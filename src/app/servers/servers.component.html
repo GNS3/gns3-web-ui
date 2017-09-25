@@ -1,0 +1,29 @@
+<div class="container page">
+  <h1>Servers</h1>
+
+  <div class="row">
+    <table class="table table-inverse">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>IP:Port</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let server of servers">
+          <th scope="row">{{ server.id }}</th>
+          <td><a [routerLink]="['/server', server.id, 'projects']">{{ server.name }}</a></td>
+          <td>{{ server.ip }}:{{ server.port }}</td>
+          <td><button class="btn btn-outline-danger btn-sm " (click)="deleteServer(server)">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <button class="btn btn-primary btn-lg active" (click)="createModal()">Add server</button>
+  </div>
+
+</div>

@@ -1,0 +1,19 @@
+<div class="container page">
+  <h1>Projects</h1>
+
+  <div class="row">
+    <table class="table table-inverse">
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of projects">
+          <td><a [routerLink]="['/server', server.id, 'project', project.project_id]">{{ project.name }}</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
