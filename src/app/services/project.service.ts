@@ -45,6 +45,11 @@ export class ProjectService {
                 .map(response => response.json() as Link[]);
   }
 
+  delete(server: Server, project_id: string): Observable<any> {
+    return this.httpServer
+                .delete(server, `/projects/${project_id}`);
+  }
+
   notificationsPath(server: Server, project_id: string): string {
     return `ws://${server.ip}:${server.port}/v2/projects/${project_id}/notifications/ws`;
   }

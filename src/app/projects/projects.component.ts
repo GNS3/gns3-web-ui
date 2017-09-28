@@ -27,13 +27,24 @@ export class ProjectsComponent implements OnInit {
       })
       .subscribe((server: Server) => {
         this.server = server;
-
-        this.projectService
-          .list(server)
-          .subscribe((projects: Project[]) => {
-            this.projects = projects;
-          });
+        this.reload();
       });
+  }
+
+  reload() {
+    this.projectService
+      .list(this.server)
+      .subscribe((projects: Project[]) => {
+        this.projects = projects;
+      });
+  }
+
+  delete(project: Project) {
+
+
+    this.projectService.delete(this.server, project.project_id).subscribe(() => {
+      this.reload();
+    });
   }
 
 }

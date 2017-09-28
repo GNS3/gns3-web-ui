@@ -6,13 +6,16 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let project of projects">
           <td><a [routerLink]="['/server', server.id, 'project', project.project_id]">{{ project.name }}</a></td>
+          <td><button class="btn btn-outline-danger btn-sm" (click)="delete(project)">Remove</button></td>
         </tr>
       </tbody>
+
     </table>
   </div>
 
