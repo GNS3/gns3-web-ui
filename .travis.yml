@@ -17,8 +17,20 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 before_script:
-   - npm install typescript@'>=2.1.0 <2.4.0'
-   - ng build
+   - npm install -g karma
 
-script: karma start config/karma.conf.js --single-run
+script: ng test --watch=false
+
+after_script:
+  - ng build --base-href /${TRAVIS_BRANCH}/
+  - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
+  - mkdir -p github-pages/${TRAVIS_BRANCH}
+  - rsync -r --delete dist/ github-pages/${TRAVIS_BRANCH}
+  - cd github-pages/${TRAVIS_BRANCH}
+  - cp ../factory_404.html 404.html
+  - git config user.email "developers@gns3.net"
+  - git config user.name "GNS3 Build"
+  - git add -A
+  - git commit -m "Deploy - $(git log -1 --pretty=%B)"
+  - git push origin master
 

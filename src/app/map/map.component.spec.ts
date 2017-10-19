@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MapComponent } from './map.component';
+import {D3Service} from "d3-ng2-service";
 
 describe('MapComponent', () => {
   let component: MapComponent;
@@ -8,7 +9,8 @@ describe('MapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MapComponent ]
+      declarations: [ MapComponent ],
+      providers: [ D3Service ]
     })
     .compileComponents();
   }));

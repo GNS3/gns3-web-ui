@@ -8,7 +8,7 @@ describe('ProjectMapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ProjectMapComponent ]
+      declarations: [ ProjectMapComponent ],
     })
     .compileComponents();
   }));
@@ -19,7 +19,4 @@ describe('ProjectMapComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should be created', () => {
-    expect(component).toBeTruthy();
-  });
 });
