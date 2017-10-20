@@ -27,7 +27,6 @@ after_script:
   - mkdir -p github-pages/${TRAVIS_BRANCH}
   - rsync -r --delete dist/ github-pages/${TRAVIS_BRANCH}
   - cd github-pages/${TRAVIS_BRANCH}
-  - cp ../factory_404.html 404.html
   - git config user.email "developers@gns3.net"
   - git config user.name "GNS3 Build"
   - git add -A
