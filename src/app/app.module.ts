@@ -20,6 +20,7 @@ import { SymbolService } from "./services/symbol.service";
 import { ServerService } from "./services/server.service";
 import { IndexedDbService } from "./services/indexed-db.service";
 import { HttpServer } from "./services/http-server.service";
+import { DefaultLayoutComponent } from './default-layout/default-layout.component';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { HttpServer } from "./services/http-server.service";
     ServersComponent,
     ServerCreateModalComponent,
     ProjectsComponent,
+    DefaultLayoutComponent,
   ],
   imports: [
     NgbModule.forRoot(),
