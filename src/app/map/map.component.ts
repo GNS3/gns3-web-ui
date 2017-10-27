@@ -21,6 +21,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
   @Input() phylloRadius = 7;
   @Input() pointRadius= 2;
+  @Input() windowFullSize = true;
 
   private d3: D3;
   private parentNativeElement: any;
@@ -77,7 +78,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.graphContext = new Context(this.svg);
 
-      this.graphContext.setSize(new Size(this.width, this.height));
+      if (this.windowFullSize) {
+        this.graphContext.setSize(this.getSize());
+      } else {
+        this.graphContext.setSize(new Size(this.width, this.height));
+      }
 
       this.graphLayout = new GraphLayout();
       this.graphLayout.draw(this.svg, this.graphContext);
@@ -85,10 +90,28 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  public getSize(): Size {
+    return new Size(
+      document.documentElement.clientWidth,
+      document.documentElement.clientHeight);
+  }
+
   private changeLayout() {
-    this.svg
-      .attr('width', this.width)
-      .attr('height', this.height);
+    if (this.graphContext != null) {
+      this.svg
+        .attr('width', this.graphContext.getSize().width)
+        .attr('height', this.graphContext.getSize().height);
+    }
+
+
+    if (this.windowFullSize) {
+      if (this.parentNativeElement != null) {
+        this.graphContext.setSize(this.getSize());
+      }
+
+    } else {
+
+    }
 
     this.graphLayout.setNodes(this.nodes);
     this.graphLayout.setLinks(this.links);

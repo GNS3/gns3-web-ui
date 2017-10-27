@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -23,6 +23,7 @@ import { Server } from "../models/server";
 
 @Component({
   selector: 'app-project-map',
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.css'],
 })

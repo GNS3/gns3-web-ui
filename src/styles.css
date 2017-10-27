@@ -2,6 +2,7 @@ html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   margin-bottom: 60px;
   background-color: #26353f;
@@ -58,7 +59,5 @@ body {
 
 .project-map svg {
   background-color: lightgray;
-  -moz-box-shadow: inset 0 0 10px	#808080;
-  -webkit-box-shadow: inset 0 0 10px	#808080;
-  box-shadow: inset 0 0 10px	#808080;
 }
+

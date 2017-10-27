@@ -1,0 +1,15 @@
+html {
+  position: static;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  margin-bottom: 0 !important;
+}
+
+app-root, app-project-map, .project-map, app-map, svg {
+  height: 100%;
+}
+
