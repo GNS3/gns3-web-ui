@@ -19,7 +19,7 @@ app-default-layout {
 .footer {
   flex-shrink: 0;
   padding: 20px;
-  background-color: #e91e63;
+  background-color: #0097a7;
   color: white;
 }
 
@@ -28,6 +28,11 @@ app-default-layout {
   max-width: 940px;
   padding-top: 20px;
   padding-bottom: 20px;
+}
+
+header {
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2),0 6px 10px 0 rgba(0,0,0,.14),0 1px 18px 0 rgba(0,0,0,.12);
+  z-index: 10;
 }
 
 main {
@@ -44,7 +49,7 @@ main {
 
 .default-header {
   padding-left: 20px;
-  background-color: #e91e63;
+  background-color: #0097a7;
 }
 
 .buttons-bar {
