@@ -1,22 +1,32 @@
-<div class="container page">
-  <h1>Projects</h1>
-
-  <div class="row">
-    <table class="table table-inverse">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let project of projects">
-          <td><a [routerLink]="['/server', server.id, 'project', project.project_id]">{{ project.name }}</a></td>
-          <td><button class="btn btn-outline-danger btn-sm" (click)="delete(project)">Remove</button></td>
-        </tr>
-      </tbody>
-
-    </table>
+<div class="content">
+  <div class="default-header">
+    <h1>Projects</h1>
   </div>
+  <div class="default-content">
 
+    <div class="example-container mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button [routerLink]="['/server', server.id, 'project', row.project_id]" mat-button>{{row.name}}</button>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="delete(row)">
+              <mat-icon aria-label="Delete project">delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </div>
+
+  </div>
 </div>

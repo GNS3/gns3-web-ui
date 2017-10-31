@@ -21,7 +21,6 @@ import 'rxjs/add/observable/fromEvent';
   styleUrls: ['./servers.component.css']
 })
 export class ServersComponent implements OnInit {
-  servers: Server[] = [];
   serverDatabase = new ServerDatabase();
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
