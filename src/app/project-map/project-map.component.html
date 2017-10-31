@@ -1,1 +1,25 @@
-<div *ngIf="project" class="project-map"><app-map [nodes]="nodes" [links]="links"></app-map></div>
+<div *ngIf="project" class="project-map">
+  <app-map [nodes]="nodes" [links]="links"></app-map>
+
+  <div class="project-toolbar">
+    <mat-toolbar color="primary" class="project-toolbar">
+      <button mat-icon-button>
+        <mat-icon svgIcon="gns3"></mat-icon>
+      </button>
+
+      <mat-toolbar-row>
+        <button mat-icon-button>
+          <mat-icon>verified_user</mat-icon>
+        </button>
+      </mat-toolbar-row>
+
+      <mat-toolbar-row>
+        <button mat-icon-button>
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
+
+</div>
+

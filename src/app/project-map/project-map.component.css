@@ -13,3 +13,12 @@
   /*height: 100%;*/
 /*}*/
 
+
+
+.project-toolbar {
+  width: 70px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
