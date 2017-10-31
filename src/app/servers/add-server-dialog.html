@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Add server</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput tabindex="1" [(ngModel)]="server.name" placeholder="Name">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput tabindex="1" [(ngModel)]="server.ip" placeholder="IP">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput tabindex="1" [(ngModel)]="server.port" placeholder="Port">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onAddClick()" tabindex="2">Add</button>
+  <button mat-button (click)="onNoClick()" tabindex="-1">No Thanks</button>
+</div>

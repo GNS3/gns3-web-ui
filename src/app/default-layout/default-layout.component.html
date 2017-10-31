@@ -1,19 +1,18 @@
-<nav class="navbar navbar-expand-lg navbar-dark">
-  <a class="navbar-brand" href="/"><img src="assets/logo-header.png"></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" [routerLink]="['/servers']" >Servers <span class="sr-only">(current)</span></a>
-      </li>
-    </ul>
-  </div>
-</nav>
+<header>
+  <mat-toolbar color="primary">
+    <button mat-icon-button>
+      <mat-icon svgIcon="gns3"></mat-icon>
+    </button>
 
-<router-outlet></router-outlet>
+    <a mat-button routerLink="/servers" >Servers</a>
+  </mat-toolbar>
+</header>
 
-<footer class="footer">
-  <span class="text-muted">GNS3 Web UI demo</span>
+<main class="mat-app-background">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer primary-light-bg">
+  GNS3 Web UI demo &copy; 2017
 </footer>
+

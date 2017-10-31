@@ -22,8 +22,15 @@ export class ServerService {
   }
 
   public create(server: Server) {
-    return this.onReady(() =>
-      this.indexedDbService.get().add(this.tablename, server));
+    return this.onReady(() => {
+      const promise = new Promise((resolve, reject) => {
+        this.indexedDbService.get().add(this.tablename, server).then((added) => {
+          server.id = added.key;
+          resolve(server);
+        }, reject);
+      });
+      return promise;
+    });
   }
 
   public findAll() {

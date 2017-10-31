@@ -1,0 +1,53 @@
+html, body {
+  height: 100%;
+}
+
+app-root, app-default-layout {
+  height: 100%;
+}
+
+app-default-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content {
+  flex: 1 0 auto;
+}
+
+.footer {
+  flex-shrink: 0;
+  padding: 20px;
+  background-color: #e91e63;
+  color: white;
+}
+
+.default-content {
+  margin: 0 auto;
+  max-width: 940px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+main {
+  height: 100%;
+}
+
+.default-header h1 {
+  font-weight: 300;
+  margin: 0;
+  font-size: 20px;
+  padding: 28px 8px;
+  color: white;
+}
+
+.default-header {
+  padding-left: 20px;
+  background-color: #e91e63;
+}
+
+.buttons-bar {
+  padding-top: 10px;
+  text-align: right;
+}

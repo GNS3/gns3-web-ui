@@ -11,7 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 import { ProjectMapComponent } from './project-map/project-map.component';
-import { ServerCreateModalComponent, ServersComponent } from './servers/servers.component';
+import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { ProjectsComponent } from './projects/projects.component';
 
 import { VersionService } from './services/version.service';
@@ -23,13 +23,28 @@ import { HttpServer } from "./services/http-server.service";
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
 
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatMenuModule,
+  MatToolbarModule,
+  MatIconModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatTableModule,
+  MatDialogModule
+} from '@angular/material';
+
+import {CdkTableModule} from "@angular/cdk/table";
+
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
     ProjectMapComponent,
     ServersComponent,
-    ServerCreateModalComponent,
+    AddServerDialogComponent,
     ProjectsComponent,
     DefaultLayoutComponent,
   ],
@@ -38,7 +53,18 @@ import { DefaultLayoutComponent } from './default-layout/default-layout.componen
     BrowserModule,
     HttpModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatCardModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatDialogModule,
+    CdkTableModule
   ],
   providers: [
     D3Service,
@@ -50,7 +76,7 @@ import { DefaultLayoutComponent } from './default-layout/default-layout.componen
     HttpServer,
   ],
   entryComponents: [
-    ServerCreateModalComponent,
+    AddServerDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })

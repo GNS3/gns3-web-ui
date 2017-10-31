@@ -1,23 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {Component, Inject, OnInit} from '@angular/core';
 
 import { Server } from "../models/server";
 import { ServerService } from "../services/server.service";
+import {DataSource} from "@angular/cdk/collections";
+import {Observable} from "rxjs/Observable";
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
-
-@Component({
-  selector: 'app-server-create-modal',
-  templateUrl: './server-create-modal.component.html'
-})
-export class ServerCreateModalComponent {
-  public server = new Server();
-
-  constructor(public activeModal: NgbActiveModal) {}
-
-  add() {
-    this.activeModal.close(this.server);
-  }
-}
+import 'rxjs/add/operator/startWith';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/observable/fromEvent';
 
 
 @Component({
@@ -27,32 +22,101 @@ export class ServerCreateModalComponent {
 })
 export class ServersComponent implements OnInit {
   servers: Server[] = [];
+  serverDatabase = new ServerDatabase();
+  dataSource: ServerDataSource;
+  displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
 
-  constructor(private modalService: NgbModal, private serverService: ServerService) { }
+  constructor(private dialog: MatDialog, private serverService: ServerService) {}
 
   ngOnInit() {
-    this.loadServers();
-  }
-
-  loadServers() {
     this.serverService.findAll().then((servers: Server[]) => {
-      this.servers = servers;
+      this.serverDatabase.addServers(servers);
     });
+
+    this.dataSource = new ServerDataSource(this.serverDatabase);
   }
 
   createModal() {
-    this.modalService.open(ServerCreateModalComponent).result.then((server: Server) => {
-      this.serverService.create(server).then((created: Server) => {
-        this.loadServers();
-      });
-    }, (rejection) => {
+    const dialogRef = this.dialog.open(AddServerDialogComponent, {
+      width: '250px',
+    });
+
+    dialogRef.afterClosed().subscribe(server => {
+      if (server) {
+        this.serverService.create(server).then((created: Server) => {
+          this.serverDatabase.addServer(created);
+        });
+      }
     });
   }
 
   deleteServer(server: Server) {
     this.serverService.delete(server).then(() => {
-      this.loadServers();
+      this.serverDatabase.remove(server);
     });
   }
+
+}
+
+@Component({
+  selector: 'app-add-server-dialog',
+  templateUrl: 'add-server-dialog.html',
+})
+export class AddServerDialogComponent {
+  server: Server = new Server();
+
+  constructor(
+    public dialogRef: MatDialogRef<AddServerDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any, serverService: ServerService) {
+  }
+
+  onAddClick(): void {
+    this.dialogRef.close(this.server);
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+}
+
+export class ServerDatabase {
+  dataChange: BehaviorSubject<Server[]> = new BehaviorSubject<Server[]>([]);
+
+  get data(): Server[] {
+    return this.dataChange.value;
+  }
+
+  public addServer(server: Server) {
+    const servers = this.data.slice();
+    servers.push(server);
+    this.dataChange.next(servers);
+  }
+
+  public addServers(servers: Server[]) {
+    this.dataChange.next(servers);
+  }
+
+  public remove(server: Server) {
+    const index = this.data.indexOf(server);
+    if (index >= 0) {
+      this.data.splice(index, 1);
+      this.dataChange.next(this.data.slice());
+    }
+  }
+}
+
+export class ServerDataSource extends DataSource<any> {
+  constructor(private serverDatabase: ServerDatabase) {
+    super();
+  }
+
+  connect(): Observable<Server[]> {
+    return Observable.merge(this.serverDatabase.dataChange).map(() => {
+      return this.serverDatabase.data;
+    });
+  }
+
+  disconnect() {}
 
 }

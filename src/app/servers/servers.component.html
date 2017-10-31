@@ -1,29 +1,49 @@
-<div class="container page">
-  <h1>Servers</h1>
-
-  <div class="row">
-    <table class="table table-inverse">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>IP:Port</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let server of servers">
-          <th scope="row">{{ server.id }}</th>
-          <td><a [routerLink]="['/server', server.id, 'projects']">{{ server.name }}</a></td>
-          <td>{{ server.ip }}:{{ server.port }}</td>
-          <td><button class="btn btn-outline-danger btn-sm " (click)="deleteServer(server)">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
+<div class="content">
+  <div class="default-header">
+    <h1>Servers</h1>
   </div>
+  <div class="default-content">
 
-  <div class="row">
-    <button class="btn btn-primary btn-lg active" (click)="createModal()">Add server</button>
+    <div class="example-container mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.id}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="ip">
+          <mat-header-cell *matHeaderCellDef> IP </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.ip}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="port">
+          <mat-header-cell *matHeaderCellDef> Port </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.port}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="deleteServer(row)">
+              <mat-icon aria-label="Remove server">delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        >
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </div>
+
+    <div class="buttons-bar">
+      <button mat-raised-button color="primary" (click)="createModal()">Add server</button>
+    </div>
   </div>
-
 </div>
