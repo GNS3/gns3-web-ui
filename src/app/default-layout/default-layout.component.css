@@ -19,7 +19,7 @@ app-default-layout {
 .footer {
   flex-shrink: 0;
   padding: 20px;
-  background-color: #0097a7;
+  /*background-color: #0097a7;*/
   color: white;
 }
 
@@ -49,7 +49,7 @@ main {
 
 .default-header {
   padding-left: 20px;
-  background-color: #0097a7;
+  /*background-color: #0097a7;*/
 }
 
 .buttons-bar {

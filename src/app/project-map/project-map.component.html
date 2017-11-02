@@ -3,21 +3,21 @@
 
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
-      <button mat-icon-button>
+      <button mat-icon-button [routerLink]="['/server', server.id, 'projects']">
         <mat-icon svgIcon="gns3"></mat-icon>
       </button>
 
-      <mat-toolbar-row>
-        <button mat-icon-button>
-          <mat-icon>verified_user</mat-icon>
-        </button>
-      </mat-toolbar-row>
+      <!--<mat-toolbar-row>-->
+        <!--<button mat-icon-button>-->
+          <!--<mat-icon>verified_user</mat-icon>-->
+        <!--</button>-->
+      <!--</mat-toolbar-row>-->
 
-      <mat-toolbar-row>
-        <button mat-icon-button>
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-toolbar-row>
+      <!--<mat-toolbar-row>-->
+        <!--<button mat-icon-button>-->
+          <!--<mat-icon>delete</mat-icon>-->
+        <!--</button>-->
+      <!--</mat-toolbar-row>-->
     </mat-toolbar>
   </div>
 
