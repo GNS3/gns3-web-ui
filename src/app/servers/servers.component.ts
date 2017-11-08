@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 
-import { Server } from "../models/server";
-import { ServerService } from "../services/server.service";
+import { Server } from "../shared/models/server";
+import { ServerService } from "../shared/services/server.service";
 import {DataSource} from "@angular/cdk/collections";
 import {Observable} from "rxjs/Observable";
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';

@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MapComponent } from './map.component';
+import { MapComponent } from '../cartography/map/map.component';
 import {D3Service} from "d3-ng2-service";
 
 describe('MapComponent', () => {

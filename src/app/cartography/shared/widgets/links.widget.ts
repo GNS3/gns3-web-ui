@@ -2,10 +2,10 @@ import { select } from "d3-selection";
 import { line } from "d3-shape";
 
 import { Widget } from "./widget";
-import { SVGSelection } from "./types";
-import { Link } from "../../models/link";
-import { LinkStatus } from "../../models/link-status";
-import { MultiLinkCalculatorHelper } from "./helpers/multi-link-calculator-helper";
+import { SVGSelection } from "../../../map/models/types";
+import { Link } from "../models/link.model";
+import { LinkStatus } from "../models/link-status";
+import { MultiLinkCalculatorHelper } from "../../map/helpers/multi-link-calculator-helper";
 
 
 export class LinksWidget implements Widget {

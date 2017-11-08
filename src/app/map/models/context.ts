@@ -1,4 +1,4 @@
-import {Size} from "./size";
+import {Size} from "../../cartography/shared/models/size.model";
 import {Selection} from "d3-selection";
 
 export class Context {

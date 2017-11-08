@@ -2,17 +2,17 @@ import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChang
 import { D3, D3Service } from 'd3-ng2-service';
 import { Selection } from 'd3-selection';
 
-import { Node } from "../models/node";
-import { Link } from "../models/link";
-import { GraphLayout } from "./models/graph-layout";
-import { Context } from "./models/context";
-import { Size } from "./models/size";
+import { Node } from "../shared/models/node.model";
+import { Link } from "../shared/models/link.model";
+import { GraphLayout } from "../shared/widgets/graph.widget";
+import { Context } from "../../map/models/context";
+import { Size } from "../shared/models/size.model";
 
 
 @Component({
   selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  templateUrl: '../../map/map.component.html',
+  styleUrls: ['../../map/map.component.css']
 })
 export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];

@@ -11,14 +11,14 @@ import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/dom/webSocket';
 
 
-import { Project } from '../models/project';
-import { Node } from '../models/node';
-import { SymbolService } from '../services/symbol.service';
-import { Link } from "../models/link";
-import { MapComponent } from "../map/map.component";
-import { ServerService } from "../services/server.service";
-import { ProjectService } from '../services/project.service';
-import { Server } from "../models/server";
+import { Project } from '../shared/models/project';
+import { Node } from '../cartography/shared/models/node.model';
+import { SymbolService } from '../shared/services/symbol.service';
+import { Link } from "../cartography/shared/models/link.model";
+import { MapComponent } from "../cartography/map/map.component";
+import { ServerService } from "../shared/services/server.service";
+import { ProjectService } from '../shared/services/project.service';
+import { Server } from "../shared/models/server";
 
 
 @Component({

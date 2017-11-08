@@ -1,10 +1,10 @@
-import { Context } from "./context";
-import { Node } from "../../models/node";
-import { Link } from "../../models/link";
-import { NodesWidget } from "./nodes-widget";
+import { Context } from "../../../map/models/context";
+import { Node } from "../models/node.model";
+import { Link } from "../models/link.model";
+import { NodesWidget } from "./nodes.widget";
 import { Widget } from "./widget";
-import { SVGSelection } from "./types";
-import { LinksWidget } from "./links-widget";
+import { SVGSelection } from "../../../map/models/types";
+import { LinksWidget } from "./links.widget";
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { event } from "d3-selection";
 

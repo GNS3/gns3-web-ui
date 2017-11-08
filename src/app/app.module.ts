@@ -9,17 +9,17 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { MapComponent } from './map/map.component';
+import { MapComponent } from './cartography/map/map.component';
 import { ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { ProjectsComponent } from './projects/projects.component';
 
-import { VersionService } from './services/version.service';
-import { ProjectService } from './services/project.service';
-import { SymbolService } from "./services/symbol.service";
-import { ServerService } from "./services/server.service";
-import { IndexedDbService } from "./services/indexed-db.service";
-import { HttpServer } from "./services/http-server.service";
+import { VersionService } from './shared/services/version.service';
+import { ProjectService } from './shared/services/project.service';
+import { SymbolService } from "./shared/services/symbol.service";
+import { ServerService } from "./shared/services/server.service";
+import { IndexedDbService } from "./shared/services/indexed-db.service";
+import { HttpServer } from "./shared/services/http-server.service";
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
 
 

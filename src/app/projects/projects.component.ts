@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
-import { Project } from "../models/project";
-import { ProjectService } from "../services/project.service";
-import { Server } from "../models/server";
-import { ServerService } from "../services/server.service";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {DataSource} from "@angular/cdk/collections";
-import {Observable} from "rxjs/Observable";
+import { Project } from "../shared/models/project";
+import { ProjectService } from "../shared/services/project.service";
+import { Server } from "../shared/models/server";
+import { ServerService } from "../shared/services/server.service";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { DataSource } from "@angular/cdk/collections";
+import { Observable } from "rxjs/Observable";
 
 @Component({
   selector: 'app-projects',

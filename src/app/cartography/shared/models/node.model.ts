@@ -1,5 +1,5 @@
-import {Label} from "./label";
-import {Symbol} from "./symbol";
+import {Label} from "./label.model";
+import {Symbol} from "../../../shared/models/symbol";
 
 export class Node {
   command_line: string;
