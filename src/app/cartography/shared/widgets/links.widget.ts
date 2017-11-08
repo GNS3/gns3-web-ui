@@ -4,7 +4,7 @@ import { line } from "d3-shape";
 import { Widget } from "./widget";
 import { SVGSelection } from "../../../map/models/types";
 import { Link } from "../models/link.model";
-import { LinkStatus } from "../models/link-status";
+import { LinkStatus } from "../models/link-status.model";
 import { MultiLinkCalculatorHelper } from "../../map/helpers/multi-link-calculator-helper";
 
 
