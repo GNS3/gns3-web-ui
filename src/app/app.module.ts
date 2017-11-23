@@ -10,7 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './cartography/map/map.component';
-import { ProjectMapComponent } from './project-map/project-map.component';
+import {CreateSnapshotDialogComponent, ProjectMapComponent} from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { ProjectsComponent } from './projects/projects.component';
 
@@ -37,6 +37,7 @@ import {
 } from '@angular/material';
 
 import {CdkTableModule} from "@angular/cdk/table";
+import {SnapshotService} from "./shared/services/snapshot.service";
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import {CdkTableModule} from "@angular/cdk/table";
     ProjectMapComponent,
     ServersComponent,
     AddServerDialogComponent,
+    CreateSnapshotDialogComponent,
     ProjectsComponent,
     DefaultLayoutComponent,
   ],
@@ -74,9 +76,11 @@ import {CdkTableModule} from "@angular/cdk/table";
     ServerService,
     IndexedDbService,
     HttpServer,
+    SnapshotService
   ],
   entryComponents: [
-    AddServerDialogComponent
+    AddServerDialogComponent,
+    CreateSnapshotDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })

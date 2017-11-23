@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -19,6 +19,9 @@ import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
 import { Server } from "../shared/models/server";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
+import {SnapshotService} from "../shared/services/snapshot.service";
+import {Snapshot} from "../shared/models/snapshot";
 
 
 @Component({
@@ -42,7 +45,9 @@ export class ProjectMapComponent implements OnInit {
               private route: ActivatedRoute,
               private serverService: ServerService,
               private projectService: ProjectService,
-              private symbolService: SymbolService) {
+              private symbolService: SymbolService,
+              private snapshotService: SnapshotService,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -149,4 +154,49 @@ export class ProjectMapComponent implements OnInit {
       }
     });
   }
+
+  public createSnapshotModal() {
+    const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
+      width: '250px',
+    });
+
+    dialogRef.afterClosed().subscribe(snapshot => {
+      if (snapshot) {
+        const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
+        const subscription = creation.subscribe((created_snapshot: Snapshot) => {
+          console.log(created_snapshot);
+        });
+
+        // setTimeout(() => {
+        //   subscription.unsubscribe();
+        //   console.log("Unsubscribed");
+        // }, 15000);
+
+      }
+    });
+  }
 }
+
+
+@Component({
+  selector: 'app-create-snapshot-dialog',
+  templateUrl: 'create-snapshot-dialog.html',
+})
+export class CreateSnapshotDialogComponent {
+  snapshot: Snapshot = new Snapshot();
+
+  constructor(
+    public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
+  }
+
+  onAddClick(): void {
+    this.dialogRef.close(this.snapshot);
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+}
+
