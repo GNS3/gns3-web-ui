@@ -66,7 +66,7 @@ export class AddServerDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<AddServerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any, serverService: ServerService) {
+    @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   onAddClick(): void {

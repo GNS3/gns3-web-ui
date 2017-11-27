@@ -19,11 +19,12 @@ import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
 import { Server } from "../shared/models/server";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
-import {SnapshotService} from "../shared/services/snapshot.service";
-import {Snapshot} from "../shared/models/snapshot";
-import {ProgressDialogService} from "../shared/progress-dialog/progress-dialog.service";
-import {ProgressDialogComponent} from "../shared/progress-dialog/progress-dialog.component";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material";
+import { SnapshotService } from "../shared/services/snapshot.service";
+import { Snapshot } from "../shared/models/snapshot";
+import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";
+import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dialog.component";
+import { ToastyService } from "ng2-toasty";
 
 
 @Component({
@@ -50,7 +51,8 @@ export class ProjectMapComponent implements OnInit {
               private symbolService: SymbolService,
               private snapshotService: SnapshotService,
               private dialog: MatDialog,
-              private progressDialogService: ProgressDialogService) {
+              private progressDialogService: ProgressDialogService,
+              private toastyService: ToastyService) {
   }
 
   ngOnInit() {
@@ -170,10 +172,17 @@ export class ProjectMapComponent implements OnInit {
         const progress = this.progressDialogService.open();
 
         const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          
-        }, () => {
-
-        }, () => {
+          this.toastyService.success({
+              'title': 'Snapshot created',
+              'msg': `Snapshot '${snapshot.name}' has been created.`
+          });
+          progress.close();
+        }, (response) => {
+          const error = response.json();
+          this.toastyService.error({
+            'title': 'Cannot create snapshot',
+            'msg': error.message
+          });
           progress.close();
         });
 

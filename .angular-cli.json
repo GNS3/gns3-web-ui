@@ -20,6 +20,7 @@
       "prefix": "app",
       "styles": [
         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "../node_modules/ng2-toasty/bundles/style-material.css",
         "styles.css",
         "theme.scss"
       ],
