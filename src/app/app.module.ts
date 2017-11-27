@@ -33,11 +33,13 @@ import {
   MatFormFieldModule,
   MatInputModule,
   MatTableModule,
-  MatDialogModule
+  MatDialogModule, MatProgressBarModule
 } from '@angular/material';
 
 import {CdkTableModule} from "@angular/cdk/table";
 import {SnapshotService} from "./shared/services/snapshot.service";
+import { ProgressDialogComponent } from './shared/progress-dialog/progress-dialog.component';
+import {ProgressDialogService} from "./shared/progress-dialog/progress-dialog.service";
 
 @NgModule({
   declarations: [
@@ -49,6 +51,7 @@ import {SnapshotService} from "./shared/services/snapshot.service";
     CreateSnapshotDialogComponent,
     ProjectsComponent,
     DefaultLayoutComponent,
+    ProgressDialogComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -66,6 +69,7 @@ import {SnapshotService} from "./shared/services/snapshot.service";
     MatInputModule,
     MatTableModule,
     MatDialogModule,
+    MatProgressBarModule,
     CdkTableModule
   ],
   providers: [
@@ -76,11 +80,13 @@ import {SnapshotService} from "./shared/services/snapshot.service";
     ServerService,
     IndexedDbService,
     HttpServer,
-    SnapshotService
+    SnapshotService,
+    ProgressDialogService
   ],
   entryComponents: [
     AddServerDialogComponent,
-    CreateSnapshotDialogComponent
+    CreateSnapshotDialogComponent,
+    ProgressDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })

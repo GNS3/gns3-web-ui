@@ -22,6 +22,8 @@ import { Server } from "../shared/models/server";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {SnapshotService} from "../shared/services/snapshot.service";
 import {Snapshot} from "../shared/models/snapshot";
+import {ProgressDialogService} from "../shared/progress-dialog/progress-dialog.service";
+import {ProgressDialogComponent} from "../shared/progress-dialog/progress-dialog.component";
 
 
 @Component({
@@ -47,7 +49,8 @@ export class ProjectMapComponent implements OnInit {
               private projectService: ProjectService,
               private symbolService: SymbolService,
               private snapshotService: SnapshotService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private progressDialogService: ProgressDialogService) {
   }
 
   ngOnInit() {
@@ -163,14 +166,21 @@ export class ProjectMapComponent implements OnInit {
     dialogRef.afterClosed().subscribe(snapshot => {
       if (snapshot) {
         const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
+
+        const progress = this.progressDialogService.open();
+
         const subscription = creation.subscribe((created_snapshot: Snapshot) => {
           console.log(created_snapshot);
+          progress.close();
+        }, () => {
+          progress.close();
         });
 
-        // setTimeout(() => {
-        //   subscription.unsubscribe();
-        //   console.log("Unsubscribed");
-        // }, 15000);
+        progress.afterClosed().subscribe((result) => {
+          if (result === ProgressDialogComponent.CANCELLED) {
+            subscription.unsubscribe();
+          }
+        });
 
       }
     });
