@@ -170,8 +170,9 @@ export class ProjectMapComponent implements OnInit {
         const progress = this.progressDialogService.open();
 
         const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          console.log(created_snapshot);
-          progress.close();
+          
+        }, () => {
+
         }, () => {
           progress.close();
         });
@@ -181,7 +182,6 @@ export class ProjectMapComponent implements OnInit {
             subscription.unsubscribe();
           }
         });
-
       }
     });
   }
