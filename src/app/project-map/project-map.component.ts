@@ -25,6 +25,7 @@ import { Snapshot } from "../shared/models/snapshot";
 import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";
 import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dialog.component";
 import { ToastyService } from "ng2-toasty";
+import {Drawing} from "../cartography/shared/models/drawing.model";
 
 
 @Component({
@@ -36,6 +37,7 @@ import { ToastyService } from "ng2-toasty";
 export class ProjectMapComponent implements OnInit {
   public nodes: Node[] = [];
   public links: Link[] = [];
+  public drawings: Drawing[] = [];
 
   project: Project;
   server: Server;
@@ -86,6 +88,10 @@ export class ProjectMapComponent implements OnInit {
     this.symbolService
       .load(this.server)
       .flatMap(() => {
+        return this.projectService.drawings(this.server, project.project_id);
+      })
+      .flatMap((drawings: Drawing[]) => {
+        this.drawings = drawings;
         return this.projectService.links(this.server, project.project_id);
       })
       .flatMap((links: Link[]) => {

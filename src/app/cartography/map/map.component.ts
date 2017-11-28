@@ -7,6 +7,7 @@ import { Link } from "../shared/models/link.model";
 import { GraphLayout } from "../shared/widgets/graph.widget";
 import { Context } from "../../map/models/context";
 import { Size } from "../shared/models/size.model";
+import { Drawing } from "../shared/models/drawing.model";
 
 
 @Component({
@@ -17,6 +18,7 @@ import { Size } from "../shared/models/size.model";
 export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
   @Input() links: Link[] = [];
+  @Input() drawings: Drawing[] = [];
   @Input() width = 1500;
   @Input() height = 600;
   @Input() phylloRadius = 7;
@@ -43,6 +45,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       (changes['height'] && !changes['height'].isFirstChange()) ||
       (changes['phylloRadius'] && !changes['phylloRadius'].isFirstChange()) ||
       (changes['pointRadius'] && !changes['pointRadius'].isFirstChange()) ||
+      (changes['drawings'] && !changes['drawings'].isFirstChange()) ||
       (changes['nodes'] && !changes['nodes'].isFirstChange()) ||
       (changes['links'] && !changes['links'].isFirstChange())
     ) {
@@ -115,6 +118,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.graphLayout.setNodes(this.nodes);
     this.graphLayout.setLinks(this.links);
+    this.graphLayout.setDrawings(this.drawings);
 
     this.redraw();
   }

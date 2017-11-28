@@ -7,14 +7,18 @@ import { SVGSelection } from "../../../map/models/types";
 import { LinksWidget } from "./links.widget";
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { event } from "d3-selection";
+import {Drawing} from "../models/drawing.model";
+import {DrawingsWidget} from "./drawings.widget";
 
 export class GraphLayout implements Widget {
 
   private nodes: Node[] = [];
   private links: Link[] = [];
+  private drawings: Drawing[] = [];
 
   private nodesWidget = new NodesWidget();
   private linksWidget = new LinksWidget();
+  private drawingsWidget = new DrawingsWidget();
 
   private centerZeroZeroPoint = true;
 
@@ -26,42 +30,46 @@ export class GraphLayout implements Widget {
     this.links = links;
   }
 
+  public setDrawings(drawings: Drawing[]) {
+    this.drawings = drawings;
+  }
 
   draw(view: SVGSelection, context: Context) {
     const self = this;
 
-    const drawing = view
-      .selectAll<SVGGElement, Context>('g.drawing')
+    const canvas = view
+      .selectAll<SVGGElement, Context>('g.canvas')
       .data([context]);
 
-    const drawingEnter = drawing.enter()
+    const canvasEnter = canvas.enter()
         .append<SVGGElement>('g')
-        .attr('class', 'drawing');
+        .attr('class', 'canvas');
 
     if (this.centerZeroZeroPoint) {
-      drawing.attr(
+      canvas.attr(
         'transform',
         (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
     }
 
-    const links = drawingEnter.append<SVGGElement>('g')
-      .attr('class', 'links');
+    // const links = canvasEnter.append<SVGGElement>('g')
+    //   .attr('class', 'links');
+    //
+    // const nodes = canvasEnter.append<SVGGElement>('g')
+    //   .attr('class', 'nodes');
 
-    const nodes = drawingEnter.append<SVGGElement>('g')
-      .attr('class', 'nodes');
-
-    this.linksWidget.draw(drawing, this.links);
-    this.nodesWidget.draw(drawing, this.nodes);
+    this.linksWidget.draw(canvas, this.links);
+    this.nodesWidget.draw(canvas, this.nodes);
+    this.drawingsWidget.draw(canvas, this.drawings)
 
     const onZoom = function(this: SVGSVGElement) {
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       if (self.centerZeroZeroPoint) {
-        drawing.attr(
+        canvas.attr(
           'transform',
           `translate(${context.getSize().width / 2 + e.transform.x}, ` +
                 `${context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
       } else {
-        drawing.attr('transform', e.transform.toString());
+        canvas.attr('transform', e.transform.toString());
       }
     };
 

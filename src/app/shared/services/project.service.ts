@@ -7,6 +7,7 @@ import 'rxjs/add/operator/map';
 import { Link } from "../../cartography/shared/models/link.model";
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
+import {Drawing} from "../../cartography/shared/models/drawing.model";
 
 @Injectable()
 export class ProjectService {
@@ -41,6 +42,12 @@ export class ProjectService {
     return this.httpServer
                 .get(server, `/projects/${project_id}/links`)
                 .map(response => response.json() as Link[]);
+  }
+
+  drawings(server: Server, project_id: string): Observable<Drawing[]> {
+    return this.httpServer
+                .get(server, `/projects/${project_id}/drawings`)
+                .map(response => response.json() as Drawing[]);
   }
 
   delete(server: Server, project_id: string): Observable<any> {
