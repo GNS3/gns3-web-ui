@@ -1,12 +1,7 @@
-import {Widget} from "./widget";
-import {Node} from "../models/node.model";
-import {SVGSelection} from "../../../map/models/types";
+import { Widget } from "./widget";
+import { Node } from "../models/node.model";
+import { SVGSelection } from "../../../map/models/types";
 import { event } from "d3-selection";
-import { D3} from "d3-ng2-service";
-
-import {D3DragEvent} from "d3-drag";
-import {select} from "d3-selection";
-import {isUndefined} from "util";
 
 export interface NodeOnContextMenuListener {
   onContextMenu(): void;
@@ -53,10 +48,6 @@ export class NodesWidget implements Widget {
         .attr('width', (n: Node) => n.width)
         .attr('height', (n: Node) => n.height)
         .on("contextmenu", function (n: Node, i: number) {
-          // if (self.onContextMenuListener !== ) {
-          //   self.onContextMenuListener.onContextMenu();
-          // }
-          console.log(event);
           event.preventDefault();
           if (self.onContextMenuCallback !== null) {
             self.onContextMenuCallback(event);
