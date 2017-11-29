@@ -1,15 +1,3 @@
 <svg preserveAspectRatio="none"></svg>
 
-<div class="context-menu" [style.left]="contextMenuLeft" [style.top]="contextMenuTop">
-  <span [matMenuTriggerFor]="contextMenu"></span>
-  <mat-menu #contextMenu="matMenu">
-    <button mat-menu-item>
-      <mat-icon>play_arrow</mat-icon>
-      <span>Start</span>
-    </button>
-    <button mat-menu-item>
-      <mat-icon>stop</mat-icon>
-      <span>Stop</span>
-    </button>
-  </mat-menu>
-</div>
+<app-node-context-menu></app-node-context-menu>

@@ -1,6 +1,5 @@
 import {
-  ChangeDetectorRef,
-  Component, ElementRef, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChange,
+  Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange,
   ViewChild
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
@@ -12,17 +11,9 @@ import { GraphLayout } from "../shared/widgets/graph.widget";
 import { Context } from "../../map/models/context";
 import { Size } from "../shared/models/size.model";
 import { Drawing } from "../shared/models/drawing.model";
-import {MatMenuTrigger} from "@angular/material";
-import {NodeOnContextMenuListener} from "../shared/widgets/nodes.widget";
-import {DomSanitizer} from "@angular/platform-browser";
 
-class NodeOnContextMenu implements NodeOnContextMenuListener {
-  constructor(private component: MapComponent) {}
+import {NodeContextMenuComponent} from "../../shared/node-context-menu/node-context-menu.component";
 
-  onContextMenu() {
-    this.component.contextMenu.openMenu();
-  }
-}
 
 @Component({
   selector: 'app-map',
@@ -37,7 +28,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
   @Input() windowFullSize = true;
 
-  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+  @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
   private d3: D3;
   private parentNativeElement: any;
@@ -46,19 +37,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private graphLayout: GraphLayout;
   private graphContext: Context;
 
-  public contextMenuTop;
-  public contextMenuLeft;
 
   constructor(protected element: ElementRef,
-              protected d3Service: D3Service,
-              protected sanitizer: DomSanitizer,
-              protected changeDetector: ChangeDetectorRef
+              protected d3Service: D3Service
               ) {
     this.d3 = d3Service.getD3();
     this.parentNativeElement = element.nativeElement;
-
-    this.contextMenuLeft = this.sanitizer.bypassSecurityTrustStyle("0");
-    this.contextMenuTop = this.sanitizer.bypassSecurityTrustStyle("0");
   }
 
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -109,14 +93,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.graphLayout = new GraphLayout();
       this.graphLayout.draw(this.svg, this.graphContext);
-      // this.graphLayout.getNodesWidget().setOnContextMenuListener(new NodeOnContextMenu(self));
+
       this.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any) => {
-
-        this.contextMenuLeft = this.sanitizer.bypassSecurityTrustStyle(event.clientX + "px");
-        this.contextMenuTop = this.sanitizer.bypassSecurityTrustStyle(event.clientY + "px");
-        this.changeDetector.detectChanges();
-
-        this.contextMenu.openMenu();
+        this.nodeContextMenu.open(event.clientY, event.clientX);
       });
     }
   }
