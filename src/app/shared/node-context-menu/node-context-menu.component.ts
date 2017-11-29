@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/c
 import {MatMenuTrigger} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Node} from "../../cartography/shared/models/node.model";
+import {NodeContextMenuAction} from "./node-context-menu-action";
 
 
 @Component({
@@ -15,6 +16,7 @@ export class NodeContextMenuComponent implements OnInit {
   private topPosition;
   private leftPosition;
   private node: Node;
+  private actions: NodeContextMenuAction[] = [];
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -34,6 +36,14 @@ export class NodeContextMenuComponent implements OnInit {
     this.node = node;
     this.setPosition(top, left);
     this.contextMenu.openMenu();
+  }
+
+  public registerAction(action: NodeContextMenuAction) {
+    this.actions.push(action);
+  }
+
+  public clearActions() {
+    this.actions = [];
   }
 
 }

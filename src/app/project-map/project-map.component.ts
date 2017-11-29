@@ -26,6 +26,9 @@ import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog
 import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dialog.component";
 import { ToastyService } from "ng2-toasty";
 import {Drawing} from "../cartography/shared/models/drawing.model";
+import {StartNodeAction} from "../shared/node-context-menu/actions/start-node-action";
+import {NodeService} from "../shared/services/node.service";
+import {StopNodeAction} from "../shared/node-context-menu/actions/stop-node-action";
 
 
 @Component({
@@ -52,6 +55,7 @@ export class ProjectMapComponent implements OnInit {
               private projectService: ProjectService,
               private symbolService: SymbolService,
               private snapshotService: SnapshotService,
+              private nodeService: NodeService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
               private toastyService: ToastyService) {
@@ -105,6 +109,7 @@ export class ProjectMapComponent implements OnInit {
           n.icon = this.symbolService.get(n.symbol);
         });
 
+        this.setUpNodeActions();
         this.setUpWS(project);
       });
 
@@ -164,6 +169,16 @@ export class ProjectMapComponent implements OnInit {
         }
       }
     });
+  }
+
+  setUpNodeActions() {
+      this.mapChild.nodeContextMenu.clearActions();
+
+      const start_node_action = new StartNodeAction(this.server, this.nodeService);
+      this.mapChild.nodeContextMenu.registerAction(start_node_action);
+
+      const stop_node_action = new StopNodeAction(this.server, this.nodeService);
+      this.mapChild.nodeContextMenu.registerAction(stop_node_action);
   }
 
   public createSnapshotModal() {

@@ -94,9 +94,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       this.graphLayout = new GraphLayout();
       this.graphLayout.draw(this.svg, this.graphContext);
 
+
       this.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
         this.nodeContextMenu.open(node, event.clientY, event.clientX);
       });
+
+
     }
   }
 

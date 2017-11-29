@@ -41,6 +41,8 @@ import { MapComponent } from './cartography/map/map.component';
 import { CreateSnapshotDialogComponent, ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { NodeContextMenuComponent } from './shared/node-context-menu/node-context-menu.component';
+import {NodeService} from "./shared/services/node.service";
+import { StartNodeActionComponent } from './shared/node-context-menu/actions/start-node-action/start-node-action.component';
 
 
 @NgModule({
@@ -55,6 +57,7 @@ import { NodeContextMenuComponent } from './shared/node-context-menu/node-contex
     DefaultLayoutComponent,
     ProgressDialogComponent,
     NodeContextMenuComponent,
+    StartNodeActionComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -82,6 +85,7 @@ import { NodeContextMenuComponent } from './shared/node-context-menu/node-contex
     ProjectService,
     SymbolService,
     ServerService,
+    NodeService,
     IndexedDbService,
     HttpServer,
     SnapshotService,
