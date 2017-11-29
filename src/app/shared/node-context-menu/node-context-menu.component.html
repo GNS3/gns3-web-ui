@@ -1,11 +1,11 @@
-<div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
+<div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition" *ngIf="node">
   <span [matMenuTriggerFor]="contextMenu"></span>
   <mat-menu #contextMenu="matMenu">
-    <button mat-menu-item>
+    <button mat-menu-item *ngIf="node.status == 'stopped'">
       <mat-icon>play_arrow</mat-icon>
       <span>Start</span>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item *ngIf="node.status == 'started'">
       <mat-icon>stop</mat-icon>
       <span>Stop</span>
     </button>

@@ -9,7 +9,7 @@ export interface NodeOnContextMenuListener {
 
 export class NodesWidget implements Widget {
   private onContextMenuListener: NodeOnContextMenuListener;
-  private onContextMenuCallback: (event: any) => void;
+  private onContextMenuCallback: (event: any, node: Node) => void;
 
   constructor() {}
 
@@ -17,7 +17,7 @@ export class NodesWidget implements Widget {
     this.onContextMenuListener = onContextMenuListener;
   }
 
-  public setOnContextMenuCallback(onContextMenuCallback: (event: any) => void) {
+  public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
     this.onContextMenuCallback = onContextMenuCallback;
   }
 
@@ -50,7 +50,7 @@ export class NodesWidget implements Widget {
         .on("contextmenu", function (n: Node, i: number) {
           event.preventDefault();
           if (self.onContextMenuCallback !== null) {
-            self.onContextMenuCallback(event);
+            self.onContextMenuCallback(event, n);
           }
         });
 
