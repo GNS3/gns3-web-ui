@@ -40,6 +40,7 @@ import { AppComponent } from './app.component';
 import { MapComponent } from './cartography/map/map.component';
 import { CreateSnapshotDialogComponent, ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
+import { ContextMenuComponent } from './shared/context-menu/context-menu.component';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import { ServersComponent, AddServerDialogComponent } from './servers/servers.co
     ProjectsComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
+    ContextMenuComponent,
   ],
   imports: [
     NgbModule.forRoot(),

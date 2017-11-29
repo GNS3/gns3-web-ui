@@ -34,6 +34,10 @@ export class GraphLayout implements Widget {
     this.drawings = drawings;
   }
 
+  public getNodesWidget() {
+    return this.nodesWidget;
+  }
+
   draw(view: SVGSelection, context: Context) {
     const self = this;
 
@@ -59,7 +63,7 @@ export class GraphLayout implements Widget {
 
     this.linksWidget.draw(canvas, this.links);
     this.nodesWidget.draw(canvas, this.nodes);
-    this.drawingsWidget.draw(canvas, this.drawings)
+    this.drawingsWidget.draw(canvas, this.drawings);
 
     const onZoom = function(this: SVGSVGElement) {
       const e: D3ZoomEvent<SVGSVGElement, any> = event;

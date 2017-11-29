@@ -1,12 +1,30 @@
 import {Widget} from "./widget";
 import {Node} from "../models/node.model";
 import {SVGSelection} from "../../../map/models/types";
+import { event } from "d3-selection";
+import { D3} from "d3-ng2-service";
+
 import {D3DragEvent} from "d3-drag";
 import {select} from "d3-selection";
+import {isUndefined} from "util";
 
+export interface NodeOnContextMenuListener {
+  onContextMenu(): void;
+};
 
 export class NodesWidget implements Widget {
+  private onContextMenuListener: NodeOnContextMenuListener;
+  private onContextMenuCallback: (event: any) => void;
+
   constructor() {}
+
+  public setOnContextMenuListener(onContextMenuListener: NodeOnContextMenuListener) {
+    this.onContextMenuListener = onContextMenuListener;
+  }
+
+  public setOnContextMenuCallback(onContextMenuCallback: (event: any) => void) {
+    this.onContextMenuCallback = onContextMenuCallback;
+  }
 
   public draw(view: SVGSelection, nodes: Node[]) {
     const self = this;
@@ -33,7 +51,17 @@ export class NodesWidget implements Widget {
     const node_image = node_enter.append<SVGImageElement>('image')
         .attr('xlink:href', (n: Node) => 'data:image/svg+xml;base64,' + btoa(n.icon.raw))
         .attr('width', (n: Node) => n.width)
-        .attr('height', (n: Node) => n.height);
+        .attr('height', (n: Node) => n.height)
+        .on("contextmenu", function (n: Node, i: number) {
+          // if (self.onContextMenuListener !== ) {
+          //   self.onContextMenuListener.onContextMenu();
+          // }
+          console.log(event);
+          event.preventDefault();
+          if (self.onContextMenuCallback !== null) {
+            self.onContextMenuCallback(event);
+          }
+        });
 
     node_enter.append<SVGCircleElement>('circle')
         .attr('class', 'node_point')
