@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Appliances list</h1>
+<div mat-dialog-content>
+    <mat-table #table [dataSource]="dataSource">
+
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let row"> <button [routerLink]="['/server', row.id, 'projects']" mat-button>{{row.name}}</button></mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">No Thanks</button>
+  <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add</button>
+</div>

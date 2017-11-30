@@ -32,6 +32,7 @@ import { HttpServer } from "./shared/services/http-server.service";
 import { SnapshotService } from "./shared/services/snapshot.service";
 import { ProgressDialogService } from "./shared/progress-dialog/progress-dialog.service";
 import { NodeService } from "./shared/services/node.service";
+import { ApplianceService } from "./shared/services/appliance.service";
 
 import { ProjectsComponent } from './projects/projects.component';
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
@@ -43,6 +44,8 @@ import { ServersComponent, AddServerDialogComponent } from './servers/servers.co
 import { NodeContextMenuComponent } from './shared/node-context-menu/node-context-menu.component';
 import { StartNodeActionComponent } from './shared/node-context-menu/actions/start-node-action/start-node-action.component';
 import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop-node-action/stop-node-action.component';
+import { ApplianceComponent } from './appliance/appliance.component';
+import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
 
 
 @NgModule({
@@ -59,6 +62,8 @@ import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop
     NodeContextMenuComponent,
     StartNodeActionComponent,
     StopNodeActionComponent,
+    ApplianceComponent,
+    ApplianceListDialogComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -86,6 +91,7 @@ import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop
     ProjectService,
     SymbolService,
     ServerService,
+    ApplianceService,
     NodeService,
     IndexedDbService,
     HttpServer,
@@ -95,7 +101,8 @@ import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop
   entryComponents: [
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
-    ProgressDialogComponent
+    ProgressDialogComponent,
+    ApplianceListDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })
