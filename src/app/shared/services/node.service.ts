@@ -7,6 +7,7 @@ import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import {Appliance} from "../models/appliance";
+import {Response} from "@angular/http";
 
 
 @Injectable()
@@ -26,10 +27,14 @@ export class NodeService {
                 .map(response => response.json() as Node);
   }
 
-  createFromAppliance(server: Server, project: Project, appliance: Appliance): Observable<Node> {
+  createFromAppliance(
+    server: Server, project: Project, appliance: Appliance,
+    x: number, y: number, compute_id: string): Observable<Response> {
     return this.httpServer
-                .post(server, `/projects/${project.project_id}/appliances/${appliance.appliance_id}`, {})
-                .map(response => response.json() as Node);
+                .post(
+                  server,
+                  `/projects/${project.project_id}/appliances/${appliance.appliance_id}`,
+                  {'x': x, 'y': y, 'compute_id': compute_id});
   }
 
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from "@angular/material";
 import {ApplianceListDialogComponent} from "./appliance-list-dialog/appliance-list-dialog.component";
 
@@ -11,7 +11,7 @@ import {Server} from "../shared/models/server";
 })
 export class ApplianceComponent implements OnInit {
   @Input() server: Server;
-
+  @Output() onNodeCreation = new EventEmitter<any>();
 
   constructor(private dialog: MatDialog) { }
 
@@ -26,8 +26,10 @@ export class ApplianceComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-
+    dialogRef.afterClosed().subscribe((appliance: AppendMode) => {
+      if (appliance !== null) {
+        this.onNodeCreation.emit(appliance);
+      }
     });
   }
 }

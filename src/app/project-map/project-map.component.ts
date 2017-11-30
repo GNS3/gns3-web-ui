@@ -27,6 +27,8 @@ import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dial
 import { ToastyService } from "ng2-toasty";
 import { Drawing } from "../cartography/shared/models/drawing.model";
 import { NodeContextMenuComponent } from "../shared/node-context-menu/node-context-menu.component";
+import {Appliance} from "../shared/models/appliance";
+import {NodeService} from "../shared/services/node.service";
 
 
 @Component({
@@ -55,6 +57,7 @@ export class ProjectMapComponent implements OnInit {
               private projectService: ProjectService,
               private symbolService: SymbolService,
               private snapshotService: SnapshotService,
+              private nodeService: NodeService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
               private toastyService: ToastyService) {
@@ -176,15 +179,18 @@ export class ProjectMapComponent implements OnInit {
     });
   }
 
-  // setUpNodeActions() {
-  //     this.mapChild.nodeContextMenu.clearActions();
-  //
-  //     const start_node_action = new StartNodeAction(this.server, this.nodeService);
-  //     this.mapChild.nodeContextMenu.registerAction(start_node_action);
-  //
-  //     const stop_node_action = new StopNodeAction(this.server, this.nodeService);
-  //     this.mapChild.nodeContextMenu.registerAction(stop_node_action);
-  // }
+  onNodeCreation(appliance: Appliance) {
+    this.nodeService
+      .createFromAppliance(this.server, this.project, appliance, 0, 0, 'local')
+      .subscribe(() => {
+        this.projectService
+          .nodes(this.server, this.project.project_id)
+          .subscribe((nodes: Node[]) => {
+            this.nodes = nodes;
+            this.mapChild.reload();
+        });
+      });
+  }
 
   public createSnapshotModal() {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {

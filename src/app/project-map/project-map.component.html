@@ -26,7 +26,7 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row>
-        <app-appliance [server]="server"></app-appliance>
+        <app-appliance [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-appliance>
       </mat-toolbar-row>
 
     </mat-toolbar>

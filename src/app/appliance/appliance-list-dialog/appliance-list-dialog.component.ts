@@ -53,12 +53,9 @@ export class ApplianceListDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  //
-  // applyFilter(filterValue: string) {
-  //   filterValue = filterValue.trim(); // Remove whitespace
-  //   filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-  //   this.dataSource.filter = filterValue;
-  // }
+  addNode(appliance: Appliance): void {
+    this.dialogRef.close(appliance);
+  }
 
 }
 
