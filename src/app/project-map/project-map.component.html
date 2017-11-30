@@ -3,9 +3,21 @@
 
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
-      <button mat-icon-button [routerLink]="['/server', server.id, 'projects']">
+
+      <button mat-icon-button [matMenuTriggerFor]="mainMenu">
         <mat-icon svgIcon="gns3"></mat-icon>
       </button>
+
+      <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
+        <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
+          <mat-icon>work</mat-icon>
+          <span>Projects</span>
+        </button>
+        <button mat-menu-item [routerLink]="['/servers']">
+          <mat-icon>developer_board</mat-icon>
+          <span>Servers</span>
+        </button>
+      </mat-menu>
 
       <mat-toolbar-row>
         <button mat-icon-button (click)="createSnapshotModal()">

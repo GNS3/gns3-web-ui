@@ -1,5 +1,10 @@
-<h1 mat-dialog-title>Appliances list</h1>
 <div mat-dialog-content>
+    <div class="example-header">
+      <mat-form-field floatPlaceholder="never">
+        <input matInput #filter placeholder="Filter appliances">
+      </mat-form-field>
+    </div>
+
     <mat-table #table [dataSource]="dataSource">
 
       <ng-container matColumnDef="name">
@@ -11,7 +16,6 @@
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions align="end">
   <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">No Thanks</button>
-  <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add</button>
 </div>
