@@ -46,13 +46,8 @@ export class NodesWidget implements Widget {
     const node_image = node_enter.append<SVGImageElement>('image')
         .attr('xlink:href', (n: Node) => 'data:image/svg+xml;base64,' + btoa(n.icon.raw))
         .attr('width', (n: Node) => n.width)
-        .attr('height', (n: Node) => n.height)
-        .on("contextmenu", function (n: Node, i: number) {
-          event.preventDefault();
-          if (self.onContextMenuCallback !== null) {
-            self.onContextMenuCallback(event, n);
-          }
-        });
+        .attr('height', (n: Node) => n.height);
+
 
     node_enter.append<SVGCircleElement>('circle')
         .attr('class', 'node_point')
@@ -67,6 +62,12 @@ export class NodesWidget implements Widget {
       .attr('y', '0');
 
     const node_merge = node.merge(node_enter)
+      .on("contextmenu", function (n: Node, i: number) {
+        event.preventDefault();
+        if (self.onContextMenuCallback !== null) {
+          self.onContextMenuCallback(event, n);
+        }
+      })
       .attr('transform', (n: Node) => {
         return `translate(${n.x},${n.y})`;
       });
