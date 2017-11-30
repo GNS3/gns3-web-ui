@@ -1,6 +1,5 @@
 import {
-  Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange,
-  ViewChild
+  Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
 import { Selection } from 'd3-selection';
@@ -11,8 +10,6 @@ import { GraphLayout } from "../shared/widgets/graph.widget";
 import { Context } from "../../map/models/context";
 import { Size } from "../shared/models/size.model";
 import { Drawing } from "../shared/models/drawing.model";
-
-import {NodeContextMenuComponent} from "../../shared/node-context-menu/node-context-menu.component";
 
 
 @Component({
@@ -28,13 +25,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
   @Input() windowFullSize = true;
 
-  @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
-
   private d3: D3;
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
-  private graphLayout: GraphLayout;
+  public graphLayout: GraphLayout;
   private graphContext: Context;
 
 
@@ -93,12 +88,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.graphLayout = new GraphLayout();
       this.graphLayout.draw(this.svg, this.graphContext);
-
-
-      this.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
-        this.nodeContextMenu.open(node, event.clientY, event.clientX);
-      });
-
 
     }
   }

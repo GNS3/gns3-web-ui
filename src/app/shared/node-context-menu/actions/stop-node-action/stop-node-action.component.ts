@@ -5,23 +5,23 @@ import {Node} from "../../../../cartography/shared/models/node.model";
 
 
 @Component({
-  selector: 'app-start-node-action',
-  templateUrl: './start-node-action.component.html',
+  selector: 'app-stop-node-action',
+  templateUrl: './stop-node-action.component.html'
 })
-export class StartNodeActionComponent implements OnInit {
+export class StopNodeActionComponent implements OnInit {
   @Input() server: Server;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService) { }
 
-  ngOnInit() {}
-
-  startNode() {
-    this.nodeService
-      .start(this.server, this.node)
-      .subscribe((n: Node) => {
-        
-      });
+  ngOnInit() {
   }
 
+  stopNode() {
+    this.nodeService
+      .stop(this.server, this.node)
+      .subscribe((n: Node) => {
+
+      });
+  }
 }

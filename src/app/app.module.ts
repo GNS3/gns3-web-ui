@@ -23,7 +23,6 @@ import { ToastyModule } from 'ng2-toasty';
 
 import { AppRoutingModule } from './app-routing.module';
 
-
 import { VersionService } from './shared/services/version.service';
 import { ProjectService } from './shared/services/project.service';
 import { SymbolService } from "./shared/services/symbol.service";
@@ -32,6 +31,7 @@ import { IndexedDbService } from "./shared/services/indexed-db.service";
 import { HttpServer } from "./shared/services/http-server.service";
 import { SnapshotService } from "./shared/services/snapshot.service";
 import { ProgressDialogService } from "./shared/progress-dialog/progress-dialog.service";
+import { NodeService } from "./shared/services/node.service";
 
 import { ProjectsComponent } from './projects/projects.component';
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
@@ -41,8 +41,8 @@ import { MapComponent } from './cartography/map/map.component';
 import { CreateSnapshotDialogComponent, ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { NodeContextMenuComponent } from './shared/node-context-menu/node-context-menu.component';
-import {NodeService} from "./shared/services/node.service";
 import { StartNodeActionComponent } from './shared/node-context-menu/actions/start-node-action/start-node-action.component';
+import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop-node-action/stop-node-action.component';
 
 
 @NgModule({
@@ -58,6 +58,7 @@ import { StartNodeActionComponent } from './shared/node-context-menu/actions/sta
     ProgressDialogComponent,
     NodeContextMenuComponent,
     StartNodeActionComponent,
+    StopNodeActionComponent,
   ],
   imports: [
     NgbModule.forRoot(),

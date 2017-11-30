@@ -1,17 +1,7 @@
 <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition" *ngIf="node">
   <span [matMenuTriggerFor]="contextMenu"></span>
   <mat-menu #contextMenu="matMenu">
-    <!--<button mat-menu-item *ngIf="node.status == 'stopped'">-->
-      <!--<mat-icon>play_arrow</mat-icon>-->
-      <!--<span>Start</span>-->
-    <!--</button>-->
-    <!--<ng-container *ngFor="let action of actions">-->
-      <!--<button mat-menu-item  *ngIf="action.isVisible(node)" (click)="action.onClick(node)">-->
-        <!--<mat-icon>{{ action.icon(node) }}</mat-icon>-->
-        <!--<span>{{ action.label(node) }}</span>-->
-      <!--</button>-->
-    <!--</ng-container>-->
-
-
+    <app-start-node-action [server]="server" [node]="node"></app-start-node-action>
+    <app-stop-node-action [server]="server" [node]="node"></app-stop-node-action>
   </mat-menu>
 </div>

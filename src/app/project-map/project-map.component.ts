@@ -29,6 +29,7 @@ import {Drawing} from "../cartography/shared/models/drawing.model";
 import {StartNodeAction} from "../shared/node-context-menu/actions/start-node-action";
 import {NodeService} from "../shared/services/node.service";
 import {StopNodeAction} from "../shared/node-context-menu/actions/stop-node-action";
+import {NodeContextMenuComponent} from "../shared/node-context-menu/node-context-menu.component";
 
 
 @Component({
@@ -43,11 +44,13 @@ export class ProjectMapComponent implements OnInit {
   public drawings: Drawing[] = [];
 
   project: Project;
-  server: Server;
+  public server: Server;
 
   private ws: Subject<any>;
 
   @ViewChild(MapComponent) mapChild: MapComponent;
+
+  @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
   constructor(
               private route: ActivatedRoute,
@@ -109,10 +112,9 @@ export class ProjectMapComponent implements OnInit {
           n.icon = this.symbolService.get(n.symbol);
         });
 
-        this.setUpNodeActions();
+        this.setUpMapCallbacks(project);
         this.setUpWS(project);
       });
-
   }
 
   setUpWS(project: Project) {
@@ -171,15 +173,22 @@ export class ProjectMapComponent implements OnInit {
     });
   }
 
-  setUpNodeActions() {
-      this.mapChild.nodeContextMenu.clearActions();
 
-      const start_node_action = new StartNodeAction(this.server, this.nodeService);
-      this.mapChild.nodeContextMenu.registerAction(start_node_action);
-
-      const stop_node_action = new StopNodeAction(this.server, this.nodeService);
-      this.mapChild.nodeContextMenu.registerAction(stop_node_action);
+  setUpMapCallbacks(project: Project) {
+    this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
+      this.nodeContextMenu.open(node, event.clientY, event.clientX);
+    });
   }
+
+  // setUpNodeActions() {
+  //     this.mapChild.nodeContextMenu.clearActions();
+  //
+  //     const start_node_action = new StartNodeAction(this.server, this.nodeService);
+  //     this.mapChild.nodeContextMenu.registerAction(start_node_action);
+  //
+  //     const stop_node_action = new StopNodeAction(this.server, this.nodeService);
+  //     this.mapChild.nodeContextMenu.registerAction(stop_node_action);
+  // }
 
   public createSnapshotModal() {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {

@@ -20,6 +20,6 @@ export class StartNodeAction implements NodeContextMenuAction {
   }
 
   onClick(node: Node) {
-    this.nodeService.start()
+    // this.nodeService.start()
   }
 }
