@@ -1,7 +1,10 @@
 /* @TODO: make icons self hosted */
 @import '~https://fonts.googleapis.com/icon?family=Material+Icons';
-/*@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';*/
 
 img.logo-header {
   width: 50px;
+}
+
+a.table-link {
+  color: #0097a7;
 }

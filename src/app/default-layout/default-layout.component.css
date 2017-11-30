@@ -48,7 +48,8 @@ main {
 }
 
 .default-header {
-  padding-left: 20px;
+  margin: 0 auto;
+  max-width: 940px;
   /*background-color: #0097a7;*/
 }
 

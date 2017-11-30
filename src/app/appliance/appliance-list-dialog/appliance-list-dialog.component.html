@@ -4,7 +4,7 @@
 
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-        <mat-cell *matCellDef="let row"> <button [routerLink]="['/server', row.id, 'projects']" mat-button>{{row.name}}</button></mat-cell>
+        <mat-cell *matCellDef="let row;"> <a [routerLink]="['/server', row.id, 'projects']" class="table-link">{{row.name}}</a> </mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
