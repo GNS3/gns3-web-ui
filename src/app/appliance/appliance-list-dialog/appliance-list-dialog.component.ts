@@ -22,6 +22,7 @@ import 'rxjs/add/observable/fromEvent';
 })
 export class ApplianceListDialogComponent implements OnInit {
   server: Server;
+  applianceDatabase: ApplianceDatabase;
   dataSource: ApplianceDataSource;
   displayedColumns = ['name'];
 
@@ -35,7 +36,8 @@ export class ApplianceListDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataSource = new ApplianceDataSource(this.server, this.applianceService);
+    this.applianceDatabase = new ApplianceDatabase(this.server, this.applianceService);
+    this.dataSource = new ApplianceDataSource(this.applianceDatabase);
 
     Observable.fromEvent(this.filter.nativeElement, 'keyup')
       .debounceTime(150)
@@ -51,14 +53,30 @@ export class ApplianceListDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
-  }
+  //
+  // applyFilter(filterValue: string) {
+  //   filterValue = filterValue.trim(); // Remove whitespace
+  //   filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+  //   this.dataSource.filter = filterValue;
+  // }
 
 }
 
+
+export class ApplianceDatabase {
+  dataChange: BehaviorSubject<Appliance[]> = new BehaviorSubject<Appliance[]>([]);
+
+  get data(): Appliance[] {
+    return this.dataChange.value;
+  }
+
+  constructor(private server: Server, private applianceService: ApplianceService) {
+    this.applianceService.list(this.server).subscribe((appliances: Appliance[]) => {
+      this.dataChange.next(appliances);
+    });
+  }
+
+};
 
 export class ApplianceDataSource extends DataSource<Appliance> {
   filterChange = new BehaviorSubject('');
@@ -66,12 +84,22 @@ export class ApplianceDataSource extends DataSource<Appliance> {
   get filter(): string { return this.filterChange.value; }
   set filter(filter: string) { this.filterChange.next(filter); }
 
-  constructor(private server: Server, private applianceService: ApplianceService) {
+  constructor(private applianceDatabase: ApplianceDatabase) {
     super();
   }
 
   connect(): Observable<Appliance[]> {
-    return this.applianceService.list(this.server);
+    const displayDataChanges = [
+      this.applianceDatabase.dataChange,
+      this.filterChange,
+    ];
+
+    return Observable.merge(...displayDataChanges).map(() => {
+      return this.applianceDatabase.data.slice().filter((item: Appliance) => {
+        const searchStr = (item.name).toLowerCase();
+        return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
+      });
+    });
   }
 
   disconnect() {}

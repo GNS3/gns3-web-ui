@@ -20,6 +20,7 @@ export class ApplianceComponent implements OnInit {
   listAppliancesModal() {
     const dialogRef = this.dialog.open(ApplianceListDialogComponent, {
       width: '600px',
+      height: '560px',
       data: {
         'server': this.server
       }
