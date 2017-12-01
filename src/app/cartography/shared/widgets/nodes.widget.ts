@@ -63,7 +63,9 @@ export class NodesWidget implements Widget {
     const self = this;
 
     const node = view.selectAll<SVGGElement, any>('g.node')
-        .data(nodes);
+        .data(nodes, (n: Node) => {
+          return n.node_id;
+        });
 
     const node_enter = node.enter()
       .append<SVGGElement>('g')
