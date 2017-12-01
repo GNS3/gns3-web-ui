@@ -10,6 +10,7 @@ export class NodesWidget implements Widget {
   private debug = false;
 
   private onContextMenuCallback: (event: any, node: Node) => void;
+  private onNodeClickedCallback: (event: any, node: Node) => void;
   private onNodeDraggedCallback: (event: any, node: Node) => void;
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
 
@@ -19,6 +20,10 @@ export class NodesWidget implements Widget {
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
     this.onContextMenuCallback = onContextMenuCallback;
+  }
+
+  public setOnNodeClickedCallback(onNodeClickedCallback: (event: any, node: Node) => void) {
+    this.onNodeClickedCallback = onNodeClickedCallback;
   }
 
   public setOnNodeDraggedCallback(onNodeDraggedCallback: (event: any, node: Node) => void) {
@@ -102,13 +107,20 @@ export class NodesWidget implements Widget {
           .attr('y', '0');
     }
 
-    const node_merge = node.merge(node_enter)
-      .on("contextmenu", function (n: Node, i: number) {
-        event.preventDefault();
-        if (self.onContextMenuCallback !== null) {
-          self.onContextMenuCallback(event, n);
-        }
-      });
+    const node_merge = node
+      .merge(node_enter)
+        .on("contextmenu", function (n: Node, i: number) {
+          event.preventDefault();
+          if (self.onContextMenuCallback !== null) {
+            self.onContextMenuCallback(event, n);
+          }
+        })
+        .on('click', (n: Node) => {
+          if (self.onNodeClickedCallback) {
+            self.onNodeClickedCallback(event, n);
+          }
+        });
+
 
     this.revise(node_merge);
 

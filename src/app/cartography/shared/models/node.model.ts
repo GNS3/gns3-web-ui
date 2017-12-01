@@ -1,4 +1,5 @@
 import {Label} from "./label.model";
+import {Port} from "../../../shared/models/port";
 
 export class Node {
   command_line: string;
@@ -15,7 +16,7 @@ export class Node {
   node_type: string;
   port_name_format: string;
   port_segment_size: number;
-  ports: number[];
+  ports: Port[];
   project_id: string;
   status: string;
   symbol: string;

@@ -46,6 +46,7 @@ import { StartNodeActionComponent } from './shared/node-context-menu/actions/sta
 import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop-node-action/stop-node-action.component';
 import { ApplianceComponent } from './appliance/appliance.component';
 import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
+import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/
     StopNodeActionComponent,
     ApplianceComponent,
     ApplianceListDialogComponent,
+    NodeSelectInterfaceComponent,
   ],
   imports: [
     NgbModule.forRoot(),

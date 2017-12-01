@@ -30,6 +30,7 @@ import { NodeContextMenuComponent } from "../shared/node-context-menu/node-conte
 import {Appliance} from "../shared/models/appliance";
 import {NodeService} from "../shared/services/node.service";
 import {Symbol} from "../shared/models/symbol";
+import {NodeSelectInterfaceComponent} from "../shared/node-select-interface/node-select-interface.component";
 
 
 @Component({
@@ -48,10 +49,13 @@ export class ProjectMapComponent implements OnInit {
   public server: Server;
 
   private ws: Subject<any>;
+  private drawLineMode =  false;
+
 
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
+  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
   constructor(
               private route: ActivatedRoute,
@@ -182,6 +186,13 @@ export class ProjectMapComponent implements OnInit {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
     });
 
+    this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
+      if (this.drawLineMode) {
+        this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
+      }
+
+    });
+
     this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
       const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
       if (index >= 0) {
@@ -244,6 +255,14 @@ export class ProjectMapComponent implements OnInit {
         });
       }
     });
+  }
+
+  public turnOnDrawLineMode() {
+    this.drawLineMode = true;
+  }
+
+  public turnOffDrawLineMode() {
+    this.drawLineMode = false;
   }
 }
 

@@ -20,6 +20,16 @@
       </mat-menu>
 
       <mat-toolbar-row>
+        <button mat-icon-button (click)="turnOnDrawLineMode()" *ngIf="!drawLineMode">
+          <mat-icon>timeline</mat-icon>
+        </button>
+
+        <button mat-icon-button color="primary" (click)="turnOffDrawLineMode()" *ngIf="drawLineMode">
+          <mat-icon>timeline</mat-icon>
+        </button>
+      </mat-toolbar-row>
+
+      <mat-toolbar-row>
         <button mat-icon-button (click)="createSnapshotModal()">
           <mat-icon>snooze</mat-icon>
         </button>
@@ -33,6 +43,6 @@
   </div>
 
   <app-node-context-menu [server]="server"></app-node-context-menu>
-
+  <app-node-select-interface></app-node-select-interface>
 </div>
 
