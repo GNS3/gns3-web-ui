@@ -266,8 +266,8 @@ export class ProjectMapComponent implements OnInit {
     this.drawLineMode = false;
   }
 
-  public onChooseInterface(port: Port) {
-    console.log(port);
+  public onChooseInterface(node: Node, port: Port) {
+    this.mapChild.graphLayout.getDrawingLineTool().start(10, 100);
   }
 
 }

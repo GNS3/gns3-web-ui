@@ -9,6 +9,7 @@ import { D3ZoomEvent, zoom } from "d3-zoom";
 import { event } from "d3-selection";
 import { Drawing } from "../models/drawing.model";
 import { DrawingsWidget } from "./drawings.widget";
+import { DrawingLineWidget } from "./drawing-line.widget";
 
 export class GraphLayout implements Widget {
   private nodes: Node[] = [];
@@ -18,6 +19,7 @@ export class GraphLayout implements Widget {
   private linksWidget: LinksWidget;
   private nodesWidget: NodesWidget;
   private drawingsWidget: DrawingsWidget;
+  private drawingLineTool: DrawingLineWidget;
 
   private centerZeroZeroPoint = true;
 
@@ -25,6 +27,7 @@ export class GraphLayout implements Widget {
     this.linksWidget = new LinksWidget();
     this.nodesWidget = new NodesWidget();
     this.drawingsWidget = new DrawingsWidget();
+    this.drawingLineTool = new DrawingLineWidget();
   }
 
   public setNodes(nodes: Node[]) {
@@ -47,6 +50,10 @@ export class GraphLayout implements Widget {
     return this.linksWidget;
   }
 
+  public getDrawingLineTool() {
+    return this.drawingLineTool;
+  }
+
   draw(view: SVGSelection, context: Context) {
     const self = this;
 
@@ -67,6 +74,7 @@ export class GraphLayout implements Widget {
     this.linksWidget.draw(canvas, this.links);
     this.nodesWidget.draw(canvas, this.nodes);
     this.drawingsWidget.draw(canvas, this.drawings);
+    this.drawingLineTool.connect(canvas);
 
     const onZoom = function(this: SVGSVGElement) {
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
