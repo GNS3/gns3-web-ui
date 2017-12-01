@@ -25,12 +25,6 @@ export class GraphLayout implements Widget {
   constructor() {
     this.linksWidget = new LinksWidget();
     this.nodesWidget = new NodesWidget();
-
-    // this.nodesWidget.addOnNodeDraggingCallback((n: Node) => {
-    //   this.linksWidget.
-    //   // this.linksWidget.draw();
-    // });
-
     this.drawingsWidget = new DrawingsWidget();
   }
 
