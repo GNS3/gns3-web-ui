@@ -1,7 +1,7 @@
 <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition" *ngIf="node">
   <span [matMenuTriggerFor]="selectInterfaceMenu"></span>
   <mat-menu #selectInterfaceMenu="matMenu">
-      <button mat-menu-item *ngFor="let port of node.ports">
+      <button mat-menu-item *ngFor="let port of node.ports" (click)="chooseInterface(port)">
         <mat-icon>info</mat-icon>
         <span>{{ port.name }}</span>
       </button>

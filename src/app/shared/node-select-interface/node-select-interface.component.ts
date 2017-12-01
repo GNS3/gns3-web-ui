@@ -1,7 +1,8 @@
-import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MatMenuTrigger} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Node} from "../../cartography/shared/models/node.model";
+import {Port} from "../models/port";
 
 
 @Component({
@@ -10,6 +11,7 @@ import {Node} from "../../cartography/shared/models/node.model";
   styleUrls: ['./node-select-interface.component.scss']
 })
 export class NodeSelectInterfaceComponent implements OnInit {
+  @Output() onChooseInterface = new EventEmitter<any>();
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -37,4 +39,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
+  public chooseInterface(port: Port) {
+    this.onChooseInterface.emit(port);
+  }
 }

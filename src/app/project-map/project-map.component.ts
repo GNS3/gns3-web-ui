@@ -31,6 +31,7 @@ import {Appliance} from "../shared/models/appliance";
 import {NodeService} from "../shared/services/node.service";
 import {Symbol} from "../shared/models/symbol";
 import {NodeSelectInterfaceComponent} from "../shared/node-select-interface/node-select-interface.component";
+import {Port} from "../shared/models/port";
 
 
 @Component({
@@ -98,6 +99,7 @@ export class ProjectMapComponent implements OnInit {
     this.symbolService.symbols.subscribe((symbols: Symbol[]) => {
       this.symbols = symbols;
     });
+
   }
 
   onProjectLoad(project: Project) {
@@ -190,7 +192,6 @@ export class ProjectMapComponent implements OnInit {
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
       }
-
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
@@ -264,6 +265,11 @@ export class ProjectMapComponent implements OnInit {
   public turnOffDrawLineMode() {
     this.drawLineMode = false;
   }
+
+  public onChooseInterface(port: Port) {
+    console.log(port);
+  }
+
 }
 
 
