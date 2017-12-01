@@ -10,7 +10,7 @@ import { GraphLayout } from "../shared/widgets/graph.widget";
 import { Context } from "../../map/models/context";
 import { Size } from "../shared/models/size.model";
 import { Drawing } from "../shared/models/drawing.model";
-import {SVGSelection} from "../../map/models/types";
+import {Symbol} from "../../shared/models/symbol";
 
 
 @Component({
@@ -22,6 +22,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
+  @Input() symbols: Symbol[] = [];
+
   @Input() width = 1500;
   @Input() height = 600;
   @Input() windowFullSize = true;
@@ -47,7 +49,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       (changes['height'] && !changes['height'].isFirstChange()) ||
       (changes['drawings'] && !changes['drawings'].isFirstChange()) ||
       (changes['nodes'] && !changes['nodes'].isFirstChange()) ||
-      (changes['links'] && !changes['links'].isFirstChange())
+      (changes['links'] && !changes['links'].isFirstChange()) ||
+      (changes['symbols'] && !changes['symbols'].isFirstChange())
     ) {
       if (this.svg.empty && !this.svg.empty()) {
         if (changes['nodes']) {
@@ -55,6 +58,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (changes['links']) {
           this.onLinksChange(changes['links']);
+        }
+        if (changes['symbols']) {
+          this.onSymbolsChange(changes['symbols']);
         }
         this.changeLayout();
       }
@@ -154,6 +160,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private onNodesChange(change: SimpleChange) {
     this.onLinksChange(null);
+  }
+
+  private onSymbolsChange(change: SimpleChange) {
+    this.graphLayout.getNodesWidget().setSymbols(this.symbols);
   }
 
   public redraw() {

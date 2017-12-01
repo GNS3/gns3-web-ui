@@ -3,6 +3,7 @@ import { Node } from "../models/node.model";
 import { SVGSelection } from "../../../map/models/types";
 import {event, select} from "d3-selection";
 import {D3DragEvent, drag} from "d3-drag";
+import {Symbol} from "../../../shared/models/symbol";
 
 export interface NodeOnContextMenuListener {
   onContextMenu(): void;
@@ -12,6 +13,8 @@ export class NodesWidget implements Widget {
   private onContextMenuCallback: (event: any, node: Node) => void;
   private onNodeDraggedCallback: (event: any, node: Node) => void;
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
+
+  private symbols: Symbol[] = [];
 
   constructor() {}
 
@@ -25,6 +28,10 @@ export class NodesWidget implements Widget {
 
   public addOnNodeDraggingCallback(onNodeDraggingCallback: (n: Node) => void) {
     this.onNodeDraggingCallbacks.push(onNodeDraggingCallback);
+  }
+
+  public setSymbols(symbols: Symbol[]) {
+    this.symbols = symbols;
   }
 
   private executeOnNodeDraggingCallback(n: Node) {
@@ -63,7 +70,14 @@ export class NodesWidget implements Widget {
       .attr('class', 'node');
 
     const node_image = node_enter.append<SVGImageElement>('image')
-        .attr('xlink:href', (n: Node) => 'data:image/svg+xml;base64,' + btoa(n.icon.raw))
+        .attr('xlink:href', (n: Node) => {
+          const symbol = this.symbols.find((s: Symbol) => s.symbol_id === n.symbol);
+          if (symbol) {
+            return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
+          }
+          // @todo; we need to have default image
+          return 'data:image/svg+xml;base64,none';
+        })
         .attr('width', (n: Node) => n.width)
         .attr('height', (n: Node) => n.height);
 

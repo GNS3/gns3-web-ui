@@ -29,6 +29,7 @@ import { Drawing } from "../cartography/shared/models/drawing.model";
 import { NodeContextMenuComponent } from "../shared/node-context-menu/node-context-menu.component";
 import {Appliance} from "../shared/models/appliance";
 import {NodeService} from "../shared/services/node.service";
+import {Symbol} from "../shared/models/symbol";
 
 
 @Component({
@@ -41,6 +42,7 @@ export class ProjectMapComponent implements OnInit {
   public nodes: Node[] = [];
   public links: Link[] = [];
   public drawings: Drawing[] = [];
+  public symbols: Symbol[] = [];
 
   project: Project;
   public server: Server;
@@ -88,6 +90,10 @@ export class ProjectMapComponent implements OnInit {
           this.onProjectLoad(project);
         });
     });
+
+    this.symbolService.symbols.subscribe((symbols: Symbol[]) => {
+      this.symbols = symbols;
+    });
   }
 
   onProjectLoad(project: Project) {
@@ -107,13 +113,11 @@ export class ProjectMapComponent implements OnInit {
       .subscribe((nodes: Node[]) => {
         this.nodes = nodes;
 
-        nodes.forEach((n: Node) => {
-          n.icon = this.symbolService.get(n.symbol);
-        });
-
         this.setUpMapCallbacks(project);
         this.setUpWS(project);
       });
+
+
   }
 
   setUpWS(project: Project) {

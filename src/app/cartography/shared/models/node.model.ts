@@ -1,5 +1,4 @@
 import {Label} from "./label.model";
-import {Symbol} from "../../../shared/models/symbol";
 
 export class Node {
   command_line: string;
@@ -24,6 +23,4 @@ export class Node {
   x: number;
   y: number;
   z: number;
-
-  icon: Symbol; // not from server
 }

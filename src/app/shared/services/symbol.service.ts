@@ -13,7 +13,7 @@ import { HttpServer } from "./http-server.service";
 
 @Injectable()
 export class SymbolService {
-  private symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
+  public symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
 
   constructor(private httpServer: HttpServer) { }
 
