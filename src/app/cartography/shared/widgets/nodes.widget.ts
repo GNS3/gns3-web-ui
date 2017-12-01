@@ -5,11 +5,10 @@ import {event, select} from "d3-selection";
 import {D3DragEvent, drag} from "d3-drag";
 import {Symbol} from "../../../shared/models/symbol";
 
-export interface NodeOnContextMenuListener {
-  onContextMenu(): void;
-};
 
 export class NodesWidget implements Widget {
+  private debug = false;
+
   private onContextMenuCallback: (event: any, node: Node) => void;
   private onNodeDraggedCallback: (event: any, node: Node) => void;
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
@@ -62,16 +61,19 @@ export class NodesWidget implements Widget {
   public draw(view: SVGSelection, nodes: Node[]) {
     const self = this;
 
-    const node = view.selectAll<SVGGElement, any>('g.node')
+    const node = view
+      .selectAll<SVGGElement, any>('g.node')
         .data(nodes, (n: Node) => {
           return n.node_id;
         });
 
-    const node_enter = node.enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'node');
+    const node_enter = node
+      .enter()
+        .append<SVGGElement>('g')
+        .attr('class', 'node');
 
-    const node_image = node_enter.append<SVGImageElement>('image')
+    node_enter
+      .append<SVGImageElement>('image')
         .attr('xlink:href', (n: Node) => {
           const symbol = this.symbols.find((s: Symbol) => s.symbol_id === n.symbol);
           if (symbol) {
@@ -83,18 +85,22 @@ export class NodesWidget implements Widget {
         .attr('width', (n: Node) => n.width)
         .attr('height', (n: Node) => n.height);
 
+    node_enter
+      .append<SVGTextElement>('text')
+        .attr('class', 'label');
 
-    node_enter.append<SVGCircleElement>('circle')
-        .attr('class', 'node_point')
-        .attr('r', 2);
+    if (this.debug) {
+      node_enter
+        .append<SVGCircleElement>('circle')
+          .attr('class', 'node_point')
+          .attr('r', 2);
 
-    node_enter.append<SVGTextElement>('text')
-      .attr('class', 'label');
-
-    node_enter.append<SVGTextElement>('text')
-      .attr('class', 'node_point_label')
-      .attr('x', '-100')
-      .attr('y', '0');
+      node_enter
+        .append<SVGTextElement>('text')
+          .attr('class', 'node_point_label')
+          .attr('x', '-100')
+          .attr('y', '0');
+    }
 
     const node_merge = node.merge(node_enter)
       .on("contextmenu", function (n: Node, i: number) {
@@ -129,6 +135,8 @@ export class NodesWidget implements Widget {
 
     node_merge.call(dragging());
 
-    node.exit().remove();
+    node
+      .exit()
+        .remove();
   }
 }

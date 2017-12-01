@@ -7,11 +7,10 @@ import { SVGSelection } from "../../../map/models/types";
 import { LinksWidget } from "./links.widget";
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { event } from "d3-selection";
-import {Drawing} from "../models/drawing.model";
-import {DrawingsWidget} from "./drawings.widget";
+import { Drawing } from "../models/drawing.model";
+import { DrawingsWidget } from "./drawings.widget";
 
 export class GraphLayout implements Widget {
-
   private nodes: Node[] = [];
   private links: Link[] = [];
   private drawings: Drawing[] = [];
@@ -46,10 +45,6 @@ export class GraphLayout implements Widget {
 
   public getLinksWidget() {
     return this.linksWidget;
-  }
-
-  public getCanvas(view: SVGSelection) {
-
   }
 
   draw(view: SVGSelection, context: Context) {
