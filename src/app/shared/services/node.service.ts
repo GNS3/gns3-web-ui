@@ -37,4 +37,12 @@ export class NodeService {
                   {'x': x, 'y': y, 'compute_id': compute_id});
   }
 
+  updatePosition(server: Server, node: Node, x: number, y: number): Observable<Node> {
+    return this.httpServer
+                .put(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+                  'x': x,
+                  'y': y
+                })
+                .map(response => response.json() as Node);
+  }
 }

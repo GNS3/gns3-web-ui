@@ -2,7 +2,7 @@ import {
   Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
-import { Selection } from 'd3-selection';
+import {select, Selection} from 'd3-selection';
 
 import { Node } from "../shared/models/node.model";
 import { Link } from "../shared/models/link.model";
@@ -10,6 +10,7 @@ import { GraphLayout } from "../shared/widgets/graph.widget";
 import { Context } from "../../map/models/context";
 import { Size } from "../shared/models/size.model";
 import { Drawing } from "../shared/models/drawing.model";
+import {SVGSelection} from "../../map/models/types";
 
 
 @Component({
@@ -87,6 +88,17 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       this.graphLayout = new GraphLayout();
+
+      this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((n: Node) => {
+        const linksWidget = this.graphLayout.getLinksWidget();
+        linksWidget.select(this.svg).each(function(this: SVGGElement, link: Link)  {
+          if (link.target.node_id === n.node_id || link.source.node_id === n.node_id) {
+            const selection = select<SVGElement, Link>(this);
+            linksWidget.revise(selection);
+          }
+        });
+      });
+
       this.graphLayout.draw(this.svg, this.graphContext);
 
     }

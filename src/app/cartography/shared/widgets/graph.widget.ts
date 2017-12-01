@@ -16,11 +16,23 @@ export class GraphLayout implements Widget {
   private links: Link[] = [];
   private drawings: Drawing[] = [];
 
-  private nodesWidget = new NodesWidget();
-  private linksWidget = new LinksWidget();
-  private drawingsWidget = new DrawingsWidget();
+  private linksWidget: LinksWidget;
+  private nodesWidget: NodesWidget;
+  private drawingsWidget: DrawingsWidget;
 
   private centerZeroZeroPoint = true;
+
+  constructor() {
+    this.linksWidget = new LinksWidget();
+    this.nodesWidget = new NodesWidget();
+
+    // this.nodesWidget.addOnNodeDraggingCallback((n: Node) => {
+    //   this.linksWidget.
+    //   // this.linksWidget.draw();
+    // });
+
+    this.drawingsWidget = new DrawingsWidget();
+  }
 
   public setNodes(nodes: Node[]) {
     this.nodes = nodes;
@@ -36,6 +48,14 @@ export class GraphLayout implements Widget {
 
   public getNodesWidget() {
     return this.nodesWidget;
+  }
+
+  public getLinksWidget() {
+    return this.linksWidget;
+  }
+
+  public getCanvas(view: SVGSelection) {
+
   }
 
   draw(view: SVGSelection, context: Context) {
@@ -54,12 +74,6 @@ export class GraphLayout implements Widget {
         'transform',
         (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
     }
-
-    // const links = canvasEnter.append<SVGGElement>('g')
-    //   .attr('class', 'links');
-    //
-    // const nodes = canvasEnter.append<SVGGElement>('g')
-    //   .attr('class', 'nodes');
 
     this.linksWidget.draw(canvas, this.links);
     this.nodesWidget.draw(canvas, this.nodes);

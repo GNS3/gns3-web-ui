@@ -1,39 +1,59 @@
 import { Widget } from "./widget";
 import { Node } from "../models/node.model";
 import { SVGSelection } from "../../../map/models/types";
-import { event } from "d3-selection";
+import {event, select} from "d3-selection";
+import {D3DragEvent, drag} from "d3-drag";
 
 export interface NodeOnContextMenuListener {
   onContextMenu(): void;
 };
 
 export class NodesWidget implements Widget {
-  private onContextMenuListener: NodeOnContextMenuListener;
   private onContextMenuCallback: (event: any, node: Node) => void;
+  private onNodeDraggedCallback: (event: any, node: Node) => void;
+  private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
 
   constructor() {}
-
-  public setOnContextMenuListener(onContextMenuListener: NodeOnContextMenuListener) {
-    this.onContextMenuListener = onContextMenuListener;
-  }
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
     this.onContextMenuCallback = onContextMenuCallback;
   }
 
+  public setOnNodeDraggedCallback(onNodeDraggedCallback: (event: any, node: Node) => void) {
+    this.onNodeDraggedCallback = onNodeDraggedCallback;
+  }
+
+  public addOnNodeDraggingCallback(onNodeDraggingCallback: (n: Node) => void) {
+    this.onNodeDraggingCallbacks.push(onNodeDraggingCallback);
+  }
+
+  private executeOnNodeDraggingCallback(n: Node) {
+    this.onNodeDraggingCallbacks.forEach((callback: (n: Node) => void) => {
+      callback(n);
+    });
+  }
+
+  public revise(selection: SVGSelection) {
+    selection
+      .attr('transform', (n: Node) => {
+        return `translate(${n.x},${n.y})`;
+      });
+
+    selection
+      .select<SVGTextElement>('text.label')
+        .attr('x', (n: Node) => n.label.x)
+        .attr('y', (n: Node) => n.label.y)
+        .attr('style', (n: Node) => n.label.style)
+        .text((n: Node) => n.label.text);
+
+    selection
+      .select<SVGTextElement>('text.node_point_label')
+        .text((n: Node) => `(${n.x}, ${n.y})`);
+
+  }
+
   public draw(view: SVGSelection, nodes: Node[]) {
     const self = this;
-
-    // function dragged(this: SVGElement, node: Node) {
-    //   const element = this;
-    //   const e: D3DragEvent<SVGGElement, Node, Node> = d3.event;
-    //
-    //   d3.select(this)
-    //     .attr('transform', `translate(${e.x},${e.y})`);
-    //
-    //   node.x = e.x;
-    //   node.y = e.y;
-    // }
 
     const node = view.selectAll<SVGGElement, any>('g.node')
         .data(nodes);
@@ -41,7 +61,6 @@ export class NodesWidget implements Widget {
     const node_enter = node.enter()
       .append<SVGGElement>('g')
       .attr('class', 'node');
-      // .call(d3.drag<SVGGElement, Node>().on('drag', dragged))
 
     const node_image = node_enter.append<SVGImageElement>('image')
         .attr('xlink:href', (n: Node) => 'data:image/svg+xml;base64,' + btoa(n.icon.raw))
@@ -67,19 +86,32 @@ export class NodesWidget implements Widget {
         if (self.onContextMenuCallback !== null) {
           self.onContextMenuCallback(event, n);
         }
-      })
-      .attr('transform', (n: Node) => {
-        return `translate(${n.x},${n.y})`;
       });
 
-    node_merge.select<SVGTextElement>('text.label')
-      .attr('x', (n: Node) => n.label.x)
-      .attr('y', (n: Node) => n.label.y)
-      .attr('style', (n: Node) => n.label.style)
-      .text((n: Node) => n.label.text);
+    this.revise(node_merge);
 
-    node_merge.select<SVGTextElement>('text.node_point_label')
-      .text((n: Node) => `(${n.x}, ${n.y})`);
+    const callback = function (this: SVGGElement, n: Node) {
+      const e: D3DragEvent<SVGGElement, Node, Node> = event;
+
+      n.x = e.x;
+      n.y = e.y;
+
+      self.revise(select(this));
+      self.executeOnNodeDraggingCallback(n);
+    };
+
+    const dragging = () => {
+      return drag<SVGGElement, Node>()
+        .on('drag', callback)
+        .on('end', (n: Node) => {
+          if (self.onNodeDraggedCallback) {
+            const e: D3DragEvent<SVGGElement, Node, Node> = event;
+            self.onNodeDraggedCallback(e, n);
+          }
+        });
+    };
+
+    node_merge.call(dragging());
 
     node.exit().remove();
   }

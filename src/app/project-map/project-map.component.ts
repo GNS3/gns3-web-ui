@@ -177,6 +177,21 @@ export class ProjectMapComponent implements OnInit {
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
     });
+
+    this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
+      const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
+      if (index >= 0) {
+        this.nodes[index] = node;
+        this.mapChild.reload(); // temporary invocation
+
+        this.nodeService
+          .updatePosition(this.server, node, node.x, node.y)
+          .subscribe((n: Node) => {
+            this.nodes[index] = node;
+            this.mapChild.reload(); // temporary invocation
+          });
+      }
+    });
   }
 
   onNodeCreation(appliance: Appliance) {

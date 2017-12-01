@@ -1,4 +1,4 @@
-import { select } from "d3-selection";
+import {BaseType, select, Selection} from "d3-selection";
 import { line } from "d3-shape";
 
 import { Widget } from "./widget";
@@ -13,33 +13,21 @@ import {EthernetLinkWidget} from "./ethernet-link.widget";
 export class LinksWidget implements Widget {
   private multiLinkCalculatorHelper = new MultiLinkCalculatorHelper();
 
-  private getLinkWidget(link: Link) {
+  public getLinkWidget(link: Link) {
     if (link.link_type === 'serial') {
       return new SerialLinkWidget();
     }
     return new EthernetLinkWidget();
   }
 
-  public draw(view: SVGSelection, links: Link[]) {
+  public select(view: SVGSelection) {
+    return view.selectAll<SVGGElement, Link>("g.link");
+  }
+
+  public revise(selection: Selection<BaseType, Link, SVGElement, any>) {
     const self = this;
 
-    this.multiLinkCalculatorHelper.assignDataToLinks(links);
-
-    const link = view
-      .selectAll("g.link")
-      .data(links.filter((l: Link) => {
-        return l.target && l.source;
-      }));
-
-    const link_enter = link.enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'link')
-      .attr('link_id', (l: Link) => l.link_id)
-      .attr('map-source', (l: Link) => l.source.node_id)
-      .attr('map-target', (l: Link) => l.target.node_id);
-
-    link.merge(link_enter)
-      .each(function (this: SVGGElement, l: Link) {
+    selection.each(function (this: SVGGElement, l: Link) {
         const link_group = select<SVGGElement, Link>(this);
         const link_widget = self.getLinkWidget(l);
 
@@ -93,7 +81,28 @@ export class LinksWidget implements Widget {
         }
         return null;
       });
+  }
 
-      link.exit().remove();
+  public draw(view: SVGSelection, links: Link[]) {
+    const self = this;
+
+    this.multiLinkCalculatorHelper.assignDataToLinks(links);
+
+    const link = view
+      .selectAll("g.link")
+      .data(links.filter((l: Link) => {
+        return l.target && l.source;
+      }));
+
+    const link_enter = link.enter()
+      .append<SVGGElement>('g')
+      .attr('class', 'link')
+      .attr('link_id', (l: Link) => l.link_id)
+      .attr('map-source', (l: Link) => l.source.node_id)
+      .attr('map-target', (l: Link) => l.target.node_id);
+
+    this.revise(link.merge(link_enter));
+
+    link.exit().remove();
   }
 }
