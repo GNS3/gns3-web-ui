@@ -47,6 +47,7 @@ import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop
 import { ApplianceComponent } from './appliance/appliance.component';
 import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
 import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
+import {LinkService} from "./shared/services/link.service";
 
 
 @NgModule({
@@ -95,6 +96,7 @@ import { NodeSelectInterfaceComponent } from './shared/node-select-interface/nod
     ServerService,
     ApplianceService,
     NodeService,
+    LinkService,
     IndexedDbService,
     HttpServer,
     SnapshotService,

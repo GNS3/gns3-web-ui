@@ -32,6 +32,7 @@ import {NodeService} from "../shared/services/node.service";
 import {Symbol} from "../shared/models/symbol";
 import {NodeSelectInterfaceComponent} from "../shared/node-select-interface/node-select-interface.component";
 import {Port} from "../shared/models/port";
+import {LinkService} from "../shared/services/link.service";
 
 
 @Component({
@@ -65,6 +66,7 @@ export class ProjectMapComponent implements OnInit {
               private symbolService: SymbolService,
               private snapshotService: SnapshotService,
               private nodeService: NodeService,
+              private linkService: LinkService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
               private toastyService: ToastyService) {
@@ -269,8 +271,27 @@ export class ProjectMapComponent implements OnInit {
   public onChooseInterface(event) {
     const node: Node = event.node;
     const port: Port = event.port;
+    const drawingLineTool = this.mapChild.graphLayout.getDrawingLineTool();
+    if (drawingLineTool.isDrawing()) {
+      const data = drawingLineTool.stop();
+      this.onLineCreation(data['node'], data['port'], node, port);
+    } else {
+      drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
+        'node': node,
+        'port': port
+      });
+    }
+  }
 
-    this.mapChild.graphLayout.getDrawingLineTool().start(node.x + node.width / 2., node.y + node.height / 2.);
+  public onLineCreation(source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
+    this.linkService
+      .createLink(this.server, source_node, source_port, target_node, target_port)
+      .subscribe(() => {
+        this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
+          this.links = links;
+          this.mapChild.reload();
+        });
+      });
   }
 
 }

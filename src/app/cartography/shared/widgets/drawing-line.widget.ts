@@ -7,11 +7,14 @@ import {event, mouse, select} from "d3-selection";
 export class DrawingLineWidget {
   private drawingLine: DrawingLine = new DrawingLine();
   private selection: SVGSelection;
+  private drawing = false;
+  private data = {};
 
-  public start(x: number, y: number) {
+  public start(x: number, y: number, data: {}) {
     const self = this;
 
-    console.log("Start", x, y);
+    this.drawing = true;
+    this.data = data;
     this.drawingLine.start = new Point(x, y);
     this.drawingLine.end = new Point(x, y);
 
@@ -27,12 +30,15 @@ export class DrawingLineWidget {
     this.draw();
   }
 
-  public update(x: number, y: number) {
-    this.drawingLine.end = new Point(x, y);
+  public isDrawing() {
+    return this.drawing;
   }
 
   public stop() {
-
+    this.drawing = false;
+    this.selection.on('mousemove', null);
+    this.draw();
+    return this.data;
   }
 
   public connect(selection: SVGSelection) {
@@ -44,10 +50,14 @@ export class DrawingLineWidget {
   }
 
   public draw() {
-    const link_data = [[
-      [this.drawingLine.start.x, this.drawingLine.start.y],
-      [this.drawingLine.end.x, this.drawingLine.end.y]
-    ]];
+    let link_data = [];
+
+    if (this.drawing) {
+       link_data = [[
+        [this.drawingLine.start.x, this.drawingLine.start.y],
+        [this.drawingLine.end.x, this.drawingLine.end.y]
+      ]];
+    }
 
     const value_line = line();
 
@@ -66,6 +76,7 @@ export class DrawingLineWidget {
         .attr('d', value_line)
         .attr('stroke', '#000')
         .attr('stroke-width', '2');
-    
+
+    tool.exit().remove();
   }
 }
