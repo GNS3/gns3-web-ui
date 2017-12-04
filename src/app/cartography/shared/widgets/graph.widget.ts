@@ -71,10 +71,13 @@ export class GraphLayout implements Widget {
         (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
     }
 
+
+
     this.linksWidget.draw(canvas, this.links);
     this.nodesWidget.draw(canvas, this.nodes);
     this.drawingsWidget.draw(canvas, this.drawings);
-    this.drawingLineTool.connect(canvas);
+
+    this.drawingLineTool.connect(view);
 
     const onZoom = function(this: SVGSVGElement) {
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
