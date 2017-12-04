@@ -16,12 +16,8 @@ export class DrawingLineWidget {
     this.drawingLine.end = new Point(x, y);
 
     const over = function(this, d, i) {
-      // const e = event;
-      // const dom = select('g.canvas').node();
       const node = self.selection.select<SVGGElement>('g.canvas').node();
       const coordinates = mouse(node);
-      // console.log(e);
-      console.log(d, i);
       self.drawingLine.end.x = coordinates[0];
       self.drawingLine.end.y = coordinates[1];
       self.draw();
@@ -30,15 +26,6 @@ export class DrawingLineWidget {
     this.selection.on('mousemove', over);
     this.draw();
   }
-
-  // private handleMouseOver(d, i) {
-  //   const e = event;
-  //   console.log(e);
-  //   console.log(d, i);
-  //   this.drawingLine.end.x = e.clientX;
-  //   this.drawingLine.end.y = e.clientY;
-  //   this.draw();
-  // }
 
   public update(x: number, y: number) {
     this.drawingLine.end = new Point(x, y);
@@ -50,7 +37,10 @@ export class DrawingLineWidget {
 
   public connect(selection: SVGSelection) {
     this.selection = selection;
-    // this.selection.append<SVGGElement>('g').classed("drawing-line-tool");
+    const canvas = this.selection.select<SVGGElement>("g.canvas");
+    if (!canvas.select<SVGGElement>("g.drawing-line-tool").node()) {
+      canvas.append<SVGGElement>('g').attr("class", "drawing-line-tool");
+    }
   }
 
   public draw() {
@@ -61,27 +51,9 @@ export class DrawingLineWidget {
 
     const value_line = line();
 
-    // const canvas = this.selection.select<SVGGElement>('g.drawing-line-tool');
-    //
-    // const tool = canvas
-    //     .selectAll<SVGPathElement, DrawingLine>('path')
-    //     .data(link_data);
-    //
-    // const enter = tool
-    //   .enter()
-    //     // .append<SVGPathElement>('g.drawing-line')
-    //       .append<SVGPathElement>('path')
-    //
-    // // enter.classed("drawing-line");
-    //
-    //
-    // tool
-    //   .merge(enter)
-    //     .attr('d', value_line)
-    //     .attr('stroke', '#000')
-    //     .attr('stroke-width', '2');
+    const drawing_line_tool = this.selection.select<SVGGElement>('g.drawing-line-tool');
 
-    const tool = this.selection
+    const tool = drawing_line_tool
         .selectAll<SVGGElement, DrawingLine>('path')
         .data(link_data);
 
@@ -94,23 +66,6 @@ export class DrawingLineWidget {
         .attr('d', value_line)
         .attr('stroke', '#000')
         .attr('stroke-width', '2');
-
-    // const tool = this.selection
-    //     .selectAll<SVGGElement, DrawingLine>('g.drawing-line')
-    //     .data(link_data);
-    //
-    // const enter = tool
-    //   .enter()
-    //     .append<SVGGElement>('g.drawing-line')
-    //       .append<SVGPathElement>('path');
-    //
-    // tool
-    //   .merge(enter)
-    //     .select<SVGPathElement>('path')
-    //       .attr('d', value_line)
-    //       .attr('stroke', '#000')
-    //       .attr('stroke-width', '2');
-
-
+    
   }
 }

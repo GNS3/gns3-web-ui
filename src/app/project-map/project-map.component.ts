@@ -270,8 +270,7 @@ export class ProjectMapComponent implements OnInit {
     const node: Node = event.node;
     const port: Port = event.port;
 
-    console.log(node);
-    this.mapChild.graphLayout.getDrawingLineTool().start(node.x, node.y);
+    this.mapChild.graphLayout.getDrawingLineTool().start(node.x + node.width / 2., node.y + node.height / 2.);
   }
 
 }
