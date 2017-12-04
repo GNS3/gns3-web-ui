@@ -115,10 +115,10 @@ export class LinksWidget implements Widget {
 
     const link_enter = link.enter()
       .append<SVGGElement>('g')
-      .attr('class', 'link')
-      .attr('link_id', (l: Link) => l.link_id)
-      .attr('map-source', (l: Link) => l.source.node_id)
-      .attr('map-target', (l: Link) => l.target.node_id);
+        .attr('class', 'link')
+        .attr('link_id', (l: Link) => l.link_id)
+        .attr('map-source', (l: Link) => l.source.node_id)
+        .attr('map-target', (l: Link) => l.target.node_id)
 
     this.revise(link.merge(link_enter));
 
@@ -126,4 +126,5 @@ export class LinksWidget implements Widget {
       .exit()
         .remove();
   }
+
 }

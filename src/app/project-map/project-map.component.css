@@ -13,6 +13,9 @@
   /*height: 100%;*/
 /*}*/
 
+g.node:hover {
+  background-color: #0097a7;
+}
 
 .project-map {
   background-color: #F0F0F0;
@@ -24,4 +27,8 @@
   top: 20px;
   left: 20px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.loading-spinner {
+  display: flex; justify-content: center; align-items: center;
 }

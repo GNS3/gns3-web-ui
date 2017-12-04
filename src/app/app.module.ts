@@ -14,7 +14,9 @@ import {
   MatFormFieldModule,
   MatInputModule,
   MatTableModule,
-  MatDialogModule, MatProgressBarModule
+  MatDialogModule,
+  MatProgressBarModule,
+  MatProgressSpinnerModule
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
@@ -33,6 +35,7 @@ import { SnapshotService } from "./shared/services/snapshot.service";
 import { ProgressDialogService } from "./shared/progress-dialog/progress-dialog.service";
 import { NodeService } from "./shared/services/node.service";
 import { ApplianceService } from "./shared/services/appliance.service";
+import { LinkService } from "./shared/services/link.service";
 
 import { ProjectsComponent } from './projects/projects.component';
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
@@ -47,7 +50,7 @@ import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop
 import { ApplianceComponent } from './appliance/appliance.component';
 import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
 import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
-import {LinkService} from "./shared/services/link.service";
+
 
 
 @NgModule({
@@ -86,6 +89,7 @@ import {LinkService} from "./shared/services/link.service";
     MatTableModule,
     MatDialogModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     CdkTableModule
   ],
   providers: [

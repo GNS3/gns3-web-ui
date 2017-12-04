@@ -89,6 +89,12 @@ export class NodesWidget implements Widget {
         })
         .attr('width', (n: Node) => n.width)
         .attr('height', (n: Node) => n.height);
+        // .on('mouseover', function (this, n: Node) {
+        //   select(this).attr("class", "over");
+        // })
+        // .on('mouseout', function (this, n: Node) {
+        //   select(this).attr("class", "");
+        // });
 
     node_enter
       .append<SVGTextElement>('text')

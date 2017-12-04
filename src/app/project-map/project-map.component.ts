@@ -52,7 +52,7 @@ export class ProjectMapComponent implements OnInit {
 
   private ws: Subject<any>;
   private drawLineMode =  false;
-
+  private isLoading = true;
 
   @ViewChild(MapComponent) mapChild: MapComponent;
 
@@ -123,6 +123,7 @@ export class ProjectMapComponent implements OnInit {
 
         this.setUpMapCallbacks(project);
         this.setUpWS(project);
+        this.isLoading = true;
       });
 
 
