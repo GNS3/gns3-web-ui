@@ -101,8 +101,14 @@ export class LinksWidget implements Widget {
 
     this.multiLinkCalculatorHelper.assignDataToLinks(links);
 
-    const link = view
-      .selectAll("g.link")
+    const linksLayer = view.selectAll("g.links").data([{}]);
+    linksLayer
+      .enter()
+        .append<SVGGElement>('g')
+          .attr("class", "links");
+
+    const link = linksLayer
+      .selectAll<SVGGElement, Link>("g.link")
       .data(links.filter((l: Link) => {
         return l.target && l.source;
       }));

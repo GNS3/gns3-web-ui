@@ -2,7 +2,7 @@
   <span [matMenuTriggerFor]="selectInterfaceMenu"></span>
   <mat-menu #selectInterfaceMenu="matMenu">
       <button mat-menu-item *ngFor="let port of node.ports" (click)="chooseInterface(port)">
-        <mat-icon>info</mat-icon>
+        <mat-icon>add_circle_outline</mat-icon>
         <span>{{ port.name }}</span>
       </button>
   </mat-menu>
