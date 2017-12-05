@@ -30,5 +30,11 @@ g.node:hover {
 }
 
 .loading-spinner {
-  display: flex; justify-content: center; align-items: center;
+  position: absolute;
+  top: 50%;
+  width: 100px;
+  margin-left:-50px;
+  margin-top: -50px;
+  left: 50%;
 }
+
