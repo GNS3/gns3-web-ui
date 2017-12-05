@@ -52,10 +52,25 @@ export class NodesWidget implements Widget {
 
     selection
       .select<SVGTextElement>('text.label')
-        .attr('x', (n: Node) => n.label.x - n.width / 2.)
-        .attr('y', (n: Node) => n.label.y - n.height / 2. + 20)  // @todo: server computes y in auto way
+        // .attr('y', (n: Node) => n.label.y - n.height / 2. + 10)  // @todo: server computes y in auto way
         .attr('style', (n: Node) => n.label.style)
-        .text((n: Node) => n.label.text);
+        .text((n: Node) => n.label.text)
+        .attr('x', function (this: SVGTextElement, n: Node) {
+          if (n.label.x === null) {
+            // center
+            const bbox = this.getBBox();
+            return -bbox.width / 2.;
+          }
+          return n.label.x - n.width / 2.;
+        })
+        .attr('y', function (this: SVGTextElement, n: Node) {
+          if (n.label.x === null) {
+            // center
+            const bbox = this.getBBox();
+            return - n.height + 20;
+          }
+          return n.label.y - n.height / 2.;
+        });
 
     selection
       .select<SVGTextElement>('text.node_point_label')
