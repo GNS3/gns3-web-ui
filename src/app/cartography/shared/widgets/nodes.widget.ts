@@ -52,8 +52,8 @@ export class NodesWidget implements Widget {
 
     selection
       .select<SVGTextElement>('text.label')
-        .attr('x', (n: Node) => n.label.x)
-        .attr('y', (n: Node) => n.label.y)
+        .attr('x', (n: Node) => n.label.x - n.width / 2.)
+        .attr('y', (n: Node) => n.label.y - n.height / 2. + 20)  // @todo: server computes y in auto way
         .attr('style', (n: Node) => n.label.style)
         .text((n: Node) => n.label.text);
 
@@ -88,7 +88,12 @@ export class NodesWidget implements Widget {
           return 'data:image/svg+xml;base64,none';
         })
         .attr('width', (n: Node) => n.width)
-        .attr('height', (n: Node) => n.height);
+        .attr('height', (n: Node) => n.height)
+        .attr('x', (n: Node) => -n.width / 2.)
+        .attr('y', (n: Node) => -n.height / 2.);
+
+        // .attr('width', (n: Node) => n.width)
+        // .attr('height', (n: Node) => n.height);
         // .on('mouseover', function (this, n: Node) {
         //   select(this).attr("class", "over");
         // })

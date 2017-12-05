@@ -90,7 +90,7 @@ export class LinksWidget implements Widget {
       .attr('transform', function(l) {
         if (l.source && l.target) {
           const translation = self.multiLinkCalculatorHelper.linkTranslation(l.distance, l.source, l.target);
-          return `translate (${translation.dx + l.source.width / 2.}, ${translation.dy + l.source.height / 2.})`;
+          return `translate (${translation.dx}, ${translation.dy})`;
         }
         return null;
       });

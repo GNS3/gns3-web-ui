@@ -277,7 +277,7 @@ export class ProjectMapComponent implements OnInit {
       const data = drawingLineTool.stop();
       this.onLineCreation(data['node'], data['port'], node, port);
     } else {
-      drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
+      drawingLineTool.start(node.x, node.y, {
         'node': node,
         'port': port
       });
