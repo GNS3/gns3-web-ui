@@ -67,7 +67,7 @@ export class NodesWidget implements Widget {
           if (n.label.x === null) {
             // center
             const bbox = this.getBBox();
-            return - n.height + 20;
+            return - n.height / 2. - bbox.height ;
           }
           return n.label.y - n.height / 2.;
         });

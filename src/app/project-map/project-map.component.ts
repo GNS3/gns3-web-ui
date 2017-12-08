@@ -267,6 +267,7 @@ export class ProjectMapComponent implements OnInit {
 
   public turnOffDrawLineMode() {
     this.drawLineMode = false;
+    this.mapChild.graphLayout.getDrawingLineTool().stop();
   }
 
   public onChooseInterface(event) {
