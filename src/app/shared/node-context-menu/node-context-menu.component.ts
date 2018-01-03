@@ -17,7 +17,7 @@ export class NodeContextMenuComponent implements OnInit {
 
   private topPosition;
   private leftPosition;
-  private node: Node;
+  public node: Node;
 
   constructor(
     private sanitizer: DomSanitizer,

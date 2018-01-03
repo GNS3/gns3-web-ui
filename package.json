@@ -2,13 +2,15 @@
   "name": "gns3-web-ui",
   "version": "0.0.0",
   "license": "MIT",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build-for-electron": "ng build --prod --output-path ng-dist --base-href ./"
   },
   "private": true,
   "dependencies": {
@@ -55,6 +57,8 @@
     "protractor": "~5.2.0",
     "ts-node": "~4.1.0",
     "tslint": "~5.8.0",
-    "typescript": ">=2.4.0 <2.6.0"
+    "typescript": ">=2.4.0 <2.6.0",
+    "popper.js": "^1.12.3",
+    "jquery": "1.9.1 - 3"
   }
 }

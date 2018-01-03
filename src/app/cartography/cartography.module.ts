@@ -6,6 +6,7 @@ import { MapComponent } from './map/map.component';
   imports: [
     CommonModule
   ],
-  declarations: [MapComponent]
+  declarations: [MapComponent],
+  exports: [MapComponent]
 })
 export class CartographyModule { }
