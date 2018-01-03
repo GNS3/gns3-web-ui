@@ -33,7 +33,6 @@ ng serve --port 8080
 Application is accessible on `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
 
 
-
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.

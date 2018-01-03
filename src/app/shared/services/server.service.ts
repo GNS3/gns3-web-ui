@@ -10,7 +10,7 @@ export class ServerService {
   private ready: Promise<any>;
 
   constructor(private indexedDbService: IndexedDbService) {
-    this.ready = indexedDbService.get().createStore(1, (evt) => {
+    this.ready = indexedDbService.get().openDatabase(1, (evt) => {
       const store = evt.currentTarget.result.createObjectStore(
         this.tablename, { keyPath: "id", autoIncrement: true });
     });
