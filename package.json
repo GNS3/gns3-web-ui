@@ -10,7 +10,13 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build-for-electron": "ng build --prod --output-path ng-dist --base-href ./"
+    "electrondev": "concurrently -k \"ng serve\" \"electron .\"",
+    "distlinux": "ng build --prod && electron-builder --linux"
+  },
+  "build": {
+     "directories": {
+       "output": "build"
+     }
   },
   "private": true,
   "dependencies": {
