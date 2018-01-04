@@ -16,7 +16,10 @@
   "build": {
      "directories": {
        "output": "build"
-     }
+     },
+    "linux": {
+      "icon": "src/assets/icons/png"
+    }
   },
   "private": true,
   "dependencies": {
