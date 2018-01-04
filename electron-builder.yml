@@ -1,0 +1,52 @@
+appId: com.gns3.web-ui
+copyright: "Copyright © 2018 GNS3"
+productName: "GNS3 Web UI Prototype"
+#forceCodeSigning: true
+artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
+asar: true
+compression: normal
+
+directories:
+  output: build
+
+files:
+  - dist
+  - main.js
+  - package.json
+
+mac:
+  category: public.app-category.developer-tools
+#  publish: github
+  target:
+    - dmg
+dmg:
+#  background: "build/appdmg.png"
+  icon: "dist/assets/icons/mac/icon.icns"
+  iconSize: 128
+  contents:
+    - x: 380
+      y: 240
+      type: link
+      path: /Applications
+    - x: 122
+      y: 240
+      type: file
+
+linux:
+#  publish: github
+  icon: "dist/assets/icons/png"
+  category: "Network"
+  packageCategory: "Network"
+  description: "GNS3 Web Ui Prototype application. Please don't use it as long as it's not officially announced."
+  target:
+    - deb
+    - AppImage
+  maintainer: "Dominik Ziajka <dominik@gns3.net>"
+win:
+  publish:
+    provider: "github"
+    owner: "GNS3"
+  icon: "dist/assets/icons/win/icon.ico"
+
+nsis:
+  perMachine: true

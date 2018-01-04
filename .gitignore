@@ -6,6 +6,11 @@
 /out-tsc
 /ng-dist
 /build
+/scripts/tmp
+/scripts/env
+/scripts/build
+/scripts/dist
+/env
 
 # dependencies
 /node_modules
@@ -34,6 +39,7 @@
 npm-debug.log
 testem.log
 /typings
+/yarn-error.log
 
 # e2e
 /e2e/*.js

@@ -14,6 +14,9 @@
     "lib": [
       "es2016",
       "dom"
-    ]
-  }
+    ],
+  },
+  "include": [
+    "./node_modules/angular2-indexeddb/index.ts"
+  ]
 }

@@ -1,4 +1,5 @@
 const electron = require('electron');
+var fs = require('fs');
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -9,7 +10,43 @@ const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow;
+
+let serverProc = null;
+
+let isWin = /^win/.test(process.platform);
+
+const createServerProc = () => {
+  fs.readdir(path.join(__dirname, 'dist'), (err, files) => {
+    var serverPath = null;
+
+    files.forEach((filename) => {
+      if(filename.startsWith('exe.')) {
+        if (isWin) {
+          serverPath = path.join(__dirname, 'dist', filename, 'gns3server.exe');
+        }
+        else {
+          serverPath = path.join(__dirname, 'dist', filename, 'gns3server');
+        }
+
+      }
+    });
+
+    if (serverPath != null) {
+      serverProc = require('child_process').execFile(serverPath, []);
+
+      if (serverProc != null) {
+        console.log('gns3server started from path: ' + serverPath);
+      }
+    }
+  });
+}
+
+const exitServerProc = () => {
+  serverProc.kill();
+  serverProc = null;
+}
+
 
 function createWindow () {
   // Create the browser window.
@@ -38,6 +75,9 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
+
+app.on('ready', createServerProc);
+app.on('will-quit', exitServerProc);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

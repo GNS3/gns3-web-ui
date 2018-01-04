@@ -1,0 +1,78 @@
+# iOS CircleCI 2.0 configuration file
+version: 2
+jobs:
+  build:
+    macos:
+      xcode: "9.1.0"
+
+    steps:
+      - checkout
+
+      - run:
+          name: Set timezone and check current datetime
+          command: |
+            sudo systemsetup -settimezone Europe/Warsaw
+            echo "Today is $(date +"%Y-%m-%d %T")"
+
+      - run:
+          name: Install project
+          # there is an issue with yarn and cache during executed on CI; for now we just run it twice, second should
+          # be successful. Check it later if updates fixed the issue
+          command: |
+            yarn || true
+            yarn || true
+
+      - run:
+          name: Building WebUI for distribution
+          command: |
+            yarn buildforelectron
+
+      - run:
+          name: Building gns3server
+          command: |
+            # brew update is required due to bug in CCI: https://discuss.circleci.com/t/homebrew-must-be-run-under-ruby-2-3-runtimeerror/17232/5
+            brew update
+            brew --env
+            brew --config
+            brew install python3
+            pip3 install -r scripts/requirements.txt
+            python3 scripts/build.py download
+            python3 scripts/build.py build -b dist
+            python3 scripts/build.py validate -b dist
+
+      - run:
+          name: Dist project
+          command: |
+            yarn electron-builder --mac --x64
+
+      - run:
+          name: Gather artifacts
+          command: |
+            mkdir artifacts
+            cp build/*.dmg artifacts/
+
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+
+      - deploy:
+          name: Deploying on SourceForge
+          command: |
+            echo "Deploying on SourceForge"
+            ssh-keyscan -H frs.sourceforge.net >> ~/.ssh/known_hosts
+            mkdir -p artifacts/release
+            cd artifacts; for file in *.dmg; do mv "$file" "release/${file%.dmg}-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}.dmg"; done; cd ..
+            echo "mkdir \"/home/frs/project/gns-3/Nightly Builds/$(date +"%Y-%m-%d")\"" | sftp gns3build@frs.sourceforge.net || true
+            echo "Copying to SourceForge"
+            scp artifacts/release/* gns3build@frs.sourceforge.net:"/home/frs/project/gns-3/Nightly\ Builds/$(date +"%Y-%m-%d")/"
+
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /v.*/
+
