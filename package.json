@@ -10,8 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "electrondev": "concurrently -k \"ng serve\" \"electron .\"",
-    "distlinux": "ng build --prod && electron-builder --linux"
+    "electrondev": "concurrently -k \"ng serve -e electronDev\" \"electron .\"",
+    "distlinux": "ng build -e electronProd && electron-builder --linux"
   },
   "build": {
      "directories": {
