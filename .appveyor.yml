@@ -12,11 +12,11 @@ init:
 install:
   - ps: Install-Product node 8 x64
   - yarn
-  - cmd: IF "%APPVEYOR_REPO_TAG%" == "false" copy build\*.exe .
-  - cmd: IF "%APPVEYOR_REPO_TAG%" == "false" Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_NUMBER%.exe"}
 
 build_script:
   - yarn distwin
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe . }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_NUMBER%.exe"} }
 
 test: off
 
