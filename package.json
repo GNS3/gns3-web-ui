@@ -1,17 +1,20 @@
 {
   "name": "gns3-web-ui",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "GPLv3",
   "main": "main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "buildforelectron": "ng build -e electronProd",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electrondev": "concurrently -k \"ng serve -e electronDev\" \"electron .\"",
-    "distlinux": "ng build -e electronProd && electron-builder --linux"
+    "distlinux": "yarn buildforelectron && electron-builder --linux --x64",
+    "distwin": "yarn buildforelectron && electron-builder --win --x64",
+    "distmac": "yarn buildforelectron && electron-builder --mac --x64"
   },
   "build": {
     "appId": "com.gns3.web-ui",
@@ -19,8 +22,8 @@
       "dist"
     ],
     "directories": {
-       "output": "build"
-     },
+      "output": "build"
+    },
     "mac": {
       "category": "public.app-category.developer-tools"
     },

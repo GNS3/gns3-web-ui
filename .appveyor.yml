@@ -1,0 +1,16 @@
+version: 1.0.{build}
+
+platform:
+  - x64
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node 8 x64
+  - yarn
+
+build_script:
+  - yarn distwin
+
+test: off
