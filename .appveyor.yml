@@ -14,3 +14,6 @@ build_script:
   - yarn distwin
 
 test: off
+
+artifacts:
+  - path: 'build'
