@@ -3,7 +3,7 @@ copyright: "Copyright © 2018 GNS3"
 productName: "GNS3 Web UI Prototype"
 #forceCodeSigning: true
 artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
-asar: false
+asar: true
 compression: store
 directories:
   output: build
