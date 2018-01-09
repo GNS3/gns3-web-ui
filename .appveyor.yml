@@ -16,7 +16,7 @@ install:
 build_script:
   - yarn distwin
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe . }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_NUMBER%.exe"} }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
 
 test: off
 
