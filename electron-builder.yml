@@ -39,4 +39,4 @@ win:
   icon: "dist/assets/icons/win/icon.ico"
 nsis:
   perMachine: true
-oneClick: true
+
