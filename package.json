@@ -16,37 +16,6 @@
     "distwin": "yarn buildforelectron && electron-builder --win --x64",
     "distmac": "yarn buildforelectron && electron-builder --mac --x64"
   },
-  "build": {
-    "appId": "com.gns3.web-ui",
-    "directories": {
-      "output": "build"
-    },
-    "mac": {
-      "category": "public.app-category.developer-tools"
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 110,
-          "y": 150
-        },
-        {
-          "x": 240,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "linux": {
-      "category": "Network",
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "icon": "dist/assets/icons/png"
-    }
-  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^5.1.2",
