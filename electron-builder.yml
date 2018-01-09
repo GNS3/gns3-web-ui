@@ -9,7 +9,7 @@ directories:
   output: build
 mac:
   category: public.app-category.developer-tools
-  publish: github
+#  publish: github
   target:
     - dmg
 dmg:
@@ -25,7 +25,7 @@ dmg:
       y: 240
       type: file
 linux:
-  publish: github
+#  publish: github
   icon: "dist/assets/icons/png"
   category: "Network"
   packageCategory: "Network"
@@ -35,7 +35,7 @@ linux:
     - AppImage
   maintainer: "Dominik Ziajka <dominik@gns3.net>"
 win:
-  publish: github
+#  publish: github
   icon: "dist/assets/icons/win/icon.ico"
 nsis:
   perMachine: true
