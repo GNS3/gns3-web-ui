@@ -18,9 +18,6 @@
   },
   "build": {
     "appId": "com.gns3.web-ui",
-    "files": [
-      "dist"
-    ],
     "directories": {
       "output": "build"
     },
