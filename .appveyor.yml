@@ -15,13 +15,14 @@ install:
 
 build_script:
   - yarn distwin
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe . }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path ".\$((Get-Date).ToString('yyyy-MM-dd'))" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe $((Get-Date).ToString('yyyy-MM-dd')) }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $((Get-Date).ToString('yyyy-MM-dd')); Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
 
 test: off
 
 artifacts:
-  - path: '*.exe'
+  - path: '**\*.exe'
 
 deploy:
   - provider: FTP
@@ -30,6 +31,6 @@ deploy:
     username: gns3build
     password:
       secure: YRiLLoY27UOZ8QJHqqdESBQFfPfENKV0cLI/QFSsbWc=
-    folder: "../../../../frs/project/gns-3/Continuous"
+    folder: "../../../../frs/project/gns-3/Nightly Builds"
     on:
       appveyor_repo_tag: false # deploy on branch only
