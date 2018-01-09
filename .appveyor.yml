@@ -12,8 +12,8 @@ init:
 install:
   - ps: Install-Product node 8 x64
   - yarn
-  - cmd: IF "%APPVEYOR_REPO_TAG%" == "false" move **\GNS3-*-all-in-one*.exe .
-  - cmd: IF "%APPVEYOR_REPO_TAG%" == "false" Get-ChildItem -Filter *.exe | Rename-Item -NewName {$_.Name -replace ".exe","-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_NUMBER%.exe"}
+  - cmd: IF "%APPVEYOR_REPO_TAG%" == "false" move '**\GNS3-*-all-in-one*.exe' .
+  - cmd: IF "%APPVEYOR_REPO_TAG%" == "false" Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_NUMBER%.exe"}
 
 build_script:
   - yarn distwin
