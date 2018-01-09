@@ -14,11 +14,37 @@
     "distlinux": "ng build -e electronProd && electron-builder --linux"
   },
   "build": {
-     "directories": {
+    "appId": "com.gns3.web-ui",
+    "files": [
+      "dist"
+    ],
+    "directories": {
        "output": "build"
      },
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
     "linux": {
-      "icon": "src/assets/icons/png"
+      "category": "Network",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "dist/assets/icons/png"
     }
   },
   "private": true,
