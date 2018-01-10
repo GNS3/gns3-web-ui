@@ -30,12 +30,12 @@ jobs:
       - run:
           name: Fix Yarn
           command: |
-            rm -rf ~/Library/Caches/Yarn
+            yarn cache clean
 
       - run:
           name: Install project
           command: |
-            yarn --network-concurrency 1
+            yarn
 
       - run:
           name: Dist project
