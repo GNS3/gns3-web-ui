@@ -38,11 +38,13 @@ jobs:
       - run:
           name: Install project
           command: |
+            source ~/.bash_profile
             yarn install --network-concurrency 1
 
       - run:
           name: Dist project
           command: |
+            source ~/.bash_profile
             yarn distmac
 
       - run:
