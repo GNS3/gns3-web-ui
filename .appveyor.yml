@@ -18,7 +18,7 @@ build_script:
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path ".\$((Get-Date).ToString('yyyy-MM-dd'))" }
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe $((Get-Date).ToString('yyyy-MM-dd')) }
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $((Get-Date).ToString('yyyy-MM-dd')); Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { Push-AppveyorArtifact *.exe }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" }
 
 test: off
 
