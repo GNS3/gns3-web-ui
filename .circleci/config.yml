@@ -16,15 +16,15 @@ jobs:
             sudo systemsetup -settimezone Europe/Warsaw
             echo "Today is $(date +"%Y-%m-%d %T")"
 
-#      - run:
-#          name: Update BREW
-#          command: |
-#            brew update
-#
-#      - run:
-#          name: Install Yarn
-#          command: |
-#            brew install yarn
+      - run:
+          name: Update BREW
+          command: |
+            brew update
+
+      - run:
+          name: Install Yarn
+          command: |
+            brew upgrade yarn
 
       - run:
           name: Install project
