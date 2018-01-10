@@ -22,6 +22,7 @@ before_script:
 script: ng test --watch=false
 
 after_script:
+# publish on gns3.github.io
   - ng build --base-href /${TRAVIS_BRANCH}/
   - export GIT_LAST_LOG="$(git log -1 --pretty=%B)"
   - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
@@ -33,4 +34,4 @@ after_script:
   - git add -A
   - git commit -m "Deploy - $GIT_LAST_LOG"
   - git push origin master
-
+# publish

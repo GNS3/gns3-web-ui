@@ -2,8 +2,6 @@
 version: 2
 jobs:
   build:
-
-    # Specify the Xcode version to use
     macos:
       xcode: "9.1.0"
 
@@ -16,27 +14,10 @@ jobs:
             sudo systemsetup -settimezone Europe/Warsaw
             echo "Today is $(date +"%Y-%m-%d %T")"
 
-#      - run:
-#          name: Update BREW
-#          command: |
-#            brew update
-#
-#      - run:
-#          name: Install Yarn
-#          command: |
-#            brew upgrade yarn
-#
-
-#      - run:
-#          name: Fix Yarn
-#          command: |
-#            brew uninstall yarn
-#            curl -o- -L https://yarnpkg.com/install.sh | bash
-#            echo 'export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"' > ~/.bash_profile
-#            source ~/.bash_profile
-
       - run:
           name: Install project
+          # there is an issue with yarn and cache during executed on CI; for now we just run it twice, second should
+          # be successful. Check it later if updates fixed the issue
           command: |
             yarn || true
             yarn || true
