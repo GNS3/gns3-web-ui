@@ -32,5 +32,6 @@ deploy:
     password:
       secure: YRiLLoY27UOZ8QJHqqdESBQFfPfENKV0cLI/QFSsbWc=
     folder: "../../../../frs/project/gns-3/Nightly Builds"
+    artifact: /.*\.exe/
     on:
       appveyor_repo_tag: false # deploy on branch only
