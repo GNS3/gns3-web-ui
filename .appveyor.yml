@@ -15,16 +15,16 @@ install:
 
 build_script:
   - yarn distwin
-  - ps: $env:OutputDirectory = $((Get-Date).ToString('yyyy-MM-dd'))
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path ".\$env:OutputDirectory" }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe "$env:OutputDirectory" }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $env:OutputDirectory; Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
+  - ps: $OutputDirectory = $((Get-Date).ToString('yyyy-MM-dd'))
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path "$OutputDirectory" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe "$OutputDirectory" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $OutputDirectory; Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
 #  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" }
 
 test: off
 
 artifacts:
-  - path: '$(env:OutputDirectory)\*.exe'
+  - path: '$(OutputDirectory)\*.exe'
 
 deploy:
   - provider: FTP
