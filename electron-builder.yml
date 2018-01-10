@@ -4,7 +4,7 @@ productName: "GNS3 Web UI Prototype"
 #forceCodeSigning: true
 artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
 asar: true
-compression: store
+compression: normal
 
 directories:
   output: build
