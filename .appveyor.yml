@@ -22,7 +22,7 @@ build_script:
 test: off
 
 artifacts:
-  - path: '**\GNS3*$env:APPVEYOR_BUILD_NUMBER.exe'
+  - path: '**\GNS3 Web UI Prototype-*.exe'
 
 deploy:
   - provider: FTP

@@ -16,12 +16,6 @@ jobs:
             sudo systemsetup -settimezone Europe/Warsaw
             echo "Today is $(date +"%Y-%m-%d %T")"
 
-      - run:
-          name: Fix Yarn
-          command: |
-            sudo systemsetup -settimezone Europe/Warsaw
-            echo "Today is $(date +"%Y-%m-%d %T")"
-
 #      - run:
 #          name: Update BREW
 #          command: |
@@ -31,22 +25,22 @@ jobs:
 #          name: Install Yarn
 #          command: |
 #            brew upgrade yarn
-
-      - run:
-          name: Install project
-          command: |
-            yarn --network-concurrency 1
-
-      - run:
-          name: Dist project
-          command: |
-            yarn distmac
-
-      - run:
-          name: Gather artifacts
-          command: |
-            mkdir artifacts
-            cp build/*.exe artifacts/
+#
+#      - run:
+#          name: Install project
+#          command: |
+#            yarn --network-concurrency 1
+#
+#      - run:
+#          name: Dist project
+#          command: |
+#            yarn distmac
+#
+#      - run:
+#          name: Gather artifacts
+#          command: |
+#            mkdir artifacts
+#            cp build/*.exe artifacts/
 
       - store_artifacts:
           path: artifacts
