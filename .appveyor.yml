@@ -19,12 +19,13 @@ build_script:
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path "$OutputDirectory" }
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe "$OutputDirectory" }
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $OutputDirectory; Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
-#  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { $execs = Get-ChildItem -Filter '*.exe'; $artifact = $execs[0].basename; }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" -FileName "$((Get-Date).ToString('yyyy-MM-dd'))\$artifact" }
 
 test: off
 
-artifacts:
-  - path: '$(OutputDirectory)\*.exe'
+#artifacts:
+#  - path: '$(OutputDirectory)\*.exe'
 
 deploy:
   - provider: FTP
