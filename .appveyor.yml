@@ -22,7 +22,7 @@ build_script:
 test: off
 
 artifacts:
-  - path: '**\*.exe'
+  - path: '**\GNS3*.exe'
 
 deploy:
   - provider: FTP

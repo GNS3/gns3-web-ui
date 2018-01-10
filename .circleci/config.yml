@@ -1,0 +1,47 @@
+# iOS CircleCI 2.0 configuration file
+version: 2
+jobs:
+  build:
+
+    # Specify the Xcode version to use
+    macos:
+      xcode: "8.3.3"
+
+    steps:
+      - checkout
+
+      - run:
+          name: Set timezone and check current datetime
+          command: |
+            sudo systemsetup -settimezone Europe/Warsaw
+            echo "Today is $(date +"%Y-%m-%d %T")"
+
+      - run:
+          name: Update BREW
+          command: |
+            brew update
+
+      - run:
+          name: Install Yarn
+          command: |
+            brew install yarn
+
+      - run:
+          name: Install project
+          command: |
+            yarn
+
+      - run:
+          name: Dist project
+          command: |
+            yarn distmac
+
+      - run:
+          name: Gather artifacts
+          command: |
+            mkdir artifacts
+            cp build/*.exe artifacts/
+
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
