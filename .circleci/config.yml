@@ -50,7 +50,7 @@ jobs:
           name: Gather artifacts
           command: |
             mkdir artifacts
-            cp build/*.exe artifacts/
+            cp build/*.dmg artifacts/
 
       - store_artifacts:
           path: artifacts

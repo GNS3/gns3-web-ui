@@ -15,15 +15,16 @@ install:
 
 build_script:
   - yarn distwin
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path ".\$((Get-Date).ToString('yyyy-MM-dd'))" }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe $((Get-Date).ToString('yyyy-MM-dd')) }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $((Get-Date).ToString('yyyy-MM-dd')); Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
+  - ps: $env:OutputDirectory = $((Get-Date).ToString('yyyy-MM-dd'))
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path ".\$env:OutputDirectory" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe $env:OutputDirectory }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $env:OutputDirectory; Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
 #  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" }
 
 test: off
 
 artifacts:
-  - path: /**\GNS3 Web UI Prototype-*.exe/
+  - path: '$(env:OutputDirectory)\*.exe'
 
 deploy:
   - provider: FTP
