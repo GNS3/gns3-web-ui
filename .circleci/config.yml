@@ -38,7 +38,7 @@ jobs:
       - run:
           name: Install project
           command: |
-            yarn || yarn
+            yarn; yarn
 
       - run:
           name: Dist project
