@@ -17,14 +17,20 @@ jobs:
             echo "Today is $(date +"%Y-%m-%d %T")"
 
       - run:
-          name: Update BREW
+          name: Fix Yarn
           command: |
-            brew update
+            sudo systemsetup -settimezone Europe/Warsaw
+            echo "Today is $(date +"%Y-%m-%d %T")"
 
-      - run:
-          name: Install Yarn
-          command: |
-            brew upgrade yarn
+#      - run:
+#          name: Update BREW
+#          command: |
+#            brew update
+#
+#      - run:
+#          name: Install Yarn
+#          command: |
+#            brew upgrade yarn
 
       - run:
           name: Install project
