@@ -30,7 +30,8 @@ jobs:
       - run:
           name: Fix Yarn
           command: |
-            yarn cache clean
+            brew uninstall yarn
+            curl -o- -L https://yarnpkg.com/install.sh | bash
 
       - run:
           name: Install project
