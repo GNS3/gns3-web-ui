@@ -26,21 +26,27 @@ jobs:
 #          command: |
 #            brew upgrade yarn
 #
-#      - run:
-#          name: Install project
-#          command: |
-#            yarn --network-concurrency 1
-#
-#      - run:
-#          name: Dist project
-#          command: |
-#            yarn distmac
-#
-#      - run:
-#          name: Gather artifacts
-#          command: |
-#            mkdir artifacts
-#            cp build/*.exe artifacts/
+
+      - run:
+          name: Fix Yarn
+          command: |
+            rm -rf ~/Library/Caches/Yarn
+
+      - run:
+          name: Install project
+          command: |
+            yarn --network-concurrency 1
+
+      - run:
+          name: Dist project
+          command: |
+            yarn distmac
+
+      - run:
+          name: Gather artifacts
+          command: |
+            mkdir artifacts
+            cp build/*.exe artifacts/
 
       - store_artifacts:
           path: artifacts
