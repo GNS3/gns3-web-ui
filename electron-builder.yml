@@ -5,8 +5,15 @@ productName: "GNS3 Web UI Prototype"
 artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
 asar: true
 compression: store
+
 directories:
   output: build
+
+files:
+  - dist
+  - main.js
+  - package.json
+
 mac:
   category: public.app-category.developer-tools
 #  publish: github
@@ -24,6 +31,7 @@ dmg:
     - x: 122
       y: 240
       type: file
+
 linux:
 #  publish: github
   icon: "dist/assets/icons/png"
@@ -37,6 +45,7 @@ linux:
 win:
 #  publish: github
   icon: "dist/assets/icons/win/icon.ico"
+
 nsis:
   perMachine: true
 
