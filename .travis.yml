@@ -34,4 +34,7 @@ after_script:
   - git add -A
   - git commit -m "Deploy - $GIT_LAST_LOG"
   - git push origin master
+
 # publish
+  - yarn
+  - yarn distlinux
