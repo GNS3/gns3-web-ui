@@ -23,7 +23,7 @@ build_script:
 test: off
 
 artifacts:
-  - path: "**\GNS3 Web UI Prototype-*.exe"
+  - path: /**\GNS3 Web UI Prototype-*.exe/
 
 deploy:
   - provider: FTP
