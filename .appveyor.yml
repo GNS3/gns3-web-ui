@@ -22,6 +22,8 @@ build_script:
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { $execs = Get-ChildItem -Filter '*.exe'; $artifact = $execs[0].basename; }
   - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" -FileName "$((Get-Date).ToString('yyyy-MM-dd'))\$artifact.exe" }
 
+#  - ps: If ($env:APPVEYOR_REPO_TAG -eq $true) { yarn release }
+
 test: off
 
 #artifacts:
