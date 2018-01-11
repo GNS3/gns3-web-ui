@@ -13,6 +13,10 @@ install:
   - ps: Install-Product node 8 x64
   - yarn
 
+environment:
+  GH_TOKEN:
+    secure: HTUOTUfWItHx4H1FTeZMJYLDFxhgP2b+vhrAU2g/5UFSioo+QfpKQ+XaZiAsm/PY
+
 build_script:
   - yarn distwin
   - ps: $OutputDirectory = $((Get-Date).ToString('yyyy-MM-dd'))
