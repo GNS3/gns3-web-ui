@@ -1,6 +1,6 @@
 {
   "name": "gns3-web-ui",
-  "version": "0.0.2",
+  "version": "0.0.0",
   "license": "GPLv3",
   "main": "main.js",
   "scripts": {

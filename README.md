@@ -53,15 +53,38 @@ Before running the tests make sure you are serving the app via `ng serve`.
 
 # Releasing
 
+## Bumping releases
+
+We're using [version-bump-prompt](https://www.npmjs.com/package/version-bump-prompt) for increasing version.
+
+Intall `bump` via:
+
+        npm install -g version-bump-prompt
+        
+If you would like to bump prepatch just type:
+
+        bump --prepatch --tag --push
+        
 ## Final release
 
 We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag your code nad push it.
 
+Using `bump`:
+
+        bump --patch --tag --push
+
+Or manually:
+
         git tag v0.0.1
         git push origin v0.0.1
+        
 
-When artifacts are made you can see draft release here: https://github.com/GNS3/gns3-web-ui/releases which is waiting for publishing.
-After release please change current version in `package.json` to `0.0.1-dev1`'. Otherwise artifacts will be overwritten during the next commit. 
+When artifacts are made you can see draft release here: [gns3-web-ui releases](https://github.com/GNS3/gns3-web-ui/releases) which is waiting to be published.
+After release please change current version in `package.json` to `X.X.X-beta.0`'. Otherwise artifacts will be overwritten during the next commit. 
+
+You may use `bump` to achieve that:
+      
+        bump --prepatch
 
 ## Staging release
 
