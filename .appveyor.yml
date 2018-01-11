@@ -6,16 +6,12 @@ skip_branch_with_pr: true
 platform:
   - x64
 
-init:
-  - git config --global core.autocrlf input
+#init:
+#  - git config --global core.autocrlf input
 
 install:
   - ps: Install-Product node 8 x64
   - yarn
-
-environment:
-  GH_TOKEN:
-    secure: GZLlhkCyEPxUkmLdbphCjflPDUwpvLQP+7CHq/P68WKhVmYYiXl5skmbREtzMrZ9
 
 build_script:
   - yarn distwin
@@ -44,3 +40,7 @@ deploy:
     artifact: /.*\.exe/
     on:
       appveyor_repo_tag: false # deploy on branch only
+
+environment:
+  GH_TOKEN:
+    secure: GZLlhkCyEPxUkmLdbphCjflPDUwpvLQP+7CHq/P68WKhVmYYiXl5skmbREtzMrZ9
