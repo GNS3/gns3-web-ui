@@ -55,17 +55,15 @@ jobs:
 #    steps:
 #      - yarn release
 #
-#workflows:
-#  version: 2
-#  build-deploy:
-#    jobs:
-#      - build
-#      - release:
-#          requires:
-#            - build
-#          filters:
-#            tags:
-#              only: /v.*/
-#            branches:
-#              ignore: /.*/
-#
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /v.*/
+            branches:
+              ignore: /.*/
+
