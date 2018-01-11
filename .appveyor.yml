@@ -43,4 +43,5 @@ deploy:
 
 environment:
   GH_TOKEN:
-    secure: GZLlhkCyEPxUkmLdbphCjflPDUwpvLQP+7CHq/P68WKhVmYYiXl5skmbREtzMrZ9
+    secure: EgwJ4mP2sPsfurW//aPDUXW+O7R+3N0pSfr+Y3SpiKK+70tGVbqy93pWCcdrPf45
+
