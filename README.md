@@ -50,6 +50,24 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 Before running the tests make sure you are serving the app via `ng serve`.
 
+
+# Releasing
+
+## Final release
+
+We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag your code nad push it.
+
+        git tag v0.0.1
+        git push origin v0.0.1
+
+When artifacts are made you can see draft release here: https://github.com/GNS3/gns3-web-ui/releases which is waiting for publishing.
+After release please change current version in `package.json` to `0.0.1-dev1`'. Otherwise artifacts will be overwritten during the next commit. 
+
+## Staging release
+
+In case you would like to create a new staging release. Please create draft release on github, like `0.0.1-dev1`. After successful build you can find there artifacts. 
+
+
 ## Further help
 
 If you want to contribute to GNS3 Web UI feel free to reach us at `developers@gns3.net`.
