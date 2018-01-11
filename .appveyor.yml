@@ -15,7 +15,7 @@ install:
 
 environment:
   GH_TOKEN:
-    secure: HTUOTUfWItHx4H1FTeZMJYLDFxhgP2b+vhrAU2g/5UFSioo+QfpKQ+XaZiAsm/PY
+    secure: GZLlhkCyEPxUkmLdbphCjflPDUwpvLQP+7CHq/P68WKhVmYYiXl5skmbREtzMrZ9
 
 build_script:
   - yarn distwin
