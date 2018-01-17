@@ -120,7 +120,7 @@ export class LinksWidget implements Widget {
         .attr('map-source', (l: Link) => l.source.node_id)
         .attr('map-target', (l: Link) => l.target.node_id)
 
-    this.revise(link.merge(link_enter));
+    //this.revise(link.merge(link_enter));
 
     link
       .exit()

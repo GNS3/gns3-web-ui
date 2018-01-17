@@ -39,9 +39,9 @@ export class NodesWidget implements Widget {
   }
 
   private executeOnNodeDraggingCallback(n: Node) {
-    this.onNodeDraggingCallbacks.forEach((callback: (n: Node) => void) => {
-      callback(n);
-    });
+    // this.onNodeDraggingCallbacks.forEach((callback: (n: Node) => void) => {
+    //   callback(n);
+    // });
   }
 
   public revise(selection: SVGSelection) {

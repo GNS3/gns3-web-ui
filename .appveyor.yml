@@ -1,0 +1,48 @@
+version: 1.0.{build}
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+platform:
+  - x64
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node 8 x64
+  - yarn
+
+build_script:
+  - yarn buildforelectron
+  - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
+  - "%PYTHON%\\python.exe scripts\\build.py download"
+  - "%PYTHON%\\python.exe scripts\\build.py build -b dist"
+  - "%PYTHON%\\python.exe scripts\\build.py validate -b dist"
+  - yarn electron-builder --win --x64
+
+  - ps: $OutputDirectory = $((Get-Date).ToString('yyyy-MM-dd'))
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path "$OutputDirectory" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe "$OutputDirectory" }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $OutputDirectory; Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { $execs = Get-ChildItem -Filter '*.exe'; $artifact = $execs[0].basename; }
+  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" -FileName "$((Get-Date).ToString('yyyy-MM-dd'))\$artifact.exe" }
+
+test: off
+
+deploy:
+  - provider: FTP
+    protocol: sftp
+    host: frs.sourceforge.net
+    username: gns3build
+    password:
+      secure: YRiLLoY27UOZ8QJHqqdESBQFfPfENKV0cLI/QFSsbWc=
+    folder: "../../../../frs/project/gns-3/Nightly Builds"
+    artifact: /.*\.exe/
+    on:
+      appveyor_repo_tag: false # deploy on branch only
+
+environment:
+  GH_TOKEN:
+    secure: Zb0F4wfA/3zXZBQiEmEGpKIP17hD9gb/CNwxQE2N3J4Eq3z58mp0K0ey5g8Dupsb
+  PYTHON: "C:\\Python36-x64"
