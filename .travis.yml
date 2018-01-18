@@ -54,9 +54,8 @@ after_script:
   - yarn buildforelectron
   - python3 -m venv env
   - |
-    source env/bin/activate
     pip3 install -r scripts/requirements.txt
     python3 scripts/build.py download
-    python3 scripts/build.py build -b dist
-#    python3 scripts/build.py validate -b dist
+    python3 scripts/build.py build_exe -b dist/exe.gns3server -s
+    python3 scripts/build.py validate -b dist
   - yarn electron-builder --linux --x64
