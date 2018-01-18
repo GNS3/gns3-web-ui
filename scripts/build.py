@@ -228,24 +228,24 @@ def validate_command(arguments):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-      description='Building gns3server for distribution')
+        description='Building gns3server for distribution')
+
     subparsers = parser.add_subparsers(
-        dest='command',
-        help="Command which needs to be executed")
+        dest='command', help='Command which needs to be executed')
 
-    download_parser = subparsers.add_parser(
-      'download', help="Downloads source code of gns3server")
+    parser_download = subparsers.add_parser(
+        'download', help='Downloads source code of gns3server')
 
-    build_parser = subparsers.add_parser(
-      'build', help="Build gns3server")
-    build_parser.add_argument('-b', default=None, help="Output directory")
+    parser_build = subparsers.add_parser('build_exe', help='Build gns3server')
+    parser_build.add_argument('-b', help='Output directory')
+    parser_build.add_argument('-s', action='store_true', help='Silient building')
 
-    validate_parser = subparsers.add_parser(
-      'validate', help="Validate build")
-    validate_parser.add_argument('-b', default=None, help="Output directory")
+    parser_validate = subparsers.add_parser('validate', help='Validate build')
+    parser_validate.add_argument('-b', help='Output directory')
 
     args = parser.parse_args()
-    if args.command == 'build':
+
+    if args.command == 'build_exe':
         prepare()
         build_command(args)
     elif args.command == 'download':

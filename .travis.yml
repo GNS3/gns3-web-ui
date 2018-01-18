@@ -56,10 +56,6 @@ after_script:
   - |
     pip3 install -r scripts/requirements.txt
     python3 scripts/build.py download
-    python3 scripts/build.py build -b dist
-  # build command from cx_freeze does something in background and we need to assure
-  # that step completed
-  - |
-    source env/bin/activate
+    python3 scripts/build.py build_exe -b dist -s
     python3 scripts/build.py validate -b dist
   - yarn electron-builder --linux --x64
