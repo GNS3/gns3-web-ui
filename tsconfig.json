@@ -17,6 +17,6 @@
     ],
   },
   "include": [
-    "./node_modules/angular2-indexeddb/index.ts"
+    "./src/**/*",
   ]
 }
