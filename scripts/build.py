@@ -132,7 +132,7 @@ def build_command(arguments):
     ]
 
     excludes = [
-        "raven.deprecation",  # reported problem in raven package
+        "raven.deprecation",  # reported problem in raven package (6.4.0)
         "distutils",  # issue on macOS
         "tkinter",  # issue on Windows
     ]
@@ -142,7 +142,8 @@ def build_command(arguments):
         "psutil",
         "asyncio",
         "packaging",  # needed for linux
-        "appdirs"
+        "appdirs",
+        "idna",  # required by aiohttp >= 2.3, cannot be found by cx_Freeze
     ]
 
     include_files = [
