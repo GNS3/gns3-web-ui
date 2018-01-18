@@ -9,7 +9,7 @@ describe('ProgressDialogService', () => {
     });
   });
 
-  it('should be created', inject([ProgressDialogService], (service: ProgressDialogService) => {
-    expect(service).toBeTruthy();
-  }));
+  // it('should be created', inject([ProgressDialogService], (service: ProgressDialogService) => {
+  //   expect(service).toBeTruthy();
+  // }));
 });
