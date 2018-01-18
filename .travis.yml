@@ -3,6 +3,9 @@ language: node_js
 node_js:
    - node
 
+# Issue with Travis: https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
+sudo: required
+
 addons:
 apt:
   sources:
@@ -19,6 +22,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 # Ubuntu trusty supports max python3.4, cx_freeze-5.1.1 requires min 3.5
+# Remove when goes to xenial
   - |
     curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
     export PATH="~/.pyenv/bin:$PATH"
