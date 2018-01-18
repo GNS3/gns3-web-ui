@@ -93,6 +93,11 @@ You may use `bump` to achieve that:
 
 In case you would like to create a new staging release. Please create draft release on github, like `0.0.1-dev1`. After successful build you can find there artifacts. 
 
+# Development
+
+## How to upgrade package.json?
+
+        yarn upgrade --latest
 
 ## Further help
 
