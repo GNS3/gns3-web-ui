@@ -95,7 +95,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.graphLayout = new GraphLayout();
 
-      this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((n: Node) => {
+      this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {
         const linksWidget = this.graphLayout.getLinksWidget();
         linksWidget.select(this.svg).each(function(this: SVGGElement, link: Link)  {
           if (link.target.node_id === n.node_id || link.source.node_id === n.node_id) {

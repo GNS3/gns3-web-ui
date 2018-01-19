@@ -23,7 +23,7 @@ export class LinksWidget implements Widget {
     return view.selectAll<SVGGElement, Link>("g.link");
   }
 
-  public revise(selection: Selection<BaseType, Link, SVGElement, any>) {
+  public revise(selection: SVGSelection) {
     const self = this;
 
     selection
@@ -120,7 +120,9 @@ export class LinksWidget implements Widget {
         .attr('map-source', (l: Link) => l.source.node_id)
         .attr('map-target', (l: Link) => l.target.node_id)
 
-    //this.revise(link.merge(link_enter));
+    const merge = link.merge(link_enter);
+
+    this.revise(merge);
 
     link
       .exit()
