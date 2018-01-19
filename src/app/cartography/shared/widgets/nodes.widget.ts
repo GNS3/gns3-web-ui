@@ -30,7 +30,7 @@ export class NodesWidget implements Widget {
     this.onNodeDraggedCallback = onNodeDraggedCallback;
   }
 
-  public addOnNodeDraggingCallback(onNodeDraggingCallback: (n: Node) => void) {
+  public addOnNodeDraggingCallback(onNodeDraggingCallback: (event: any, n: Node) => void) {
     this.onNodeDraggingCallbacks.push(onNodeDraggingCallback);
   }
 
@@ -38,10 +38,10 @@ export class NodesWidget implements Widget {
     this.symbols = symbols;
   }
 
-  private executeOnNodeDraggingCallback(n: Node) {
-    // this.onNodeDraggingCallbacks.forEach((callback: (n: Node) => void) => {
-    //   callback(n);
-    // });
+  private executeOnNodeDraggingCallback(callback_event: any, node: Node) {
+    this.onNodeDraggingCallbacks.forEach((callback: (e: any, n: Node) => void) => {
+      callback(callback_event, node);
+    });
   }
 
   public revise(selection: SVGSelection) {
@@ -157,7 +157,7 @@ export class NodesWidget implements Widget {
       n.y = e.y;
 
       self.revise(select(this));
-      self.executeOnNodeDraggingCallback(n);
+      self.executeOnNodeDraggingCallback(event, n);
     };
 
     const dragging = () => {
