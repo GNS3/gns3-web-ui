@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange
+  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
 import {select, Selection} from 'd3-selection';
@@ -106,7 +106,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       });
 
       this.graphLayout.draw(this.svg, this.graphContext);
-
     }
   }
 
@@ -117,13 +116,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private changeLayout() {
-    if (this.graphContext != null) {
-      this.svg
-        .attr('width', this.graphContext.getSize().width)
-        .attr('height', this.graphContext.getSize().height);
-    }
-
-
     if (this.windowFullSize) {
       if (this.parentNativeElement != null) {
         this.graphContext.setSize(this.getSize());
@@ -132,6 +124,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     } else {
 
     }
+
+    if (this.graphContext != null) {
+      this.svg
+        .attr('width', this.graphContext.getSize().width)
+        .attr('height', this.graphContext.getSize().height);
+    }
+
+
 
     this.graphLayout.setNodes(this.nodes);
     this.graphLayout.setLinks(this.links);
@@ -173,5 +173,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   public reload() {
     this.onLinksChange(null);
     this.redraw();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.changeLayout();
   }
 }
