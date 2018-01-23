@@ -70,5 +70,13 @@
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
     "typescript": ">=2.4.0 <2.6.0"
-  }
+  },
+  "greenkeeper": {
+    "ignore": [
+      "typescript"
+    ]
+  },
+  "comments": [
+    "Typescript should remain below 2.6.0, @todo: check later if packages were adjusted"
+  ]
 }
