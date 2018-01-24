@@ -1,5 +1,7 @@
 # gns3-web-ui
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/GNS3/gns3-web-ui.svg)](https://greenkeeper.io/)
+
 Test WebUI implementation for GNS3. 
 
 This is not production ready version. It has been made to evaluate possibility of creation Web User Interface for GNS3 application.
