@@ -21,26 +21,11 @@ build_script:
   - "%PYTHON%\\python.exe scripts\\build.py validate -b dist"
   - yarn electron-builder --win --x64
 
-  - ps: $OutputDirectory = $((Get-Date).ToString('yyyy-MM-dd'))
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { New-Item -ItemType Directory -Path "$OutputDirectory" }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { move build\*.exe "$OutputDirectory" }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd $OutputDirectory; Get-ChildItem -Filter '*.exe' | Rename-Item -NewName {$_.Name -replace ".exe","-$env:APPVEYOR_REPO_BRANCH-$env:APPVEYOR_BUILD_NUMBER.exe"} }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { $execs = Get-ChildItem -Filter '*.exe'; $artifact = $execs[0].basename; }
-  - ps: If ($env:APPVEYOR_REPO_TAG -eq $false) { cd ..; Push-AppveyorArtifact "$((Get-Date).ToString('yyyy-MM-dd'))\*.exe" -FileName "$((Get-Date).ToString('yyyy-MM-dd'))\$artifact.exe" }
-
 test: off
 
-deploy:
-  - provider: FTP
-    protocol: sftp
-    host: frs.sourceforge.net
-    username: gns3build
-    password:
-      secure: YRiLLoY27UOZ8QJHqqdESBQFfPfENKV0cLI/QFSsbWc=
-    folder: "../../../../frs/project/gns-3/Nightly Builds"
-    artifact: /.*\.exe/
-    on:
-      appveyor_repo_tag: false # deploy on branch only
+artifacts:
+  - path: 'GNS3*.exe'
+    name: gns3-web-ui
 
 environment:
   GH_TOKEN:

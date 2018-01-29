@@ -55,18 +55,6 @@ jobs:
           path: artifacts
           destination: artifacts
 
-      - deploy:
-          name: Deploying on SourceForge
-          command: |
-            echo "Deploying on SourceForge"
-            ssh-keyscan -H frs.sourceforge.net >> ~/.ssh/known_hosts
-            mkdir -p artifacts/release
-            cd artifacts; for file in *.dmg; do mv "$file" "release/${file%.dmg}-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}.dmg"; done; cd ..
-            echo "mkdir \"/home/frs/project/gns-3/Nightly Builds/$(date +"%Y-%m-%d")\"" | sftp gns3build@frs.sourceforge.net || true
-            echo "Copying to SourceForge"
-            scp artifacts/release/* gns3build@frs.sourceforge.net:"/home/frs/project/gns-3/Nightly\ Builds/$(date +"%Y-%m-%d")/"
-
-
 workflows:
   version: 2
   build_and_deploy:
