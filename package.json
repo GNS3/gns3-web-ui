@@ -54,7 +54,7 @@
     "@types/node": "~9.4.0",
     "codelyzer": "~4.1.0",
     "electron": "1.7.11",
-    "electron-builder": "^19.54.0",
+    "electron-builder": "^20.0.4",
     "jasmine-core": "~2.9.1",
     "jasmine-spec-reporter": "~4.2.1",
     "jquery": "^3.3.1",
