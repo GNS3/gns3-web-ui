@@ -34,6 +34,13 @@ ng serve --port 8080
 
 Application is accessible on `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
 
+### Docker container
+
+For development you can run the GNS3 Web UI in a container
+
+.. code:: bash
+
+    bash scripts/docker_dev_webui.sh
 
 ## Code scaffolding
 
