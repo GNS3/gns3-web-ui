@@ -1,9 +1,6 @@
 # Dockerfile for GNS3 Web-ui development
 FROM node:carbon
 
-RUN npm -g config set user root
-RUN npm install -g @angular/cli
-
 # Create user
 RUN useradd --user-group --create-home --shell /bin/false gns3-web-ui
 
@@ -11,14 +8,18 @@ RUN useradd --user-group --create-home --shell /bin/false gns3-web-ui
 ENV HOME /home/gns3-web-ui
 WORKDIR $HOME
 
+# Copy source
+COPY . .
+RUN chown -R gns3-web-ui:gns3-web-ui $HOME
+
 # Switch to gns3-web-ui user
 USER gns3-web-ui
 
-# Copy source
-COPY . .
-
 # Install dependencies
-RUN npm install
+RUN yarn global add @angular/cli
+RUN yarn install --pure-lockfile
+
+ENV PATH /home/gns3-web-ui/.yarn/bin:$PATH
 
 EXPOSE 8080
 
