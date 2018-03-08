@@ -19,20 +19,20 @@ import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
 import { Server } from "../shared/models/server";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar } from "@angular/material";
 import { SnapshotService } from "../shared/services/snapshot.service";
 import { Snapshot } from "../shared/models/snapshot";
 import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";
 import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dialog.component";
-import { ToastyService } from "ng2-toasty";
 import { Drawing } from "../cartography/shared/models/drawing.model";
 import { NodeContextMenuComponent } from "../shared/node-context-menu/node-context-menu.component";
-import {Appliance} from "../shared/models/appliance";
-import {NodeService} from "../shared/services/node.service";
-import {Symbol} from "../shared/models/symbol";
-import {NodeSelectInterfaceComponent} from "../shared/node-select-interface/node-select-interface.component";
-import {Port} from "../shared/models/port";
-import {LinkService} from "../shared/services/link.service";
+import { Appliance } from "../shared/models/appliance";
+import { NodeService } from "../shared/services/node.service";
+import { Symbol } from "../shared/models/symbol";
+import { NodeSelectInterfaceComponent } from "../shared/node-select-interface/node-select-interface.component";
+import { Port } from "../shared/models/port";
+import { LinkService } from "../shared/services/link.service";
+import { ToasterService } from '../shared/services/toaster.service';
 
 
 @Component({
@@ -69,7 +69,7 @@ export class ProjectMapComponent implements OnInit {
               private linkService: LinkService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
-              private toastyService: ToastyService) {
+              private toaster: ToasterService) {
   }
 
   ngOnInit() {
@@ -238,17 +238,11 @@ export class ProjectMapComponent implements OnInit {
         const progress = this.progressDialogService.open();
 
         const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          this.toastyService.success({
-              'title': 'Snapshot created',
-              'msg': `Snapshot '${snapshot.name}' has been created.`
-          });
+          this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
           progress.close();
         }, (response) => {
           const error = response.json();
-          this.toastyService.error({
-            'title': 'Cannot create snapshot',
-            'msg': error.message
-          });
+          this.toaster.error(`Cannot create snapshot: ${error.message}`);
           progress.close();
         });
 
