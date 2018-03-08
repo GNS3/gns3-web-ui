@@ -34,11 +34,12 @@ jobs:
             brew update
             brew --env
             brew --config
-            brew install python3
-            pip3 install -r scripts/requirements.txt
-            python3 scripts/build.py download
-            python3 scripts/build.py build_exe -b dist/exe.gns3server -s
-            python3 scripts/build.py validate -b dist
+            brew upgrade python
+            python -V
+            pip install -r scripts/requirements.txt
+            python scripts/build.py download
+            python scripts/build.py build_exe -b dist/exe.gns3server -s
+            python scripts/build.py validate -b dist
 
       - run:
           name: Dist project
