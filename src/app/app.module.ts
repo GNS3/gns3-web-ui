@@ -17,12 +17,12 @@ import {
   MatTableModule,
   MatDialogModule,
   MatProgressBarModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatSnackBarModule
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ToastyModule } from 'ng2-toasty';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -42,7 +42,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
 import { ProgressDialogComponent } from './shared/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
-//import { MapComponent } from './cartography/map/map.component';
+
 import { CreateSnapshotDialogComponent, ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { NodeContextMenuComponent } from './shared/node-context-menu/node-context-menu.component';
@@ -52,6 +52,7 @@ import { ApplianceComponent } from './appliance/appliance.component';
 import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
 import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
 import { CartographyModule } from './cartography/cartography.module';
+import { ToasterService } from './shared/services/toaster.service';
 
 
 @NgModule({
@@ -73,7 +74,6 @@ import { CartographyModule } from './cartography/cartography.module';
   ],
   imports: [
     NgbModule.forRoot(),
-    ToastyModule.forRoot(),
     BrowserModule,
     HttpModule,
     HttpClientModule,
@@ -91,6 +91,7 @@ import { CartographyModule } from './cartography/cartography.module';
     MatDialogModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
     CdkTableModule,
     CartographyModule
   ],
@@ -106,7 +107,8 @@ import { CartographyModule } from './cartography/cartography.module';
     IndexedDbService,
     HttpServer,
     SnapshotService,
-    ProgressDialogService
+    ProgressDialogService,
+    ToasterService
   ],
   entryComponents: [
     AddServerDialogComponent,

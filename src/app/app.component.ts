@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {Http} from "@angular/http";
 import {MatIconRegistry} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
-import {ToastyConfig} from "ng2-toasty";
 
 @Component({
   selector: 'app-root',
@@ -12,9 +11,7 @@ import {ToastyConfig} from "ng2-toasty";
   ]
 })
 export class AppComponent implements OnInit {
-    constructor(http: Http, iconReg: MatIconRegistry, sanitizer: DomSanitizer, toastyConfig: ToastyConfig) {
-      toastyConfig.theme = 'material';
-
+    constructor(http: Http, iconReg: MatIconRegistry, sanitizer: DomSanitizer) {
       iconReg.addSvgIcon('gns3', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
   }
 
