@@ -42,3 +42,7 @@ g.node text {
   font-family: Roboto !important;
 }
 
+
+svg image:hover, svg image.chosen {
+  filter: grayscale(100%);
+}
