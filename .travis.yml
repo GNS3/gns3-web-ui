@@ -40,8 +40,12 @@ before_script:
    - yarn
   # greenkeeper-lockfile support
    - greenkeeper-lockfile-update
+   - npm install -g codecov
 
-script: yarn ng test --watch=false
+script: yarn ng test --watch=false --code-coverage
+
+after_success:
+  - codecov
 
 after_script:
   # greenkeeper-lockfile support
