@@ -46,3 +46,23 @@ g.node text {
 svg image:hover, svg image.chosen {
   filter: grayscale(100%);
 }
+
+.selection-line-tool .selection {
+  fill: #7ccbe1;
+  stroke:  #66aec2 ;
+  fill-opacity: 0.3;
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+}
+
+
+g.node text,
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

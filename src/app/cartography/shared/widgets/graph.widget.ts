@@ -11,6 +11,7 @@ import { Drawing } from "../models/drawing.model";
 import { DrawingsWidget } from "./drawings.widget";
 import { DrawingLineWidget } from "./drawing-line.widget";
 import {SelectionTool} from "../tools/selection-tool";
+import {Tool} from "../tool";
 
 export class GraphLayout implements Widget {
   private nodes: Node[] = [];
@@ -80,24 +81,25 @@ export class GraphLayout implements Widget {
     this.nodesWidget.draw(canvas, this.nodes);
     this.drawingsWidget.draw(canvas, this.drawings);
 
-    this.drawingLineTool.connect(view);
-    this.selectionTool.connect(view);
 
-    const onZoom = function(this: SVGSVGElement) {
-      const e: D3ZoomEvent<SVGSVGElement, any> = event;
-      if (self.centerZeroZeroPoint) {
-        canvas.attr(
-          'transform',
-          `translate(${context.getSize().width / 2 + e.transform.x}, ` +
-                `${context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
-      } else {
-        canvas.attr('transform', e.transform.toString());
-      }
-    };
+    // this.drawingLineTool.connect(view, context);
+    this.selectionTool.connect(view, context);
 
-    view.call(zoom<SVGSVGElement, any>()
-        .scaleExtent([1 / 2, 8])
-        .on('zoom', onZoom));
+    // const onZoom = function(this: SVGSVGElement) {
+    //   const e: D3ZoomEvent<SVGSVGElement, any> = event;
+    //   if (self.centerZeroZeroPoint) {
+    //     canvas.attr(
+    //       'transform',
+    //       `translate(${context.getSize().width / 2 + e.transform.x}, ` +
+    //             `${context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
+    //   } else {
+    //     canvas.attr('transform', e.transform.toString());
+    //   }
+    // };
+    //
+    // view.call(zoom<SVGSVGElement, any>()
+    //     .scaleExtent([1 / 2, 8])
+    //     .on('zoom', onZoom));
   }
 
 }

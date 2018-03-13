@@ -1,9 +1,11 @@
 import {Size} from "../../cartography/shared/models/size.model";
 import {Selection} from "d3-selection";
+import {Point} from "../../cartography/shared/models/point.model";
 
 export class Context {
   private size: Size;
   private root: Selection<SVGSVGElement, any, null, undefined>;
+  private centerZeroZeroPoint = true;
 
   constructor(root: Selection<SVGSVGElement, any, null, undefined>) {
     this.root = root;
@@ -15,5 +17,9 @@ export class Context {
 
   public setSize(size: Size): void {
     this.size = size;
+  }
+
+  public getZeroZeroTransformationPoint() {
+    return new Point(this.getSize().width / 2., this.getSize().height / 2.);
   }
 }
