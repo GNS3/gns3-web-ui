@@ -52,6 +52,8 @@ export class ProjectMapComponent implements OnInit {
 
   private ws: Subject<any>;
   private drawLineMode =  false;
+  private movingMode = false;
+
   public isLoading = true;
 
   @ViewChild(MapComponent) mapChild: MapComponent;
@@ -255,13 +257,15 @@ export class ProjectMapComponent implements OnInit {
     });
   }
 
-  public turnOnDrawLineMode() {
-    this.drawLineMode = true;
+  public toggleDrawLineMode() {
+    this.drawLineMode = !this.drawLineMode;
+    if (!this.drawLineMode) {
+      this.mapChild.graphLayout.getDrawingLineTool().stop();
+    }
   }
 
-  public turnOffDrawLineMode() {
-    this.drawLineMode = false;
-    this.mapChild.graphLayout.getDrawingLineTool().stop();
+  public toggleMovingMode() {
+    this.movingMode = !this.movingMode;
   }
 
   public onChooseInterface(event) {

@@ -66,3 +66,10 @@ g.node text,
   -ms-user-select: none;
   user-select: none;
 }
+
+/* Disable outline after button click */
+.project-toolbar button {
+  outline: 0;
+  border: none;
+  -moz-outline-style: none
+}

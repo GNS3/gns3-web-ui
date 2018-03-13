@@ -82,7 +82,7 @@ export class GraphLayout implements Widget {
     this.drawingsWidget.draw(canvas, this.drawings);
 
 
-    // this.drawingLineTool.connect(view, context);
+    this.drawingLineTool.connect(view);
     this.selectionTool.connect(view, context);
 
     // const onZoom = function(this: SVGSVGElement) {
