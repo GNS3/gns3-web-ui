@@ -266,6 +266,13 @@ export class ProjectMapComponent implements OnInit {
 
   public toggleMovingMode() {
     this.movingMode = !this.movingMode;
+    if (this.movingMode) {
+      this.mapChild.graphLayout.getSelectionTool().deactivate();
+      this.mapChild.graphLayout.getMovingTool().activate();
+    } else {
+      this.mapChild.graphLayout.getSelectionTool().activate();
+      this.mapChild.graphLayout.getMovingTool().deactivate();
+    }
   }
 
   public onChooseInterface(event) {

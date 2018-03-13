@@ -5,28 +5,22 @@ import {Context} from "../../../map/models/context";
 export class SelectionTool {
   private selection: SVGSelection;
   private path;
+  private context: Context;
 
   public connect(selection: SVGSelection, context: Context) {
-    const self = this;
     this.selection = selection;
-    const canvas = this.selection.select<SVGGElement>("g.canvas");
+    this.context = context;
+  }
 
-    if (!canvas.select<SVGGElement>("g.selection-line-tool").node()) {
-      const g = canvas.append<SVGGElement>('g');
-      g.attr("class", "selection-line-tool");
-
-      this.path = g.append("path");
-      this.path
-        .attr("class", "selection")
-        .attr("visibility", "hidden");
-    }
+  public activate() {
+    const self = this;
 
     const transformation = (p) => {
-      const transformation_point = context.getZeroZeroTransformationPoint();
+      const transformation_point = this.context.getZeroZeroTransformationPoint();
       return [p[0] - transformation_point.x, p[1] - transformation_point.y];
     };
 
-    selection.on("mousedown", function() {
+    this.selection.on("mousedown", function() {
       const subject = select(window);
       const parent = this.parentElement;
 
@@ -43,8 +37,22 @@ export class SelectionTool {
     });
   }
 
-  public draw() {
+  public deactivate() {
+    this.selection.on('mousedown', null);
+  }
 
+  public draw(selection: SVGSelection, context: Context) {
+    const canvas = selection.select<SVGGElement>("g.canvas");
+
+    if (!canvas.select<SVGGElement>("g.selection-line-tool").node()) {
+      const g = canvas.append<SVGGElement>('g');
+      g.attr("class", "selection-line-tool");
+
+      this.path = g.append("path");
+      this.path
+        .attr("class", "selection")
+        .attr("visibility", "hidden");
+    }
   }
 
   private startSelection(start) {

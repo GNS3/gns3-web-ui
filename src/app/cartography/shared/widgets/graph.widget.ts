@@ -12,6 +12,7 @@ import { DrawingsWidget } from "./drawings.widget";
 import { DrawingLineWidget } from "./drawing-line.widget";
 import {SelectionTool} from "../tools/selection-tool";
 import {Tool} from "../tool";
+import {MovingTool} from "../tools/moving-tool";
 
 export class GraphLayout implements Widget {
   private nodes: Node[] = [];
@@ -23,6 +24,7 @@ export class GraphLayout implements Widget {
   private drawingsWidget: DrawingsWidget;
   private drawingLineTool: DrawingLineWidget;
   private selectionTool: SelectionTool;
+  private movingTool: MovingTool;
 
   private centerZeroZeroPoint = true;
 
@@ -32,6 +34,7 @@ export class GraphLayout implements Widget {
     this.drawingsWidget = new DrawingsWidget();
     this.drawingLineTool = new DrawingLineWidget();
     this.selectionTool = new SelectionTool();
+    this.movingTool = new MovingTool();
   }
 
   public setNodes(nodes: Node[]) {
@@ -58,6 +61,22 @@ export class GraphLayout implements Widget {
     return this.drawingLineTool;
   }
 
+  public getMovingTool() {
+    return this.movingTool;
+  }
+
+  public getSelectionTool() {
+    return this.selectionTool;
+  }
+
+  connect(view: SVGSelection, context: Context) {
+    this.drawingLineTool.connect(view, context);
+    this.selectionTool.connect(view, context);
+    this.movingTool.connect(view, context);
+
+    this.selectionTool.activate();
+  }
+
   draw(view: SVGSelection, context: Context) {
     const self = this;
 
@@ -81,9 +100,9 @@ export class GraphLayout implements Widget {
     this.nodesWidget.draw(canvas, this.nodes);
     this.drawingsWidget.draw(canvas, this.drawings);
 
-
-    this.drawingLineTool.connect(view);
-    this.selectionTool.connect(view, context);
+    this.drawingLineTool.draw(view, context);
+    this.selectionTool.draw(view, context);
+    this.movingTool.draw(view, context);
 
     // const onZoom = function(this: SVGSVGElement) {
     //   const e: D3ZoomEvent<SVGSVGElement, any> = event;
