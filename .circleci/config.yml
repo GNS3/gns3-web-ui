@@ -1,0 +1,67 @@
+# iOS CircleCI 2.0 configuration file
+version: 2
+jobs:
+  build:
+    macos:
+      xcode: "9.1.0"
+
+    steps:
+      - checkout
+
+      - run:
+          name: Set timezone and check current datetime
+          command: |
+            sudo systemsetup -settimezone Europe/Warsaw
+            echo "Today is $(date +"%Y-%m-%d %T")"
+
+      - run:
+          name: Install project
+          # there is an issue with yarn and cache during executed on CI; for now we just run it twice, second should
+          # be successful. Check it later if updates fixed the issue
+          command: |
+            yarn || true
+            yarn || true
+
+      - run:
+          name: Building WebUI for distribution
+          command: |
+            yarn buildforelectron
+
+      - run:
+          name: Building gns3server
+          command: |
+            # brew update is required due to bug in CCI: https://discuss.circleci.com/t/homebrew-must-be-run-under-ruby-2-3-runtimeerror/17232/5
+            brew update
+            brew --env
+            brew --config
+            brew upgrade python
+            python -V
+            pip install -r scripts/requirements.txt
+            python scripts/build.py download
+            python scripts/build.py build_exe -b dist/exe.gns3server -s
+            python scripts/build.py validate -b dist
+
+      - run:
+          name: Dist project
+          command: |
+            yarn electron-builder --mac --x64
+
+      - run:
+          name: Gather artifacts
+          command: |
+            mkdir artifacts
+            cp build/*.dmg artifacts/
+
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /v.*/
+

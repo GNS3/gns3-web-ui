@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { CdkTableModule } from "@angular/cdk/table";
+import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -16,12 +17,12 @@ import {
   MatTableModule,
   MatDialogModule,
   MatProgressBarModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatSnackBarModule
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ToastyModule } from 'ng2-toasty';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -41,7 +42,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import { DefaultLayoutComponent } from './default-layout/default-layout.component';
 import { ProgressDialogComponent } from './shared/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
-import { MapComponent } from './cartography/map/map.component';
+
 import { CreateSnapshotDialogComponent, ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
 import { NodeContextMenuComponent } from './shared/node-context-menu/node-context-menu.component';
@@ -50,13 +51,13 @@ import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop
 import { ApplianceComponent } from './appliance/appliance.component';
 import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
 import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
-
+import { CartographyModule } from './cartography/cartography.module';
+import { ToasterService } from './shared/services/toaster.service';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent,
     ProjectMapComponent,
     ServersComponent,
     AddServerDialogComponent,
@@ -73,9 +74,9 @@ import { NodeSelectInterfaceComponent } from './shared/node-select-interface/nod
   ],
   imports: [
     NgbModule.forRoot(),
-    ToastyModule.forRoot(),
     BrowserModule,
     HttpModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
@@ -90,7 +91,9 @@ import { NodeSelectInterfaceComponent } from './shared/node-select-interface/nod
     MatDialogModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    CdkTableModule
+    MatSnackBarModule,
+    CdkTableModule,
+    CartographyModule
   ],
   providers: [
     D3Service,
@@ -104,7 +107,8 @@ import { NodeSelectInterfaceComponent } from './shared/node-select-interface/nod
     IndexedDbService,
     HttpServer,
     SnapshotService,
-    ProgressDialogService
+    ProgressDialogService,
+    ToasterService
   ],
   entryComponents: [
     AddServerDialogComponent,

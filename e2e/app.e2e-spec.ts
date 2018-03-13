@@ -7,8 +7,8 @@ describe('gns3-web-ui App', () => {
     page = new Gns3WebUiPage();
   });
 
-  it('should display welcome message', () => {
+  it('should display title', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getTitleText()).toEqual('GNS3 Web UI Demo');
   });
 });

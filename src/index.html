@@ -3,10 +3,27 @@
 <head>
   <meta charset="utf-8">
   <title>GNS3 Web UI Demo</title>
-  <base href="/">
+  <script>
+    var userAgent = navigator.userAgent.toLowerCase();
+    // in case we're running in electron because we need it for resources
+    if (userAgent.indexOf(' electron/') > -1) {
+      document.write('<base href="' + document.location + '" />');
+    }
+    // in case base href is not set, when not defined during the build time (for instance github.io pages)
+    else if (document.getElementsByTagName('base').length == 0) {
+      document.write('<base href="/" />');
+    }
+  </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+
+  <!-- 
+    angular/angular-cli has an issue with handling imports with leading ~ (like: @import '~https://url.url';)
+    #Ref. https://github.com/angular/angular-cli/issues/9181
+    /* @TODO: make Material Icons self hosted */
+    //-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700" type="text/css">

@@ -9,7 +9,7 @@ describe('ApplianceService', () => {
     });
   });
 
-  it('should be created', inject([ApplianceService], (service: ApplianceService) => {
-    expect(service).toBeTruthy();
-  }));
+  // it('should be created', inject([ApplianceService], (service: ApplianceService) => {
+  //   expect(service).toBeTruthy();
+  // }));
 });

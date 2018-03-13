@@ -30,7 +30,7 @@ export class NodesWidget implements Widget {
     this.onNodeDraggedCallback = onNodeDraggedCallback;
   }
 
-  public addOnNodeDraggingCallback(onNodeDraggingCallback: (n: Node) => void) {
+  public addOnNodeDraggingCallback(onNodeDraggingCallback: (event: any, n: Node) => void) {
     this.onNodeDraggingCallbacks.push(onNodeDraggingCallback);
   }
 
@@ -38,9 +38,9 @@ export class NodesWidget implements Widget {
     this.symbols = symbols;
   }
 
-  private executeOnNodeDraggingCallback(n: Node) {
-    this.onNodeDraggingCallbacks.forEach((callback: (n: Node) => void) => {
-      callback(n);
+  private executeOnNodeDraggingCallback(callback_event: any, node: Node) {
+    this.onNodeDraggingCallbacks.forEach((callback: (e: any, n: Node) => void) => {
+      callback(callback_event, node);
     });
   }
 
@@ -105,16 +105,17 @@ export class NodesWidget implements Widget {
         .attr('width', (n: Node) => n.width)
         .attr('height', (n: Node) => n.height)
         .attr('x', (n: Node) => -n.width / 2.)
-        .attr('y', (n: Node) => -n.height / 2.);
+        .attr('y', (n: Node) => -n.height / 2.)
+        .on('mouseover', function (this, n: Node) {
+          select(this).attr("class", "over");
+        })
+        .on('mouseout', function (this, n: Node) {
+          select(this).attr("class", "");
+        });
 
         // .attr('width', (n: Node) => n.width)
         // .attr('height', (n: Node) => n.height);
-        // .on('mouseover', function (this, n: Node) {
-        //   select(this).attr("class", "over");
-        // })
-        // .on('mouseout', function (this, n: Node) {
-        //   select(this).attr("class", "");
-        // });
+
 
     node_enter
       .append<SVGTextElement>('text')
@@ -157,7 +158,7 @@ export class NodesWidget implements Widget {
       n.y = e.y;
 
       self.revise(select(this));
-      self.executeOnNodeDraggingCallback(n);
+      self.executeOnNodeDraggingCallback(event, n);
     };
 
     const dragging = () => {

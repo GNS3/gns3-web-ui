@@ -9,5 +9,9 @@
   "exclude": [
     "test.ts",
     "**/*.spec.ts"
+  ],
+  "include": [
+    "../src/**/*",
+    "../node_modules/angular2-indexeddb/*"
   ]
 }

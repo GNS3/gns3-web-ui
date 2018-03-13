@@ -16,8 +16,4 @@ export class Context {
   public setSize(size: Size): void {
     this.size = size;
   }
-
-  public getRoot() {
-    return this.root;
-  }
 }

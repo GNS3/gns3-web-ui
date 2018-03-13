@@ -4,10 +4,12 @@
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
 
-      <button mat-icon-button [matMenuTriggerFor]="mainMenu">
-        <mat-icon svgIcon="gns3"></mat-icon>
-      </button>
-
+      <mat-toolbar-row>
+        <button mat-icon-button [matMenuTriggerFor]="mainMenu">
+          <mat-icon svgIcon="gns3"></mat-icon>
+        </button>
+      </mat-toolbar-row>
+      
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
         <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
           <mat-icon>work</mat-icon>

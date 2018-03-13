@@ -20,7 +20,6 @@
       "prefix": "app",
       "styles": [
         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
-        "../node_modules/ng2-toasty/bundles/style-material.css",
         "styles.css",
         "theme.scss"
       ],
@@ -28,7 +27,9 @@
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
-        "prod": "environments/environment.prod.ts"
+        "prod": "environments/environment.prod.ts",
+        "electronProd": "environments/environment.electron.prod.ts",
+        "electronDev": "environments/environment.electron.ts"
       }
     }
   ],

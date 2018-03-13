@@ -5,6 +5,10 @@ export class Gns3WebUiPage {
     return browser.get('/');
   }
 
+  getTitleText() {
+    return browser.getTitle();
+  }
+
   getParagraphText() {
     return element(by.css('app-root h1')).getText();
   }

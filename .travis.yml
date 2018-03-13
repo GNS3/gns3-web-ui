@@ -3,26 +3,55 @@ language: node_js
 node_js:
    - node
 
+# Issue with Travis: https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
+sudo: required
+
 addons:
 apt:
   sources:
     - google-chrome
+    - ubuntu-toolchain-r-test
   packages:
     - google-chrome-stable
     - google-chrome-beta
+    - g++-4.8
 
 before_install:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  # greenkeeper-lockfile support
+  - yarn global add greenkeeper-lockfile@1
+
+# Ubuntu trusty supports max python3.4, cx_freeze-5.1.1 requires min 3.5
+# Remove when goes to xenial
+  - |
+    curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+    export PATH="~/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+    pyenv virtualenv 3.6.3 general
+    pyenv global general
+    python3 -V
+    pip3 -V
+
 
 before_script:
-   - npm install -g karma
+   - yarn
+  # greenkeeper-lockfile support
+   - greenkeeper-lockfile-update
+   - npm install -g codecov
 
-script: ng test --watch=false
+script: yarn ng test --watch=false --code-coverage
+
+after_success:
+  - codecov
 
 after_script:
-  - ng build --base-href /${TRAVIS_BRANCH}/
+  # greenkeeper-lockfile support
+  - greenkeeper-lockfile-upload
+# publish on gns3.github.io
+  - yarn ng build --base-href /${TRAVIS_BRANCH}/
   - export GIT_LAST_LOG="$(git log -1 --pretty=%B)"
   - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
   - mkdir -p github-pages/${TRAVIS_BRANCH}
@@ -33,4 +62,14 @@ after_script:
   - git add -A
   - git commit -m "Deploy - $GIT_LAST_LOG"
   - git push origin master
+  - cd $TRAVIS_BUILD_DIR
 
+# publish
+  - yarn buildforelectron
+  - python3 -m venv env
+  - |
+    pip3 install -r scripts/requirements.txt
+    python3 scripts/build.py download
+    python3 scripts/build.py build_exe -b dist/exe.gns3server -s
+    python3 scripts/build.py validate -b dist
+  - yarn electron-builder --linux --x64
