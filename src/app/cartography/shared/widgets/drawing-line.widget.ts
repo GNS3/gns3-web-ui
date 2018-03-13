@@ -2,7 +2,7 @@ import {DrawingLine} from "../models/drawing-line.model";
 import {SVGSelection} from "../../../map/models/types";
 import {Point} from "../models/point.model";
 import {line} from "d3-shape";
-import {event, mouse, select} from "d3-selection";
+import {mouse} from "d3-selection";
 import {Context} from "../../../map/models/context";
 
 export class DrawingLineWidget {

@@ -19,7 +19,7 @@ import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
 import { Server } from "../shared/models/server";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar } from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import { SnapshotService } from "../shared/services/snapshot.service";
 import { Snapshot } from "../shared/models/snapshot";
 import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";

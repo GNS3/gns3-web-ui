@@ -94,8 +94,6 @@ export class GraphLayout implements Widget {
         (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
     }
 
-
-
     this.linksWidget.draw(canvas, this.links);
     this.nodesWidget.draw(canvas, this.nodes);
     this.drawingsWidget.draw(canvas, this.drawings);
@@ -103,22 +101,6 @@ export class GraphLayout implements Widget {
     this.drawingLineTool.draw(view, context);
     this.selectionTool.draw(view, context);
     this.movingTool.draw(view, context);
-
-    // const onZoom = function(this: SVGSVGElement) {
-    //   const e: D3ZoomEvent<SVGSVGElement, any> = event;
-    //   if (self.centerZeroZeroPoint) {
-    //     canvas.attr(
-    //       'transform',
-    //       `translate(${context.getSize().width / 2 + e.transform.x}, ` +
-    //             `${context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
-    //   } else {
-    //     canvas.attr('transform', e.transform.toString());
-    //   }
-    // };
-    //
-    // view.call(zoom<SVGSVGElement, any>()
-    //     .scaleExtent([1 / 2, 8])
-    //     .on('zoom', onZoom));
   }
 
 }
