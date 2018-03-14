@@ -71,4 +71,15 @@ describe('SelectionTool', () => {
     });
   });
 
+  describe('SelectionTool can be deactivated', () => {
+    beforeEach(() => {
+      tool.deactivate();
+      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
+    });
+
+    it('path should be still hiden', () => {
+        expect(path_selection.attr('visibility')).toEqual('hidden');
+    });
+  });
+
 });
