@@ -2,7 +2,6 @@ import {SelectionTool} from "./selection-tool";
 import {select} from "d3-selection";
 import {Context} from "../../../map/models/context";
 import {SVGSelection} from "../../../map/models/types";
-import {beforeEach} from "selenium-webdriver/testing";
 
 
 describe('SelectionTool', () => {
