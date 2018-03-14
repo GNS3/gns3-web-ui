@@ -270,8 +270,8 @@ export class ProjectMapComponent implements OnInit {
       this.mapChild.graphLayout.getSelectionTool().deactivate();
       this.mapChild.graphLayout.getMovingTool().activate();
     } else {
-      this.mapChild.graphLayout.getSelectionTool().activate();
       this.mapChild.graphLayout.getMovingTool().deactivate();
+      this.mapChild.graphLayout.getSelectionTool().activate();
     }
   }
 

@@ -20,6 +20,7 @@ export class SelectionTool {
       return [p[0] - transformation_point.x, p[1] - transformation_point.y];
     };
 
+
     this.selection.on("mousedown", function() {
       const subject = select(window);
       const parent = this.parentElement;
@@ -53,6 +54,7 @@ export class SelectionTool {
         .attr("class", "selection")
         .attr("visibility", "hidden");
     }
+    this.selection = selection;
   }
 
   private startSelection(start) {

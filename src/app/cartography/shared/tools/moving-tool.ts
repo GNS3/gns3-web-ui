@@ -1,18 +1,22 @@
 import {SVGSelection} from "../../../map/models/types";
 import {Context} from "../../../map/models/context";
-import {D3ZoomEvent, zoom} from "d3-zoom";
+import {D3ZoomEvent, zoom, ZoomBehavior} from "d3-zoom";
 import { event } from "d3-selection";
 
 export class MovingTool {
   private selection: SVGSelection;
   private context: Context;
+  private zoom: ZoomBehavior<SVGSVGElement, any>;
+
+  constructor() {
+      this.zoom = zoom<SVGSVGElement, any>()
+        .scaleExtent([1 / 2, 8]);
+  }
 
   public connect(selection: SVGSelection, context: Context) {
     this.selection = selection;
     this.context = context;
 
-    this.selection.call(zoom<SVGSVGElement, any>()
-        .scaleExtent([1 / 2, 8]);
   }
 
   public draw(selection: SVGSelection, context: Context) {
@@ -32,10 +36,14 @@ export class MovingTool {
               `${self.context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
     };
 
-    this.selection.on('zoom', onZoom);
+
+    this.zoom.on('zoom', onZoom);
+    this.selection.call(this.zoom);
   }
 
   public deactivate() {
-    this.selection.on('zoom', null);
+    // d3.js preserves event `mousedown.zoom` and blocks selection
+    this.selection.on('mousedown.zoom', null);
+    this.zoom.on('zoom', null);
   }
 }
