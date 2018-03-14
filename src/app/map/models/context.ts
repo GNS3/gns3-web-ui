@@ -4,11 +4,9 @@ import {Point} from "../../cartography/shared/models/point.model";
 
 export class Context {
   private size: Size;
-  private root: Selection<SVGSVGElement, any, null, undefined>;
-  private centerZeroZeroPoint = true;
 
-  constructor(root: Selection<SVGSVGElement, any, null, undefined>) {
-    this.root = root;
+  constructor(private centerZeroZeroPoint = false) {
+    this.size = new Size(0, 0);
   }
 
   public getSize(): Size {
@@ -20,6 +18,9 @@ export class Context {
   }
 
   public getZeroZeroTransformationPoint() {
-    return new Point(this.getSize().width / 2., this.getSize().height / 2.);
+    if (this.centerZeroZeroPoint) {
+      return new Point(this.getSize().width / 2., this.getSize().height / 2.);
+    }
+    return new Point(0, 0);
   }
 }

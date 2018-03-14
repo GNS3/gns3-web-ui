@@ -33,7 +33,9 @@ export class SelectionTool {
           self.moveSelection(start, transformation(mouse(parent)));
         }).on("mouseup.selection", function() {
           self.endSelection(start, transformation(mouse(parent)));
-          subject.on("mousemove.selection", null).on("mouseup.selection", null);
+          subject
+            .on("mousemove.selection", null)
+            .on("mouseup.selection", null);
         });
     });
   }

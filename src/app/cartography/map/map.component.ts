@@ -78,14 +78,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     let rootElement: Selection<HTMLElement, any, null, undefined>;
 
-    const self = this;
-
     if (this.parentNativeElement !== null) {
       rootElement = d3.select(this.parentNativeElement);
 
       this.svg = rootElement.select<SVGSVGElement>('svg');
 
-      this.graphContext = new Context(this.svg);
+      this.graphContext = new Context();
 
       if (this.windowFullSize) {
         this.graphContext.setSize(this.getSize());
