@@ -2,6 +2,7 @@ import {SelectionTool} from "./selection-tool";
 import {select} from "d3-selection";
 import {Context} from "../../../map/models/context";
 import {SVGSelection} from "../../../map/models/types";
+import {Node} from "../models/node.model";
 
 
 describe('SelectionTool', () => {
@@ -18,6 +19,25 @@ describe('SelectionTool', () => {
         .append<SVGSVGElement>('svg')
         .attr('width', 1000)
         .attr('height', 1000);
+
+    const node_1 = new Node();
+    node_1.name = "Node 1";
+    node_1.x = 150;
+    node_1.y = 150;
+
+    const node_2 = new Node();
+    node_2.name = "Node 2";
+    node_2.x = 300;
+    node_2.y = 300;
+
+    svg.selectAll<SVGGElement, any>('g.node')
+        .data([node_1, node_2], (n: Node) => {
+          return n.node_id;
+        })
+      .enter()
+        .append<SVGGElement>('g')
+        .attr('class', 'node selectable');
+
 
     svg.append<SVGGElement>('g').attr('class', 'canvas');
 
@@ -62,12 +82,30 @@ describe('SelectionTool', () => {
   describe('SelectionTool can handle end of selection', () => {
     beforeEach(() => {
       svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
-      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 300, clientY: 300}));
-      window.dispatchEvent(new MouseEvent('mouseup', {clientX: 300, clientY: 300}));
+      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 200, clientY: 200}));
+      window.dispatchEvent(new MouseEvent('mouseup', {clientX: 200, clientY: 200}));
     });
 
     it('path should be hidden', () => {
-        expect(path_selection.attr('visibility')).toEqual('hidden');
+      expect(path_selection.attr('visibility')).toEqual('hidden');
+    });
+
+    it('node should be selected', () => {
+      expect(svg.selectAll('.selected').size()).toEqual(1);
+      expect(svg.select('.selected').datum().name).toEqual("Node 1");
+    });
+  });
+
+  describe('SelectionTool can handle end of selection in reverse direction', () => {
+    beforeEach(() => {
+      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 200, clientY: 200}));
+      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 100, clientY: 100}));
+      window.dispatchEvent(new MouseEvent('mouseup', {clientX: 100, clientY: 100}));
+    });
+
+    it('node should be selected', () => {
+        expect()
+        expect(svg.select('.selected').datum().name).toEqual("Node 1");
     });
   });
 
@@ -81,5 +119,6 @@ describe('SelectionTool', () => {
         expect(path_selection.attr('visibility')).toEqual('hidden');
     });
   });
+
 
 });

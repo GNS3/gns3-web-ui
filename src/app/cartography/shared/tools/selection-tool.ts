@@ -1,6 +1,8 @@
 import {SVGSelection} from "../../../map/models/types";
 import {mouse, select} from "d3-selection";
 import {Context} from "../../../map/models/context";
+import {Node} from "../models/node.model";
+
 
 export class SelectionTool {
   private selection: SVGSelection;
@@ -30,7 +32,20 @@ export class SelectionTool {
 
       subject
         .on("mousemove.selection", function() {
-          self.moveSelection(start, transformation(mouse(parent)));
+          const end = transformation(mouse(parent));
+          self.moveSelection(start, end);
+
+          const x = Math.min(start[0], end[0]);
+          const y = Math.min(start[1], end[1]);
+          const width = Math.abs(start[0] - end[0]);
+          const height = Math.abs(start[1] - end[1]);
+
+          self.selection
+            .selectAll('.selectable')
+            .classed('selected', (node: Node, i) => {
+              return (x <= node.x && node.x < (x + width) && y <= node.y && node.y < (y + height));
+            });
+
         }).on("mouseup.selection", function() {
           self.endSelection(start, transformation(mouse(parent)));
           subject
