@@ -30,6 +30,9 @@ export class SelectionTool {
       const start = transformation(mouse(parent));
       self.startSelection(start);
 
+      // clear selection
+      self.selection.selectAll('.selectable').classed("selected", false);
+
       subject
         .on("mousemove.selection", function() {
           const end = transformation(mouse(parent));

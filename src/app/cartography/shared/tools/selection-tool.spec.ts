@@ -94,6 +94,17 @@ describe('SelectionTool', () => {
       expect(svg.selectAll('.selected').size()).toEqual(1);
       expect(svg.select('.selected').datum().name).toEqual("Node 1");
     });
+
+    describe('SelectionTool can deselect after click outside', () => {
+      beforeEach(() => {
+        svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 300, clientY: 300}));
+      });
+
+      it('should have no selection', () => {
+        expect(svg.selectAll('.selected').size()).toEqual(0);
+      });
+    });
+
   });
 
   describe('SelectionTool can handle end of selection in reverse direction', () => {
@@ -104,7 +115,6 @@ describe('SelectionTool', () => {
     });
 
     it('node should be selected', () => {
-        expect()
         expect(svg.select('.selected').datum().name).toEqual("Node 1");
     });
   });
