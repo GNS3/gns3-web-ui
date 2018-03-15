@@ -9,7 +9,7 @@ export class MovingTool {
   private zoom: ZoomBehavior<SVGSVGElement, any>;
 
   constructor() {
-      this.zoom = zoom<SVGSVGElement, any>()
+    this.zoom = zoom<SVGSVGElement, any>()
         .scaleExtent([1 / 2, 8]);
   }
 
@@ -28,6 +28,7 @@ export class MovingTool {
     const self = this;
 
     const onZoom = function(this: SVGSVGElement) {
+
       const canvas = self.selection.select<SVGGElement>("g.canvas");
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr(
@@ -35,7 +36,6 @@ export class MovingTool {
         `translate(${self.context.getSize().width / 2 + e.transform.x}, ` +
               `${self.context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
     };
-
 
     this.zoom.on('zoom', onZoom);
     this.selection.call(this.zoom);
