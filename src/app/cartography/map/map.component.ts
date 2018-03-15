@@ -83,7 +83,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.svg = rootElement.select<SVGSVGElement>('svg');
 
-      this.graphContext = new Context();
+      this.graphContext = new Context(true);
 
       if (this.windowFullSize) {
         this.graphContext.setSize(this.getSize());
