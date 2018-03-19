@@ -25,7 +25,7 @@ describe('NodesDataSource', () => {
     });
 
     it('name should change', () => {
-      expect(data[1].name).toEqual("1");
+      expect(data[0].node_id).toEqual("1");
       expect(data[0].name).toEqual("Node 2");
     });
   });
