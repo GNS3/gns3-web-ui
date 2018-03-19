@@ -53,6 +53,9 @@ import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/
 import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
 import { CartographyModule } from './cartography/cartography.module';
 import { ToasterService } from './shared/services/toaster.service';
+import {ProjectWebServiceHandler} from "./shared/handlers/project-web-service-handler";
+import {LinksDataSource} from "./cartography/shared/datasources/links-datasource";
+import {NodesDataSource} from "./cartography/shared/datasources/nodes-datasource";
 
 
 @NgModule({
@@ -108,7 +111,10 @@ import { ToasterService } from './shared/services/toaster.service';
     HttpServer,
     SnapshotService,
     ProgressDialogService,
-    ToasterService
+    ToasterService,
+    ProjectWebServiceHandler,
+    LinksDataSource,
+    NodesDataSource
   ],
   entryComponents: [
     AddServerDialogComponent,

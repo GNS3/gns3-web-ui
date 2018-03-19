@@ -33,6 +33,9 @@ import { NodeSelectInterfaceComponent } from "../shared/node-select-interface/no
 import { Port } from "../shared/models/port";
 import { LinkService } from "../shared/services/link.service";
 import { ToasterService } from '../shared/services/toaster.service';
+import {NodesDataSource} from "../cartography/shared/datasources/nodes-datasource";
+import {LinksDataSource} from "../cartography/shared/datasources/links-datasource";
+import {ProjectWebServiceHandler} from "../shared/handlers/project-web-service-handler";
 
 
 @Component({
@@ -71,7 +74,11 @@ export class ProjectMapComponent implements OnInit {
               private linkService: LinkService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
-              private toaster: ToasterService) {
+              private toaster: ToasterService,
+              private projectWebServiceHandler: ProjectWebServiceHandler,
+              protected nodesDataSource: NodesDataSource,
+              protected linksDataSource: LinksDataSource,
+              ) {
   }
 
   ngOnInit() {
@@ -104,6 +111,19 @@ export class ProjectMapComponent implements OnInit {
       this.symbols = symbols;
     });
 
+    this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
+      this.nodes = nodes;
+      if (this.mapChild) {
+        this.mapChild.reload();
+      }
+    });
+
+    this.linksDataSource.connect().subscribe((links: Link[]) => {
+      this.links = links;
+      if (this.mapChild) {
+        this.mapChild.reload();
+      }
+    });
   }
 
   onProjectLoad(project: Project) {
@@ -117,11 +137,11 @@ export class ProjectMapComponent implements OnInit {
         return this.projectService.links(this.server, project.project_id);
       })
       .flatMap((links: Link[]) => {
-        this.links = links;
+        this.linksDataSource.set(links);
         return this.projectService.nodes(this.server, project.project_id);
       })
       .subscribe((nodes: Node[]) => {
-        this.nodes = nodes;
+        this.nodesDataSource.set(nodes);
 
         this.setUpMapCallbacks(project);
         this.setUpWS(project);
@@ -134,59 +154,8 @@ export class ProjectMapComponent implements OnInit {
   setUpWS(project: Project) {
     this.ws = Observable.webSocket(
       this.projectService.notificationsPath(this.server, project.project_id));
-
-    this.ws.subscribe((o: any) => {
-      if (o.action === 'node.updated') {
-        const node: Node = o.event;
-        const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-        if (index >= 0) {
-          this.nodes[index] = node;
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'node.created') {
-        const node: Node = o.event;
-        const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-        if (index === -1) {
-          this.nodes.push(node);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'node.deleted') {
-        const node: Node = o.event;
-        const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-        if (index >= 0) {
-          this.nodes.splice(index, 1);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'link.created') {
-        const link: Link = o.event;
-        const index = this.links.findIndex((l: Link) => l.link_id === link.link_id);
-        if (index === -1) {
-          this.links.push(link);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'link.updated') {
-        const link: Link = o.event;
-        const index = this.links.findIndex((l: Link) => l.link_id === link.link_id);
-        if (index >= 0) {
-          this.links[index] = link;
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'link.deleted') {
-        const link: Link = o.event;
-        const index = this.links.findIndex((l: Link) => l.link_id === link.link_id);
-        if (index >= 0) {
-          this.links.splice(index, 1);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-    });
+    this.projectWebServiceHandler.connect(this.ws);
   }
-
 
   setUpMapCallbacks(project: Project) {
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
@@ -200,18 +169,12 @@ export class ProjectMapComponent implements OnInit {
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
-      const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-      if (index >= 0) {
-        this.nodes[index] = node;
-        this.mapChild.reload(); // temporary invocation
-
-        this.nodeService
-          .updatePosition(this.server, node, node.x, node.y)
-          .subscribe((n: Node) => {
-            this.nodes[index] = node;
-            this.mapChild.reload(); // temporary invocation
-          });
-      }
+      this.nodesDataSource.update(node);
+      this.nodeService
+        .updatePosition(this.server, node, node.x, node.y)
+        .subscribe((n: Node) => {
+          this.nodesDataSource.update(n);
+        });
     });
   }
 
@@ -222,8 +185,7 @@ export class ProjectMapComponent implements OnInit {
         this.projectService
           .nodes(this.server, this.project.project_id)
           .subscribe((nodes: Node[]) => {
-            this.nodes = nodes;
-            this.mapChild.reload();
+            this.nodesDataSource.set(nodes);
         });
       });
   }
@@ -295,8 +257,7 @@ export class ProjectMapComponent implements OnInit {
       .createLink(this.server, source_node, source_port, target_node, target_port)
       .subscribe(() => {
         this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
-          this.links = links;
-          this.mapChild.reload();
+          this.linksDataSource.set(links);
         });
       });
   }

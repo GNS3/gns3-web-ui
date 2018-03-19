@@ -1,11 +1,12 @@
-import {Node} from "../models/node.model";
-import {DataSource} from "./datasource";
 import {Injectable} from "@angular/core";
+
+import {DataSource} from "./datasource";
+import {Link} from "../models/link.model";
 
 
 @Injectable()
-export class NodesDataSource extends DataSource<Node> {
-  protected findIndex(node: Node) {
-    return this.data.findIndex((n: Node) => n.node_id === node.node_id);
+export class LinksDataSource extends DataSource<Link> {
+  protected findIndex(link: Link) {
+    return this.data.findIndex((l: Link) => l.link_id === link.link_id);
   }
 }

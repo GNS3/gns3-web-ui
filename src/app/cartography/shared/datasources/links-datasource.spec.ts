@@ -1,32 +1,32 @@
-import {NodesDataSource} from "./nodes-datasource";
-import {Node} from "../models/node.model";
+import {LinksDataSource} from "./links-datasource";
+import {Link} from "../models/link.model";
 
 
-describe('NodesDataSource', () => {
-  let dataSource: NodesDataSource;
-  let data: Node[];
+describe('LinksDataSource', () => {
+  let dataSource: LinksDataSource;
+  let data: Link[];
 
   beforeEach(() => {
-    dataSource = new NodesDataSource();
-    dataSource.connect().subscribe((nodes: Node[]) => {
-      data = nodes;
+    dataSource = new LinksDataSource();
+    dataSource.connect().subscribe((links: Link[]) => {
+      data = links;
     });
   });
 
-  describe('Node can be updated', () => {
+  describe('Link can be updated', () => {
     beforeEach(() => {
-      const node = new Node();
-      node.node_id = "1";
-      node.name = "Node 1";
-      dataSource.add(node);
+      const link = new Link();
+      link.link_id = "1";
+      link.project_id = "project-1";
+      dataSource.add(link);
 
-      node.name = "Node 2";
-      dataSource.update(node);
+      link.project_id = "project-2";
+      dataSource.update(link);
     });
 
-    it('name should change', () => {
-      expect(data[0].node_id).toEqual("1");
-      expect(data[0].name).toEqual("Node 2");
+    it('project_id should change', () => {
+      expect(data[0].link_id).toEqual("1");
+      expect(data[0].project_id).toEqual("project-2");
     });
   });
 
