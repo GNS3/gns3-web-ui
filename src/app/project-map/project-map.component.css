@@ -47,6 +47,10 @@ svg image:hover, svg image.chosen, .selectable.selected {
   filter: grayscale(100%);
 }
 
+link.selectable.selected {
+  color: darkred;
+}
+
 .selection-line-tool .selection {
   fill: #7ccbe1;
   stroke:  #66aec2 ;

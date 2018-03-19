@@ -5,15 +5,29 @@ import {SVGSelection} from "../../../map/models/types";
 import {Node} from "../models/node.model";
 
 
+class OnSelectedListenerMock {
+  public constructor(public nodes: Node[] = []) {}
+
+  public listen(nodes: Node[]) {
+    console.log(this);
+    this.nodes = nodes;
+  }
+}
+
 describe('SelectionTool', () => {
   let tool: SelectionTool;
   let svg: SVGSelection;
   let context: Context;
   let selection_line_tool: SVGSelection;
   let path_selection: SVGSelection;
+  let selected_nodes: Node[];
 
   beforeEach(() => {
     tool = new SelectionTool();
+
+    tool.selectedSubject.subscribe((nodes: Node[]) => {
+      selected_nodes = nodes;
+    });
 
     svg = select('body')
         .append<SVGSVGElement>('svg')
@@ -95,13 +109,22 @@ describe('SelectionTool', () => {
       expect(svg.select('.selected').datum().name).toEqual("Node 1");
     });
 
+    it('selectedSubject should update nodes', () => {
+      expect(selected_nodes.length).toEqual(1);
+    });
+
     describe('SelectionTool can deselect after click outside', () => {
       beforeEach(() => {
         svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 300, clientY: 300}));
+        window.dispatchEvent(new MouseEvent('mouseup', {clientX: 300, clientY: 300}));
       });
 
       it('should have no selection', () => {
         expect(svg.selectAll('.selected').size()).toEqual(0);
+      });
+
+      it('selectedSubject should clear nodes', () => {
+        expect(selected_nodes.length).toEqual(0);
       });
     });
 
