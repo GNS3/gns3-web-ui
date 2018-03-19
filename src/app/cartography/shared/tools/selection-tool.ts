@@ -25,17 +25,12 @@ export class SelectionTool {
   public activate() {
     const self = this;
 
-    const transformation = (p) => {
-      const transformation_point = this.context.getZeroZeroTransformationPoint();
-      return [p[0] - transformation_point.x, p[1] - transformation_point.y];
-    };
-
 
     this.selection.on("mousedown", function() {
       const subject = select(window);
       const parent = this.parentElement;
 
-      const start = transformation(mouse(parent));
+      const start = self.transformation(mouse(parent));
       self.startSelection(start);
 
       // clear selection
@@ -45,10 +40,10 @@ export class SelectionTool {
 
       subject
         .on("mousemove.selection", function() {
-          const end = transformation(mouse(parent));
+          const end = self.transformation(mouse(parent));
           self.moveSelection(start, end);
         }).on("mouseup.selection", function() {
-          const end = transformation(mouse(parent));
+          const end = self.transformation(mouse(parent));
           self.endSelection(start, end);
           subject
             .on("mousemove.selection", null)
@@ -116,4 +111,11 @@ export class SelectionTool {
   private rect(x: number, y: number, w: number, h: number) {
     return "M" + [x, y] + " l" + [w, 0] + " l" + [0, h] + " l" + [-w, 0] + "z";
   }
+
+  private transformation(point) {
+    const transformation_point = this.context.getZeroZeroTransformationPoint();
+    return [point[0] - transformation_point.x, point[1] - transformation_point.y];
+  }
+
+
 }

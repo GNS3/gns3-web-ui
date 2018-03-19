@@ -9,7 +9,6 @@ class OnSelectedListenerMock {
   public constructor(public nodes: Node[] = []) {}
 
   public listen(nodes: Node[]) {
-    console.log(this);
     this.nodes = nodes;
   }
 }
