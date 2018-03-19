@@ -68,9 +68,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.svg.empty && !this.svg.empty()) {
-      this.svg.selectAll('*').remove();
-    }
+    this.graphLayout.disconnect(this.svg);
   }
 
   ngOnInit() {

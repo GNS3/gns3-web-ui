@@ -5,13 +5,10 @@ import { NodesWidget } from "./nodes.widget";
 import { Widget } from "./widget";
 import { SVGSelection } from "../../../map/models/types";
 import { LinksWidget } from "./links.widget";
-import { D3ZoomEvent, zoom } from "d3-zoom";
-import { event } from "d3-selection";
 import { Drawing } from "../models/drawing.model";
 import { DrawingsWidget } from "./drawings.widget";
 import { DrawingLineWidget } from "./drawing-line.widget";
 import {SelectionTool} from "../tools/selection-tool";
-import {Tool} from "../tool";
 import {MovingTool} from "../tools/moving-tool";
 
 export class GraphLayout implements Widget {
@@ -101,4 +98,9 @@ export class GraphLayout implements Widget {
     this.movingTool.draw(view, context);
   }
 
+  disconnect(view: SVGSelection) {
+    if (view.empty && !view.empty()) {
+      view.selectAll('*').remove();
+    }
+  }
 }
