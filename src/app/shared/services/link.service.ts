@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Node } from '../../cartography/shared/models/node';
-import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
-import {Response} from "@angular/http";
 import {Port} from "../models/port";
 
 @Injectable()
@@ -15,7 +13,7 @@ export class LinkService {
   constructor(private httpServer: HttpServer) { }
 
   createLink(
-    server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port): Observable<Response> {
+    server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
     return this.httpServer
                 .post(
                   server,

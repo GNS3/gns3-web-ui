@@ -26,9 +26,9 @@ export class SymbolService {
   load(server: Server): Observable<Symbol[]> {
     this.list(server).subscribe((symbols: Symbol[]) => {
       const streams = symbols.map(symbol => this.raw(server, symbol.symbol_id));
-      Observable.forkJoin(streams).subscribe((results: string[]) => {
+      Observable.forkJoin(streams).subscribe((results) => {
         symbols.forEach((symbol: Symbol, i: number) => {
-          symbol.raw = results[i];
+          symbol.raw = results[i].body;
         });
         this.symbols.next(symbols);
       });
@@ -36,16 +36,14 @@ export class SymbolService {
     return this.symbols.asObservable();
   }
 
-  list(server: Server): Observable<Symbol[]> {
+  list(server: Server) {
     return this.httpServer
-                .get(server, '/symbols')
-                .map(response => response.json() as Symbol[]);
+                .get<Symbol[]>(server, '/symbols');
   }
 
-  raw(server: Server, symbol_id: string): Observable<string> {
+  raw(server: Server, symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpServer
-                .get(server, `/symbols/${encoded_uri}/raw`)
-                .map(response => response.text() as string);
+                .getText(server, `/symbols/${encoded_uri}/raw`);
   }
 }

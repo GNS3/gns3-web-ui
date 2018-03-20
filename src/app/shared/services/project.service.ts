@@ -14,40 +14,34 @@ export class ProjectService {
 
   constructor(private httpServer: HttpServer) { }
 
-  get(server: Server, project_id: string): Observable<Project> {
+  get(server: Server, project_id: string) {
     return this.httpServer
-                .get(server, `/projects/${project_id}`)
-                .map(response => response.json() as Project);
+                .get<Project>(server, `/projects/${project_id}`);
   }
 
-  open(server: Server, project_id: string): Observable<Project> {
+  open(server: Server, project_id: string) {
     return this.httpServer
-                .post(server, `/projects/${project_id}/open`, {})
-                .map(response => response.json() as Project);
+                .post<Project>(server, `/projects/${project_id}/open`, {});
   }
 
-  list(server: Server): Observable<Project[]> {
+  list(server: Server) {
     return this.httpServer
-                .get(server, '/projects')
-                .map(response => response.json() as Project[]);
+                .get<Project[]>(server, '/projects');
   }
 
-  nodes(server: Server, project_id: string): Observable<Node[]> {
+  nodes(server: Server, project_id: string) {
     return this.httpServer
-                .get(server, `/projects/${project_id}/nodes`)
-                .map(response => response.json() as Node[]);
+                .get<Node[]>(server, `/projects/${project_id}/nodes`);
   }
 
-  links(server: Server, project_id: string): Observable<Link[]> {
+  links(server: Server, project_id: string) {
     return this.httpServer
-                .get(server, `/projects/${project_id}/links`)
-                .map(response => response.json() as Link[]);
+                .get<Link[]>(server, `/projects/${project_id}/links`);
   }
 
-  drawings(server: Server, project_id: string): Observable<Drawing[]> {
+  drawings(server: Server, project_id: string) {
     return this.httpServer
-                .get(server, `/projects/${project_id}/drawings`)
-                .map(response => response.json() as Drawing[]);
+                .get<Drawing[]>(server, `/projects/${project_id}/drawings`);
   }
 
   delete(server: Server, project_id: string): Observable<any> {

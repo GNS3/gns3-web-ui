@@ -68,9 +68,11 @@ export class ApplianceDatabase {
   }
 
   constructor(private server: Server, private applianceService: ApplianceService) {
-    this.applianceService.list(this.server).subscribe((appliances: Appliance[]) => {
-      this.dataChange.next(appliances);
-    });
+    this.applianceService
+      .list(this.server)
+      .subscribe((appliances) => {
+        this.dataChange.next(appliances);
+      });
   }
 
 };
