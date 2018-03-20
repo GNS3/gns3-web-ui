@@ -12,9 +12,9 @@ import 'rxjs/add/observable/dom/webSocket';
 
 
 import { Project } from '../shared/models/project';
-import { Node } from '../cartography/shared/models/node.model';
+import { Node } from '../cartography/shared/models/node';
 import { SymbolService } from '../shared/services/symbol.service';
-import { Link } from "../cartography/shared/models/link.model";
+import { Link } from "../cartography/shared/models/link";
 import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
@@ -24,11 +24,11 @@ import { SnapshotService } from "../shared/services/snapshot.service";
 import { Snapshot } from "../shared/models/snapshot";
 import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";
 import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dialog.component";
-import { Drawing } from "../cartography/shared/models/drawing.model";
+import { Drawing } from "../cartography/shared/models/drawing";
 import { NodeContextMenuComponent } from "../shared/node-context-menu/node-context-menu.component";
 import { Appliance } from "../shared/models/appliance";
 import { NodeService } from "../shared/services/node.service";
-import { Symbol } from "../shared/models/symbol";
+import { Symbol } from "../cartography/shared/models/symbol";
 import { NodeSelectInterfaceComponent } from "../shared/node-select-interface/node-select-interface.component";
 import { Port } from "../shared/models/port";
 import { LinkService } from "../shared/services/link.service";

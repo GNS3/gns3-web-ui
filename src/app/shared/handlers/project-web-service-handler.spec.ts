@@ -3,8 +3,8 @@ import {Subject} from "rxjs/Subject";
 import {inject, TestBed} from "@angular/core/testing";
 import {NodesDataSource} from "../../cartography/shared/datasources/nodes-datasource";
 import {LinksDataSource} from "../../cartography/shared/datasources/links-datasource";
-import {Node} from "../../cartography/shared/models/node.model";
-import {Link} from "../../cartography/shared/models/link.model";
+import {Node} from "../../cartography/shared/models/node";
+import {Link} from "../../cartography/shared/models/link";
 
 
 

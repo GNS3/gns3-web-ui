@@ -1,4 +1,4 @@
-import {Label} from "./label.model";
+import {Label} from "./label";
 import {Port} from "../../../shared/models/port";
 
 export class Node {

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Project } from '../models/project';
-import { Node } from '../../cartography/shared/models/node.model';
+import { Node } from '../../cartography/shared/models/node';
 import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
-import { Link } from "../../cartography/shared/models/link.model";
+import { Link } from "../../cartography/shared/models/link";
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
-import {Drawing} from "../../cartography/shared/models/drawing.model";
+import {Drawing} from "../../cartography/shared/models/drawing";
 
 @Injectable()
 export class ProjectService {

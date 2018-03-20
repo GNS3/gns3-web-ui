@@ -1,7 +1,7 @@
 import {SVGSelection} from "../../../map/models/types";
 import {mouse, select} from "d3-selection";
 import {Context} from "../../../map/models/context";
-import {Node} from "../models/node.model";
+import {Node} from "../models/node";
 import {Subject} from "rxjs/Subject";
 
 

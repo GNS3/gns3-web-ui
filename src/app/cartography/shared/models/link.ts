@@ -1,4 +1,4 @@
-import {Node} from "./node.model";
+import {Node} from "./node";
 
 export class Link {
   capture_file_name: string;

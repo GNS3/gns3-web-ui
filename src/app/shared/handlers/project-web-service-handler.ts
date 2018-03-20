@@ -2,8 +2,8 @@ import {Injectable} from "@angular/core";
 import {NodesDataSource} from "../../cartography/shared/datasources/nodes-datasource";
 import {LinksDataSource} from "../../cartography/shared/datasources/links-datasource";
 import {Subject} from "rxjs/Subject";
-import {Link} from "../../cartography/shared/models/link.model";
-import {Node} from "../../cartography/shared/models/node.model";
+import {Link} from "../../cartography/shared/models/link";
+import {Node} from "../../cartography/shared/models/node";
 
 
 export class WebServiceMessage {

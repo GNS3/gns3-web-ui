@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatMenuTrigger} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
-import {Node} from "../../cartography/shared/models/node.model";
+import {Node} from "../../cartography/shared/models/node";
 import {Server} from "../models/server";
 
 

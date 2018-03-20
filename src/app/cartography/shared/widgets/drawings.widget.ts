@@ -1,5 +1,5 @@
 import {Widget} from "./widget";
-import {Drawing} from "../models/drawing.model";
+import {Drawing} from "../models/drawing";
 import {SVGSelection} from "../../../map/models/types";
 
 

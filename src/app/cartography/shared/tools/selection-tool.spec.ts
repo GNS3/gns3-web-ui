@@ -2,7 +2,7 @@ import {SelectionTool} from "./selection-tool";
 import {select} from "d3-selection";
 import {Context} from "../../../map/models/context";
 import {SVGSelection} from "../../../map/models/types";
-import {Node} from "../models/node.model";
+import {Node} from "../models/node";
 
 
 class OnSelectedListenerMock {

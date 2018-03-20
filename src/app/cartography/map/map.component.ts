@@ -4,13 +4,13 @@ import {
 import { D3, D3Service } from 'd3-ng2-service';
 import {select, Selection} from 'd3-selection';
 
-import { Node } from "../shared/models/node.model";
-import { Link } from "../shared/models/link.model";
+import { Node } from "../shared/models/node";
+import { Link } from "../shared/models/link";
 import { GraphLayout } from "../shared/widgets/graph.widget";
 import { Context } from "../../map/models/context";
-import { Size } from "../shared/models/size.model";
-import { Drawing } from "../shared/models/drawing.model";
-import {Symbol} from "../../shared/models/symbol";
+import { Size } from "../shared/models/size";
+import { Drawing } from "../shared/models/drawing";
+import {Symbol} from "../shared/models/symbol";
 
 
 @Component({

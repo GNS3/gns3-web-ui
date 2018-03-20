@@ -1,9 +1,9 @@
 import { Widget } from "./widget";
-import { Node } from "../models/node.model";
+import { Node } from "../models/node";
 import { SVGSelection } from "../../../map/models/types";
 import {event, select} from "d3-selection";
 import {D3DragEvent, drag} from "d3-drag";
-import {Symbol} from "../../../shared/models/symbol";
+import {Symbol} from "../models/symbol";
 
 
 export class NodesWidget implements Widget {

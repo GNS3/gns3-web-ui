@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Node } from '../../cartography/shared/models/node.model';
+import { Node } from '../../cartography/shared/models/node';
 import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';

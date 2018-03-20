@@ -1,11 +1,11 @@
 import { Context } from "../../../map/models/context";
-import { Node } from "../models/node.model";
-import { Link } from "../models/link.model";
+import { Node } from "../models/node";
+import { Link } from "../models/link";
 import { NodesWidget } from "./nodes.widget";
 import { Widget } from "./widget";
 import { SVGSelection } from "../../../map/models/types";
 import { LinksWidget } from "./links.widget";
-import { Drawing } from "../models/drawing.model";
+import { Drawing } from "../models/drawing";
 import { DrawingsWidget } from "./drawings.widget";
 import { DrawingLineWidget } from "./drawing-line.widget";
 import {SelectionTool} from "../tools/selection-tool";

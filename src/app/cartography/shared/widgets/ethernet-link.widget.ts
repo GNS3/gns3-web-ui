@@ -2,7 +2,7 @@ import {Widget} from "./widget";
 import {SVGSelection} from "../../../map/models/types";
 
 import { line } from "d3-shape";
-import {Link} from "../models/link.model";
+import {Link} from "../models/link";
 
 export class EthernetLinkWidget implements Widget {
 

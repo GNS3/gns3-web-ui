@@ -56,6 +56,7 @@ import { ToasterService } from './shared/services/toaster.service';
 import {ProjectWebServiceHandler} from "./shared/handlers/project-web-service-handler";
 import {LinksDataSource} from "./cartography/shared/datasources/links-datasource";
 import {NodesDataSource} from "./cartography/shared/datasources/nodes-datasource";
+import {SymbolsDataSource} from "./cartography/shared/datasources/symbols-datasource";
 
 
 @NgModule({
@@ -114,7 +115,8 @@ import {NodesDataSource} from "./cartography/shared/datasources/nodes-datasource
     ToasterService,
     ProjectWebServiceHandler,
     LinksDataSource,
-    NodesDataSource
+    NodesDataSource,
+    SymbolsDataSource
   ],
   entryComponents: [
     AddServerDialogComponent,

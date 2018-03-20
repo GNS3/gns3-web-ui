@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/observable/of';
 
-import { Symbol } from '../models/symbol';
+import { Symbol } from '../../cartography/shared/models/symbol';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 
