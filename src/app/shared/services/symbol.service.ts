@@ -28,7 +28,7 @@ export class SymbolService {
       const streams = symbols.map(symbol => this.raw(server, symbol.symbol_id));
       Observable.forkJoin(streams).subscribe((results) => {
         symbols.forEach((symbol: Symbol, i: number) => {
-          symbol.raw = results[i].body;
+          symbol.raw = results[i];
         });
         this.symbols.next(symbols);
       });
