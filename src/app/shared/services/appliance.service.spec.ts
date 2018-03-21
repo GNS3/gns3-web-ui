@@ -1,39 +1,39 @@
-import { TestBed, inject, async } from '@angular/core/testing';
-import { HttpClientModule} from '@angular/common/http';
+import { TestBed,  } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient } from "@angular/common/http";
 
 import { ApplianceService } from './appliance.service';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
-import { Http, HttpModule, XHRBackend} from '@angular/http';
-import { MockBackend, MockConnection } from '@angular/http/testing';
+
+
 
 describe('ApplianceService', () => {
-  beforeEach(async(() => {
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+  let service: ApplianceService;
+
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpModule,
+        HttpClientTestingModule
       ],
       providers: [
         ApplianceService,
-        HttpServer,
-        MockBackend,
-        { provide: XHRBackend, useExisting: MockBackend }
+        HttpServer
       ]
     });
-  }));
 
-  it('should be created', 
-    inject([ApplianceService, Http, MockBackend], 
-      (service: ApplianceService, client: Http, backend: MockBackend) => {
+    httpClient = TestBed.get(HttpClient);
+    httpTestingController = TestBed.get(HttpTestingController);
+    service = TestBed.get(ApplianceService);
+  });
 
-    expect(service).toBeTruthy();
-  }));
+  afterEach(() => {
+    httpTestingController.verify();
+  });
 
-  it('should ask for the list from server', 
-    async(inject([ApplianceService, Http, MockBackend], 
-      (service: ApplianceService, client: Http, backend: MockBackend) => {
-    
+  it('should ask for the list from server', () => {
     const server = new Server();
     server.ip = "127.0.0.1";
     server.port = 3080;
@@ -41,10 +41,7 @@ describe('ApplianceService', () => {
 
     service.list(server).subscribe();
 
-    backend.connections.subscribe((c: MockConnection) => {
-      expect(c.request.url).toBe('test');
-    });
+    httpTestingController.expectOne('http://127.0.0.1:3080/v2/appliances');
 
-    expect(backend.verifyNoPendingRequests).toBeTruthy();
-  })));
+  });
 });
