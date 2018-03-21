@@ -114,8 +114,8 @@ export class HttpServer {
   private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
     url = `http://${server.ip}:${server.port}/v2${url}`;
 
-    if (options.headers === null) {
-      options.headers = new HttpHeaders();
+    if (!options.headers) {
+      options.headers = {};
     }
 
     if (server.authorization === "basic") {
