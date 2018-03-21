@@ -52,6 +52,19 @@ describe('HttpServer', () => {
     expect(req.request.responseType).toEqual("text");
   });
 
+  it('should make GET query for getText method and preserve options', () => {
+    service.getText(server, '/test', {
+      headers: {
+        'CustomHeader': 'value'
+      },
+      responseType: 'text'
+    }).subscribe();
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/test');
+    expect(req.request.method).toEqual("GET");
+    expect(req.request.responseType).toEqual("text");
+  });
+
   it('should make POST query for post method', () => {
     service.post(server, '/test', {test: "1"}).subscribe();
 
@@ -111,5 +124,23 @@ describe('HttpServer', () => {
     expect(req.request.method).toEqual("GET");
     expect(req.request.responseType).toEqual("json");
     expect(req.request.headers.get('Authorization')).toEqual('Basic bG9naW46cGFzc3dvcmQ=');
+  });
+
+  it('should add headers for `basic` authorization and preserve headers', () => {
+    server.authorization = "basic";
+    server.login = "login";
+    server.password = "password";
+
+    service.get(server, '/test', {
+      headers: {
+        'CustomHeader': 'value'
+      }
+    }).subscribe();
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/test');
+    expect(req.request.method).toEqual("GET");
+    expect(req.request.responseType).toEqual("json");
+    expect(req.request.headers.get('Authorization')).toEqual('Basic bG9naW46cGFzc3dvcmQ=');
+    expect(req.request.headers.get('CustomHeader')).toEqual('value');
   });
 });
