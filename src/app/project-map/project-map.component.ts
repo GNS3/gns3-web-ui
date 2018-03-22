@@ -33,9 +33,12 @@ import { NodeSelectInterfaceComponent } from "../shared/node-select-interface/no
 import { Port } from "../shared/models/port";
 import { LinkService } from "../shared/services/link.service";
 import { ToasterService } from '../shared/services/toaster.service';
-import {NodesDataSource} from "../cartography/shared/datasources/nodes-datasource";
-import {LinksDataSource} from "../cartography/shared/datasources/links-datasource";
-import {ProjectWebServiceHandler} from "../shared/handlers/project-web-service-handler";
+import { NodesDataSource } from "../cartography/shared/datasources/nodes-datasource";
+import { LinksDataSource } from "../cartography/shared/datasources/links-datasource";
+import { ProjectWebServiceHandler } from "../shared/handlers/project-web-service-handler";
+import { Rectangle } from "../cartography/shared/models/rectangle";
+import { SelectionManager } from "../cartography/shared/managers/selection-manager";
+import { InRectangleHelper } from "../cartography/map/helpers/in-rectangle-helper";
 
 
 @Component({
@@ -175,6 +178,12 @@ export class ProjectMapComponent implements OnInit {
         .subscribe((n: Node) => {
           this.nodesDataSource.update(n);
         });
+    });
+
+    const selectionManager = new SelectionManager(this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
+
+    this.mapChild.graphLayout.getSelectionTool().rectangleSelected.subscribe((rectangle: Rectangle) => {
+      selectionManager.setSelectedItemsInRectangle(rectangle);
     });
   }
 

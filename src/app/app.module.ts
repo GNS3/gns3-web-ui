@@ -57,6 +57,8 @@ import {ProjectWebServiceHandler} from "./shared/handlers/project-web-service-ha
 import {LinksDataSource} from "./cartography/shared/datasources/links-datasource";
 import {NodesDataSource} from "./cartography/shared/datasources/nodes-datasource";
 import {SymbolsDataSource} from "./cartography/shared/datasources/symbols-datasource";
+import {SelectionManager} from "./cartography/shared/managers/selection-manager";
+import {InRectangleHelper} from "./cartography/map/helpers/in-rectangle-helper";
 
 
 @NgModule({
@@ -116,7 +118,9 @@ import {SymbolsDataSource} from "./cartography/shared/datasources/symbols-dataso
     ProjectWebServiceHandler,
     LinksDataSource,
     NodesDataSource,
-    SymbolsDataSource
+    SymbolsDataSource,
+    SelectionManager,
+    InRectangleHelper
   ],
   entryComponents: [
     AddServerDialogComponent,

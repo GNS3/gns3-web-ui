@@ -1,6 +1,7 @@
 import {Node} from "./node";
+import {Selectable} from "../managers/selection-manager";
 
-export class Link {
+export class Link implements Selectable {
   capture_file_name: string;
   capture_file_path: string;
   capturing: boolean;
@@ -12,4 +13,8 @@ export class Link {
   length: number; // this is not from server
   source: Node; // this is not from server
   target: Node; // this is not from server
+
+  is_selected = false;
+  x: number;
+  y: number;
 }

@@ -4,6 +4,10 @@ export abstract class DataSource<T> {
   protected data: T[] = [];
   protected dataChange: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
 
+  public getItems(): T[] {
+    return this.data;
+  }
+
   public add(item: T) {
     this.data.push(item);
     this.dataChange.next(this.data);

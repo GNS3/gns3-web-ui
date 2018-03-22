@@ -128,8 +128,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         .attr('height', this.graphContext.getSize().height);
     }
 
-
-
     this.graphLayout.setNodes(this.nodes);
     this.graphLayout.setLinks(this.links);
     this.graphLayout.setDrawings(this.drawings);
@@ -151,6 +149,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (target_id in nodes_by_id) {
         link.target = nodes_by_id[target_id];
+      }
+
+      if (link.source && link.target) {
+        link.x = link.source.x + (link.target.x - link.source.x) * 0.5;
+        link.y = link.source.y + (link.target.y - link.source.y) * 0.5;
       }
     });
   }

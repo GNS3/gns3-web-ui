@@ -43,12 +43,12 @@ g.node text {
 }
 
 
-svg image:hover, svg image.chosen, .selectable.selected {
+svg image:hover, svg image.chosen, g.selectable.selected {
   filter: grayscale(100%);
 }
 
-link.selectable.selected {
-  color: darkred;
+path.selectable.selected {
+  stroke: darkred;
 }
 
 .selection-line-tool .selection {

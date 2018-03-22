@@ -15,6 +15,8 @@ export class EthernetLinkWidget implements Widget {
       const value_line = line();
 
       let link_path = view.select<SVGPathElement>('path');
+      link_path.classed('selectable', true);
+      link_path.classed('selected', (l: Link) => l.is_selected);
 
       if (!link_path.node()) {
         link_path = view.append<SVGPathElement>('path');

@@ -136,6 +136,7 @@ export class NodesWidget implements Widget {
 
     const node_merge = node
       .merge(node_enter)
+        .classed('selected', (n: Node) => n.is_selected)
         .on("contextmenu", function (n: Node, i: number) {
           event.preventDefault();
           if (self.onContextMenuCallback !== null) {
