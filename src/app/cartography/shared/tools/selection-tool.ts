@@ -3,20 +3,21 @@ import {mouse, select} from "d3-selection";
 import {Context} from "../../../map/models/context";
 import {Subject} from "rxjs/Subject";
 import {Rectangle} from "../models/rectangle";
+import {Injectable} from "@angular/core";
 
 
+@Injectable()
 export class SelectionTool {
   static readonly SELECTABLE_CLASS = '.selectable';
 
-  public rectangleSelected = new Subject<Rectangle>();
+  public rectangleSelected: Subject<Rectangle>;
 
   private selection: SVGSelection;
   private path;
   private context: Context;
-  // public selectedSubject: Subject<Selectable[]>;
 
   public constructor() {
-    // this.selectedSubject = new Subject<Selectable[]>();
+    this.rectangleSelected = new Subject<Rectangle>();
   }
 
   public connect(selection: SVGSelection, context: Context) {
@@ -87,8 +88,7 @@ export class SelectionTool {
 
   private endSelection(start, end) {
     this.path.attr("visibility", "hidden");
-    // const selected_items = this.getSelectedItems(start, end);
-    // this.selectedSubject.next(selected_items);
+    this.selectedEvent(start, end);
   }
 
   private selectedEvent(start, end) {
@@ -98,27 +98,6 @@ export class SelectionTool {
     const height = Math.abs(start[1] - end[1]);
     this.rectangleSelected.next(new Rectangle(x, y, width, height));
   }
-
-  // private getSelectedItems(start, end): Selectable[] {
-  //   const x = Math.min(start[0], end[0]);
-  //   const y = Math.min(start[1], end[1]);
-  //   const width = Math.abs(start[0] - end[0]);
-  //   const height = Math.abs(start[1] - end[1]);
-  //   const items: Selectable[] = [];
-  //
-  //   this.selection
-  //     .selectAll<null, Selectable>(SelectionTool.SELECTABLE_CLASS)
-  //     .classed('selected', (item: Selectable) => {
-  //
-  //       const in_rect = (x <= item.x && item.x < (x + width) && y <= item.y && item.y < (y + height));
-  //       if (in_rect) {
-  //         items.push(item);
-  //       }
-  //       return in_rect;
-  //     });
-  //
-  //   return items;
-  // }
 
   private rect(x: number, y: number, w: number, h: number) {
     return "M" + [x, y] + " l" + [w, 0] + " l" + [0, h] + " l" + [-w, 0] + "z";

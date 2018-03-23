@@ -1,17 +1,10 @@
-import {SelectionTool} from "./selection-tool";
-import {select} from "d3-selection";
-import {Context} from "../../../map/models/context";
-import {SVGSelection} from "../../../map/models/types";
-import {Node} from "../models/node";
+import { select } from "d3-selection";
 
+import { SelectionTool } from "./selection-tool";
+import { Context } from "../../../map/models/context";
+import { SVGSelection } from "../../../map/models/types";
+import { Rectangle } from "../models/rectangle";
 
-class OnSelectedListenerMock {
-  public constructor(public nodes: Node[] = []) {}
-
-  public listen(nodes: Node[]) {
-    this.nodes = nodes;
-  }
-}
 
 describe('SelectionTool', () => {
   let tool: SelectionTool;
@@ -19,38 +12,19 @@ describe('SelectionTool', () => {
   let context: Context;
   let selection_line_tool: SVGSelection;
   let path_selection: SVGSelection;
-  let selected_nodes: Node[];
+  let selected_rectangle: Rectangle;
 
   beforeEach(() => {
     tool = new SelectionTool();
 
-    tool.selectedSubject.subscribe((nodes: Node[]) => {
-      selected_nodes = nodes;
+    tool.rectangleSelected.subscribe((rectangle: Rectangle) => {
+      selected_rectangle = rectangle;
     });
 
     svg = select('body')
         .append<SVGSVGElement>('svg')
         .attr('width', 1000)
         .attr('height', 1000);
-
-    const node_1 = new Node();
-    node_1.name = "Node 1";
-    node_1.x = 150;
-    node_1.y = 150;
-
-    const node_2 = new Node();
-    node_2.name = "Node 2";
-    node_2.x = 300;
-    node_2.y = 300;
-
-    svg.selectAll<SVGGElement, any>('g.node')
-        .data([node_1, node_2], (n: Node) => {
-          return n.node_id;
-        })
-      .enter()
-        .append<SVGGElement>('g')
-        .attr('class', 'node selectable');
-
 
     svg.append<SVGGElement>('g').attr('class', 'canvas');
 
@@ -103,13 +77,8 @@ describe('SelectionTool', () => {
       expect(path_selection.attr('visibility')).toEqual('hidden');
     });
 
-    it('node should be selected', () => {
-      expect(svg.selectAll('.selected').size()).toEqual(1);
-      expect(svg.select('.selected').datum().name).toEqual("Node 1");
-    });
-
-    it('selectedSubject should update nodes', () => {
-      expect(selected_nodes.length).toEqual(1);
+    it('rectangle should be selected', () => {
+      expect(selected_rectangle).toEqual(new Rectangle(95, 86, 100, 100));
     });
 
     describe('SelectionTool can deselect after click outside', () => {
@@ -118,15 +87,10 @@ describe('SelectionTool', () => {
         window.dispatchEvent(new MouseEvent('mouseup', {clientX: 300, clientY: 300}));
       });
 
-      it('should have no selection', () => {
-        expect(svg.selectAll('.selected').size()).toEqual(0);
-      });
-
-      it('selectedSubject should clear nodes', () => {
-        expect(selected_nodes.length).toEqual(0);
+      it('rectangle should be selected', () => {
+        expect(selected_rectangle).toEqual(new Rectangle(295, 286, 0, 0));
       });
     });
-
   });
 
   describe('SelectionTool can handle end of selection in reverse direction', () => {
@@ -136,8 +100,8 @@ describe('SelectionTool', () => {
       window.dispatchEvent(new MouseEvent('mouseup', {clientX: 100, clientY: 100}));
     });
 
-    it('node should be selected', () => {
-        expect(svg.select('.selected').datum().name).toEqual("Node 1");
+    it('rectangle should be selected', () => {
+      expect(selected_rectangle).toEqual(new Rectangle(95, 86, 100, 100));
     });
   });
 

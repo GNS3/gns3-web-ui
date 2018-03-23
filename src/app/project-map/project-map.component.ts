@@ -182,9 +182,7 @@ export class ProjectMapComponent implements OnInit {
 
     const selectionManager = new SelectionManager(this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
 
-    this.mapChild.graphLayout.getSelectionTool().rectangleSelected.subscribe((rectangle: Rectangle) => {
-      selectionManager.setSelectedItemsInRectangle(rectangle);
-    });
+    selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected);
   }
 
   onNodeCreation(appliance: Appliance) {

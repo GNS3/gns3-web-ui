@@ -1,10 +1,16 @@
-import {Node} from "../models/node";
-import {NodesDataSource} from "../datasources/nodes-datasource";
-import {LinksDataSource} from "../datasources/links-datasource";
-import {Injectable} from "@angular/core";
-import {InRectangleHelper} from "../../map/helpers/in-rectangle-helper";
-import {Rectangle} from "../models/rectangle";
-import {Link} from "../models/link";
+import { Injectable } from "@angular/core";
+
+import { Subject } from "rxjs/Subject";
+import { Subscription } from "rxjs/Subscription";
+
+import { NodesDataSource } from "../datasources/nodes-datasource";
+import { LinksDataSource } from "../datasources/links-datasource";
+import { Node } from "../models/node";
+import { InRectangleHelper } from "../../map/helpers/in-rectangle-helper";
+import { Rectangle } from "../models/rectangle";
+import { Link } from "../models/link";
+import { DataSource } from "../datasources/datasource";
+
 
 export interface Selectable {
   x: number;
@@ -12,40 +18,44 @@ export interface Selectable {
   is_selected: boolean;
 }
 
-
 @Injectable()
 export class SelectionManager {
-  private selectedItems: Selectable[] = [];
+  private selectedNodes: Node[] = [];
+  private selectedLinks: Link[] = [];
+  private subscription: Subscription;
 
   constructor(private nodesDataSource: NodesDataSource,
               private linksDataSource: LinksDataSource,
               private inRectangleHelper: InRectangleHelper) {}
 
-  public setSelectedItemsInRectangle(rectangle: Rectangle) {
-    const self = this;
 
-    const nodes: Node[] = [];
-    this.nodesDataSource.getItems().forEach((node: Node) => {
-      const is_selected = self.inRectangleHelper.inRectangle(node, rectangle);
-      if (node.is_selected !== is_selected) {
-        node.is_selected = is_selected;
-        self.nodesDataSource.update(node);
+  public subscribe(subject: Subject<Rectangle>) {
+    this.subscription = subject.subscribe((rectangle: Rectangle) => {
+        this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
+        this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
+    });
+  }
+
+  public getSelectedNodes() {
+    return this.selectedNodes;
+  }
+
+  public getSelectedLinks() {
+    return this.selectedLinks;
+  }
+
+  private getSelectedItemsInRectangle<T extends Selectable>(dataSource: DataSource<T>, rectangle: Rectangle) {
+    const items: T[] = [];
+    dataSource.getItems().forEach((item: T) => {
+      const is_selected = this.inRectangleHelper.inRectangle(item, rectangle);
+      if (item.is_selected !== is_selected) {
+        item.is_selected = is_selected;
+        dataSource.update(item);
         if (is_selected) {
-          nodes.push(node);
+          items.push(item);
         }
       }
     });
-
-    const links: Link[] = [];
-    this.linksDataSource.getItems().forEach((link: Link) => {
-      const is_selected = self.inRectangleHelper.inRectangle(link, rectangle);
-      if (link.is_selected !== is_selected) {
-        link.is_selected = is_selected;
-        self.linksDataSource.update(link);
-        if (is_selected) {
-          links.push(link);
-        }
-      }
-    });
+    return items;
   }
 }
