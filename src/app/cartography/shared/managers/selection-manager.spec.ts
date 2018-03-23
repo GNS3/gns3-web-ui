@@ -15,17 +15,18 @@ describe('SelectionManager', () => {
   let nodesDataSource: NodesDataSource;
 
   beforeEach(() => {
-    const linksDataSourec = new LinksDataSource();
+    const linksDataSource = new LinksDataSource();
     const inRectangleHelper = new InRectangleHelper();
 
     selectedRectangleSubject = new Subject<Rectangle>();
 
     nodesDataSource = new NodesDataSource();
 
-    manager = new SelectionManager(nodesDataSource, linksDataSourec, inRectangleHelper);
+    manager = new SelectionManager(nodesDataSource, linksDataSource, inRectangleHelper);
     manager.subscribe(selectedRectangleSubject);
 
     const node_1 = new Node();
+    node_1.node_id = "test1";
     node_1.name = "Node 1";
     node_1.x = 150;
     node_1.y = 150;
@@ -33,11 +34,15 @@ describe('SelectionManager', () => {
     nodesDataSource.add(node_1);
 
     const node_2 = new Node();
+    node_2.node_id = "test2";
     node_2.name = "Node 2";
     node_2.x = 300;
     node_2.y = 300;
     nodesDataSource.add(node_2);
 
+    const link_1 = new Link();
+    link_1.link_id = "test1";
+    linksDataSource.add(link_1);
   });
 
   it('node should be selected', () => {
@@ -56,12 +61,16 @@ describe('SelectionManager', () => {
   });
 
   it('nodes should be manually selected', () => {
-    manager.setSelectedNodes([new Node()]);
+    const node = new Node();
+    node.node_id = "test1";
+    manager.setSelectedNodes([node]);
     expect(manager.getSelectedNodes().length).toEqual(1);
   });
 
   it('links should be manually selected', () => {
-    manager.setSelectedLinks([new Link()]);
+    const link = new Link();
+    link.link_id = "test1";
+    manager.setSelectedLinks([link]);
     expect(manager.getSelectedLinks().length).toEqual(1);
   });
 });

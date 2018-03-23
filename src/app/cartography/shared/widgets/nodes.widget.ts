@@ -90,7 +90,7 @@ export class NodesWidget implements Widget {
     const node_enter = node
       .enter()
         .append<SVGGElement>('g')
-        .attr('class', 'node selectable');
+        .attr('class', 'node');
 
     node_enter
       .append<SVGImageElement>('image')

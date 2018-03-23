@@ -45,25 +45,40 @@ export class SelectionManager {
   }
 
   public setSelectedNodes(nodes: Node[]) {
-    this.selectedNodes = nodes;
+    this.selectedNodes = this.setSelectedItems<Node>(this.nodesDataSource, (node: Node) => {
+      return !!nodes.find((n: Node) => node.node_id === n.node_id);
+    });
   }
 
   public setSelectedLinks(links: Link[]) {
-    this.selectedLinks = links;
+    this.selectedLinks = this.setSelectedItems<Link>(this.linksDataSource, (link: Link) => {
+      return !!links.find((l: Link) => link.link_id === l.link_id);
+    });
   }
 
   private getSelectedItemsInRectangle<T extends Selectable>(dataSource: DataSource<T>, rectangle: Rectangle) {
-    const items: T[] = [];
+    return this.setSelectedItems<T>(dataSource, (item: T) => {
+      return this.inRectangleHelper.inRectangle(item, rectangle);
+    });
+  }
+
+  private setSelected<T extends Selectable>(item: T, isSelected: boolean, dataSource: DataSource<T>): boolean {
+    if (item.is_selected !== isSelected) {
+      item.is_selected = isSelected;
+      dataSource.update(item);
+    }
+    return item.is_selected;
+  }
+
+  private setSelectedItems<T extends Selectable>(dataSource: DataSource<T>, discriminator: (item: T) => boolean) {
+    const selected: T[] = [];
     dataSource.getItems().forEach((item: T) => {
-      const is_selected = this.inRectangleHelper.inRectangle(item, rectangle);
-      if (item.is_selected !== is_selected) {
-        item.is_selected = is_selected;
-        dataSource.update(item);
-        if (is_selected) {
-          items.push(item);
-        }
+      const isSelected = discriminator(item);
+      this.setSelected<T>(item, isSelected, dataSource);
+      if (isSelected) {
+        selected.push(item);
       }
     });
-    return items;
+    return selected;
   }
 }

@@ -161,11 +161,15 @@ export class ProjectMapComponent implements OnInit {
   }
 
   setUpMapCallbacks(project: Project) {
+    const selectionManager = new SelectionManager(this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
+
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
+      selectionManager.setSelectedNodes([node]);
+
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
       }
@@ -179,8 +183,6 @@ export class ProjectMapComponent implements OnInit {
           this.nodesDataSource.update(n);
         });
     });
-
-    const selectionManager = new SelectionManager(this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
 
     selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected);
   }
