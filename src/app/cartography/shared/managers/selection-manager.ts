@@ -8,7 +8,7 @@ import { LinksDataSource } from "../datasources/links-datasource";
 import { Node } from "../models/node";
 import { InRectangleHelper } from "../../map/helpers/in-rectangle-helper";
 import { Rectangle } from "../models/rectangle";
-import { Link } from "../models/link";
+import { Link} from "../models/link";
 import { DataSource } from "../datasources/datasource";
 
 
@@ -42,6 +42,14 @@ export class SelectionManager {
 
   public getSelectedLinks() {
     return this.selectedLinks;
+  }
+
+  public setSelectedNodes(nodes: Node[]) {
+    this.selectedNodes = nodes;
+  }
+
+  public setSelectedLinks(links: Link[]) {
+    this.selectedLinks = links;
   }
 
   private getSelectedItemsInRectangle<T extends Selectable>(dataSource: DataSource<T>, rectangle: Rectangle) {

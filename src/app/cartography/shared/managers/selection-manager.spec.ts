@@ -1,6 +1,7 @@
 import { Subject} from "rxjs/Subject";
 
 import { Node } from "../models/node";
+import { Link } from "../models/link";
 import { Rectangle } from "../models/rectangle";
 import { SelectionManager } from "./selection-manager";
 import { NodesDataSource } from "../datasources/nodes-datasource";
@@ -54,4 +55,13 @@ describe('SelectionManager', () => {
     expect(manager.getSelectedLinks().length).toEqual(0);
   });
 
+  it('nodes should be manually selected', () => {
+    manager.setSelectedNodes([new Node()]);
+    expect(manager.getSelectedNodes().length).toEqual(1);
+  });
+
+  it('links should be manually selected', () => {
+    manager.setSelectedLinks([new Link()]);
+    expect(manager.getSelectedLinks().length).toEqual(1);
+  });
 });
