@@ -1,6 +1,6 @@
-import {Size} from "../../cartography/shared/models/size";
-import {Selection} from "d3-selection";
-import {Point} from "../../cartography/shared/models/point";
+import {Size} from "./size";
+import {Point} from "./point";
+
 
 export class Context {
   private size: Size;

@@ -1,6 +1,6 @@
 import { Widget } from "./widget";
 import { Node } from "../models/node";
-import { SVGSelection } from "../../../map/models/types";
+import { SVGSelection } from "../models/types";
 import {event, select} from "d3-selection";
 import {D3DragEvent, drag} from "d3-drag";
 import {Symbol} from "../models/symbol";

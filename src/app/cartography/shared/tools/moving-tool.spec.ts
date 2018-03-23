@@ -1,6 +1,6 @@
 import { select } from "d3-selection";
-import { Context } from "../../../map/models/context";
-import { SVGSelection } from "../../../map/models/types";
+import { Context } from "../models/context";
+import { SVGSelection } from "../models/types";
 import { MovingTool } from "./moving-tool";
 
 

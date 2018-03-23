@@ -1,9 +1,9 @@
-import { Context } from "../../../map/models/context";
+import { Context } from "../models/context";
 import { Node } from "../models/node";
 import { Link } from "../models/link";
 import { NodesWidget } from "./nodes.widget";
 import { Widget } from "./widget";
-import { SVGSelection } from "../../../map/models/types";
+import { SVGSelection } from "../models/types";
 import { LinksWidget } from "./links.widget";
 import { Drawing } from "../models/drawing";
 import { DrawingsWidget } from "./drawings.widget";

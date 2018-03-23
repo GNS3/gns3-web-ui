@@ -1,9 +1,10 @@
-import {SVGSelection} from "../../../map/models/types";
-import {mouse, select} from "d3-selection";
-import {Context} from "../../../map/models/context";
-import {Subject} from "rxjs/Subject";
-import {Rectangle} from "../models/rectangle";
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
+import { mouse, select } from "d3-selection";
+import { Subject } from "rxjs/Subject";
+
+import { SVGSelection } from "../models/types";
+import { Context } from "../models/context";
+import { Rectangle } from "../models/rectangle";
 
 
 @Injectable()
@@ -83,7 +84,6 @@ export class SelectionTool {
   private moveSelection(start, move) {
     this.path.attr("d", this.rect(start[0], start[1], move[0] - start[0], move[1] - start[1]));
     this.selectedEvent(start, move);
-    // this.getSelectedItems(start, move);
   }
 
   private endSelection(start, end) {

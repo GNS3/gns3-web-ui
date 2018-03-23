@@ -1,5 +1,5 @@
 import {Widget} from "./widget";
-import {SVGSelection} from "../../../map/models/types";
+import {SVGSelection} from "../models/types";
 
 import { line } from "d3-shape";
 import {Link} from "../models/link";
