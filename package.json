@@ -50,7 +50,7 @@
     "@angular/language-service": "^5.2.1",
     "@types/jasmine": "~2.8.5",
     "@types/jasminewd2": "~2.0.2",
-    "@types/node": "~9.4.0",
+    "@types/node": "~9.6.0",
     "codelyzer": "~4.1.0",
     "electron": "1.8.3",
     "electron-builder": "^20.0.4",
