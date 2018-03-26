@@ -15,12 +15,12 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Installation for development
 
-Please install `npm` if not present in your system. 
+Please install `yarn` if not present in your system. 
 
-Next step is `angular-cli` installation:
+In the root of project please type to install dependencies:
 
 ```
-npm install @angular/cli
+yarn
 ```
 
 ## Development server
@@ -34,7 +34,7 @@ Please run locally GNS3 server.
 GNS3 server contains CORS policies to run Web UI on 8080 at localhost. In order to use it, please run development server with custom port:
 
 ```
-ng serve --port 8080
+yarn ng serve --port 8080
 ``` 
 
 Application is accessible on `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
@@ -49,19 +49,19 @@ For development you can run the GNS3 Web UI in a container
 
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
+Run `yarn ng generate component component-name` to generate a new component. You can also use `yarn ng generate directive|pipe|service|class|module`.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+Run `yarn ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `yarn ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Run `yarn ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 Before running the tests make sure you are serving the app via `ng serve`.
 
 # How to build gns3server for WebUI?
@@ -74,7 +74,7 @@ Before running the tests make sure you are serving the app via `ng serve`.
 
 We're using [version-bump-prompt](https://www.npmjs.com/package/version-bump-prompt) for increasing version.
 
-Intall `bump` via:
+Install `version-bump-prompt` via:
 
         npm install -g version-bump-prompt
         
