@@ -21,7 +21,7 @@ export abstract class DataSource<T> {
   public update(item: T) {
     const index = this.findIndex(item);
     if (index >= 0) {
-      this.data[index] = item;
+      this.data[index] = Object.assign(this.data[index], item);
       this.dataChange.next(this.data);
     }
   }

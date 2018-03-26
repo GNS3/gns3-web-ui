@@ -169,7 +169,6 @@ export class ProjectMapComponent implements OnInit {
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
       selectionManager.setSelectedNodes([node]);
-
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
       }
