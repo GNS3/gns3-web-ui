@@ -3,6 +3,7 @@ import {MatDialog} from "@angular/material";
 import {ApplianceListDialogComponent} from "./appliance-list-dialog/appliance-list-dialog.component";
 
 import {Server} from "../shared/models/server";
+import {Appliance} from "../shared/models/appliance";
 
 @Component({
   selector: 'app-appliance',
@@ -26,7 +27,7 @@ export class ApplianceComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe((appliance: AppendMode) => {
+    dialogRef.afterClosed().subscribe((appliance: Appliance) => {
       if (appliance !== null) {
         this.onNodeCreation.emit(appliance);
       }

@@ -1,8 +1,9 @@
-import {DrawingLine} from "../models/drawing-line.model";
-import {SVGSelection} from "../../../map/models/types";
-import {Point} from "../models/point.model";
+import {DrawingLine} from "../models/drawing-line";
+import {SVGSelection} from "../models/types";
+import {Point} from "../models/point";
 import {line} from "d3-shape";
-import {event, mouse, select} from "d3-selection";
+import {mouse} from "d3-selection";
+import {Context} from "../models/context";
 
 export class DrawingLineWidget {
   private drawingLine: DrawingLine = new DrawingLine();
@@ -23,11 +24,11 @@ export class DrawingLineWidget {
       const coordinates = mouse(node);
       self.drawingLine.end.x = coordinates[0];
       self.drawingLine.end.y = coordinates[1];
-      self.draw();
+      self.draw(null, null);
     };
 
     this.selection.on('mousemove', over);
-    this.draw();
+    this.draw(null, null);
   }
 
   public isDrawing() {
@@ -37,19 +38,20 @@ export class DrawingLineWidget {
   public stop() {
     this.drawing = false;
     this.selection.on('mousemove', null);
-    this.draw();
+    this.draw(null, null);
     return this.data;
   }
 
-  public connect(selection: SVGSelection) {
+  public connect(selection: SVGSelection, context: Context) {
     this.selection = selection;
+  }
+
+  public draw(selection: SVGSelection, context: Context) {
     const canvas = this.selection.select<SVGGElement>("g.canvas");
     if (!canvas.select<SVGGElement>("g.drawing-line-tool").node()) {
       canvas.append<SVGGElement>('g').attr("class", "drawing-line-tool");
     }
-  }
 
-  public draw() {
     let link_data = [];
 
     if (this.drawing) {

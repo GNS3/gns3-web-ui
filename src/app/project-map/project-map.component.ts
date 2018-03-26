@@ -12,27 +12,33 @@ import 'rxjs/add/observable/dom/webSocket';
 
 
 import { Project } from '../shared/models/project';
-import { Node } from '../cartography/shared/models/node.model';
+import { Node } from '../cartography/shared/models/node';
 import { SymbolService } from '../shared/services/symbol.service';
-import { Link } from "../cartography/shared/models/link.model";
+import { Link } from "../cartography/shared/models/link";
 import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
 import { Server } from "../shared/models/server";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar } from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import { SnapshotService } from "../shared/services/snapshot.service";
 import { Snapshot } from "../shared/models/snapshot";
 import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";
 import { ProgressDialogComponent } from "../shared/progress-dialog/progress-dialog.component";
-import { Drawing } from "../cartography/shared/models/drawing.model";
+import { Drawing } from "../cartography/shared/models/drawing";
 import { NodeContextMenuComponent } from "../shared/node-context-menu/node-context-menu.component";
 import { Appliance } from "../shared/models/appliance";
 import { NodeService } from "../shared/services/node.service";
-import { Symbol } from "../shared/models/symbol";
+import { Symbol } from "../cartography/shared/models/symbol";
 import { NodeSelectInterfaceComponent } from "../shared/node-select-interface/node-select-interface.component";
 import { Port } from "../shared/models/port";
 import { LinkService } from "../shared/services/link.service";
 import { ToasterService } from '../shared/services/toaster.service';
+import { NodesDataSource } from "../cartography/shared/datasources/nodes-datasource";
+import { LinksDataSource } from "../cartography/shared/datasources/links-datasource";
+import { ProjectWebServiceHandler } from "../shared/handlers/project-web-service-handler";
+import { Rectangle } from "../cartography/shared/models/rectangle";
+import { SelectionManager } from "../cartography/shared/managers/selection-manager";
+import { InRectangleHelper } from "../cartography/map/helpers/in-rectangle-helper";
 
 
 @Component({
@@ -52,6 +58,8 @@ export class ProjectMapComponent implements OnInit {
 
   private ws: Subject<any>;
   private drawLineMode =  false;
+  private movingMode = false;
+
   public isLoading = true;
 
   @ViewChild(MapComponent) mapChild: MapComponent;
@@ -69,7 +77,11 @@ export class ProjectMapComponent implements OnInit {
               private linkService: LinkService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
-              private toaster: ToasterService) {
+              private toaster: ToasterService,
+              private projectWebServiceHandler: ProjectWebServiceHandler,
+              protected nodesDataSource: NodesDataSource,
+              protected linksDataSource: LinksDataSource,
+              ) {
   }
 
   ngOnInit() {
@@ -102,6 +114,19 @@ export class ProjectMapComponent implements OnInit {
       this.symbols = symbols;
     });
 
+    this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
+      this.nodes = nodes;
+      if (this.mapChild) {
+        this.mapChild.reload();
+      }
+    });
+
+    this.linksDataSource.connect().subscribe((links: Link[]) => {
+      this.links = links;
+      if (this.mapChild) {
+        this.mapChild.reload();
+      }
+    });
   }
 
   onProjectLoad(project: Project) {
@@ -115,11 +140,11 @@ export class ProjectMapComponent implements OnInit {
         return this.projectService.links(this.server, project.project_id);
       })
       .flatMap((links: Link[]) => {
-        this.links = links;
+        this.linksDataSource.set(links);
         return this.projectService.nodes(this.server, project.project_id);
       })
       .subscribe((nodes: Node[]) => {
-        this.nodes = nodes;
+        this.nodesDataSource.set(nodes);
 
         this.setUpMapCallbacks(project);
         this.setUpWS(project);
@@ -132,85 +157,33 @@ export class ProjectMapComponent implements OnInit {
   setUpWS(project: Project) {
     this.ws = Observable.webSocket(
       this.projectService.notificationsPath(this.server, project.project_id));
-
-    this.ws.subscribe((o: any) => {
-      if (o.action === 'node.updated') {
-        const node: Node = o.event;
-        const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-        if (index >= 0) {
-          this.nodes[index] = node;
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'node.created') {
-        const node: Node = o.event;
-        const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-        if (index === -1) {
-          this.nodes.push(node);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'node.deleted') {
-        const node: Node = o.event;
-        const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-        if (index >= 0) {
-          this.nodes.splice(index, 1);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'link.created') {
-        const link: Link = o.event;
-        const index = this.links.findIndex((l: Link) => l.link_id === link.link_id);
-        if (index === -1) {
-          this.links.push(link);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'link.updated') {
-        const link: Link = o.event;
-        const index = this.links.findIndex((l: Link) => l.link_id === link.link_id);
-        if (index >= 0) {
-          this.links[index] = link;
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-      if (o.action === 'link.deleted') {
-        const link: Link = o.event;
-        const index = this.links.findIndex((l: Link) => l.link_id === link.link_id);
-        if (index >= 0) {
-          this.links.splice(index, 1);
-          this.mapChild.reload(); // temporary invocation
-        }
-      }
-    });
+    this.projectWebServiceHandler.connect(this.ws);
   }
 
-
   setUpMapCallbacks(project: Project) {
+    const selectionManager = new SelectionManager(this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
+
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
+      selectionManager.setSelectedNodes([node]);
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
       }
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
-      const index = this.nodes.findIndex((n: Node) => n.node_id === node.node_id);
-      if (index >= 0) {
-        this.nodes[index] = node;
-        this.mapChild.reload(); // temporary invocation
-
-        this.nodeService
-          .updatePosition(this.server, node, node.x, node.y)
-          .subscribe((n: Node) => {
-            this.nodes[index] = node;
-            this.mapChild.reload(); // temporary invocation
-          });
-      }
+      this.nodesDataSource.update(node);
+      this.nodeService
+        .updatePosition(this.server, node, node.x, node.y)
+        .subscribe((n: Node) => {
+          this.nodesDataSource.update(n);
+        });
     });
+
+    selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected);
   }
 
   onNodeCreation(appliance: Appliance) {
@@ -220,8 +193,7 @@ export class ProjectMapComponent implements OnInit {
         this.projectService
           .nodes(this.server, this.project.project_id)
           .subscribe((nodes: Node[]) => {
-            this.nodes = nodes;
-            this.mapChild.reload();
+            this.nodesDataSource.set(nodes);
         });
       });
   }
@@ -255,13 +227,22 @@ export class ProjectMapComponent implements OnInit {
     });
   }
 
-  public turnOnDrawLineMode() {
-    this.drawLineMode = true;
+  public toggleDrawLineMode() {
+    this.drawLineMode = !this.drawLineMode;
+    if (!this.drawLineMode) {
+      this.mapChild.graphLayout.getDrawingLineTool().stop();
+    }
   }
 
-  public turnOffDrawLineMode() {
-    this.drawLineMode = false;
-    this.mapChild.graphLayout.getDrawingLineTool().stop();
+  public toggleMovingMode() {
+    this.movingMode = !this.movingMode;
+    if (this.movingMode) {
+      this.mapChild.graphLayout.getSelectionTool().deactivate();
+      this.mapChild.graphLayout.getMovingTool().activate();
+    } else {
+      this.mapChild.graphLayout.getMovingTool().deactivate();
+      this.mapChild.graphLayout.getSelectionTool().activate();
+    }
   }
 
   public onChooseInterface(event) {
@@ -284,8 +265,7 @@ export class ProjectMapComponent implements OnInit {
       .createLink(this.server, source_node, source_port, target_node, target_port)
       .subscribe(() => {
         this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
-          this.links = links;
-          this.mapChild.reload();
+          this.linksDataSource.set(links);
         });
       });
   }

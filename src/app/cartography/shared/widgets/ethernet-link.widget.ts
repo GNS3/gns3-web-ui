@@ -1,8 +1,8 @@
 import {Widget} from "./widget";
-import {SVGSelection} from "../../../map/models/types";
+import {SVGSelection} from "../models/types";
 
 import { line } from "d3-shape";
-import {Link} from "../models/link.model";
+import {Link} from "../models/link";
 
 export class EthernetLinkWidget implements Widget {
 
@@ -15,6 +15,7 @@ export class EthernetLinkWidget implements Widget {
       const value_line = line();
 
       let link_path = view.select<SVGPathElement>('path');
+      link_path.classed('selected', (l: Link) => l.is_selected);
 
       if (!link_path.node()) {
         link_path = view.append<SVGPathElement>('path');

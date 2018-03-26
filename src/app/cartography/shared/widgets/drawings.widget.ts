@@ -1,6 +1,6 @@
 import {Widget} from "./widget";
-import {Drawing} from "../models/drawing.model";
-import {SVGSelection} from "../../../map/models/types";
+import {Drawing} from "../models/drawing";
+import {SVGSelection} from "../models/types";
 
 
 export class DrawingsWidget implements Widget {

@@ -9,7 +9,7 @@
           <mat-icon svgIcon="gns3"></mat-icon>
         </button>
       </mat-toolbar-row>
-      
+
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
         <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
           <mat-icon>work</mat-icon>
@@ -22,12 +22,14 @@
       </mat-menu>
 
       <mat-toolbar-row>
-        <button mat-icon-button (click)="turnOnDrawLineMode()" *ngIf="!drawLineMode">
+        <button mat-icon-button [color]="drawLineMode ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
+      </mat-toolbar-row>
 
-        <button mat-icon-button color="primary" (click)="turnOffDrawLineMode()" *ngIf="drawLineMode">
-          <mat-icon>timeline</mat-icon>
+      <mat-toolbar-row>
+        <button mat-icon-button [color]="movingMode ? 'primary': 'basic'" (click)="toggleMovingMode()">
+          <mat-icon>zoom_out_map</mat-icon>
         </button>
       </mat-toolbar-row>
 

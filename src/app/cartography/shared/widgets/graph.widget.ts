@@ -1,15 +1,15 @@
-import { Context } from "../../../map/models/context";
-import { Node } from "../models/node.model";
-import { Link } from "../models/link.model";
+import { Context } from "../models/context";
+import { Node } from "../models/node";
+import { Link } from "../models/link";
 import { NodesWidget } from "./nodes.widget";
 import { Widget } from "./widget";
-import { SVGSelection } from "../../../map/models/types";
+import { SVGSelection } from "../models/types";
 import { LinksWidget } from "./links.widget";
-import { D3ZoomEvent, zoom } from "d3-zoom";
-import { event } from "d3-selection";
-import { Drawing } from "../models/drawing.model";
+import { Drawing } from "../models/drawing";
 import { DrawingsWidget } from "./drawings.widget";
 import { DrawingLineWidget } from "./drawing-line.widget";
+import {SelectionTool} from "../tools/selection-tool";
+import {MovingTool} from "../tools/moving-tool";
 
 export class GraphLayout implements Widget {
   private nodes: Node[] = [];
@@ -20,6 +20,8 @@ export class GraphLayout implements Widget {
   private nodesWidget: NodesWidget;
   private drawingsWidget: DrawingsWidget;
   private drawingLineTool: DrawingLineWidget;
+  private selectionTool: SelectionTool;
+  private movingTool: MovingTool;
 
   private centerZeroZeroPoint = true;
 
@@ -28,6 +30,8 @@ export class GraphLayout implements Widget {
     this.nodesWidget = new NodesWidget();
     this.drawingsWidget = new DrawingsWidget();
     this.drawingLineTool = new DrawingLineWidget();
+    this.selectionTool = new SelectionTool();
+    this.movingTool = new MovingTool();
   }
 
   public setNodes(nodes: Node[]) {
@@ -54,9 +58,23 @@ export class GraphLayout implements Widget {
     return this.drawingLineTool;
   }
 
-  draw(view: SVGSelection, context: Context) {
-    const self = this;
+  public getMovingTool() {
+    return this.movingTool;
+  }
 
+  public getSelectionTool() {
+    return this.selectionTool;
+  }
+
+  connect(view: SVGSelection, context: Context) {
+    this.drawingLineTool.connect(view, context);
+    this.selectionTool.connect(view, context);
+    this.movingTool.connect(view, context);
+
+    this.selectionTool.activate();
+  }
+
+  draw(view: SVGSelection, context: Context) {
     const canvas = view
       .selectAll<SVGGElement, Context>('g.canvas')
       .data([context]);
@@ -71,29 +89,18 @@ export class GraphLayout implements Widget {
         (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
     }
 
-
-
     this.linksWidget.draw(canvas, this.links);
     this.nodesWidget.draw(canvas, this.nodes);
     this.drawingsWidget.draw(canvas, this.drawings);
 
-    this.drawingLineTool.connect(view);
-
-    const onZoom = function(this: SVGSVGElement) {
-      const e: D3ZoomEvent<SVGSVGElement, any> = event;
-      if (self.centerZeroZeroPoint) {
-        canvas.attr(
-          'transform',
-          `translate(${context.getSize().width / 2 + e.transform.x}, ` +
-                `${context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
-      } else {
-        canvas.attr('transform', e.transform.toString());
-      }
-    };
-
-    view.call(zoom<SVGSVGElement, any>()
-        .scaleExtent([1 / 2, 8])
-        .on('zoom', onZoom));
+    this.drawingLineTool.draw(view, context);
+    this.selectionTool.draw(view, context);
+    this.movingTool.draw(view, context);
   }
 
+  disconnect(view: SVGSelection) {
+    if (view.empty && !view.empty()) {
+      view.selectAll('*').remove();
+    }
+  }
 }

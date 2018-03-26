@@ -10,16 +10,14 @@ export class SnapshotService {
 
   constructor(private httpServer: HttpServer) { }
 
-  create(server: Server, project_id: string, snapshot: Snapshot): Observable<Snapshot> {
+  create(server: Server, project_id: string, snapshot: Snapshot) {
     return this.httpServer
-                .post(server, `/projects/${project_id}/snapshots`, snapshot)
-                .map(response => response.json() as Snapshot);
+                .post<Snapshot>(server, `/projects/${project_id}/snapshots`, snapshot);
   }
 
-  list(server: Server, project_id: string): Observable<Snapshot[]> {
+  list(server: Server, project_id: string) {
     return this.httpServer
-                .get(server, `/projects/${project_id}/snapshots`)
-                .map(response => response.json() as Snapshot[]);
+                .get<Snapshot[]>(server, `/projects/${project_id}/snapshots`);
   }
 
 }

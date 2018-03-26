@@ -4,13 +4,13 @@ import {
 import { D3, D3Service } from 'd3-ng2-service';
 import {select, Selection} from 'd3-selection';
 
-import { Node } from "../shared/models/node.model";
-import { Link } from "../shared/models/link.model";
+import { Node } from "../shared/models/node";
+import { Link } from "../shared/models/link";
 import { GraphLayout } from "../shared/widgets/graph.widget";
-import { Context } from "../../map/models/context";
-import { Size } from "../shared/models/size.model";
-import { Drawing } from "../shared/models/drawing.model";
-import {Symbol} from "../../shared/models/symbol";
+import { Context } from "../shared/models/context";
+import { Size } from "../shared/models/size";
+import { Drawing } from "../shared/models/drawing";
+import {Symbol} from "../shared/models/symbol";
 
 
 @Component({
@@ -68,9 +68,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.svg.empty && !this.svg.empty()) {
-      this.svg.selectAll('*').remove();
-    }
+    this.graphLayout.disconnect(this.svg);
   }
 
   ngOnInit() {
@@ -78,14 +76,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     let rootElement: Selection<HTMLElement, any, null, undefined>;
 
-    const self = this;
-
     if (this.parentNativeElement !== null) {
       rootElement = d3.select(this.parentNativeElement);
 
       this.svg = rootElement.select<SVGSVGElement>('svg');
 
-      this.graphContext = new Context(this.svg);
+      this.graphContext = new Context(true);
 
       if (this.windowFullSize) {
         this.graphContext.setSize(this.getSize());
@@ -94,6 +90,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       this.graphLayout = new GraphLayout();
+      this.graphLayout.connect(this.svg, this.graphContext);
 
       this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {
         const linksWidget = this.graphLayout.getLinksWidget();
@@ -131,8 +128,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         .attr('height', this.graphContext.getSize().height);
     }
 
-
-
     this.graphLayout.setNodes(this.nodes);
     this.graphLayout.setLinks(this.links);
     this.graphLayout.setDrawings(this.drawings);
@@ -154,6 +149,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (target_id in nodes_by_id) {
         link.target = nodes_by_id[target_id];
+      }
+
+      if (link.source && link.target) {
+        link.x = link.source.x + (link.target.x - link.source.x) * 0.5;
+        link.y = link.source.y + (link.target.y - link.source.y) * 0.5;
       }
     });
   }

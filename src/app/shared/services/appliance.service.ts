@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import {Appliance} from "../models/appliance";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class ApplianceService {
@@ -13,8 +13,7 @@ export class ApplianceService {
 
   list(server: Server): Observable<Appliance[]> {
     return this.httpServer
-                .get(server, '/appliances')
-                .map(response => response.json() as Appliance[]);
+                .get<Appliance[]>(server, '/appliances') as Observable<Appliance[]>;
   }
 
 }

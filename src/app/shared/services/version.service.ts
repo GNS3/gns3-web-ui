@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
 
@@ -13,9 +12,8 @@ export class VersionService {
 
   constructor(private httpServer: HttpServer) { }
 
-  get(server: Server): Observable<Version> {
+  get(server: Server) {
     return this.httpServer
-                .get(server, '/version')
-                .map(response => response.json() as Version);
+                .get<Version>(server, '/version');
   }
 }

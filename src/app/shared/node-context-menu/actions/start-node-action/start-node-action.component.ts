@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Server} from "../../../models/server";
 import {NodeService} from "../../../services/node.service";
-import {Node} from "../../../../cartography/shared/models/node.model";
+import {Node} from "../../../../cartography/shared/models/node";
 
 
 @Component({

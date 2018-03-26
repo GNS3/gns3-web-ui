@@ -1,64 +1,132 @@
 import { Injectable } from '@angular/core';
+import {HttpHeaders, HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import {Headers, Http, RequestOptions, RequestOptionsArgs, Response} from "@angular/http";
+
 import {Server} from "../models/server";
+
+
+/* tslint:disable:interface-over-type-literal */
+export type JsonOptions = {
+  headers?: HttpHeaders | {
+      [header: string]: string | string[];
+  };
+  observe?: 'body';
+  params?: HttpParams | {
+      [param: string]: string | string[];
+  };
+  reportProgress?: boolean;
+  responseType?: 'json';
+  withCredentials?: boolean;
+};
+
+export type TextOptions = {
+  headers?: HttpHeaders | {
+      [header: string]: string | string[];
+  };
+  observe?: 'body';
+  params?: HttpParams | {
+      [param: string]: string | string[];
+  };
+  reportProgress?: boolean;
+  responseType: 'text';
+  withCredentials?: boolean;
+};
+
+export type HeadersOptions = {
+    headers?: HttpHeaders | {
+        [header: string]: string | string[];
+    };
+};
+/* tslint:enable:interface-over-type-literal */
+
 
 @Injectable()
 export class HttpServer {
 
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
-  get(server: Server, url: string, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.get(url, options);
+  get<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer<JsonOptions>(server, url, options);
+    return this.http.get<T>(intercepted.url, intercepted.options as JsonOptions);
   }
 
-  post(server: Server, url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.post(url, body, options);
+  getText(server: Server, url: string, options?: TextOptions): Observable<string> {
+    options = this.getTextOptions(options);
+    const intercepted = this.getOptionsForServer<TextOptions>(server, url, options);
+    return this.http.get(intercepted.url, intercepted.options as TextOptions);
   }
 
-  put(server: Server, url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.put(url, body, options);
+  post<T>(server: Server, url: string, body: any | null, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer(server, url, options);
+    return this.http.post<T>(intercepted.url, body, intercepted.options);
   }
 
-  delete(server: Server, url: string, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.delete(url, options);
+  put<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer(server, url, options);
+    return this.http.put<T>(intercepted.url, body, intercepted.options);
   }
 
-  patch(server: Server, url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.patch(url, body, options);
+  delete<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer(server, url, options);
+    return this.http.delete<T>(intercepted.url, intercepted.options);
   }
 
-  head(server: Server, url: string, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.patch(url, options);
+  patch<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer(server, url, options);
+    return this.http.patch<T>(intercepted.url, body, intercepted.options);
   }
 
-  options(server: Server, url: string, options?: RequestOptionsArgs): Observable<Response> {
-    options = this.getOptionsForServer(server, url, options);
-    return this.http.options(url, options);
+  head<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer(server, url, options);
+    return this.http.head<T>(intercepted.url, intercepted.options);
   }
 
-  private getOptionsForServer(server: Server, url: string, options) {
-    if (options === undefined) {
-      options = new RequestOptions();
+  options<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+    options = this.getJsonOptions(options);
+    const intercepted = this.getOptionsForServer(server, url, options);
+    return this.http.options<T>(intercepted.url, intercepted.options);
+  }
+
+  private getJsonOptions(options: JsonOptions): JsonOptions {
+    if (!options) {
+      return {
+        responseType: "json"
+      };
     }
-    options.url = `http://${server.ip}:${server.port}/v2${url}`;
+    return options;
+  }
 
-    if (options.headers === null) {
-      options.headers = new Headers();
+  private getTextOptions(options: TextOptions): TextOptions {
+    if (!options) {
+      return {
+        responseType: "text"
+      };
+    }
+    return options;
+  }
+
+  private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
+    url = `http://${server.ip}:${server.port}/v2${url}`;
+
+    if (!options.headers) {
+      options.headers = {};
     }
 
     if (server.authorization === "basic") {
       const credentials = btoa(`${server.login}:${server.password}`);
-      options.headers.append('Authorization', `Basic ${credentials}`);
+      options.headers['Authorization'] = `Basic ${credentials}`;
     }
 
-    return options;
+    return {
+      url: url,
+      options: options
+    };
   }
 
 }
