@@ -1,4 +1,4 @@
-import {DataSource} from "./datasource";
+import { DataSource } from "./datasource";
 
 class Item {
   constructor(public id: string, public property1?: string, public property2?: string) {}
@@ -10,7 +10,6 @@ class TestDataSource extends DataSource<Item> {
     return this.data.findIndex((i: Item) => i.id === item.id);
   }
 };
-
 
 
 describe('TestDataSource', () => {

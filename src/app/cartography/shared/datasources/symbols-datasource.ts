@@ -1,7 +1,7 @@
-import {Node} from "../models/node";
-import {DataSource} from "./datasource";
-import {Injectable} from "@angular/core";
-import {Symbol} from "../models/symbol";
+import { Injectable } from "@angular/core";
+
+import { DataSource } from "./datasource";
+import { Symbol } from "../models/symbol";
 
 
 @Injectable()

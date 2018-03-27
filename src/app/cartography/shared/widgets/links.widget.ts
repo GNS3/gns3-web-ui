@@ -101,7 +101,6 @@ export class LinksWidget implements Widget {
     const link = view
       .selectAll<SVGGElement, Link>("g.link")
       .data((layer: Layer) => {
-        console.log(layer.links);
         if (layer.links) {
           const layer_links = layer.links.filter((l: Link) => {
               return l.target && l.source;
