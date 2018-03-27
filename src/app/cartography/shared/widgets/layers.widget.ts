@@ -24,6 +24,10 @@ export class LayersWidget implements Widget {
         .remove();
 
     this.graphLayout
+      .getLinksWidget()
+      .draw(layers_selection);
+
+    this.graphLayout
       .getNodesWidget()
       .draw(layers_selection);
 
@@ -31,8 +35,5 @@ export class LayersWidget implements Widget {
       .getDrawingsWidget()
       .draw(layers_selection);
 
-    this.graphLayout
-      .getLinksWidget()
-      .draw(layers_selection);
   }
 }
