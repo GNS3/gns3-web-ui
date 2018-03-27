@@ -1,9 +1,10 @@
 import { Widget } from "./widget";
 import { Node } from "../models/node";
 import { SVGSelection } from "../models/types";
-import {event, select} from "d3-selection";
+import {event, select, Selection} from "d3-selection";
 import {D3DragEvent, drag} from "d3-drag";
 import {Symbol} from "../models/symbol";
+import {Layer} from "../models/layer";
 
 
 export class NodesWidget implements Widget {
@@ -78,16 +79,23 @@ export class NodesWidget implements Widget {
 
   }
 
-  public draw(view: SVGSelection, nodes: Node[]) {
+  public draw(view: SVGSelection, nodes?: Node[]) {
     const self = this;
 
-    const node = view
-      .selectAll<SVGGElement, any>('g.node')
-        .data(nodes, (n: Node) => {
-          return n.node_id;
-        });
+    let nodes_selection: Selection<SVGGElement, Node, any, any> = view
+      .selectAll<SVGGElement, Node>('g.node');
 
-    const node_enter = node
+    if (nodes) {
+      nodes_selection = nodes_selection.data(nodes);
+    } else {
+      nodes_selection = nodes_selection.data((l: Layer) => {
+        return l.nodes;
+      }, (n: Node) => {
+        return n.node_id;
+      });
+    }
+
+    const node_enter = nodes_selection
       .enter()
         .append<SVGGElement>('g')
         .attr('class', 'node');
@@ -134,7 +142,7 @@ export class NodesWidget implements Widget {
           .attr('y', '0');
     }
 
-    const node_merge = node
+    const node_merge = nodes_selection
       .merge(node_enter)
         .classed('selected', (n: Node) => n.is_selected)
         .on("contextmenu", function (n: Node, i: number) {
@@ -175,7 +183,7 @@ export class NodesWidget implements Widget {
 
     node_merge.call(dragging());
 
-    node
+    nodes_selection
       .exit()
         .remove();
   }
