@@ -1,11 +1,14 @@
-import {ProjectWebServiceHandler, WebServiceMessage} from "./project-web-service-handler";
-import {Subject} from "rxjs/Subject";
-import {inject, TestBed} from "@angular/core/testing";
-import {NodesDataSource} from "../../cartography/shared/datasources/nodes-datasource";
-import {LinksDataSource} from "../../cartography/shared/datasources/links-datasource";
-import {Node} from "../../cartography/shared/models/node";
-import {Link} from "../../cartography/shared/models/link";
+import { inject, TestBed } from "@angular/core/testing";
 
+import { Subject } from "rxjs/Subject";
+
+import { ProjectWebServiceHandler, WebServiceMessage } from "./project-web-service-handler";
+import { NodesDataSource } from "../../cartography/shared/datasources/nodes-datasource";
+import { LinksDataSource } from "../../cartography/shared/datasources/links-datasource";
+import { DrawingsDataSource } from "../../cartography/shared/datasources/drawings-datasource";
+import { Node } from "../../cartography/shared/models/node";
+import { Link } from "../../cartography/shared/models/link";
+import { Drawing } from "../../cartography/shared/models/drawing";
 
 
 describe('ProjectWebServiceHandler', () => {
@@ -13,7 +16,7 @@ describe('ProjectWebServiceHandler', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProjectWebServiceHandler, NodesDataSource, LinksDataSource]
+      providers: [ProjectWebServiceHandler, NodesDataSource, LinksDataSource, DrawingsDataSource]
     });
 
     ws = new Subject<WebServiceMessage>();
@@ -119,5 +122,54 @@ describe('ProjectWebServiceHandler', () => {
 
     expect(service).toBeTruthy();
     expect(linksDataSource.remove).toHaveBeenCalledWith(message.event);
+  }));
+
+  it('drawing should be added', inject([ProjectWebServiceHandler, DrawingsDataSource],
+    (service: ProjectWebServiceHandler, drawingsDataSource: DrawingsDataSource) => {
+    spyOn(drawingsDataSource, 'add');
+
+    service.connect(ws);
+
+    const message = new WebServiceMessage();
+    message.action = "drawing.created";
+    message.event = new Drawing();
+
+    ws.next(message);
+
+    expect(service).toBeTruthy();
+    expect(drawingsDataSource.add).toHaveBeenCalledWith(message.event);
+  }));
+
+  it('drawing should be updated', inject([ProjectWebServiceHandler, DrawingsDataSource],
+    (service: ProjectWebServiceHandler, drawingsDataSource: DrawingsDataSource) => {
+    spyOn(drawingsDataSource, 'update');
+
+    service.connect(ws);
+
+    const message = new WebServiceMessage();
+    message.action = "drawing.updated";
+    message.event = new Drawing();
+
+    ws.next(message);
+
+    expect(service).toBeTruthy();
+    expect(drawingsDataSource.update).toHaveBeenCalledWith(message.event);
+  }));
+
+
+  it('drawing should be removed', inject([ProjectWebServiceHandler, DrawingsDataSource],
+    (service: ProjectWebServiceHandler, drawingsDataSource: DrawingsDataSource) => {
+    spyOn(drawingsDataSource, 'remove');
+
+    service.connect(ws);
+
+    const message = new WebServiceMessage();
+    message.action = "drawing.deleted";
+    message.event = new Drawing();
+
+    ws.next(message);
+
+    expect(service).toBeTruthy();
+    expect(drawingsDataSource.remove).toHaveBeenCalledWith(message.event);
   }));
 });

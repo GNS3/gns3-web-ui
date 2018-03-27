@@ -1,20 +1,24 @@
-import {Injectable} from "@angular/core";
-import {NodesDataSource} from "../../cartography/shared/datasources/nodes-datasource";
-import {LinksDataSource} from "../../cartography/shared/datasources/links-datasource";
-import {Subject} from "rxjs/Subject";
-import {Link} from "../../cartography/shared/models/link";
-import {Node} from "../../cartography/shared/models/node";
+import { Injectable } from "@angular/core";
+import { Subject } from "rxjs/Subject";
+
+import { NodesDataSource } from "../../cartography/shared/datasources/nodes-datasource";
+import { LinksDataSource } from "../../cartography/shared/datasources/links-datasource";
+import { DrawingsDataSource } from "../../cartography/shared/datasources/drawings-datasource";
+import { Link } from "../../cartography/shared/models/link";
+import { Node } from "../../cartography/shared/models/node";
+import { Drawing } from "../../cartography/shared/models/drawing";
 
 
 export class WebServiceMessage {
   action: string;
-  event: Node | Link;
+  event: Node | Link | Drawing;
 }
 
 @Injectable()
 export class ProjectWebServiceHandler {
   constructor(private nodesDataSource: NodesDataSource,
-              private linksDataSource: LinksDataSource) {}
+              private linksDataSource: LinksDataSource,
+              private drawingsDataSource: DrawingsDataSource) {}
 
   public connect(ws: Subject<WebServiceMessage>) {
     ws.subscribe((message: WebServiceMessage) => {
@@ -35,6 +39,15 @@ export class ProjectWebServiceHandler {
       }
       if (message.action === 'link.deleted') {
         this.linksDataSource.remove(message.event as Link);
+      }
+      if (message.action === 'drawing.created') {
+        this.drawingsDataSource.add(message.event as Drawing);
+      }
+      if (message.action === 'drawing.updated') {
+       this.drawingsDataSource.update(message.event as Drawing);
+      }
+      if (message.action === 'drawing.deleted') {
+        this.drawingsDataSource.remove(message.event as Drawing);
       }
     });
   }

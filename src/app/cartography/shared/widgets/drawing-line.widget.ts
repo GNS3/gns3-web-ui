@@ -1,9 +1,11 @@
-import {DrawingLine} from "../models/drawing-line";
-import {SVGSelection} from "../models/types";
-import {Point} from "../models/point";
-import {line} from "d3-shape";
-import {mouse} from "d3-selection";
-import {Context} from "../models/context";
+import { line } from "d3-shape";
+import { mouse } from "d3-selection";
+
+import { DrawingLine } from "../models/drawing-line";
+import { SVGSelection } from "../models/types";
+import { Point } from "../models/point";
+import { Context } from "../models/context";
+
 
 export class DrawingLineWidget {
   private drawingLine: DrawingLine = new DrawingLine();

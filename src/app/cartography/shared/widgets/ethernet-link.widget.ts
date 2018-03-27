@@ -1,8 +1,9 @@
-import {Widget} from "./widget";
-import {SVGSelection} from "../models/types";
-
 import { line } from "d3-shape";
-import {Link} from "../models/link";
+
+import { Widget } from "./widget";
+import { SVGSelection } from "../models/types";
+import { Link } from "../models/link";
+
 
 export class EthernetLinkWidget implements Widget {
 

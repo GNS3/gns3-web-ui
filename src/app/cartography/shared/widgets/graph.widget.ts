@@ -8,10 +8,10 @@ import { LinksWidget } from "./links.widget";
 import { Drawing } from "../models/drawing";
 import { DrawingsWidget } from "./drawings.widget";
 import { DrawingLineWidget } from "./drawing-line.widget";
-import {SelectionTool} from "../tools/selection-tool";
-import {MovingTool} from "../tools/moving-tool";
-import {LayersWidget} from "./layers.widget";
-import {Layer} from "../models/layer";
+import { SelectionTool } from "../tools/selection-tool";
+import { MovingTool } from "../tools/moving-tool";
+import { LayersWidget } from "./layers.widget";
+import { Layer } from "../models/layer";
 
 
 export class GraphLayout implements Widget {
