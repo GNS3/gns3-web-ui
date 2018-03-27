@@ -141,18 +141,18 @@ export class ProjectMapComponent implements OnInit {
     this.symbolService
       .load(this.server)
       .flatMap(() => {
-        return this.projectService.drawings(this.server, project.project_id);
+        return this.projectService.nodes(this.server, project.project_id);
       })
-      .flatMap((drawings: Drawing[]) => {
-        this.drawingsDataSource.set(drawings);
+      .flatMap((nodes: Node[]) => {
+        this.nodesDataSource.set(nodes);
         return this.projectService.links(this.server, project.project_id);
       })
       .flatMap((links: Link[]) => {
         this.linksDataSource.set(links);
-        return this.projectService.nodes(this.server, project.project_id);
+        return this.projectService.drawings(this.server, project.project_id);
       })
-      .subscribe((nodes: Node[]) => {
-        this.nodesDataSource.set(nodes);
+      .subscribe((drawings: Drawing[]) => {
+        this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks(project);
         this.setUpWS(project);
