@@ -7,4 +7,10 @@ export class Layer {
   nodes: Node[];
   drawings: Drawing[];
   links: Link[];
+
+  constructor() {
+    this.nodes = [];
+    this.drawings = [];
+    this.links = [];
+  }
 }

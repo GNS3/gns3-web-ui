@@ -11,7 +11,7 @@ import { DrawingLineWidget } from "./drawing-line";
 import { SelectionTool } from "../tools/selection-tool";
 import { MovingTool } from "../tools/moving-tool";
 import { LayersWidget } from "./layers";
-import { Layer } from "../models/layer";
+import { LayersManager } from "../managers/layers-manager";
 
 
 export class GraphLayout implements Widget {
@@ -98,56 +98,13 @@ export class GraphLayout implements Widget {
         (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
     }
 
-
-    const layers = {};
-
-    this.nodes.forEach((n: Node) => {
-      const key = n.z.toString();
-      if (!(key in layers)) {
-        layers[key] = new Layer();
-        layers[key].nodes = [];
-        layers[key].drawings = [];
-        layers[key].links = [];
-      }
-      layers[key].nodes.push(n);
-    });
-
-
-    this.drawings.forEach((d: Drawing) => {
-      const key = d.z.toString();
-      if (!(key in layers)) {
-        layers[key] = new Layer();
-        layers[key].nodes = [];
-        layers[key].drawings = [];
-        layers[key].links = [];
-      }
-      layers[key].drawings.push(d);
-    });
-
-    this.links.forEach((l: Link) => {
-      if (!l.source || !l.target) {
-        return;
-      }
-
-      const key = Math.min(l.source.z, l.target.z).toString();
-
-      if (!(key in layers)) {
-        layers[key] = new Layer();
-        layers[key].nodes = [];
-        layers[key].drawings = [];
-        layers[key].links = [];
-      }
-      layers[key].links.push(l);
-    });
-
-    const layers_list: Layer[] = Object.keys(layers).sort((a: string, b: string) => {
-      return Number(a) - Number(b);
-    }).map((key: string) => {
-      return layers[key];
-    });
+    const layersManager = new LayersManager();
+    layersManager.setNodes(this.nodes);
+    layersManager.setDrawings(this.drawings);
+    layersManager.setLinks(this.links);
 
     this.layersWidget.graphLayout = this;
-    this.layersWidget.draw(canvas, layers_list);
+    this.layersWidget.draw(canvas, layersManager.getLayersList());
 
     this.drawingLineTool.draw(view, context);
     this.selectionTool.draw(view, context);

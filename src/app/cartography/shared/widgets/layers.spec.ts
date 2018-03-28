@@ -6,7 +6,7 @@ import { Layer } from "../models/layer";
 import { LinksWidget } from "./links";
 import { NodesWidget } from "./nodes";
 import { DrawingsWidget } from "./drawings";
-import { GraphLayout } from "./graph";
+import { GraphLayout } from "./graph-layout";
 
 
 describe('LayersWidget', () => {

@@ -6,7 +6,7 @@ import {select, Selection} from 'd3-selection';
 
 import { Node } from "../shared/models/node";
 import { Link } from "../shared/models/link";
-import { GraphLayout } from "../shared/widgets/graph";
+import { GraphLayout } from "../shared/widgets/graph-layout";
 import { Context } from "../shared/models/context";
 import { Size } from "../shared/models/size";
 import { Drawing } from "../shared/models/drawing";
