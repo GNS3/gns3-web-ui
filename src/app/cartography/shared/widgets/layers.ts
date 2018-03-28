@@ -1,6 +1,6 @@
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { GraphLayout } from "./graph.widget";
+import { GraphLayout } from "./graph";
 import { Layer } from "../models/layer";
 
 

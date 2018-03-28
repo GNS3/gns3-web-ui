@@ -1,16 +1,16 @@
 import { Context } from "../models/context";
 import { Node } from "../models/node";
 import { Link } from "../models/link";
-import { NodesWidget } from "./nodes.widget";
+import { NodesWidget } from "./nodes";
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { LinksWidget } from "./links.widget";
+import { LinksWidget } from "./links";
 import { Drawing } from "../models/drawing";
-import { DrawingsWidget } from "./drawings.widget";
-import { DrawingLineWidget } from "./drawing-line.widget";
+import { DrawingsWidget } from "./drawings";
+import { DrawingLineWidget } from "./drawing-line";
 import { SelectionTool } from "../tools/selection-tool";
 import { MovingTool } from "../tools/moving-tool";
-import { LayersWidget } from "./layers.widget";
+import { LayersWidget } from "./layers";
 import { Layer } from "../models/layer";
 
 
