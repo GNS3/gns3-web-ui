@@ -6,6 +6,8 @@ node_js:
 # Issue with Travis: https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
 sudo: required
 
+cache: yarn
+
 addons:
 apt:
   sources:
@@ -37,7 +39,6 @@ before_install:
 
 
 before_script:
-   - yarn
   # greenkeeper-lockfile support
    - greenkeeper-lockfile-update
    - npm install -g codecov
