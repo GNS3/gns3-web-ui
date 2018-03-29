@@ -30,8 +30,8 @@ export class MultiLinkCalculatorHelper {
   public assignDataToLinks(links: Link[]) {
     const links_from_nodes = {};
     links.forEach((l: Link, i: number) => {
-      const sid = l.nodes[0].node_id;
-      const tid = l.nodes[1].node_id;
+      const sid = l.source.node_id;
+      const tid = l.target.node_id;
       const key = (sid < tid ? sid + "," + tid : tid + "," + sid);
       let idx = 1;
       if (!(key in links_from_nodes)) {

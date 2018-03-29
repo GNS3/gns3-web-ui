@@ -13,11 +13,13 @@ export class LayersWidget implements Widget {
       .selectAll<SVGGElement, Layer>('g.layer')
         .data(layers);
 
-    layers_selection
+    const layers_enter = layers_selection
       .enter()
         .append<SVGGElement>('g')
         .attr('class', 'layer')
         .attr('data-index', (layer: Layer) => layer.index);
+
+    const merge = layers_selection.merge(layers_enter);
 
     layers_selection
       .exit()
@@ -25,15 +27,15 @@ export class LayersWidget implements Widget {
 
     this.graphLayout
       .getLinksWidget()
-      .draw(layers_selection);
+      .draw(merge);
 
     this.graphLayout
       .getNodesWidget()
-      .draw(layers_selection);
+      .draw(merge);
 
     this.graphLayout
       .getDrawingsWidget()
-      .draw(layers_selection);
+      .draw(merge);
 
   }
 }

@@ -113,7 +113,6 @@ export class LinksWidget implements Widget {
         return l.link_id;
       });
 
-
     const link_enter = link.enter()
       .append<SVGGElement>('g')
         .attr('class', 'link')
