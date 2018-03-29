@@ -16,6 +16,7 @@ describe('LayersWidget', () => {
   let mockedLinksWidget: LinksWidget;
   let mockedNodesWidget: NodesWidget;
   let mockedDrawingsWidget: DrawingsWidget;
+  let layers: Layer[];
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
@@ -29,6 +30,12 @@ describe('LayersWidget', () => {
     when(mockedGraphLayout.getDrawingsWidget()).thenReturn(instance(mockedDrawingsWidget));
 
     widget.graphLayout = instance(mockedGraphLayout);
+    
+    const layer_1 = new Layer();
+    layer_1.index = 1;
+    const layer_2 = new Layer();
+    layer_2.index = 2;
+    layers = [layer_1, layer_2];
   });
 
   afterEach(() => {
@@ -36,17 +43,22 @@ describe('LayersWidget', () => {
   });
 
   it('should draw layers', () => {
-    const layer_1 = new Layer();
-    layer_1.index = 1;
-    const layer_2 = new Layer();
-    layer_2.index = 2;
-    const layers = [layer_1, layer_2];
-
     widget.draw(svg.canvas, layers);
 
     const drew = svg.canvas.selectAll<SVGGElement, Layer>('g.layer');
     expect(drew.size()).toEqual(2);
     expect(drew.nodes()[0].getAttribute('data-index')).toEqual('1');
+    expect(drew.nodes()[1].getAttribute('data-index')).toEqual('2');
+  });
+
+  it('should redraw on layers change', () => {
+    widget.draw(svg.canvas, layers);
+    layers[0].index = 3;
+    widget.draw(svg.canvas, layers);
+
+    const drew = svg.canvas.selectAll<SVGGElement, Layer>('g.layer');
+    expect(drew.size()).toEqual(2);
+    expect(drew.nodes()[0].getAttribute('data-index')).toEqual('3');
     expect(drew.nodes()[1].getAttribute('data-index')).toEqual('2');
   });
 

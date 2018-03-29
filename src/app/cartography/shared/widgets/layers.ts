@@ -11,17 +11,17 @@ export class LayersWidget implements Widget {
 
     const layers_selection = view
       .selectAll<SVGGElement, Layer>('g.layer')
-        .data(layers, (l: Layer) => {
-          return l.index.toString();
-        });
+        .data(layers);
 
     const layers_enter = layers_selection
       .enter()
         .append<SVGGElement>('g')
         .attr('class', 'layer')
-        .attr('data-index', (layer: Layer) => layer.index);
 
     const merge = layers_selection.merge(layers_enter);
+
+    merge
+      .attr('data-index', (layer: Layer) => layer.index);
 
     layers_selection
       .exit()
