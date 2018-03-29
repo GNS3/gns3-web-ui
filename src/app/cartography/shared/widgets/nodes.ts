@@ -16,9 +16,11 @@ export class NodesWidget implements Widget {
   private onNodeDraggedCallback: (event: any, node: Node) => void;
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
 
-  private symbols: Symbol[] = [];
+  private symbols: Symbol[];
 
-  constructor() {}
+  constructor() {
+    this.symbols = [];
+  }
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
     this.onContextMenuCallback = onContextMenuCallback;
@@ -101,31 +103,11 @@ export class NodesWidget implements Widget {
         .append<SVGGElement>('g')
         .attr('class', 'node');
 
+    // add image to node
     node_enter
-      .append<SVGImageElement>('image')
-        .attr('xlink:href', (n: Node) => {
-          const symbol = this.symbols.find((s: Symbol) => s.symbol_id === n.symbol);
-          if (symbol) {
-            return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
-          }
-          // @todo; we need to have default image
-          return 'data:image/svg+xml;base64,none';
-        })
-        .attr('width', (n: Node) => n.width)
-        .attr('height', (n: Node) => n.height)
-        .attr('x', (n: Node) => -n.width / 2.)
-        .attr('y', (n: Node) => -n.height / 2.)
-        .on('mouseover', function (this, n: Node) {
-          select(this).attr("class", "over");
-        })
-        .on('mouseout', function (this, n: Node) {
-          select(this).attr("class", "");
-        });
+      .append<SVGImageElement>('image');
 
-        // .attr('width', (n: Node) => n.width)
-        // .attr('height', (n: Node) => n.height);
-
-
+    // add label of node
     node_enter
       .append<SVGTextElement>('text')
         .attr('class', 'label');
@@ -158,6 +140,27 @@ export class NodesWidget implements Widget {
           }
         });
 
+    // update image of node
+    node_merge
+        .select<SVGImageElement>('image')
+          .attr('xlink:href', (n: Node) => {
+            const symbol = this.symbols.find((s: Symbol) => s.symbol_id === n.symbol);
+            if (symbol) {
+              return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
+            }
+            // @todo; we need to have default image
+            return 'data:image/svg+xml;base64,none';
+          })
+          .attr('width', (n: Node) => n.width)
+          .attr('height', (n: Node) => n.height)
+          .attr('x', (n: Node) => -n.width / 2.)
+          .attr('y', (n: Node) => -n.height / 2.)
+          .on('mouseover', function (this, n: Node) {
+            select(this).attr("class", "over");
+          })
+          .on('mouseout', function (this, n: Node) {
+            select(this).attr("class", "");
+          });
 
     this.revise(node_merge);
 

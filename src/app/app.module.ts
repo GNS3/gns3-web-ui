@@ -60,6 +60,8 @@ import { SymbolsDataSource } from "./cartography/shared/datasources/symbols-data
 import { SelectionManager } from "./cartography/shared/managers/selection-manager";
 import { InRectangleHelper } from "./cartography/map/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "./cartography/shared/datasources/drawings-datasource";
+import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
+import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 
 
 @NgModule({
@@ -78,6 +80,8 @@ import { DrawingsDataSource } from "./cartography/shared/datasources/drawings-da
     ApplianceComponent,
     ApplianceListDialogComponent,
     NodeSelectInterfaceComponent,
+    MoveLayerDownActionComponent,
+    MoveLayerUpActionComponent,
   ],
   imports: [
     NgbModule.forRoot(),
