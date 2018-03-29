@@ -11,7 +11,9 @@ export class LayersWidget implements Widget {
 
     const layers_selection = view
       .selectAll<SVGGElement, Layer>('g.layer')
-        .data(layers);
+        .data(layers, (layer: Layer) => {
+          return layer.index.toString();
+        });
 
     const layers_enter = layers_selection
       .enter()
