@@ -14,6 +14,14 @@ jobs:
             sudo systemsetup -settimezone Europe/Warsaw
             echo "Today is $(date +"%Y-%m-%d %T")"
 
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-{{ .Branch }}
+            - yarn-packages-master
+            - yarn-packages-
+
       - run:
           name: Install project
           # there is an issue with yarn and cache during executed on CI; for now we just run it twice, second should
@@ -21,6 +29,12 @@ jobs:
           command: |
             yarn || true
             yarn || true
+
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules/
 
       - run:
           name: Building WebUI for distribution
