@@ -1,5 +1,6 @@
+import * as Raven from 'raven-js';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { CdkTableModule } from "@angular/cdk/table";
@@ -66,6 +67,17 @@ import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions
 import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 import { ProjectMapShortcutsComponent } from './project-map/project-map-shortcuts/project-map-shortcuts.component';
 
+Raven
+  .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
+  .install();
+
+export class RavenErrorHandler implements ErrorHandler {
+  handleError(err:any) : void {
+    console.error(err.originalError || err);
+    Raven.captureException(err.originalError || err);
+  }
+}
+
 
 @NgModule({
   declarations: [
@@ -112,6 +124,7 @@ import { ProjectMapShortcutsComponent } from './project-map/project-map-shortcut
     HotkeyModule.forRoot()
   ],
   providers: [
+    { provide: ErrorHandler, useClass: RavenErrorHandler },
     D3Service,
     VersionService,
     ProjectService,
