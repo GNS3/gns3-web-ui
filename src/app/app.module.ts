@@ -67,6 +67,8 @@ import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions
 import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 import { ProjectMapShortcutsComponent } from './project-map/project-map-shortcuts/project-map-shortcuts.component';
 
+import { environment } from "../environments/environment";
+
 Raven
   .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
   .install();
@@ -74,7 +76,9 @@ Raven
 export class RavenErrorHandler implements ErrorHandler {
   handleError(err:any) : void {
     console.error(err.originalError || err);
-    Raven.captureException(err.originalError || err);
+    if (environment.production) {
+      Raven.captureException(err.originalError || err);
+    }
   }
 }
 
