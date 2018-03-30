@@ -44,7 +44,7 @@ describe('VersionService', () => {
   }));
 
   it('should get version', inject([VersionService], (service: VersionService) => {
-    service.get(server);
+    service.get(server).subscribe();
 
     const req = httpTestingController.expectOne(
       'http://127.0.0.1:3080/v2/version');
