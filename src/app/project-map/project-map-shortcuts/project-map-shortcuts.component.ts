@@ -9,8 +9,7 @@ import { ToasterService } from '../../shared/services/toaster.service';
 
 @Component({
   selector: 'app-project-map-shortcuts',
-  templateUrl: './project-map-shortcuts.component.html',
-  styleUrls: ['./project-map-shortcuts.component.scss']
+  templateUrl: './project-map-shortcuts.component.html'
 })
 export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
   @Input() server: Server;
