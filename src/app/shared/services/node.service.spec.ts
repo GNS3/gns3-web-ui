@@ -131,7 +131,6 @@ describe('NodeService', () => {
     const req = httpTestingController.expectOne(
       'http://127.0.0.1:3080/v2/projects/myproject/nodes/id');
     expect(req.request.method).toEqual("DELETE");
-
   }));
 
 });
