@@ -2,6 +2,7 @@ import {Label} from "./label";
 import {Port} from "../../../shared/models/port";
 import {Selectable} from "../managers/selection-manager";
 
+
 export class Node implements Selectable {
   command_line: string;
   compute_id: string;

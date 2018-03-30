@@ -41,4 +41,14 @@ export class NodeService {
                   'y': y
                 });
   }
+
+  update(server: Server, node: Node): Observable<Node> {
+    return this.httpServer
+                .put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+                  'x': node.x,
+                  'y': node.y,
+                  'z': node.z 
+                });
+  }
+
 }

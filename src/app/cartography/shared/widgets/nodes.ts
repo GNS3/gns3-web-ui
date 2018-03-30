@@ -1,9 +1,11 @@
+import { event, select, Selection } from "d3-selection";
+import { D3DragEvent, drag } from "d3-drag";
+
 import { Widget } from "./widget";
 import { Node } from "../models/node";
 import { SVGSelection } from "../models/types";
-import {event, select} from "d3-selection";
-import {D3DragEvent, drag} from "d3-drag";
-import {Symbol} from "../models/symbol";
+import { Symbol } from "../models/symbol";
+import { Layer  } from "../models/layer";
 
 
 export class NodesWidget implements Widget {
@@ -14,9 +16,11 @@ export class NodesWidget implements Widget {
   private onNodeDraggedCallback: (event: any, node: Node) => void;
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
 
-  private symbols: Symbol[] = [];
+  private symbols: Symbol[];
 
-  constructor() {}
+  constructor() {
+    this.symbols = [];
+  }
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
     this.onContextMenuCallback = onContextMenuCallback;
@@ -78,45 +82,32 @@ export class NodesWidget implements Widget {
 
   }
 
-  public draw(view: SVGSelection, nodes: Node[]) {
+  public draw(view: SVGSelection, nodes?: Node[]) {
     const self = this;
 
-    const node = view
-      .selectAll<SVGGElement, any>('g.node')
-        .data(nodes, (n: Node) => {
-          return n.node_id;
-        });
+    let nodes_selection: Selection<SVGGElement, Node, any, any> = view
+      .selectAll<SVGGElement, Node>('g.node');
 
-    const node_enter = node
+    if (nodes) {
+      nodes_selection = nodes_selection.data(nodes);
+    } else {
+      nodes_selection = nodes_selection.data((l: Layer) => {
+        return l.nodes;
+      }, (n: Node) => {
+        return n.node_id;
+      });
+    }
+
+    const node_enter = nodes_selection
       .enter()
         .append<SVGGElement>('g')
         .attr('class', 'node');
 
+    // add image to node
     node_enter
-      .append<SVGImageElement>('image')
-        .attr('xlink:href', (n: Node) => {
-          const symbol = this.symbols.find((s: Symbol) => s.symbol_id === n.symbol);
-          if (symbol) {
-            return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
-          }
-          // @todo; we need to have default image
-          return 'data:image/svg+xml;base64,none';
-        })
-        .attr('width', (n: Node) => n.width)
-        .attr('height', (n: Node) => n.height)
-        .attr('x', (n: Node) => -n.width / 2.)
-        .attr('y', (n: Node) => -n.height / 2.)
-        .on('mouseover', function (this, n: Node) {
-          select(this).attr("class", "over");
-        })
-        .on('mouseout', function (this, n: Node) {
-          select(this).attr("class", "");
-        });
+      .append<SVGImageElement>('image');
 
-        // .attr('width', (n: Node) => n.width)
-        // .attr('height', (n: Node) => n.height);
-
-
+    // add label of node
     node_enter
       .append<SVGTextElement>('text')
         .attr('class', 'label');
@@ -134,7 +125,7 @@ export class NodesWidget implements Widget {
           .attr('y', '0');
     }
 
-    const node_merge = node
+    const node_merge = nodes_selection
       .merge(node_enter)
         .classed('selected', (n: Node) => n.is_selected)
         .on("contextmenu", function (n: Node, i: number) {
@@ -149,6 +140,27 @@ export class NodesWidget implements Widget {
           }
         });
 
+    // update image of node
+    node_merge
+        .select<SVGImageElement>('image')
+          .attr('xlink:href', (n: Node) => {
+            const symbol = this.symbols.find((s: Symbol) => s.symbol_id === n.symbol);
+            if (symbol) {
+              return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
+            }
+            // @todo; we need to have default image
+            return 'data:image/svg+xml;base64,none';
+          })
+          .attr('width', (n: Node) => n.width)
+          .attr('height', (n: Node) => n.height)
+          .attr('x', (n: Node) => -n.width / 2.)
+          .attr('y', (n: Node) => -n.height / 2.)
+          .on('mouseover', function (this, n: Node) {
+            select(this).attr("class", "over");
+          })
+          .on('mouseout', function (this, n: Node) {
+            select(this).attr("class", "");
+          });
 
     this.revise(node_merge);
 
@@ -175,7 +187,7 @@ export class NodesWidget implements Widget {
 
     node_merge.call(dragging());
 
-    node
+    nodes_selection
       .exit()
         .remove();
   }

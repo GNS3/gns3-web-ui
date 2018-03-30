@@ -4,11 +4,12 @@ import { SelectionTool } from "./selection-tool";
 import { Context } from "../models/context";
 import { SVGSelection } from "../models/types";
 import { Rectangle } from "../models/rectangle";
+import { TestSVGCanvas } from "../../testing";
 
 
 describe('SelectionTool', () => {
   let tool: SelectionTool;
-  let svg: SVGSelection;
+  let svg: TestSVGCanvas;
   let context: Context;
   let selection_line_tool: SVGSelection;
   let path_selection: SVGSelection;
@@ -16,26 +17,23 @@ describe('SelectionTool', () => {
 
   beforeEach(() => {
     tool = new SelectionTool();
-
     tool.rectangleSelected.subscribe((rectangle: Rectangle) => {
       selected_rectangle = rectangle;
     });
 
-    svg = select('body')
-        .append<SVGSVGElement>('svg')
-        .attr('width', 1000)
-        .attr('height', 1000);
-
-    svg.append<SVGGElement>('g').attr('class', 'canvas');
-
+    svg = new TestSVGCanvas();
     context = new Context();
 
-    tool.connect(svg, context);
-    tool.draw(svg, context);
+    tool.connect(svg.svg, context);
+    tool.draw(svg.svg, context);
     tool.activate();
 
-    selection_line_tool = svg.select('g.selection-line-tool');
+    selection_line_tool = svg.svg.select('g.selection-line-tool');
     path_selection = selection_line_tool.select('path.selection');
+  });
+
+  afterEach(() => {
+    svg.destroy();
   });
 
   it('creates selection-line-tool container with path', () => {
@@ -46,7 +44,7 @@ describe('SelectionTool', () => {
 
   describe('SelectionTool can handle start of selection', () => {
     beforeEach(() => {
-      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
+      svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
     });
 
     it('path should be visible and have parameters', () => {
@@ -57,7 +55,7 @@ describe('SelectionTool', () => {
 
   describe('SelectionTool can handle move of selection', () => {
     beforeEach(() => {
-      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
+      svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
       window.dispatchEvent(new MouseEvent('mousemove', {clientX: 300, clientY: 300}));
     });
 
@@ -68,7 +66,7 @@ describe('SelectionTool', () => {
 
   describe('SelectionTool can handle end of selection', () => {
     beforeEach(() => {
-      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
+      svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
       window.dispatchEvent(new MouseEvent('mousemove', {clientX: 200, clientY: 200}));
       window.dispatchEvent(new MouseEvent('mouseup', {clientX: 200, clientY: 200}));
     });
@@ -83,7 +81,7 @@ describe('SelectionTool', () => {
 
     describe('SelectionTool can deselect after click outside', () => {
       beforeEach(() => {
-        svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 300, clientY: 300}));
+        svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 300, clientY: 300}));
         window.dispatchEvent(new MouseEvent('mouseup', {clientX: 300, clientY: 300}));
       });
 
@@ -95,7 +93,7 @@ describe('SelectionTool', () => {
 
   describe('SelectionTool can handle end of selection in reverse direction', () => {
     beforeEach(() => {
-      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 200, clientY: 200}));
+      svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 200, clientY: 200}));
       window.dispatchEvent(new MouseEvent('mousemove', {clientX: 100, clientY: 100}));
       window.dispatchEvent(new MouseEvent('mouseup', {clientX: 100, clientY: 100}));
     });
@@ -108,13 +106,11 @@ describe('SelectionTool', () => {
   describe('SelectionTool can be deactivated', () => {
     beforeEach(() => {
       tool.deactivate();
-      svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
+      svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
     });
 
     it('path should be still hiden', () => {
         expect(path_selection.attr('visibility')).toEqual('hidden');
     });
   });
-
-
 });

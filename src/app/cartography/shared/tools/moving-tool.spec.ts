@@ -1,46 +1,41 @@
-import { select } from "d3-selection";
 import { Context } from "../models/context";
 import { SVGSelection } from "../models/types";
 import { MovingTool } from "./moving-tool";
+import { TestSVGCanvas } from "../../testing";
 
 
 describe('MovingTool', () => {
   let tool: MovingTool;
-  let svg: SVGSelection;
+  let svg: TestSVGCanvas;
   let context: Context;
   let node: SVGSelection;
-  let canvas: SVGSelection;
 
   beforeEach(() => {
     tool = new MovingTool();
+    svg = new TestSVGCanvas();
 
-    svg = select('body')
-        .append<SVGSVGElement>('svg')
-        .attr('width', 1000)
-        .attr('height', 1000);
-
-    canvas = svg.append<SVGGElement>('g').attr('class', 'canvas');
-
-    node = canvas
+    node = svg.canvas
       .append<SVGGElement>('g')
       .attr('class', 'node')
       .attr('x', 10)
       .attr('y', 20);
 
-
     context = new Context();
 
-    tool.connect(svg, context);
-    tool.draw(svg, context);
+    tool.connect(svg.svg, context);
+    tool.draw(svg.svg, context);
     tool.activate();
+  });
 
+  afterEach(() => {
+    svg.destroy();
   });
 
   describe('MovingTool can move canvas', () => {
     beforeEach(() => {
-      svg.node().dispatchEvent(
+      svg.svg.node().dispatchEvent(
         new MouseEvent('mousedown', {
-          clientX: 100, clientY: 100, relatedTarget: svg.node(),
+          clientX: 100, clientY: 100, relatedTarget: svg.svg.node(),
           screenY: 1024, screenX: 1024, view: window
         })
       );
@@ -50,7 +45,7 @@ describe('MovingTool', () => {
     });
 
     it('canvas should transformed', () => {
-      expect(canvas.attr('transform')).toEqual('translate(100, 100) scale(1)');
+      expect(svg.canvas.attr('transform')).toEqual('translate(100, 100) scale(1)');
     });
   });
 
@@ -58,9 +53,9 @@ describe('MovingTool', () => {
     beforeEach(() => {
       tool.deactivate();
 
-      svg.node().dispatchEvent(
+      svg.svg.node().dispatchEvent(
         new MouseEvent('mousedown', {
-          clientX: 100, clientY: 100, relatedTarget: svg.node(),
+          clientX: 100, clientY: 100, relatedTarget: svg.svg.node(),
           screenY: 1024, screenX: 1024, view: window
         })
       );
@@ -69,7 +64,7 @@ describe('MovingTool', () => {
     });
 
     it('canvas cannot be transformed', () => {
-      expect(canvas.attr('transform')).toBeNull();
+      expect(svg.canvas.attr('transform')).toBeNull();
     });
   });
 });

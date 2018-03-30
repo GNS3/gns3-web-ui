@@ -6,6 +6,11 @@ import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 
 
+class MyType {
+  id: number;
+}
+
+
 describe('HttpServer', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
@@ -42,6 +47,37 @@ describe('HttpServer', () => {
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/test');
     expect(req.request.method).toEqual("GET");
     expect(req.request.responseType).toEqual("json");
+  });
+
+  it('should make GET query for get method and return instance of type', () => {
+    const testData: MyType = {id: 3};
+
+    service.get<MyType>(server, '/test').subscribe(data => {
+      expect(data instanceof MyType).toBeFalsy();
+      expect(data).toEqual(testData);
+    });
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/test');
+    expect(req.request.method).toEqual("GET");
+    expect(req.request.responseType).toEqual("json");
+
+    req.flush({id: 3});
+  });
+
+  it('HttpClient should make GET query for get method and return instance of type', () => {
+    const testData: MyType = {id: 3};
+
+    httpClient.get<MyType>('http://localhost/test').subscribe(data => {
+      // when this condition is true, it would be great
+      expect(data instanceof MyType).toBeFalsy();
+      expect(data).toEqual(testData);
+    });
+
+    const req = httpTestingController.expectOne('http://localhost/test');
+    expect(req.request.method).toEqual("GET");
+    expect(req.request.responseType).toEqual("json");
+
+    req.flush(testData);
   });
 
   it('should make GET query for getText method', () => {

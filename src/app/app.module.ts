@@ -53,12 +53,15 @@ import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/
 import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
 import { CartographyModule } from './cartography/cartography.module';
 import { ToasterService } from './shared/services/toaster.service';
-import {ProjectWebServiceHandler} from "./shared/handlers/project-web-service-handler";
-import {LinksDataSource} from "./cartography/shared/datasources/links-datasource";
-import {NodesDataSource} from "./cartography/shared/datasources/nodes-datasource";
-import {SymbolsDataSource} from "./cartography/shared/datasources/symbols-datasource";
-import {SelectionManager} from "./cartography/shared/managers/selection-manager";
-import {InRectangleHelper} from "./cartography/map/helpers/in-rectangle-helper";
+import { ProjectWebServiceHandler } from "./shared/handlers/project-web-service-handler";
+import { LinksDataSource } from "./cartography/shared/datasources/links-datasource";
+import { NodesDataSource } from "./cartography/shared/datasources/nodes-datasource";
+import { SymbolsDataSource } from "./cartography/shared/datasources/symbols-datasource";
+import { SelectionManager } from "./cartography/shared/managers/selection-manager";
+import { InRectangleHelper } from "./cartography/map/helpers/in-rectangle-helper";
+import { DrawingsDataSource } from "./cartography/shared/datasources/drawings-datasource";
+import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
+import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 
 
 @NgModule({
@@ -77,6 +80,8 @@ import {InRectangleHelper} from "./cartography/map/helpers/in-rectangle-helper";
     ApplianceComponent,
     ApplianceListDialogComponent,
     NodeSelectInterfaceComponent,
+    MoveLayerDownActionComponent,
+    MoveLayerUpActionComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -120,7 +125,8 @@ import {InRectangleHelper} from "./cartography/map/helpers/in-rectangle-helper";
     NodesDataSource,
     SymbolsDataSource,
     SelectionManager,
-    InRectangleHelper
+    InRectangleHelper,
+    DrawingsDataSource
   ],
   entryComponents: [
     AddServerDialogComponent,

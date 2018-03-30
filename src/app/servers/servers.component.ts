@@ -1,11 +1,9 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { DataSource } from "@angular/cdk/collections";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { Server } from "../shared/models/server";
-import { ServerService } from "../shared/services/server.service";
-import {DataSource} from "@angular/cdk/collections";
-import {Observable} from "rxjs/Observable";
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import { Observable } from "rxjs/Observable";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
@@ -13,6 +11,9 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
+
+import { Server } from "../shared/models/server";
+import { ServerService } from "../shared/services/server.service";
 
 
 @Component({
@@ -105,7 +106,7 @@ export class ServerDatabase {
   }
 }
 
-export class ServerDataSource extends DataSource<any> {
+export class ServerDataSource extends DataSource<Server> {
   constructor(private serverDatabase: ServerDatabase) {
     super();
   }

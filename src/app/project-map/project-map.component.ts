@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import  {Component, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -19,7 +19,7 @@ import { MapComponent } from "../cartography/map/map.component";
 import { ServerService } from "../shared/services/server.service";
 import { ProjectService } from '../shared/services/project.service';
 import { Server } from "../shared/models/server";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material";
 import { SnapshotService } from "../shared/services/snapshot.service";
 import { Snapshot } from "../shared/models/snapshot";
 import { ProgressDialogService } from "../shared/progress-dialog/progress-dialog.service";
@@ -36,9 +36,9 @@ import { ToasterService } from '../shared/services/toaster.service';
 import { NodesDataSource } from "../cartography/shared/datasources/nodes-datasource";
 import { LinksDataSource } from "../cartography/shared/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../shared/handlers/project-web-service-handler";
-import { Rectangle } from "../cartography/shared/models/rectangle";
 import { SelectionManager } from "../cartography/shared/managers/selection-manager";
 import { InRectangleHelper } from "../cartography/map/helpers/in-rectangle-helper";
+import { DrawingsDataSource } from "../cartography/shared/datasources/drawings-datasource";
 
 
 @Component({
@@ -81,6 +81,7 @@ export class ProjectMapComponent implements OnInit {
               private projectWebServiceHandler: ProjectWebServiceHandler,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
+              protected drawingsDataSource: DrawingsDataSource
               ) {
   }
 
@@ -114,6 +115,13 @@ export class ProjectMapComponent implements OnInit {
       this.symbols = symbols;
     });
 
+    this.drawingsDataSource.connect().subscribe((drawings: Drawing[]) => {
+      this.drawings = drawings;
+      if (this.mapChild) {
+        this.mapChild.reload();
+      }
+    });
+
     this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
       this.nodes = nodes;
       if (this.mapChild) {
@@ -133,18 +141,18 @@ export class ProjectMapComponent implements OnInit {
     this.symbolService
       .load(this.server)
       .flatMap(() => {
-        return this.projectService.drawings(this.server, project.project_id);
+        return this.projectService.nodes(this.server, project.project_id);
       })
-      .flatMap((drawings: Drawing[]) => {
-        this.drawings = drawings;
+      .flatMap((nodes: Node[]) => {
+        this.nodesDataSource.set(nodes);
         return this.projectService.links(this.server, project.project_id);
       })
       .flatMap((links: Link[]) => {
         this.linksDataSource.set(links);
-        return this.projectService.nodes(this.server, project.project_id);
+        return this.projectService.drawings(this.server, project.project_id);
       })
-      .subscribe((nodes: Node[]) => {
-        this.nodesDataSource.set(nodes);
+      .subscribe((drawings: Drawing[]) => {
+        this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks(project);
         this.setUpWS(project);

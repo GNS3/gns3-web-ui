@@ -1,5 +1,5 @@
-import {NodesDataSource} from "./nodes-datasource";
-import {Node} from "../models/node";
+import { NodesDataSource } from "./nodes-datasource";
+import { Node } from "../models/node";
 
 
 describe('NodesDataSource', () => {

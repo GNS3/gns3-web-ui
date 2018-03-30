@@ -1,12 +1,13 @@
-import {BaseType, select, Selection} from "d3-selection";
+import { select } from "d3-selection";
 
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { Link } from "../models/link";
 import { LinkStatus } from "../models/link-status";
 import { MultiLinkCalculatorHelper } from "../../map/helpers/multi-link-calculator-helper";
-import {SerialLinkWidget} from "./serial-link.widget";
-import {EthernetLinkWidget} from "./ethernet-link.widget";
+import { SerialLinkWidget } from "./serial-link";
+import { EthernetLinkWidget } from "./ethernet-link";
+import { Layer } from "../models/layer";
 
 
 export class LinksWidget implements Widget {
@@ -96,29 +97,28 @@ export class LinksWidget implements Widget {
       });
   }
 
-  public draw(view: SVGSelection, links: Link[]) {
-    const self = this;
-
-    this.multiLinkCalculatorHelper.assignDataToLinks(links);
-
-    const linksLayer = view.selectAll("g.links").data([{}]);
-    linksLayer
-      .enter()
-        .append<SVGGElement>('g')
-          .attr("class", "links");
-
-    const link = linksLayer
+  public draw(view: SVGSelection, links?: Link[]) {
+    const link = view
       .selectAll<SVGGElement, Link>("g.link")
-      .data(links.filter((l: Link) => {
-        return l.target && l.source;
-      }));
+      .data((layer: Layer) => {
+        if (layer.links) {
+          const layer_links = layer.links.filter((l: Link) => {
+              return l.target && l.source;
+          });
+          this.multiLinkCalculatorHelper.assignDataToLinks(layer_links);
+          return layer_links;
+        }
+        return [];
+      }, (l: Link) => {
+        return l.link_id;
+      });
 
     const link_enter = link.enter()
       .append<SVGGElement>('g')
         .attr('class', 'link')
         .attr('link_id', (l: Link) => l.link_id)
         .attr('map-source', (l: Link) => l.source.node_id)
-        .attr('map-target', (l: Link) => l.target.node_id)
+        .attr('map-target', (l: Link) => l.target.node_id);
 
     const merge = link.merge(link_enter);
 

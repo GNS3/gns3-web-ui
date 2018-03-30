@@ -8565,6 +8565,12 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
+ts-mockito@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/ts-mockito/-/ts-mockito-2.3.0.tgz#c1836f04ec037cad82cfd7b3b66d52fc75adfcc7"
+  dependencies:
+    lodash "^4.17.5"
+
 ts-node@~5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-5.0.0.tgz#9aa573889ad7949411f972981c209e064705e36f"

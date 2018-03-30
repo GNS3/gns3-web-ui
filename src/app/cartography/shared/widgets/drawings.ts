@@ -1,14 +1,20 @@
 import {Widget} from "./widget";
 import {Drawing} from "../models/drawing";
 import {SVGSelection} from "../models/types";
+import {Layer} from "../models/layer";
 
 
 export class DrawingsWidget implements Widget {
   constructor() {}
 
-  public draw(view: SVGSelection, drawings: Drawing[]) {
-    const drawing = view.selectAll<SVGGElement, Drawing>('g.drawing')
-        .data(drawings);
+  public draw(view: SVGSelection, drawings?: Drawing[]) {
+    const drawing = view
+      .selectAll<SVGGElement, Drawing>('g.drawing')
+      .data((l: Layer) => {
+        return l.drawings;
+      }, (d: Drawing) => {
+        return d.drawing_id;
+      });
 
     const drawing_enter = drawing.enter()
       .append<SVGGElement>('g')
@@ -52,9 +58,5 @@ export class DrawingsWidget implements Widget {
       });
 
     drawing.exit().remove();
-  }
-
-  private appendSVG(svg: string) {
-
   }
 }
