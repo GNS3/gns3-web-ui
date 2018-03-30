@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
-
+import { getTestServer } from './testing';
 
 class MyType {
   id: number;
@@ -31,10 +31,7 @@ describe('HttpServer', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     service = TestBed.get(HttpServer);
 
-    server = new Server();
-    server.ip = "127.0.0.1";
-    server.port = 3080;
-    server.authorization = "none";
+    server = getTestServer();
   });
 
   afterEach(() => {

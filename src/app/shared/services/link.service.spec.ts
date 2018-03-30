@@ -7,6 +7,7 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { Node } from '../../cartography/shared/models/node';
 import { Port } from '../models/port';
+import { getTestServer } from './testing';
 
 describe('LinkService', () => {
   let httpClient: HttpClient;
@@ -30,11 +31,7 @@ describe('LinkService', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
     service = TestBed.get(LinkService);
-
-    server = new Server();
-    server.ip = "127.0.0.1";
-    server.port = 3080;
-    server.authorization = "none";
+    server = getTestServer();
   });
 
   afterEach(() => {
@@ -64,6 +61,7 @@ describe('LinkService', () => {
     service.createLink(server, sourceNode, sourcePort, targetNode, targetPort).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/links');
+    expect(req.request.method).toEqual("POST");
     expect(req.request.body).toEqual({"nodes": [
       {
         node_id: "sourceid",
