@@ -383,6 +383,10 @@
   dependencies:
     "@types/jasmine" "*"
 
+"@types/mousetrap@^1.5.32":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@types/mousetrap/-/mousetrap-1.6.0.tgz#c3951ab98b88ff6093cd0b1e4f8591af439141b8"
+
 "@types/node@^6.0.46":
   version "6.0.96"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.96.tgz#7bf0bf40d6ce51e93762cc47d010c8cc5ebb2179"
@@ -530,6 +534,13 @@ amqplib@^0.5.2:
     buffer-more-ints "0.0.2"
     readable-stream "1.x >=1.1.9"
     safe-buffer "^5.0.1"
+
+angular2-hotkeys@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/angular2-hotkeys/-/angular2-hotkeys-2.0.4.tgz#83355f0a65fe484bfdd3d238b6ee96d63526eb91"
+  dependencies:
+    "@types/mousetrap" "^1.5.32"
+    mousetrap "^1.6.0"
 
 angular2-indexeddb@^1.2.2:
   version "1.2.2"
@@ -5520,6 +5531,10 @@ module-deps@^4.0.8:
     subarg "^1.0.0"
     through2 "^2.0.0"
     xtend "^4.0.0"
+
+mousetrap@^1.6.0:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/mousetrap/-/mousetrap-1.6.1.tgz#2a085f5c751294c75e7e81f6ec2545b29cbf42d9"
 
 move-concurrently@^1.0.1:
   version "1.0.1"

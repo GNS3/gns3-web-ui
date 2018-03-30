@@ -51,4 +51,8 @@ export class NodeService {
                 });
   }
 
+  delete(server: Server, node: Node) {
+    return this.httpServer.delete<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`);
+  }
+
 }

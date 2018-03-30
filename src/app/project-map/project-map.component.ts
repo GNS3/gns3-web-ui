@@ -1,5 +1,6 @@
-import  {Component, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { HotkeysService } from 'angular2-hotkeys';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from "rxjs/Subject";
@@ -41,6 +42,7 @@ import { InRectangleHelper } from "../cartography/map/helpers/in-rectangle-helpe
 import { DrawingsDataSource } from "../cartography/shared/datasources/drawings-datasource";
 
 
+
 @Component({
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
@@ -59,6 +61,8 @@ export class ProjectMapComponent implements OnInit {
   private ws: Subject<any>;
   private drawLineMode =  false;
   private movingMode = false;
+
+  protected selectionManager: SelectionManager;
 
   public isLoading = true;
 
@@ -81,8 +85,11 @@ export class ProjectMapComponent implements OnInit {
               private projectWebServiceHandler: ProjectWebServiceHandler,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
-              protected drawingsDataSource: DrawingsDataSource
+              protected drawingsDataSource: DrawingsDataSource,
+              protected hotkeysService: HotkeysService
               ) {
+    this.selectionManager = new SelectionManager(
+      this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
   }
 
   ngOnInit() {
@@ -169,14 +176,12 @@ export class ProjectMapComponent implements OnInit {
   }
 
   setUpMapCallbacks(project: Project) {
-    const selectionManager = new SelectionManager(this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
-
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
-      selectionManager.setSelectedNodes([node]);
+      this.selectionManager.setSelectedNodes([node]);
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
       }
@@ -191,7 +196,7 @@ export class ProjectMapComponent implements OnInit {
         });
     });
 
-    selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected);
+    this.selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected);
   }
 
   onNodeCreation(appliance: Appliance) {

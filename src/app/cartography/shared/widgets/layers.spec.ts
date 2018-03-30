@@ -51,6 +51,27 @@ describe('LayersWidget', () => {
     expect(drew.nodes()[1].getAttribute('data-index')).toEqual('2');
   });
 
+  it('should draw links container', () => {
+    widget.draw(svg.canvas, layers);
+
+    const drew = svg.canvas.selectAll<SVGGElement, Layer>('g.links');
+    expect(drew.size()).toEqual(2);
+  });
+
+  it('should draw nodes container', () => {
+    widget.draw(svg.canvas, layers);
+
+    const drew = svg.canvas.selectAll<SVGGElement, Layer>('g.nodes');
+    expect(drew.size()).toEqual(2);
+  });
+
+  it('should draw drawings container', () => {
+    widget.draw(svg.canvas, layers);
+
+    const drew = svg.canvas.selectAll<SVGGElement, Layer>('g.drawings');
+    expect(drew.size()).toEqual(2);
+  });
+
   it('should redraw on layers change', () => {
     widget.draw(svg.canvas, layers);
     layers[0].index = 3;
