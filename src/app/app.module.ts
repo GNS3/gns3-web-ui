@@ -24,6 +24,8 @@ import {
 import { D3Service } from 'd3-ng2-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { HotkeyModule } from 'angular2-hotkeys';
+
 import { AppRoutingModule } from './app-routing.module';
 
 import { VersionService } from './shared/services/version.service';
@@ -62,6 +64,7 @@ import { InRectangleHelper } from "./cartography/map/helpers/in-rectangle-helper
 import { DrawingsDataSource } from "./cartography/shared/datasources/drawings-datasource";
 import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
+import { ProjectMapShortcutsComponent } from './project-map/project-map-shortcuts/project-map-shortcuts.component';
 
 
 @NgModule({
@@ -82,6 +85,7 @@ import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/m
     NodeSelectInterfaceComponent,
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
+    ProjectMapShortcutsComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -104,7 +108,8 @@ import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/m
     MatProgressSpinnerModule,
     MatSnackBarModule,
     CdkTableModule,
-    CartographyModule
+    CartographyModule,
+    HotkeyModule.forRoot()
   ],
   providers: [
     D3Service,
