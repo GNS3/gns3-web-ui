@@ -20,10 +20,34 @@ export class LayersWidget implements Widget {
         .append<SVGGElement>('g')
         .attr('class', 'layer')
 
+    // add container for links
+    layers_enter
+      .append<SVGGElement>('g')
+        .attr('class', 'links');
+
+    // add container for nodes
+    layers_enter
+      .append<SVGGElement>('g')
+        .attr('class', 'nodes');
+
+    // add container for drawings
+    layers_enter
+      .append<SVGGElement>('g')
+        .attr('class', 'drawings');
+
     const merge = layers_selection.merge(layers_enter);
 
     merge
       .attr('data-index', (layer: Layer) => layer.index);
+
+    const links_container = merge
+      .select<SVGGElement>('g.links');
+
+    const nodes_container = merge
+      .select<SVGGElement>('g.nodes');
+
+    const drawings_container = merge
+      .select<SVGGElement>('g.drawings');
 
     layers_selection
       .exit()
@@ -31,15 +55,15 @@ export class LayersWidget implements Widget {
 
     this.graphLayout
       .getLinksWidget()
-      .draw(merge);
+      .draw(links_container);
 
     this.graphLayout
       .getNodesWidget()
-      .draw(merge);
+      .draw(nodes_container);
 
     this.graphLayout
       .getDrawingsWidget()
-      .draw(merge);
+      .draw(drawings_container);
 
   }
 }
