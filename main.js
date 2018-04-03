@@ -18,7 +18,14 @@ let serverProc = null;
 
 let isWin = /^win/.test(process.platform);
 
+
 const createServerProc = () => {
+  const directory = path.join(__dirname, 'dist');
+
+  if (!fs.existsSync(directory)) {
+    return;
+  }
+
   fs.readdir(path.join(__dirname, 'dist'), (err, files) => {
     var serverPath = null;
 
@@ -45,8 +52,10 @@ const createServerProc = () => {
 }
 
 const exitServerProc = () => {
-  serverProc.kill();
-  serverProc = null;
+  if(serverProc) {
+    serverProc.kill();
+    serverProc = null;
+  }
 }
 
 
