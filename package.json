@@ -50,6 +50,7 @@
     "@angular/cli": "^6.0.0-beta.5",
     "@angular/compiler-cli": "^5.2.1",
     "@angular/language-service": "^5.2.1",
+    "@sentry/electron": "^0.4.2",
     "@types/jasmine": "~2.8.5",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~9.6.0",
