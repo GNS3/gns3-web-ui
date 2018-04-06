@@ -16,11 +16,7 @@ jobs:
 
       - restore_cache:
           name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-master
-            - yarn-packages-
+          key: dependency-cache-{{ checksum "package.json" }}
 
       - run:
           name: Install project
@@ -32,9 +28,10 @@ jobs:
 
       - save_cache:
           name: Save Yarn Package Cache
-          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - node_modules/
+            - ~/.cache/yarn
+            - ./node_modules
 
       - run:
           name: Building WebUI for distribution
