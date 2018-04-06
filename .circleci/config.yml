@@ -30,7 +30,6 @@ jobs:
           name: Save Yarn Package Cache
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ~/.cache/yarn
             - ./node_modules
 
       - run:
