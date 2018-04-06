@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     if (this.electronService.isElectronApp) {
       this.settingsService.subscribe((settings) => {
+        console.log("settings changed on angular");
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }

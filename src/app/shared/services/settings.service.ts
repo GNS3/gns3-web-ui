@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PersistenceService, StorageType } from "angular-persistence";
 import { Subject } from "rxjs/Subject";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 
 export interface Settings {
@@ -14,11 +15,10 @@ export class SettingsService {
     'crash_reports': true
   };
 
-  private settingsSubject: Subject<Settings>;
+  private settingsSubject: BehaviorSubject<Settings>;
 
   constructor(private persistenceService: PersistenceService) {
-    this.settingsSubject = new Subject<Settings>();
-    this.settingsSubject.next(this.getAll());
+    this.settingsSubject = new BehaviorSubject<Settings>(this.getAll());
   }
 
   get<T>(key: string) {

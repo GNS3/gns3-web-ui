@@ -1,22 +1,30 @@
 const electron = require('electron');
-var fs = require('fs');
-// Module to control application life.
+const fs = require('fs');
 const app = electron.app;
-// Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
-
 const path = require('path');
 const url = require('url');
+const yargs = require('yargs');
 
 require('./sentry');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-
 let serverProc = null;
-
 let isWin = /^win/.test(process.platform);
+let isDev = false;
+
+const argv = yargs
+  .describe('m', 'Maximizes window on startup.')
+  .boolean('m')
+  .describe('e', 'Environment, `dev` for developer mode and when not specified then production mode. ')
+  .choices('e', ['dev', null])
+  .argv;
+
+if (argv.e == 'dev') {
+  isDev = true;
+}
 
 
 const createServerProc = () => {
@@ -64,14 +72,25 @@ function createWindow () {
   mainWindow = new BrowserWindow({width: 800, height: 600});
 
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'dist/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+
+  if(isDev) {
+    mainWindow.loadURL('http://localhost:4200/');
+    mainWindow.webContents.openDevTools();
+  }
+  else {
+    mainWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'dist/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
+  }
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
+
+  if(argv.m) {
+    mainWindow.maximize();
+  }
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -109,3 +128,5 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+

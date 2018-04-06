@@ -16,7 +16,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "electrondev": "concurrently -k \"yarn startforelectron\" \"electron .\"",
+    "electron": "electron .",
+    "electrondev": "concurrently -k \"yarn startforelectron\" \"electron . -e dev\"",
     "distlinux": "yarn buildforelectron && electron-builder --linux --x64",
     "distwin": "yarn buildforelectron && electron-builder --win --x64",
     "distmac": "yarn buildforelectron && electron-builder --mac --x64",
@@ -47,6 +48,7 @@
     "npm-check-updates": "^2.13.0",
     "raven-js": "^3.24.0",
     "rxjs": "^5.4.1",
+    "yargs": "^11.0.0",
     "zone.js": "^0.8.20"
   },
   "devDependencies": {
