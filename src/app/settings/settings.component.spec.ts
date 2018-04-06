@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
+  let settingsService: SettingsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -20,6 +21,8 @@ describe('SettingsComponent', () => {
       declarations: [ SettingsComponent ]
     })
     .compileComponents();
+
+    settingsService = TestBed.get(SettingsService);
   }));
 
   beforeEach(() => {
@@ -31,4 +34,20 @@ describe('SettingsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should get and save new settings', () => {
+    const settings = {
+      'crash_reports': true
+    };
+    const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
+    const setAll = spyOn(settingsService, 'setAll');
+    component.ngOnInit();
+    expect(getAll).toHaveBeenCalled();
+    expect(component.settings).toEqual(settings);
+    component.settings.crash_reports = false;
+    component.save();
+    expect(setAll).toHaveBeenCalledWith(settings);
+  });
+
+
 });
