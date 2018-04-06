@@ -16,7 +16,9 @@ jobs:
 
       - restore_cache:
           name: Restore Yarn Package Cache
-          key: dependency-cache-{{ checksum "package.json" }}
+          keys:
+            - dependency-cache-{{ checksum "yarn.lock" }}
+            - dependency-cache-
 
       - run:
           name: Install project
@@ -28,7 +30,7 @@ jobs:
 
       - save_cache:
           name: Save Yarn Package Cache
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
 
