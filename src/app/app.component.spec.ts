@@ -52,7 +52,6 @@ describe('AppComponent', () => {
   }));
 
   it('should receive changed settings and forward to electron', async(() => {
-    // when(electronService.isElectronApp).thenReturn(true);
     const spy = createSpyObj('Electron.IpcRenderer', ['send']);
     spyOnProperty(electronService, 'isElectronApp').and.returnValue(true);
     spyOnProperty(electronService, 'ipcRenderer').and.returnValue(spy);
@@ -65,7 +64,6 @@ describe('AppComponent', () => {
   }));
 
   it('should receive changed settings and do not forward to electron', async(() => {
-    // when(electronService.isElectronApp).thenReturn(true);
     const spy = createSpyObj('Electron.IpcRenderer', ['send']);
     spyOnProperty(electronService, 'isElectronApp').and.returnValue(false);
     settingsService.set('crash_reports', true);
