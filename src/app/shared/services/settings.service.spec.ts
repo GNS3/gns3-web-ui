@@ -1,7 +1,8 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { PersistenceService, StorageType } from "angular-persistence";
 
-import { SettingsService } from './settings.service';
+import { Settings, SettingsService } from './settings.service';
+import createSpyObj = jasmine.createSpyObj;
 
 
 describe('SettingsService', () => {
@@ -58,4 +59,15 @@ describe('SettingsService', () => {
       'crash_reports': false
     });
   }));
+
+  it('should execute subscriber', inject([SettingsService], (service: SettingsService) => {
+    let changedSettings: Settings;
+
+    service.set('crash_reports', true);
+    service.subscribe(settings => changedSettings = settings);
+    service.set('crash_reports', false);
+
+    expect(changedSettings.crash_reports).toEqual(false);
+  }));
+
 });

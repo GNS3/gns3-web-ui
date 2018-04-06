@@ -1,30 +1,76 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
+import { MatIconModule } from "@angular/material";
+import { SettingsService } from "./shared/services/settings.service";
+import { PersistenceService } from "angular-persistence";
+import { ElectronService, NgxElectronModule } from "ngx-electron";
+import createSpyObj = jasmine.createSpyObj;
+
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let electronService: ElectronService;
+  let settingsService: SettingsService;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
         declarations: [
-            AppComponent
+          AppComponent
         ],
         imports: [
-            RouterTestingModule
+          RouterTestingModule,
+          MatIconModule,
+          NgxElectronModule
+        ],
+        providers: [
+          SettingsService,
+          PersistenceService,
         ]
     }).compileComponents();
+
+    electronService = TestBed.get(ElectronService);
+    settingsService = TestBed.get(SettingsService);
   }));
 
-  // it('should create the app', async(() => {
-  //   const fixture = TestBed.createComponent(AppComponent);
-  //   const app = fixture.debugElement.componentInstance;
-  //   expect(app).toBeTruthy();
-  // }));
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-  // it('should have footer', async(() => {
-  //   const fixture = TestBed.createComponent(AppComponent);
-  //   fixture.detectChanges();
-  //   const compiled = fixture.debugElement.nativeElement;
-  //   expect(compiled.querySelector('.text-muted').textContent).toContain('GNS3 Web UI demo');
-  // }));
+  it('should create the app', async(() => {
+    const app = fixture.debugElement.componentInstance;
+    expect(app).toBeTruthy();
+  }));
+
+  it('should have footer', async(() => {
+    const compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('router-outlet').textContent).toEqual('');
+  }));
+
+  it('should receive changed settings and forward to electron', async(() => {
+    // when(electronService.isElectronApp).thenReturn(true);
+    const spy = createSpyObj('Electron.IpcRenderer', ['send']);
+    spyOnProperty(electronService, 'isElectronApp').and.returnValue(true);
+    spyOnProperty(electronService, 'ipcRenderer').and.returnValue(spy);
+    settingsService.set('crash_reports', true);
+    component.ngOnInit();
+    settingsService.set('crash_reports', false);
+    expect(spy.send).toHaveBeenCalled();
+    expect(spy.send.calls.first().args[0]).toEqual('settings.changed');
+    expect(spy.send.calls.first().args[1].crash_reports).toEqual(false);
+  }));
+
+  it('should receive changed settings and do not forward to electron', async(() => {
+    // when(electronService.isElectronApp).thenReturn(true);
+    const spy = createSpyObj('Electron.IpcRenderer', ['send']);
+    spyOnProperty(electronService, 'isElectronApp').and.returnValue(false);
+    settingsService.set('crash_reports', true);
+    component.ngOnInit();
+    settingsService.set('crash_reports', false);
+    expect(spy.send).not.toHaveBeenCalled();
+  }));
 });

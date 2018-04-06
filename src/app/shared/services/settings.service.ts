@@ -1,13 +1,25 @@
 import { Injectable } from '@angular/core';
 import { PersistenceService, StorageType } from "angular-persistence";
+import { Subject } from "rxjs/Subject";
+
+
+export interface Settings {
+  crash_reports: boolean;
+}
+
 
 @Injectable()
 export class SettingsService {
-  static DEFAULTS = {
+  static DEFAULTS: Settings = {
     'crash_reports': true
   };
 
-  constructor(private persistenceService: PersistenceService) { }
+  private settingsSubject: Subject<Settings>;
+
+  constructor(private persistenceService: PersistenceService) {
+    this.settingsSubject = new Subject<Settings>();
+    this.settingsSubject.next(this.getAll());
+  }
 
   get<T>(key: string) {
     if (!(key in SettingsService.DEFAULTS)) {
@@ -25,6 +37,7 @@ export class SettingsService {
       throw Error(`Key '${key}' doesn't exist in settings`);
     }
     this.persistenceService.set(key, value, { type: StorageType.LOCAL });
+    this.settingsSubject.next(this.getAll());
   }
 
   getAll() {
@@ -39,5 +52,9 @@ export class SettingsService {
     Object.keys(settings).forEach((key) => {
       this.set(key, settings[key]);
     });
+  }
+
+  subscribe(subscriber: ((settings: Settings) => void)) {
+    return this.settingsSubject.subscribe(subscriber);
   }
 }

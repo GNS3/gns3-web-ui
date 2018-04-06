@@ -26,10 +26,9 @@ import {
 
 import { D3Service } from 'd3-ng2-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 import { HotkeyModule } from 'angular2-hotkeys';
-
 import { PersistenceModule } from 'angular-persistence';
+import { NgxElectronModule } from 'ngx-electron';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -127,7 +126,8 @@ Raven
     CdkTableModule,
     CartographyModule,
     HotkeyModule.forRoot(),
-    PersistenceModule
+    PersistenceModule,
+    NgxElectronModule
   ],
   providers: [
     SettingsService,
