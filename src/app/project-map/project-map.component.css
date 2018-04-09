@@ -1,32 +1,25 @@
-/*html {*/
-  /*position: static;*/
-  /*height: 100%;*/
-/*}*/
+app-root, app-project-map, .project-map, app-map {
+  width: auto;
+}
 
-/*body {*/
-  /*height: 100%;*/
-  /*margin: 0;*/
-  /*margin-bottom: 0 !important;*/
-/*}*/
-
-/*app-root, app-project-map, .project-map, app-map, svg {*/
-  /*height: 100%;*/
-/*}*/
+svg.map {
+  background-color: #F0F0F0;
+}
 
 g.node:hover {
   background-color: #0097a7;
 }
 
-.project-map {
-  background-color: #F0F0F0;
-}
-
 .project-toolbar {
   width: 70px;
-  position: absolute;
+  position: fixed;
   top: 20px;
   left: 20px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.project-toolbar .mat-toolbar-multiple-rows {
+  width: auto !important;
 }
 
 .loading-spinner {
@@ -43,7 +36,7 @@ g.node text {
 }
 
 
-svg image:hover, svg image.chosen, g.selected {
+svg.map image:hover, svg.map image.chosen, g.selected {
   filter: grayscale(100%);
 }
 
