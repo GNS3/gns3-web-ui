@@ -55,7 +55,7 @@ after_script:
   # greenkeeper-lockfile support
   - greenkeeper-lockfile-upload
 # publish on gns3.github.io
-  - yarn ng build --base-href /${TRAVIS_BRANCH}/
+  - yarn buildforgithub --base-href /${TRAVIS_BRANCH}/
   - export GIT_LAST_LOG="$(git log -1 --pretty=%B)"
   - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
   - mkdir -p github-pages/${TRAVIS_BRANCH}

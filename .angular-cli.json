@@ -29,7 +29,8 @@
         "dev": "environments/environment.ts",
         "prod": "environments/environment.prod.ts",
         "electronProd": "environments/environment.electron.prod.ts",
-        "electronDev": "environments/environment.electron.ts"
+        "electronDev": "environments/environment.electron.ts",
+        "githubProd": "environments/environment.github.prod.ts"
       }
     }
   ],

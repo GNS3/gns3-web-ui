@@ -13,6 +13,7 @@
     "startforelectron": "ng serve -e electronDev",
     "build": "ng build",
     "buildforelectron": "ng build -e electronProd",
+    "buildforgithub": "ng build -e githubProd",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

@@ -3,15 +3,20 @@
 <head>
   <meta charset="utf-8">
   <title>GNS3 Web UI Demo</title>
+  <!-- It's important to have base here because of the script below //-->
+  <base href="/">
+
   <script>
     var userAgent = navigator.userAgent.toLowerCase();
     // in case we're running in electron because we need it for resources
     if (userAgent.indexOf(' electron/') > -1) {
-      document.write('<base href="' + document.location + '" />');
-    }
-    // in case base href is not set, when not defined during the build time (for instance github.io pages)
-    else if (document.getElementsByTagName('base').length == 0) {
-      document.write('<base href="/" />');
+      var base = document.getElementsByTagName('base');
+      if(base.length > 0) {
+        base.href = document.location;
+      }
+      else {
+        document.write('<base href="' + document.location + '" />');
+      }
     }
   </script>
 
