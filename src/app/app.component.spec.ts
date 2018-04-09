@@ -59,8 +59,8 @@ describe('AppComponent', () => {
     component.ngOnInit();
     settingsService.set('crash_reports', false);
     expect(spy.send).toHaveBeenCalled();
-    expect(spy.send.calls.first().args[0]).toEqual('settings.changed');
-    expect(spy.send.calls.first().args[1].crash_reports).toEqual(false);
+    expect(spy.send.calls.mostRecent().args[0]).toEqual('settings.changed');
+    expect(spy.send.calls.mostRecent().args[1].crash_reports).toEqual(false);
   }));
 
   it('should receive changed settings and do not forward to electron', async(() => {
