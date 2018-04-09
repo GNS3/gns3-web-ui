@@ -105,7 +105,10 @@ export class SelectionTool {
 
   private transformation(point) {
     const transformation_point = this.context.getZeroZeroTransformationPoint();
-    return [point[0] - transformation_point.x, point[1] - transformation_point.y];
+    return [
+      point[0] - transformation_point.x - this.context.transformation.x,
+      point[1] - transformation_point.y - this.context.transformation.y
+    ];
   }
 
 

@@ -27,8 +27,6 @@ export class GraphLayout implements Widget {
   private movingTool: MovingTool;
   private layersWidget: LayersWidget;
 
-  private centerZeroZeroPoint = true;
-
   constructor() {
     this.linksWidget = new LinksWidget();
     this.nodesWidget = new NodesWidget();
@@ -89,14 +87,19 @@ export class GraphLayout implements Widget {
       .data([context]);
 
     const canvasEnter = canvas.enter()
-        .append<SVGGElement>('g')
-        .attr('class', 'canvas');
+      .append<SVGGElement>('g')
+      .attr('class', 'canvas');
 
-    if (this.centerZeroZeroPoint) {
-      canvas.attr(
-        'transform',
-        (ctx: Context) => `translate(${ctx.getSize().width / 2}, ${ctx.getSize().height / 2})`);
-    }
+    canvas
+      .merge(canvasEnter)
+      .attr(
+      'transform',
+      (ctx: Context) => {
+        const xTrans = ctx.getZeroZeroTransformationPoint().x + ctx.transformation.x;
+        const yTrans = ctx.getZeroZeroTransformationPoint().y + ctx.transformation.y;
+        const kTrans = ctx.transformation.k;
+        return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+      });
 
     const layersManager = new LayersManager();
     layersManager.setNodes(this.nodes);

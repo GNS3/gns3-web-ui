@@ -1,25 +1,27 @@
 import {Size} from "./size";
 import {Point} from "./point";
 
+export class Transformation {
+  constructor(
+    public x: number,
+    public y: number,
+    public k: number
+  ) {}
+}
+
 
 export class Context {
-  private size: Size;
+  public transformation: Transformation;
+  public size: Size;
 
-  constructor(private centerZeroZeroPoint = false) {
+  constructor(public centerZeroZeroPoint = true) {
     this.size = new Size(0, 0);
-  }
-
-  public getSize(): Size {
-    return this.size;
-  }
-
-  public setSize(size: Size): void {
-    this.size = size;
+    this.transformation = new Transformation(0, 0, 1);
   }
 
   public getZeroZeroTransformationPoint() {
     if (this.centerZeroZeroPoint) {
-      return new Point(this.getSize().width / 2., this.getSize().height / 2.);
+      return new Point(this.size.width / 2., this.size.height / 2.);
     }
     return new Point(0, 0);
   }

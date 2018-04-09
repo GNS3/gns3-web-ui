@@ -84,9 +84,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       this.graphContext = new Context(true);
 
       if (this.windowFullSize) {
-        this.graphContext.setSize(this.getSize());
+        this.graphContext.size = this.getSize();
       } else {
-        this.graphContext.setSize(new Size(this.width, this.height));
+        this.graphContext.size = new Size(this.width, this.height);
       }
 
       this.graphLayout = new GraphLayout();
@@ -113,19 +113,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private changeLayout() {
-    if (this.windowFullSize) {
-      if (this.parentNativeElement != null) {
-        this.graphContext.setSize(this.getSize());
-      }
-
-    } else {
-
+    if (this.parentNativeElement != null) {
+      this.graphContext.size = this.getSize();
     }
 
     if (this.graphContext != null) {
       this.svg
-        .attr('width', this.graphContext.getSize().width)
-        .attr('height', this.graphContext.getSize().height);
+        .attr('width', this.graphContext.size.width)
+        .attr('height', this.graphContext.size.height);
     }
 
     this.graphLayout.setNodes(this.nodes);

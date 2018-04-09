@@ -1,7 +1,9 @@
-import {SVGSelection} from "../models/types";
-import {Context} from "../models/context";
-import {D3ZoomEvent, zoom, ZoomBehavior} from "d3-zoom";
+import { D3ZoomEvent, zoom, ZoomBehavior} from "d3-zoom";
 import { event } from "d3-selection";
+
+import { SVGSelection} from "../models/types";
+import { Context} from "../models/context";
+
 
 export class MovingTool {
   private selection: SVGSelection;
@@ -32,9 +34,17 @@ export class MovingTool {
       const canvas = self.selection.select<SVGGElement>("g.canvas");
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr(
-        'transform',
-        `translate(${self.context.getSize().width / 2 + e.transform.x}, ` +
-              `${self.context.getSize().height / 2 + e.transform.y}) scale(${e.transform.k})`);
+      'transform',
+      () => {
+        self.context.transformation.x = e.transform.x;
+        self.context.transformation.y = e.transform.y;
+        self.context.transformation.k = e.transform.k;
+
+        const xTrans = self.context.getZeroZeroTransformationPoint().x + self.context.transformation.x;
+        const yTrans = self.context.getZeroZeroTransformationPoint().y + self.context.transformation.y;
+        const kTrans = self.context.transformation.k;
+        return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+      });
     };
 
     this.zoom.on('zoom', onZoom);

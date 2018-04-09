@@ -113,4 +113,16 @@ describe('SelectionTool', () => {
         expect(path_selection.attr('visibility')).toEqual('hidden');
     });
   });
+
+  describe('SelectionTool correctly transform points with context transformation', () => {
+    beforeEach(() => {
+      context.transformation.x = 100;
+      context.transformation.y = 100;
+      svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
+    });
+
+    it('path should have d adjusted for transformation', () => {
+        expect(path_selection.attr('d')).toEqual('M-5,-14 l0,0 l0,0 l0,0z');
+    });
+  });
 });
