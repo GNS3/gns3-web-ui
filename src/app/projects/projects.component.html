@@ -1,5 +1,5 @@
 <div class="content">
-  <div class="default-header mat-app-background">
+  <div class="default-header">
     <h1>Projects</h1>
   </div>
   <div class="default-content">
@@ -8,7 +8,7 @@
       <mat-table #table [dataSource]="dataSource">
 
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <a [routerLink]="['/server', server.id, 'project', row.project_id]" class="table-link">{{row.name}}</a>
           </mat-cell>
