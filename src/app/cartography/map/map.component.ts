@@ -107,9 +107,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getSize(): Size {
-    return new Size(
-      document.documentElement.clientWidth,
-      document.documentElement.clientHeight);
+    // return new Size(
+    //   document.documentElement.clientWidth,
+    //   document.documentElement.clientHeight);
+    return new Size(2000, 2000);
   }
 
   private changeLayout() {
