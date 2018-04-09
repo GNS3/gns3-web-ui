@@ -58,3 +58,10 @@ main {
   text-align: right;
 }
 
+.fill-space {
+  flex: 1 1 auto;
+}
+
+.example-container > * {
+  width: 100%;
+}

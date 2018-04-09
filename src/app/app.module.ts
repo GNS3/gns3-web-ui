@@ -1,7 +1,6 @@
 import * as Raven from 'raven-js';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from '@angular/common/http';
@@ -19,13 +18,17 @@ import {
   MatDialogModule,
   MatProgressBarModule,
   MatProgressSpinnerModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatCheckboxModule,
+  MatListModule,
+  MatExpansionModule,
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 import { HotkeyModule } from 'angular2-hotkeys';
+import { PersistenceModule } from 'angular-persistence';
+import { NgxElectronModule } from 'ngx-electron';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -66,21 +69,15 @@ import { DrawingsDataSource } from "./cartography/shared/datasources/drawings-da
 import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 import { ProjectMapShortcutsComponent } from './project-map/project-map-shortcuts/project-map-shortcuts.component';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsService } from "./shared/services/settings.service";
 
-import { environment } from "../environments/environment";
+import { RavenErrorHandler } from "./raven-error-handler";
 
 Raven
   .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
   .install();
 
-export class RavenErrorHandler implements ErrorHandler {
-  handleError(err:any) : void {
-    console.error(err.originalError || err);
-    if (environment.production) {
-      Raven.captureException(err.originalError || err);
-    }
-  }
-}
 
 
 @NgModule({
@@ -102,11 +99,11 @@ export class RavenErrorHandler implements ErrorHandler {
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     ProjectMapShortcutsComponent,
+    SettingsComponent,
   ],
   imports: [
     NgbModule.forRoot(),
     BrowserModule,
-    HttpModule,
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
@@ -123,11 +120,17 @@ export class RavenErrorHandler implements ErrorHandler {
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatCheckboxModule,
+    MatListModule,
+    MatExpansionModule,
     CdkTableModule,
     CartographyModule,
-    HotkeyModule.forRoot()
+    HotkeyModule.forRoot(),
+    PersistenceModule,
+    NgxElectronModule
   ],
   providers: [
+    SettingsService,
     { provide: ErrorHandler, useClass: RavenErrorHandler },
     D3Service,
     VersionService,

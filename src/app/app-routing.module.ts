@@ -7,6 +7,7 @@ import { ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent } from "./servers/servers.component";
 import { ProjectsComponent } from "./projects/projects.component";
 import { DefaultLayoutComponent } from "./default-layout/default-layout.component";
+import { SettingsComponent } from "./settings/settings.component";
 
 
 const routes: Routes = [
@@ -14,7 +15,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'servers', pathMatch: 'full'},
       { path: 'servers', component: ServersComponent },
-      { path: 'server/:server_id/projects', component: ProjectsComponent }
+      { path: 'server/:server_id/projects', component: ProjectsComponent },
+      { path: 'settings', component: SettingsComponent },
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent },
