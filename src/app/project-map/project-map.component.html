@@ -1,5 +1,5 @@
 <div *ngIf="project" class="project-map">
-  <app-map [symbols]="symbols" [nodes]="nodes" [links]="links" [drawings]="drawings"></app-map>
+  <app-map [symbols]="symbols" [nodes]="nodes" [links]="links" [drawings]="drawings" [width]="project.scene_width" [height]="project.scene_height"></app-map>
 
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">

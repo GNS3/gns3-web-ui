@@ -26,7 +26,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() width = 1500;
   @Input() height = 600;
-  @Input() windowFullSize = true;
 
   private d3: D3;
   private parentNativeElement: any;
@@ -83,11 +82,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.graphContext = new Context(true);
 
-      if (this.windowFullSize) {
-        this.graphContext.size = this.getSize();
-      } else {
-        this.graphContext.size = new Size(this.width, this.height);
-      }
+      this.graphContext.size = this.getSize();
 
       this.graphLayout = new GraphLayout();
       this.graphLayout.connect(this.svg, this.graphContext);
@@ -107,10 +102,15 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getSize(): Size {
-    // return new Size(
-    //   document.documentElement.clientWidth,
-    //   document.documentElement.clientHeight);
-    return new Size(2000, 2000);
+    let width = document.documentElement.clientWidth;
+    let height = document.documentElement.clientHeight;
+    if (this.width > width) {
+      width = this.width;
+    }
+    if (this.height > height) {
+      height = this.height;
+    }
+    return new Size(width, height);
   }
 
   private changeLayout() {
