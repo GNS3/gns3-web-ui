@@ -227,41 +227,47 @@
     semver "^5.3.0"
     semver-intersect "^1.1.2"
 
-"@sentry/browser@0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-0.4.2.tgz#bd91752558d2e92adbd1f4b1dcd78efd92c7d2ed"
+"@sentry/browser@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-0.5.0.tgz#4a8f06af6a92536c017342481f75930d62c285a4"
   dependencies:
-    "@sentry/core" "0.4.2"
-    "@sentry/utils" "0.4.2"
-    raven-js "^3.23.1"
+    "@sentry/core" "0.5.0"
+    "@sentry/shim" "0.5.0"
 
-"@sentry/core@0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-0.4.2.tgz#3922c61b42519d9b67cd49da39f214a1d92b7f84"
-
-"@sentry/electron@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-0.4.2.tgz#47c15672470d3fd850096d8786b6738e250eea61"
+"@sentry/core@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-0.5.0.tgz#ceb6fb4a6591d5333c7716496dd98b85c30d177e"
   dependencies:
-    "@sentry/browser" "0.4.2"
-    "@sentry/core" "0.4.2"
-    "@sentry/node" "0.4.2"
-    "@sentry/utils" "0.4.2"
+    "@sentry/shim" "0.5.0"
+
+"@sentry/electron@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sentry/electron/-/electron-0.5.0.tgz#cb12b7848d8a81ea701b2f0596b1d7cb133aa664"
+  dependencies:
+    "@sentry/browser" "0.5.0"
+    "@sentry/core" "0.5.0"
+    "@sentry/node" "0.5.0"
+    "@sentry/shim" "0.5.0"
+    "@sentry/utils" "0.5.0"
     form-data "^2.3.2"
     node-fetch "^2.1.1"
     util.promisify "^1.0.0"
 
-"@sentry/node@0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-0.4.2.tgz#3fcc890cdff157fbb488a130ba83b7f68b57aacd"
+"@sentry/node@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-0.5.0.tgz#231745b70ce8a7304446b597fb82ae63088d9720"
   dependencies:
-    "@sentry/core" "0.4.2"
-    "@sentry/utils" "0.4.2"
-    raven "^2.4.2"
+    "@sentry/core" "0.5.0"
+    "@sentry/shim" "0.5.0"
+    raven "^2.5.0"
 
-"@sentry/utils@0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-0.4.2.tgz#1a951ceee448f0fd2dc146798ee9b93f39c058cf"
+"@sentry/shim@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sentry/shim/-/shim-0.5.0.tgz#c8a2b7c2812d5a53e866c4e471b8eca0aff21267"
+
+"@sentry/utils@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-0.5.0.tgz#a44a6b5220f55d2b3f7aad8339837a667ce3ce57"
 
 "@types/d3-array@1.2":
   version "1.2.1"
@@ -6953,17 +6959,17 @@ range-parser@^1.0.3, range-parser@^1.2.0, range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
 
-raven-js@^3.23.1, raven-js@^3.24.0:
+raven-js@^3.24.0:
   version "3.24.0"
   resolved "https://registry.yarnpkg.com/raven-js/-/raven-js-3.24.0.tgz#59464d8bc4b3812ae87a282e9bb98ecad5b4b047"
 
-raven@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/raven/-/raven-2.4.2.tgz#0129e2adc30788646fd530b67d08a8ce25d4f6dc"
+raven@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/raven/-/raven-2.5.0.tgz#7a2b4ce8b9ff884448924ad19ca33b574bce59a2"
   dependencies:
     cookie "0.3.1"
     md5 "^2.2.1"
-    stack-trace "0.0.9"
+    stack-trace "0.0.10"
     timed-out "4.0.1"
     uuid "3.0.0"
 
@@ -8260,9 +8266,9 @@ ssri@^5.0.0:
   dependencies:
     safe-buffer "^5.1.0"
 
-stack-trace@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.9.tgz#a8f6eaeca90674c333e7c43953f275b451510695"
+stack-trace@0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/stack-trace/-/stack-trace-0.0.10.tgz#547c70b347e8d32b4e108ea1a2a159e5fdde19c0"
 
 stat-mode@^0.2.2:
   version "0.2.2"
