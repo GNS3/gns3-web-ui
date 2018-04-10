@@ -23,6 +23,7 @@ import {
   MatListModule,
   MatExpansionModule,
   MatSortModule,
+  MatSelectModule
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
@@ -126,6 +127,7 @@ Raven
     MatListModule,
     MatExpansionModule,
     MatSortModule,
+    MatSelectModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,

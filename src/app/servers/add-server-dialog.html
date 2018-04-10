@@ -9,6 +9,22 @@
   <mat-form-field>
     <input matInput tabindex="1" [(ngModel)]="server.port" placeholder="Port">
   </mat-form-field>
+
+  <mat-form-field>
+    <mat-select placeholder="Authorization" [(value)]="server.authorization">
+      <mat-option *ngFor="let auth of authorizations" [value]="auth.key">
+        {{ auth.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field *ngIf="server.authorization === 'basic'">
+    <input matInput tabindex="1" [(ngModel)]="server.login" placeholder="Login">
+  </mat-form-field>
+  <mat-form-field *ngIf="server.authorization === 'basic'">
+    <input matInput tabindex="1" [(ngModel)]="server.password" placeholder="Password">
+  </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">No Thanks</button>

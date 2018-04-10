@@ -66,3 +66,7 @@ header {
 .example-container > * {
   width: 100%;
 }
+
+.mat-dialog-content > * {
+  width: 100%;
+}

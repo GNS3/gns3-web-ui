@@ -38,7 +38,7 @@ export class ServersComponent implements OnInit {
 
   createModal() {
     const dialogRef = this.dialog.open(AddServerDialogComponent, {
-      width: '250px',
+      width: '350px',
     });
 
     dialogRef.afterClosed().subscribe(server => {
@@ -62,12 +62,21 @@ export class ServersComponent implements OnInit {
   selector: 'app-add-server-dialog',
   templateUrl: 'add-server-dialog.html',
 })
-export class AddServerDialogComponent {
+export class AddServerDialogComponent implements OnInit {
   server: Server = new Server();
+
+  authorizations = [
+    {'key': 'none', name: 'No authorization'},
+    {'key': 'basic', name: 'Basic authorization'}
+  ];
 
   constructor(
     public dialogRef: MatDialogRef<AddServerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
+  }
+
+  ngOnInit() {
+    this.server.authorization = 'none';
   }
 
   onAddClick(): void {
