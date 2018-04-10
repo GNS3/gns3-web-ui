@@ -18,8 +18,10 @@ let isDev = false;
 const argv = yargs
   .describe('m', 'Maximizes window on startup.')
   .boolean('m')
-  .describe('e', 'Environment, `dev` for developer mode and when not specified then production mode. ')
+  .describe('e', 'Environment, `dev` for developer mode and when not specified then production mode.')
   .choices('e', ['dev', null])
+  .describe('d', 'Enable developer tools.')
+  .boolean('d')
   .argv;
 
 if (argv.e == 'dev') {
@@ -75,7 +77,6 @@ function createWindow () {
 
   if(isDev) {
     mainWindow.loadURL('http://localhost:4200/');
-    mainWindow.webContents.openDevTools();
   }
   else {
     mainWindow.loadURL(url.format({
@@ -85,8 +86,10 @@ function createWindow () {
     }));
   }
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  if(argv.d) {
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  }
 
   if(argv.m) {
     mainWindow.maximize();

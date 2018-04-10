@@ -1,4 +1,6 @@
 @import '~@angular/material/theming';
+@import '~material-design-icons/iconfont/material-icons.css';
+@import '~typeface-roboto/index.css';
 
 // Include non-theme styles for core.
 @include mat-core();
