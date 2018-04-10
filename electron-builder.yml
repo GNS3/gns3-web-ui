@@ -12,6 +12,8 @@ directories:
 files:
   - dist
   - main.js
+  - renderer.js
+  - sentry.js
   - package.json
 
 mac:
