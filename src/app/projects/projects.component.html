@@ -5,7 +5,7 @@
   <div class="default-content">
 
     <div class="example-container mat-elevation-z8">
-      <mat-table #table [dataSource]="dataSource">
+      <mat-table #table [dataSource]="dataSource" matSort>
 
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>

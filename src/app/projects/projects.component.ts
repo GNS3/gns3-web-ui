@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { MatSort, MatSortable } from "@angular/material";
 
 import { Project } from "../shared/models/project";
 import { ProjectService } from "../shared/services/project.service";
@@ -8,6 +9,7 @@ import { ServerService } from "../shared/services/server.service";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { DataSource } from "@angular/cdk/collections";
 import { Observable } from "rxjs/Observable";
+
 
 @Component({
   selector: 'app-projects',
@@ -20,13 +22,23 @@ export class ProjectsComponent implements OnInit {
   dataSource: ProjectDataSource;
   displayedColumns = ['name', 'actions'];
 
+  @ViewChild(MatSort) sort: MatSort;
+
   constructor(private route: ActivatedRoute,
               private serverService: ServerService,
               private projectService: ProjectService) {
-    this.dataSource = new ProjectDataSource(this.projectDatabase);
+
   }
 
   ngOnInit() {
+    this.sort.sort(<MatSortable>{
+        id: 'name',
+        start: 'asc'
+      }
+    );
+
+    this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
+
     this.route.paramMap
       .switchMap((params: ParamMap) => {
         const server_id = parseInt(params.get('server_id'), 10);
@@ -47,7 +59,6 @@ export class ProjectsComponent implements OnInit {
       this.projectDatabase.remove(project);
     });
   }
-
 }
 
 
@@ -72,13 +83,31 @@ export class ProjectDatabase {
 }
 
 export class ProjectDataSource extends DataSource<any> {
-  constructor(private projectDatabase: ProjectDatabase) {
+
+  constructor(private projectDatabase: ProjectDatabase, private sort: MatSort) {
     super();
   }
 
   connect(): Observable<Project[]> {
-    return Observable.merge(this.projectDatabase.dataChange).map(() => {
-      return this.projectDatabase.data;
+    const displayDataChanges = [
+      this.projectDatabase.dataChange,
+      this.sort.sortChange,
+    ];
+
+    return Observable.merge(...displayDataChanges).map(() => {
+      if (!this.sort.active || this.sort.direction === '') {
+        return this.projectDatabase.data;
+      }
+
+      return this.projectDatabase.data.sort((a, b) => {
+        const propertyA = a[this.sort.active];
+        const propertyB = b[this.sort.active];
+
+        const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
+        const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
+
+        return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+      });
     });
   }
 

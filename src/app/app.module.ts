@@ -22,6 +22,7 @@ import {
   MatCheckboxModule,
   MatListModule,
   MatExpansionModule,
+  MatSortModule,
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
@@ -108,6 +109,7 @@ Raven
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
+    CdkTableModule,
     MatButtonModule,
     MatMenuModule,
     MatCardModule,
@@ -123,7 +125,7 @@ Raven
     MatCheckboxModule,
     MatListModule,
     MatExpansionModule,
-    CdkTableModule,
+    MatSortModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
