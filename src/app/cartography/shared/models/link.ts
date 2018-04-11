@@ -1,5 +1,7 @@
-import {Node} from "./node";
-import {Selectable} from "../managers/selection-manager";
+import { Node } from "./node";
+import { LinkNode } from "./link-node";
+import { Selectable } from "../managers/selection-manager";
+
 
 export class Link implements Selectable {
   capture_file_name: string;
@@ -7,7 +9,7 @@ export class Link implements Selectable {
   capturing: boolean;
   link_id: string;
   link_type: string;
-  nodes: Node[];
+  nodes: LinkNode[];
   project_id: string;
   distance: number; // this is not from server
   length: number; // this is not from server

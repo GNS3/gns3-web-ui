@@ -8,6 +8,7 @@ import { MultiLinkCalculatorHelper } from "../../map/helpers/multi-link-calculat
 import { SerialLinkWidget } from "./serial-link";
 import { EthernetLinkWidget } from "./ethernet-link";
 import { Layer } from "../models/layer";
+import { InterfaceLabelWidget } from "./interface-label";
 
 
 export class LinksWidget implements Widget {
@@ -95,6 +96,9 @@ export class LinksWidget implements Widget {
         }
         return null;
       });
+
+    const interfaceLabel = new InterfaceLabelWidget();
+    interfaceLabel.draw(selection);
   }
 
   public draw(view: SVGSelection, links?: Link[]) {
@@ -123,6 +127,7 @@ export class LinksWidget implements Widget {
     const merge = link.merge(link_enter);
 
     this.revise(merge);
+
 
     link
       .exit()
