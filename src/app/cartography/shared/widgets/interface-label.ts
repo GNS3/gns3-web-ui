@@ -1,13 +1,32 @@
 import { SVGSelection } from "../models/types";
 import { Link } from "../models/link";
+import { InterfaceLabel } from "../models/interface-label";
 
 
 export class InterfaceLabelWidget {
   draw(selection: SVGSelection) {
 
     const labels = selection
-      .selectAll<SVGTextElement, Link>('text.interface_label')
-      .data((l: Link) => [l]);
+      .selectAll<SVGTextElement, InterfaceLabel>('text.interface_label')
+      .data((l: Link) => {
+        const sourceInterface = new InterfaceLabel(
+          Math.round(l.source.x + l.nodes[0].label.x),
+          Math.round(l.source.y + l.nodes[0].label.y),
+          l.nodes[0].label.text,
+          l.nodes[0].label.style,
+          l.nodes[0].label.rotation
+        );
+
+        const targetInterface = new InterfaceLabel(
+          Math.round(l.target.x + l.nodes[1].label.x),
+          Math.round(l.target.y + l.nodes[1].label.y),
+          l.nodes[1].label.text,
+          l.nodes[1].label.style,
+          l.nodes[1].label.rotation
+        );
+
+        return [sourceInterface, targetInterface];
+      });
 
     const enter = labels
       .enter()
@@ -18,9 +37,11 @@ export class InterfaceLabelWidget {
       .merge(enter);
 
     merge
-      .text((l: Link) => l.nodes[0].label.text)
-      .attr('x', (l: Link) => Math.round(l.source.x + l.nodes[0].label.x))
-      .attr('y', (l: Link) => Math.round(l.source.y + l.nodes[0].label.y));
+      .text((l: InterfaceLabel) => l.text)
+      .attr('x', (l: InterfaceLabel) => l.x)
+      .attr('y', (l: InterfaceLabel) => l.y)
+      .attr('style', (l: InterfaceLabel) => l.style)
+      .attr('transform', (l: InterfaceLabel) => `rotate(${l.rotation}, ${l.x}, ${l.y})`);
 
     labels
       .exit()
