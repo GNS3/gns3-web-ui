@@ -1,4 +1,4 @@
-const { SentryClient } = require('@sentry/electron');
+const { init } = require('@sentry/electron');
 const fs = require('fs');
 const { ipcMain } = require('electron');
 
@@ -20,7 +20,7 @@ ipcMain.on('settings.changed', function (event, settings) {
 });
 
 
-SentryClient.create({
+init({
   dsn: DSN,
   shouldSendCallback: shouldSendCallback
 });
