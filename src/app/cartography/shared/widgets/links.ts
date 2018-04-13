@@ -14,6 +14,20 @@ import { InterfaceLabelWidget } from "./interface-label";
 export class LinksWidget implements Widget {
   private multiLinkCalculatorHelper = new MultiLinkCalculatorHelper();
 
+  private interfaceLabelWidget: InterfaceLabelWidget;
+
+  constructor() {
+    this.interfaceLabelWidget = new InterfaceLabelWidget();
+  }
+
+  public getInterfaceLabelWidget() {
+    return this.interfaceLabelWidget;
+  }
+
+  public setInterfaceLabelWidget(interfaceLabelWidget: InterfaceLabelWidget) {
+    this.interfaceLabelWidget = interfaceLabelWidget;
+  }
+
   public getLinkWidget(link: Link) {
     if (link.link_type === 'serial') {
       return new SerialLinkWidget();
@@ -97,8 +111,7 @@ export class LinksWidget implements Widget {
         return null;
       });
 
-    const interfaceLabel = new InterfaceLabelWidget();
-    interfaceLabel.draw(selection);
+    this.getInterfaceLabelWidget().draw(selection);
   }
 
   public draw(view: SVGSelection, links?: Link[]) {
