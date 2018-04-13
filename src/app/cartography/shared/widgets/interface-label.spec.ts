@@ -86,6 +86,8 @@ describe('InterfaceLabelsWidget', () => {
     expect(sourceInterface.getAttribute('y')).toEqual('220');
     expect(sourceInterface.getAttribute('transform')).toEqual('rotate(5, 110, 220)');
     expect(sourceInterface.getAttribute('style')).toEqual('font-size: 12px');
+    expect(sourceInterface.getAttribute('class')).toContain('noselect');
+
 
     const targetInterface = drew.nodes()[1];
     expect(targetInterface.innerHTML).toEqual('Interface 2');
@@ -93,6 +95,7 @@ describe('InterfaceLabelsWidget', () => {
     expect(targetInterface.getAttribute('y')).toEqual('360');
     expect(targetInterface.getAttribute('transform')).toEqual('rotate(0, 270, 360)');
     expect(targetInterface.getAttribute('style')).toEqual('');
+    expect(targetInterface.getAttribute('class')).toContain('noselect');
   });
 
 });

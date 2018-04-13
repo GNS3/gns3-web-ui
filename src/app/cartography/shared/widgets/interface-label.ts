@@ -31,7 +31,7 @@ export class InterfaceLabelWidget {
     const enter = labels
       .enter()
         .append<SVGTextElement>('text')
-          .attr('class', 'interface_label');
+          .attr('class', 'interface_label noselect');
 
     const merge = labels
       .merge(enter);
