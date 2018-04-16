@@ -1,9 +1,16 @@
 import { SVGSelection } from "../models/types";
 import { Link } from "../models/link";
 import { InterfaceLabel } from "../models/interface-label";
+import { CssFixer } from "../helpers/css-fixer";
 
 
 export class InterfaceLabelWidget {
+  private cssFixer: CssFixer;
+
+  constructor() {
+    this.cssFixer = new CssFixer();
+  }
+
   draw(selection: SVGSelection) {
 
     const labels = selection
@@ -40,7 +47,7 @@ export class InterfaceLabelWidget {
       .text((l: InterfaceLabel) => l.text)
       .attr('x', (l: InterfaceLabel) => l.x)
       .attr('y', (l: InterfaceLabel) => l.y)
-      .attr('style', (l: InterfaceLabel) => l.style)
+      .attr('style', (l: InterfaceLabel) => this.cssFixer.fix(l.style))
       .attr('transform', (l: InterfaceLabel) => `rotate(${l.rotation}, ${l.x}, ${l.y})`);
 
     labels

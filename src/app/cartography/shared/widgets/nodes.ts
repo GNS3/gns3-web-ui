@@ -6,6 +6,7 @@ import { Node } from "../models/node";
 import { SVGSelection } from "../models/types";
 import { Symbol } from "../models/symbol";
 import { Layer  } from "../models/layer";
+import { CssFixer } from "../helpers/css-fixer";
 
 
 export class NodesWidget implements Widget {
@@ -17,9 +18,11 @@ export class NodesWidget implements Widget {
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
 
   private symbols: Symbol[];
+  private cssFixer: CssFixer;
 
   constructor() {
     this.symbols = [];
+    this.cssFixer = new CssFixer();
   }
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
@@ -57,7 +60,7 @@ export class NodesWidget implements Widget {
     selection
       .select<SVGTextElement>('text.label')
         // .attr('y', (n: Node) => n.label.y - n.height / 2. + 10)  // @todo: server computes y in auto way
-        .attr('style', (n: Node) => n.label.style)
+        .attr('style', (n: Node) => this.cssFixer.fix(n.label.style))
         .text((n: Node) => n.label.text)
         .attr('x', function (this: SVGTextElement, n: Node) {
           if (n.label.x === null) {

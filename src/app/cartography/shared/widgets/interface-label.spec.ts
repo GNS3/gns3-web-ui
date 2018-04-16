@@ -85,7 +85,7 @@ describe('InterfaceLabelsWidget', () => {
     expect(sourceInterface.getAttribute('x')).toEqual('110');
     expect(sourceInterface.getAttribute('y')).toEqual('220');
     expect(sourceInterface.getAttribute('transform')).toEqual('rotate(5, 110, 220)');
-    expect(sourceInterface.getAttribute('style')).toEqual('font-size: 12px');
+    expect(sourceInterface.getAttribute('style')).toEqual('font-size:12px');
     expect(sourceInterface.getAttribute('class')).toContain('noselect');
 
 
