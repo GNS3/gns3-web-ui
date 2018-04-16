@@ -24,13 +24,14 @@ export class SymbolService {
   }
 
   load(server: Server): Observable<Symbol[]> {
-    this.list(server).subscribe((symbols: Symbol[]) => {
+    const subscription = this.list(server).subscribe((symbols: Symbol[]) => {
       const streams = symbols.map(symbol => this.raw(server, symbol.symbol_id));
       Observable.forkJoin(streams).subscribe((results) => {
         symbols.forEach((symbol: Symbol, i: number) => {
           symbol.raw = results[i];
         });
         this.symbols.next(symbols);
+        subscription.unsubscribe();
       });
     });
     return this.symbols.asObservable();

@@ -21,7 +21,7 @@ export class ProjectWebServiceHandler {
               private drawingsDataSource: DrawingsDataSource) {}
 
   public connect(ws: Subject<WebServiceMessage>) {
-    ws.subscribe((message: WebServiceMessage) => {
+    const subscription = ws.subscribe((message: WebServiceMessage) => {
       if (message.action === 'node.updated') {
         this.nodesDataSource.update(message.event as Node);
       }
@@ -50,5 +50,6 @@ export class ProjectWebServiceHandler {
         this.drawingsDataSource.remove(message.event as Drawing);
       }
     });
+    return subscription;
   }
 }

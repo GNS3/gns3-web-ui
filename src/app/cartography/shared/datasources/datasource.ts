@@ -38,5 +38,10 @@ export abstract class DataSource<T> {
     return this.dataChange;
   }
 
+  public clear() {
+    this.data = [];
+    this.dataChange.next(this.data);
+  }
+
   protected abstract findIndex(item: T): number;
 }

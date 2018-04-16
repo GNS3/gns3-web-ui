@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { HotkeysService } from 'angular2-hotkeys';
 
@@ -40,6 +40,7 @@ import { ProjectWebServiceHandler } from "../shared/handlers/project-web-service
 import { SelectionManager } from "../cartography/shared/managers/selection-manager";
 import { InRectangleHelper } from "../cartography/map/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../cartography/shared/datasources/drawings-datasource";
+import { Subscription } from "rxjs/Subscription";
 
 
 
@@ -49,7 +50,7 @@ import { DrawingsDataSource } from "../cartography/shared/datasources/drawings-d
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.css'],
 })
-export class ProjectMapComponent implements OnInit {
+export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
   public links: Link[] = [];
   public drawings: Drawing[] = [];
@@ -71,6 +72,8 @@ export class ProjectMapComponent implements OnInit {
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
   @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
+  private subscriptions: Subscription[];
+
   constructor(
               private route: ActivatedRoute,
               private serverService: ServerService,
@@ -90,10 +93,13 @@ export class ProjectMapComponent implements OnInit {
               ) {
     this.selectionManager = new SelectionManager(
       this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
+
+    this.subscriptions = [];
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+
+    const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const server_id = parseInt(paramMap.get('server_id'), 10);
       Observable
         .fromPromise(this.serverService.get(server_id))
@@ -118,34 +124,44 @@ export class ProjectMapComponent implements OnInit {
         });
     });
 
-    this.symbolService.symbols.subscribe((symbols: Symbol[]) => {
-      this.symbols = symbols;
-    });
+    this.subscriptions.push(routeSub);
 
-    this.drawingsDataSource.connect().subscribe((drawings: Drawing[]) => {
-      this.drawings = drawings;
-      if (this.mapChild) {
-        this.mapChild.reload();
-      }
-    });
+    this.subscriptions.push(
+      this.symbolService.symbols.subscribe((symbols: Symbol[]) => {
+        this.symbols = symbols;
+      })
+    );
 
-    this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
-      this.nodes = nodes;
-      if (this.mapChild) {
-        this.mapChild.reload();
-      }
-    });
+    this.subscriptions.push(
+      this.drawingsDataSource.connect().subscribe((drawings: Drawing[]) => {
+        this.drawings = drawings;
+        if (this.mapChild) {
+          this.mapChild.reload();
+        }
+      })
+    );
 
-    this.linksDataSource.connect().subscribe((links: Link[]) => {
-      this.links = links;
-      if (this.mapChild) {
-        this.mapChild.reload();
-      }
-    });
+    this.subscriptions.push(
+      this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
+        this.nodes = nodes;
+        if (this.mapChild) {
+          this.mapChild.reload();
+        }
+      })
+    );
+
+    this.subscriptions.push(
+      this.linksDataSource.connect().subscribe((links: Link[]) => {
+        this.links = links;
+        if (this.mapChild) {
+          this.mapChild.reload();
+        }
+      })
+    );
   }
 
   onProjectLoad(project: Project) {
-    this.symbolService
+    const subscription = this.symbolService
       .load(this.server)
       .flatMap(() => {
         return this.projectService.nodes(this.server, project.project_id);
@@ -165,14 +181,16 @@ export class ProjectMapComponent implements OnInit {
         this.setUpWS(project);
         this.isLoading = false;
       });
-
-
+    this.subscriptions.push(subscription);
   }
 
   setUpWS(project: Project) {
     this.ws = Observable.webSocket(
       this.projectService.notificationsPath(this.server, project.project_id));
-    this.projectWebServiceHandler.connect(this.ws);
+
+    this.subscriptions.push(
+      this.projectWebServiceHandler.connect(this.ws)
+    );
   }
 
   setUpMapCallbacks(project: Project) {
@@ -196,7 +214,9 @@ export class ProjectMapComponent implements OnInit {
         });
     });
 
-    this.selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected);
+    this.subscriptions.push(
+      this.selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
+    );
   }
 
   onNodeCreation(appliance: Appliance) {
@@ -281,6 +301,15 @@ export class ProjectMapComponent implements OnInit {
           this.linksDataSource.set(links);
         });
       });
+  }
+
+  public ngOnDestroy() {
+    this.drawingsDataSource.clear();
+    this.nodesDataSource.clear();
+    this.linksDataSource.clear();
+
+    this.ws.unsubscribe();
+    this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 
 }

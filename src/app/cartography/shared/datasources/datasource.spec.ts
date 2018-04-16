@@ -69,4 +69,16 @@ describe('TestDataSource', () => {
 
   });
 
+  describe('Items should be cleared', () => {
+    beforeEach(() => {
+      dataSource.set([new Item("test1", "property1", "another"), new Item("test2", "property2")]);
+      dataSource.clear();
+    });
+
+    it('items should be cleared', () => {
+      expect(data).toEqual([]);
+    });
+
+  });
+
 });

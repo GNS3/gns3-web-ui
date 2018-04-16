@@ -34,6 +34,7 @@ export class SelectionManager {
         this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
         this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
     });
+    return this.subscription;
   }
 
   public getSelectedNodes() {
