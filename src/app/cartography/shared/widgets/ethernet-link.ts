@@ -9,8 +9,8 @@ export class EthernetLinkWidget implements Widget {
 
   public draw(view: SVGSelection, link: Link) {
       const link_data = [[
-        [link.source.x, link.source.y],
-        [link.target.x, link.target.y]
+        [link.source.x + link.source.width / 2., link.source.y + link.source.height / 2.],
+        [link.target.x + link.target.width / 2., link.target.y + link.source.height / 2.]
       ]];
 
       const value_line = line();

@@ -33,6 +33,18 @@ describe('TestDataSource', () => {
     });
   });
 
+
+  describe('Item can be added when key duplocates', () => {
+    beforeEach(() => {
+      dataSource.add(new Item("test1", "property1"));
+      dataSource.add(new Item("test1", "property2"));
+    });
+
+    it('item should be in data', () => {
+      expect(data).toEqual([new Item("test1", "property2")]);
+    });
+  });
+
   describe('Items can be set', () => {
     beforeEach(() => {
       dataSource.set([new Item("test1", "property1"), new Item("test2", "property2")]);
