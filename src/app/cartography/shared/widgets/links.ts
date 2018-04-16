@@ -51,12 +51,12 @@ export class LinksWidget implements Widget {
 
         const link_path = link_group.select<SVGPathElement>('path');
 
-        const start_point: SVGPoint = link_path.node().getPointAtLength(40);
-        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 40);
+        const start_point: SVGPoint = link_path.node().getPointAtLength(45);
+        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 45);
 
         let statuses = [];
 
-        if (link_path.node().getTotalLength() > 2 * 40 + 10) {
+        if (link_path.node().getTotalLength() > 2 * 45 + 10) {
           statuses = [
             new LinkStatus(start_point.x, start_point.y, l.source.status),
             new LinkStatus(end_point.x, end_point.y, l.target.status)

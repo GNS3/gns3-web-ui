@@ -5,5 +5,6 @@ export class InterfaceLabel {
     public text: string,
     public style: string,
     public rotation = 0,
+    public type: string
     ) {}
 }
