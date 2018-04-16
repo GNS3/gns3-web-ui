@@ -54,10 +54,15 @@ export class LinksWidget implements Widget {
         const start_point: SVGPoint = link_path.node().getPointAtLength(40);
         const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 40);
 
-        const statuses = [
-          new LinkStatus(start_point.x, start_point.y, l.source.status),
-          new LinkStatus(end_point.x, end_point.y, l.target.status)
-        ];
+        let statuses = [];
+
+        if (link_path.node().getTotalLength() > 2 * 40 + 10) {
+          statuses = [
+            new LinkStatus(start_point.x, start_point.y, l.source.status),
+            new LinkStatus(end_point.x, end_point.y, l.target.status)
+          ];
+        }
+
 
         const status_started = link_group
           .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
