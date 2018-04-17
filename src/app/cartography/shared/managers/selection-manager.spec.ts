@@ -7,6 +7,7 @@ import { SelectionManager } from "./selection-manager";
 import { NodesDataSource } from "../datasources/nodes-datasource";
 import { LinksDataSource } from "../datasources/links-datasource";
 import { InRectangleHelper } from "../../map/helpers/in-rectangle-helper";
+import { DrawingsDataSource } from "../datasources/drawings-datasource";
 
 
 describe('SelectionManager', () => {
@@ -16,13 +17,14 @@ describe('SelectionManager', () => {
 
   beforeEach(() => {
     const linksDataSource = new LinksDataSource();
+    const drawingsDataSource = new DrawingsDataSource();
     const inRectangleHelper = new InRectangleHelper();
 
     selectedRectangleSubject = new Subject<Rectangle>();
 
     nodesDataSource = new NodesDataSource();
 
-    manager = new SelectionManager(nodesDataSource, linksDataSource, inRectangleHelper);
+    manager = new SelectionManager(nodesDataSource, linksDataSource, drawingsDataSource, inRectangleHelper);
     manager.subscribe(selectedRectangleSubject);
 
     const node_1 = new Node();

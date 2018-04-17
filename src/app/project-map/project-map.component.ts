@@ -92,7 +92,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               protected hotkeysService: HotkeysService
               ) {
     this.selectionManager = new SelectionManager(
-      this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
+      this.nodesDataSource, this.linksDataSource, this.drawingsDataSource, new InRectangleHelper());
 
     this.subscriptions = [];
   }

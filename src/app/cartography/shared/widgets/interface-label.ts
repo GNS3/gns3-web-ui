@@ -6,6 +6,8 @@ import { select } from "d3-selection";
 
 
 export class InterfaceLabelWidget {
+  static SURROUNDING_TEXT_BORDER = 10;
+
   private cssFixer: CssFixer;
 
   constructor() {
@@ -15,24 +17,28 @@ export class InterfaceLabelWidget {
   draw(selection: SVGSelection) {
 
     const labels = selection
-      .selectAll<SVGTextElement, InterfaceLabel>('text.interface_label')
+      .selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container')
       .data((l: Link) => {
         const sourceInterface = new InterfaceLabel(
+          l.link_id,
+          'source',
           Math.round( l.source.x + l.nodes[0].label.x),
           Math.round(l.source.y + l.nodes[0].label.y),
           l.nodes[0].label.text,
           l.nodes[0].label.style,
           l.nodes[0].label.rotation,
-          'source'
+          l.nodes[0].label.is_selected
         );
 
         const targetInterface = new InterfaceLabel(
+          l.link_id,
+          'target',
           Math.round(  l.target.x + l.nodes[1].label.x),
           Math.round( l.target.y + l.nodes[1].label.y),
           l.nodes[1].label.text,
           l.nodes[1].label.style,
           l.nodes[1].label.rotation,
-          'target'
+          l.nodes[1].label.is_selected
         );
 
         return [sourceInterface, targetInterface];
@@ -40,44 +46,56 @@ export class InterfaceLabelWidget {
 
     const enter = labels
       .enter()
-        .append<SVGTextElement>('text')
-          .attr('class', 'interface_label noselect');
+        .append<SVGGElement>('g')
+        .classed('interface_label_container', true);
+
+    // create surrounding rect
+    enter
+      .append<SVGRectElement>('rect')
+        .attr('class', 'interface_label_border');
+
+    // create label
+    enter
+      .append<SVGTextElement>('text')
+        .attr('class', 'interface_label noselect');
 
     const merge = labels
       .merge(enter);
 
     merge
-      .text((l: InterfaceLabel) => l.text)
-      .attr('x', function(this: SVGTextElement, l: InterfaceLabel) {
-        /* @todo: in GUI probably it should be calculated based on the line; for now we keep it the same */
-        // const link = select(this.parentElement);
-        // const path = link.select<SVGPathElement>('path');
-        // let point;
-        // if (l.type === 'source') {
-        //   point = path.node().getPointAtLength(40);
-        // } else {
-        //   point = path.node().getPointAtLength(path.node().getTotalLength() - 40);
-        // }
-        // return point.x + l.x;
+      .attr('width', 100)
+      .attr('height', 100)
+      .attr('transform', function(this: SVGGElement, l: InterfaceLabel) {
         const bbox = this.getBBox();
-        return l.x;
+        const x = l.x;
+        const y = l.y + bbox.height;
+        return `translate(${x}, ${y}) rotate(${l.rotation}, ${x}, ${y})`;
       })
-      .attr('y', function(this: SVGTextElement, l: InterfaceLabel)  {
-        /* @todo: in GUI probably it should be calculated based on the line; for now we keep it the same */
-        // const link = select(this.parentElement);
-        // const path = link.select<SVGPathElement>('path');
-        // let point;
-        // if (l.type === 'source') {
-        //   point = path.node().getPointAtLength(40);
-        // } else {
-        //   point = path.node().getPointAtLength(path.node().getTotalLength() - 40);
-        // }
-        // return point.y + l.y;
-        const bbox = this.getBBox();
-        return l.y + bbox.height;
-      })
-      .attr('style', (l: InterfaceLabel) => this.cssFixer.fix(l.style))
-      .attr('transform', (l: InterfaceLabel) => `rotate(${l.rotation}, ${l.x}, ${l.y})`);
+      .classed('selected', (l: InterfaceLabel) => l.is_selected);
+
+    // update label
+    merge
+      .select<SVGTextElement>('text.interface_label')
+        .text((l: InterfaceLabel) => l.text)
+        .attr('style', (l: InterfaceLabel) => this.cssFixer.fix(l.style));
+
+    // update surrounding rect
+    merge
+      .select<SVGRectElement>('rect.interface_label_border')
+        .attr('visibility', (l: InterfaceLabel) => l.is_selected ? 'visible' : 'hidden')
+        .attr('stroke-dasharray', '3,3')
+        .attr('stroke-width', '0.5')
+        .each(function (this: SVGRectElement, l: InterfaceLabel) {
+          const current = select(this);
+          const parent = select(this.parentElement);
+          const text = parent.select<SVGTextElement>('text');
+          const bbox = text.node().getBBox();
+
+          current.attr('width', bbox.width + InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
+          current.attr('height', bbox.height + InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
+          current.attr('x', bbox.x - InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
+          current.attr('y', bbox.y - InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
+        });
 
     labels
       .exit()

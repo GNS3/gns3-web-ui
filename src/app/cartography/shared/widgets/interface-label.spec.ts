@@ -83,7 +83,7 @@ describe('InterfaceLabelsWidget', () => {
     const sourceInterface = drew.nodes()[0];
     expect(sourceInterface.innerHTML).toEqual('Interface 1');
     expect(sourceInterface.getAttribute('x')).toEqual('110');
-    expect(sourceInterface.getAttribute('y')).toEqual('220');
+    expect(sourceInterface.getAttribute('y')).toEqual('237');
     expect(sourceInterface.getAttribute('transform')).toEqual('rotate(5, 110, 220)');
     expect(sourceInterface.getAttribute('style')).toEqual('font-size:12px');
     expect(sourceInterface.getAttribute('class')).toContain('noselect');
@@ -92,10 +92,21 @@ describe('InterfaceLabelsWidget', () => {
     const targetInterface = drew.nodes()[1];
     expect(targetInterface.innerHTML).toEqual('Interface 2');
     expect(targetInterface.getAttribute('x')).toEqual('270');
-    expect(targetInterface.getAttribute('y')).toEqual('360');
+    expect(targetInterface.getAttribute('y')).toEqual('377');
     expect(targetInterface.getAttribute('transform')).toEqual('rotate(0, 270, 360)');
     expect(targetInterface.getAttribute('style')).toEqual('');
     expect(targetInterface.getAttribute('class')).toContain('noselect');
   });
 
+  it('should draw interface label with class `selected` when selected', () => {
+    links[0].nodes[0].label.is_selected = true;
+
+    widget.draw(linksEnter);
+
+    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('text.interface_label');
+
+    const sourceInterface = drew.nodes()[0];
+    expect(sourceInterface.getAttribute('class')).toContain('selected');
+  });
 });
+
