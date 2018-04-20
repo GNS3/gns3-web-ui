@@ -199,6 +199,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
+      this.selectionManager.clearSelection();
       this.selectionManager.setSelectedNodes([node]);
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
