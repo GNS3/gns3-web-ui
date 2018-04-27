@@ -77,7 +77,10 @@ export class InterfaceLabelWidget {
     merge
       .select<SVGTextElement>('text.interface_label')
         .text((l: InterfaceLabel) => l.text)
-        .attr('style', (l: InterfaceLabel) => this.cssFixer.fix(l.style));
+        .attr('style', (l: InterfaceLabel) => this.cssFixer.fix(l.style))
+        .attr('x', -InterfaceLabelWidget.SURROUNDING_TEXT_BORDER)
+        .attr('y', -InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
+
 
     // update surrounding rect
     merge
