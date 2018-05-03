@@ -36,7 +36,7 @@
     "@angular/material": "^5.2.4",
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
-    "@angular/router": "^5.2.9",
+    "@angular/router": "^6.0.0",
     "@ng-bootstrap/ng-bootstrap": "^2.0.0-alpha.0",
     "angular-persistence": "^1.0.1",
     "angular2-hotkeys": "^2.0.4",
