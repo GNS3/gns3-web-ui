@@ -76,6 +76,12 @@ export class SelectionManager {
     });
   }
 
+  public clearSelection() {
+    this.setSelectedDrawings([]);
+    this.setSelectedLinks([]);
+    this.setSelectedNodes([]);
+  }
+
   private getSelectedItemsInRectangle<T extends Selectable>(dataSource: DataSource<T>, rectangle: Rectangle) {
     return this.setSelectedItems<T>(dataSource, (item: T) => {
       return this.inRectangleHelper.inRectangle(rectangle, item.x, item.y);

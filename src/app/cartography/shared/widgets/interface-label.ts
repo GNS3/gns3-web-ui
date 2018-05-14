@@ -6,7 +6,7 @@ import { select } from "d3-selection";
 
 
 export class InterfaceLabelWidget {
-  static SURROUNDING_TEXT_BORDER = 10;
+  static SURROUNDING_TEXT_BORDER = 5;
 
   private cssFixer: CssFixer;
 
@@ -94,10 +94,12 @@ export class InterfaceLabelWidget {
           const text = parent.select<SVGTextElement>('text');
           const bbox = text.node().getBBox();
 
-          current.attr('width', bbox.width + InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
-          current.attr('height', bbox.height + InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
-          current.attr('x', bbox.x - InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
-          current.attr('y', bbox.y - InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
+          const border = InterfaceLabelWidget.SURROUNDING_TEXT_BORDER;
+
+          current.attr('width', bbox.width + border*2);
+          current.attr('height', bbox.height + border);
+          current.attr('x', - border);
+          current.attr('y', - bbox.height);
         });
 
     labels
