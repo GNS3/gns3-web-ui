@@ -68,15 +68,17 @@ export class NodesWidget implements Widget {
             const bbox = this.getBBox();
             return -bbox.width / 2.;
           }
-          return n.label.x - n.width / 2.;
+          return n.label.x;
         })
         .attr('y', function (this: SVGTextElement, n: Node) {
+          let bbox = this.getBBox();
+
           if (n.label.x === null) {
             // center
-            const bbox = this.getBBox();
+            bbox = this.getBBox();
             return - n.height / 2. - bbox.height ;
           }
-          return n.label.y - n.height / 2.;
+          return n.label.y + bbox.height;
         });
 
     selection
@@ -156,8 +158,8 @@ export class NodesWidget implements Widget {
           })
           .attr('width', (n: Node) => n.width)
           .attr('height', (n: Node) => n.height)
-          .attr('x', (n: Node) => -n.width / 2.)
-          .attr('y', (n: Node) => -n.height / 2.)
+          .attr('x', (n: Node) => 0)
+          .attr('y', (n: Node) => 0)
           .on('mouseover', function (this, n: Node) {
             select(this).attr("class", "over");
           })

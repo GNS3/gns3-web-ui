@@ -6,8 +6,8 @@ import { Rectangle } from "../../shared/models/rectangle";
 
 @Injectable()
 export class InRectangleHelper {
-  public inRectangle(item: Selectable, rectangle: Rectangle): boolean {
-    return (rectangle.x <= item.x && item.x < (rectangle.x + rectangle.width)
-      && rectangle.y <= item.y && item.y < (rectangle.y + rectangle.height));
+  public inRectangle(rectangle: Rectangle, x: number, y: number): boolean {
+    return (rectangle.x <= x && x < (rectangle.x + rectangle.width)
+      && rectangle.y <= y && y < (rectangle.y + rectangle.height));
   }
 }

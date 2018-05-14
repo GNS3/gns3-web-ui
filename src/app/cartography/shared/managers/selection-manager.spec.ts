@@ -2,11 +2,13 @@ import { Subject} from "rxjs/Subject";
 
 import { Node } from "../models/node";
 import { Link } from "../models/link";
+import { Drawing } from "../models/drawing";
 import { Rectangle } from "../models/rectangle";
 import { SelectionManager } from "./selection-manager";
 import { NodesDataSource } from "../datasources/nodes-datasource";
 import { LinksDataSource } from "../datasources/links-datasource";
 import { InRectangleHelper } from "../../map/helpers/in-rectangle-helper";
+import { DrawingsDataSource } from "../datasources/drawings-datasource";
 
 
 describe('SelectionManager', () => {
@@ -16,13 +18,14 @@ describe('SelectionManager', () => {
 
   beforeEach(() => {
     const linksDataSource = new LinksDataSource();
+    const drawingsDataSource = new DrawingsDataSource();
     const inRectangleHelper = new InRectangleHelper();
 
     selectedRectangleSubject = new Subject<Rectangle>();
 
     nodesDataSource = new NodesDataSource();
 
-    manager = new SelectionManager(nodesDataSource, linksDataSource, inRectangleHelper);
+    manager = new SelectionManager(nodesDataSource, linksDataSource, drawingsDataSource, inRectangleHelper);
     manager.subscribe(selectedRectangleSubject);
 
     const node_1 = new Node();
@@ -72,5 +75,21 @@ describe('SelectionManager', () => {
     link.link_id = "test1";
     manager.setSelectedLinks([link]);
     expect(manager.getSelectedLinks().length).toEqual(1);
+  });
+
+  it('items should be cleared', () => {
+    const link = new Link();
+    link.link_id = "test1";
+    const node = new Node();
+    node.node_id = "test1";
+    const drawing = new Drawing();
+    drawing.drawing_id = "test1"
+    manager.setSelectedLinks([link]);
+    manager.setSelectedNodes([node]);
+    manager.setSelectedDrawings([drawing]);
+    manager.clearSelection();
+    expect(manager.getSelectedLinks().length).toEqual(0);
+    expect(manager.getSelectedDrawings().length).toEqual(0);
+    expect(manager.getSelectedNodes().length).toEqual(0);
   });
 });

@@ -51,13 +51,18 @@ export class LinksWidget implements Widget {
 
         const link_path = link_group.select<SVGPathElement>('path');
 
-        const start_point: SVGPoint = link_path.node().getPointAtLength(50);
-        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 50);
+        const start_point: SVGPoint = link_path.node().getPointAtLength(45);
+        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 45);
 
-        const statuses = [
-          new LinkStatus(start_point.x, start_point.y, l.source.status),
-          new LinkStatus(end_point.x, end_point.y, l.target.status)
-        ];
+        let statuses = [];
+
+        if (link_path.node().getTotalLength() > 2 * 45 + 10) {
+          statuses = [
+            new LinkStatus(start_point.x, start_point.y, l.source.status),
+            new LinkStatus(end_point.x, end_point.y, l.target.status)
+          ];
+        }
+
 
         const status_started = link_group
           .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
@@ -72,7 +77,7 @@ export class LinksWidget implements Widget {
             .attr('class', 'status_started')
             .attr('cx', (ls: LinkStatus) => ls.x)
             .attr('cy', (ls: LinkStatus) => ls.y)
-            .attr('r', 4)
+            .attr('r', 6)
             .attr('fill', '#2ecc71');
 
         status_started
@@ -87,7 +92,7 @@ export class LinksWidget implements Widget {
           .enter()
             .append<SVGRectElement>('rect');
 
-        const STOPPED_STATUS_RECT_WIDTH = 6;
+        const STOPPED_STATUS_RECT_WIDTH = 10;
 
         status_stopped
           .merge(status_stopped_enter)

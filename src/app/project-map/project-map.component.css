@@ -44,6 +44,11 @@ path.selected {
   stroke: darkred;
 }
 
+.selected > .interface_label_border {
+  stroke: black;
+  fill: none;
+}
+
 .selection-line-tool .selection {
   fill: #7ccbe1;
   stroke:  #66aec2 ;

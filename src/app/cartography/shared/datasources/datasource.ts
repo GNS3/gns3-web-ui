@@ -9,8 +9,13 @@ export abstract class DataSource<T> {
   }
 
   public add(item: T) {
-    this.data.push(item);
-    this.dataChange.next(this.data);
+    const index = this.findIndex(item);
+    if (index >= 0) {
+      this.update(item);
+    } else {
+      this.data.push(item);
+      this.dataChange.next(this.data);
+    }
   }
 
   public set(data: T[]) {

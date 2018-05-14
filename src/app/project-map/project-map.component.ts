@@ -92,7 +92,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               protected hotkeysService: HotkeysService
               ) {
     this.selectionManager = new SelectionManager(
-      this.nodesDataSource, this.linksDataSource, new InRectangleHelper());
+      this.nodesDataSource, this.linksDataSource, this.drawingsDataSource, new InRectangleHelper());
 
     this.subscriptions = [];
   }
@@ -199,6 +199,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
+      this.selectionManager.clearSelection();
       this.selectionManager.setSelectedNodes([node]);
       if (this.drawLineMode) {
         this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
@@ -286,7 +287,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       const data = drawingLineTool.stop();
       this.onLineCreation(data['node'], data['port'], node, port);
     } else {
-      drawingLineTool.start(node.x, node.y, {
+      drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
         'node': node,
         'port': port
       });
