@@ -41,7 +41,8 @@ export class SelectionManager {
         this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
         this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
         this.selectedDrawings = this.getSelectedItemsInRectangle<Drawing>(this.drawingsDataSource, rectangle);
-        this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
+        // don't select interfaces for now
+        // this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
     });
     return this.subscription;
   }
