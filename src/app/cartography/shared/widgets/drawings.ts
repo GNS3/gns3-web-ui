@@ -42,7 +42,7 @@ export class DrawingsWidget implements Widget {
           return 0;
         })
         .attr('height', (d: Drawing) => {
-         const svg_dom = parser.parseFromString(d.svg, 'text/xml');
+          const svg_dom = parser.parseFromString(d.svg, 'text/xml');
           const roots = svg_dom.getElementsByTagName('svg');
           if (roots.length > 0) {
             if (roots[0].hasAttribute('height')) {
