@@ -104,7 +104,7 @@ describe('InterfaceLabelsWidget', () => {
     links[0].nodes[0].label.is_selected = true;
 
     widget.draw(linksEnter);
-    
+
     const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container');
     const sourceInterface = drew.nodes()[0];
     expect(sourceInterface.getAttribute('class')).toContain('selected');
