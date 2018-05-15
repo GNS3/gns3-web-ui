@@ -5,8 +5,8 @@ export class TextElement implements DrawingElement {
   height: number;
   width: number;
   fill: string;
-  fill_opacity: string;
+  fill_opacity: number;
   font_family: string;
-  font_size: string;
-  font_weight: number;
+  font_size: number;
+  font_weight: string;
 }

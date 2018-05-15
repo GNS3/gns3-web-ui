@@ -20,7 +20,7 @@ describe('SvgToDrawingHelper', () => {
     expect(() => svgToDrawingConverter.convert("<svg><unkown></unkown></svg>")).toThrowError(Error);
   });
 
-  it('should parse text drawing', () => {
+  it('should parse width and height if defined', () => {
     const svg = '<svg height="53" width="78">' +
       '<text fill="#000000" fill-opacity="1.0" font-family="TypeWriter" font-size="10.0" font-weight="bold">' +
       'Line' +
