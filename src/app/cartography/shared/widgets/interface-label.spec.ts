@@ -76,26 +76,28 @@ describe('InterfaceLabelsWidget', () => {
   it('should draw interface labels', () => {
     widget.draw(linksEnter);
 
-    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('text.interface_label');
+    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container');
 
     expect(drew.nodes().length).toEqual(2);
 
     const sourceInterface = drew.nodes()[0];
-    expect(sourceInterface.innerHTML).toEqual('Interface 1');
-    expect(sourceInterface.getAttribute('x')).toEqual('110');
-    expect(sourceInterface.getAttribute('y')).toEqual('237');
-    expect(sourceInterface.getAttribute('transform')).toEqual('rotate(5, 110, 220)');
-    expect(sourceInterface.getAttribute('style')).toEqual('font-size:12px');
-    expect(sourceInterface.getAttribute('class')).toContain('noselect');
 
+    expect(sourceInterface.getAttribute('transform')).toEqual('translate(110, 220) rotate(5, 110, 220)');
+    const sourceIntefaceRect = sourceInterface.firstChild;
+    expect(sourceIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_border');
+    const sourceIntefaceText = sourceInterface.children[1];
+    expect(sourceIntefaceText.attributes.getNamedItem('class').value).toEqual('interface_label noselect');
+    expect(sourceIntefaceText.attributes.getNamedItem('style').value).toEqual('font-size:12px');
 
     const targetInterface = drew.nodes()[1];
-    expect(targetInterface.innerHTML).toEqual('Interface 2');
-    expect(targetInterface.getAttribute('x')).toEqual('270');
-    expect(targetInterface.getAttribute('y')).toEqual('377');
-    expect(targetInterface.getAttribute('transform')).toEqual('rotate(0, 270, 360)');
-    expect(targetInterface.getAttribute('style')).toEqual('');
-    expect(targetInterface.getAttribute('class')).toContain('noselect');
+
+    expect(targetInterface.getAttribute('transform')).toEqual('translate(270, 360) rotate(0, 270, 360)');
+    const targetIntefaceRect = targetInterface.firstChild;
+    expect(targetIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_border');
+    const targetIntefaceText = targetInterface.children[1];
+    expect(targetIntefaceText.attributes.getNamedItem('class').value).toEqual('interface_label noselect');
+    expect(targetIntefaceText.attributes.getNamedItem('style').value).toEqual('');
+
   });
 
   it('should draw interface label with class `selected` when selected', () => {
@@ -103,8 +105,7 @@ describe('InterfaceLabelsWidget', () => {
 
     widget.draw(linksEnter);
 
-    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('text.interface_label');
-
+    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container');
     const sourceInterface = drew.nodes()[0];
     expect(sourceInterface.getAttribute('class')).toContain('selected');
   });

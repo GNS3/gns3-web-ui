@@ -17,7 +17,6 @@
 
 import os
 import re
-import pip
 import sys
 import shutil
 import psutil
@@ -95,7 +94,7 @@ def download_command(arguments):
     else:
         requirements = 'requirements.txt'
 
-    pip.main(['install', '-r', os.path.join(source_directory, requirements)])
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', os.path.join(source_directory, requirements)])
 
 
 def build_command(arguments):
