@@ -84,19 +84,19 @@ describe('InterfaceLabelsWidget', () => {
 
     expect(sourceInterface.getAttribute('transform')).toEqual('translate(110, 220) rotate(5, 110, 220)');
     const sourceIntefaceRect = sourceInterface.firstChild;
-    expect(sourceIntefaceRect.getAttribute('class')).toEqual('interface_label_border');
+    expect(sourceIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_border');
     const sourceIntefaceText = sourceInterface.children[1];
-    expect(sourceIntefaceText.getAttribute('class')).toEqual('interface_label noselect');
-    expect(sourceIntefaceText.getAttribute('style')).toEqual('font-size:12px');
+    expect(sourceIntefaceText.attributes.getNamedItem('class').value).toEqual('interface_label noselect');
+    expect(sourceIntefaceText.attributes.getNamedItem('style').value).toEqual('font-size:12px');
 
     const targetInterface = drew.nodes()[1];
 
     expect(targetInterface.getAttribute('transform')).toEqual('translate(270, 360) rotate(0, 270, 360)');
     const targetIntefaceRect = targetInterface.firstChild;
-    expect(targetIntefaceRect.getAttribute('class')).toEqual('interface_label_border');
+    expect(targetIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_border');
     const targetIntefaceText = targetInterface.children[1];
-    expect(targetIntefaceText.getAttribute('class')).toEqual('interface_label noselect');
-    expect(targetIntefaceText.getAttribute('style')).toEqual('');
+    expect(targetIntefaceText.attributes.getNamedItem('class').value).toEqual('interface_label noselect');
+    expect(targetIntefaceText.attributes.getNamedItem('style').value).toEqual('');
 
   });
 
