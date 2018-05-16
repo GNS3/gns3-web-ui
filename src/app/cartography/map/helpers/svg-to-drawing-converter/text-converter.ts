@@ -6,6 +6,8 @@ export class TextConverter implements SvgConverter {
   convert(node: Node): TextElement {
     const drawing = new TextElement();
 
+    drawing.text = node.textContent;
+
     const fill = node.attributes.getNamedItem('fill');
     if (fill) {
       drawing.fill = fill.value;
