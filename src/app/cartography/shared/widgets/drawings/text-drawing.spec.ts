@@ -1,4 +1,3 @@
-import { instance, mock, when } from "ts-mockito";
 import { TestSVGCanvas } from "../../../testing";
 import { TextDrawingWidget } from "./text-drawing";
 import { Drawing } from "../../models/drawing";
@@ -21,8 +20,15 @@ describe('TextDrawingWidget', () => {
   });
 
   it('should draw text drawing', () => {
-    drawing.svg = '<svg height="23" width="106"><text fill="#000000" fill-opacity="1.0" ' +
-      'font-family="TypeWriter" font-size="10.0" font-weight="bold">THIS IS TEXT</text></svg>';
+    const text = new TextElement();
+    text.text = "THIS IS TEXT";
+    text.fill = "#000000";
+    text.fill_opacity = 1.0;
+    text.font_family = "TypeWriter";
+    text.font_size = 10.0;
+    text.font_weight = "bold";
+
+    drawing.element = text;
 
     const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
@@ -33,12 +39,14 @@ describe('TextDrawingWidget', () => {
     const drew = drawings_merge.selectAll<SVGTextElement, TextElement>('text.text_element');
     expect(drew.size()).toEqual(1);
     const text_element = drew.nodes()[0];
-    expect(text_element.innerHTML).toEqual("THIS IS TEXT");
+    expect(text_element.innerHTML).toEqual('<tspan x="0" dy="0em">THIS IS TEXT</tspan>');
     expect(text_element.getAttribute('style')).toEqual('font-family: "TypeWriter"; font-size: 10pt; font-weight: bold');
   });
 
   it('should draw multiline text', () => {
-    drawing.svg = '<svg height="23" width="106"><text>THIS' + "\n" + 'IS TEXT</text></svg>';
+    const text = new TextElement();
+    text.text = 'THIS' + "\n" + 'IS TEXT';
+    drawing.element = text;
 
     const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);

@@ -1,8 +1,6 @@
 import { SVGSelection } from "../../models/types";
 import { TextElement } from "../../models/drawings/text-element";
 import { Drawing } from "../../models/drawing";
-import { SvgToDrawingConverter } from "../../../map/helpers/svg-to-drawing-converter";
-import { DrawingElement } from "../../models/drawings/drawing-element";
 
 
 export class TextDrawingWidget {
@@ -10,15 +8,7 @@ export class TextDrawingWidget {
     const drawing = view
       .selectAll<SVGTextElement, TextElement>('text.text_element')
         .data((d: Drawing) => {
-          const svgConverter = new SvgToDrawingConverter();
-          const elements: DrawingElement[] = [];
-          try {
-            const element = svgConverter.convert(d.svg);
-            elements.push(element);
-          } catch (error) {
-            console.log(`Cannot convert due to Error: '${error}'`);
-          }
-          return elements.filter((e: DrawingElement) => e instanceof TextElement);
+          return (d.element && d.element instanceof TextElement) ? [d.element] : [];
         });
 
     const drawing_enter = drawing
