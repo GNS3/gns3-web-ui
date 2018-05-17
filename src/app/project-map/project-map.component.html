@@ -55,4 +55,4 @@
   </mat-spinner>
 </div>
 
-<app-project-map-shortcuts [server]="server" [selectionManager]="selectionManager"></app-project-map-shortcuts>
+<app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server" [selectionManager]="selectionManager"></app-project-map-shortcuts>

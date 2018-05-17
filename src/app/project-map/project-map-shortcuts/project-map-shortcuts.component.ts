@@ -5,13 +5,15 @@ import { SelectionManager } from '../../cartography/shared/managers/selection-ma
 import { NodeService } from '../../shared/services/node.service';
 import { Server } from '../../shared/models/server';
 import { ToasterService } from '../../shared/services/toaster.service';
+import { Project } from "../../shared/models/project";
 
 
 @Component({
   selector: 'app-project-map-shortcuts',
-  templateUrl: './project-map-shortcuts.component.html'
+  template: ''
 })
 export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
+  @Input() project: Project;
   @Input() server: Server;
   @Input() selectionManager: SelectionManager;
 
@@ -24,7 +26,12 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.deleteHotkey = new Hotkey('del', (event: KeyboardEvent): boolean => {
+    this.deleteHotkey = new Hotkey('del', this.onDeleteHandler);
+    this.hotkeysService.add(this.deleteHotkey);
+  }
+
+  onDeleteHandler(event: KeyboardEvent):boolean {
+    if (!this.project.readonly) {
       const selectedNodes = this.selectionManager.getSelectedNodes();
       if (selectedNodes) {
         selectedNodes.forEach((node) => {
@@ -33,10 +40,8 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
           });
         });
       }
-      return false;
-    });
-
-    this.hotkeysService.add(this.deleteHotkey);
+    }
+    return false;
   }
 
   ngOnDestroy() {

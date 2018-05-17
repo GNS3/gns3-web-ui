@@ -64,7 +64,9 @@ describe('SettingsService', () => {
     let changedSettings: Settings;
 
     service.set('crash_reports', true);
-    service.subscribe(settings => changedSettings = settings);
+    service.subscribe(settings => {
+      changedSettings = settings
+    });
     service.set('crash_reports', false);
 
     expect(changedSettings.crash_reports).toEqual(false);
