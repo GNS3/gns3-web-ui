@@ -21,7 +21,7 @@
         </button>
       </mat-menu>
 
-      <mat-toolbar-row>
+      <mat-toolbar-row *ngIf="!project.readonly">
         <button mat-icon-button [color]="drawLineMode ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
@@ -33,20 +33,20 @@
         </button>
       </mat-toolbar-row>
 
-      <mat-toolbar-row>
+      <mat-toolbar-row *ngIf="!project.readonly" >
         <button mat-icon-button (click)="createSnapshotModal()">
           <mat-icon>snooze</mat-icon>
         </button>
       </mat-toolbar-row>
 
-      <mat-toolbar-row>
+      <mat-toolbar-row *ngIf="!project.readonly" >
         <app-appliance [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-appliance>
       </mat-toolbar-row>
 
     </mat-toolbar>
   </div>
 
-  <app-node-context-menu [server]="server"></app-node-context-menu>
+  <app-node-context-menu [project]="project" [server]="server"></app-node-context-menu>
   <app-node-select-interface (onChooseInterface)="onChooseInterface($event)"></app-node-select-interface>
 </div>
 
