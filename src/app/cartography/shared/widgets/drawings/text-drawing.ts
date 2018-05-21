@@ -1,9 +1,10 @@
 import { SVGSelection } from "../../models/types";
 import { TextElement } from "../../models/drawings/text-element";
 import { Drawing } from "../../models/drawing";
+import { DrawingWidget } from "./drawing-widget";
 
 
-export class TextDrawingWidget {
+export class TextDrawingWidget implements DrawingWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGTextElement, TextElement>('text.text_element')

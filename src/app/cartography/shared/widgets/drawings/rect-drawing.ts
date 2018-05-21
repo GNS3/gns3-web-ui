@@ -1,9 +1,10 @@
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { RectElement } from "../../models/drawings/rect-element";
+import { DrawingWidget } from "./drawing-widget";
 
 
-export class RectDrawingWidget {
+export class RectDrawingWidget implements DrawingWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGRectElement, RectElement>('rect.rect_element')

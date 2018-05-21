@@ -1,9 +1,10 @@
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { LineElement } from "../../models/drawings/line-element";
+import { DrawingWidget } from "./drawing-widget";
 
 
-export class LineDrawingWidget {
+export class LineDrawingWidget implements DrawingWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGLineElement, LineElement>('line.line_element')

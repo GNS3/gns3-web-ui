@@ -8,10 +8,15 @@ import { ImageDrawingWidget } from "./drawings/image-drawing";
 import { RectDrawingWidget } from "./drawings/rect-drawing";
 import { LineDrawingWidget } from "./drawings/line-drawing";
 import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
+import { DrawingWidget } from "./drawings/drawing-widget";
 
 
 export class DrawingsWidget implements Widget {
   private svgToDrawingConverter: SvgToDrawingConverter;
+  private drawingWidgets: DrawingWidget[] = [
+    new TextDrawingWidget(), new ImageDrawingWidget(), new RectDrawingWidget(),
+    new LineDrawingWidget(), new EllipseDrawingWidget()
+  ];
 
   constructor() {
     this.svgToDrawingConverter = new SvgToDrawingConverter();
@@ -42,20 +47,9 @@ export class DrawingsWidget implements Widget {
         return `translate(${d.x},${d.y})`;
       });
 
-    const text_drawing = new TextDrawingWidget();
-    text_drawing.draw(drawing_merge);
-
-    const image_drawing = new ImageDrawingWidget();
-    image_drawing.draw(drawing_merge);
-
-    const rect_drawing = new RectDrawingWidget();
-    rect_drawing.draw(drawing_merge);
-
-    const line_drawing = new LineDrawingWidget();
-    line_drawing.draw(drawing_merge);
-
-    const ellipse_drawing = new EllipseDrawingWidget();
-    ellipse_drawing.draw(drawing_merge);
+    this.drawingWidgets.forEach((widget) => {
+      widget.draw(drawing_merge);
+    });
 
     drawing
       .exit()

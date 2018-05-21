@@ -1,9 +1,10 @@
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { EllipseElement } from "../../models/drawings/ellipse-element";
+import { DrawingWidget } from "./drawing-widget";
 
 
-export class EllipseDrawingWidget {
+export class EllipseDrawingWidget implements DrawingWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGEllipseElement, EllipseElement>('ellipse.ellipse_element')
