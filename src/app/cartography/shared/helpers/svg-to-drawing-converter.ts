@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { DrawingElement } from "../../shared/models/drawings/drawing-element";
+import { DrawingElement } from "../models/drawings/drawing-element";
 import { SvgConverter } from "./svg-to-drawing-converter/svg-converter";
 import { TextConverter } from "./svg-to-drawing-converter/text-converter";
 import { ImageConverter } from "./svg-to-drawing-converter/image-converter";

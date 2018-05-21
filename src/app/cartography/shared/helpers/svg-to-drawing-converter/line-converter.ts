@@ -1,5 +1,5 @@
 import { SvgConverter } from "./svg-converter";
-import { LineElement } from "../../../shared/models/drawings/line-element";
+import { LineElement } from "../../models/drawings/line-element";
 
 
 export class LineConverter implements SvgConverter {

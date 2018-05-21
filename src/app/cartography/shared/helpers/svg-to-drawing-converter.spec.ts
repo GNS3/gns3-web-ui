@@ -1,5 +1,5 @@
 import { SvgToDrawingConverter } from "./svg-to-drawing-converter";
-import { TextElement } from "../../shared/models/drawings/text-element";
+import { TextElement } from "../models/drawings/text-element";
 
 
 describe('SvgToDrawingHelper', () => {

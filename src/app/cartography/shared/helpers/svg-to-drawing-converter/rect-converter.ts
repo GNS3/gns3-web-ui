@@ -1,5 +1,5 @@
 import { SvgConverter } from "./svg-converter";
-import { RectElement } from "../../../shared/models/drawings/rect-element";
+import { RectElement } from "../../models/drawings/rect-element";
 
 
 export class RectConverter implements SvgConverter {

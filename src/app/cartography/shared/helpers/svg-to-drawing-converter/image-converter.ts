@@ -1,5 +1,5 @@
 import { SvgConverter } from "./svg-converter";
-import { ImageElement } from "../../../shared/models/drawings/image-element";
+import { ImageElement } from "../../models/drawings/image-element";
 
 
 export class ImageConverter implements SvgConverter {

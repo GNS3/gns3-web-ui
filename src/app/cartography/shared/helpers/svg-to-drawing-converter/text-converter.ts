@@ -1,5 +1,5 @@
 import { SvgConverter } from "./svg-converter";
-import { TextElement } from "../../../shared/models/drawings/text-element";
+import { TextElement } from "../../models/drawings/text-element";
 
 
 export class TextConverter implements SvgConverter {
