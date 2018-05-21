@@ -36,7 +36,7 @@ describe('SvgToDrawingHelper', () => {
 
   it('should parse element even when is text between', () => {
     const svg = '<svg height="53" width="78">    <text>Label</text>    </svg>';
-    const drawing: TextElement = svgToDrawingConverter.convert(svg);
+    const drawing: TextElement = svgToDrawingConverter.convert(svg) as TextElement;
     expect(drawing.text).toEqual('Label');
   });
 
