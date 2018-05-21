@@ -1,4 +1,5 @@
 import { SvgToDrawingConverter } from "./svg-to-drawing-converter";
+import { TextElement } from "../../shared/models/drawings/text-element";
 
 
 describe('SvgToDrawingHelper', () => {
@@ -16,7 +17,7 @@ describe('SvgToDrawingHelper', () => {
     expect(() => svgToDrawingConverter.convert("<svg></svg>")).toThrowError(Error);
   });
 
-    it('should raise Error on unknown parser', () => {
+  it('should raise Error on unknown parser', () => {
     expect(() => svgToDrawingConverter.convert("<svg><unkown></unkown></svg>")).toThrowError(Error);
   });
 
@@ -31,5 +32,15 @@ describe('SvgToDrawingHelper', () => {
 
     expect(drawing.width).toBe(78);
     expect(drawing.height).toBe(53);
+  });
+
+  it('should parse element even when is text between', () => {
+    const svg = '<svg height="53" width="78">    <text>Label</text>    </svg>';
+    const drawing: TextElement = svgToDrawingConverter.convert(svg);
+    expect(drawing.text).toEqual('Label');
+  });
+
+  it('should match supported elements', () => {
+    expect(svgToDrawingConverter.supportedTags()).toEqual(['text', 'image', 'rect', 'line', 'ellipse']);
   });
 });

@@ -2,6 +2,10 @@ import { Injectable } from "@angular/core";
 import { DrawingElement } from "../../shared/models/drawings/drawing-element";
 import { SvgConverter } from "./svg-to-drawing-converter/svg-converter";
 import { TextConverter } from "./svg-to-drawing-converter/text-converter";
+import { ImageConverter } from "./svg-to-drawing-converter/image-converter";
+import { RectConverter } from "./svg-to-drawing-converter/rect-converter";
+import { LineConverter } from "./svg-to-drawing-converter/line-converter";
+import { EllipseConverter } from "./svg-to-drawing-converter/ellipse-converter";
 
 
 @Injectable()
@@ -12,8 +16,16 @@ export class SvgToDrawingConverter {
   constructor() {
     this.parser = new DOMParser();
     this.elementParsers = {
-      'text': new TextConverter()
+      'text': new TextConverter(),
+      'image': new ImageConverter(),
+      'rect': new RectConverter(),
+      'line': new LineConverter(),
+      'ellipse': new EllipseConverter()
     };
+  }
+
+  supportedTags() {
+    return Object.keys(this.elementParsers);
   }
 
   convert(svg: string): DrawingElement {
@@ -24,17 +36,23 @@ export class SvgToDrawingConverter {
     }
     const svgRoot = roots[0];
 
-    const child = svgRoot.firstChild;
-    if (!child) {
-      throw new Error(`Cannot find first child in '${svg}`);
+    let parser: SvgConverter = null;
+    let child: any = null;
+
+    // find matching tag
+    for (const i in svgRoot.children) {
+      child = svgRoot.children[i];
+      const name = child.nodeName;
+      if (name in this.elementParsers) {
+        parser = this.elementParsers[name];
+        break;
+      }
     }
 
-    const name = child.nodeName;
-    if (!(name in this.elementParsers)) {
-      throw new Error(`Cannot find parser for '${name}'`);
+    if (parser === null) {
+      throw new Error(`Cannot find parser for '${svg}'`);
     }
 
-    const parser = this.elementParsers[name];
     const drawing = parser.convert(child);
 
     drawing.width = +svgRoot.getAttribute('width');

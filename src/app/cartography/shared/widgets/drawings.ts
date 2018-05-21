@@ -4,6 +4,10 @@ import {SVGSelection} from "../models/types";
 import {Layer} from "../models/layer";
 import { TextDrawingWidget } from "./drawings/text-drawing";
 import { SvgToDrawingConverter } from "../../map/helpers/svg-to-drawing-converter";
+import { ImageDrawingWidget } from "./drawings/image-drawing";
+import { RectDrawingWidget } from "./drawings/rect-drawing";
+import { LineDrawingWidget } from "./drawings/line-drawing";
+import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
 
 
 export class DrawingsWidget implements Widget {
@@ -72,6 +76,18 @@ export class DrawingsWidget implements Widget {
 
     const text_drawing = new TextDrawingWidget();
     text_drawing.draw(drawing_merge);
+
+    const image_drawing = new ImageDrawingWidget();
+    image_drawing.draw(drawing_merge);
+
+    const rect_drawing = new RectDrawingWidget();
+    rect_drawing.draw(drawing_merge);
+
+    const line_drawing = new LineDrawingWidget();
+    line_drawing.draw(drawing_merge);
+
+    const ellipse_drawing = new EllipseDrawingWidget();
+    ellipse_drawing.draw(drawing_merge);
 
     drawing
       .exit()

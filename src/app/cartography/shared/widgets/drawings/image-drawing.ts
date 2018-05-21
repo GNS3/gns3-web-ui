@@ -19,16 +19,9 @@ export class ImageDrawingWidget {
     const merge = drawing.merge(drawing_enter);
 
     merge
-      .attr('xlink:href', (image: ImageElement) => {
-        let svg = image.data;
-        if (svg.indexOf("xmlns") < 0) {
-          svg = svg.replace('svg', 'svg xmlns="http://www.w3.org/2000/svg"');
-        }
-        return 'data:image/svg+xml;base64,' + btoa(svg);
-      })
+      .attr('xlink:href', (image: ImageElement) => image.data)
       .attr('width', (image) => image.width)
       .attr('height', (image) => image.height);
-
 
     drawing
       .exit()

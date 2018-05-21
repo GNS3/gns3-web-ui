@@ -1,7 +1,7 @@
 import { TextConverter } from "./text-converter";
 
 
-describe('SvgToDrawingHelper', () => {
+describe('TextConverter', () => {
   let textConverter: TextConverter;
 
   beforeEach(() => {
