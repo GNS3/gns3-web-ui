@@ -4,8 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
-import { Node } from '../../cartography/shared/models/node';
-import { Port } from '../models/port';
 import { getTestServer } from './testing';
 import { SymbolService } from './symbol.service';
 import { Symbol } from '../../cartography/shared/models/symbol';
@@ -61,7 +59,6 @@ describe('SymbolService', () => {
   }));
 
   it('should load symbols', inject([SymbolService], (service: SymbolService) => {
-    let call = 0;
     service.load(server).subscribe();
 
     const req = httpTestingController.expectOne(
