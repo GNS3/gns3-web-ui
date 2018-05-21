@@ -18,7 +18,7 @@ export class LayersWidget implements Widget {
     const layers_enter = layers_selection
       .enter()
         .append<SVGGElement>('g')
-        .attr('class', 'layer')
+        .attr('class', 'layer');
 
     // add container for links
     layers_enter

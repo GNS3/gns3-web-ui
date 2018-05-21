@@ -9,4 +9,5 @@ export class Project {
   scene_height: number;
   scene_width: number;
   status: string;
+  readonly: boolean = true;
 }

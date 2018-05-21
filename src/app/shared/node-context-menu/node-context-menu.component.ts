@@ -1,8 +1,9 @@
-import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
-import {DomSanitizer} from "@angular/platform-browser";
-import {Node} from "../../cartography/shared/models/node";
-import {Server} from "../models/server";
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MatMenuTrigger } from "@angular/material";
+import { DomSanitizer } from "@angular/platform-browser";
+import { Node } from "../../cartography/shared/models/node";
+import { Server } from "../models/server";
+import { Project } from "../models/project";
 
 
 @Component({
@@ -11,6 +12,7 @@ import {Server} from "../models/server";
   styleUrls: ['./node-context-menu.component.scss']
 })
 export class NodeContextMenuComponent implements OnInit {
+  @Input() project: Project;
   @Input() server: Server;
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
