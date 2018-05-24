@@ -32,7 +32,8 @@ export class TextDrawingWidget implements DrawingWidget {
           styles.push(`font-weight: ${text.font_weight}`);
         }
         return styles.join("; ");
-      });
+      })
+      .attr('fill', (text) => text.fill);
 
     const lines = merge.selectAll<SVGTSpanElement, string>('tspan')
       .data((text: TextElement) => {

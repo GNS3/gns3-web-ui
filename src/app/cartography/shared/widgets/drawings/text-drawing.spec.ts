@@ -40,6 +40,7 @@ describe('TextDrawingWidget', () => {
     expect(drew.size()).toEqual(1);
     const text_element = drew.nodes()[0];
     expect(text_element.innerHTML).toEqual('<tspan x="0" dy="0em">THIS IS TEXT</tspan>');
+    expect(text_element.getAttribute('fill')).toEqual("#000000");
     expect(text_element.getAttribute('style')).toEqual('font-family: "TypeWriter"; font-size: 10pt; font-weight: bold');
   });
 
