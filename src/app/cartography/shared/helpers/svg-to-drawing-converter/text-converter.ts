@@ -15,7 +15,7 @@ export class TextConverter implements SvgConverter {
 
     const fill_opacity = node.attributes.getNamedItem('fill-opacity');
     if (fill_opacity) {
-      drawing.fill_opacity = +fill_opacity.value;
+      drawing.fill_opacity = parseFloat(fill_opacity.value);
     }
 
     const font_family = node.attributes.getNamedItem('font-family');

@@ -13,7 +13,7 @@ export class RectConverter implements SvgConverter {
 
     const fill_opacity = node.attributes.getNamedItem("fill-opacity");
     if (fill) {
-      drawing.fill_opacity = parseInt(fill_opacity.value, 10);
+      drawing.fill_opacity = parseFloat(fill_opacity.value);
     }
 
     const stroke = node.attributes.getNamedItem("stroke");
