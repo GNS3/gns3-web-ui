@@ -42,7 +42,8 @@ export class TextDrawingWidget implements DrawingWidget {
         }
         return styles.join("; ");
       })
-      .attr('fill', (text) => text.fill);
+      .attr('fill', (text) => text.fill)
+      .attr('text-decoration', (text) => text.text_decoration);
 
     const lines = merge.selectAll<SVGTSpanElement, string>('tspan')
       .data((text: TextElement) => {

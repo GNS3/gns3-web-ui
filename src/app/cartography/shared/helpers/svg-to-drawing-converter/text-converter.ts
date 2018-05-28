@@ -33,6 +33,12 @@ export class TextConverter implements SvgConverter {
       drawing.font_weight = font_weight.value;
     }
 
+    const text_decoration = node.attributes.getNamedItem('text-decoration');
+    if (text_decoration) {
+      drawing.text_decoration = text_decoration.value;
+    }
+
+
     return drawing;
   }
 }
