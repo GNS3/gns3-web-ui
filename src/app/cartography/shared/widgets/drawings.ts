@@ -44,7 +44,7 @@ export class DrawingsWidget implements Widget {
 
     const drawing_merge = drawing.merge(drawing_enter)
       .attr('transform', (d: Drawing) => {
-        return `translate(${d.x},${d.y})`;
+        return `translate(${d.x},${d.y}) rotate(${d.rotation})`;
       });
 
     this.drawingWidgets.forEach((widget) => {
