@@ -1,7 +1,8 @@
 import { DrawingElement } from "./drawing-element";
+import { Font } from "../font";
 
 
-export class TextElement implements DrawingElement {
+export class TextElement implements DrawingElement, Font {
   height: number;
   width: number;
   text: string;

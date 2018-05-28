@@ -2,9 +2,17 @@ import { SVGSelection } from "../../models/types";
 import { TextElement } from "../../models/drawings/text-element";
 import { Drawing } from "../../models/drawing";
 import { DrawingWidget } from "./drawing-widget";
+import { FontFixer } from "../../helpers/font-fixer";
+import { Font } from "../../models/font";
 
 
 export class TextDrawingWidget implements DrawingWidget {
+  private fontFixer: FontFixer;
+
+  constructor() {
+    this.fontFixer = new FontFixer();
+  }
+
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGTextElement, TextElement>('text.text_element')
@@ -18,17 +26,18 @@ export class TextDrawingWidget implements DrawingWidget {
         .attr('class', 'text_element noselect');
 
     const merge = drawing.merge(drawing_enter);
-
     merge
       .attr('style', (text: TextElement) => {
+        const font = this.fontFixer.fix(text);
+
         const styles: string[] = [];
-        if (text.font_family) {
+        if (font.font_family) {
           styles.push(`font-family: "${text.font_family}"`);
         }
-        if (text.font_size) {
+        if (font.font_size) {
           styles.push(`font-size: ${text.font_size}pt`);
         }
-        if (text.font_weight) {
+        if (font.font_weight) {
           styles.push(`font-weight: ${text.font_weight}`);
         }
         return styles.join("; ");
