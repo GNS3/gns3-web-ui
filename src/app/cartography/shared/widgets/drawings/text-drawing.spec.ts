@@ -39,9 +39,9 @@ describe('TextDrawingWidget', () => {
     const drew = drawings_merge.selectAll<SVGTextElement, TextElement>('text.text_element');
     expect(drew.size()).toEqual(1);
     const text_element = drew.nodes()[0];
-    expect(text_element.innerHTML).toEqual('<tspan x="0" dy="0em">THIS IS TEXT</tspan>');
+    expect(text_element.innerHTML).toEqual('<tspan xml:space="preserve" x="0" dy="0em">THIS IS TEXT</tspan>');
     expect(text_element.getAttribute('fill')).toEqual("#000000");
-    expect(text_element.getAttribute('style')).toEqual('font-family: "TypeWriter"; font-size: 10pt; font-weight: bold');
+    expect(text_element.getAttribute('style')).toEqual('font-family: "Noto Sans"; font-size: 11pt; font-weight: bold');
   });
 
   it('should draw multiline text', () => {
@@ -66,5 +66,25 @@ describe('TextDrawingWidget', () => {
     expect(drew.nodes()[1].getAttribute('x')).toEqual('0');
     expect(drew.nodes()[1].getAttribute('dy')).toEqual('1.2em');
   });
+
+  it('should draw whitespaces', () => {
+    const text = new TextElement();
+    text.text = '   Text  with whitespaces';
+    drawing.element = text;
+
+    const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
+    const drawings_merge = drawings.merge(drawings_enter);
+
+    widget.draw(drawings_merge);
+
+    const drew = drawings_merge.selectAll<SVGTSpanElement, string>('tspan');
+    expect(drew.nodes().length).toEqual(1);
+
+    expect(drew.nodes()[0].innerHTML).toEqual('   Text  with whitespaces');
+    expect(drew.nodes()[0].getAttribute('space')).toEqual('preserve');
+
+  });
+
 
 });

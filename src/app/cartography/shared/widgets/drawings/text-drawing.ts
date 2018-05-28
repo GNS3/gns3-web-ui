@@ -57,6 +57,7 @@ export class TextDrawingWidget implements DrawingWidget {
 
     lines_merge
       .text((line) => line)
+      .attr('xml:space', 'preserve')
       .attr('x', 0)
       .attr("dy", (line, i) => i === 0 ? '0em' : '1.2em');
 
