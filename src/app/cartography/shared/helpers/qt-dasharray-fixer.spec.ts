@@ -9,7 +9,7 @@ describe('QtDashArrayFixer', () => {
   });
 
   it('should fix when matches mapping', () => {
-    expect(fixer.fix('25, 25')).toEqual('');
+    expect(fixer.fix('25, 25')).toEqual('10, 2');
   });
 
   it('should not fix when do not match mapping', () => {
