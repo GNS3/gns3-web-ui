@@ -24,6 +24,7 @@ describe('LineDrawingWidget', () => {
     const line = new LineElement();
     line.stroke = "#000000";
     line.stroke_width = 2.0;
+    line.stroke_dasharray = "5,25,25";
     line.x1 = 10;
     line.x2 = 20;
     line.y1 = 30;
@@ -41,6 +42,7 @@ describe('LineDrawingWidget', () => {
     const line_element = drew.nodes()[0];
     expect(line_element.getAttribute('stroke')).toEqual('#000000');
     expect(line_element.getAttribute('stroke-width')).toEqual('2');
+    expect(line_element.getAttribute('stroke-dasharray')).toEqual('5,25,25');
     expect(line_element.getAttribute('x1')).toEqual('10');
     expect(line_element.getAttribute('x2')).toEqual('20');
     expect(line_element.getAttribute('y1')).toEqual('30');

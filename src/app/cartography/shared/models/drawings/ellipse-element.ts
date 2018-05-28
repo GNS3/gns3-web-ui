@@ -12,4 +12,5 @@ export class EllipseElement implements DrawingElement {
   ry: number;
   stroke: string;
   stroke_width: number;
+  stroke_dasharray: string;
 }

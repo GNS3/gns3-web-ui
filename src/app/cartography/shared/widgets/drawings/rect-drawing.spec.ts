@@ -26,6 +26,7 @@ describe('RectDrawingWidget', () => {
     rect.fill_opacity = 1.0;
     rect.stroke = "#000000";
     rect.stroke_width = 2.0;
+    rect.stroke_dasharray = "5,25,25";
     rect.width = 100;
     rect.height = 200;
     drawing.element = rect;
@@ -43,6 +44,7 @@ describe('RectDrawingWidget', () => {
     expect(rect_element.getAttribute('fill-opacity')).toEqual('1');
     expect(rect_element.getAttribute('stroke')).toEqual('#000000');
     expect(rect_element.getAttribute('stroke-width')).toEqual('2');
+    expect(rect_element.getAttribute('stroke-dasharray')).toEqual('5,25,25');
     expect(rect_element.getAttribute('width')).toEqual('100');
     expect(rect_element.getAttribute('height')).toEqual('200');
   });

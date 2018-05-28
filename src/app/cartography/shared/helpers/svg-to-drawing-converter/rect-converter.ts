@@ -26,6 +26,11 @@ export class RectConverter implements SvgConverter {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
     }
 
+    const stroke_dasharray = node.attributes.getNamedItem("stroke-dasharray");
+    if (stroke_dasharray) {
+      drawing.stroke_dasharray = stroke_dasharray.value;
+    }
+
     const width = node.attributes.getNamedItem('width');
     if (width) {
       drawing.width = parseInt(width.value, 10);

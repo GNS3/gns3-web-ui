@@ -24,6 +24,7 @@ export class RectDrawingWidget implements DrawingWidget {
       .attr('fill-opacity', (rect) => rect.fill_opacity)
       .attr('stroke', (rect) => rect.stroke)
       .attr('stroke-width', (rect) => rect.stroke_width)
+      .attr('stroke-dasharray', (rect) => rect.stroke_dasharray)
       .attr('width', (rect) => rect.width)
       .attr('height', (rect) => rect.height);
 

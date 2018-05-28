@@ -24,6 +24,7 @@ export class EllipseDrawingWidget implements DrawingWidget {
       .attr('fill-opacity', (ellipse) => ellipse.fill_opacity)
       .attr('stroke', (ellipse) => ellipse.stroke)
       .attr('stroke-width', (ellipse) => ellipse.stroke_width)
+      .attr('stroke-dasharray', (ellipse) => ellipse.stroke_dasharray)
       .attr('cx', (ellipse) => ellipse.cx)
       .attr('cy', (ellipse) => ellipse.cy)
       .attr('rx', (ellipse) => ellipse.rx)

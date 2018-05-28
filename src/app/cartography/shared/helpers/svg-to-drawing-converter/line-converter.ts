@@ -16,6 +16,11 @@ export class LineConverter implements SvgConverter {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
     }
 
+    const stroke_dasharray = node.attributes.getNamedItem("stroke-dasharray");
+    if (stroke_dasharray) {
+      drawing.stroke_dasharray = stroke_dasharray.value;
+    }
+
     const x1 = node.attributes.getNamedItem('x1');
     if (x1) {
       drawing.x1 = parseInt(x1.value, 10);
