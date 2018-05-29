@@ -11,6 +11,7 @@ import { CssFixer } from "../helpers/css-fixer";
 
 export class NodesWidget implements Widget {
   private debug = false;
+  private draggingEnabled = false;
 
   private onContextMenuCallback: (event: any, node: Node) => void;
   private onNodeClickedCallback: (event: any, node: Node) => void;
@@ -43,6 +44,10 @@ export class NodesWidget implements Widget {
 
   public setSymbols(symbols: Symbol[]) {
     this.symbols = symbols;
+  }
+
+  public setDraggingEnabled(enabled: boolean) {
+    this.draggingEnabled = enabled;
   }
 
   private executeOnNodeDraggingCallback(callback_event: any, node: Node) {
@@ -190,7 +195,9 @@ export class NodesWidget implements Widget {
         });
     };
 
-    node_merge.call(dragging());
+    if (this.draggingEnabled) {
+      node_merge.call(dragging());
+    }
 
     nodes_selection
       .exit()
