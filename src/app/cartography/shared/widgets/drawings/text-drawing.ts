@@ -3,10 +3,12 @@ import { TextElement } from "../../models/drawings/text-element";
 import { Drawing } from "../../models/drawing";
 import { DrawingWidget } from "./drawing-widget";
 import { FontFixer } from "../../helpers/font-fixer";
-import { Font } from "../../models/font";
+import { select } from "d3-selection";
 
 
 export class TextDrawingWidget implements DrawingWidget {
+  static MARGIN = 4;
+
   private fontFixer: FontFixer;
 
   constructor() {
@@ -14,6 +16,7 @@ export class TextDrawingWidget implements DrawingWidget {
   }
 
   public draw(view: SVGSelection) {
+
     const drawing = view
       .selectAll<SVGTextElement, TextElement>('text.text_element')
         .data((d: Drawing) => {
@@ -58,13 +61,21 @@ export class TextDrawingWidget implements DrawingWidget {
 
     lines_merge
       .text((line) => line)
-      .attr('xml:space', 'preserve')
-      .attr('x', 0)
-      .attr("dy", (line, i) => i === 0 ? '0em' : '1.2em');
+        .attr('xml:space', 'preserve')
+        .attr('x', 0)
+        .attr("dy", (line, i) => i === 0 ? '0em' : '1.2em');
 
     lines
       .exit()
         .remove();
+
+    merge.attr('transform', function (this: SVGTextElement) {
+        // SVG calculates y pos by the /bottom/ of the first tspan, hence we need to make some
+        // approx and make it matching to GUI
+        const tspan = select(this).selectAll<SVGTSpanElement, string>('tspan');
+        const height = this.getBBox().height / tspan.size();
+        return `translate(${TextDrawingWidget.MARGIN}, ${height - TextDrawingWidget.MARGIN})`;
+    });
 
     drawing
       .exit()
