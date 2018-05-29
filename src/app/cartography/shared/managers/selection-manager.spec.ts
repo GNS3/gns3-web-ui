@@ -83,7 +83,7 @@ describe('SelectionManager', () => {
     const node = new Node();
     node.node_id = "test1";
     const drawing = new Drawing();
-    drawing.drawing_id = "test1"
+    drawing.drawing_id = "test1";
     manager.setSelectedLinks([link]);
     manager.setSelectedNodes([node]);
     manager.setSelectedDrawings([drawing]);

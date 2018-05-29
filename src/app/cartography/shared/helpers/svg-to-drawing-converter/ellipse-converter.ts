@@ -13,7 +13,7 @@ export class EllipseConverter implements SvgConverter {
 
     const fill_opacity = node.attributes.getNamedItem("fill-opacity");
     if (fill) {
-      drawing.fill_opacity = parseInt(fill_opacity.value, 10);
+      drawing.fill_opacity = parseFloat(fill_opacity.value);
     }
 
     const stroke = node.attributes.getNamedItem("stroke");
@@ -24,6 +24,11 @@ export class EllipseConverter implements SvgConverter {
     const stroke_width = node.attributes.getNamedItem("stroke-width");
     if (stroke) {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
+    }
+
+    const stroke_dasharray = node.attributes.getNamedItem("stroke-dasharray");
+    if (stroke_dasharray) {
+      drawing.stroke_dasharray = stroke_dasharray.value;
     }
 
     const cx = node.attributes.getNamedItem('cx');

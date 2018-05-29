@@ -6,6 +6,7 @@ export class LineElement implements DrawingElement {
   width: number;
   stroke: string;
   stroke_width: number;
+  stroke_dasharray: string;
   x1: number;
   x2: number;
   y1: number;

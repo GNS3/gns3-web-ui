@@ -31,9 +31,9 @@ g.node:hover {
   left: 50%;
 }
 
-g.node text {
-  font-family: Roboto !important;
-}
+/*g.node text {*/
+  /*font-family: Roboto !important;*/
+/*}*/
 
 
 svg.map image:hover, svg.map image.chosen, g.selected {

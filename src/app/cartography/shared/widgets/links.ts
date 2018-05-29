@@ -63,7 +63,6 @@ export class LinksWidget implements Widget {
           ];
         }
 
-
         const status_started = link_group
           .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));

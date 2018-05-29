@@ -1,6 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { HotkeysService } from 'angular2-hotkeys';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from "rxjs/Subject";
@@ -89,7 +88,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
               protected drawingsDataSource: DrawingsDataSource,
-              protected hotkeysService: HotkeysService
               ) {
     this.selectionManager = new SelectionManager(
       this.nodesDataSource, this.linksDataSource, this.drawingsDataSource, new InRectangleHelper());
@@ -105,7 +103,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .fromPromise(this.serverService.get(server_id))
         .flatMap((server: Server) => {
           this.server = server;
-          return this.projectService.get(server, paramMap.get('project_id'));
+          return this.projectService.get(server, paramMap.get('project_id')).map((project) => {
+            project.readonly = true;
+            return project;
+          });
         })
         .flatMap((project: Project) => {
           this.project = project;
@@ -194,6 +195,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
+    if (this.project.readonly) {
+        this.mapChild.graphLayout.getSelectionTool().deactivate();
+    }
+    this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.project.readonly);
+
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
     });
@@ -271,11 +277,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleMovingMode() {
     this.movingMode = !this.movingMode;
     if (this.movingMode) {
-      this.mapChild.graphLayout.getSelectionTool().deactivate();
+      if (!this.project.readonly) {
+        this.mapChild.graphLayout.getSelectionTool().deactivate();
+      }
       this.mapChild.graphLayout.getMovingTool().activate();
     } else {
       this.mapChild.graphLayout.getMovingTool().deactivate();
-      this.mapChild.graphLayout.getSelectionTool().activate();
+      if (!this.project.readonly) {
+        this.mapChild.graphLayout.getSelectionTool().activate();
+      }
     }
   }
 

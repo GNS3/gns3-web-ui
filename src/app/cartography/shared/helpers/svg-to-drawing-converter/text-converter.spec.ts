@@ -16,6 +16,7 @@ describe('TextConverter', () => {
     node.setAttribute("font-family", "TypeWriter");
     node.setAttribute("font-size", "10.0");
     node.setAttribute("font-weight", "bold");
+    node.setAttribute("text-decoration", "line-through");
 
     const drawing = textConverter.convert(node);
     expect(drawing.text).toEqual("Text");
@@ -24,6 +25,7 @@ describe('TextConverter', () => {
     expect(drawing.font_family).toEqual("TypeWriter");
     expect(drawing.font_size).toEqual(10.0);
     expect(drawing.font_weight).toEqual("bold");
+    expect(drawing.text_decoration).toEqual("line-through");
   });
 
 });

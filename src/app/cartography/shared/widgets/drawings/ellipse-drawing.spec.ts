@@ -26,6 +26,7 @@ describe('EllipseDrawingWidget', () => {
     ellipse.fill_opacity = 2.0;
     ellipse.stroke = "#000000";
     ellipse.stroke_width = 2.0;
+    ellipse.stroke_dasharray = "5,25,25";
     ellipse.cx = 10;
     ellipse.cy = 20;
     ellipse.rx = 30;
@@ -45,6 +46,7 @@ describe('EllipseDrawingWidget', () => {
     expect(ellipse_element.getAttribute('fill-opacity')).toEqual('2');
     expect(ellipse_element.getAttribute('stroke')).toEqual('#000000');
     expect(ellipse_element.getAttribute('stroke-width')).toEqual('2');
+    expect(ellipse_element.getAttribute('stroke-dasharray')).toEqual('5,25,25');
     expect(ellipse_element.getAttribute('cx')).toEqual('10');
     expect(ellipse_element.getAttribute('cy')).toEqual('20');
     expect(ellipse_element.getAttribute('rx')).toEqual('30');

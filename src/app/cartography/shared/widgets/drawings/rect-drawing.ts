@@ -2,9 +2,16 @@ import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { RectElement } from "../../models/drawings/rect-element";
 import { DrawingWidget } from "./drawing-widget";
+import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
 export class RectDrawingWidget implements DrawingWidget {
+  private qtDasharrayFixer: QtDasharrayFixer;
+
+  constructor() {
+    this.qtDasharrayFixer = new QtDasharrayFixer();
+  }
+
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGRectElement, RectElement>('rect.rect_element')
@@ -24,6 +31,7 @@ export class RectDrawingWidget implements DrawingWidget {
       .attr('fill-opacity', (rect) => rect.fill_opacity)
       .attr('stroke', (rect) => rect.stroke)
       .attr('stroke-width', (rect) => rect.stroke_width)
+      .attr('stroke-dasharray', (rect) => this.qtDasharrayFixer.fix(rect.stroke_dasharray))
       .attr('width', (rect) => rect.width)
       .attr('height', (rect) => rect.height);
 
