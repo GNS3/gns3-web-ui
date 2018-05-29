@@ -195,6 +195,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
+    if (this.project.readonly) {
+        this.mapChild.graphLayout.getSelectionTool().deactivate();
+    }
     this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.project.readonly);
 
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
@@ -274,11 +277,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleMovingMode() {
     this.movingMode = !this.movingMode;
     if (this.movingMode) {
-      this.mapChild.graphLayout.getSelectionTool().deactivate();
+      if (!this.project.readonly) {
+        this.mapChild.graphLayout.getSelectionTool().deactivate();
+      }
       this.mapChild.graphLayout.getMovingTool().activate();
     } else {
       this.mapChild.graphLayout.getMovingTool().deactivate();
-      this.mapChild.graphLayout.getSelectionTool().activate();
+      if (!this.project.readonly) {
+        this.mapChild.graphLayout.getSelectionTool().activate();
+      }
     }
   }
 
