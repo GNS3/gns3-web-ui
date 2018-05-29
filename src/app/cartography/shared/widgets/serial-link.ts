@@ -8,8 +8,17 @@ import { Link } from "../models/link";
 export class SerialLinkWidget implements Widget {
 
   public draw(view: SVGSelection, link: Link) {
-      const dx = link.target.x - link.source.x;
-      const dy = link.target.y - link.source.y;
+      const source = {
+        'x': link.source.x + link.source.width / 2,
+        'y': link.source.y + link.source.height / 2
+      };
+      const target = {
+        'x': link.target.x + link.target.width / 2,
+        'y': link.target.y + link.target.height / 2
+      };
+
+      const dx = target.x - source.x;
+      const dy = target.y - source.y;
 
       const vector_angle = Math.atan2(dy, dx);
       const rot_angle = -Math.PI / 4.0;
@@ -19,20 +28,20 @@ export class SerialLinkWidget implements Widget {
       ];
 
       const angle_source = [
-        link.source.x + dx / 2.0 + 15 * vect_rot[0],
-        link.source.y + dy / 2.0 + 15 * vect_rot[1]
+        source.x + dx / 2.0 + 15 * vect_rot[0],
+        source.y + dy / 2.0 + 15 * vect_rot[1]
       ];
 
       const angle_target = [
-        link.target.x - dx / 2.0 - 15 * vect_rot[0],
-        link.target.y - dy / 2.0 - 15 * vect_rot[1]
+        target.x - dx / 2.0 - 15 * vect_rot[0],
+        target.y - dy / 2.0 - 15 * vect_rot[1]
       ];
 
       const line_data = [
-        [link.source.x, link.source.y],
+        [source.x, source.y],
         angle_source,
         angle_target,
-        [link.target.x, link.target.y]
+        [target.x, target.y]
       ];
 
       let link_path = view.select<SVGPathElement>('path');
