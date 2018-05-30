@@ -28,4 +28,17 @@ describe('LineConverter', () => {
     expect(drawing.y2).toEqual(40);
   });
 
+  it('should parse with no attributes', () => {
+    const node = document.createElement("line");
+
+    const drawing = lineConverter.convert(node);
+    expect(drawing.stroke).toBeUndefined();
+    expect(drawing.stroke_width).toBeUndefined();
+    expect(drawing.stroke_dasharray).toBeUndefined();
+    expect(drawing.x1).toBeUndefined();
+    expect(drawing.x2).toBeUndefined();
+    expect(drawing.y1).toBeUndefined();
+    expect(drawing.y2).toBeUndefined();
+  });
+
 });

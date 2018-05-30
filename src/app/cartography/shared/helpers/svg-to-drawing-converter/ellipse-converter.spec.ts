@@ -32,4 +32,18 @@ describe('EllipseConverter', () => {
     expect(drawing.ry).toEqual(59);
   });
 
+  it('should parse with no attributes', () => {
+    const node = document.createElement("ellipse");
+
+    const drawing = ellipseConverter.convert(node);
+    expect(drawing.fill).toBeUndefined();
+    expect(drawing.fill_opacity).toBeUndefined();
+    expect(drawing.stroke).toBeUndefined();
+    expect(drawing.stroke_width).toBeUndefined();
+    expect(drawing.stroke_dasharray).toBeUndefined();
+    expect(drawing.cx).toBeUndefined();
+    expect(drawing.cy).toBeUndefined();
+    expect(drawing.rx).toBeUndefined();
+    expect(drawing.ry).toBeUndefined();
+  });
 });

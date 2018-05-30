@@ -28,4 +28,15 @@ describe('RectConverter', () => {
     expect(drawing.height).toEqual(200);
   });
 
+  it('should parse with no attributes', () => {
+    const node = document.createElement("rect");
+
+    const drawing = rectConverter.convert(node);
+    expect(drawing.fill).toBeUndefined();
+    expect(drawing.fill_opacity).toBeUndefined();
+    expect(drawing.stroke).toBeUndefined();
+    expect(drawing.stroke_dasharray).toBeUndefined();
+    expect(drawing.width).toBeUndefined();
+    expect(drawing.height).toBeUndefined();
+  });
 });

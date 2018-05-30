@@ -28,4 +28,16 @@ describe('TextConverter', () => {
     expect(drawing.text_decoration).toEqual("line-through");
   });
 
+  it('should parse with no attributes', () => {
+    const node = document.createElement("text");
+
+    const drawing = textConverter.convert(node);
+    expect(drawing.text).toEqual("");
+    expect(drawing.fill).toBeUndefined();
+    expect(drawing.fill_opacity).toBeUndefined();
+    expect(drawing.font_family).toBeUndefined();
+    expect(drawing.font_size).toBeUndefined();
+    expect(drawing.font_weight).toBeUndefined();
+    expect(drawing.text_decoration).toBeUndefined();
+  });
 });

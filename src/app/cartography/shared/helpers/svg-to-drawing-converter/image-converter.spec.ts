@@ -20,4 +20,12 @@ describe('ImageConverter', () => {
     expect(drawing.height).toEqual(200);
   });
 
+  it('should parse with no attributes', () => {
+    const node = document.createElement("image");
+
+    const drawing = imageConverter.convert(node);
+    expect(drawing.data).toBeUndefined();
+    expect(drawing.width).toBeUndefined();
+    expect(drawing.height).toBeUndefined();
+  });
 });
