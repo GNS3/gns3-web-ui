@@ -7,9 +7,12 @@ import { SVGSelection } from "../models/types";
 import { Symbol } from "../models/symbol";
 import { Layer  } from "../models/layer";
 import { CssFixer } from "../helpers/css-fixer";
+import { FontFixer } from "../helpers/font-fixer";
 
 
 export class NodesWidget implements Widget {
+  static NODE_LABEL_MARGIN = 3;
+
   private debug = false;
   private draggingEnabled = false;
 
@@ -20,10 +23,12 @@ export class NodesWidget implements Widget {
 
   private symbols: Symbol[];
   private cssFixer: CssFixer;
+  private fontFixer: FontFixer;
 
   constructor() {
     this.symbols = [];
     this.cssFixer = new CssFixer();
+    this.fontFixer = new FontFixer();
   }
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
@@ -65,7 +70,11 @@ export class NodesWidget implements Widget {
     selection
       .select<SVGTextElement>('text.label')
         // .attr('y', (n: Node) => n.label.y - n.height / 2. + 10)  // @todo: server computes y in auto way
-        .attr('style', (n: Node) => this.cssFixer.fix(n.label.style))
+        .attr('style', (n: Node) => {
+          let styles = this.cssFixer.fix(n.label.style);
+          styles = this.fontFixer.fixStyles(styles);
+          return styles;
+        })
         .text((n: Node) => n.label.text)
         .attr('x', function (this: SVGTextElement, n: Node) {
           if (n.label.x === null) {
@@ -73,7 +82,7 @@ export class NodesWidget implements Widget {
             const bbox = this.getBBox();
             return -bbox.width / 2.;
           }
-          return n.label.x;
+          return n.label.x + NodesWidget.NODE_LABEL_MARGIN;
         })
         .attr('y', function (this: SVGTextElement, n: Node) {
           let bbox = this.getBBox();
@@ -83,7 +92,7 @@ export class NodesWidget implements Widget {
             bbox = this.getBBox();
             return - n.height / 2. - bbox.height ;
           }
-          return n.label.y + bbox.height;
+          return n.label.y + bbox.height - NodesWidget.NODE_LABEL_MARGIN;
         });
 
     selection
