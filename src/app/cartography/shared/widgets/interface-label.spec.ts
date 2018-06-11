@@ -100,6 +100,15 @@ describe('InterfaceLabelsWidget', () => {
 
   });
 
+  it('should not draw interface labels when disabled', () => {
+    widget.setEnabled(false);
+    widget.draw(linksEnter);
+
+    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container');
+
+    expect(drew.nodes().length).toEqual(0);
+  });
+
   it('should draw interface label with class `selected` when selected', () => {
     links[0].nodes[0].label.is_selected = true;
 
