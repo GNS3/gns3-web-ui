@@ -9,9 +9,14 @@ export class InterfaceLabelWidget {
   static SURROUNDING_TEXT_BORDER = 5;
 
   private cssFixer: CssFixer;
+  private enabled = true;
 
   constructor() {
     this.cssFixer = new CssFixer();
+  }
+
+  public setEnabled(enabled: boolean) {
+    this.enabled = enabled;
   }
 
   draw(selection: SVGSelection) {
@@ -41,7 +46,10 @@ export class InterfaceLabelWidget {
           l.nodes[1].label.is_selected
         );
 
-        return [sourceInterface, targetInterface];
+        if (this.enabled) {
+          return [sourceInterface, targetInterface];
+        }
+        return [];
       });
 
     const enter = labels

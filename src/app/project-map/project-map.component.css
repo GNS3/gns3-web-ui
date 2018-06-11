@@ -75,3 +75,9 @@ g.node text,
   border: none;
   -moz-outline-style: none
 }
+
+.options-item {
+  padding-left: 15px;
+  padding-right: 15px;
+
+}

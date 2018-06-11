@@ -21,6 +21,18 @@
         </button>
       </mat-menu>
 
+      <mat-toolbar-row>
+        <button mat-icon-button [matMenuTriggerFor]="viewMenu">
+          <mat-icon>view_module</mat-icon>
+        </button>
+      </mat-toolbar-row>
+
+      <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
+        <div class="options-item">
+          <mat-checkbox [(ngModel)]="showIntefaceLabels" (change)="toggleShowInterfaceLabels($event.checked)">Show interface labels</mat-checkbox>
+        </div>
+      </mat-menu>
+
       <mat-toolbar-row *ngIf="!project.readonly">
         <button mat-icon-button [color]="drawLineMode ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>

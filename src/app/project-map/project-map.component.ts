@@ -314,6 +314,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
+  public toggleShowInterfaceLabels(enabled: boolean) {
+    this.project.show_interface_labels = enabled;
+
+    this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget()
+      .setEnabled(this.project.show_interface_labels);
+    this.mapChild.reload();
+  }
+
   public ngOnDestroy() {
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
