@@ -65,11 +65,16 @@ describe('SettingsService', () => {
 
     service.set('crash_reports', true);
     service.subscribe(settings => {
-      changedSettings = settings
+      changedSettings = settings;
     });
     service.set('crash_reports', false);
 
     expect(changedSettings.crash_reports).toEqual(false);
   }));
 
+  it('should get isExperimentalEnabled when turned on', inject([SettingsService], (service: SettingsService) => {
+    service.set('experimental_features', true);
+
+    expect(service.isExperimentalEnabled()).toEqual(true);
+  }));
 });

@@ -224,6 +224,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
     );
+
+    this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget().setEnabled(this.project.show_interface_labels);
+    this.mapChild.reload();
   }
 
   onNodeCreation(appliance: Appliance) {

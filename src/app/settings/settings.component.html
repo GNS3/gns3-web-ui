@@ -15,7 +15,13 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <mat-checkbox class="example-margin" [(ngModel)]="settings.crash_reports">Send anonymous crash reports</mat-checkbox>
+          <div>
+            <mat-checkbox class="example-margin" [(ngModel)]="settings.crash_reports">Send anonymous crash reports</mat-checkbox>
+          </div>
+
+          <div>
+            <mat-checkbox class="example-margin" [(ngModel)]="settings.experimental_features">Enable experimental features (WARNING: IT CAN BREAK YOU LABS!)</mat-checkbox>
+          </div>
 
         </mat-expansion-panel>
       </mat-accordion>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingsService } from "../shared/services/settings.service";
+import { ToasterService } from "../shared/services/toaster.service";
 
 @Component({
   selector: 'app-settings',
@@ -9,7 +10,10 @@ import { SettingsService } from "../shared/services/settings.service";
 export class SettingsComponent implements OnInit {
   settings = { ...SettingsService.DEFAULTS };
 
-  constructor(private settingsService: SettingsService) { }
+  constructor(
+    private settingsService: SettingsService,
+    private toaster: ToasterService
+  ) { }
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
@@ -17,5 +21,6 @@ export class SettingsComponent implements OnInit {
 
   save() {
     this.settingsService.setAll(this.settings);
+    this.toaster.success("Settings have been saved.");
   }
 }

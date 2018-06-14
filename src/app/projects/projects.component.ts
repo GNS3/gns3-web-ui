@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MatSort, MatSortable } from "@angular/material";
 
@@ -9,6 +9,7 @@ import { ServerService } from "../shared/services/server.service";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { DataSource } from "@angular/cdk/collections";
 import { Observable } from "rxjs/Observable";
+import { SettingsService, Settings } from "../shared/services/settings.service";
 
 
 @Component({
@@ -21,12 +22,15 @@ export class ProjectsComponent implements OnInit {
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
   displayedColumns = ['name', 'actions'];
+  settings: Settings;
 
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(private route: ActivatedRoute,
               private serverService: ServerService,
-              private projectService: ProjectService) {
+              private projectService: ProjectService,
+              private settingsService: SettingsService
+              ) {
 
   }
 
@@ -41,8 +45,8 @@ export class ProjectsComponent implements OnInit {
 
     this.route.paramMap
       .switchMap((params: ParamMap) => {
-        const server_id = parseInt(params.get('server_id'), 10);
-        return this.serverService.get(server_id);
+        const server_id = params.get('server_id');
+        return this.serverService.getLocalOrRemote(server_id);
       })
       .subscribe((server: Server) => {
         this.server = server;
@@ -52,6 +56,8 @@ export class ProjectsComponent implements OnInit {
             this.projectDatabase.addProjects(projects);
           });
       });
+
+    this.settings = this.settingsService.getAll();
   }
 
   delete(project: Project) {

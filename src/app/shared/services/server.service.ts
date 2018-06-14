@@ -21,6 +21,13 @@ export class ServerService {
       this.indexedDbService.get().getByKey(this.tablename,  id));
   }
 
+  public getLocalOrRemote(id: string) {
+    if (id === 'local') {
+
+    }
+    return this.get(parseInt(id, 10));
+  }
+
   public create(server: Server) {
     return this.onReady(() => {
       const promise = new Promise((resolve, reject) => {

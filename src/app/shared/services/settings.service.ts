@@ -6,13 +6,15 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 export interface Settings {
   crash_reports: boolean;
+  experimental_features: boolean;
 }
 
 
 @Injectable()
 export class SettingsService {
   static DEFAULTS: Settings = {
-    'crash_reports': true
+    'crash_reports': true,
+    'experimental_features': false
   };
 
   private settingsSubject: BehaviorSubject<Settings>;
@@ -52,6 +54,10 @@ export class SettingsService {
     Object.keys(settings).forEach((key) => {
       this.set(key, settings[key]);
     });
+  }
+
+  isExperimentalEnabled(): boolean {
+    return this.get('experimental_features');
   }
 
   subscribe(subscriber: ((settings: Settings) => void)) {
