@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import {IndexedDbService} from "./indexed-db.service";
 import {Server} from "../models/server";
+import { Observable } from "rxjs/Observable";
 
 
 @Injectable()
@@ -23,7 +24,9 @@ export class ServerService {
 
   public getLocalOrRemote(id: string) {
     if (id === 'local') {
-
+      const server = new Server();
+      server.name = 'local';
+      return Observable.of(server);
     }
     return this.get(parseInt(id, 10));
   }

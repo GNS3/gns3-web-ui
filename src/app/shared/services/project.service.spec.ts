@@ -115,4 +115,5 @@ describe('ProjectService', () => {
     const path = service.notificationsPath(server, "myproject");
     expect(path).toEqual('ws://127.0.0.1:3080/v2/projects/myproject/notifications/ws')
   }));
+
 });
