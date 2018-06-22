@@ -4,12 +4,21 @@ import { HttpClient } from '@angular/common/http';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
-import { Node } from '../../cartography/shared/models/node';
-import { Port } from '../models/port';
 import { getTestServer } from './testing';
-import { Appliance } from '../models/appliance';
-import { Project } from '../models/project';
 import { ProjectService } from './project.service';
+import { SettingsService } from "./settings.service";
+import { MockedSettingsService } from "./settings.service.spec";
+
+
+/**
+ * Mocks ProjectsService so it's not based on settings
+ */
+export class MockedProjectService {
+  isReadOnly(project) {
+    return project.readonly;
+  }
+}
+
 
 describe('ProjectService', () => {
   let httpClient: HttpClient;
@@ -25,7 +34,8 @@ describe('ProjectService', () => {
       ],
       providers: [
         HttpServer,
-        ProjectService
+        ProjectService,
+        { provide: SettingsService, useClass: MockedSettingsService }
       ]
     });
 

@@ -8,11 +8,13 @@ import { Link } from "../../cartography/shared/models/link";
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import {Drawing} from "../../cartography/shared/models/drawing";
+import { SettingsService } from "./settings.service";
 
 @Injectable()
 export class ProjectService {
 
-  constructor(private httpServer: HttpServer) { }
+  constructor(private httpServer: HttpServer,
+              private settingsService: SettingsService) { }
 
   get(server: Server, project_id: string) {
     return this.httpServer
@@ -51,5 +53,12 @@ export class ProjectService {
 
   notificationsPath(server: Server, project_id: string): string {
     return `ws://${server.ip}:${server.port}/v2/projects/${project_id}/notifications/ws`;
+  }
+
+  isReadOnly(project: Project) {
+    if (project.readonly) {
+      return project.readonly;
+    }
+    return !this.settingsService.isExperimentalEnabled();
   }
 }

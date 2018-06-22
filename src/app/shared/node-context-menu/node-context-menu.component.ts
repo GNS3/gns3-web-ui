@@ -4,6 +4,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { Node } from "../../cartography/shared/models/node";
 import { Server } from "../models/server";
 import { Project } from "../models/project";
+import { ProjectService } from "../services/project.service";
 
 
 @Component({
@@ -23,7 +24,8 @@ export class NodeContextMenuComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private changeDetector: ChangeDetectorRef) {}
+    private changeDetector: ChangeDetectorRef,
+    protected projectService: ProjectService) {}
 
   ngOnInit() {
     this.setPosition(0, 0);

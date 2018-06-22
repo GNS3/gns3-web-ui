@@ -40,7 +40,7 @@ import { SelectionManager } from "../cartography/shared/managers/selection-manag
 import { InRectangleHelper } from "../cartography/map/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../cartography/shared/datasources/drawings-datasource";
 import { Subscription } from "rxjs/Subscription";
-
+import { SettingsService } from "../shared/services/settings.service";
 
 
 @Component({
@@ -61,6 +61,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private ws: Subject<any>;
   private drawLineMode =  false;
   private movingMode = false;
+  private readonly = false;
 
   protected selectionManager: SelectionManager;
 
@@ -85,6 +86,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               private progressDialogService: ProgressDialogService,
               private toaster: ToasterService,
               private projectWebServiceHandler: ProjectWebServiceHandler,
+              private settingsService: SettingsService,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
               protected drawingsDataSource: DrawingsDataSource,
@@ -104,7 +106,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .flatMap((server: Server) => {
           this.server = server;
           return this.projectService.get(server, paramMap.get('project_id')).map((project) => {
-            project.readonly = true;
             return project;
           });
         })
@@ -162,6 +163,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onProjectLoad(project: Project) {
+    this.readonly = this.projectService.isReadOnly(project);
+
     const subscription = this.symbolService
       .load(this.server)
       .flatMap(() => {
@@ -195,10 +198,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    if (this.project.readonly) {
+    if (this.readonly) {
         this.mapChild.graphLayout.getSelectionTool().deactivate();
     }
-    this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.project.readonly);
+
+    this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
 
     this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
       this.nodeContextMenu.open(node, event.clientY, event.clientX);
@@ -280,17 +284,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleMovingMode() {
     this.movingMode = !this.movingMode;
     if (this.movingMode) {
-      if (!this.project.readonly) {
+      if (!this.readonly) {
         this.mapChild.graphLayout.getSelectionTool().deactivate();
       }
       this.mapChild.graphLayout.getMovingTool().activate();
     } else {
       this.mapChild.graphLayout.getMovingTool().deactivate();
-      if (!this.project.readonly) {
+      if (!this.readonly) {
         this.mapChild.graphLayout.getSelectionTool().activate();
       }
     }
   }
+
 
   public onChooseInterface(event) {
     const node: Node = event.node;
