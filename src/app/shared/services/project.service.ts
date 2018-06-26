@@ -26,6 +26,11 @@ export class ProjectService {
                 .post<Project>(server, `/projects/${project_id}/open`, {});
   }
 
+  close(server: Server, project_id: string) {
+    return this.httpServer
+                .post<Project>(server, `/projects/${project_id}/close`, {});
+  }
+
   list(server: Server) {
     return this.httpServer
                 .get<Project[]>(server, '/projects');

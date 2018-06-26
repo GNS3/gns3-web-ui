@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ProjectMapComponent } from './project-map/project-map.component';
 import { ServersComponent } from "./servers/servers.component";
 import { ProjectsComponent } from "./projects/projects.component";
-import { DefaultLayoutComponent } from "./default-layout/default-layout.component";
+import { DefaultLayoutComponent } from "./layouts/default-layout/default-layout.component";
 import { SettingsComponent } from "./settings/settings.component";
 import { LocalServerComponent } from "./local-server/local-server.component";
 

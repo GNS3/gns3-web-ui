@@ -10,6 +10,7 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { DataSource } from "@angular/cdk/collections";
 import { Observable } from "rxjs/Observable";
 import { SettingsService, Settings } from "../shared/services/settings.service";
+import { ProgressService } from "../progress/progress.service";
 
 
 @Component({
@@ -29,7 +30,8 @@ export class ProjectsComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private serverService: ServerService,
               private projectService: ProjectService,
-              private settingsService: SettingsService
+              private settingsService: SettingsService,
+              private progressService: ProgressService
               ) {
 
   }
@@ -63,6 +65,23 @@ export class ProjectsComponent implements OnInit {
   delete(project: Project) {
     this.projectService.delete(this.server, project.project_id).subscribe(() => {
       this.projectDatabase.remove(project);
+    });
+  }
+
+  open(project: Project) {
+    this.progressService.activate();
+
+    this.projectService.open(this.server, project.project_id).subscribe(() => {
+    }, () => {}, () => {
+      this.progressService.deactivate();
+    });
+  }
+
+  close(project: Project) {
+    this.progressService.activate();
+
+    this.projectService.close(this.server, project.project_id).subscribe(() => {}, () => {}, () => {
+      this.progressService.deactivate();
     });
   }
 }

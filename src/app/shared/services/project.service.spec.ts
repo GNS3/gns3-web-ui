@@ -71,6 +71,16 @@ describe('ProjectService', () => {
     expect(req.request.body).toEqual({});
   }));
 
+  it('should close the project', inject([ProjectService], (service: ProjectService) => {
+    service.close(server, "myproject").subscribe();
+
+    const req = httpTestingController.expectOne(
+      'http://127.0.0.1:3080/v2/projects/myproject/close');
+    expect(req.request.method).toEqual("POST");
+    expect(req.request.body).toEqual({});
+  }));
+
+
   it('should list projects', inject([ProjectService], (service: ProjectService) => {
     service.list(server).subscribe();
 

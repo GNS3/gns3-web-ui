@@ -23,7 +23,8 @@ import {
   MatListModule,
   MatExpansionModule,
   MatSortModule,
-  MatSelectModule
+  MatSelectModule,
+  MatTooltipModule
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
@@ -47,7 +48,7 @@ import { ApplianceService } from "./shared/services/appliance.service";
 import { LinkService } from "./shared/services/link.service";
 
 import { ProjectsComponent } from './projects/projects.component';
-import { DefaultLayoutComponent } from './default-layout/default-layout.component';
+import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './shared/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
 
@@ -76,6 +77,8 @@ import { SettingsService } from "./shared/services/settings.service";
 
 import { RavenErrorHandler } from "./raven-error-handler";
 import { LocalServerComponent } from './local-server/local-server.component';
+import { ProgressComponent } from './progress/progress.component';
+import { ProgressService } from "./progress/progress.service";
 
 Raven
   .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
@@ -104,6 +107,7 @@ Raven
     ProjectMapShortcutsComponent,
     SettingsComponent,
     LocalServerComponent,
+    ProgressComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -130,6 +134,7 @@ Raven
     MatExpansionModule,
     MatSortModule,
     MatSelectModule,
+    MatTooltipModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
@@ -151,6 +156,7 @@ Raven
     SnapshotService,
     ProgressDialogService,
     ToasterService,
+    ProgressService,
     ProjectWebServiceHandler,
     LinksDataSource,
     NodesDataSource,
