@@ -17,6 +17,9 @@ import { SelectionManager } from "../../cartography/shared/managers/selection-ma
 import { Server } from "../../shared/models/server";
 import { Node } from "../../cartography/shared/models/node";
 import { Project } from "../../shared/models/project";
+import { ProjectService } from "../../shared/services/project.service";
+import { MockedProjectService } from "../../shared/services/project.service.spec";
+import { SettingsService } from "../../shared/services/settings.service";
 
 
 describe('ProjectMapShortcutsComponent', () => {
@@ -37,9 +40,11 @@ describe('ProjectMapShortcutsComponent', () => {
       ],
       providers: [
         HttpServer,
-        { provide: NodeService, useFactory: () => instance(nodeServiceMock)},
-        { provide: HotkeysService, useFactory: () => hotkeyServiceInstanceMock},
-        { provide: ToasterService, useClass: MockedToasterService},
+        { provide: NodeService, useFactory: () => instance(nodeServiceMock) },
+        { provide: HotkeysService, useFactory: () => hotkeyServiceInstanceMock },
+        { provide: ToasterService, useClass: MockedToasterService },
+        { provide: ProjectService, useClass: MockedProjectService },
+        { provide: SettingsService, useClass: SettingsService }
       ],
       declarations: [ ProjectMapShortcutsComponent ]
     })

@@ -5,6 +5,13 @@ import { Settings, SettingsService } from './settings.service';
 import createSpyObj = jasmine.createSpyObj;
 
 
+export class MockedSettingsService {
+  isExperimentalEnabled() {
+    return true;
+  }
+}
+
+
 describe('SettingsService', () => {
   let persistenceService: PersistenceService;
 
@@ -45,7 +52,8 @@ describe('SettingsService', () => {
 
   it('should get all values', inject([SettingsService], (service: SettingsService) => {
     expect(service.getAll()).toEqual({
-      'crash_reports': true
+      'crash_reports': true,
+      'experimental_features': false
     });
   }));
 
@@ -53,10 +61,11 @@ describe('SettingsService', () => {
     const settings = {
       'crash_reports': false
     };
-    service.setAll(settings)
+    service.setAll(settings);
 
     expect(service.getAll()).toEqual({
-      'crash_reports': false
+      'crash_reports': false,
+      'experimental_features': false
     });
   }));
 

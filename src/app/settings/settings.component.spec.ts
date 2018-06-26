@@ -6,6 +6,7 @@ import { FormsModule } from "@angular/forms";
 import { SettingsService } from "../shared/services/settings.service";
 import { PersistenceModule } from "angular-persistence";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MockedToasterService, ToasterService } from "../shared/services/toaster.service";
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -17,7 +18,10 @@ describe('SettingsComponent', () => {
       imports: [
         MatExpansionModule, MatCheckboxModule, FormsModule,
         PersistenceModule, BrowserAnimationsModule ],
-      providers: [ SettingsService ],
+      providers: [
+        SettingsService,
+        { provide: ToasterService, useClass: MockedToasterService }
+      ],
       declarations: [ SettingsComponent ]
     })
     .compileComponents();
@@ -37,7 +41,8 @@ describe('SettingsComponent', () => {
 
   it('should get and save new settings', () => {
     const settings = {
-      'crash_reports': true
+      'crash_reports': true,
+      'experimental_features': true
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');

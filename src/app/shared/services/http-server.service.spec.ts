@@ -176,4 +176,17 @@ describe('HttpServer', () => {
     expect(req.request.headers.get('Authorization')).toEqual('Basic bG9naW46cGFzc3dvcmQ=');
     expect(req.request.headers.get('CustomHeader')).toEqual('value');
   });
+
+  it('should make local call when ip and port is not defined', () => {
+    server.ip = null;
+    server.port = null;
+
+    service.get(server, '/test', {
+      headers: {
+        'CustomHeader': 'value'
+      }
+    }).subscribe();
+
+    const req = httpTestingController.expectOne('/v2/test');
+  });
 });

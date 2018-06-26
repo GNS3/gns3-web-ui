@@ -6,6 +6,7 @@ import { NodeService } from '../../shared/services/node.service';
 import { Server } from '../../shared/models/server';
 import { ToasterService } from '../../shared/services/toaster.service';
 import { Project } from "../../shared/models/project";
+import { ProjectService } from "../../shared/services/project.service";
 
 
 @Component({
@@ -23,6 +24,7 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
     private hotkeysService: HotkeysService,
     private toaster: ToasterService,
     private nodesService: NodeService,
+    private projectService: ProjectService
   ) { }
 
   ngOnInit() {
@@ -30,8 +32,8 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
     this.hotkeysService.add(this.deleteHotkey);
   }
 
-  onDeleteHandler(event: KeyboardEvent):boolean {
-    if (!this.project.readonly) {
+  onDeleteHandler(event: KeyboardEvent): boolean {
+    if (!this.projectService.isReadOnly(this.project)) {
       const selectedNodes = this.selectionManager.getSelectedNodes();
       if (selectedNodes) {
         selectedNodes.forEach((node) => {

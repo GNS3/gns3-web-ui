@@ -8,4 +8,5 @@ export class Server {
   authorization: ServerAuthorization;
   login: string;
   password: string;
+  is_local: boolean;
 }

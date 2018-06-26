@@ -46,7 +46,7 @@ export class ProjectsComponent implements OnInit {
     this.route.paramMap
       .switchMap((params: ParamMap) => {
         const server_id = params.get('server_id');
-        return this.serverService.getLocalOrRemote(server_id);
+        return this.serverService.get(parseInt(server_id, 10));
       })
       .subscribe((server: Server) => {
         this.server = server;
