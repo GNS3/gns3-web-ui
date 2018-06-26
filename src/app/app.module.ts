@@ -75,6 +75,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { SettingsService } from "./shared/services/settings.service";
 
 import { RavenErrorHandler } from "./raven-error-handler";
+import { LocalServerComponent } from './local-server/local-server.component';
 
 Raven
   .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
@@ -102,6 +103,7 @@ Raven
     MoveLayerUpActionComponent,
     ProjectMapShortcutsComponent,
     SettingsComponent,
+    LocalServerComponent,
   ],
   imports: [
     NgbModule.forRoot(),
