@@ -52,14 +52,18 @@ export class ProjectsComponent implements OnInit {
       })
       .subscribe((server: Server) => {
         this.server = server;
-        this.projectService
-          .list(this.server)
-          .subscribe((projects: Project[]) => {
-            this.projectDatabase.addProjects(projects);
-          });
+        this.refresh();
       });
 
     this.settings = this.settingsService.getAll();
+  }
+
+  refresh() {
+    this.projectService
+      .list(this.server)
+      .subscribe((projects: Project[]) => {
+        this.projectDatabase.addProjects(projects);
+      });
   }
 
   delete(project: Project) {
@@ -72,6 +76,7 @@ export class ProjectsComponent implements OnInit {
     this.progressService.activate();
 
     this.projectService.open(this.server, project.project_id).subscribe(() => {
+      this.refresh();
     }, () => {}, () => {
       this.progressService.deactivate();
     });
@@ -80,7 +85,9 @@ export class ProjectsComponent implements OnInit {
   close(project: Project) {
     this.progressService.activate();
 
-    this.projectService.close(this.server, project.project_id).subscribe(() => {}, () => {}, () => {
+    this.projectService.close(this.server, project.project_id).subscribe(() => {
+      this.refresh();
+    }, () => {}, () => {
       this.progressService.deactivate();
     });
   }
