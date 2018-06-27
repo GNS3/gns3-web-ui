@@ -1,11 +1,13 @@
-import {Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
+
 import {Observable} from "rxjs/Observable";
-import {Appliance} from "../../models/appliance";
-import {ApplianceService} from "../../services/appliance.service";
-import {Server} from "../../models/server";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+
+import { Server } from "../../../models/server";
+import { ApplianceService } from "../../../services/appliance.service";
+import { Appliance } from "../../../models/appliance";
 
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
