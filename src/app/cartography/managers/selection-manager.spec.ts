@@ -7,7 +7,7 @@ import { Rectangle } from "../models/rectangle";
 import { SelectionManager } from "./selection-manager";
 import { NodesDataSource } from "../datasources/nodes-datasource";
 import { LinksDataSource } from "../datasources/links-datasource";
-import { InRectangleHelper } from "../map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "../components/map/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../datasources/drawings-datasource";
 
 

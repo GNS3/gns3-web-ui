@@ -6,7 +6,7 @@ import { Subscription } from "rxjs/Subscription";
 import { NodesDataSource } from "../datasources/nodes-datasource";
 import { LinksDataSource } from "../datasources/links-datasource";
 import { Node } from "../models/node";
-import { InRectangleHelper } from "../map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "../components/map/helpers/in-rectangle-helper";
 import { Rectangle } from "../models/rectangle";
 import { Link} from "../models/link";
 import { DataSource } from "../datasources/datasource";

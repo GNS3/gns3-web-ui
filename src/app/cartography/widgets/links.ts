@@ -4,7 +4,7 @@ import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { Link } from "../models/link";
 import { LinkStatus } from "../models/link-status";
-import { MultiLinkCalculatorHelper } from "../map/helpers/multi-link-calculator-helper";
+import { MultiLinkCalculatorHelper } from "../components/map/helpers/multi-link-calculator-helper";
 import { SerialLinkWidget } from "./serial-link";
 import { EthernetLinkWidget } from "./ethernet-link";
 import { Layer } from "../models/layer";
