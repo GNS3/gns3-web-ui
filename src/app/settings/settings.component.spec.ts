@@ -1,12 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { SettingsComponent } from './settings.component';
 import { MatCheckboxModule, MatExpansionModule } from "@angular/material";
 import { FormsModule } from "@angular/forms";
-import { SettingsService } from "../shared/services/settings.service";
-import { PersistenceModule } from "angular-persistence";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MockedToasterService, ToasterService } from "../shared/services/toaster.service";
+
+import { PersistenceModule } from "angular-persistence";
+
+import { SettingsComponent } from './settings.component';
+import { SettingsService } from "../shared/services/settings.service";
+import { ToasterService } from "../shared/services/toaster.service";
+import { MockedToasterService } from "../shared/services/toaster.service.spec";
+
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;

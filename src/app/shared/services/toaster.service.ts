@@ -14,22 +14,3 @@ export class ToasterService {
   }
 }
 
-
-@Injectable()
-export class MockedToasterService {
-  public errors: string[];
-  public successes: string[];
-
-  constructor() {
-    this.errors = [];
-    this.successes = [];
-  }
-
-  public error(message: string) {
-    this.errors.push(message);
-  }
-
-  public success(message: string) {
-    this.successes.push(message);
-  }
-}

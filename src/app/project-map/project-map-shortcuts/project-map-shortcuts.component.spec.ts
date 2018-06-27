@@ -7,10 +7,7 @@ import { HotkeyModule, HotkeysService, Hotkey } from "angular2-hotkeys";
 import { Observable } from "rxjs";
 
 import { ProjectMapShortcutsComponent } from './project-map-shortcuts.component';
-import {
-  ToasterService,
-  MockedToasterService
-} from "../../shared/services/toaster.service";
+import { ToasterService, } from "../../shared/services/toaster.service";
 import { NodeService } from "../../shared/services/node.service";
 import { HttpServer } from "../../shared/services/http-server.service";
 import { SelectionManager } from "../../cartography/shared/managers/selection-manager";
@@ -20,6 +17,7 @@ import { Project } from "../../shared/models/project";
 import { ProjectService } from "../../shared/services/project.service";
 import { MockedProjectService } from "../../shared/services/project.service.spec";
 import { SettingsService } from "../../shared/services/settings.service";
+import { MockedToasterService } from "../../shared/services/toaster.service.spec";
 
 
 describe('ProjectMapShortcutsComponent', () => {

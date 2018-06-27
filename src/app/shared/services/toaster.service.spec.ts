@@ -1,7 +1,27 @@
 import { TestBed, inject } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material';
 
 import { ToasterService } from './toaster.service';
-import { MatSnackBar } from '@angular/material';
+
+
+export class MockedToasterService {
+  public errors: string[];
+  public successes: string[];
+
+  constructor() {
+    this.errors = [];
+    this.successes = [];
+  }
+
+  public error(message: string) {
+    this.errors.push(message);
+  }
+
+  public success(message: string) {
+    this.successes.push(message);
+  }
+}
+
 
 class MockedSnackBar {
   public open(message: string, ignored: any, options: any) {}
