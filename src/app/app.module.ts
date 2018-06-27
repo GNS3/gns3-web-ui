@@ -23,7 +23,8 @@ import {
   MatListModule,
   MatExpansionModule,
   MatSortModule,
-  MatSelectModule
+  MatSelectModule,
+  MatTooltipModule
 } from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
@@ -34,53 +35,58 @@ import { NgxElectronModule } from 'ngx-electron';
 
 import { AppRoutingModule } from './app-routing.module';
 
-import { VersionService } from './shared/services/version.service';
-import { ProjectService } from './shared/services/project.service';
-import { SymbolService } from "./shared/services/symbol.service";
-import { ServerService } from "./shared/services/server.service";
-import { IndexedDbService } from "./shared/services/indexed-db.service";
-import { HttpServer } from "./shared/services/http-server.service";
-import { SnapshotService } from "./shared/services/snapshot.service";
-import { ProgressDialogService } from "./shared/progress-dialog/progress-dialog.service";
-import { NodeService } from "./shared/services/node.service";
-import { ApplianceService } from "./shared/services/appliance.service";
-import { LinkService } from "./shared/services/link.service";
+import { VersionService } from './services/version.service';
+import { ProjectService } from './services/project.service';
+import { SymbolService } from "./services/symbol.service";
+import { ServerService } from "./services/server.service";
+import { IndexedDbService } from "./services/indexed-db.service";
+import { HttpServer } from "./services/http-server.service";
+import { SnapshotService } from "./services/snapshot.service";
+import { ProgressDialogService } from "./common/progress-dialog/progress-dialog.service";
+import { NodeService } from "./services/node.service";
+import { ApplianceService } from "./services/appliance.service";
+import { LinkService } from "./services/link.service";
 
-import { ProjectsComponent } from './projects/projects.component';
-import { DefaultLayoutComponent } from './default-layout/default-layout.component';
-import { ProgressDialogComponent } from './shared/progress-dialog/progress-dialog.component';
+import { ProjectsComponent } from './components/projects/projects.component';
+import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
+import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
 
-import { CreateSnapshotDialogComponent, ProjectMapComponent } from './project-map/project-map.component';
-import { ServersComponent, AddServerDialogComponent } from './servers/servers.component';
-import { NodeContextMenuComponent } from './shared/node-context-menu/node-context-menu.component';
-import { StartNodeActionComponent } from './shared/node-context-menu/actions/start-node-action/start-node-action.component';
-import { StopNodeActionComponent } from './shared/node-context-menu/actions/stop-node-action/stop-node-action.component';
-import { ApplianceComponent } from './appliance/appliance.component';
-import { ApplianceListDialogComponent } from './appliance/appliance-list-dialog/appliance-list-dialog.component';
-import { NodeSelectInterfaceComponent } from './shared/node-select-interface/node-select-interface.component';
+import { CreateSnapshotDialogComponent, ProjectMapComponent } from './components/project-map/project-map.component';
+import { ServersComponent, AddServerDialogComponent } from './components/servers/servers.component';
+import { NodeContextMenuComponent } from './components/project-map/node-context-menu/node-context-menu.component';
+import { StartNodeActionComponent } from './components/project-map/node-context-menu/actions/start-node-action/start-node-action.component';
+import { StopNodeActionComponent } from './components/project-map/node-context-menu/actions/stop-node-action/stop-node-action.component';
+import { ApplianceComponent } from './components/appliance/appliance.component';
+import { ApplianceListDialogComponent } from './components/appliance/appliance-list-dialog/appliance-list-dialog.component';
+import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { CartographyModule } from './cartography/cartography.module';
-import { ToasterService } from './shared/services/toaster.service';
-import { ProjectWebServiceHandler } from "./shared/handlers/project-web-service-handler";
-import { LinksDataSource } from "./cartography/shared/datasources/links-datasource";
-import { NodesDataSource } from "./cartography/shared/datasources/nodes-datasource";
-import { SymbolsDataSource } from "./cartography/shared/datasources/symbols-datasource";
-import { SelectionManager } from "./cartography/shared/managers/selection-manager";
-import { InRectangleHelper } from "./cartography/map/helpers/in-rectangle-helper";
-import { DrawingsDataSource } from "./cartography/shared/datasources/drawings-datasource";
-import { MoveLayerDownActionComponent } from './shared/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
-import { MoveLayerUpActionComponent } from './shared/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
-import { ProjectMapShortcutsComponent } from './project-map/project-map-shortcuts/project-map-shortcuts.component';
-import { SettingsComponent } from './settings/settings.component';
-import { SettingsService } from "./shared/services/settings.service";
+import { ToasterService } from './services/toaster.service';
+import { ProjectWebServiceHandler } from "./handlers/project-web-service-handler";
+import { LinksDataSource } from "./cartography/datasources/links-datasource";
+import { NodesDataSource } from "./cartography/datasources/nodes-datasource";
+import { SymbolsDataSource } from "./cartography/datasources/symbols-datasource";
+import { SelectionManager } from "./cartography/managers/selection-manager";
+import { InRectangleHelper } from "./cartography/components/map/helpers/in-rectangle-helper";
+import { DrawingsDataSource } from "./cartography/datasources/drawings-datasource";
+import { MoveLayerDownActionComponent } from './components/project-map/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
+import { MoveLayerUpActionComponent } from './components/project-map/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
+import { ProjectMapShortcutsComponent } from './components/project-map/project-map-shortcuts/project-map-shortcuts.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { SettingsService } from "./services/settings.service";
 
 import { RavenErrorHandler } from "./raven-error-handler";
-import { LocalServerComponent } from './local-server/local-server.component';
+import { LocalServerComponent } from './components/local-server/local-server.component';
+import { ProgressComponent } from './common/progress/progress.component';
+import { ProgressService } from "./common/progress/progress.service";
+import { version } from "./version";
+
 
 Raven
-  .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
+  .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
+    release: version
+  })
   .install();
-
 
 
 @NgModule({
@@ -104,6 +110,7 @@ Raven
     ProjectMapShortcutsComponent,
     SettingsComponent,
     LocalServerComponent,
+    ProgressComponent,
   ],
   imports: [
     NgbModule.forRoot(),
@@ -130,6 +137,7 @@ Raven
     MatExpansionModule,
     MatSortModule,
     MatSelectModule,
+    MatTooltipModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
@@ -151,6 +159,7 @@ Raven
     SnapshotService,
     ProgressDialogService,
     ToasterService,
+    ProgressService,
     ProjectWebServiceHandler,
     LinksDataSource,
     NodesDataSource,
