@@ -64,6 +64,8 @@ export class ProjectsComponent implements OnInit {
       .subscribe((projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
       });
+
+
   }
 
   delete(project: Project) {

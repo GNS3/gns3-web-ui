@@ -10,11 +10,13 @@ export class RavenErrorHandler implements ErrorHandler {
   constructor(@Inject(Injector) private injector: Injector) {}
 
   handleError(err: any): void {
-    const settingsService: SettingsService = this.injector.get(SettingsService);
-    console.error(err.originalError || err);
+    Raven.setShouldSendCallback(this.shouldSend);
 
-    if (environment.production && settingsService.get('crash_reports')) {
-      Raven.captureException(err.originalError || err);
-    }
+    console.error(err.originalError || err);
+  }
+
+  shouldSend() {
+    const settingsService: SettingsService = this.injector.get(SettingsService);
+    return environment.production && settingsService.get('crash_reports');
   }
 }

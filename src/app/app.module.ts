@@ -79,11 +79,14 @@ import { RavenErrorHandler } from "./raven-error-handler";
 import { LocalServerComponent } from './components/local-server/local-server.component';
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from "./common/progress/progress.service";
+import { version } from "./version";
+
 
 Raven
-  .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726')
+  .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
+    release: version
+  })
   .install();
-
 
 
 @NgModule({
