@@ -2,7 +2,7 @@ import * as Raven from 'raven-js';
 
 import { ErrorHandler, Inject, Injector } from "@angular/core";
 
-import { SettingsService } from "./shared/services/settings.service";
+import { SettingsService } from "./services/settings.service";
 import { environment } from "../environments/environment";
 
 

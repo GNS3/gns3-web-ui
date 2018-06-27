@@ -6,9 +6,9 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { PersistenceModule } from "angular-persistence";
 
 import { SettingsComponent } from './settings.component';
-import { SettingsService } from "../shared/services/settings.service";
-import { ToasterService } from "../shared/services/toaster.service";
-import { MockedToasterService } from "../shared/services/toaster.service.spec";
+import { SettingsService } from "../services/settings.service";
+import { ToasterService } from "../services/toaster.service";
+import { MockedToasterService } from "../services/toaster.service.spec";
 
 
 describe('SettingsComponent', () => {

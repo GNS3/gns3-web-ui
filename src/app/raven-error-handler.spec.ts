@@ -3,7 +3,7 @@ import { PersistenceService } from "angular-persistence";
 
 import * as Raven from 'raven-js';
 
-import { SettingsService } from "./shared/services/settings.service";
+import { SettingsService } from "./services/settings.service";
 import { RavenErrorHandler } from "./raven-error-handler";
 import { environment } from "../environments/environment";
 

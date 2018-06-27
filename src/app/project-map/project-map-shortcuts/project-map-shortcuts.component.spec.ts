@@ -7,17 +7,17 @@ import { HotkeyModule, HotkeysService, Hotkey } from "angular2-hotkeys";
 import { Observable } from "rxjs";
 
 import { ProjectMapShortcutsComponent } from './project-map-shortcuts.component';
-import { ToasterService, } from "../../shared/services/toaster.service";
-import { NodeService } from "../../shared/services/node.service";
-import { HttpServer } from "../../shared/services/http-server.service";
-import { SelectionManager } from "../../cartography/shared/managers/selection-manager";
-import { Server } from "../../shared/models/server";
-import { Node } from "../../cartography/shared/models/node";
-import { Project } from "../../shared/models/project";
-import { ProjectService } from "../../shared/services/project.service";
-import { MockedProjectService } from "../../shared/services/project.service.spec";
-import { SettingsService } from "../../shared/services/settings.service";
-import { MockedToasterService } from "../../shared/services/toaster.service.spec";
+import { ToasterService, } from "../../services/toaster.service";
+import { NodeService } from "../../services/node.service";
+import { HttpServer } from "../../services/http-server.service";
+import { SelectionManager } from "../../cartography/managers/selection-manager";
+import { Server } from "../../models/server";
+import { Node } from "../../cartography/models/node";
+import { Project } from "../../models/project";
+import { ProjectService } from "../../services/project.service";
+import { MockedProjectService } from "../../services/project.service.spec";
+import { SettingsService } from "../../services/settings.service";
+import { MockedToasterService } from "../../services/toaster.service.spec";
 
 
 describe('ProjectMapShortcutsComponent', () => {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIconRegistry } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
 import { ElectronService } from "ngx-electron";
-import { SettingsService } from "./shared/services/settings.service";
+import { SettingsService } from "./services/settings.service";
 
 
 @Component({

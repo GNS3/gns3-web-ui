@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from "@angular/common";
 import { Router } from "@angular/router";
 
-import { ServerService } from "../shared/services/server.service";
-import { Server } from "../shared/models/server";
+import { ServerService } from "../services/server.service";
+import { Server } from "../models/server";
 
 
 @Component({

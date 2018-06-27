@@ -12,8 +12,8 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 
-import { Server } from "../shared/models/server";
-import { ServerService } from "../shared/services/server.service";
+import { Server } from "../models/server";
+import { ServerService } from "../services/server.service";
 
 
 @Component({

@@ -2,8 +2,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from "@angular/material";
 import {ApplianceListDialogComponent} from "./appliance-list-dialog/appliance-list-dialog.component";
 
-import {Server} from "../shared/models/server";
-import {Appliance} from "../shared/models/appliance";
+import {Server} from "../models/server";
+import {Appliance} from "../models/appliance";
 
 @Component({
   selector: 'app-appliance',

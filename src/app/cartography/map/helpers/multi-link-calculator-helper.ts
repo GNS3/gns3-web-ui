@@ -1,4 +1,4 @@
-import {Link} from "../../shared/models/link";
+import {Link} from "../../models/link";
 
 export class MultiLinkCalculatorHelper {
   LINK_WIDTH = 2;

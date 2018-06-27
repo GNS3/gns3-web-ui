@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { HotkeysService, Hotkey } from 'angular2-hotkeys';
 
-import { SelectionManager } from '../../cartography/shared/managers/selection-manager';
-import { NodeService } from '../../shared/services/node.service';
-import { Server } from '../../shared/models/server';
-import { ToasterService } from '../../shared/services/toaster.service';
-import { Project } from "../../shared/models/project";
-import { ProjectService } from "../../shared/services/project.service";
+import { SelectionManager } from '../../cartography/managers/selection-manager';
+import { NodeService } from '../../services/node.service';
+import { Server } from '../../models/server';
+import { ToasterService } from '../../services/toaster.service';
+import { Project } from "../../models/project";
+import { ProjectService } from "../../services/project.service";
 
 
 @Component({

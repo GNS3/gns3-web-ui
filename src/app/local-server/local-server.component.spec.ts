@@ -4,8 +4,8 @@ import { LocalServerComponent } from './local-server.component';
 import { Location } from "@angular/common";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Router } from "@angular/router";
-import { ServerService } from "../shared/services/server.service";
-import { MockedServerService } from "../shared/services/server.service.spec";
+import { ServerService } from "../services/server.service";
+import { MockedServerService } from "../services/server.service.spec";
 
 
 class MockedLocation {

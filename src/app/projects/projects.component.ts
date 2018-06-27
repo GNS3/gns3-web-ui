@@ -2,15 +2,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MatSort, MatSortable } from "@angular/material";
 
-import { Project } from "../shared/models/project";
-import { ProjectService } from "../shared/services/project.service";
-import { Server } from "../shared/models/server";
-import { ServerService } from "../shared/services/server.service";
+import { Project } from "../models/project";
+import { ProjectService } from "../services/project.service";
+import { Server } from "../models/server";
+import { ServerService } from "../services/server.service";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { DataSource } from "@angular/cdk/collections";
 import { Observable } from "rxjs/Observable";
-import { SettingsService, Settings } from "../shared/services/settings.service";
-import { ProgressService } from "../progress/progress.service";
+import { SettingsService, Settings } from "../services/settings.service";
+import { ProgressService } from "../common/progress/progress.service";
 
 
 @Component({

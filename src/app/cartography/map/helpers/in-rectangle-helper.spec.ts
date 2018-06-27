@@ -1,5 +1,5 @@
 import { InRectangleHelper } from "./in-rectangle-helper";
-import { Rectangle } from "../../shared/models/rectangle";
+import { Rectangle } from "../../models/rectangle";
 
 
 
