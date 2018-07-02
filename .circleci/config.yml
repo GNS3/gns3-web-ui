@@ -44,7 +44,7 @@ jobs:
           command: |
             brew --env
             brew --config
-            python -V
+            python3 -V
             pip3 install -r scripts/requirements.txt
             python3 scripts/build.py download
             python3 scripts/build.py build_exe -b dist/exe.gns3server -s
