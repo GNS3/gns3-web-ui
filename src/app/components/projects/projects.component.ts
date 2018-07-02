@@ -62,6 +62,8 @@ export class ProjectsComponent implements OnInit {
       .list(this.server)
       .subscribe((projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
+      }, null, () => {
+
       });
   }
 

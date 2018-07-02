@@ -75,11 +75,11 @@ import { ProjectMapShortcutsComponent } from './components/project-map/project-m
 import { SettingsComponent } from './components/settings/settings.component';
 import { SettingsService } from "./services/settings.service";
 
-import { RavenErrorHandler } from "./raven-error-handler";
 import { LocalServerComponent } from './components/local-server/local-server.component';
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from "./common/progress/progress.service";
 import { version } from "./version";
+import { HttpErrorHandler } from "./toaster-error-handler";
 
 
 Raven
@@ -145,7 +145,7 @@ Raven
   ],
   providers: [
     SettingsService,
-    { provide: ErrorHandler, useClass: RavenErrorHandler },
+    { provide: ErrorHandler, useClass: HttpErrorHandler },
     D3Service,
     VersionService,
     ProjectService,

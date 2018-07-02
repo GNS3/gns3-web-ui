@@ -31,11 +31,11 @@ describe('RavenErrorHandler', () => {
   it('should handle error', () => {
     settingsService.set('crash_reports', true);
     environment.production = true;
-    expect(handler.shouldSend()).toBeTruthy()
+    expect(handler.shouldSend()()).toBeTruthy();
   });
 
   it('should not handle when crash reports are disabled', () => {
     settingsService.set('crash_reports', false);
-    expect(handler.shouldSend()).toBeFalsy();
+    expect(handler.shouldSend()()).toBeFalsy();
   });
 });

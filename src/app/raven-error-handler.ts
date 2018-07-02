@@ -7,16 +7,18 @@ import { environment } from "../environments/environment";
 
 
 export class RavenErrorHandler implements ErrorHandler {
-  constructor(@Inject(Injector) private injector: Injector) {}
+  constructor(@Inject(Injector) protected injector: Injector) {}
 
   handleError(err: any): void {
-    Raven.setShouldSendCallback(this.shouldSend);
+    Raven.setShouldSendCallback(this.shouldSend());
 
     console.error(err.originalError || err);
   }
 
   shouldSend() {
-    const settingsService: SettingsService = this.injector.get(SettingsService);
-    return environment.production && settingsService.get('crash_reports');
+    return () => {
+      const settingsService: SettingsService = this.injector.get(SettingsService);
+      return environment.production && settingsService.get('crash_reports');
+    };
   }
 }
