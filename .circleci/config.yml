@@ -42,8 +42,6 @@ jobs:
       - run:
           name: Building gns3server
           command: |
-#            brew --env
-#            brew --config
             python3 -V
             pip3 install -r scripts/requirements.txt
             python3 scripts/build.py download
