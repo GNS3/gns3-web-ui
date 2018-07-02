@@ -9,6 +9,7 @@ export class MockedSettingsService {
   isExperimentalEnabled() {
     return true;
   }
+  getAll() {}
 }
 
 
