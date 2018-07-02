@@ -42,11 +42,8 @@ jobs:
       - run:
           name: Building gns3server
           command: |
-            # brew update is required due to bug in CCI: https://discuss.circleci.com/t/homebrew-must-be-run-under-ruby-2-3-runtimeerror/17232/5
-            brew update
             brew --env
             brew --config
-            brew upgrade python
             python -V
             pip3 install -r scripts/requirements.txt
             python3 scripts/build.py download
