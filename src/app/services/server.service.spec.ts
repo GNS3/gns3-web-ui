@@ -3,7 +3,14 @@ import { TestBed, inject } from '@angular/core/testing';
 import { ServerService } from './server.service';
 import { Server } from "../models/server";
 
+
 export class MockedServerService {
+  public get(server_id: number) {
+    const server = new Server();
+    server.id = server_id;
+    return Promise.resolve(server);
+  }
+
   public getLocalServer(hostname: string, port: number) {
     return new Promise((resolve, reject) => {
       const server = new Server();
@@ -12,6 +19,7 @@ export class MockedServerService {
     });
   }
 }
+
 
 describe('ServerService', () => {
   beforeEach(() => {

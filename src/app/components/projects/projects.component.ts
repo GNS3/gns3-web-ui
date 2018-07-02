@@ -42,7 +42,6 @@ export class ProjectsComponent implements OnInit {
         start: 'asc'
       }
     );
-
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
 
     this.route.paramMap
@@ -64,8 +63,6 @@ export class ProjectsComponent implements OnInit {
       .subscribe((projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
       });
-
-
   }
 
   delete(project: Project) {
