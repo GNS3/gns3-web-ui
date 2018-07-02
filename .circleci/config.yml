@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     macos:
-      xcode: "9.1.0"
+      xcode: "9.4.0"
 
     steps:
       - checkout
@@ -42,8 +42,8 @@ jobs:
       - run:
           name: Building gns3server
           command: |
-            brew --env
-            brew --config
+#            brew --env
+#            brew --config
             python3 -V
             pip3 install -r scripts/requirements.txt
             python3 scripts/build.py download
