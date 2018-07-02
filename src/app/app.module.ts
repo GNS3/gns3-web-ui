@@ -79,7 +79,7 @@ import { LocalServerComponent } from './components/local-server/local-server.com
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from "./common/progress/progress.service";
 import { version } from "./version";
-import { HttpErrorHandler } from "./toaster-error-handler";
+import { ToasterErrorHandler } from "./toaster-error-handler";
 
 
 Raven
@@ -145,7 +145,7 @@ Raven
   ],
   providers: [
     SettingsService,
-    { provide: ErrorHandler, useClass: HttpErrorHandler },
+    { provide: ErrorHandler, useClass: ToasterErrorHandler },
     D3Service,
     VersionService,
     ProjectService,
