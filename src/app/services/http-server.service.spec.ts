@@ -5,6 +5,7 @@ import { HttpClient } from "@angular/common/http";
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { getTestServer } from './testing';
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 class MyType {
   id: number;
@@ -20,7 +21,8 @@ describe('HttpServer', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         HttpServer

@@ -5,11 +5,11 @@ import { HttpTestingController, HttpClientTestingModule } from '@angular/common/
 import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { Node } from '../cartography/models/node';
-import { Port } from '../models/port';
 import { getTestServer } from './testing';
 import { NodeService } from './node.service';
 import { Appliance } from '../models/appliance';
 import { Project } from '../models/project';
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 describe('NodeService', () => {
   let httpClient: HttpClient;
@@ -21,7 +21,8 @@ describe('NodeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         HttpServer,

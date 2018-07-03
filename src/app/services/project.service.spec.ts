@@ -10,6 +10,7 @@ import { SettingsService } from "./settings.service";
 import { MockedSettingsService } from "./settings.service.spec";
 import { Observable } from "rxjs/Observable";
 import { Project } from "../models/project";
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 
 /**
@@ -47,7 +48,8 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         HttpServer,

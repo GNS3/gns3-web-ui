@@ -8,6 +8,7 @@ import { Server } from '../models/server';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
 import { getTestServer } from './testing';
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 describe('LinkService', () => {
   let httpClient: HttpClient;
@@ -19,7 +20,8 @@ describe('LinkService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         HttpServer,

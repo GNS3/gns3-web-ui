@@ -1,24 +1,21 @@
-import * as Raven from 'raven-js';
-
 import { ErrorHandler, Inject, Injector } from "@angular/core";
 
 import { SettingsService } from "./services/settings.service";
 import { environment } from "../environments/environment";
+import { RavenState } from "./raven-state-communicator";
 
 
 export class RavenErrorHandler implements ErrorHandler {
   constructor(@Inject(Injector) protected injector: Injector) {}
 
   handleError(err: any): void {
-    Raven.setShouldSendCallback(this.shouldSend());
+    RavenState.shouldSend = this.shouldSend();
 
     console.error(err.originalError || err);
   }
 
   shouldSend() {
-    return () => {
-      const settingsService: SettingsService = this.injector.get(SettingsService);
-      return environment.production && settingsService.get('crash_reports');
-    };
+    const settingsService: SettingsService = this.injector.get(SettingsService);
+    return environment.production && settingsService.get('crash_reports');
   }
 }
