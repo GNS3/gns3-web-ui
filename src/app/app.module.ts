@@ -79,9 +79,9 @@ import { LocalServerComponent } from './components/local-server/local-server.com
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from "./common/progress/progress.service";
 import { version } from "./version";
-import { ToasterErrorHandler } from "./toaster-error-handler";
+import { ToasterErrorHandler } from "./common/error-handlers/toaster-error-handler";
 import { environment } from "../environments/environment";
-import { RavenState } from "./raven-state-communicator";
+import { RavenState } from "./common/error-handlers/raven-state-communicator";
 
 
 if (environment.production) {

@@ -1,7 +1,7 @@
 import { ErrorHandler, Inject, Injector } from "@angular/core";
 
-import { SettingsService } from "./services/settings.service";
-import { environment } from "../environments/environment";
+import { SettingsService } from "../../services/settings.service";
+import { environment } from "../../../environments/environment";
 import { RavenState } from "./raven-state-communicator";
 
 
