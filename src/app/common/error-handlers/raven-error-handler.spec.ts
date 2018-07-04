@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { PersistenceService } from "angular-persistence";
 
-import { SettingsService } from "./services/settings.service";
+import { SettingsService } from "../../services/settings.service";
 import { RavenErrorHandler } from "./raven-error-handler";
-import { environment } from "../environments/environment";
+import { environment } from "../../../environments/environment";
 
 
 describe('RavenErrorHandler', () => {
@@ -31,11 +31,11 @@ describe('RavenErrorHandler', () => {
   it('should handle error', () => {
     settingsService.set('crash_reports', true);
     environment.production = true;
-    expect(handler.shouldSend()()).toBeTruthy();
+    expect(handler.shouldSend()).toBeTruthy();
   });
 
   it('should not handle when crash reports are disabled', () => {
     settingsService.set('crash_reports', false);
-    expect(handler.shouldSend()()).toBeFalsy();
+    expect(handler.shouldSend()).toBeFalsy();
   });
 });

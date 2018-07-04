@@ -10,9 +10,19 @@
     z-index: 1000;
 }
 
-.loading-spinner {
+.loading-spinner, .error-state {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.error-state div {
+  text-align: center;
+}
+
+.error-icon mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
 }

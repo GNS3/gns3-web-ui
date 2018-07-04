@@ -41,6 +41,7 @@ import { InRectangleHelper } from "../../cartography/components/map/helpers/in-r
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { Subscription } from "rxjs/Subscription";
 import { SettingsService } from "../../services/settings.service";
+import { ProgressService } from "../../common/progress/progress.service";
 
 
 @Component({
@@ -65,8 +66,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   protected selectionManager: SelectionManager;
 
-  public isLoading = true;
-
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
@@ -84,6 +83,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               private linkService: LinkService,
               private dialog: MatDialog,
               private progressDialogService: ProgressDialogService,
+              private progressService: ProgressService,
               private toaster: ToasterService,
               private projectWebServiceHandler: ProjectWebServiceHandler,
               private settingsService: SettingsService,
@@ -98,6 +98,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.progressService.activate();
 
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const server_id = parseInt(paramMap.get('server_id'), 10);
@@ -123,6 +124,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         })
         .subscribe((project: Project) => {
           this.onProjectLoad(project);
+        }, (error) => {
+          this.progressService.setError(error);
+        }, () => {
+            this.progressService.deactivate();
         });
     });
 
@@ -183,7 +188,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         this.setUpMapCallbacks(project);
         this.setUpWS(project);
-        this.isLoading = false;
+
+        this.progressService.deactivate();
       });
     this.subscriptions.push(subscription);
   }
@@ -335,7 +341,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
 
-    this.ws.unsubscribe();
+    if (this.ws) {
+      this.ws.unsubscribe();
+    }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 

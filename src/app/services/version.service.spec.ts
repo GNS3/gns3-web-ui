@@ -8,6 +8,7 @@ import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
 import { getTestServer } from './testing';
 import { VersionService } from './version.service';
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 
 describe('VersionService', () => {
@@ -20,7 +21,8 @@ describe('VersionService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         HttpServer,

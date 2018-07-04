@@ -40,7 +40,7 @@ import { ProjectService } from './services/project.service';
 import { SymbolService } from "./services/symbol.service";
 import { ServerService } from "./services/server.service";
 import { IndexedDbService } from "./services/indexed-db.service";
-import { HttpServer } from "./services/http-server.service";
+import { HttpServer, ServerErrorHandler } from "./services/http-server.service";
 import { SnapshotService } from "./services/snapshot.service";
 import { ProgressDialogService } from "./common/progress-dialog/progress-dialog.service";
 import { NodeService } from "./services/node.service";
@@ -79,14 +79,21 @@ import { LocalServerComponent } from './components/local-server/local-server.com
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from "./common/progress/progress.service";
 import { version } from "./version";
-import { ToasterErrorHandler } from "./toaster-error-handler";
+import { ToasterErrorHandler } from "./common/error-handlers/toaster-error-handler";
+import { environment } from "../environments/environment";
+import { RavenState } from "./common/error-handlers/raven-state-communicator";
 
 
-Raven
-  .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
-    release: version
-  })
-  .install();
+if (environment.production) {
+  Raven
+    .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
+      shouldSendCallback: () => {
+        return RavenState.shouldSend;
+      },
+      release: version
+    })
+    .install();
+}
 
 
 @NgModule({
@@ -166,7 +173,8 @@ Raven
     SymbolsDataSource,
     SelectionManager,
     InRectangleHelper,
-    DrawingsDataSource
+    DrawingsDataSource,
+    ServerErrorHandler
   ],
   entryComponents: [
     AddServerDialogComponent,

@@ -1,5 +1,5 @@
 import { RavenErrorHandler } from "./raven-error-handler";
-import { ToasterService } from "./services/toaster.service";
+import { ToasterService } from "../../services/toaster.service";
 
 
 export class ToasterErrorHandler extends RavenErrorHandler {
@@ -8,8 +8,7 @@ export class ToasterErrorHandler extends RavenErrorHandler {
     super.handleError(err);
 
     const toasterService = this.injector.get(ToasterService);
-    const error = err.originalError || err;
-    toasterService.error(error.message);
+    toasterService.error(err.message);
   }
 
 }
