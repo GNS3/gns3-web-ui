@@ -7,6 +7,7 @@ import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { SymbolService } from './symbol.service';
 import { Symbol } from '../cartography/models/symbol';
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 
 describe('SymbolService', () => {
@@ -19,7 +20,8 @@ describe('SymbolService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         HttpServer,

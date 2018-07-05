@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpHeaders, HttpClient, HttpParams} from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
 import {Server} from "../models/server";
+import { catchError } from "rxjs/operators";
+
+import 'rxjs/add/observable/throw'
 
 
 /* tslint:disable:interface-over-type-literal */
@@ -40,57 +43,104 @@ export type HeadersOptions = {
 /* tslint:enable:interface-over-type-literal */
 
 
+export class ServerError extends Error {
+  public originalError: Error;
+
+  constructor(message: string) {
+    super(message);
+  }
+
+  static fromError(message: string, originalError: Error) {
+    const serverError = new ServerError(message);
+    serverError.originalError = originalError;
+    return serverError;
+  }
+}
+
+@Injectable()
+export class ServerErrorHandler {
+  handleError(error: HttpErrorResponse) {
+    let err: Error = error;
+
+    if (error.name === 'HttpErrorResponse' && error.status === 0) {
+      err = ServerError.fromError("Server is unreachable", error);
+    }
+
+    return Observable.throw(err);
+  }
+}
+
+
 @Injectable()
 export class HttpServer {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private errorHandler: ServerErrorHandler
+  ) { }
 
   get<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer<JsonOptions>(server, url, options);
-    return this.http.get<T>(intercepted.url, intercepted.options as JsonOptions);
+    return this.http
+      .get<T>(intercepted.url, intercepted.options as JsonOptions)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   getText(server: Server, url: string, options?: TextOptions): Observable<string> {
     options = this.getTextOptions(options);
     const intercepted = this.getOptionsForServer<TextOptions>(server, url, options);
-    return this.http.get(intercepted.url, intercepted.options as TextOptions);
+    return this.http
+      .get(intercepted.url, intercepted.options as TextOptions)
+      .pipe(catchError(this.errorHandler.handleError));
   }
 
   post<T>(server: Server, url: string, body: any | null, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
-    return this.http.post<T>(intercepted.url, body, intercepted.options);
+    return this.http
+      .post<T>(intercepted.url, body, intercepted.options)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   put<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
-    return this.http.put<T>(intercepted.url, body, intercepted.options);
+    return this.http
+      .put<T>(intercepted.url, body, intercepted.options)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   delete<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
-    return this.http.delete<T>(intercepted.url, intercepted.options);
+    return this.http
+      .delete<T>(intercepted.url, intercepted.options)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   patch<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
-    return this.http.patch<T>(intercepted.url, body, intercepted.options);
+    return this.http
+      .patch<T>(intercepted.url, body, intercepted.options)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   head<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
-    return this.http.head<T>(intercepted.url, intercepted.options);
+    return this.http
+      .head<T>(intercepted.url, intercepted.options)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   options<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
-    return this.http.options<T>(intercepted.url, intercepted.options);
+    return this.http
+      .options<T>(intercepted.url, intercepted.options)
+      .pipe(catchError<T, any>(this.errorHandler.handleError));
   }
 
   private getJsonOptions(options: JsonOptions): JsonOptions {

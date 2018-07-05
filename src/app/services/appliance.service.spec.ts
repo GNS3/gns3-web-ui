@@ -5,6 +5,7 @@ import { HttpClient } from "@angular/common/http";
 import { ApplianceService } from './appliance.service';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
+import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 
 
@@ -16,7 +17,8 @@ describe('ApplianceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        AppTestingModule
       ],
       providers: [
         ApplianceService,
