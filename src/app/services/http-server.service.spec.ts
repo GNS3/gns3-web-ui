@@ -1,15 +1,36 @@
 import { TestBed,  } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpClient } from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 
 import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import {HttpServer, ServerError, ServerErrorHandler} from './http-server.service';
 import { getTestServer } from './testing';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 class MyType {
   id: number;
 }
+
+describe('ServerError', () => {
+  it('should construct ServerError from error', () => {
+    const error = new Error("test");
+    const serverError = ServerError.fromError("new message", error);
+    expect(serverError.originalError).toEqual(error);
+    expect(serverError.message).toEqual("new message");
+  });
+});
+
+
+describe('ServerErrorHandler', () => {
+  it('should handle HttpErrorResponse', () => {
+    const error = new HttpErrorResponse({ status: 0 });
+
+    const handler = new ServerErrorHandler();
+    const result = handler.handleError(error);
+
+    expect(result.error.toString()).toEqual('Error: Server is unreachable');
+  });
+});
 
 
 describe('HttpServer', () => {
