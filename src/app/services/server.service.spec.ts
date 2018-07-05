@@ -130,4 +130,39 @@ describe('ServerService', () => {
     });
   });
 
+  it('should create local server when missing', (done) => {
+    spyOn(db, 'getAll').and.returnValue(Promise.resolve([]));
+    spyOn(service, 'create').and.returnValue(Promise.resolve(new Server()));
+
+    const expectedServer = new Server();
+    expectedServer.name = 'local';
+    expectedServer.ip = 'hostname';
+    expectedServer.port = 9999;
+    expectedServer.is_local = true;
+
+    service.getLocalServer('hostname', 9999).then(() => {
+      expect(service.create).toHaveBeenCalledWith(expectedServer)
+      done();
+    });
+  });
+
+  it('should update local server when found', (done) => {
+    const server = new Server();
+    server.name = 'local';
+    server.ip = 'hostname';
+    server.port = 9999;
+    server.is_local = true;
+
+    spyOn(db, 'getAll').and.returnValue(Promise.resolve([server]));
+    spyOn(service, 'update').and.returnValue(Promise.resolve(new Server()));
+
+    service.getLocalServer('hostname-2', 11111).then(() => {
+      server.ip = 'hostname-2';
+      server.port = 11111;
+
+      expect(service.update).toHaveBeenCalledWith(server);
+      done();
+    });
+  });
+
 });
