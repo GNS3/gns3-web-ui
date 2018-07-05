@@ -12,6 +12,11 @@ class MyType {
 }
 
 describe('ServerError', () => {
+  it('should construct with message', () => {
+    const error = new Error("test");
+    expect(error.message).toEqual("test");
+  });
+
   it('should construct ServerError from error', () => {
     const error = new Error("test");
     const serverError = ServerError.fromError("new message", error);
@@ -22,13 +27,22 @@ describe('ServerError', () => {
 
 
 describe('ServerErrorHandler', () => {
-  it('should handle HttpErrorResponse', () => {
+  it('should handle HttpErrorResponse with status 0', () => {
     const error = new HttpErrorResponse({ status: 0 });
 
     const handler = new ServerErrorHandler();
     const result = handler.handleError(error);
 
-    expect(result.error.toString()).toEqual('Error: Server is unreachable');
+    expect(result.error.message).toEqual('Server is unreachable');
+  });
+
+  it('should not handle HttpErrorResponse with status!=0', () => {
+    const error = new HttpErrorResponse({ status: 499 });
+
+    const handler = new ServerErrorHandler();
+    const result = handler.handleError(error);
+
+    expect(result.error.message).toEqual('Http failure response for (unknown url): 499 undefined');
   });
 });
 
