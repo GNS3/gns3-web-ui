@@ -12,7 +12,7 @@ export class ServerService {
 
   constructor(private indexedDbService: IndexedDbService) {
     this.ready = indexedDbService.get().openDatabase(1, (evt) => {
-      const store = evt.currentTarget.result.createObjectStore(
+      evt.currentTarget.result.createObjectStore(
         this.tablename, { keyPath: "id", autoIncrement: true });
     });
   }
@@ -81,7 +81,7 @@ export class ServerService {
     return promise;
   }
 
-  private onReady(query) {
+  protected onReady(query) {
     const promise = new Promise((resolve, reject) => {
       this.ready.then(() => {
         query()
