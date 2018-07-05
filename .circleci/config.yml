@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     macos:
-      xcode: "9.3.0"
+      xcode: "9.4.0"
 
     steps:
       - checkout
@@ -42,11 +42,11 @@ jobs:
       - run:
           name: Building gns3server
           command: |
-            python3 -V
-            pip3 install -r scripts/requirements.txt
-            python3 scripts/build.py download
-            python3 scripts/build.py build_exe -b dist/exe.gns3server -s
-            python3 scripts/build.py validate -b dist
+            python -V
+            pip install -r scripts/requirements.txt
+            python scripts/build.py download
+            python scripts/build.py build_exe -b dist/exe.gns3server -s
+            python scripts/build.py validate -b dist
 
       - run:
           name: Dist project
