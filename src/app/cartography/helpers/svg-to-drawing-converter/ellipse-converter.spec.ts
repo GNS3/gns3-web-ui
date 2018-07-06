@@ -9,18 +9,18 @@ describe('EllipseConverter', () => {
   });
 
   it('should parse attributes', () => {
-    const node = document.createElement("ellipse");
-    node.setAttribute("fill", "#ffffff");
-    node.setAttribute("fill-opacity", "1.0");
-    node.setAttribute("stroke", "#000000");
-    node.setAttribute("stroke-width", "2");
-    node.setAttribute("stroke-dasharray", "5,25,25");
-    node.setAttribute("cx", "63");
-    node.setAttribute("cy", "59");
-    node.setAttribute("rx", "63");
-    node.setAttribute("ry", "59");
+    const element = document.createElement("ellipse");
+    element.setAttribute("fill", "#ffffff");
+    element.setAttribute("fill-opacity", "1.0");
+    element.setAttribute("stroke", "#000000");
+    element.setAttribute("stroke-width", "2");
+    element.setAttribute("stroke-dasharray", "5,25,25");
+    element.setAttribute("cx", "63");
+    element.setAttribute("cy", "59");
+    element.setAttribute("rx", "63");
+    element.setAttribute("ry", "59");
 
-    const drawing = ellipseConverter.convert(node);
+    const drawing = ellipseConverter.convert(element);
     expect(drawing.fill).toEqual("#ffffff");
     expect(drawing.fill_opacity).toEqual(1.0);
     expect(drawing.stroke).toEqual("#000000");
@@ -33,9 +33,9 @@ describe('EllipseConverter', () => {
   });
 
   it('should parse with no attributes', () => {
-    const node = document.createElement("ellipse");
+    const element = document.createElement("ellipse");
 
-    const drawing = ellipseConverter.convert(node);
+    const drawing = ellipseConverter.convert(element);
     expect(drawing.fill).toBeUndefined();
     expect(drawing.fill_opacity).toBeUndefined();
     expect(drawing.stroke).toBeUndefined();

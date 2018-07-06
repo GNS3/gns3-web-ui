@@ -9,21 +9,21 @@ describe('ImageConverter', () => {
   });
 
   it('should parse attributes', () => {
-    const node = document.createElement("image");
-    node.setAttribute("xlink:href", "data:image/png");
-    node.setAttribute("width", "100px");
-    node.setAttribute("height", "200px");
+    const element = document.createElement("image");
+    element.setAttribute("xlink:href", "data:image/png");
+    element.setAttribute("width", "100px");
+    element.setAttribute("height", "200px");
 
-    const drawing = imageConverter.convert(node);
+    const drawing = imageConverter.convert(element);
     expect(drawing.data).toEqual("data:image/png");
     expect(drawing.width).toEqual(100);
     expect(drawing.height).toEqual(200);
   });
 
   it('should parse with no attributes', () => {
-    const node = document.createElement("image");
+    const element = document.createElement("image");
 
-    const drawing = imageConverter.convert(node);
+    const drawing = imageConverter.convert(element);
     expect(drawing.data).toBeUndefined();
     expect(drawing.width).toBeUndefined();
     expect(drawing.height).toBeUndefined();

@@ -9,16 +9,16 @@ describe('TextConverter', () => {
   });
 
   it('should parse attributes', () => {
-    const node = document.createElement("text");
-    node.innerText = "Text";
-    node.setAttribute("fill", "#00000");
-    node.setAttribute("fill-opacity", "1.0");
-    node.setAttribute("font-family", "TypeWriter");
-    node.setAttribute("font-size", "10.0");
-    node.setAttribute("font-weight", "bold");
-    node.setAttribute("text-decoration", "line-through");
+    const element = document.createElement("text");
+    element.innerText = "Text";
+    element.setAttribute("fill", "#00000");
+    element.setAttribute("fill-opacity", "1.0");
+    element.setAttribute("font-family", "TypeWriter");
+    element.setAttribute("font-size", "10.0");
+    element.setAttribute("font-weight", "bold");
+    element.setAttribute("text-decoration", "line-through");
 
-    const drawing = textConverter.convert(node);
+    const drawing = textConverter.convert(element);
     expect(drawing.text).toEqual("Text");
     expect(drawing.fill).toEqual("#00000");
     expect(drawing.fill_opacity).toEqual(1.0);
@@ -29,9 +29,9 @@ describe('TextConverter', () => {
   });
 
   it('should parse with no attributes', () => {
-    const node = document.createElement("text");
+    const element = document.createElement("text");
 
-    const drawing = textConverter.convert(node);
+    const drawing = textConverter.convert(element);
     expect(drawing.text).toEqual("");
     expect(drawing.fill).toBeUndefined();
     expect(drawing.fill_opacity).toBeUndefined();

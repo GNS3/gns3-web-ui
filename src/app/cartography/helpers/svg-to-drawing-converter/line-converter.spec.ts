@@ -9,16 +9,16 @@ describe('LineConverter', () => {
   });
 
   it('should parse attributes', () => {
-    const node = document.createElement("line");
-    node.setAttribute("stroke", "#000000");
-    node.setAttribute("stroke-width", "2");
-    node.setAttribute("stroke-dasharray", "5,25,25");
-    node.setAttribute("x1", "10.10");
-    node.setAttribute("x2", "20");
-    node.setAttribute("y1", "30");
-    node.setAttribute("y2", "40");
+    const element = document.createElement("line");
+    element.setAttribute("stroke", "#000000");
+    element.setAttribute("stroke-width", "2");
+    element.setAttribute("stroke-dasharray", "5,25,25");
+    element.setAttribute("x1", "10.10");
+    element.setAttribute("x2", "20");
+    element.setAttribute("y1", "30");
+    element.setAttribute("y2", "40");
 
-    const drawing = lineConverter.convert(node);
+    const drawing = lineConverter.convert(element);
     expect(drawing.stroke).toEqual("#000000");
     expect(drawing.stroke_width).toEqual(2.0);
     expect(drawing.stroke_dasharray).toEqual("5,25,25");
@@ -29,9 +29,9 @@ describe('LineConverter', () => {
   });
 
   it('should parse with no attributes', () => {
-    const node = document.createElement("line");
+    const element = document.createElement("line");
 
-    const drawing = lineConverter.convert(node);
+    const drawing = lineConverter.convert(element);
     expect(drawing.stroke).toBeUndefined();
     expect(drawing.stroke_width).toBeUndefined();
     expect(drawing.stroke_dasharray).toBeUndefined();

@@ -9,17 +9,17 @@ describe('RectConverter', () => {
   });
 
   it('should parse attributes', () => {
-    const node = document.createElement("rect");
-    node.setAttribute("fill", "#ffffff");
-    node.setAttribute("fill-opacity", "0.7");
-    node.setAttribute("stroke", "#000000");
-    node.setAttribute("stroke-width", "2");
-    node.setAttribute("stroke-dasharray", "5,25,25");
+    const element = document.createElement("rect");
+    element.setAttribute("fill", "#ffffff");
+    element.setAttribute("fill-opacity", "0.7");
+    element.setAttribute("stroke", "#000000");
+    element.setAttribute("stroke-width", "2");
+    element.setAttribute("stroke-dasharray", "5,25,25");
 
-    node.setAttribute("width", "100px");
-    node.setAttribute("height", "200px");
+    element.setAttribute("width", "100px");
+    element.setAttribute("height", "200px");
 
-    const drawing = rectConverter.convert(node);
+    const drawing = rectConverter.convert(element);
     expect(drawing.fill).toEqual("#ffffff");
     expect(drawing.fill_opacity).toEqual(0.7);
     expect(drawing.stroke).toEqual("#000000");
@@ -29,9 +29,9 @@ describe('RectConverter', () => {
   });
 
   it('should parse with no attributes', () => {
-    const node = document.createElement("rect");
+    const element = document.createElement("rect");
 
-    const drawing = rectConverter.convert(node);
+    const drawing = rectConverter.convert(element);
     expect(drawing.fill).toBeUndefined();
     expect(drawing.fill_opacity).toBeUndefined();
     expect(drawing.stroke).toBeUndefined();
