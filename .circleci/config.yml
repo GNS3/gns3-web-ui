@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Installed python version
           command: |
-            python -V
+            python3 -V
 
 #      - restore_cache:
 #          name: Restore Yarn Package Cache
