@@ -10,10 +10,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "startforelectron": "ng serve -e electronDev",
+    "startforelectron": "ng serve --configuration=electronDev",
     "build": "ng build",
-    "buildforelectron": "ng build -e electronProd",
-    "buildforgithub": "ng build -e githubProd",
+    "buildforelectron": "ng build --configuration=electronProd",
+    "buildforgithub": "ng build --configuration=githubProd",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
