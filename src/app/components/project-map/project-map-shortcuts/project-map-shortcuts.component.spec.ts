@@ -4,7 +4,7 @@ import { inject } from "@angular/core/testing";
 
 import { mock, instance, capture, when } from "ts-mockito";
 import { HotkeyModule, HotkeysService, Hotkey } from "angular2-hotkeys";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 
 import { ProjectMapShortcutsComponent } from './project-map-shortcuts.component';
 import { ToasterService, } from "../../../services/toaster.service";
@@ -18,6 +18,7 @@ import { ProjectService } from "../../../services/project.service";
 import { MockedProjectService } from "../../../services/project.service.spec";
 import { SettingsService } from "../../../services/settings.service";
 import { MockedToasterService } from "../../../services/toaster.service.spec";
+import { mapTo } from "rxjs/internal/operators";
 
 
 describe('ProjectMapShortcutsComponent', () => {
@@ -82,7 +83,7 @@ describe('ProjectMapShortcutsComponent', () => {
 
       when(selectionManagerMock.getSelectedNodes()).thenReturn([node]);
       when(nodeServiceMock.delete(server, node))
-        .thenReturn(Observable.of(node).mapTo(null));
+        .thenReturn(of(node).pipe(mapTo(null)));
 
       component.project = project;
       component.server = server;

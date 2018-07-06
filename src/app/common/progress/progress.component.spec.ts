@@ -5,7 +5,7 @@ import { MatIconModule, MatProgressSpinnerModule } from "@angular/material";
 import { ProgressService } from "./progress.service";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { BehaviorSubject } from "rxjs";
 
 
 class MockedRouter {

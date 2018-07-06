@@ -1,20 +1,13 @@
-import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {DataSource} from "@angular/cdk/collections";
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
+import { DataSource } from "@angular/cdk/collections";
 
-import {Observable} from "rxjs/Observable";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import { Observable, BehaviorSubject, fromEvent, merge } from "rxjs";
+import { debounceTime, distinctUntilChanged, map } from "rxjs/operators";
 
 import { Server } from "../../../models/server";
 import { ApplianceService } from "../../../services/appliance.service";
 import { Appliance } from "../../../models/appliance";
-
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/fromEvent';
 
 
 @Component({
@@ -41,13 +34,14 @@ export class ApplianceListDialogComponent implements OnInit {
     this.applianceDatabase = new ApplianceDatabase(this.server, this.applianceService);
     this.dataSource = new ApplianceDataSource(this.applianceDatabase);
 
-    Observable.fromEvent(this.filter.nativeElement, 'keyup')
-      .debounceTime(150)
-      .distinctUntilChanged()
-      .subscribe(() => {
-        if (!this.dataSource) { return; }
-        this.dataSource.filter = this.filter.nativeElement.value;
-      });
+    fromEvent(this.filter.nativeElement, 'keyup').pipe(
+      debounceTime(150),
+      distinctUntilChanged()
+    )
+    .subscribe(() => {
+      if (!this.dataSource) { return; }
+      this.dataSource.filter = this.filter.nativeElement.value;
+    });
 
   }
 
@@ -95,12 +89,12 @@ export class ApplianceDataSource extends DataSource<Appliance> {
       this.filterChange,
     ];
 
-    return Observable.merge(...displayDataChanges).map(() => {
+    return merge(...displayDataChanges).pipe(map(() => {
       return this.applianceDatabase.data.slice().filter((item: Appliance) => {
         const searchStr = (item.name).toLowerCase();
         return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
       });
-    });
+    }));
   }
 
   disconnect() {}

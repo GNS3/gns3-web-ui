@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import {IndexedDbService} from "./indexed-db.service";
 import {Server} from "../models/server";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 
 
 @Injectable()

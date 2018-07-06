@@ -1,15 +1,9 @@
 import { Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
-import { Subject } from "rxjs/Subject";
-
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/observable/forkJoin';
-import 'rxjs/add/observable/fromPromise';
-import 'rxjs/add/observable/dom/webSocket';
-
+import { Observable, Subject, Subscription, from } from 'rxjs';
+import { webSocket } from "rxjs/webSocket";
+import { map, mergeMap } from "rxjs/operators";
 
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
@@ -39,7 +33,6 @@ import { ProjectWebServiceHandler } from "../../handlers/project-web-service-han
 import { SelectionManager } from "../../cartography/managers/selection-manager";
 import { InRectangleHelper } from "../../cartography/components/map/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
-import { Subscription } from "rxjs/Subscription";
 import { SettingsService } from "../../services/settings.service";
 import { ProgressService } from "../../common/progress/progress.service";
 
@@ -102,19 +95,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const server_id = parseInt(paramMap.get('server_id'), 10);
-      Observable
-        .fromPromise(this.serverService.get(server_id))
-        .flatMap((server: Server) => {
+
+      from(this.serverService.get(server_id)).pipe(
+        mergeMap((server: Server) => {
           this.server = server;
-          return this.projectService.get(server, paramMap.get('project_id')).map((project) => {
+          return this.projectService.get(server, paramMap.get('project_id')).pipe(map((project) => {
             return project;
-          });
-        })
-        .flatMap((project: Project) => {
+          }));
+        }),
+        mergeMap((project: Project) => {
           this.project = project;
 
           if (this.project.status === 'opened') {
-            return new Observable((observer) => {
+            return new Observable<Project>((observer) => {
               observer.next(this.project);
             });
           } else {
@@ -122,13 +115,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               this.server, this.project.project_id);
           }
         })
-        .subscribe((project: Project) => {
-          this.onProjectLoad(project);
-        }, (error) => {
-          this.progressService.setError(error);
-        }, () => {
-            this.progressService.deactivate();
-        });
+      )
+      .subscribe((project: Project) => {
+        this.onProjectLoad(project);
+      }, (error) => {
+        this.progressService.setError(error);
+      }, () => {
+          this.progressService.deactivate();
+      });
     });
 
     this.subscriptions.push(routeSub);
@@ -172,17 +166,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const subscription = this.symbolService
       .load(this.server)
-      .flatMap(() => {
-        return this.projectService.nodes(this.server, project.project_id);
-      })
-      .flatMap((nodes: Node[]) => {
-        this.nodesDataSource.set(nodes);
-        return this.projectService.links(this.server, project.project_id);
-      })
-      .flatMap((links: Link[]) => {
-        this.linksDataSource.set(links);
-        return this.projectService.drawings(this.server, project.project_id);
-      })
+      .pipe(
+        mergeMap(() => {
+          return this.projectService.nodes(this.server, project.project_id);
+        }),
+        mergeMap((nodes: Node[]) => {
+          this.nodesDataSource.set(nodes);
+          return this.projectService.links(this.server, project.project_id);
+        }),
+        mergeMap((links: Link[]) => {
+          this.linksDataSource.set(links);
+          return this.projectService.drawings(this.server, project.project_id);
+        })
+      )
       .subscribe((drawings: Drawing[]) => {
         this.drawingsDataSource.set(drawings);
 
@@ -195,7 +191,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpWS(project: Project) {
-    this.ws = Observable.webSocket(
+    this.ws = webSocket(
       this.projectService.notificationsPath(this.server, project.project_id));
 
     this.subscriptions.push(

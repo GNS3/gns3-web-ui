@@ -1,4 +1,4 @@
-import { Subject} from "rxjs/Subject";
+import { Subject} from "rxjs";
 
 import { Node } from "../models/node";
 import { Link } from "../models/link";

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Project } from '../models/project';
 import { Node } from '../cartography/models/node';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import 'rxjs/add/operator/map';
 import { Server } from "../models/server";

@@ -1,6 +1,6 @@
 import { inject, TestBed } from "@angular/core/testing";
 
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 
 import { ProjectWebServiceHandler, WebServiceMessage } from "./project-web-service-handler";
 import { NodesDataSource } from "../cartography/datasources/nodes-datasource";

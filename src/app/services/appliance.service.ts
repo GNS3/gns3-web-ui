@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import {Appliance} from "../models/appliance";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class ApplianceService {

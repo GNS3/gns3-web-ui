@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-
-import 'rxjs/add/operator/map';
-import 'rxjs/add/observable/forkJoin';
-import 'rxjs/add/observable/of';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
 import { Symbol } from '../cartography/models/symbol';
 import { Server } from "../models/server";
@@ -26,7 +21,7 @@ export class SymbolService {
   load(server: Server): Observable<Symbol[]> {
     const subscription = this.list(server).subscribe((symbols: Symbol[]) => {
       const streams = symbols.map(symbol => this.raw(server, symbol.symbol_id));
-      Observable.forkJoin(streams).subscribe((results) => {
+      forkJoin(streams).subscribe((results) => {
         symbols.forEach((symbol: Symbol, i: number) => {
           symbol.raw = results[i];
         });

@@ -2,13 +2,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { MatSort, MatSortable } from "@angular/material";
 
+import { DataSource } from "@angular/cdk/collections";
+
+import { map, switchMap } from "rxjs//operators";
+import { BehaviorSubject, Observable, merge } from "rxjs";
+
 import { Project } from "../../models/project";
 import { ProjectService } from "../../services/project.service";
 import { Server } from "../../models/server";
 import { ServerService } from "../../services/server.service";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { DataSource } from "@angular/cdk/collections";
-import { Observable } from "rxjs/Observable";
 import { SettingsService, Settings } from "../../services/settings.service";
 import { ProgressService } from "../../common/progress/progress.service";
 
@@ -45,10 +47,12 @@ export class ProjectsComponent implements OnInit {
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
 
     this.route.paramMap
-      .switchMap((params: ParamMap) => {
-        const server_id = params.get('server_id');
-        return this.serverService.get(parseInt(server_id, 10));
-      })
+      .pipe(
+        switchMap((params: ParamMap) => {
+          const server_id = params.get('server_id');
+          return this.serverService.get(parseInt(server_id, 10));
+        })
+      )
       .subscribe((server: Server) => {
         this.server = server;
         this.refresh();
@@ -127,7 +131,7 @@ export class ProjectDataSource extends DataSource<any> {
       this.sort.sortChange,
     ];
 
-    return Observable.merge(...displayDataChanges).map(() => {
+    return merge(...displayDataChanges).pipe(map(() => {
       if (!this.sort.active || this.sort.direction === '') {
         return this.projectDatabase.data;
       }
@@ -141,7 +145,7 @@ export class ProjectDataSource extends DataSource<any> {
 
         return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
       });
-    });
+    }));
   }
 
   disconnect() {}

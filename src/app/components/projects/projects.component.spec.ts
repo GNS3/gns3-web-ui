@@ -1,8 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule } from "@angular/material";
+import { RouterTestingModule } from "@angular/router/testing";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+
+import { Observable, of } from "rxjs";
 
 import { ProjectsComponent } from './projects.component';
-import { RouterTestingModule } from "@angular/router/testing";
 import { ServerService } from "../../services/server.service";
 import { MockedServerService } from "../../services/server.service.spec";
 import { ProjectService } from "../../services/project.service";
@@ -10,9 +13,7 @@ import { MockedProjectService } from "../../services/project.service.spec";
 import { SettingsService } from "../../services/settings.service";
 import { MockedSettingsService } from "../../services/settings.service.spec";
 import { ProgressService } from "../../common/progress/progress.service";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { Server } from "../../models/server";
-import { Observable } from "rxjs/Observable";
 import { Settings } from "../../services/settings.service";
 import { Project } from "../../models/project";
 
@@ -58,7 +59,7 @@ describe('ProjectsComponent', () => {
 
     spyOn(serverService, 'get').and.returnValue(Promise.resolve(server));
     spyOn(settingsService, 'getAll').and.returnValue(settings);
-    spyOn(projectService, 'list').and.returnValue(Observable.of([]));
+    spyOn(projectService, 'list').and.returnValue(of([]));
 
     spyOn(progressService, 'activate');
     spyOn(progressService, 'deactivate');
@@ -82,7 +83,7 @@ describe('ProjectsComponent', () => {
       project = new Project();
       project.project_id = "1";
 
-      spyOn(projectService, 'open').and.returnValue(Observable.of(project));
+      spyOn(projectService, 'open').and.returnValue(of(project));
 
       component.server = server;
     });
@@ -104,7 +105,7 @@ describe('ProjectsComponent', () => {
       project = new Project();
       project.project_id = "1";
 
-      spyOn(projectService, 'close').and.returnValue(Observable.of(project));
+      spyOn(projectService, 'close').and.returnValue(of(project));
 
       component.server = server;
     });

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 
 import { NodesDataSource } from "../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../cartography/datasources/links-datasource";

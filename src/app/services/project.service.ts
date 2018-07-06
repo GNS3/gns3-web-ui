@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Project } from '../models/project';
 import { Node } from '../cartography/models/node';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
-import 'rxjs/add/operator/map';
 import { Link } from "../cartography/models/link";
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
-import {Drawing} from "../cartography/models/drawing";
+import { Drawing } from "../cartography/models/drawing";
 import { SettingsService } from "./settings.service";
 
 @Injectable()

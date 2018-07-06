@@ -2,15 +2,15 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { DataSource } from "@angular/cdk/collections";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { Observable } from "rxjs/Observable";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { Observable, BehaviorSubject, merge } from "rxjs";
+import { map } from "rxjs/operators";
 
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/fromEvent';
+// import 'rxjs/add/operator/startWith';
+// import 'rxjs/add/observable/merge';
+// import 'rxjs/add/operator/map';
+// import 'rxjs/add/operator/debounceTime';
+// import 'rxjs/add/operator/distinctUntilChanged';
+// import 'rxjs/add/observable/fromEvent';
 
 import { Server } from "../../models/server";
 import { ServerService } from "../../services/server.service";
@@ -121,9 +121,10 @@ export class ServerDataSource extends DataSource<Server> {
   }
 
   connect(): Observable<Server[]> {
-    return Observable.merge(this.serverDatabase.dataChange).map(() => {
+    return merge(this.serverDatabase.dataChange).pipe(
+      map(() => {
       return this.serverDatabase.data;
-    });
+    }));
   }
 
   disconnect() {}

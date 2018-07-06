@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { HttpClient } from '@angular/common/http';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
@@ -8,7 +8,7 @@ import { getTestServer } from './testing';
 import { ProjectService } from './project.service';
 import { SettingsService } from "./settings.service";
 import { MockedSettingsService } from "./settings.service.spec";
-import { Observable } from "rxjs/Observable";
+import { Observable, of } from "rxjs";
 import { Project } from "../models/project";
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
@@ -21,15 +21,15 @@ export class MockedProjectService {
   public projects: Project[] = [];
 
   list(server: Server) {
-    return Observable.of(this.projects);
+    return of(this.projects);
   }
 
   open(server: Server, project: Project) {
-    return Observable.of(project);
+    return of(project);
   }
 
   close(server: Server, project: Project) {
-    return Observable.of(project);
+    return of(project);
   }
 
   isReadOnly(project) {

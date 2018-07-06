@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { mouse, select } from "d3-selection";
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 
 import { SVGSelection } from "../models/types";
 import { Context } from "../models/context";
