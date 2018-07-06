@@ -20,26 +20,22 @@ jobs:
             python3 -V
             pip3 -V
 
-#      - restore_cache:
-#          name: Restore Yarn Package Cache
-#          keys:
-#            - dependency-cache-{{ checksum "yarn.lock" }}
-#            - dependency-cache-
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
 
       - run:
           name: Install project
-          # there is an issue with yarn and cache during executed on CI; for now we just run it twice, second should
-          # be successful. Check it later if updates fixed the issue
-
           # increased timeout is for material-design-icons
           command: |
             yarn install --network-timeout 1000000
 
-#      - save_cache:
-#          name: Save Yarn Package Cache
-#          key: dependency-cache-{{ checksum "yarn.lock" }}
-#          paths:
-#            - ./node_modules
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
 
       - run:
           name: Building WebUI for distribution
