@@ -24,9 +24,10 @@ jobs:
           name: Install project
           # there is an issue with yarn and cache during executed on CI; for now we just run it twice, second should
           # be successful. Check it later if updates fixed the issue
+          
+          # increased timeout is for material-design-icons
           command: |
-            yarn || true
-            yarn || true
+            yarn install --network-timeout 1000000
 
 #      - save_cache:
 #          name: Save Yarn Package Cache
