@@ -15,9 +15,10 @@ jobs:
             echo "Today is $(date +"%Y-%m-%d %T")"
 
       - run:
-          name: Installed python version
+          name: Installed python and pip version
           command: |
             python3 -V
+            pip3 -V
 
 #      - restore_cache:
 #          name: Restore Yarn Package Cache
@@ -48,11 +49,11 @@ jobs:
       - run:
           name: Building gns3server
           command: |
-            python -V
-            pip install -r scripts/requirements.txt
-            python scripts/build.py download
-            python scripts/build.py build_exe -b dist/exe.gns3server -s
-            python scripts/build.py validate -b dist
+            python3 -V
+            pip3 install -r scripts/requirements.txt
+            python3 scripts/build.py download
+            python3 scripts/build.py build_exe -b dist/exe.gns3server -s
+            python3 scripts/build.py validate -b dist
 
       - run:
           name: Dist project
