@@ -4,6 +4,7 @@ import { ServerService } from './server.service';
 import { Server } from "../models/server";
 import { IndexedDbService } from "./indexed-db.service";
 import { AngularIndexedDB } from "angular2-indexeddb";
+import Spy = jasmine.Spy;
 
 
 export class MockedServerService {
@@ -27,13 +28,14 @@ describe('ServerService', () => {
   let indexedDbService: IndexedDbService;
   let db: AngularIndexedDB;
   let service: ServerService;
+  let openDatabaseSpy: Spy;
 
   beforeEach(() => {
     indexedDbService = new IndexedDbService();
 
     db = indexedDbService.get();
 
-    spyOn(db, 'openDatabase').and.returnValue(Promise.resolve(true));
+    openDatabaseSpy = spyOn(db, 'openDatabase').and.returnValue(Promise.resolve(true));
 
     TestBed.configureTestingModule({
       providers: [
@@ -48,7 +50,7 @@ describe('ServerService', () => {
   it('should be created and create database', () => {
     expect(service).toBeTruthy();
     expect(db.openDatabase).toHaveBeenCalled();
-    expect(db.openDatabase.calls.first().args[0]).toEqual(1);
+    expect(openDatabaseSpy.calls.first().args[0]).toEqual(1);
 
     const evnt = {
       currentTarget: {
@@ -60,7 +62,7 @@ describe('ServerService', () => {
 
     spyOn(evnt.currentTarget.result, 'createObjectStore');
 
-    const upgradeCallback = db.openDatabase.calls.first().args[1];
+    const upgradeCallback = openDatabaseSpy.calls.first().args[1];
     upgradeCallback(evnt);
 
     expect(evnt.currentTarget.result.createObjectStore).toHaveBeenCalledWith( 'servers', { keyPath: 'id', autoIncrement: true });
@@ -85,15 +87,13 @@ describe('ServerService', () => {
     });
 
     it('should create an object', (done) => {
-      const created = {
-        'key': 99
-      };
+      const created = new Server();
+      created.id = 22;
 
       spyOn(db, 'add').and.returnValue(Promise.resolve(created));
 
       service.create(record).then((result) => {
         expect(db.add).toHaveBeenCalledWith('servers', record);
-        expect(result.id).toEqual(99);
         done();
       });
     });

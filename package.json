@@ -60,7 +60,7 @@
     "@angular/compiler-cli": "^5.2.9",
     "@angular/language-service": "^5.2.9",
     "@sentry/electron": "^0.5.0",
-    "@types/jasmine": "~2.8.6",
+    "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~9.6.4",
     "codelyzer": "~4.2.1",
