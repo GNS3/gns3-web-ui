@@ -1,6 +1,6 @@
 import { TestBed,  } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
 import { Server } from '../models/server';
 import {HttpServer, ServerError, ServerErrorHandler} from './http-server.service';
@@ -27,22 +27,28 @@ describe('ServerError', () => {
 
 
 describe('ServerErrorHandler', () => {
-  it('should handle HttpErrorResponse with status 0', () => {
+  it('should handle HttpErrorResponse with status 0', (done) => {
     const error = new HttpErrorResponse({ status: 0 });
 
     const handler = new ServerErrorHandler();
     const result = handler.handleError(error);
 
-    expect(result.error.message).toEqual('Server is unreachable');
+    result.subscribe(null, (err) => {
+      expect(err.message).toEqual('Server is unreachable');
+      done();
+    });
   });
 
-  it('should not handle HttpErrorResponse with status!=0', () => {
+  it('should not handle HttpErrorResponse with status!=0', (done) => {
     const error = new HttpErrorResponse({ status: 499 });
 
     const handler = new ServerErrorHandler();
     const result = handler.handleError(error);
 
-    expect(result.error.message).toEqual('Http failure response for (unknown url): 499 undefined');
+    result.subscribe(null, (err) => {
+      expect(err.message).toEqual('Http failure response for (unknown url): 499 undefined');
+      done();
+    });
   });
 });
 

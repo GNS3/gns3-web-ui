@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
-import {Server} from "../models/server";
+import { Observable, throwError } from 'rxjs';
 import { catchError } from "rxjs/operators";
 
-import 'rxjs/add/observable/throw'
+import {Server} from "../models/server";
 
 
 /* tslint:disable:interface-over-type-literal */
@@ -66,7 +65,7 @@ export class ServerErrorHandler {
       err = ServerError.fromError("Server is unreachable", error);
     }
 
-    return Observable.throw(err);
+    return throwError(err);
   }
 }
 
