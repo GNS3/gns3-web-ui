@@ -44,6 +44,7 @@ describe('ProjectService', () => {
   let httpServer: HttpServer;
   let service: ProjectService;
   let server: Server;
+  let settingsService: SettingsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -62,6 +63,8 @@ describe('ProjectService', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
     service = TestBed.get(ProjectService);
+    settingsService = TestBed.get(SettingsService);
+
     server = getTestServer();
   });
 
@@ -142,7 +145,29 @@ describe('ProjectService', () => {
 
   it('should get notifications path of project', () => {
     const path = service.notificationsPath(server, "myproject");
-    expect(path).toEqual('ws://127.0.0.1:3080/v2/projects/myproject/notifications/ws')
+    expect(path).toEqual('ws://127.0.0.1:3080/v2/projects/myproject/notifications/ws');
   });
 
+  it('project should be readonly when defined as readonly ', () => {
+    const project = new Project();
+    project.readonly = true;
+
+    expect(service.isReadOnly(project)).toEqual(true);
+  });
+
+  it('project should be readonly when experimentalFeatures disabled ', () => {
+    const project = new Project();
+    project.readonly = false;
+    spyOn(settingsService, 'isExperimentalEnabled').and.returnValue(false);
+
+    expect(service.isReadOnly(project)).toEqual(true);
+  });
+
+  it('project should not be readonly when experimentalFeatures enabled ', () => {
+    const project = new Project();
+    project.readonly = false;
+    spyOn(settingsService, 'isExperimentalEnabled').and.returnValue(true);
+
+    expect(service.isReadOnly(project)).toEqual(false);
+  });
 });
