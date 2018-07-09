@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Location } from "@angular/common";
 import { Router } from "@angular/router";
 
 import { ServerService } from "../../services/server.service";
@@ -13,8 +12,7 @@ import { Server } from "../../models/server";
 })
 export class LocalServerComponent implements OnInit {
 
-  constructor(private location: Location,
-              private router: Router,
+  constructor(private router: Router,
               private serverService: ServerService) { }
 
   ngOnInit() {
