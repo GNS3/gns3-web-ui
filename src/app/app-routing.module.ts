@@ -1,5 +1,3 @@
-import { environment } from "../environments/environment";
-
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -24,17 +22,9 @@ const routes: Routes = [
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent },
 ];
 
-// AOT in production requires to have exported symbol
-export let extraOptions = null;
-if (environment.electron) {
-  // angular in electron has problem with base-href and links separated by slashes, because of that
-  // we use simply hashes
-  extraOptions = { useHash: true };
-}
-
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes, extraOptions)],
+  imports: [ RouterModule.forRoot(routes) ],
   exports: [ RouterModule ]
 })
 export class AppRoutingModule {}

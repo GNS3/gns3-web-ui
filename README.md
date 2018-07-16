@@ -11,66 +11,71 @@ Test WebUI implementation for GNS3.
 
 This is not production ready version. It has been made to evaluate possibility of creation Web User Interface for GNS3 application.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.2.6.
 
-## Installation for development
+## Demo
 
-Please install `yarn` if not present in your system. 
+Please use GNS3 WebUI bundled in `gns3server` and `gns3`.
 
-In the root of project please type to install dependencies:
+## Development
 
-```
-yarn
-```
+### Installation
 
-## Development server
-
-### Run GNS3 server
-
-Please run locally GNS3 server.
-
-### Using default CORS policy.
-
-GNS3 server contains CORS policies to run Web UI on 8080 at localhost. In order to use it, please run development server with custom port:
+We're using [yarn](https://yarnpkg.com/lang/en/) for packages installation:
 
 ```
-yarn ng serve --port 8080
+yarn install
+```
+
+#### Run GNS3 server
+
+Visit [gns3-server](https://github.com/GNS3/gns3-server) for guide how to run GNS3 server.
+
+#### Run WebUI
+
+```
+yarn ng serve
 ``` 
 
-Application is accessible on `http://localhost:8080/`. The app will automatically reload if you change any of the source files.
+Application is accessible on `http://127.0.0.1:4200/`. The app will automatically reload if you change any of the source files.
 
 ### Docker container
 
-For development you can run the GNS3 Web UI in a container
+For development you can also run the GNS3 Web UI in a container
 
-.. code:: bash
+```
+bash scripts/docker_dev_webui.sh
+```
 
-    bash scripts/docker_dev_webui.sh
+### How to upgrade package.json?
 
-## Code scaffolding
+```
+yarn upgrade --latest
+```
+
+### gns3server bundled in WebUI - electron based
+
+In special cases it's possible to build `gns3server` for GNS3 WebUI. This version is included in `electronjs` dist application.
+
+```
+python3 scripts/build.py build -b dist
+```
+
+### Code scaffolding
 
 Run `yarn ng generate component component-name` to generate a new component. You can also use `yarn ng generate directive|pipe|service|class|module`.
 
-## Build
+### Build
 
 Run `yarn ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
-## Running unit tests
+### Running unit tests
 
 Run `yarn ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
 
-Run `yarn ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+## Releasing
 
-# How to build gns3server for WebUI?
-
-      python3 scripts/build.py build -b dist
-
-# Releasing
-
-## Bumping releases
+### Bumping releases
 
 We're using [version-bump-prompt](https://www.npmjs.com/package/version-bump-prompt) for increasing version.
 
@@ -82,9 +87,9 @@ If you would like to bump prepatch just type:
 
         bump --prepatch --tag --push
         
-## Final release
+### Distribute release
 
-We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag your code nad push it.
+We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag&push your changes.
 
 Using `bump`:
 
@@ -103,15 +108,10 @@ You may use `bump` to achieve that:
       
         bump --prepatch
 
-## Staging release
+### Staging release
 
-In case you would like to create a new staging release. Please create draft release on github, like `0.0.1-dev1`. After successful build you can find there artifacts. 
+In case you would like to create a new staging release. Please create draft release on github, like `0.0.1-dev1`. After successful build you can find artifacts there. 
 
-# Development
-
-## How to upgrade package.json?
-
-        yarn upgrade --latest
 
 ## Further help
 

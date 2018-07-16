@@ -91,6 +91,6 @@
     ]
   },
   "comments": [
-    "Typescript should remain below 2.6.0, @todo: check later if packages were adjusted"
+    "Typescript should remain below 2.8.0, @todo: check later if packages were adjusted"
   ]
 }
