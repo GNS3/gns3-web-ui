@@ -79,7 +79,7 @@
     "karma-jasmine-html-reporter": "^1.2.0",
     "node-sass": "^4.9.1",
     "popper.js": "^1.14.3",
-    "protractor": "~5.3.1",
+    "protractor": "~5.4.0",
     "ts-mockito": "^2.3.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.10.0",
