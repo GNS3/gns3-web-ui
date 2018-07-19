@@ -5613,6 +5613,10 @@ normalize-range@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
 
+notosans-fontface@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/notosans-fontface/-/notosans-fontface-1.1.0.tgz#327fd8b54aa3249a44678605d912e31f1449b855"
+
 npm-bundled@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.0.3.tgz#7e71703d973af3370a9591bafe3a63aca0be2308"
