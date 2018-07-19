@@ -1,6 +1,6 @@
 appId: com.gns3.web-ui
 copyright: "Copyright © 2018 GNS3"
-productName: "GNS3 Web UI Prototype"
+productName: "GNS3 Web UI"
 #forceCodeSigning: true
 artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
 asar: true
