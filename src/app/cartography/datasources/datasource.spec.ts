@@ -18,7 +18,7 @@ describe('TestDataSource', () => {
 
   beforeEach(() => {
     dataSource = new TestDataSource();
-    dataSource.connect().subscribe((updated: Item[]) => {
+    dataSource.changes.subscribe((updated: Item[]) => {
       data = updated;
     });
   });

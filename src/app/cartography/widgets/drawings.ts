@@ -14,8 +14,11 @@ import { DrawingWidget } from "./drawings/drawing-widget";
 export class DrawingsWidget implements Widget {
   private svgToDrawingConverter: SvgToDrawingConverter;
   private drawingWidgets: DrawingWidget[] = [
-    new TextDrawingWidget(), new ImageDrawingWidget(), new RectDrawingWidget(),
-    new LineDrawingWidget(), new EllipseDrawingWidget()
+    new TextDrawingWidget(),
+    new ImageDrawingWidget(),
+    new RectDrawingWidget(),
+    new LineDrawingWidget(),
+    new EllipseDrawingWidget()
   ];
 
   constructor() {

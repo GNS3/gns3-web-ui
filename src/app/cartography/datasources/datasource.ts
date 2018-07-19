@@ -39,7 +39,7 @@ export abstract class DataSource<T> {
     }
   }
 
-  public connect() {
+  public get changes() {
     return this.dataChange;
   }
 

@@ -4,8 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
-import { Node } from '../cartography/models/node';
-import { Port } from '../models/port';
 import { getTestServer } from './testing';
 import { VersionService } from './version.service';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";

@@ -3,7 +3,7 @@ import { Project } from '../models/project';
 import { Node } from '../cartography/models/node';
 import { Observable } from 'rxjs';
 
-import { Link } from "../cartography/models/link";
+import { Link } from "../models/link";
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import { Drawing } from "../cartography/models/drawing";

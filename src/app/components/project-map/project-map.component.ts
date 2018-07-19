@@ -8,7 +8,7 @@ import { map, mergeMap } from "rxjs/operators";
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
 import { SymbolService } from '../../services/symbol.service';
-import { Link } from "../../cartography/models/link";
+import { Link } from "../../models/link";
 import { MapComponent } from "../../cartography/components/map/map.component";
 import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
@@ -22,7 +22,7 @@ import { Drawing } from "../../cartography/models/drawing";
 import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.component";
 import { Appliance } from "../../models/appliance";
 import { NodeService } from "../../services/node.service";
-import { Symbol } from "../../cartography/models/symbol";
+import { Symbol } from "../../models/symbol";
 import { NodeSelectInterfaceComponent } from "./node-select-interface/node-select-interface.component";
 import { Port } from "../../models/port";
 import { LinkService } from "../../services/link.service";
@@ -31,7 +31,7 @@ import { NodesDataSource } from "../../cartography/datasources/nodes-datasource"
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
 import { SelectionManager } from "../../cartography/managers/selection-manager";
-import { InRectangleHelper } from "../../cartography/components/map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { SettingsService } from "../../services/settings.service";
 import { ProgressService } from "../../common/progress/progress.service";
@@ -134,7 +134,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.drawingsDataSource.connect().subscribe((drawings: Drawing[]) => {
+      this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         if (this.mapChild) {
           this.mapChild.reload();
@@ -143,7 +143,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
+      this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         this.nodes = nodes;
         if (this.mapChild) {
           this.mapChild.reload();
@@ -152,7 +152,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.linksDataSource.connect().subscribe((links: Link[]) => {
+      this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links = links;
         if (this.mapChild) {
           this.mapChild.reload();
@@ -228,7 +228,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(
-      this.selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
+      this.selectionManager.subscribe(
+        this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
     );
 
     this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget().setEnabled(this.project.show_interface_labels);

@@ -5,12 +5,12 @@ import { D3, D3Service } from 'd3-ng2-service';
 import {select, Selection} from 'd3-selection';
 
 import { Node } from "../../models/node";
-import { Link } from "../../models/link";
+import { Link } from "../../../models/link";
 import { GraphLayout } from "../../widgets/graph-layout";
 import { Context } from "../../models/context";
 import { Size } from "../../models/size";
 import { Drawing } from "../../models/drawing";
-import {Symbol} from "../../models/symbol";
+import {Symbol} from "../../../models/symbol";
 
 
 @Component({

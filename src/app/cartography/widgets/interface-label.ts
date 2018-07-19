@@ -1,18 +1,19 @@
 import { SVGSelection } from "../models/types";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { InterfaceLabel } from "../models/interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { select } from "d3-selection";
+import { Inject } from "@angular/core";
 
 
 export class InterfaceLabelWidget {
   static SURROUNDING_TEXT_BORDER = 5;
 
-  private cssFixer: CssFixer;
   private enabled = true;
 
-  constructor() {
-    this.cssFixer = new CssFixer();
+  constructor(
+    @Inject(CssFixer) private cssFixer: CssFixer
+  ) {
   }
 
   public setEnabled(enabled: boolean) {

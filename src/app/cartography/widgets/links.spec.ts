@@ -6,7 +6,7 @@ import { TestSVGCanvas } from "../testing";
 import { Layer } from "../models/layer";
 import { LinksWidget } from "./links";
 import { Node } from "../models/node";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { InterfaceLabelWidget } from "./interface-label";
 
 

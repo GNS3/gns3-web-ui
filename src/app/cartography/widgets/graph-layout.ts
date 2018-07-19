@@ -1,6 +1,6 @@
 import { Context } from "../models/context";
 import { Node } from "../models/node";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { NodesWidget } from "./nodes";
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";

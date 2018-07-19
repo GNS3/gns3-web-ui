@@ -2,13 +2,14 @@ import { select } from "d3-selection";
 
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { LinkStatus } from "../models/link-status";
-import { MultiLinkCalculatorHelper } from "../components/map/helpers/multi-link-calculator-helper";
+import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
 import { SerialLinkWidget } from "./serial-link";
 import { EthernetLinkWidget } from "./ethernet-link";
 import { Layer } from "../models/layer";
 import { InterfaceLabelWidget } from "./interface-label";
+import { CssFixer } from "../helpers/css-fixer";
 
 
 export class LinksWidget implements Widget {
@@ -17,7 +18,7 @@ export class LinksWidget implements Widget {
   private interfaceLabelWidget: InterfaceLabelWidget;
 
   constructor() {
-    this.interfaceLabelWidget = new InterfaceLabelWidget();
+    this.interfaceLabelWidget = new InterfaceLabelWidget(new CssFixer());
   }
 
   public getInterfaceLabelWidget() {

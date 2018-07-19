@@ -1,7 +1,7 @@
 import { Layer } from "../models/layer";
 import { Node } from "../models/node";
 import { Drawing } from "../models/drawing";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { Dictionary } from "../models/types";
 
 

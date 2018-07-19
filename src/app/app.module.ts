@@ -67,7 +67,7 @@ import { LinksDataSource } from "./cartography/datasources/links-datasource";
 import { NodesDataSource } from "./cartography/datasources/nodes-datasource";
 import { SymbolsDataSource } from "./cartography/datasources/symbols-datasource";
 import { SelectionManager } from "./cartography/managers/selection-manager";
-import { InRectangleHelper } from "./cartography/components/map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "./cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "./cartography/datasources/drawings-datasource";
 import { MoveLayerDownActionComponent } from './components/project-map/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from './components/project-map/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
