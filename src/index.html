@@ -2,22 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>GNS3 Web UI Demo</title>
+  <title>GNS3 Web UI</title>
   <!-- It's important to have base here because of the script below //-->
-  <base href="/">
+  <base href="./">
 
   <script>
     var userAgent = navigator.userAgent.toLowerCase();
+
     // in case we're running in electron because we need it for resources
-    if (userAgent.indexOf(' electron/') > -1) {
-      var base = document.getElementsByTagName('base');
-      if(base.length > 0) {
-        base.href = document.location;
-      }
-      else {
-        document.write('<base href="' + document.location + '" />');
-      }
-    }
+    // if (userAgent.indexOf(' electron/') > -1) {
+    //   var base = document.getElementsByTagName('base');
+    //   if(base.length > 0) {
+    //     base.href = document.location;
+    //   }
+    //   else {
+    //     document.write('<base href="' + document.location + '" />');
+    //   }
+    // }
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
