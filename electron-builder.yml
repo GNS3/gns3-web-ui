@@ -39,7 +39,7 @@ linux:
   icon: "dist/assets/icons/png"
   category: "Network"
   packageCategory: "Network"
-  description: "GNS3 Web Ui Prototype application. Please don't use it as long as it's not officially announced."
+  description: "GNS3 Web UI Prototype application. Please don't use it as long as it's not officially announced."
   target:
     - deb
     - AppImage
