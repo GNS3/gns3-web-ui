@@ -28,7 +28,7 @@ build_script:
 test: off
 
 artifacts:
-  - path: 'GNS3*.exe'
+  - path: 'gns3-web-ui*.exe'
     name: gns3-web-ui
 
 environment:
