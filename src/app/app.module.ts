@@ -82,6 +82,7 @@ import { version } from "./version";
 import { ToasterErrorHandler } from "./common/error-handlers/toaster-error-handler";
 import { environment } from "../environments/environment";
 import { RavenState } from "./common/error-handlers/raven-state-communicator";
+import { ServerDiscoveryComponent } from "./components/servers/server-discovery/server-discovery.component";
 
 
 if (environment.production) {
@@ -118,6 +119,7 @@ if (environment.production) {
     SettingsComponent,
     LocalServerComponent,
     ProgressComponent,
+    ServerDiscoveryComponent,
   ],
   imports: [
     NgbModule.forRoot(),
