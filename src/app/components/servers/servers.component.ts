@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Injectable } from '@angular/core';
 import { DataSource } from "@angular/cdk/collections";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
@@ -7,6 +7,8 @@ import { map } from "rxjs/operators";
 
 import { Server } from "../../models/server";
 import { ServerService } from "../../services/server.service";
+import { ServerDatabase } from '../../services/server.database';
+
 
 
 @Component({
@@ -15,11 +17,13 @@ import { ServerService } from "../../services/server.service";
   styleUrls: ['./servers.component.css']
 })
 export class ServersComponent implements OnInit {
-  serverDatabase = new ServerDatabase();
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
 
-  constructor(private dialog: MatDialog, private serverService: ServerService) {}
+  constructor(
+    private dialog: MatDialog,
+    private serverService: ServerService,
+    private serverDatabase: ServerDatabase) {}
 
   ngOnInit() {
     this.serverService.findAll().then((servers: Server[]) => {
@@ -80,32 +84,6 @@ export class AddServerDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-}
-
-export class ServerDatabase {
-  dataChange: BehaviorSubject<Server[]> = new BehaviorSubject<Server[]>([]);
-
-  get data(): Server[] {
-    return this.dataChange.value;
-  }
-
-  public addServer(server: Server) {
-    const servers = this.data.slice();
-    servers.push(server);
-    this.dataChange.next(servers);
-  }
-
-  public addServers(servers: Server[]) {
-    this.dataChange.next(servers);
-  }
-
-  public remove(server: Server) {
-    const index = this.data.indexOf(server);
-    if (index >= 0) {
-      this.data.splice(index, 1);
-      this.dataChange.next(this.data.slice());
-    }
-  }
 }
 
 export class ServerDataSource extends DataSource<Server> {

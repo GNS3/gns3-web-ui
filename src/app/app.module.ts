@@ -83,6 +83,7 @@ import { ToasterErrorHandler } from "./common/error-handlers/toaster-error-handl
 import { environment } from "../environments/environment";
 import { RavenState } from "./common/error-handlers/raven-state-communicator";
 import { ServerDiscoveryComponent } from "./components/servers/server-discovery/server-discovery.component";
+import { ServerDatabase } from './services/server.database';
 
 
 if (environment.production) {
@@ -176,7 +177,8 @@ if (environment.production) {
     SelectionManager,
     InRectangleHelper,
     DrawingsDataSource,
-    ServerErrorHandler
+    ServerErrorHandler,
+    ServerDatabase
   ],
   entryComponents: [
     AddServerDialogComponent,
