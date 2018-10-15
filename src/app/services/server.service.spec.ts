@@ -5,9 +5,20 @@ import { Server } from "../models/server";
 import { IndexedDbService } from "./indexed-db.service";
 import { AngularIndexedDB } from "angular2-indexeddb";
 import Spy = jasmine.Spy;
+import { resolve } from 'path';
+import { reject } from 'q';
 
 
 export class MockedServerService {
+  public servers: Server[] = [];
+
+  public create(server: Server) {
+    return new Promise((resolve, reject) => {
+      this.servers.push(server);
+      resolve(server);
+    });
+  }
+
   public get(server_id: number) {
     const server = new Server();
     server.id = server_id;
@@ -19,6 +30,12 @@ export class MockedServerService {
       const server = new Server();
       server.id = 99;
       resolve(server);
+    });
+  }
+
+  public findAll() {
+    return new Promise((resolve, reject) => {
+      resolve(this.servers);
     });
   }
 }

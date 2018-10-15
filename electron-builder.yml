@@ -1,6 +1,6 @@
 appId: com.gns3.web-ui
 copyright: "Copyright © 2018 GNS3"
-productName: "GNS3 Web UI Prototype"
+productName: "GNS3 Web UI"
 #forceCodeSigning: true
 artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
 asar: true
@@ -39,7 +39,7 @@ linux:
   icon: "dist/assets/icons/png"
   category: "Network"
   packageCategory: "Network"
-  description: "GNS3 Web Ui Prototype application. Please don't use it as long as it's not officially announced."
+  description: "GNS3 Web UI Prototype application. Please don't use it as long as it's not officially announced."
   target:
     - deb
     - AppImage

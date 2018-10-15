@@ -9,6 +9,6 @@ describe('gns3-web-ui App', () => {
 
   it('should display title', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('GNS3 Web UI Demo');
+    expect(page.getTitleText()).toEqual('GNS3 Web UI');
   });
 });

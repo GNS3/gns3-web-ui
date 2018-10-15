@@ -2,7 +2,7 @@ import {
   Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
-import {select, Selection} from 'd3-selection';
+import { select, Selection } from 'd3-selection';
 
 import { Node } from "../../models/node";
 import { Link } from "../../models/link";
@@ -10,7 +10,7 @@ import { GraphLayout } from "../../widgets/graph-layout";
 import { Context } from "../../models/context";
 import { Size } from "../../models/size";
 import { Drawing } from "../../models/drawing";
-import {Symbol} from "../../models/symbol";
+import { Symbol } from "../../models/symbol";
 
 
 @Component({
@@ -30,10 +30,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private d3: D3;
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-
-  public graphLayout: GraphLayout;
   private graphContext: Context;
 
+  public graphLayout: GraphLayout;
 
   constructor(protected element: ElementRef,
               protected d3Service: D3Service
@@ -116,12 +115,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private changeLayout() {
     if (this.parentNativeElement != null) {
       this.graphContext.size = this.getSize();
-    }
-
-    if (this.graphContext != null) {
-      this.svg
-        .attr('width', this.graphContext.size.width)
-        .attr('height', this.graphContext.size.height);
     }
 
     this.graphLayout.setNodes(this.nodes);
