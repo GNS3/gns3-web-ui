@@ -22,6 +22,7 @@
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/notosans-fontface/css/notosans-fontface.min.css",
               "src/styles.css",
               "src/theme.scss"
             ],
@@ -125,6 +126,7 @@
             "scripts": [],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/notosans-fontface/css/notosans-fontface.min.css",
               "src/styles.css",
               "src/theme.scss"
             ],

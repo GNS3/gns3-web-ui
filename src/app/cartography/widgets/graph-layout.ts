@@ -82,6 +82,10 @@ export class GraphLayout implements Widget {
   }
 
   draw(view: SVGSelection, context: Context) {
+    view
+      .attr('width', context.size.width)
+      .attr('height', context.size.height);
+
     const canvas = view
       .selectAll<SVGGElement, Context>('g.canvas')
       .data([context]);

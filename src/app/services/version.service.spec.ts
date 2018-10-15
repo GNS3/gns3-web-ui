@@ -7,6 +7,15 @@ import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { VersionService } from './version.service';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
+import {Observable} from "rxjs/Rx";
+
+export class MockedVersionService {
+  public response: Observable<any>;
+
+  public get(server: Server) {
+    return this.response;
+  }
+}
 
 
 describe('VersionService', () => {
