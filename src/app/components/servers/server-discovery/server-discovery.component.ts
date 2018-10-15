@@ -20,10 +20,6 @@ export class ServerDiscoveryComponent implements OnInit {
   private defaultServers = [{
       ip: '127.0.0.1',
       port: 3080
-    },
-    {
-      ip: '127.0.0.1',
-      port: 3085
     }
   ];
 
@@ -36,6 +32,10 @@ export class ServerDiscoveryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.discoverFirstAvailableServer();
+  }
+
+  discoverFirstAvailableServer() {
     forkJoin(
       Observable.fromPromise(this.serverService.findAll()).pipe(map((s: Server[]) => s)),
       this.discovery()
