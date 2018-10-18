@@ -105,6 +105,7 @@ export class GraphLayout implements Widget {
         return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
       });
 
+    // @fix me
     const layersManager = new LayersManager();
     layersManager.setNodes(this.nodes);
     layersManager.setDrawings(this.drawings);

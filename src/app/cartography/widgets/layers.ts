@@ -53,6 +53,7 @@ export class LayersWidget implements Widget {
       .exit()
         .remove();
 
+    // @FixMe
     this.graphLayout
       .getLinksWidget()
       .draw(links_container);

@@ -10,7 +10,7 @@ import { GraphLayout } from "../../widgets/graph-layout";
 import { Context } from "../../models/context";
 import { Size } from "../../models/size";
 import { Drawing } from "../../models/drawing";
-import { Symbol } from "../../models/symbol";
+import { Symbol } from '../../../models/symbol';
 
 
 @Component({
@@ -72,32 +72,33 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     const d3 = this.d3;
 
-    let rootElement: Selection<HTMLElement, any, null, undefined>;
-
     if (this.parentNativeElement !== null) {
-      rootElement = d3.select(this.parentNativeElement);
-
-      this.svg = rootElement.select<SVGSVGElement>('svg');
-
-      this.graphContext = new Context(true);
-
-      this.graphContext.size = this.getSize();
-
-      this.graphLayout = new GraphLayout();
-      this.graphLayout.connect(this.svg, this.graphContext);
-
-      this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {
-        const linksWidget = this.graphLayout.getLinksWidget();
-        linksWidget.select(this.svg).each(function(this: SVGGElement, link: Link)  {
-          if (link.target.node_id === n.node_id || link.source.node_id === n.node_id) {
-            const selection = select<SVGElement, Link>(this);
-            linksWidget.revise(selection);
-          }
-        });
-      });
-
-      this.graphLayout.draw(this.svg, this.graphContext);
+      this.createGraph(this.parentNativeElement);
     }
+  }
+
+  public createGraph(domElement: HTMLElement) {
+    const rootElement = this.d3.select(domElement);
+    this.svg = rootElement.select<SVGSVGElement>('svg');
+
+    this.graphContext = new Context(true);
+
+    this.graphContext.size = this.getSize();
+
+    this.graphLayout = new GraphLayout();
+    this.graphLayout.connect(this.svg, this.graphContext);
+
+    this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {
+      const linksWidget = this.graphLayout.getLinksWidget();
+      linksWidget.select(this.svg).each(function(this: SVGGElement, link: Link)  {
+        if (link.target.node_id === n.node_id || link.source.node_id === n.node_id) {
+          const selection = select<SVGElement, Link>(this);
+          linksWidget.revise(selection);
+        }
+      });
+    });
+
+    this.graphLayout.draw(this.svg, this.graphContext);
   }
 
   public getSize(): Size {
