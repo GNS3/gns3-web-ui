@@ -232,7 +232,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
     );
 
-    this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget().setEnabled(this.project.show_interface_labels);
+    this.mapChild.graphLayout
+      .getLinksWidget().getLinkWidget().getInterfaceLabelWidget().setEnabled(this.project.show_interface_labels);
+
     this.mapChild.reload();
   }
 
@@ -328,7 +330,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
 
-    this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget()
+    this.mapChild.graphLayout.getLinksWidget().getLinkWidget().getInterfaceLabelWidget()
       .setEnabled(this.project.show_interface_labels);
     this.mapChild.reload();
   }

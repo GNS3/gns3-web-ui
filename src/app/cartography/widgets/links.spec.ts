@@ -1,4 +1,4 @@
-import { anything, instance, mock, verify } from "ts-mockito";
+import { instance, mock } from "ts-mockito";
 import { Selection } from "d3-selection";
 
 
@@ -7,7 +7,7 @@ import { Layer } from "../models/layer";
 import { LinksWidget } from "./links";
 import { Node } from "../models/node";
 import { Link } from "../../models/link";
-import { InterfaceLabelWidget } from "./interface-label";
+import { LinkWidget } from "./link";
 
 
 describe('LinksWidget', () => {
@@ -62,9 +62,9 @@ describe('LinksWidget', () => {
   });
 
   it('should draw links', () => {
-    const interfaceLabelWidgetMock = mock(InterfaceLabelWidget);
-    const interfaceLabelWidget = instance(interfaceLabelWidgetMock);
-    spyOn(widget, 'getInterfaceLabelWidget').and.returnValue(interfaceLabelWidget);
+    const linkWidgetMock = mock(LinkWidget);
+    const linkWidget = instance(linkWidgetMock);
+    spyOn(widget, 'getLinkWidget').and.returnValue(linkWidget);
 
     widget.draw(layersEnter);
 
@@ -73,9 +73,6 @@ describe('LinksWidget', () => {
     expect(linkNode.getAttribute('link_id')).toEqual('link1');
     expect(linkNode.getAttribute('map-source')).toEqual('1');
     expect(linkNode.getAttribute('map-target')).toEqual('2');
-    expect(linkNode.getAttribute('transform')).toEqual('translate (0, 0)');
-
-    verify(interfaceLabelWidgetMock.draw(anything())).called();
   });
 
 });

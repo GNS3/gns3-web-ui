@@ -22,7 +22,7 @@ export class EllipseDrawingWidget implements DrawingWidget {
     const drawing_enter = drawing
       .enter()
         .append<SVGEllipseElement>('ellipse')
-        .attr('class', 'ellipse_element noselect');
+          .attr('class', 'ellipse_element noselect');
 
     const merge = drawing.merge(drawing_enter);
 

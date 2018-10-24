@@ -90,11 +90,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {
       const linksWidget = this.graphLayout.getLinksWidget();
-      linksWidget.select(this.svg).each(function(this: SVGGElement, link: Link)  {
-        if (link.target.node_id === n.node_id || link.source.node_id === n.node_id) {
-          const selection = select<SVGElement, Link>(this);
-          linksWidget.revise(selection);
-        }
+
+      const links = this.links.filter((link) => link.target.node_id === n.node_id || link.source.node_id === n.node_id)
+
+      links.forEach((link) => {
+        linksWidget.redrawLink(this.svg, link);
       });
     });
 
