@@ -1,8 +1,8 @@
 import { path } from "d3-path";
 
-import { Widget } from "./widget";
-import { SVGSelection } from "../models/types";
-import { Link } from "../../models/link";
+import { Widget } from "../widget";
+import { SVGSelection } from "../../models/types";
+import { Link } from "../../../models/link";
 
 
 export class SerialLinkWidget implements Widget {
