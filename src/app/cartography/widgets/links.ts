@@ -14,7 +14,7 @@ export class LinksWidget implements Widget {
   }
 
   public getLinkWidget() {
-    return this.linkWidget
+    return this.linkWidget;
   }
 
   public redrawLink(view: SVGSelection, link: Link) {

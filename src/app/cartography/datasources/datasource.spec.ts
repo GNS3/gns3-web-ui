@@ -9,7 +9,7 @@ class TestDataSource extends DataSource<Item> {
   protected findIndex(item: Item) {
     return this.data.findIndex((i: Item) => i.id === item.id);
   }
-};
+}
 
 
 describe('TestDataSource', () => {
