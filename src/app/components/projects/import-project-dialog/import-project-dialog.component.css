@@ -1,0 +1,9 @@
+.file-name-form {
+    margin-left: 10px; 
+    margin-right: 10px; 
+    width:250px;
+}
+
+.non-visible {
+    display: none;
+}

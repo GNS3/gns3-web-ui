@@ -11,6 +11,7 @@ import {
   MatCardModule,
   MatMenuModule,
   MatToolbarModule,
+  MatStepperModule,
   MatIconModule,
   MatFormFieldModule,
   MatInputModule,
@@ -32,7 +33,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HotkeyModule } from 'angular2-hotkeys';
 import { PersistenceModule } from 'angular-persistence';
 import { NgxElectronModule } from 'ngx-electron';
-
+import { FileUploadModule } from 'ng2-file-upload';
 import { AppRoutingModule } from './app-routing.module';
 
 import { VersionService } from './services/version.service';
@@ -48,6 +49,7 @@ import { ApplianceService } from "./services/appliance.service";
 import { LinkService } from "./services/link.service";
 
 import { ProjectsComponent } from './components/projects/projects.component';
+import { ImportProjectDialogComponent } from './components/projects/import-project-dialog/import-project-dialog.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
@@ -106,6 +108,7 @@ if (environment.production) {
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     ProjectsComponent,
+    ImportProjectDialogComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
     NodeContextMenuComponent,
@@ -148,10 +151,12 @@ if (environment.production) {
     MatSortModule,
     MatSelectModule,
     MatTooltipModule,
+    MatStepperModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
-    NgxElectronModule
+    NgxElectronModule,
+    FileUploadModule
   ],
   providers: [
     SettingsService,
@@ -184,7 +189,8 @@ if (environment.production) {
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
-    ApplianceListDialogComponent
+    ApplianceListDialogComponent,
+    ImportProjectDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })
