@@ -1,9 +1,33 @@
+.non-visible {
+    display: none;
+}
+
+.file-button{
+    height: 50px;
+    width: 120px;
+    margin-top: 10px;
+}
+
 .file-name-form {
+    float: right;
+}
+
+.file-name-form-field {
     margin-left: 10px; 
     margin-right: 10px; 
     width:250px;
 }
 
-.non-visible {
-    display: none;
+.delete-button {
+    background: transparent; 
+    border: none; 
+    outline: 0
+}
+
+.delete-icon {
+    vertical-align: "middle";
+}
+
+.result-message-box {
+    margin-top: 10px;
 }

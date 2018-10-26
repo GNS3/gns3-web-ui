@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImportProjectDialogComponent } from "./import-project-dialog.component";
+import { ImportProjectDialogComponent, Validator } from "./import-project-dialog.component";
 import { Server } from "../../../models/server";
 import { MatInputModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatStepperModule, MatFormFieldModule, MatDialogRef, MatDialog, MAT_DIALOG_DATA } from "@angular/material";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { FileUploadModule, FileSelectDirective, FileItem, FileUploader } from "ng2-file-upload";
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
@@ -13,9 +13,9 @@ describe('ImportProjectDialogComponent', () => {
     let component: ImportProjectDialogComponent;
     let fixture: ComponentFixture<ImportProjectDialogComponent>;
     let server: Server;
-    let dialog: MatDialog;
     let debugElement: DebugElement;
     let fileSelectDirective: FileSelectDirective;
+    let formBuilder: FormBuilder;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -31,6 +31,7 @@ describe('ImportProjectDialogComponent', () => {
                 NoopAnimationsModule,
                 FileUploadModule,
                 FormsModule,
+                ReactiveFormsModule,
                 RouterTestingModule.withRoutes([]),
             ],
             providers: [
@@ -41,10 +42,10 @@ describe('ImportProjectDialogComponent', () => {
         })
         .compileComponents();
 
-        dialog = TestBed.get(MatDialog);
         server = new Server();
         server.ip = "localhost";
         server.port = 80;
+        formBuilder = new FormBuilder();
     }));
 
     beforeEach(() => {
@@ -52,7 +53,10 @@ describe('ImportProjectDialogComponent', () => {
         debugElement = fixture.debugElement;
         component = fixture.componentInstance;
         component.server = server;
-
+        component.projectNameForm = formBuilder.group({
+            projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
+          });
+        component.projectNameForm.controls['projectName'].setValue("ValidName");
         fixture.detectChanges();
 
         debugElement = fixture.debugElement.query(By.directive(FileSelectDirective));
@@ -119,21 +123,47 @@ describe('ImportProjectDialogComponent', () => {
 
     it('should prepare correct upload path for file', () => {
         fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader,new File([],"fileName"),{}));
-        component.projectName = "newProject.gns3";
+        component.projectNameForm.controls['projectName'].setValue("newProject");
 
-        component.prepareUploadPath();
+        component.onImportClick();
 
         expect(fileSelectDirective.uploader.queue[0].url).toContain("localhost:80");
         expect(fileSelectDirective.uploader.queue[0].url).toContain("newProject");
     });
 
     it('should navigate to next step after clicking import', () => {
-        let fileItem = new FileItem(fileSelectDirective.uploader,new File([],"fileName"),{});
+        let fileItem = new FileItem(fileSelectDirective.uploader, new File([],"fileName"),{});
         fileSelectDirective.uploader.queue.push(fileItem);
         spyOn(component.stepper, "next");
 
         component.onImportClick();
 
         expect(component.stepper.next).toHaveBeenCalled();
+    });
+
+    it('should detect if file input is empty', () => {
+        component.projectNameForm.controls['projectName'].setValue("");
+        fixture.detectChanges();
+        spyOn(component.stepper, "next");
+        spyOn(fileSelectDirective.uploader, 'uploadItem');
+
+        component.onImportClick();
+
+        expect(component.stepper.next).not.toHaveBeenCalled();
+        expect(fileSelectDirective.uploader.uploadItem).not.toHaveBeenCalled();
+        expect(component.projectNameForm.valid).toBeFalsy();
+    });
+
+    it('should sanitize file name input', () => {
+        component.projectNameForm.controls['projectName'].setValue("[][]");
+        fixture.detectChanges();
+        spyOn(component.stepper, "next");
+        spyOn(fileSelectDirective.uploader, 'uploadItem');
+
+        component.onImportClick();
+
+        expect(component.stepper.next).not.toHaveBeenCalled();
+        expect(fileSelectDirective.uploader.uploadItem).not.toHaveBeenCalled();
+        expect(component.projectNameForm.valid).toBeFalsy();
     });
 });

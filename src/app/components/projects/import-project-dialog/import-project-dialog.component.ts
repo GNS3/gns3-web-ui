@@ -3,51 +3,80 @@ import { MatStepper, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { v4 as uuid } from 'uuid';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+
+export class Validator {
+    static projectNameValidator(projectName) {
+      var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
+
+      if(!pattern.test(projectName.value)) {
+        return null;
+      }
+
+      return { invalidName: true }
+    }
+}
 
 @Component({
     selector: 'app-import-project-dialog',
     templateUrl: 'import-project-dialog.component.html',
-    styleUrls: ['import-project-dialog.component.css'],
+    styleUrls: ['import-project-dialog.component.css']
 })
 export class ImportProjectDialogComponent implements OnInit {
     uploader: FileUploader;
     server : Server;
-    projectName : string;
     isImportEnabled : boolean = false;
     isFinishEnabled : boolean = false;
-    errorMessage : string;
+    resultMessage : string = "The project is being imported... Please wait";
+    projectNameForm: FormGroup;
+    submitted: boolean = false;
 
     @ViewChild('stepper') stepper: MatStepper;
   
     constructor(
       public dialogRef: MatDialogRef<ImportProjectDialogComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: any){}
+      @Inject(MAT_DIALOG_DATA) public data: any,
+      private formBuilder: FormBuilder){
+        this.projectNameForm = this.formBuilder.group({
+            projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
+          });
+      }
   
     ngOnInit(){
       this.uploader = new FileUploader({});
       this.uploader.onAfterAddingFile = (file) => { file.withCredentials = false; };
     }
+
+    get form() { 
+        return this.projectNameForm.controls; 
+    }
   
     uploadProjectFile(event) : void{
-      this.projectName = event.target.files[0].name.split(".")[0];
+      this.projectNameForm.controls['projectName'].setValue(event.target.files[0].name.split(".")[0]);
       this.isImportEnabled = true;
     }
   
     onImportClick() : void{
-      if(this.validateProjectName()){
-        this.prepareUploadPath();
+      if (this.projectNameForm.invalid){
+        this.submitted = true;
+      } else {
+        const url = this.prepareUploadPath();
+        this.uploader.queue.forEach(elem => elem.url = url);
+
         this.stepper.selected.completed = true;
         this.stepper.next();
-        let itemToUpload = this.uploader.queue[0];
+
+        const itemToUpload = this.uploader.queue[0];
         this.uploader.uploadItem(itemToUpload);
 
         this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-          this.errorMessage = response;
-          this.isFinishEnabled = true;
+            this.resultMessage = response;
+            this.isFinishEnabled = true;
         };
 
         this.uploader.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-          this.isFinishEnabled = true;
+            this.resultMessage = "Project was imported succesfully!";
+            this.isFinishEnabled = true;
         };
       }
     }
@@ -64,16 +93,11 @@ export class ImportProjectDialogComponent implements OnInit {
     onDeleteClick() : void{
       this.uploader.queue.pop();
       this.isImportEnabled = false;
-      this.projectName = "";
+      this.projectNameForm.controls['projectName'].setValue("");
     }
 
-    prepareUploadPath() : void{
-      let url = `http://${this.server.ip}:${this.server.port}/v2/projects/${uuid()}/import?name=${this.projectName}`;
-      this.uploader.queue.forEach(elem => elem.url = url);
-    }
-
-    validateProjectName() : boolean{
-      var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
-      return !pattern.test(this.projectName);
+    prepareUploadPath() : string{
+      const projectName = this.projectNameForm.controls['projectName'].value;
+      return `http://${this.server.ip}:${this.server.port}/v2/projects/${uuid()}/import?name=${projectName}`;
     }
 }

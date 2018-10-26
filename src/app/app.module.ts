@@ -1,7 +1,7 @@
 import * as Raven from 'raven-js';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from '@angular/common/http';
 
@@ -131,6 +131,7 @@ if (environment.production) {
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     CdkTableModule,
     MatButtonModule,
