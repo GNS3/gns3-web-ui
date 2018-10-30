@@ -1,0 +1,10 @@
+<span>
+    {{confirmationMessage}}
+</span>
+<div class="buttons-bar" *ngIf="!isOpen">
+    <button mat-button (click)="onNoClick()" color="accent">No</button>
+    <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Yes</button>
+</div>
+<div class="buttons-bar" *ngIf="isOpen">
+    <button mat-button (click)="onNoClick()" color="accent">Ok</button>
+</div>
