@@ -12,8 +12,8 @@ import { Project } from '../../../../models/project';
 })
 export class ImportProjectConfirmationDialogComponent implements OnInit {
     private existingProject : Project;
-    private confirmationMessage : string;
-    private isOpen : boolean;
+    public confirmationMessage : string;
+    public isOpen : boolean;
     constructor(
         public dialogRef: MatDialogRef<ImportProjectConfirmationDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
