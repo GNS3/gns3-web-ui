@@ -4,10 +4,37 @@ import { Server } from "../../../models/server";
 import { MatInputModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatStepperModule, MatFormFieldModule, MatDialogRef, MatDialog, MAT_DIALOG_DATA } from "@angular/material";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { FileUploadModule, FileSelectDirective, FileItem, FileUploader } from "ng2-file-upload";
+import { FileUploadModule, FileSelectDirective, FileItem, FileUploader, ParsedResponseHeaders } from "ng2-file-upload";
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { ProjectService } from '../../../services/project.service';
+import { of } from 'rxjs/internal/observable/of';
+import { Project } from '../../../models/project';
+
+export class MockedProjectService {
+    public projects: Project[] = [{
+        auto_close: false,
+        auto_open: false,
+        auto_start: false,
+        filename: "blank",
+        name: "blank",
+        path: "",
+        project_id: "",
+        scene_height: 100,
+        scene_width: 100,
+        status: "opened",
+        readonly: false,
+        show_interface_labels: false,
+        show_layers: false,
+        show_grid: false,
+        snap_to_grid: false,
+    }];
+  
+    list(server: Server) {
+      return of(this.projects);
+    }
+}
 
 describe('ImportProjectDialogComponent', () => {
     let component: ImportProjectDialogComponent;
@@ -36,7 +63,8 @@ describe('ImportProjectDialogComponent', () => {
             ],
             providers: [
                 { provide: MatDialogRef },
-                { provide: MAT_DIALOG_DATA }
+                { provide: MAT_DIALOG_DATA },
+                { provide: ProjectService, useClass: MockedProjectService}
             ],
             declarations : [ImportProjectDialogComponent]
         })
@@ -61,6 +89,7 @@ describe('ImportProjectDialogComponent', () => {
 
         debugElement = fixture.debugElement.query(By.directive(FileSelectDirective));
         fileSelectDirective = debugElement.injector.get(FileSelectDirective) as FileSelectDirective;
+        component.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {};
     });
 
     it('should be created', () => {
@@ -134,6 +163,7 @@ describe('ImportProjectDialogComponent', () => {
     it('should navigate to next step after clicking import', () => {
         let fileItem = new FileItem(fileSelectDirective.uploader, new File([],"fileName"),{});
         fileSelectDirective.uploader.queue.push(fileItem);
+
         spyOn(component.stepper, "next");
 
         component.onImportClick();
@@ -165,5 +195,14 @@ describe('ImportProjectDialogComponent', () => {
         expect(component.stepper.next).not.toHaveBeenCalled();
         expect(fileSelectDirective.uploader.uploadItem).not.toHaveBeenCalled();
         expect(component.projectNameForm.valid).toBeFalsy();
+    });
+
+    it('should open confirmation dialog if project with the same exists', () => {
+        component.projectNameForm.controls['projectName'].setValue("blank");
+        spyOn(component, "openConfirmationDialog");
+
+        component.onImportClick();
+
+        expect(component.openConfirmationDialog).toHaveBeenCalled();
     });
 });
