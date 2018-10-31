@@ -1,8 +1,9 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
 export abstract class DataSource<T> {
   protected data: T[] = [];
   protected dataChange: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
+  protected itemUpdated: Subject<T> = new Subject<T>();
 
   public getItems(): T[] {
     return this.data;
@@ -26,8 +27,10 @@ export abstract class DataSource<T> {
   public update(item: T) {
     const index = this.findIndex(item);
     if (index >= 0) {
-      this.data[index] = Object.assign(this.data[index], item);
+      const updated = Object.assign(this.data[index], item);
+      this.data[index] = updated;
       this.dataChange.next(this.data);
+      this.itemUpdated.next(updated);
     }
   }
 
@@ -41,6 +44,10 @@ export abstract class DataSource<T> {
 
   public get changes() {
     return this.dataChange;
+  }
+
+  public get itemChanged() {
+    return this.itemUpdated;
   }
 
   public clear() {

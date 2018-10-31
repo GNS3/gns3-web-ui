@@ -1,5 +1,7 @@
 import {Link} from "../../models/link";
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class MultiLinkCalculatorHelper {
   LINK_WIDTH = 2;
 

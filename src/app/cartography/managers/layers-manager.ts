@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { Layer } from "../models/layer";
 import { Node } from "../models/node";
 import { Drawing } from "../models/drawing";
@@ -5,6 +7,7 @@ import { Link } from "../../models/link";
 import { Dictionary } from "../models/types";
 
 
+@Injectable()
 export class LayersManager {
   private layers: Dictionary<Layer>;
 
@@ -57,4 +60,5 @@ export class LayersManager {
     }
     return this.layers[key];
   }
+
 }

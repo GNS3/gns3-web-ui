@@ -34,6 +34,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   public graphLayout: GraphLayout;
 
+  protected settings = {
+    'show_interface_labels': true
+  };
+
   constructor(protected element: ElementRef,
               protected d3Service: D3Service
               ) {
@@ -41,6 +45,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.parentNativeElement = element.nativeElement;
   }
 
+  @Input('show-interface-labels') 
+  set showInterfaceLabels(value) {
+    this.settings.show_interface_labels = value;
+  }
+  
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
     if (
       (changes['width'] && !changes['width'].isFirstChange()) ||

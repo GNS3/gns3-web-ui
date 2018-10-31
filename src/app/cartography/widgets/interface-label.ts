@@ -28,7 +28,7 @@ export class InterfaceLabelWidget {
         const sourceInterface = new InterfaceLabel(
           l.link_id,
           'source',
-          Math.round( l.source.x + l.nodes[0].label.x),
+          Math.round(l.source.x + l.nodes[0].label.x),
           Math.round(l.source.y + l.nodes[0].label.y),
           l.nodes[0].label.text,
           l.nodes[0].label.style,

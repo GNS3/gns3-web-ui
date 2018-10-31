@@ -38,14 +38,18 @@ export class SelectionManager {
 
   public subscribe(subject: Subject<Rectangle>) {
     this.subscription = subject.subscribe((rectangle: Rectangle) => {
-        this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
-        this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
-        this.selectedDrawings = this.getSelectedItemsInRectangle<Drawing>(this.drawingsDataSource, rectangle);
-        // don't select interfaces for now
-        // this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
+      this.onSelection(rectangle);
     });
     return this.subscription;
   }
+
+  public onSelection(rectangle: Rectangle) {
+    this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
+    this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
+    this.selectedDrawings = this.getSelectedItemsInRectangle<Drawing>(this.drawingsDataSource, rectangle);
+    // don't select interfaces for now
+    // this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
+  }  
 
   public getSelectedNodes() {
     return this.selectedNodes;

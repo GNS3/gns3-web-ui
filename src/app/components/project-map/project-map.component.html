@@ -1,5 +1,13 @@
 <div *ngIf="project" class="project-map">
-  <app-map [symbols]="symbols" [nodes]="nodes" [links]="links" [drawings]="drawings" [width]="project.scene_width" [height]="project.scene_height"></app-map>
+  <app-map
+    [symbols]="symbols"
+    [nodes]="nodes"
+    [links]="links"
+    [drawings]="drawings"
+    [width]="project.scene_width"
+    [height]="project.scene_height"
+    [show-interface-labels]="project.show_interface_labels"
+  ></app-map>
 
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
@@ -29,7 +37,11 @@
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
-          <mat-checkbox [(ngModel)]="showIntefaceLabels" (change)="toggleShowInterfaceLabels($event.checked)">Show interface labels</mat-checkbox>
+          <mat-checkbox
+            [ngModel]="project.show_interface_labels"
+            (change)="toggleShowInterfaceLabels($event.checked)">
+              Show interface labels
+          </mat-checkbox>
         </div>
       </mat-menu>
 
@@ -53,7 +65,10 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >
-        <app-appliance [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-appliance>
+        <app-appliance 
+          [server]="server"
+          (onNodeCreation)="onNodeCreation($event)"
+        ></app-appliance>
       </mat-toolbar-row>
 
     </mat-toolbar>
@@ -65,4 +80,9 @@
 
 <app-progress></app-progress>
 
-<app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server" [selectionManager]="selectionManager"></app-project-map-shortcuts>
+<app-project-map-shortcuts 
+  *ngIf="project"
+  [project]="project"
+  [server]="server"
+  [selectionManager]="selectionManager">
+</app-project-map-shortcuts>
