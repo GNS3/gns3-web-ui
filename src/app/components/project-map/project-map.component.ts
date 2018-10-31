@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -13,11 +13,6 @@ import { MapComponent } from "../../cartography/components/map/map.component";
 import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
 import { Server } from "../../models/server";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material";
-import { SnapshotService } from "../../services/snapshot.service";
-import { Snapshot } from "../../models/snapshot";
-import { ProgressDialogService } from "../../common/progress-dialog/progress-dialog.service";
-import { ProgressDialogComponent } from "../../common/progress-dialog/progress-dialog.component";
 import { Drawing } from "../../cartography/models/drawing";
 import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.component";
 import { Appliance } from "../../models/appliance";
@@ -26,14 +21,12 @@ import { Symbol } from "../../models/symbol";
 import { NodeSelectInterfaceComponent } from "./node-select-interface/node-select-interface.component";
 import { Port } from "../../models/port";
 import { LinkService } from "../../services/link.service";
-import { ToasterService } from '../../services/toaster.service';
 import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
 import { SelectionManager } from "../../cartography/managers/selection-manager";
 import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
-import { SettingsService } from "../../services/settings.service";
 import { ProgressService } from "../../common/progress/progress.service";
 
 
@@ -71,15 +64,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               private serverService: ServerService,
               private projectService: ProjectService,
               private symbolService: SymbolService,
-              private snapshotService: SnapshotService,
               private nodeService: NodeService,
               private linkService: LinkService,
-              private dialog: MatDialog,
-              private progressDialogService: ProgressDialogService,
               private progressService: ProgressService,
-              private toaster: ToasterService,
               private projectWebServiceHandler: ProjectWebServiceHandler,
-              private settingsService: SettingsService,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
               protected drawingsDataSource: DrawingsDataSource,
@@ -250,35 +238,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  public createSnapshotModal() {
-    const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
-      width: '250px',
-    });
-
-    dialogRef.afterClosed().subscribe(snapshot => {
-      if (snapshot) {
-        const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
-
-        const progress = this.progressDialogService.open();
-
-        const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
-          progress.close();
-        }, (response) => {
-          const error = response.json();
-          this.toaster.error(`Cannot create snapshot: ${error.message}`);
-          progress.close();
-        });
-
-        progress.afterClosed().subscribe((result) => {
-          if (result === ProgressDialogComponent.CANCELLED) {
-            subscription.unsubscribe();
-          }
-        });
-      }
-    });
-  }
-
   public toggleDrawLineMode() {
     this.drawLineMode = !this.drawLineMode;
     if (!this.drawLineMode) {
@@ -347,27 +306,3 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
 }
-
-
-@Component({
-  selector: 'app-create-snapshot-dialog',
-  templateUrl: 'create-snapshot-dialog.html',
-})
-export class CreateSnapshotDialogComponent {
-  snapshot: Snapshot = new Snapshot();
-
-  constructor(
-    public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-  }
-
-  onAddClick(): void {
-    this.dialogRef.close(this.snapshot);
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-}
-

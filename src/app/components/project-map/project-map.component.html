@@ -46,9 +46,10 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >
-        <button mat-icon-button (click)="createSnapshotModal()">
-          <mat-icon>snooze</mat-icon>
-        </button>
+        <app-snapshot-menu-item
+          [server]="server"
+          [project]="project">
+        </app-snapshot-menu-item>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >

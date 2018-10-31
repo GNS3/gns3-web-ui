@@ -52,7 +52,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
 
-import { CreateSnapshotDialogComponent, ProjectMapComponent } from './components/project-map/project-map.component';
+import { ProjectMapComponent } from './components/project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './components/servers/servers.component';
 import { NodeContextMenuComponent } from './components/project-map/node-context-menu/node-context-menu.component';
 import { StartNodeActionComponent } from './components/project-map/node-context-menu/actions/start-node-action/start-node-action.component';
@@ -84,6 +84,9 @@ import { environment } from "../environments/environment";
 import { RavenState } from "./common/error-handlers/raven-state-communicator";
 import { ServerDiscoveryComponent } from "./components/servers/server-discovery/server-discovery.component";
 import { ServerDatabase } from './services/server.database';
+import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
+import { SnapshotsComponent } from './components/snapshots/snapshots.component';
+import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 
 
 if (environment.production) {
@@ -105,6 +108,8 @@ if (environment.production) {
     ServersComponent,
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
+    SnapshotMenuItemComponent,
+    SnapshotsComponent,
     ProjectsComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
