@@ -32,15 +32,17 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private svg: Selection<SVGSVGElement, any, null, undefined>;
   private graphContext: Context;
 
-  public graphLayout: GraphLayout;
+  // public graphLayout: GraphLayout;
 
   protected settings = {
     'show_interface_labels': true
   };
 
-  constructor(protected element: ElementRef,
-              protected d3Service: D3Service
-              ) {
+  constructor(
+    protected element: ElementRef,
+    protected d3Service: D3Service,
+    public graphLayout: GraphLayout
+    ) {
     this.d3 = d3Service.getD3();
     this.parentNativeElement = element.nativeElement;
   }
@@ -94,7 +96,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.graphContext.size = this.getSize();
 
-    this.graphLayout = new GraphLayout();
+    // this.graphLayout = new GraphLayout();
     this.graphLayout.connect(this.svg, this.graphContext);
 
     this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {

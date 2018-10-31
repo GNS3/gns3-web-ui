@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { event, select, Selection } from "d3-selection";
 import { D3DragEvent, drag } from "d3-drag";
 
@@ -10,6 +12,7 @@ import { CssFixer } from "../helpers/css-fixer";
 import { FontFixer } from "../helpers/font-fixer";
 
 
+@Injectable()
 export class NodesWidget implements Widget {
   static NODE_LABEL_MARGIN = 3;
 
@@ -21,14 +24,13 @@ export class NodesWidget implements Widget {
   private onNodeDraggedCallback: (event: any, node: Node) => void;
   private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
 
-  private symbols: Symbol[];
-  private cssFixer: CssFixer;
-  private fontFixer: FontFixer;
+  private symbols: Symbol[] = [];
 
-  constructor() {
+  constructor(
+    private cssFixer: CssFixer,
+    private fontFixer: FontFixer
+  ) {
     this.symbols = [];
-    this.cssFixer = new CssFixer();
-    this.fontFixer = new FontFixer();
   }
 
   public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {

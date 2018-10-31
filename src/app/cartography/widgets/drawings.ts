@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { Widget } from "./widget";
 import { Drawing } from "../models/drawing";
 import { SVGSelection } from "../models/types";
@@ -11,18 +13,27 @@ import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
 import { DrawingWidget } from "./drawings/drawing-widget";
 
 
+@Injectable()
 export class DrawingsWidget implements Widget {
-  private svgToDrawingConverter: SvgToDrawingConverter;
-  private drawingWidgets: DrawingWidget[] = [
-    new TextDrawingWidget(),
-    new ImageDrawingWidget(),
-    new RectDrawingWidget(),
-    new LineDrawingWidget(),
-    new EllipseDrawingWidget()
-  ];
+  private drawingWidgets: DrawingWidget[] = [];
 
-  constructor() {
+  constructor(
+    private svgToDrawingConverter: SvgToDrawingConverter,
+    private textDrawingWidget: TextDrawingWidget,
+    private imageDrawingWidget: ImageDrawingWidget,
+    private rectDrawingWidget: RectDrawingWidget,
+    private lineDrawingWidget: LineDrawingWidget,
+    private ellipseDrawingWidget: EllipseDrawingWidget
+  ) {
     this.svgToDrawingConverter = new SvgToDrawingConverter();
+
+    this.drawingWidgets = [
+      this.textDrawingWidget,
+      this.imageDrawingWidget,
+      this.rectDrawingWidget,
+      this.lineDrawingWidget,
+      this.ellipseDrawingWidget
+    ];
   }
 
   public draw(view: SVGSelection, drawings?: Drawing[]) {

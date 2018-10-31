@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { select } from "d3-selection";
 
 import { Widget } from "./widget";
@@ -6,6 +8,7 @@ import { Link } from "../../models/link";
 import { LinkStatus } from "../models/link-status";
 
 
+@Injectable()
 export class InterfaceStatusWidget implements Widget {
   constructor() {}
 

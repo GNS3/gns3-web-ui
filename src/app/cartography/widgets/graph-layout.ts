@@ -12,29 +12,24 @@ import { SelectionTool } from "../tools/selection-tool";
 import { MovingTool } from "../tools/moving-tool";
 import { LayersWidget } from "./layers";
 import { LayersManager } from "../managers/layers-manager";
+import { Injectable } from "@angular/core";
 
 
+@Injectable()
 export class GraphLayout implements Widget {
   private nodes: Node[] = [];
   private links: Link[] = [];
   private drawings: Drawing[] = [];
 
-  private linksWidget: LinksWidget;
-  private nodesWidget: NodesWidget;
-  private drawingsWidget: DrawingsWidget;
-  private drawingLineTool: DrawingLineWidget;
-  private selectionTool: SelectionTool;
-  private movingTool: MovingTool;
-  private layersWidget: LayersWidget;
-
-  constructor() {
-    this.linksWidget = new LinksWidget();
-    this.nodesWidget = new NodesWidget();
-    this.drawingsWidget = new DrawingsWidget();
-    this.drawingLineTool = new DrawingLineWidget();
-    this.selectionTool = new SelectionTool();
-    this.movingTool = new MovingTool();
-    this.layersWidget = new LayersWidget();
+  constructor(
+    private linksWidget: LinksWidget,
+    private nodesWidget: NodesWidget,
+    private drawingsWidget: DrawingsWidget,
+    private drawingLineTool: DrawingLineWidget,
+    private selectionTool: SelectionTool,
+    private movingTool: MovingTool,
+    private layersWidget: LayersWidget
+  ) {
   }
 
   public setNodes(nodes: Node[]) {

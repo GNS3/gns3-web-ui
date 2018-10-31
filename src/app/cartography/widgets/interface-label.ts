@@ -1,18 +1,19 @@
+import { Injectable } from "@angular/core";
+
 import { SVGSelection } from "../models/types";
 import { Link } from "../../models/link";
 import { InterfaceLabel } from "../models/interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { select } from "d3-selection";
-import { Inject } from "@angular/core";
 
-
+@Injectable()
 export class InterfaceLabelWidget {
   static SURROUNDING_TEXT_BORDER = 5;
 
   private enabled = true;
 
   constructor(
-    @Inject(CssFixer) private cssFixer: CssFixer
+    private cssFixer: CssFixer
   ) {
   }
 

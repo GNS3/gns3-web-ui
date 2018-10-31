@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { Link } from "../../models/link";
@@ -5,12 +7,12 @@ import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-help
 import { Layer } from "../models/layer";
 import { LinkWidget } from "./link";
 
-
+@Injectable()
 export class LinksWidget implements Widget {
-  private multiLinkCalculatorHelper = new MultiLinkCalculatorHelper();
-  private linkWidget = new LinkWidget();
-
-  constructor() {
+  constructor(
+    private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
+    private linkWidget: LinkWidget
+  ) {
   }
 
   public getLinkWidget() {

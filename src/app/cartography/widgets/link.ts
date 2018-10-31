@@ -1,3 +1,4 @@
+import { Injectable } from "@angular/core";
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { Link } from "../../models/link";
@@ -9,10 +10,12 @@ import { CssFixer } from "../helpers/css-fixer";
 import { InterfaceStatusWidget } from "./interface-status";
 
 
+@Injectable()
 export class LinkWidget implements Widget {
-  private multiLinkCalculatorHelper = new MultiLinkCalculatorHelper();
 
-  constructor() {}
+  constructor(
+    private multiLinkCalculatorHelper: MultiLinkCalculatorHelper
+  ) {}
 
   public getInterfaceLabelWidget() {
     return new InterfaceLabelWidget(new CssFixer());

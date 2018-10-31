@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { D3ZoomEvent, zoom, ZoomBehavior} from "d3-zoom";
 import { event } from "d3-selection";
 
@@ -5,6 +7,7 @@ import { SVGSelection} from "../models/types";
 import { Context} from "../models/context";
 
 
+@Injectable()
 export class MovingTool {
   private selection: SVGSelection;
   private context: Context;
