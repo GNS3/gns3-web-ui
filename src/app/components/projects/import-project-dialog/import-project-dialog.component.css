@@ -4,24 +4,26 @@
 
 .file-button{
     height: 50px;
-    width: 120px;
+    width: 20%;
     margin-top: 10px;
+    padding: 0px;
 }
 
 .file-name-form {
     float: right;
+    width: 100%;
 }
 
 .file-name-form-field {
-    margin-left: 10px; 
-    margin-right: 10px; 
-    width:250px;
+    margin-left: 5%; 
+    width: 65%; 
 }
 
 .delete-button {
     background: transparent; 
     border: none; 
-    outline: 0
+    outline: 0;
+    width: 10%;
 }
 
 .delete-icon {
@@ -30,4 +32,9 @@
 
 .result-message-box {
     margin-top: 10px;
+    text-align: center;
+}
+
+.progress-bar {
+    background-color : #0097a7;
 }

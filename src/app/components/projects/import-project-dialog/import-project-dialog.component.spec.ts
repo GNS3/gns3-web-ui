@@ -205,4 +205,31 @@ describe('ImportProjectDialogComponent', () => {
 
         expect(component.openConfirmationDialog).toHaveBeenCalled();
     });
+
+    it('should show delete button after selecting project', () => {
+        let fileItem = new FileItem(fileSelectDirective.uploader, new File([],"fileName"),{});
+        fileSelectDirective.uploader.queue.push(fileItem);
+        let event = {
+            target: {
+                files: [ {name : "uploadedFile"} ]
+            }
+        };
+        component.uploadProjectFile(event);
+
+        expect(component.isDeleteVisible).toBe(true);
+    });
+
+    it('should hide delete button after deselecting project', () => {
+        let fileItem = new FileItem(fileSelectDirective.uploader, new File([],"fileName"),{});
+        fileSelectDirective.uploader.queue.push(fileItem);
+        let event = {
+            target: {
+                files: [ {name : "uploadedFile"} ]
+            }
+        };
+        component.uploadProjectFile(event);
+        component.onDeleteClick();
+
+        expect(component.isDeleteVisible).toBe(false);
+    });
 });

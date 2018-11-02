@@ -11,7 +11,7 @@ import { ServerResponse } from '../../../models/serverResponse';
 
 export class Validator {
     static projectNameValidator(projectName) {
-      var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
+      var pattern = new RegExp(/[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?]/);
 
       if(!pattern.test(projectName.value)) {
         return null;
@@ -31,6 +31,7 @@ export class ImportProjectDialogComponent implements OnInit {
     server : Server;
     isImportEnabled : boolean = false;
     isFinishEnabled : boolean = false;
+    isDeleteVisible : boolean = false;
     resultMessage : string = "The project is being imported... Please wait";
     projectNameForm: FormGroup;
     submitted: boolean = false;
@@ -71,6 +72,7 @@ export class ImportProjectDialogComponent implements OnInit {
     uploadProjectFile(event) : void{
       this.projectNameForm.controls['projectName'].setValue(event.target.files[0].name.split(".")[0]);
       this.isImportEnabled = true;
+      this.isDeleteVisible = true;
     }
   
     onImportClick() : void{
@@ -135,6 +137,7 @@ export class ImportProjectDialogComponent implements OnInit {
     onDeleteClick() : void{
       this.uploader.queue.pop();
       this.isImportEnabled = false;
+      this.isDeleteVisible = false;
       this.projectNameForm.controls['projectName'].setValue("");
     }
 
@@ -143,4 +146,3 @@ export class ImportProjectDialogComponent implements OnInit {
       return `http://${this.server.ip}:${this.server.port}/v2/projects/${uuid()}/import?name=${projectName}`;
     }
 }
- 
