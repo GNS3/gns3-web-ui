@@ -48,14 +48,6 @@ export class GraphLayout implements Widget {
     return this.nodesWidget;
   }
 
-  public getLinksWidget() {
-    return this.linksWidget;
-  }
-
-  public getDrawingsWidget() {
-    return this.drawingsWidget;
-  }
-
   public getDrawingLineTool() {
     return this.drawingLineTool;
   }
@@ -98,7 +90,6 @@ export class GraphLayout implements Widget {
     layersManager.setDrawings(this.drawings);
     layersManager.setLinks(this.links);
 
-    this.layersWidget.graphLayout = this;
     this.layersWidget.draw(canvas, layersManager.getLayersList());
 
     this.drawingLineTool.draw(view, context);

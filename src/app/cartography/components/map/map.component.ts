@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
+import { LinksWidget } from '../../widgets/links';
 
 
 @Component({
@@ -37,7 +38,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private d3: D3;
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-  
+
   private isReady = false;
 
   private onNodeDraggingSubscription: Subscription;
@@ -51,6 +52,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     protected element: ElementRef,
     protected d3Service: D3Service,
     protected nodesWidget: NodesWidget,
+    protected linksWidget: LinksWidget,
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
@@ -122,26 +124,21 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       this.createGraph(this.parentNativeElement);
     }
     this.context.size = this.getSize();
+
+    this.onNodeDraggingSubscription = this.nodesWidget.onNodeDragging.subscribe((eventNode: NodeEvent) => {
+      const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id)
+
+      links.forEach((link) => {
+        this.linksWidget.redrawLink(this.svg, link);
+      });
+    });
   }
 
   public createGraph(domElement: HTMLElement) {
     const rootElement = this.d3.select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
-
     this.graphLayout.connect(this.svg, this.context);
-
-    this.onNodeDraggingSubscription = this.graphLayout.getNodesWidget().onNodeDragging.subscribe((eventNode: NodeEvent) => {
-      const linksWidget = this.graphLayout.getLinksWidget();
-
-      const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id)
-
-      links.forEach((link) => {
-        linksWidget.redrawLink(this.svg, link);
-      });
-    });
-
     this.graphLayout.draw(this.svg, this.context);
-
     this.isReady = true;
   }
 

@@ -4,11 +4,18 @@ import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { GraphLayout } from "./graph-layout";
 import { Layer } from "../models/layer";
+import { LinksWidget } from "./links";
+import { NodesWidget } from "./nodes";
+import { DrawingsWidget } from "./drawings";
 
 
 @Injectable()
 export class LayersWidget implements Widget {
-  public graphLayout: GraphLayout;
+  constructor(
+    private linksWidget: LinksWidget,
+    private nodesWidget: NodesWidget,
+    private drawingsWidget: DrawingsWidget
+  ) {}
 
   public draw(view: SVGSelection, layers: Layer[]) {
 
@@ -56,18 +63,9 @@ export class LayersWidget implements Widget {
       .exit()
         .remove();
 
-    // @FixMe
-    this.graphLayout
-      .getLinksWidget()
-      .draw(links_container);
-
-    this.graphLayout
-      .getNodesWidget()
-      .draw(nodes_container);
-
-    this.graphLayout
-      .getDrawingsWidget()
-      .draw(drawings_container);
+    this.linksWidget.draw(links_container);
+    this.nodesWidget.draw(nodes_container);
+    this.drawingsWidget.draw(drawings_container);
 
   }
 }
