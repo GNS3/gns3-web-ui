@@ -10,7 +10,7 @@ import { LayersManager } from './managers/layers-manager';
 import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { GraphLayout } from './widgets/graph-layout';
 import { LinksWidget } from './widgets/links';
-import { NodesWidget } from './widgets/nodes';
+import { NodesWidget, NodeEvent } from './widgets/nodes';
 import { DrawingsWidget } from './widgets/drawings';
 import { DrawingLineWidget } from './widgets/drawing-line';
 import { SelectionTool } from './tools/selection-tool';

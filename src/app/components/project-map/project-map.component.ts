@@ -28,6 +28,7 @@ import { SelectionManager } from "../../cartography/managers/selection-manager";
 import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
+import { NodeEvent } from '../../cartography/widgets/nodes';
 
 
 @Component({
@@ -194,26 +195,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
 
-    this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
-      this.nodeContextMenu.open(node, event.clientY, event.clientX);
+
+    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeEvent) => {
+      this.nodeContextMenu.open(eventNode.node, eventNode.event.clientY, eventNode.event.clientX);
     });
 
-    this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
+    this.subscriptions.push(onContextMenu);
+
+    const onNodeClicked = this.mapChild.graphLayout.getNodesWidget().onNodeClicked.subscribe((eventNode: NodeEvent) => {
       this.selectionManager.clearSelection();
-      this.selectionManager.setSelectedNodes([node]);
+      this.selectionManager.setSelectedNodes([eventNode.node]);
       if (this.drawLineMode) {
-        this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
+        this.nodeSelectInterfaceMenu.open(eventNode.node, eventNode.event.clientY, eventNode.event.clientX);
       }
     });
 
-    this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
-      this.nodesDataSource.update(node);
+    this.subscriptions.push(onNodeClicked);
+
+    const onNodeDragged = this.mapChild.graphLayout.getNodesWidget().onNodeDragged.subscribe((eventNode: NodeEvent) => {
+      this.nodesDataSource.update(eventNode.node);
       this.nodeService
-        .updatePosition(this.server, node, node.x, node.y)
+        .updatePosition(this.server, eventNode.node, eventNode.node.x, eventNode.node.y)
         .subscribe((n: Node) => {
           this.nodesDataSource.update(n);
         });
     });
+
+    this.subscriptions.push(onNodeDragged);
 
     this.subscriptions.push(
       this.selectionManager.subscribe(

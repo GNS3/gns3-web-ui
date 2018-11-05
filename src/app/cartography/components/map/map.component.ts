@@ -1,8 +1,8 @@
 import {
-  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange
+  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
-import { select, Selection } from 'd3-selection';
+import { Selection } from 'd3-selection';
 
 import { Node } from "../../models/node";
 import { Link } from "../../../models/link";
@@ -11,6 +11,8 @@ import { Context } from "../../models/context";
 import { Size } from "../../models/size";
 import { Drawing } from "../../models/drawing";
 import { Symbol } from '../../../models/symbol';
+import { NodeEvent } from '../../widgets/nodes';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -31,6 +33,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
   private graphContext: Context;
+
+  private onNodeDraggingSubscription: Subscription;
 
   // public graphLayout: GraphLayout;
 
@@ -78,6 +82,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.graphLayout.disconnect(this.svg);
+    this.onNodeDraggingSubscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -96,13 +101,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.graphContext.size = this.getSize();
 
-    // this.graphLayout = new GraphLayout();
     this.graphLayout.connect(this.svg, this.graphContext);
 
-    this.graphLayout.getNodesWidget().addOnNodeDraggingCallback((event: any, n: Node) => {
+    this.onNodeDraggingSubscription = this.graphLayout.getNodesWidget().onNodeDragging.subscribe((eventNode: NodeEvent) => {
       const linksWidget = this.graphLayout.getLinksWidget();
 
-      const links = this.links.filter((link) => link.target.node_id === n.node_id || link.source.node_id === n.node_id)
+      const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id)
 
       links.forEach((link) => {
         linksWidget.redrawLink(this.svg, link);

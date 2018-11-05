@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 
 import { event, select, Selection } from "d3-selection";
 import { D3DragEvent, drag } from "d3-drag";
@@ -12,6 +12,14 @@ import { CssFixer } from "../helpers/css-fixer";
 import { FontFixer } from "../helpers/font-fixer";
 
 
+export class NodeEvent {
+  constructor(
+    public event: any,
+    public node: Node
+  ) {}
+}
+
+
 @Injectable()
 export class NodesWidget implements Widget {
   static NODE_LABEL_MARGIN = 3;
@@ -19,12 +27,12 @@ export class NodesWidget implements Widget {
   private debug = false;
   private draggingEnabled = false;
 
-  private onContextMenuCallback: (event: any, node: Node) => void;
-  private onNodeClickedCallback: (event: any, node: Node) => void;
-  private onNodeDraggedCallback: (event: any, node: Node) => void;
-  private onNodeDraggingCallbacks: ((event: any, node: Node) => void)[] = [];
-
   private symbols: Symbol[] = [];
+
+  public onContextMenu = new EventEmitter<NodeEvent>();
+  public onNodeClicked = new EventEmitter<NodeEvent>();
+  public onNodeDragged = new EventEmitter<NodeEvent>();
+  public onNodeDragging = new EventEmitter<NodeEvent>();
 
   constructor(
     private cssFixer: CssFixer,
@@ -33,34 +41,12 @@ export class NodesWidget implements Widget {
     this.symbols = [];
   }
 
-  public setOnContextMenuCallback(onContextMenuCallback: (event: any, node: Node) => void) {
-    this.onContextMenuCallback = onContextMenuCallback;
-  }
-
-  public setOnNodeClickedCallback(onNodeClickedCallback: (event: any, node: Node) => void) {
-    this.onNodeClickedCallback = onNodeClickedCallback;
-  }
-
-  public setOnNodeDraggedCallback(onNodeDraggedCallback: (event: any, node: Node) => void) {
-    this.onNodeDraggedCallback = onNodeDraggedCallback;
-  }
-
-  public addOnNodeDraggingCallback(onNodeDraggingCallback: (event: any, n: Node) => void) {
-    this.onNodeDraggingCallbacks.push(onNodeDraggingCallback);
-  }
-
   public setSymbols(symbols: Symbol[]) {
     this.symbols = symbols;
   }
 
   public setDraggingEnabled(enabled: boolean) {
     this.draggingEnabled = enabled;
-  }
-
-  private executeOnNodeDraggingCallback(callback_event: any, node: Node) {
-    this.onNodeDraggingCallbacks.forEach((callback: (e: any, n: Node) => void) => {
-      callback(callback_event, node);
-    });
   }
 
   public revise(selection: SVGSelection) {
@@ -151,14 +137,10 @@ export class NodesWidget implements Widget {
         .classed('selected', (n: Node) => n.is_selected)
         .on("contextmenu", function (n: Node, i: number) {
           event.preventDefault();
-          if (self.onContextMenuCallback !== null) {
-            self.onContextMenuCallback(event, n);
-          }
+          self.onContextMenu.emit(new NodeEvent(event, n));
         })
         .on('click', (n: Node) => {
-          if (self.onNodeClickedCallback) {
-            self.onNodeClickedCallback(event, n);
-          }
+          this.onNodeClicked.emit(new NodeEvent(event, n));
         });
 
     // update image of node
@@ -192,17 +174,15 @@ export class NodesWidget implements Widget {
       n.y = e.y;
 
       self.revise(select(this));
-      self.executeOnNodeDraggingCallback(event, n);
+      self.onNodeDragging.emit(new NodeEvent(event, n));
     };
 
     const dragging = () => {
       return drag<SVGGElement, Node>()
         .on('drag', callback)
         .on('end', (n: Node) => {
-          if (self.onNodeDraggedCallback) {
-            const e: D3DragEvent<SVGGElement, Node, Node> = event;
-            self.onNodeDraggedCallback(e, n);
-          }
+          const e: D3DragEvent<SVGGElement, Node, Node> = event;
+          self.onNodeDragged.emit(new NodeEvent(e, n));
         });
     };
 
