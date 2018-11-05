@@ -10,7 +10,7 @@ import { LayersManager } from './managers/layers-manager';
 import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { GraphLayout } from './widgets/graph-layout';
 import { LinksWidget } from './widgets/links';
-import { NodesWidget, NodeEvent } from './widgets/nodes';
+import { NodesWidget } from './widgets/nodes';
 import { DrawingsWidget } from './widgets/drawings';
 import { DrawingLineWidget } from './widgets/drawing-line';
 import { SelectionTool } from './tools/selection-tool';
@@ -24,6 +24,7 @@ import { ImageDrawingWidget } from './widgets/drawings/image-drawing';
 import { RectDrawingWidget } from './widgets/drawings/rect-drawing';
 import { TextDrawingWidget } from './widgets/drawings/text-drawing';
 import { LineDrawingWidget } from './widgets/drawings/line-drawing';
+import { Context } from './models/context';
 
 @NgModule({
   imports: [
@@ -55,7 +56,8 @@ import { LineDrawingWidget } from './widgets/drawings/line-drawing';
     ImageDrawingWidget,
     LineDrawingWidget,
     RectDrawingWidget,
-    TextDrawingWidget
+    TextDrawingWidget,
+    Context
   ],
   exports: [MapComponent]
 })

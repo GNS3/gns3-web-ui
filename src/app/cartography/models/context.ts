@@ -1,5 +1,6 @@
 import { Size } from "./size";
 import { Point } from "./point";
+import { Injectable } from "@angular/core";
 
 export class Transformation {
   constructor(
@@ -9,12 +10,13 @@ export class Transformation {
   ) {}
 }
 
-
+@Injectable()
 export class Context {
   public transformation: Transformation;
   public size: Size;
-
-  constructor(public centerZeroZeroPoint = true) {
+  public centerZeroZeroPoint = true;
+  
+  constructor() {
     this.size = new Size(0, 0);
     this.transformation = new Transformation(0, 0, 1);
   }

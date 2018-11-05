@@ -60,20 +60,12 @@ export class GraphLayout implements Widget {
     return this.drawingLineTool;
   }
 
-  public getMovingTool() {
-    return this.movingTool;
-  }
-
   public getSelectionTool() {
     return this.selectionTool;
   }
 
   connect(view: SVGSelection, context: Context) {
     this.drawingLineTool.connect(view, context);
-    this.selectionTool.connect(view, context);
-    this.movingTool.connect(view, context);
-
-    this.selectionTool.activate();
   }
 
   draw(view: SVGSelection, context: Context) {

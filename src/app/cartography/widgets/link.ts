@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { Link } from "../../models/link";

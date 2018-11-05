@@ -48,8 +48,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private ws: Subject<any>;
   private drawLineMode =  false;
-  private movingMode = false;
-  private readonly = false;
+
+  protected tools = {
+    'selection': true,
+    'moving': false
+  };
+
+  private inReadOnlyMode = false;
 
   protected selectionManager: SelectionManager;
 
@@ -189,12 +194,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    if (this.readonly) {
-        this.mapChild.graphLayout.getSelectionTool().deactivate();
-    }
-
     this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
-
 
     const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeEvent) => {
       this.nodeContextMenu.open(eventNode.node, eventNode.event.clientY, eventNode.event.clientX);
@@ -216,9 +216,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.selectionManager.subscribe(
         this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
     );
-
-    this.mapChild.graphLayout
-      .getLinksWidget().getLinkWidget().getInterfaceLabelWidget().setEnabled(this.project.show_interface_labels);
 
     this.mapChild.reload();
   }
@@ -244,28 +241,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
+  public set readonly(value) {
+    this.inReadOnlyMode = value;
+    if (value) {
+      this.tools.selection = false;
+    }
+    else {
+      this.tools.selection = true;
+    }
+  }
+
+  public get readonly() {
+    return this.inReadOnlyMode;
+  }
+
+  public toggleMovingMode() {
+    this.tools.moving = !this.tools.moving;
+    if (!this.readonly) {
+      this.tools.selection = !this.tools.moving;
+    }
+  }
+
   public toggleDrawLineMode() {
     this.drawLineMode = !this.drawLineMode;
     if (!this.drawLineMode) {
       this.mapChild.graphLayout.getDrawingLineTool().stop();
     }
   }
-
-  public toggleMovingMode() {
-    this.movingMode = !this.movingMode;
-    if (this.movingMode) {
-      if (!this.readonly) {
-        this.mapChild.graphLayout.getSelectionTool().deactivate();
-      }
-      this.mapChild.graphLayout.getMovingTool().activate();
-    } else {
-      this.mapChild.graphLayout.getMovingTool().deactivate();
-      if (!this.readonly) {
-        this.mapChild.graphLayout.getSelectionTool().activate();
-      }
-    }
-  }
-
 
   public onChooseInterface(event) {
     const node: Node = event.node;
@@ -294,10 +296,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
-
-    this.mapChild.graphLayout.getLinksWidget().getLinkWidget().getInterfaceLabelWidget()
-      .setEnabled(this.project.show_interface_labels);
-    this.mapChild.reload();
   }
 
   public ngOnDestroy() {

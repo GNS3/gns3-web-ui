@@ -13,6 +13,9 @@ import { Drawing } from "../../models/drawing";
 import { Symbol } from '../../../models/symbol';
 import { NodeEvent, NodesWidget } from '../../widgets/nodes';
 import { Subscription } from 'rxjs';
+import { InterfaceLabelWidget } from '../../widgets/interface-label';
+import { SelectionTool } from '../../tools/selection-tool';
+import { MovingTool } from '../../tools/moving-tool';
 
 
 @Component({
@@ -34,7 +37,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private d3: D3;
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-  private graphContext: Context;
+  
+  private isReady = false;
 
   private onNodeDraggingSubscription: Subscription;
 
@@ -43,9 +47,13 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   constructor(
+    private context: Context,
     protected element: ElementRef,
     protected d3Service: D3Service,
     protected nodesWidget: NodesWidget,
+    protected interfaceLabelWidget: InterfaceLabelWidget,
+    protected selectionToolWidget: SelectionTool,
+    protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout
     ) {
     this.d3 = d3Service.getD3();
@@ -56,6 +64,28 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('show-interface-labels') 
   set showInterfaceLabels(value) {
     this.settings.show_interface_labels = value;
+    this.interfaceLabelWidget.setEnabled(value);
+    if (this.isReady) {
+      this.redraw();
+    }
+  }
+
+  @Input('moving-tool')
+  set movingTool(value) {
+    this.movingToolWidget.setEnabled(value);
+
+    if(this.isReady) {
+      this.redraw();
+    }
+  }
+
+   @Input('selection-tool')
+   set selectionTool(value) {
+    this.selectionToolWidget.setEnabled(value);
+
+     if(this.isReady) {
+       this.redraw();
+     }
   }
   
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -88,22 +118,17 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    const d3 = this.d3;
-
     if (this.parentNativeElement !== null) {
       this.createGraph(this.parentNativeElement);
     }
+    this.context.size = this.getSize();
   }
 
   public createGraph(domElement: HTMLElement) {
     const rootElement = this.d3.select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
 
-    this.graphContext = new Context(true);
-
-    this.graphContext.size = this.getSize();
-
-    this.graphLayout.connect(this.svg, this.graphContext);
+    this.graphLayout.connect(this.svg, this.context);
 
     this.onNodeDraggingSubscription = this.graphLayout.getNodesWidget().onNodeDragging.subscribe((eventNode: NodeEvent) => {
       const linksWidget = this.graphLayout.getLinksWidget();
@@ -115,7 +140,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       });
     });
 
-    this.graphLayout.draw(this.svg, this.graphContext);
+    this.graphLayout.draw(this.svg, this.context);
+
+    this.isReady = true;
   }
 
   public getSize(): Size {
@@ -132,7 +159,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private changeLayout() {
     if (this.parentNativeElement != null) {
-      this.graphContext.size = this.getSize();
+      this.context.size = this.getSize();
     }
 
     this.graphLayout.setNodes(this.nodes);
@@ -174,7 +201,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public redraw() {
-    this.graphLayout.draw(this.svg, this.graphContext);
+    this.graphLayout.draw(this.svg, this.context);
   }
 
   public reload() {

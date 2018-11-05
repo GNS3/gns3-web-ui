@@ -7,6 +7,8 @@
     [width]="project.scene_width"
     [height]="project.scene_height"
     [show-interface-labels]="project.show_interface_labels"
+    [selection-tool]="tools.selection"
+    [moving-tool]="tools.moving"
     (onNodeDragged)="onNodeDragged($event)"
   ></app-map>
 
@@ -53,7 +55,7 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row>
-        <button mat-icon-button [color]="movingMode ? 'primary': 'basic'" (click)="toggleMovingMode()">
+        <button mat-icon-button [color]="tools.moving ? 'primary': 'basic'" (click)="toggleMovingMode()">
           <mat-icon>zoom_out_map</mat-icon>
         </button>
       </mat-toolbar-row>
