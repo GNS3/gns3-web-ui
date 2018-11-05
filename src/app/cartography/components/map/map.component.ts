@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter
+  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter, Output
 } from '@angular/core';
 import { D3, D3Service } from 'd3-ng2-service';
 import { Selection } from 'd3-selection';
@@ -11,7 +11,7 @@ import { Context } from "../../models/context";
 import { Size } from "../../models/size";
 import { Drawing } from "../../models/drawing";
 import { Symbol } from '../../../models/symbol';
-import { NodeEvent } from '../../widgets/nodes';
+import { NodeEvent, NodesWidget } from '../../widgets/nodes';
 import { Subscription } from 'rxjs';
 
 
@@ -29,14 +29,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
+  @Output() onNodeDragged: EventEmitter<NodeEvent>;
+
   private d3: D3;
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
   private graphContext: Context;
 
   private onNodeDraggingSubscription: Subscription;
-
-  // public graphLayout: GraphLayout;
 
   protected settings = {
     'show_interface_labels': true
@@ -45,10 +45,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     protected element: ElementRef,
     protected d3Service: D3Service,
+    protected nodesWidget: NodesWidget,
     public graphLayout: GraphLayout
     ) {
     this.d3 = d3Service.getD3();
     this.parentNativeElement = element.nativeElement;
+    this.onNodeDragged = nodesWidget.onNodeDragged;
   }
 
   @Input('show-interface-labels') 

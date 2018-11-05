@@ -212,17 +212,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(onNodeClicked);
 
-    const onNodeDragged = this.mapChild.graphLayout.getNodesWidget().onNodeDragged.subscribe((eventNode: NodeEvent) => {
-      this.nodesDataSource.update(eventNode.node);
-      this.nodeService
-        .updatePosition(this.server, eventNode.node, eventNode.node.x, eventNode.node.y)
-        .subscribe((n: Node) => {
-          this.nodesDataSource.update(n);
-        });
-    });
-
-    this.subscriptions.push(onNodeDragged);
-
     this.subscriptions.push(
       this.selectionManager.subscribe(
         this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
@@ -243,6 +232,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           .subscribe((nodes: Node[]) => {
             this.nodesDataSource.set(nodes);
         });
+      });
+  }
+
+  onNodeDragged(nodeEvent: NodeEvent) {
+    this.nodesDataSource.update(nodeEvent.node);
+    this.nodeService
+      .updatePosition(this.server, nodeEvent.node, nodeEvent.node.x, nodeEvent.node.y)
+      .subscribe((n: Node) => {
+        this.nodesDataSource.update(n);
       });
   }
 
