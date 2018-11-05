@@ -8,6 +8,7 @@ import { LinksWidget } from "./links";
 import { Node } from "../models/node";
 import { Link } from "../../models/link";
 import { LinkWidget } from "./link";
+import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
 
 
 describe('LinksWidget', () => {
@@ -15,10 +16,12 @@ describe('LinksWidget', () => {
   let widget: LinksWidget;
   let layersEnter: Selection<SVGGElement, Layer, SVGGElement, any>;
   let layer: Layer;
+  let mockedLinkWidget: LinkWidget;
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    widget = new LinksWidget();
+    mockedLinkWidget = instance(mock(LinkWidget));
+    widget = new LinksWidget(new MultiLinkCalculatorHelper(), mockedLinkWidget);
 
     const node_1 = new Node();
     node_1.node_id = "1";
