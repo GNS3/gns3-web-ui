@@ -17,6 +17,7 @@ import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { LinksWidget } from '../../widgets/links';
+import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 
 
 @Component({
@@ -42,6 +43,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private isReady = false;
 
   private onNodeDraggingSubscription: Subscription;
+  private onChangesDetected: Subscription;
 
   protected settings = {
     'show_interface_labels': true
@@ -49,6 +51,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private context: Context,
+    private mapChangeDetectorRef: MapChangeDetectorRef,
     protected element: ElementRef,
     protected d3Service: D3Service,
     protected nodesWidget: NodesWidget,
@@ -67,27 +70,19 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   set showInterfaceLabels(value) {
     this.settings.show_interface_labels = value;
     this.interfaceLabelWidget.setEnabled(value);
-    if (this.isReady) {
-      this.redraw();
-    }
+    this.mapChangeDetectorRef.detectChanges();
   }
 
   @Input('moving-tool')
   set movingTool(value) {
     this.movingToolWidget.setEnabled(value);
-
-    if(this.isReady) {
-      this.redraw();
-    }
+    this.mapChangeDetectorRef.detectChanges();
   }
 
-   @Input('selection-tool')
-   set selectionTool(value) {
+  @Input('selection-tool')
+  set selectionTool(value) {
     this.selectionToolWidget.setEnabled(value);
-
-     if(this.isReady) {
-       this.redraw();
-     }
+    this.mapChangeDetectorRef.detectChanges();
   }
   
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -117,6 +112,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.graphLayout.disconnect(this.svg);
     this.onNodeDraggingSubscription.unsubscribe();
+    this.onChangesDetected.unsubscribe();
   }
 
   ngOnInit() {
@@ -131,6 +127,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       links.forEach((link) => {
         this.linksWidget.redrawLink(this.svg, link);
       });
+    });
+
+    this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
+      if (this.isReady) {
+        this.reload();
+      }
     });
   }
 

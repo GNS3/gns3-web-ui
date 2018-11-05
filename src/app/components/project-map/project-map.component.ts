@@ -29,6 +29,7 @@ import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
 import { NodeEvent } from '../../cartography/widgets/nodes';
+import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 
 
 @Component({
@@ -74,6 +75,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               private linkService: LinkService,
               private progressService: ProgressService,
               private projectWebServiceHandler: ProjectWebServiceHandler,
+              private mapChangeDetectorRef: MapChangeDetectorRef,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
               protected drawingsDataSource: DrawingsDataSource,
@@ -130,27 +132,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
-        if (this.mapChild) {
-          this.mapChild.reload();
-        }
+        this.mapChangeDetectorRef.detectChanges();
       })
     );
 
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         this.nodes = nodes;
-        if (this.mapChild) {
-          this.mapChild.reload();
-        }
+        this.mapChangeDetectorRef.detectChanges();
       })
     );
 
     this.subscriptions.push(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links = links;
-        if (this.mapChild) {
-          this.mapChild.reload();
-        }
+        this.mapChangeDetectorRef.detectChanges();
       })
     );
   }
@@ -217,7 +213,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
     );
 
-    this.mapChild.reload();
+    this.mapChangeDetectorRef.detectChanges();
   }
 
   onNodeCreation(appliance: Appliance) {
