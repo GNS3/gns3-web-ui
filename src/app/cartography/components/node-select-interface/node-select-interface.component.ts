@@ -1,8 +1,9 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy} from '@angular/core';
 import {MatMenuTrigger} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Node} from "../../../cartography/models/node";
 import {Port} from "../../../models/port";
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -17,11 +18,13 @@ export class NodeSelectInterfaceComponent implements OnInit {
 
   protected topPosition;
   protected leftPosition;
+
   public node: Node;
 
   constructor(
     private sanitizer: DomSanitizer,
-    private changeDetector: ChangeDetectorRef) {}
+    private changeDetector: ChangeDetectorRef,
+    ) {}
 
   ngOnInit() {
     this.setPosition(0, 0);

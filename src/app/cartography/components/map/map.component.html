@@ -2,3 +2,5 @@
     class="map"
     preserveAspectRatio="none"
 ></svg>
+
+<app-draw-link-tool *ngIf="drawLinkTool" (linkCreated)="linkCreated($event)"></app-draw-link-tool>

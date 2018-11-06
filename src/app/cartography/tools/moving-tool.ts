@@ -9,8 +9,6 @@ import { Context} from "../models/context";
 
 @Injectable()
 export class MovingTool {
-  // private selection: SVGSelection;
-  
   private zoom: ZoomBehavior<SVGSVGElement, any>;
   private enabled = false;
   private needsDeactivate = false;

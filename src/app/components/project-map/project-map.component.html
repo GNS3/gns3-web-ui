@@ -9,9 +9,10 @@
     [show-interface-labels]="project.show_interface_labels"
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
+    [draw-link-tool]="tools.draw_link"
     (onNodeDragged)="onNodeDragged($event)"
+    (onLinkCreated)="onLinkCreated($event)"
   ></app-map>
-
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
 
@@ -49,7 +50,7 @@
       </mat-menu>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button mat-icon-button [color]="drawLineMode ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
+        <button mat-icon-button [color]="tools.draw_link ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
       </mat-toolbar-row>
@@ -78,7 +79,6 @@
   </div>
 
   <app-node-context-menu [project]="project" [server]="server"></app-node-context-menu>
-  <app-node-select-interface (onChooseInterface)="onChooseInterface($event)"></app-node-select-interface>
 </div>
 
 <app-progress></app-progress>

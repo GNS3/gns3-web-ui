@@ -39,7 +39,6 @@ import { StartNodeActionComponent } from './components/project-map/node-context-
 import { StopNodeActionComponent } from './components/project-map/node-context-menu/actions/stop-node-action/stop-node-action.component';
 import { ApplianceComponent } from './components/appliance/appliance.component';
 import { ApplianceListDialogComponent } from './components/appliance/appliance-list-dialog/appliance-list-dialog.component';
-import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { CartographyModule } from './cartography/cartography.module';
 import { ToasterService } from './services/toaster.service';
 import { ProjectWebServiceHandler } from "./handlers/project-web-service-handler";
@@ -99,7 +98,6 @@ if (environment.production) {
     StopNodeActionComponent,
     ApplianceComponent,
     ApplianceListDialogComponent,
-    NodeSelectInterfaceComponent,
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     ProjectMapShortcutsComponent,

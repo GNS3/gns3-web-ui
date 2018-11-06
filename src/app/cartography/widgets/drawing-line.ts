@@ -15,7 +15,7 @@ export class DrawingLineWidget {
   private selection: SVGSelection;
   private drawing = false;
   private data = {};
-
+  
   public start(x: number, y: number, data: {}) {
     const self = this;
 

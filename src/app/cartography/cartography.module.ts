@@ -25,13 +25,20 @@ import { RectDrawingWidget } from './widgets/drawings/rect-drawing';
 import { TextDrawingWidget } from './widgets/drawings/text-drawing';
 import { LineDrawingWidget } from './widgets/drawings/line-drawing';
 import { Context } from './models/context';
+import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
+import { NodeSelectInterfaceComponent } from './components/node-select-interface/node-select-interface.component';
+import { MatMenuModule, MatIconModule } from '@angular/material';
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
+    MatMenuModule,
+    MatIconModule
   ],
   declarations: [
     MapComponent,
+    DrawLinkToolComponent,
+    NodeSelectInterfaceComponent
   ],
   providers: [
     CssFixer,
@@ -57,7 +64,7 @@ import { Context } from './models/context';
     LineDrawingWidget,
     RectDrawingWidget,
     TextDrawingWidget,
-    Context
+    Context,
   ],
   exports: [MapComponent]
 })

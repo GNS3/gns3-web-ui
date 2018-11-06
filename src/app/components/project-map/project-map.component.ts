@@ -18,8 +18,6 @@ import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.
 import { Appliance } from "../../models/appliance";
 import { NodeService } from "../../services/node.service";
 import { Symbol } from "../../models/symbol";
-import { NodeSelectInterfaceComponent } from "./node-select-interface/node-select-interface.component";
-import { Port } from "../../models/port";
 import { LinkService } from "../../services/link.service";
 import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
@@ -30,6 +28,7 @@ import { DrawingsDataSource } from "../../cartography/datasources/drawings-datas
 import { ProgressService } from "../../common/progress/progress.service";
 import { NodeEvent } from '../../cartography/widgets/nodes';
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
+import { LinkCreated } from '../../cartography/components/draw-link-tool/draw-link-tool.component';
 
 
 @Component({
@@ -48,11 +47,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
 
   private ws: Subject<any>;
-  private drawLineMode =  false;
 
   protected tools = {
     'selection': true,
-    'moving': false
+    'moving': false,
+    'draw_link': false
   };
 
   private inReadOnlyMode = false;
@@ -62,7 +61,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
-  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
   private subscriptions: Subscription[];
 
@@ -198,16 +196,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(onContextMenu);
 
-    const onNodeClicked = this.mapChild.graphLayout.getNodesWidget().onNodeClicked.subscribe((eventNode: NodeEvent) => {
-      this.selectionManager.clearSelection();
-      this.selectionManager.setSelectedNodes([eventNode.node]);
-      if (this.drawLineMode) {
-        this.nodeSelectInterfaceMenu.open(eventNode.node, eventNode.event.clientY, eventNode.event.clientX);
-      }
-    });
-
-    this.subscriptions.push(onNodeClicked);
-
     this.subscriptions.push(
       this.selectionManager.subscribe(
         this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
@@ -259,30 +247,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public toggleDrawLineMode() {
-    this.drawLineMode = !this.drawLineMode;
-    if (!this.drawLineMode) {
-      this.mapChild.graphLayout.getDrawingLineTool().stop();
-    }
+    this.tools.draw_link = !this.tools.draw_link;
   }
 
-  public onChooseInterface(event) {
-    const node: Node = event.node;
-    const port: Port = event.port;
-    const drawingLineTool = this.mapChild.graphLayout.getDrawingLineTool();
-    if (drawingLineTool.isDrawing()) {
-      const data = drawingLineTool.stop();
-      this.onLineCreation(data['node'], data['port'], node, port);
-    } else {
-      drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
-        'node': node,
-        'port': port
-      });
-    }
-  }
-
-  public onLineCreation(source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
+  public onLinkCreated(linkCreated: LinkCreated) {
     this.linkService
-      .createLink(this.server, source_node, source_port, target_node, target_port)
+      .createLink(this.server, linkCreated.sourceNode, linkCreated.sourcePort, linkCreated.targetNode, linkCreated.targetPort)
       .subscribe(() => {
         this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
           this.linksDataSource.set(links);

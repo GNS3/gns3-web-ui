@@ -18,6 +18,7 @@ import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { LinksWidget } from '../../widgets/links';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
+import { LinkCreated } from '../draw-link-tool/draw-link-tool.component';
 
 
 @Component({
@@ -35,6 +36,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
 
   @Output() onNodeDragged: EventEmitter<NodeEvent>;
+  @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
   private d3: D3;
   private parentNativeElement: any;
@@ -84,6 +86,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.selectionToolWidget.setEnabled(value);
     this.mapChangeDetectorRef.detectChanges();
   }
+
+  @Input('draw-link-tool') drawLinkTool: boolean;
   
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
     if (
@@ -156,6 +160,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     return new Size(width, height);
   }
 
+  protected linkCreated(evt) {
+    this.onLinkCreated.emit(evt);
+  }
+  
   private changeLayout() {
     if (this.parentNativeElement != null) {
       this.context.size = this.getSize();
@@ -206,6 +214,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   public reload() {
     this.onLinksChange(null);
     this.redraw();
+  }
+
+  protected onLinkdddCreated(evt) {
+
   }
 
   @HostListener('window:resize', ['$event'])
