@@ -11,7 +11,7 @@ import { LinkWidget } from "./link";
 export class LinksWidget implements Widget {
   constructor(
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
-    private linkWidget: LinkWidget
+    private linkWidget: LinkWidget,
   ) {
   }
 
