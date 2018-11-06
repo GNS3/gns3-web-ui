@@ -191,7 +191,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
 
     const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeEvent) => {
-      this.nodeContextMenu.open(eventNode.node, eventNode.event.clientY, eventNode.event.clientX);
+      this.nodeContextMenu.open(
+        eventNode.node,
+        eventNode.event.clientY,
+        eventNode.event.clientX
+      );
     });
 
     this.subscriptions.push(onContextMenu);

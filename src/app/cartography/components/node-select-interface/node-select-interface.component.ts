@@ -3,7 +3,6 @@ import {MatMenuTrigger} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Node} from "../../../cartography/models/node";
 import {Port} from "../../../models/port";
-import { Subscription } from 'rxjs';
 
 
 @Component({

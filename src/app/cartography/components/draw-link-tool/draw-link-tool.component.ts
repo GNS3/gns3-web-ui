@@ -35,7 +35,11 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onNodeClicked = this.nodesWidget.onNodeClicked.subscribe((eventNode: NodeEvent) => {
-        this.nodeSelectInterfaceMenu.open(eventNode.node, eventNode.event.clientY, eventNode.event.clientX);
+        this.nodeSelectInterfaceMenu.open(
+          eventNode.node,
+          eventNode.event.clientY,
+          eventNode.event.clientX
+        );
     });
   }
 
@@ -46,17 +50,9 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
     this.onNodeClicked.unsubscribe();
   }
 
-  // public toggleDrawLineMode() {
-  //   this.drawLineMode = !this.drawLineMode;
-  //   if (!this.drawLineMode) {
-  //     this.mapChild.graphLayout.getDrawingLineTool().stop();
-  //   }
-  // }
-
   public onChooseInterface(event) {
     const node: Node = event.node;
     const port: Port = event.port;
-    // const drawingLineTool = this.mapChild.graphLayout.getDrawingLineTool();
     if (this.drawingLineTool.isDrawing()) {
       const data = this.drawingLineTool.stop();
       this.linkCreated.emit(new LinkCreated(data['node'], data['port'], node, port));

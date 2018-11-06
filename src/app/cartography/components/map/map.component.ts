@@ -163,7 +163,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   protected linkCreated(evt) {
     this.onLinkCreated.emit(evt);
   }
-  
+
   private changeLayout() {
     if (this.parentNativeElement != null) {
       this.context.size = this.getSize();
@@ -214,10 +214,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   public reload() {
     this.onLinksChange(null);
     this.redraw();
-  }
-
-  protected onLinkdddCreated(evt) {
-
   }
 
   @HostListener('window:resize', ['$event'])

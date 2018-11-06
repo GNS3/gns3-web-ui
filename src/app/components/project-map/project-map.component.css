@@ -85,3 +85,14 @@ g.node text,
   padding-right: 15px;
 
 }
+
+.context-menu-items .mat-menu-item {
+  line-height: 24px !important;
+  height: 24px !important;
+  font-size: 13px !important;
+  padding: 0 6px;
+}
+
+.context-menu-items .mat-menu-item .mat-icon {
+  margin-right: 3px;
+}
