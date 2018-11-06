@@ -19,6 +19,7 @@ import { LinksWidget } from '../../widgets/links';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { NodeDragging, NodeDragged } from '../../events/nodes';
 import { LinkCreated } from '../../events/links';
+import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 
 
 @Component({
@@ -51,6 +52,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
+    private canvasSizeDetector: CanvasSizeDetector,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected linksWidget: LinksWidget,
@@ -121,7 +123,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.context.size = this.getSize();
 
     this.onNodeDraggingSubscription = this.nodesWidget.onNodeDragging.subscribe((eventNode: NodeDragging) => {
-      const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id)
+      const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id);
 
       links.forEach((link) => {
         this.linksWidget.redrawLink(this.svg, link);
@@ -144,15 +146,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getSize(): Size {
-    let width = document.documentElement.clientWidth;
-    let height = document.documentElement.clientHeight;
-    if (this.width > width) {
-      width = this.width;
-    }
-    if (this.height > height) {
-      height = this.height;
-    }
-    return new Size(width, height);
+    return this.canvasSizeDetector.getOptimalSize(this.width, this.height);
   }
 
   protected linkCreated(evt) {

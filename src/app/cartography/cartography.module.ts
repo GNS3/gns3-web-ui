@@ -15,6 +15,7 @@ import { LayersManager } from './managers/layers-manager';
 import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { Context } from './models/context';
 import { D3_MAP_IMPORTS } from './d3-map.imports';
+import { CanvasSizeDetector } from './helpers/canvas-size-detector';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { D3_MAP_IMPORTS } from './d3-map.imports';
     QtDasharrayFixer,
     LayersManager,
     MapChangeDetectorRef,
+    CanvasSizeDetector,
     Context,
     ...D3_MAP_IMPORTS
   ],
