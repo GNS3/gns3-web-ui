@@ -2,6 +2,7 @@ import { TestSVGCanvas } from "../../testing";
 import { Drawing } from "../../models/drawing";
 import { EllipseDrawingWidget } from "./ellipse-drawing";
 import { EllipseElement } from "../../models/drawings/ellipse-element";
+import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
 describe('EllipseDrawingWidget', () => {
@@ -13,7 +14,7 @@ describe('EllipseDrawingWidget', () => {
   beforeEach(() => {
     svg = new TestSVGCanvas();
     drawing = new Drawing();
-    widget = new EllipseDrawingWidget();
+    widget = new EllipseDrawingWidget(new QtDasharrayFixer());
   });
 
   afterEach(() => {

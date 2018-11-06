@@ -1,18 +1,20 @@
+import { Injectable } from "@angular/core";
+
 import { SVGSelection } from "../models/types";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { InterfaceLabel } from "../models/interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { select } from "d3-selection";
 
-
+@Injectable()
 export class InterfaceLabelWidget {
   static SURROUNDING_TEXT_BORDER = 5;
 
-  private cssFixer: CssFixer;
   private enabled = true;
 
-  constructor() {
-    this.cssFixer = new CssFixer();
+  constructor(
+    private cssFixer: CssFixer
+  ) {
   }
 
   public setEnabled(enabled: boolean) {
@@ -27,7 +29,7 @@ export class InterfaceLabelWidget {
         const sourceInterface = new InterfaceLabel(
           l.link_id,
           'source',
-          Math.round( l.source.x + l.nodes[0].label.x),
+          Math.round(l.source.x + l.nodes[0].label.x),
           Math.round(l.source.y + l.nodes[0].label.y),
           l.nodes[0].label.text,
           l.nodes[0].label.style,

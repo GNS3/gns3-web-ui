@@ -1,6 +1,6 @@
 <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition" *ngIf="node">
   <span [matMenuTriggerFor]="contextMenu"></span>
-  <mat-menu #contextMenu="matMenu">
+  <mat-menu #contextMenu="matMenu" class="context-menu-items">
     <app-start-node-action [server]="server" [node]="node"></app-start-node-action>
     <app-stop-node-action [server]="server" [node]="node"></app-stop-node-action>
     <app-move-layer-up-action *ngIf="!projectService.isReadOnly(project)" [server]="server" [node]="node"></app-move-layer-up-action>

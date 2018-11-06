@@ -2,6 +2,7 @@ import { TestSVGCanvas } from "../../testing";
 import { TextDrawingWidget } from "./text-drawing";
 import { Drawing } from "../../models/drawing";
 import { TextElement } from "../../models/drawings/text-element";
+import { FontFixer } from "../../helpers/font-fixer";
 
 describe('TextDrawingWidget', () => {
   let svg: TestSVGCanvas;
@@ -12,7 +13,7 @@ describe('TextDrawingWidget', () => {
   beforeEach(() => {
     svg = new TestSVGCanvas();
     drawing = new Drawing();
-    widget = new TextDrawingWidget();
+    widget = new TextDrawingWidget(new FontFixer());
   });
 
   afterEach(() => {

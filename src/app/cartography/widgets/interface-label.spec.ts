@@ -2,11 +2,12 @@ import { Selection } from "d3-selection";
 
 import { TestSVGCanvas } from "../testing";
 import { Node } from "../models/node";
-import { Link } from "../models/link";
-import { LinkNode } from "../models/link-node";
+import { Link } from "../../models/link";
+import { LinkNode } from "../../models/link-node";
 import { Label } from "../models/label";
 import { InterfaceLabel } from "../models/interface-label";
 import { InterfaceLabelWidget } from "./interface-label";
+import { CssFixer } from "../helpers/css-fixer";
 
 
 describe('InterfaceLabelsWidget', () => {
@@ -66,7 +67,7 @@ describe('InterfaceLabelsWidget', () => {
       .exit()
         .remove();
 
-    widget = new InterfaceLabelWidget();
+    widget = new InterfaceLabelWidget(new CssFixer());
   });
 
   afterEach(() => {

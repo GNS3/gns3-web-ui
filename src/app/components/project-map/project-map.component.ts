@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -8,33 +8,27 @@ import { map, mergeMap } from "rxjs/operators";
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
 import { SymbolService } from '../../services/symbol.service';
-import { Link } from "../../cartography/models/link";
+import { Link } from "../../models/link";
 import { MapComponent } from "../../cartography/components/map/map.component";
 import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
 import { Server } from "../../models/server";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material";
-import { SnapshotService } from "../../services/snapshot.service";
-import { Snapshot } from "../../models/snapshot";
-import { ProgressDialogService } from "../../common/progress-dialog/progress-dialog.service";
-import { ProgressDialogComponent } from "../../common/progress-dialog/progress-dialog.component";
 import { Drawing } from "../../cartography/models/drawing";
 import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.component";
 import { Appliance } from "../../models/appliance";
 import { NodeService } from "../../services/node.service";
-import { Symbol } from "../../cartography/models/symbol";
-import { NodeSelectInterfaceComponent } from "./node-select-interface/node-select-interface.component";
-import { Port } from "../../models/port";
+import { Symbol } from "../../models/symbol";
 import { LinkService } from "../../services/link.service";
-import { ToasterService } from '../../services/toaster.service';
 import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
 import { SelectionManager } from "../../cartography/managers/selection-manager";
-import { InRectangleHelper } from "../../cartography/components/map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
-import { SettingsService } from "../../services/settings.service";
 import { ProgressService } from "../../common/progress/progress.service";
+import { NodeEvent } from '../../cartography/widgets/nodes';
+import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
+import { LinkCreated } from '../../cartography/components/draw-link-tool/draw-link-tool.component';
 
 
 @Component({
@@ -53,16 +47,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
 
   private ws: Subject<any>;
-  private drawLineMode =  false;
-  private movingMode = false;
-  private readonly = false;
+
+  protected tools = {
+    'selection': true,
+    'moving': false,
+    'draw_link': false
+  };
+
+  private inReadOnlyMode = false;
 
   protected selectionManager: SelectionManager;
 
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
-  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
   private subscriptions: Subscription[];
 
@@ -71,15 +69,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               private serverService: ServerService,
               private projectService: ProjectService,
               private symbolService: SymbolService,
-              private snapshotService: SnapshotService,
               private nodeService: NodeService,
               private linkService: LinkService,
-              private dialog: MatDialog,
-              private progressDialogService: ProgressDialogService,
               private progressService: ProgressService,
-              private toaster: ToasterService,
               private projectWebServiceHandler: ProjectWebServiceHandler,
-              private settingsService: SettingsService,
+              private mapChangeDetectorRef: MapChangeDetectorRef,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
               protected drawingsDataSource: DrawingsDataSource,
@@ -134,29 +128,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.drawingsDataSource.connect().subscribe((drawings: Drawing[]) => {
+      this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
-        if (this.mapChild) {
-          this.mapChild.reload();
-        }
+        this.mapChangeDetectorRef.detectChanges();
       })
     );
 
     this.subscriptions.push(
-      this.nodesDataSource.connect().subscribe((nodes: Node[]) => {
+      this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         this.nodes = nodes;
-        if (this.mapChild) {
-          this.mapChild.reload();
-        }
+        this.mapChangeDetectorRef.detectChanges();
       })
     );
 
     this.subscriptions.push(
-      this.linksDataSource.connect().subscribe((links: Link[]) => {
+      this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links = links;
-        if (this.mapChild) {
-          this.mapChild.reload();
-        }
+        this.mapChangeDetectorRef.detectChanges();
       })
     );
   }
@@ -200,39 +188,24 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    if (this.readonly) {
-        this.mapChild.graphLayout.getSelectionTool().deactivate();
-    }
-
     this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
 
-    this.mapChild.graphLayout.getNodesWidget().setOnContextMenuCallback((event: any, node: Node) => {
-      this.nodeContextMenu.open(node, event.clientY, event.clientX);
+    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeEvent) => {
+      this.nodeContextMenu.open(
+        eventNode.node,
+        eventNode.event.clientY,
+        eventNode.event.clientX
+      );
     });
 
-    this.mapChild.graphLayout.getNodesWidget().setOnNodeClickedCallback((event: any, node: Node) => {
-      this.selectionManager.clearSelection();
-      this.selectionManager.setSelectedNodes([node]);
-      if (this.drawLineMode) {
-        this.nodeSelectInterfaceMenu.open(node, event.clientY, event.clientX);
-      }
-    });
-
-    this.mapChild.graphLayout.getNodesWidget().setOnNodeDraggedCallback((event: any, node: Node) => {
-      this.nodesDataSource.update(node);
-      this.nodeService
-        .updatePosition(this.server, node, node.x, node.y)
-        .subscribe((n: Node) => {
-          this.nodesDataSource.update(n);
-        });
-    });
+    this.subscriptions.push(onContextMenu);
 
     this.subscriptions.push(
-      this.selectionManager.subscribe(this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
+      this.selectionManager.subscribe(
+        this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
     );
 
-    this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget().setEnabled(this.project.show_interface_labels);
-    this.mapChild.reload();
+    this.mapChangeDetectorRef.detectChanges();
   }
 
   onNodeCreation(appliance: Appliance) {
@@ -247,76 +220,43 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  public createSnapshotModal() {
-    const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
-      width: '250px',
-    });
-
-    dialogRef.afterClosed().subscribe(snapshot => {
-      if (snapshot) {
-        const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
-
-        const progress = this.progressDialogService.open();
-
-        const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
-          progress.close();
-        }, (response) => {
-          const error = response.json();
-          this.toaster.error(`Cannot create snapshot: ${error.message}`);
-          progress.close();
-        });
-
-        progress.afterClosed().subscribe((result) => {
-          if (result === ProgressDialogComponent.CANCELLED) {
-            subscription.unsubscribe();
-          }
-        });
-      }
-    });
+  onNodeDragged(nodeEvent: NodeEvent) {
+    this.nodesDataSource.update(nodeEvent.node);
+    this.nodeService
+      .updatePosition(this.server, nodeEvent.node, nodeEvent.node.x, nodeEvent.node.y)
+      .subscribe((n: Node) => {
+        this.nodesDataSource.update(n);
+      });
   }
 
-  public toggleDrawLineMode() {
-    this.drawLineMode = !this.drawLineMode;
-    if (!this.drawLineMode) {
-      this.mapChild.graphLayout.getDrawingLineTool().stop();
+  public set readonly(value) {
+    this.inReadOnlyMode = value;
+    if (value) {
+      this.tools.selection = false;
     }
+    else {
+      this.tools.selection = true;
+    }
+  }
+
+  public get readonly() {
+    return this.inReadOnlyMode;
   }
 
   public toggleMovingMode() {
-    this.movingMode = !this.movingMode;
-    if (this.movingMode) {
-      if (!this.readonly) {
-        this.mapChild.graphLayout.getSelectionTool().deactivate();
-      }
-      this.mapChild.graphLayout.getMovingTool().activate();
-    } else {
-      this.mapChild.graphLayout.getMovingTool().deactivate();
-      if (!this.readonly) {
-        this.mapChild.graphLayout.getSelectionTool().activate();
-      }
+    this.tools.moving = !this.tools.moving;
+    if (!this.readonly) {
+      this.tools.selection = !this.tools.moving;
     }
   }
 
-
-  public onChooseInterface(event) {
-    const node: Node = event.node;
-    const port: Port = event.port;
-    const drawingLineTool = this.mapChild.graphLayout.getDrawingLineTool();
-    if (drawingLineTool.isDrawing()) {
-      const data = drawingLineTool.stop();
-      this.onLineCreation(data['node'], data['port'], node, port);
-    } else {
-      drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
-        'node': node,
-        'port': port
-      });
-    }
+  public toggleDrawLineMode() {
+    this.tools.draw_link = !this.tools.draw_link;
   }
 
-  public onLineCreation(source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
+  public onLinkCreated(linkCreated: LinkCreated) {
     this.linkService
-      .createLink(this.server, source_node, source_port, target_node, target_port)
+      .createLink(this.server, linkCreated.sourceNode, linkCreated.sourcePort, linkCreated.targetNode, linkCreated.targetPort)
       .subscribe(() => {
         this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
           this.linksDataSource.set(links);
@@ -326,10 +266,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
-
-    this.mapChild.graphLayout.getLinksWidget().getInterfaceLabelWidget()
-      .setEnabled(this.project.show_interface_labels);
-    this.mapChild.reload();
   }
 
   public ngOnDestroy() {
@@ -344,27 +280,3 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
 }
-
-
-@Component({
-  selector: 'app-create-snapshot-dialog',
-  templateUrl: 'create-snapshot-dialog.html',
-})
-export class CreateSnapshotDialogComponent {
-  snapshot: Snapshot = new Snapshot();
-
-  constructor(
-    public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-  }
-
-  onAddClick(): void {
-    this.dialogRef.close(this.snapshot);
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-}
-

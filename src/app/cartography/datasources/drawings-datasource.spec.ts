@@ -8,7 +8,7 @@ describe('DrawingsDataSource', () => {
 
   beforeEach(() => {
     dataSource = new DrawingsDataSource();
-    dataSource.connect().subscribe((drawings: Drawing[]) => {
+    dataSource.changes.subscribe((drawings: Drawing[]) => {
       data = drawings;
     });
   });

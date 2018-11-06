@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { RectElement } from "../../models/drawings/rect-element";
@@ -5,12 +7,11 @@ import { DrawingWidget } from "./drawing-widget";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
+@Injectable()
 export class RectDrawingWidget implements DrawingWidget {
-  private qtDasharrayFixer: QtDasharrayFixer;
-
-  constructor() {
-    this.qtDasharrayFixer = new QtDasharrayFixer();
-  }
+  constructor(
+    private qtDasharrayFixer: QtDasharrayFixer
+  ) {}
 
   public draw(view: SVGSelection) {
     const drawing = view

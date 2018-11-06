@@ -1,13 +1,13 @@
 import { Subject} from "rxjs";
 
 import { Node } from "../models/node";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 import { Drawing } from "../models/drawing";
 import { Rectangle } from "../models/rectangle";
 import { SelectionManager } from "./selection-manager";
 import { NodesDataSource } from "../datasources/nodes-datasource";
 import { LinksDataSource } from "../datasources/links-datasource";
-import { InRectangleHelper } from "../components/map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "../helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../datasources/drawings-datasource";
 
 

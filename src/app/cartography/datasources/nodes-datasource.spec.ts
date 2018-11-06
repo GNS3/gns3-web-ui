@@ -8,7 +8,7 @@ describe('NodesDataSource', () => {
 
   beforeEach(() => {
     dataSource = new NodesDataSource();
-    dataSource.connect().subscribe((nodes: Node[]) => {
+    dataSource.changes.subscribe((nodes: Node[]) => {
       data = nodes;
     });
   });

@@ -1,5 +1,5 @@
 import { LinksDataSource } from "./links-datasource";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 
 
 describe('LinksDataSource', () => {
@@ -8,7 +8,7 @@ describe('LinksDataSource', () => {
 
   beforeEach(() => {
     dataSource = new LinksDataSource();
-    dataSource.connect().subscribe((links: Link[]) => {
+    dataSource.changes.subscribe((links: Link[]) => {
       data = links;
     });
   });

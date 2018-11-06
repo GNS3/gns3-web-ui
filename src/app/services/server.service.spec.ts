@@ -5,8 +5,6 @@ import { Server } from "../models/server";
 import { IndexedDbService } from "./indexed-db.service";
 import { AngularIndexedDB } from "angular2-indexeddb";
 import Spy = jasmine.Spy;
-import { resolve } from 'path';
-import { reject } from 'q';
 
 
 export class MockedServerService {
