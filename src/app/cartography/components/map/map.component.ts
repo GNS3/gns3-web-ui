@@ -1,8 +1,7 @@
 import {
   Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter, Output
 } from '@angular/core';
-import { D3, D3Service } from 'd3-ng2-service';
-import { Selection } from 'd3-selection';
+import { Selection, select } from 'd3-selection';
 
 import { Node } from "../../models/node";
 import { Link } from "../../../models/link";
@@ -39,11 +38,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Output() onNodeDragged: EventEmitter<NodeDragged>;
   @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
-  private d3: D3;
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-
-  private isReady = false;
 
   private onNodeDraggingSubscription: Subscription;
   private onChangesDetected: Subscription;
@@ -56,7 +52,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     protected element: ElementRef,
-    protected d3Service: D3Service,
     protected nodesWidget: NodesWidget,
     protected linksWidget: LinksWidget,
     protected interfaceLabelWidget: InterfaceLabelWidget,
@@ -64,7 +59,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout
     ) {
-    this.d3 = d3Service.getD3();
     this.parentNativeElement = element.nativeElement;
     this.onNodeDragged = nodesWidget.onNodeDragged;
   }
@@ -135,18 +129,18 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
-      if (this.isReady) {
+      if (this.mapChangeDetectorRef.hasBeenDrawn) {
         this.reload();
       }
     });
   }
 
   public createGraph(domElement: HTMLElement) {
-    const rootElement = this.d3.select(domElement);
+    const rootElement = select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
     this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
-    this.isReady = true;
+    this.mapChangeDetectorRef.hasBeenDrawn = true;
   }
 
   public getSize(): Size {

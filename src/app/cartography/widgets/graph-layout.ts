@@ -22,9 +22,7 @@ export class GraphLayout implements Widget {
   private drawings: Drawing[] = [];
 
   constructor(
-    private linksWidget: LinksWidget,
     private nodesWidget: NodesWidget,
-    private drawingsWidget: DrawingsWidget,
     private drawingLineTool: DrawingLineWidget,
     private selectionTool: SelectionTool,
     private movingTool: MovingTool,
