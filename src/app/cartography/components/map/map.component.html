@@ -2,9 +2,9 @@
     class="map"
     preserveAspectRatio="none"
 >
-<filter id="grayscale">
-    <feColorMatrix id="feGrayscale" type="saturate" values="0"/>
- </filter>
+    <filter id="grayscale">
+        <feColorMatrix id="feGrayscale" type="saturate" values="0"/>
+    </filter>
 </svg>
 
 <app-draw-link-tool *ngIf="drawLinkTool" (linkCreated)="linkCreated($event)"></app-draw-link-tool>
