@@ -10,14 +10,7 @@ import { Symbol } from "../../models/symbol";
 import { Layer  } from "../models/layer";
 import { CssFixer } from "../helpers/css-fixer";
 import { FontFixer } from "../helpers/font-fixer";
-
-
-export class NodeEvent {
-  constructor(
-    public event: any,
-    public node: Node
-  ) {}
-}
+import { NodeDragging, NodeDragged, NodeContextMenu, NodeClicked } from "../events/nodes";
 
 
 @Injectable()
@@ -29,10 +22,10 @@ export class NodesWidget implements Widget {
 
   private symbols: Symbol[] = [];
 
-  public onContextMenu = new EventEmitter<NodeEvent>();
-  public onNodeClicked = new EventEmitter<NodeEvent>();
-  public onNodeDragged = new EventEmitter<NodeEvent>();
-  public onNodeDragging = new EventEmitter<NodeEvent>();
+  public onContextMenu = new EventEmitter<NodeContextMenu>();
+  public onNodeClicked = new EventEmitter<NodeClicked>();
+  public onNodeDragged = new EventEmitter<NodeDragged>();
+  public onNodeDragging = new EventEmitter<NodeDragging>();
 
   constructor(
     private cssFixer: CssFixer,
@@ -137,10 +130,10 @@ export class NodesWidget implements Widget {
         .classed('selected', (n: Node) => n.is_selected)
         .on("contextmenu", function (n: Node, i: number) {
           event.preventDefault();
-          self.onContextMenu.emit(new NodeEvent(event, n));
+          self.onContextMenu.emit(new NodeContextMenu(event, n));
         })
         .on('click', (n: Node) => {
-          this.onNodeClicked.emit(new NodeEvent(event, n));
+          this.onNodeClicked.emit(new NodeClicked(event, n));
         });
 
     // update image of node
@@ -174,7 +167,7 @@ export class NodesWidget implements Widget {
       n.y = e.y;
 
       self.revise(select(this));
-      self.onNodeDragging.emit(new NodeEvent(event, n));
+      self.onNodeDragging.emit(new NodeDragging(event, n));
     };
 
     const dragging = () => {
@@ -182,7 +175,7 @@ export class NodesWidget implements Widget {
         .on('drag', callback)
         .on('end', (n: Node) => {
           const e: D3DragEvent<SVGGElement, Node, Node> = event;
-          self.onNodeDragged.emit(new NodeEvent(e, n));
+          self.onNodeDragged.emit(new NodeDragged(e, n));
         });
     };
 

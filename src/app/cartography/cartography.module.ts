@@ -39,6 +39,6 @@ import { D3_MAP_IMPORTS } from './d3-map.imports';
     Context,
     ...D3_MAP_IMPORTS
   ],
-  exports: [MapComponent]
+  exports: [ MapComponent ]
 })
 export class CartographyModule { }

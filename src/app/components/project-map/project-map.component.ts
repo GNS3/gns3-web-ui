@@ -26,9 +26,9 @@ import { SelectionManager } from "../../cartography/managers/selection-manager";
 import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
-import { NodeEvent } from '../../cartography/widgets/nodes';
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
-import { LinkCreated } from '../../cartography/components/draw-link-tool/draw-link-tool.component';
+import { NodeContextMenu, NodeDragged } from '../../cartography/events/nodes';
+import { LinkCreated } from '../../cartography/events/links';
 
 
 @Component({
@@ -190,7 +190,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   setUpMapCallbacks(project: Project) {
     this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
 
-    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeEvent) => {
+    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       this.nodeContextMenu.open(
         eventNode.node,
         eventNode.event.clientY,
@@ -220,7 +220,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(nodeEvent: NodeEvent) {
+  onNodeDragged(nodeEvent: NodeDragged) {
     this.nodesDataSource.update(nodeEvent.node);
     this.nodeService
       .updatePosition(this.server, nodeEvent.node, nodeEvent.node.x, nodeEvent.node.y)

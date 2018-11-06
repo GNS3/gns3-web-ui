@@ -1,5 +1,6 @@
-import {Link} from "../../models/link";
 import { Injectable } from "@angular/core";
+import { Link } from "../../models/link";
+
 
 @Injectable()
 export class MultiLinkCalculatorHelper {

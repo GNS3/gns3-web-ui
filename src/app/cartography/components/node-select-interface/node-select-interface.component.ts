@@ -1,8 +1,8 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
-import {DomSanitizer} from "@angular/platform-browser";
-import {Node} from "../../../cartography/models/node";
-import {Port} from "../../../models/port";
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { MatMenuTrigger } from "@angular/material";
+import { DomSanitizer } from "@angular/platform-browser";
+import { Node } from "../../../cartography/models/node";
+import { Port } from "../../../models/port";
 
 
 @Component({

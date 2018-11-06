@@ -11,14 +11,15 @@ import { Context } from "../../models/context";
 import { Size } from "../../models/size";
 import { Drawing } from "../../models/drawing";
 import { Symbol } from '../../../models/symbol';
-import { NodeEvent, NodesWidget } from '../../widgets/nodes';
+import { NodesWidget } from '../../widgets/nodes';
 import { Subscription } from 'rxjs';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { LinksWidget } from '../../widgets/links';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { LinkCreated } from '../draw-link-tool/draw-link-tool.component';
+import { NodeDragging, NodeDragged } from '../../events/nodes';
+import { LinkCreated } from '../../events/links';
 
 
 @Component({
@@ -35,7 +36,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() onNodeDragged: EventEmitter<NodeEvent>;
+  @Output() onNodeDragged: EventEmitter<NodeDragged>;
   @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
   private d3: D3;
@@ -125,7 +126,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.context.size = this.getSize();
 
-    this.onNodeDraggingSubscription = this.nodesWidget.onNodeDragging.subscribe((eventNode: NodeEvent) => {
+    this.onNodeDraggingSubscription = this.nodesWidget.onNodeDragging.subscribe((eventNode: NodeDragging) => {
       const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id)
 
       links.forEach((link) => {
