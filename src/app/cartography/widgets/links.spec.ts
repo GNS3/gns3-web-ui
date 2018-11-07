@@ -16,12 +16,12 @@ describe('LinksWidget', () => {
   let widget: LinksWidget;
   let layersEnter: Selection<SVGGElement, Layer, SVGGElement, any>;
   let layer: Layer;
-  let mockedLinkWidget: LinkWidget;
+  let linkWidget: LinkWidget;
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    mockedLinkWidget = instance(mock(LinkWidget));
-    widget = new LinksWidget(new MultiLinkCalculatorHelper(), mockedLinkWidget);
+    linkWidget = instance(mock(LinkWidget));
+    widget = new LinksWidget(new MultiLinkCalculatorHelper(), linkWidget);
 
     const node_1 = new Node();
     node_1.node_id = "1";
@@ -65,10 +65,6 @@ describe('LinksWidget', () => {
   });
 
   it('should draw links', () => {
-    const linkWidgetMock = mock(LinkWidget);
-    const linkWidget = instance(linkWidgetMock);
-    spyOn(widget, 'getLinkWidget').and.returnValue(linkWidget);
-
     widget.draw(layersEnter);
 
     const drew = svg.canvas.selectAll<SVGGElement, Link>('g.link');

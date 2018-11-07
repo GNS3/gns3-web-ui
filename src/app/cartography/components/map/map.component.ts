@@ -17,7 +17,7 @@ import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { LinksWidget } from '../../widgets/links';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { NodeDragging, NodeDragged } from '../../events/nodes';
+import { NodeDragging, NodeDragged, NodeClicked } from '../../events/nodes';
 import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { SelectionManager } from '../../managers/selection-manager';
@@ -40,13 +40,16 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() onNodeDragged: EventEmitter<NodeDragged>;
+  @Output() onNodeDragged = new EventEmitter<NodeDragged>();
   @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
   private onNodeDraggingSubscription: Subscription;
+  private onNodeClickedSubscription: Subscription;
+  private onNodeDraggedSubscription: Subscription;
+
   private onChangesDetected: Subscription;
 
   protected settings = {
@@ -67,7 +70,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     public graphLayout: GraphLayout
     ) {
     this.parentNativeElement = element.nativeElement;
-    this.onNodeDragged = nodeWidget.onNodeDragged;
   }
 
   @Input('show-interface-labels') 
@@ -118,6 +120,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.graphLayout.disconnect(this.svg);
     this.onNodeDraggingSubscription.unsubscribe();
+    this.onNodeClickedSubscription.unsubscribe();
+    this.onNodeDraggedSubscription.unsubscribe();
     this.onChangesDetected.unsubscribe();
   }
 
@@ -128,22 +132,42 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.context.size = this.getSize();
 
     this.onNodeDraggingSubscription = this.nodeWidget.onNodeDragging.subscribe((eventNode: NodeDragging) => {
-      const nodes = this.selectionManager.getSelectedNodes();      
+      let nodes = this.selectionManager.getSelectedNodes();
+      
+      if (nodes.filter((n: Node) => n.node_id === eventNode.node.node_id).length === 0) {
+        this.selectionManager.setSelectedNodes([eventNode.node]);
+        nodes = this.selectionManager.getSelectedNodes();
+      }
 
       nodes.forEach((node: Node) => {
-
         node.x += eventNode.event.dx;
         node.y += eventNode.event.dy;
 
         this.nodesWidget.redrawNode(this.svg, node);
-
         const links = this.links.filter((link) => link.target.node_id === node.node_id || link.source.node_id === node.node_id);
-
         links.forEach((link) => {
           this.linksWidget.redrawLink(this.svg, link);
         });
       });
 
+    });
+
+    this.onNodeDraggedSubscription = this.nodeWidget.onNodeDragged.subscribe((eventNode: NodeDragged) => {
+      let nodes = this.selectionManager.getSelectedNodes();
+      
+      if (nodes.filter((n: Node) => n.node_id === eventNode.node.node_id).length === 0) {
+        this.selectionManager.setSelectedNodes([eventNode.node]);
+        nodes = this.selectionManager.getSelectedNodes();
+      }
+
+      nodes.forEach((node) => {
+        this.onNodeDragged.emit(new NodeDragged(eventNode.event, node));
+      });
+      
+    });
+
+    this.onNodeClickedSubscription = this.nodeWidget.onNodeClicked.subscribe((nodeClickedEvent: NodeClicked) => {
+      this.selectionManager.setSelectedNodes([nodeClickedEvent.node]);
     });
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {

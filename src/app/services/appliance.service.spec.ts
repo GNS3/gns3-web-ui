@@ -41,7 +41,7 @@ describe('ApplianceService', () => {
     server.port = 3080;
     server.authorization = "none";
 
-    service.list(server).subscribe();
+    service.list(server).subscribe(() => {});
 
     httpTestingController.expectOne('http://127.0.0.1:3080/v2/appliances');
 
