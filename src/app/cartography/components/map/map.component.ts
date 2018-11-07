@@ -20,6 +20,8 @@ import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { NodeDragging, NodeDragged } from '../../events/nodes';
 import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
+import { SelectionManager } from '../../managers/selection-manager';
+import { NodeWidget } from '../../widgets/node';
 
 
 @Component({
@@ -32,6 +34,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
+
+  @Input('selection-manager') selectionManager: SelectionManager;
 
   @Input() width = 1500;
   @Input() height = 600;
@@ -55,6 +59,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private canvasSizeDetector: CanvasSizeDetector,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
+    protected nodeWidget: NodeWidget,
     protected linksWidget: LinksWidget,
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
@@ -62,7 +67,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     public graphLayout: GraphLayout
     ) {
     this.parentNativeElement = element.nativeElement;
-    this.onNodeDragged = nodesWidget.onNodeDragged;
+    this.onNodeDragged = nodeWidget.onNodeDragged;
   }
 
   @Input('show-interface-labels') 
@@ -122,12 +127,23 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.context.size = this.getSize();
 
-    this.onNodeDraggingSubscription = this.nodesWidget.onNodeDragging.subscribe((eventNode: NodeDragging) => {
-      const links = this.links.filter((link) => link.target.node_id === eventNode.node.node_id || link.source.node_id === eventNode.node.node_id);
+    this.onNodeDraggingSubscription = this.nodeWidget.onNodeDragging.subscribe((eventNode: NodeDragging) => {
+      const nodes = this.selectionManager.getSelectedNodes();      
 
-      links.forEach((link) => {
-        this.linksWidget.redrawLink(this.svg, link);
+      nodes.forEach((node: Node) => {
+
+        node.x += eventNode.event.dx;
+        node.y += eventNode.event.dy;
+
+        this.nodesWidget.redrawNode(this.svg, node);
+
+        const links = this.links.filter((link) => link.target.node_id === node.node_id || link.source.node_id === node.node_id);
+
+        links.forEach((link) => {
+          this.linksWidget.redrawLink(this.svg, link);
+        });
       });
+
     });
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
@@ -193,7 +209,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private onSymbolsChange(change: SimpleChange) {
-    this.graphLayout.getNodesWidget().setSymbols(this.symbols);
+    this.nodeWidget.setSymbols(this.symbols);
   }
 
   public redraw() {

@@ -29,6 +29,7 @@ import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 import { NodeContextMenu, NodeDragged } from '../../cartography/events/nodes';
 import { LinkCreated } from '../../cartography/events/links';
+import { NodeWidget } from '../../cartography/widgets/node';
 
 
 @Component({
@@ -74,6 +75,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               private progressService: ProgressService,
               private projectWebServiceHandler: ProjectWebServiceHandler,
               private mapChangeDetectorRef: MapChangeDetectorRef,
+              private nodeWidget: NodeWidget,
               protected nodesDataSource: NodesDataSource,
               protected linksDataSource: LinksDataSource,
               protected drawingsDataSource: DrawingsDataSource,
@@ -188,9 +190,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
+    this.nodeWidget.setDraggingEnabled(!this.readonly);
 
-    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+    const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       this.nodeContextMenu.open(
         eventNode.node,
         eventNode.event.clientY,

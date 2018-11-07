@@ -2,11 +2,11 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@
 import { Port } from '../../../models/port';
 import { DrawingLineWidget } from '../../widgets/drawing-line';
 import { Node } from '../../models/node';
-import { NodesWidget } from '../../widgets/nodes';
 import { Subscription } from 'rxjs';
 import { NodeSelectInterfaceComponent } from '../node-select-interface/node-select-interface.component';
 import { LinkCreated } from '../../events/links';
 import { NodeClicked } from '../../events/nodes';
+import { NodeWidget } from '../../widgets/node';
 
 
 @Component({
@@ -23,11 +23,11 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
 
   constructor(
     private drawingLineTool: DrawingLineWidget,
-    private nodesWidget: NodesWidget
+    private nodeWidget: NodeWidget
   ) { }
 
   ngOnInit() {
-    this.onNodeClicked = this.nodesWidget.onNodeClicked.subscribe((eventNode: NodeClicked) => {
+    this.onNodeClicked = this.nodeWidget.onNodeClicked.subscribe((eventNode: NodeClicked) => {
         this.nodeSelectInterfaceMenu.open(
           eventNode.node,
           eventNode.event.clientY,
