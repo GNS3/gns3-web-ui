@@ -11,26 +11,33 @@ import { Rectangle } from "../models/rectangle";
 export class SelectionTool {
   static readonly SELECTABLE_CLASS = '.selectable';
 
-  public rectangleSelected: Subject<Rectangle>;
+  public rectangleSelected = new Subject<Rectangle>();
 
-  private selection: SVGSelection;
   private path;
-  private context: Context;
+  private enabled = false;
+  private needsDeactivate = false;
+  private needsActivate = false;
 
-  public constructor() {
-    this.rectangleSelected = new Subject<Rectangle>();
+  public constructor(
+    private context: Context
+  ) {}
+
+  public setEnabled(enabled) {
+    if (this.enabled != enabled) {
+      if (enabled) {
+        this.needsActivate = true;
+      }
+      else {
+        this.needsDeactivate = true;
+      }
+    }
+    this.enabled = enabled;
   }
 
-  public connect(selection: SVGSelection, context: Context) {
-    this.selection = selection;
-    this.context = context;
-  }
-
-  public activate() {
+  private activate(selection) {
     const self = this;
 
-
-    this.selection.on("mousedown", function() {
+    selection.on("mousedown", function() {
       const subject = select(window);
       const parent = this.parentElement;
 
@@ -38,7 +45,7 @@ export class SelectionTool {
       self.startSelection(start);
 
       // clear selection
-      self.selection
+      selection
         .selectAll(SelectionTool.SELECTABLE_CLASS)
         .classed("selected", false);
 
@@ -56,8 +63,8 @@ export class SelectionTool {
     });
   }
 
-  public deactivate() {
-    this.selection.on('mousedown', null);
+  private deactivate(selection) {
+    selection.on('mousedown', null);
   }
 
   public draw(selection: SVGSelection, context: Context) {
@@ -72,7 +79,15 @@ export class SelectionTool {
         .attr("class", "selection")
         .attr("visibility", "hidden");
     }
-    this.selection = selection;
+
+    if(this.needsActivate) {
+      this.activate(selection);
+      this.needsActivate = false;
+    }
+    if(this.needsDeactivate) {
+      this.deactivate(selection);
+      this.needsDeactivate = false;
+    }
   }
 
   private startSelection(start) {

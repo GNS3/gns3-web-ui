@@ -1,6 +1,18 @@
 <div *ngIf="project" class="project-map">
-  <app-map [symbols]="symbols" [nodes]="nodes" [links]="links" [drawings]="drawings" [width]="project.scene_width" [height]="project.scene_height"></app-map>
-
+  <app-map
+    [symbols]="symbols"
+    [nodes]="nodes"
+    [links]="links"
+    [drawings]="drawings"
+    [width]="project.scene_width"
+    [height]="project.scene_height"
+    [show-interface-labels]="project.show_interface_labels"
+    [selection-tool]="tools.selection"
+    [moving-tool]="tools.moving"
+    [draw-link-tool]="tools.draw_link"
+    (onNodeDragged)="onNodeDragged($event)"
+    (onLinkCreated)="onLinkCreated($event)"
+  ></app-map>
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
 
@@ -29,39 +41,51 @@
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
-          <mat-checkbox [(ngModel)]="showIntefaceLabels" (change)="toggleShowInterfaceLabels($event.checked)">Show interface labels</mat-checkbox>
+          <mat-checkbox
+            [ngModel]="project.show_interface_labels"
+            (change)="toggleShowInterfaceLabels($event.checked)">
+              Show interface labels
+          </mat-checkbox>
         </div>
       </mat-menu>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button mat-icon-button [color]="drawLineMode ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
+        <button mat-icon-button [color]="tools.draw_link ? 'primary': 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
       </mat-toolbar-row>
 
       <mat-toolbar-row>
-        <button mat-icon-button [color]="movingMode ? 'primary': 'basic'" (click)="toggleMovingMode()">
+        <button mat-icon-button [color]="tools.moving ? 'primary': 'basic'" (click)="toggleMovingMode()">
           <mat-icon>zoom_out_map</mat-icon>
         </button>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >
-        <button mat-icon-button (click)="createSnapshotModal()">
-          <mat-icon>snooze</mat-icon>
-        </button>
+        <app-snapshot-menu-item
+          [server]="server"
+          [project]="project">
+        </app-snapshot-menu-item>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >
-        <app-appliance [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-appliance>
+        <app-appliance 
+          [server]="server"
+          (onNodeCreation)="onNodeCreation($event)"
+        ></app-appliance>
       </mat-toolbar-row>
 
     </mat-toolbar>
   </div>
 
   <app-node-context-menu [project]="project" [server]="server"></app-node-context-menu>
-  <app-node-select-interface (onChooseInterface)="onChooseInterface($event)"></app-node-select-interface>
 </div>
 
 <app-progress></app-progress>
 
-<app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server" [selectionManager]="selectionManager"></app-project-map-shortcuts>
+<app-project-map-shortcuts 
+  *ngIf="project"
+  [project]="project"
+  [server]="server"
+  [selectionManager]="selectionManager">
+</app-project-map-shortcuts>

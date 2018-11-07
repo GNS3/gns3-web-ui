@@ -2,6 +2,7 @@ import { TestSVGCanvas } from "../../testing";
 import { Drawing } from "../../models/drawing";
 import { RectDrawingWidget } from "./rect-drawing";
 import { RectElement } from "../../models/drawings/rect-element";
+import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
 describe('RectDrawingWidget', () => {
@@ -13,7 +14,7 @@ describe('RectDrawingWidget', () => {
   beforeEach(() => {
     svg = new TestSVGCanvas();
     drawing = new Drawing();
-    widget = new RectDrawingWidget();
+    widget = new RectDrawingWidget(new QtDasharrayFixer());
   });
 
   afterEach(() => {

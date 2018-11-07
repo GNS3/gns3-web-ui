@@ -6,7 +6,7 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { SymbolService } from './symbol.service';
-import { Symbol } from '../cartography/models/symbol';
+import { Symbol } from '../models/symbol';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 

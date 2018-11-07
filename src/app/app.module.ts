@@ -6,27 +6,6 @@ import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  MatButtonModule,
-  MatCardModule,
-  MatMenuModule,
-  MatToolbarModule,
-  MatStepperModule,
-  MatIconModule,
-  MatFormFieldModule,
-  MatInputModule,
-  MatTableModule,
-  MatDialogModule,
-  MatProgressBarModule,
-  MatProgressSpinnerModule,
-  MatSnackBarModule,
-  MatCheckboxModule,
-  MatListModule,
-  MatExpansionModule,
-  MatSortModule,
-  MatSelectModule,
-  MatTooltipModule
-} from '@angular/material';
 
 import { D3Service } from 'd3-ng2-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -55,14 +34,13 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
 
-import { CreateSnapshotDialogComponent, ProjectMapComponent } from './components/project-map/project-map.component';
+import { ProjectMapComponent } from './components/project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './components/servers/servers.component';
 import { NodeContextMenuComponent } from './components/project-map/node-context-menu/node-context-menu.component';
 import { StartNodeActionComponent } from './components/project-map/node-context-menu/actions/start-node-action/start-node-action.component';
 import { StopNodeActionComponent } from './components/project-map/node-context-menu/actions/stop-node-action/stop-node-action.component';
 import { ApplianceComponent } from './components/appliance/appliance.component';
 import { ApplianceListDialogComponent } from './components/appliance/appliance-list-dialog/appliance-list-dialog.component';
-import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { CartographyModule } from './cartography/cartography.module';
 import { ToasterService } from './services/toaster.service';
 import { ProjectWebServiceHandler } from "./handlers/project-web-service-handler";
@@ -70,7 +48,7 @@ import { LinksDataSource } from "./cartography/datasources/links-datasource";
 import { NodesDataSource } from "./cartography/datasources/nodes-datasource";
 import { SymbolsDataSource } from "./cartography/datasources/symbols-datasource";
 import { SelectionManager } from "./cartography/managers/selection-manager";
-import { InRectangleHelper } from "./cartography/components/map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "./cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "./cartography/datasources/drawings-datasource";
 import { MoveLayerDownActionComponent } from './components/project-map/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from './components/project-map/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
@@ -87,6 +65,10 @@ import { environment } from "../environments/environment";
 import { RavenState } from "./common/error-handlers/raven-state-communicator";
 import { ServerDiscoveryComponent } from "./components/servers/server-discovery/server-discovery.component";
 import { ServerDatabase } from './services/server.database';
+import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
+import { SnapshotsComponent } from './components/snapshots/snapshots.component';
+import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
+import { MATERIAL_IMPORTS } from './material.imports';
 
 
 if (environment.production) {
@@ -108,6 +90,8 @@ if (environment.production) {
     ServersComponent,
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
+    SnapshotMenuItemComponent,
+    SnapshotsComponent,
     ProjectsComponent,
     ImportProjectDialogComponent,
     ImportProjectConfirmationDialogComponent,
@@ -118,7 +102,6 @@ if (environment.production) {
     StopNodeActionComponent,
     ApplianceComponent,
     ApplianceListDialogComponent,
-    NodeSelectInterfaceComponent,
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     ProjectMapShortcutsComponent,
@@ -136,30 +119,12 @@ if (environment.production) {
     ReactiveFormsModule,
     BrowserAnimationsModule,
     CdkTableModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatCardModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatDialogModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatCheckboxModule,
-    MatListModule,
-    MatExpansionModule,
-    MatSortModule,
-    MatSelectModule,
-    MatTooltipModule,
-    MatStepperModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
     NgxElectronModule,
-    FileUploadModule
+    FileUploadModule,
+    MATERIAL_IMPORTS
   ],
   providers: [
     SettingsService,

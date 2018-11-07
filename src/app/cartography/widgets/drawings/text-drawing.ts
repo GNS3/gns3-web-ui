@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { SVGSelection } from "../../models/types";
 import { TextElement } from "../../models/drawings/text-element";
 import { Drawing } from "../../models/drawing";
@@ -6,14 +8,13 @@ import { FontFixer } from "../../helpers/font-fixer";
 import { select } from "d3-selection";
 
 
+@Injectable()
 export class TextDrawingWidget implements DrawingWidget {
   static MARGIN = 4;
 
-  private fontFixer: FontFixer;
-
-  constructor() {
-    this.fontFixer = new FontFixer();
-  }
+  constructor(
+    private fontFixer: FontFixer
+  ) {}
 
   public draw(view: SVGSelection) {
 
