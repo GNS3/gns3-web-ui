@@ -36,7 +36,7 @@ export class MockedProjectService {
     }
 }
 
-fdescribe('ImportProjectDialogComponent', () => {
+describe('ImportProjectDialogComponent', () => {
     let component: ImportProjectDialogComponent;
     let fixture: ComponentFixture<ImportProjectDialogComponent>;
     let server: Server;
