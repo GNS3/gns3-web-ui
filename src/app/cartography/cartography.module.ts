@@ -16,6 +16,7 @@ import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { Context } from './models/context';
 import { D3_MAP_IMPORTS } from './d3-map.imports';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
+import { MapListener } from './listeners/map-listener';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import { CanvasSizeDetector } from './helpers/canvas-size-detector';
     MapChangeDetectorRef,
     CanvasSizeDetector,
     Context,
+    MapListener,
     ...D3_MAP_IMPORTS
   ],
   exports: [ MapComponent ]

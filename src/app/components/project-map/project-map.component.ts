@@ -57,34 +57,28 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private inReadOnlyMode = false;
 
-  protected selectionManager: SelectionManager;
-
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
-  private subscriptions: Subscription[];
+  private subscriptions: Subscription[] = [];
 
   constructor(
-              private route: ActivatedRoute,
-              private serverService: ServerService,
-              private projectService: ProjectService,
-              private symbolService: SymbolService,
-              private nodeService: NodeService,
-              private linkService: LinkService,
-              private progressService: ProgressService,
-              private projectWebServiceHandler: ProjectWebServiceHandler,
-              private mapChangeDetectorRef: MapChangeDetectorRef,
-              private nodeWidget: NodeWidget,
-              protected nodesDataSource: NodesDataSource,
-              protected linksDataSource: LinksDataSource,
-              protected drawingsDataSource: DrawingsDataSource,
-              ) {
-    this.selectionManager = new SelectionManager(
-      this.nodesDataSource, this.linksDataSource, this.drawingsDataSource, new InRectangleHelper());
-
-    this.subscriptions = [];
-  }
+    private route: ActivatedRoute,
+    private serverService: ServerService,
+    private projectService: ProjectService,
+    private symbolService: SymbolService,
+    private nodeService: NodeService,
+    private linkService: LinkService,
+    private progressService: ProgressService,
+    private projectWebServiceHandler: ProjectWebServiceHandler,
+    private mapChangeDetectorRef: MapChangeDetectorRef,
+    private nodeWidget: NodeWidget,
+    private selectionManager: SelectionManager,
+    protected nodesDataSource: NodesDataSource,
+    protected linksDataSource: LinksDataSource,
+    protected drawingsDataSource: DrawingsDataSource,
+  ) {}
 
   ngOnInit() {
     this.progressService.activate();

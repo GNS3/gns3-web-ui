@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 
 import { Widget } from "./widget";
 import { Drawing } from "../models/drawing";
@@ -11,12 +11,22 @@ import { RectDrawingWidget } from "./drawings/rect-drawing";
 import { LineDrawingWidget } from "./drawings/line-drawing";
 import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
 import { DrawingWidget } from "./drawings/drawing-widget";
+import { event } from "d3-selection";
+import { D3DragEvent, drag } from "d3-drag";
+import { Draggable } from "../events/draggable";
 
 
 @Injectable()
 export class DrawingsWidget implements Widget {
   private drawingWidgets: DrawingWidget[] = [];
 
+  public draggable = new Draggable<SVGGElement, Drawing>();
+
+  // public onContextMenu = new EventEmitter<NodeContextMenu>();
+  // public onDrawingClicked = new EventEmitter<NodeClicked>();
+  // public onDrawingDragged = new EventEmitter<NodeDragged>();
+  // public onDrawingDragging = new EventEmitter<NodeDragging>();
+  
   constructor(
     private svgToDrawingConverter: SvgToDrawingConverter,
     private textDrawingWidget: TextDrawingWidget,
@@ -69,5 +79,6 @@ export class DrawingsWidget implements Widget {
       .exit()
         .remove();
 
+    this.draggable.call(drawing_merge);
   }
 }

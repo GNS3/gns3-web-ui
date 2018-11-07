@@ -22,6 +22,7 @@ import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { SelectionManager } from '../../managers/selection-manager';
 import { NodeWidget } from '../../widgets/node';
+import { MapListener } from '../../listeners/map-listener';
 
 
 @Component({
@@ -34,8 +35,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
-
-  @Input('selection-manager') selectionManager: SelectionManager;
 
   @Input() width = 1500;
   @Input() height = 600;
@@ -60,6 +59,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
+    private mapListener: MapListener,
+    private selectionManager: SelectionManager,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected nodeWidget: NodeWidget,
@@ -123,6 +124,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.onNodeClickedSubscription.unsubscribe();
     this.onNodeDraggedSubscription.unsubscribe();
     this.onChangesDetected.unsubscribe();
+    this.mapListener.onDestroy();
   }
 
   ngOnInit() {
@@ -175,6 +177,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         this.reload();
       }
     });
+
+    this.mapListener.onInit(this.svg);
   }
 
   public createGraph(domElement: HTMLElement) {
