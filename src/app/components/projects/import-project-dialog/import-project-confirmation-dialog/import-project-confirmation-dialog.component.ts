@@ -1,8 +1,5 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatStepper, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
-import { v4 as uuid } from 'uuid';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Project } from '../../../../models/project';
 
 @Component({

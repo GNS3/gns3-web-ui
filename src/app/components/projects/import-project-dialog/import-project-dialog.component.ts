@@ -35,8 +35,7 @@ export class ImportProjectDialogComponent implements OnInit {
     resultMessage : string = "The project is being imported... Please wait";
     projectNameForm: FormGroup;
     submitted: boolean = false;
-
-    @ViewChild('stepper') stepper: MatStepper;
+    isFirstStepCompleted: boolean = false;
   
     constructor(
       private dialog: MatDialog,
@@ -98,8 +97,7 @@ export class ImportProjectDialogComponent implements OnInit {
         const url = this.prepareUploadPath();
         this.uploader.queue.forEach(elem => elem.url = url);
 
-        this.stepper.selected.completed = true;
-        this.stepper.next();
+        this.isFirstStepCompleted = true;
 
         const itemToUpload = this.uploader.queue[0];
         this.uploader.uploadItem(itemToUpload);              

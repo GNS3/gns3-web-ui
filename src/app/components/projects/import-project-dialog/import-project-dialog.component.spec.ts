@@ -36,7 +36,7 @@ export class MockedProjectService {
     }
 }
 
-describe('ImportProjectDialogComponent', () => {
+fdescribe('ImportProjectDialogComponent', () => {
     let component: ImportProjectDialogComponent;
     let fixture: ComponentFixture<ImportProjectDialogComponent>;
     let server: Server;
@@ -160,26 +160,22 @@ describe('ImportProjectDialogComponent', () => {
         expect(fileSelectDirective.uploader.queue[0].url).toContain("newProject");
     });
 
-    it('should navigate to next step after clicking import', () => {
+    it('should navigate to progress view after clicking import', () => {
         let fileItem = new FileItem(fileSelectDirective.uploader, new File([],"fileName"),{});
         fileSelectDirective.uploader.queue.push(fileItem);
 
-        spyOn(component.stepper, "next");
-
         component.onImportClick();
 
-        expect(component.stepper.next).toHaveBeenCalled();
+        expect(component.isFirstStepCompleted).toBe(true);
     });
 
     it('should detect if file input is empty', () => {
         component.projectNameForm.controls['projectName'].setValue("");
         fixture.detectChanges();
-        spyOn(component.stepper, "next");
         spyOn(fileSelectDirective.uploader, 'uploadItem');
 
         component.onImportClick();
 
-        expect(component.stepper.next).not.toHaveBeenCalled();
         expect(fileSelectDirective.uploader.uploadItem).not.toHaveBeenCalled();
         expect(component.projectNameForm.valid).toBeFalsy();
     });
@@ -187,12 +183,10 @@ describe('ImportProjectDialogComponent', () => {
     it('should sanitize file name input', () => {
         component.projectNameForm.controls['projectName'].setValue("[][]");
         fixture.detectChanges();
-        spyOn(component.stepper, "next");
         spyOn(fileSelectDirective.uploader, 'uploadItem');
 
         component.onImportClick();
 
-        expect(component.stepper.next).not.toHaveBeenCalled();
         expect(fileSelectDirective.uploader.uploadItem).not.toHaveBeenCalled();
         expect(component.projectNameForm.valid).toBeFalsy();
     });
