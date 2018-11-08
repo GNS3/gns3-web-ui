@@ -19,14 +19,6 @@ export class LinkWidget implements Widget {
     private interfaceStatusWidget: InterfaceStatusWidget
   ) {}
 
-  public getInterfaceLabelWidget() {
-    return this.interfaceLabelWidget;
-  }
-
-  public getInterfaceStatusWidget() {
-    return this.interfaceStatusWidget;
-  }
-
   public draw(view: SVGSelection) {
     const link_body = view.selectAll<SVGGElement, Link>("g.link_body")
       .data((l) => [l]);
@@ -51,8 +43,8 @@ export class LinkWidget implements Widget {
       .select<SVGPathElement>('path')
         .classed('selected', (l: Link) => l.is_selected);
 
-    this.getInterfaceLabelWidget().draw(link_body_merge);
-    this.getInterfaceStatusWidget().draw(link_body_merge);
+    this.interfaceLabelWidget.draw(link_body_merge);
+    this.interfaceStatusWidget.draw(link_body_merge);
 
   }
 }

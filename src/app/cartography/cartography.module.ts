@@ -16,6 +16,11 @@ import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { Context } from './models/context';
 import { D3_MAP_IMPORTS } from './d3-map.imports';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
+import { MapListeners } from './listeners/map-listeners';
+import { DrawingsDraggableListener } from './listeners/drawings-draggable-listener';
+import { NodesDraggableListener } from './listeners/nodes-draggable-listener';
+import { DrawingsEventSource } from './events/drawings-event-source';
+import { NodesEventSource } from './events/nodes-event-source';
 
 
 @NgModule({
@@ -39,6 +44,11 @@ import { CanvasSizeDetector } from './helpers/canvas-size-detector';
     MapChangeDetectorRef,
     CanvasSizeDetector,
     Context,
+    MapListeners,
+    DrawingsDraggableListener,
+    NodesDraggableListener,
+    DrawingsEventSource,
+    NodesEventSource,
     ...D3_MAP_IMPORTS
   ],
   exports: [ MapComponent ]

@@ -10,7 +10,9 @@
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
     [draw-link-tool]="tools.draw_link"
-    (onNodeDragged)="onNodeDragged($event)"
+    [readonly]="inReadOnlyMode"
+    (nodeDragged)="onNodeDragged($event)"
+    (drawingDragged)="onDrawingDragged($event)"
     (onLinkCreated)="onLinkCreated($event)"
   ></app-map>
   <div class="project-toolbar">

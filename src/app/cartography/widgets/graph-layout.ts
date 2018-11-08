@@ -36,6 +36,10 @@ export class GraphLayout implements Widget {
     this.links = links;
   }
 
+  public getLinks() {
+    return this.links;
+  }
+
   public setDrawings(drawings: Drawing[]) {
     this.drawings = drawings;
   }
