@@ -99,7 +99,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('readonly') set readonly(value) {
     this.nodesWidget.draggingEnabled = !value;
-    this.drawingsWidget.draggingEnabled == !value;
+    this.drawingsWidget.draggingEnabled = !value;
   }
   
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
