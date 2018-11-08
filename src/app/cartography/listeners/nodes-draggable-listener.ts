@@ -30,7 +30,6 @@ export class NodesDraggableListener {
       let nodes = this.selectionManager.getSelectedNodes();
       if (nodes.filter((n: Node) => n.node_id === evt.datum.node_id).length === 0) {
         this.selectionManager.setSelectedNodes([evt.datum]);
-        nodes = this.selectionManager.getSelectedNodes();
       }
     });
 

@@ -26,7 +26,6 @@ export class DrawingsDraggableListener {
       let drawings = this.selectionManager.getSelectedDrawings();
       if (drawings.filter((n: Drawing) => n.drawing_id === evt.datum.drawing_id).length === 0) {
         this.selectionManager.setSelectedDrawings([evt.datum]);
-        drawings = this.selectionManager.getSelectedDrawings();
       }
     });
 
