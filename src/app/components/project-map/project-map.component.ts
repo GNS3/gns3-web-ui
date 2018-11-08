@@ -23,11 +23,10 @@ import { NodesDataSource } from "../../cartography/datasources/nodes-datasource"
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
 import { SelectionManager } from "../../cartography/managers/selection-manager";
-import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
-import { NodeContextMenu, NodeDragged } from '../../cartography/events/nodes';
+import { NodeContextMenu } from '../../cartography/events/nodes';
 import { LinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { DraggedDataEvent } from '../../cartography/events/event-source';
@@ -187,8 +186,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    this.nodeWidget.setDraggingEnabled(!this.readonly);
-
     const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       this.nodeContextMenu.open(
         eventNode.node,

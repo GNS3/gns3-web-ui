@@ -10,6 +10,7 @@
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
     [draw-link-tool]="tools.draw_link"
+    [readonly]="inReadOnlyMode"
     (nodeDragged)="onNodeDragged($event)"
     (drawingDragged)="onDrawingDragged($event)"
     (onLinkCreated)="onLinkCreated($event)"

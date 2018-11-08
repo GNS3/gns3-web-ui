@@ -12,6 +12,7 @@ import { DrawingWidget } from "./drawing";
 @Injectable()
 export class DrawingsWidget implements Widget {
   public draggable = new Draggable<SVGGElement, Drawing>();
+  public draggingEnabled = false;
 
   // public onContextMenu = new EventEmitter<NodeContextMenu>();
   // public onDrawingClicked = new EventEmitter<NodeClicked>();
@@ -58,7 +59,9 @@ export class DrawingsWidget implements Widget {
       .exit()
         .remove();
 
-    this.draggable.call(merge);
+    if (this.draggingEnabled) {
+      this.draggable.call(merge);
+    }
   }
 
   private selectDrawing(view: SVGSelection, drawing: Drawing) {

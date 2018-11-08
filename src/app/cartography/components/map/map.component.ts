@@ -25,6 +25,7 @@ import { MapListeners } from '../../listeners/map-listeners';
 import { DraggedDataEvent } from '../../events/event-source';
 import { NodesEventSource } from '../../events/nodes-event-source';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
+import { DrawingsWidget } from '../../widgets/drawings';
 
 
 @Component({
@@ -63,6 +64,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     protected nodesWidget: NodesWidget,
     protected nodeWidget: NodeWidget,
     protected linksWidget: LinksWidget,
+    protected drawingsWidget: DrawingsWidget,
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
@@ -95,6 +97,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   @Input('draw-link-tool') drawLinkTool: boolean;
+
+  @Input('readonly') set readonly(value) {
+    this.nodesWidget.draggingEnabled = !value;
+    this.drawingsWidget.draggingEnabled == !value;
+  }
   
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
     if (

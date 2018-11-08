@@ -13,7 +13,8 @@ export class NodesWidget implements Widget {
   static NODE_LABEL_MARGIN = 3;
 
   public draggable = new Draggable<SVGGElement, Node>();
-  
+  public draggingEnabled = false;
+
   constructor(
     private nodeWidget: NodeWidget
   ) {
@@ -48,7 +49,9 @@ export class NodesWidget implements Widget {
       .exit()
         .remove();
 
-    this.draggable.call(merge);
+    if (this.draggingEnabled) {
+      this.draggable.call(merge);
+    }
   }
 
   private selectNode(view: SVGSelection, node: Node) {

@@ -21,7 +21,6 @@ export class NodeWidget implements Widget {
   public onNodeDragging = new EventEmitter<NodeDragging>();
 
   private symbols: Symbol[] = [];
-  private draggingEnabled = false;
 
   constructor(
     private cssFixer: CssFixer,
@@ -32,10 +31,6 @@ export class NodeWidget implements Widget {
     this.symbols = symbols;
   }
 
-  public setDraggingEnabled(enabled: boolean) {
-    this.draggingEnabled = enabled;
-  }
-  
   public draw(view: SVGSelection) {
     const self = this;
 
