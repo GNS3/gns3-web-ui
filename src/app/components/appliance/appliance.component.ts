@@ -34,4 +34,3 @@ export class ApplianceComponent implements OnInit {
     });
   }
 }
-

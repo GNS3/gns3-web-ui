@@ -1,7 +1,7 @@
 import * as Raven from 'raven-js';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from '@angular/common/http';
 
@@ -12,7 +12,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HotkeyModule } from 'angular2-hotkeys';
 import { PersistenceModule } from 'angular-persistence';
 import { NgxElectronModule } from 'ngx-electron';
-
+import { FileUploadModule } from 'ng2-file-upload';
 import { AppRoutingModule } from './app-routing.module';
 
 import { VersionService } from './services/version.service';
@@ -28,6 +28,8 @@ import { ApplianceService } from "./services/appliance.service";
 import { LinkService } from "./services/link.service";
 
 import { ProjectsComponent } from './components/projects/projects.component';
+import { ImportProjectDialogComponent } from './components/projects/import-project-dialog/import-project-dialog.component';
+import { ImportProjectConfirmationDialogComponent} from './components/projects/import-project-dialog/import-project-confirmation-dialog/import-project-confirmation-dialog.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
@@ -92,6 +94,8 @@ if (environment.production) {
     SnapshotMenuItemComponent,
     SnapshotsComponent,
     ProjectsComponent,
+    ImportProjectDialogComponent,
+    ImportProjectConfirmationDialogComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
     NodeContextMenuComponent,
@@ -113,13 +117,15 @@ if (environment.production) {
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     CdkTableModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
     NgxElectronModule,
-    ...MATERIAL_IMPORTS
+    FileUploadModule,
+    MATERIAL_IMPORTS
   ],
   providers: [
     SettingsService,
@@ -153,7 +159,9 @@ if (environment.production) {
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
-    ApplianceListDialogComponent
+    ApplianceListDialogComponent,
+    ImportProjectDialogComponent,
+    ImportProjectConfirmationDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })
