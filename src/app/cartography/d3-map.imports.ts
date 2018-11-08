@@ -15,6 +15,7 @@ import { RectDrawingWidget } from './widgets/drawings/rect-drawing';
 import { TextDrawingWidget } from './widgets/drawings/text-drawing';
 import { LineDrawingWidget } from './widgets/drawings/line-drawing';
 import { NodeWidget } from './widgets/node';
+import { DrawingWidget } from './widgets/drawing';
 
 export const D3_MAP_IMPORTS = [
     GraphLayout,
@@ -34,4 +35,5 @@ export const D3_MAP_IMPORTS = [
     LineDrawingWidget,
     RectDrawingWidget,
     TextDrawingWidget,
+    DrawingWidget
 ];

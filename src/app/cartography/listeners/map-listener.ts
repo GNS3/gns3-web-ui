@@ -28,12 +28,12 @@ export class MapListener {
       }
     });
 
-    this.drag = this.drawingsWidget.draggable.start.subscribe((evt: DraggableStart<Drawing>) => {
+    this.drag = this.drawingsWidget.draggable.drag.subscribe((evt: DraggableStart<Drawing>) => {
       let drawings = this.selectionManager.getSelectedDrawings();
       drawings.forEach((drawing: Drawing) => {
         drawing.x += evt.dx;
         drawing.y += evt.dy;
-        // this.drawingsWidget.redrawDrawing(svg, drawing);
+        this.drawingsWidget.redrawDrawing(svg, drawing);
       });
     });
 

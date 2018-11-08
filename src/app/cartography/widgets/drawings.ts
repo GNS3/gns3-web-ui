@@ -1,25 +1,16 @@
-import { Injectable, EventEmitter } from "@angular/core";
+import { Injectable } from "@angular/core";
 
 import { Widget } from "./widget";
 import { Drawing } from "../models/drawing";
 import { SVGSelection } from "../models/types";
 import { Layer } from "../models/layer";
-import { TextDrawingWidget } from "./drawings/text-drawing";
 import { SvgToDrawingConverter } from "../helpers/svg-to-drawing-converter";
-import { ImageDrawingWidget } from "./drawings/image-drawing";
-import { RectDrawingWidget } from "./drawings/rect-drawing";
-import { LineDrawingWidget } from "./drawings/line-drawing";
-import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
-import { DrawingShapeWidget } from "./drawings/drawing-widget";
-import { event } from "d3-selection";
-import { D3DragEvent, drag } from "d3-drag";
 import { Draggable } from "../events/draggable";
+import { DrawingWidget } from "./drawing";
 
 
 @Injectable()
 export class DrawingsWidget implements Widget {
-  private drawingWidgets: DrawingShapeWidget[] = [];
-
   public draggable = new Draggable<SVGGElement, Drawing>();
 
   // public onContextMenu = new EventEmitter<NodeContextMenu>();
@@ -28,57 +19,49 @@ export class DrawingsWidget implements Widget {
   // public onDrawingDragging = new EventEmitter<NodeDragging>();
   
   constructor(
+    private drawingWidget: DrawingWidget,
     private svgToDrawingConverter: SvgToDrawingConverter,
-    private textDrawingWidget: TextDrawingWidget,
-    private imageDrawingWidget: ImageDrawingWidget,
-    private rectDrawingWidget: RectDrawingWidget,
-    private lineDrawingWidget: LineDrawingWidget,
-    private ellipseDrawingWidget: EllipseDrawingWidget
   ) {
     this.svgToDrawingConverter = new SvgToDrawingConverter();
-
-    this.drawingWidgets = [
-      this.textDrawingWidget,
-      this.imageDrawingWidget,
-      this.rectDrawingWidget,
-      this.lineDrawingWidget,
-      this.ellipseDrawingWidget
-    ];
   }
 
-  public draw(view: SVGSelection, drawings?: Drawing[]) {
+  public redrawDrawing(view: SVGSelection, drawing: Drawing) {
+    this.drawingWidget.draw(this.selectDrawing(view, drawing));
+  }
+
+  public draw(view: SVGSelection) {
     const drawing = view
-      .selectAll<SVGGElement, Drawing>('g.drawing')
-      .data((l: Layer) => {
-        l.drawings.forEach((d: Drawing) => {
+      .selectAll<SVGGElement, Drawing>("g.drawing")
+      .data((layer: Layer) => {
+        layer.drawings.forEach((d: Drawing) => {
           try {
             d.element = this.svgToDrawingConverter.convert(d.svg);
           } catch (error) {
             console.log(`Cannot convert due to Error: '${error}'`);
           }
         });
-        return l.drawings;
-      }, (d: Drawing) => {
-        return d.drawing_id;
+        return layer.drawings;
+      }, (l: Drawing) => {
+        return l.drawing_id;
       });
 
     const drawing_enter = drawing.enter()
       .append<SVGGElement>('g')
-      .attr('class', 'drawing');
+        .attr('class', 'drawing')
+        .attr('drawing_id', (l: Drawing) => l.drawing_id)
 
-    const drawing_merge = drawing.merge(drawing_enter)
-      .attr('transform', (d: Drawing) => {
-        return `translate(${d.x},${d.y}) rotate(${d.rotation})`;
-      });
+    const merge = drawing.merge(drawing_enter);
 
-    this.drawingWidgets.forEach((widget) => {
-      widget.draw(drawing_merge);
-    });
+    this.drawingWidget.draw(merge);
 
     drawing
       .exit()
         .remove();
 
-    this.draggable.call(drawing_merge);
+    this.draggable.call(merge);
+  }
+
+  private selectDrawing(view: SVGSelection, drawing: Drawing) {
+    return view.selectAll<SVGGElement, Drawing>(`g.drawing[drawing_id="${drawing.drawing_id}"]`);
   }
 }

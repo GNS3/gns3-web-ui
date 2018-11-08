@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { ImageElement } from "../../models/drawings/image-element";
-import { DrawingShapeWidget } from "./drawing-widget";
+import { DrawingShapeWidget } from "./drawing-shape-widget";
 
 
 @Injectable()

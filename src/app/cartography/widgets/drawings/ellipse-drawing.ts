@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { EllipseElement } from "../../models/drawings/ellipse-element";
-import { DrawingShapeWidget } from "./drawing-widget";
+import { DrawingShapeWidget } from "./drawing-shape-widget";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
