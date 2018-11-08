@@ -17,7 +17,6 @@ import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { LinksWidget } from '../../widgets/links';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { NodeDragging, NodeDragged, NodeClicked } from '../../events/nodes';
 import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { NodeWidget } from '../../widgets/node';
