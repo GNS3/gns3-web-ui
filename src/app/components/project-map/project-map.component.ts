@@ -23,12 +23,14 @@ import { NodesDataSource } from "../../cartography/datasources/nodes-datasource"
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
 import { SelectionManager } from "../../cartography/managers/selection-manager";
-import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
-import { NodeContextMenu, NodeDragged } from '../../cartography/events/nodes';
+import { NodeContextMenu } from '../../cartography/events/nodes';
 import { LinkCreated } from '../../cartography/events/links';
+import { NodeWidget } from '../../cartography/widgets/node';
+import { DraggedDataEvent } from '../../cartography/events/event-source';
+import { DrawingService } from '../../services/drawing.service';
 
 
 @Component({
@@ -56,33 +58,29 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private inReadOnlyMode = false;
 
-  protected selectionManager: SelectionManager;
-
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
-  private subscriptions: Subscription[];
+  private subscriptions: Subscription[] = [];
 
   constructor(
-              private route: ActivatedRoute,
-              private serverService: ServerService,
-              private projectService: ProjectService,
-              private symbolService: SymbolService,
-              private nodeService: NodeService,
-              private linkService: LinkService,
-              private progressService: ProgressService,
-              private projectWebServiceHandler: ProjectWebServiceHandler,
-              private mapChangeDetectorRef: MapChangeDetectorRef,
-              protected nodesDataSource: NodesDataSource,
-              protected linksDataSource: LinksDataSource,
-              protected drawingsDataSource: DrawingsDataSource,
-              ) {
-    this.selectionManager = new SelectionManager(
-      this.nodesDataSource, this.linksDataSource, this.drawingsDataSource, new InRectangleHelper());
-
-    this.subscriptions = [];
-  }
+    private route: ActivatedRoute,
+    private serverService: ServerService,
+    private projectService: ProjectService,
+    private symbolService: SymbolService,
+    private nodeService: NodeService,
+    private linkService: LinkService,
+    private drawingService: DrawingService,
+    private progressService: ProgressService,
+    private projectWebServiceHandler: ProjectWebServiceHandler,
+    private mapChangeDetectorRef: MapChangeDetectorRef,
+    private nodeWidget: NodeWidget,
+    private selectionManager: SelectionManager,
+    protected nodesDataSource: NodesDataSource,
+    protected linksDataSource: LinksDataSource,
+    protected drawingsDataSource: DrawingsDataSource,
+  ) {}
 
   ngOnInit() {
     this.progressService.activate();
@@ -188,9 +186,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
-
-    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+    const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       this.nodeContextMenu.open(
         eventNode.node,
         eventNode.event.clientY,
@@ -220,12 +216,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(nodeEvent: NodeDragged) {
-    this.nodesDataSource.update(nodeEvent.node);
+  onNodeDragged(draggedEvent: DraggedDataEvent<Node>) {
+    this.nodesDataSource.update(draggedEvent.datum);
     this.nodeService
-      .updatePosition(this.server, nodeEvent.node, nodeEvent.node.x, nodeEvent.node.y)
-      .subscribe((n: Node) => {
-        this.nodesDataSource.update(n);
+      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
+      .subscribe((node: Node) => {
+        this.nodesDataSource.update(node);
+      });
+  }
+
+  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing>) {
+    this.drawingsDataSource.update(draggedEvent.datum);
+    this.drawingService
+      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
+      .subscribe((drawing: Drawing) => {
+        this.drawingsDataSource.update(drawing);
       });
   }
 

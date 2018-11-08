@@ -1,5 +1,5 @@
 import { SVGSelection } from "../../models/types";
 
-export interface DrawingWidget {
+export interface DrawingShapeWidget {
   draw(view: SVGSelection);
 }

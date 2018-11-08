@@ -11,16 +11,12 @@ import { LinkWidget } from "./link";
 export class LinksWidget implements Widget {
   constructor(
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
-    private linkWidget: LinkWidget,
+    private linkWidget: LinkWidget
   ) {
   }
 
-  public getLinkWidget() {
-    return this.linkWidget;
-  }
-
   public redrawLink(view: SVGSelection, link: Link) {
-    this.getLinkWidget().draw(this.selectLink(view, link));
+    this.linkWidget.draw(this.selectLink(view, link));
   }
 
   public draw(view: SVGSelection) {
@@ -48,7 +44,7 @@ export class LinksWidget implements Widget {
 
     const merge = link.merge(link_enter);
 
-    this.getLinkWidget().draw(merge);
+    this.linkWidget.draw(merge);
 
     link
       .exit()

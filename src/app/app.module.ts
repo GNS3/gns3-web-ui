@@ -67,6 +67,7 @@ import { CreateSnapshotDialogComponent } from './components/snapshots/create-sna
 import { SnapshotsComponent } from './components/snapshots/snapshots.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { MATERIAL_IMPORTS } from './material.imports';
+import { DrawingService } from './services/drawing.service';
 
 
 if (environment.production) {
@@ -131,6 +132,7 @@ if (environment.production) {
     ApplianceService,
     NodeService,
     LinkService,
+    DrawingService,
     IndexedDbService,
     HttpServer,
     SnapshotService,
