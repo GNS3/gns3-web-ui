@@ -20,9 +20,11 @@ import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { NodeDragging, NodeDragged, NodeClicked } from '../../events/nodes';
 import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
-import { SelectionManager } from '../../managers/selection-manager';
 import { NodeWidget } from '../../widgets/node';
-import { MapListener } from '../../listeners/map-listener';
+import { MapListeners } from '../../listeners/map-listeners';
+import { DraggedDataEvent } from '../../events/event-source';
+import { NodesEventSource } from '../../events/nodes-event-source';
+import { DrawingsEventSource } from '../../events/drawings-event-source';
 
 
 @Component({
@@ -39,15 +41,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() onNodeDragged = new EventEmitter<NodeDragged>();
+  @Output() nodeDragged: EventEmitter<DraggedDataEvent<Node>>;
+  @Output() drawingDragged: EventEmitter<DraggedDataEvent<Drawing>>;
   @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-
-  private onNodeDraggingSubscription: Subscription;
-  private onNodeClickedSubscription: Subscription;
-  private onNodeDraggedSubscription: Subscription;
 
   private onChangesDetected: Subscription;
 
@@ -59,8 +58,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
-    private mapListener: MapListener,
-    private selectionManager: SelectionManager,
+    private mapListeners: MapListeners,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected nodeWidget: NodeWidget,
@@ -68,9 +66,13 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
-    public graphLayout: GraphLayout
+    public graphLayout: GraphLayout,
+    nodesEventSource: NodesEventSource,
+    drawingsEventSource: DrawingsEventSource,
     ) {
     this.parentNativeElement = element.nativeElement;
+    this.nodeDragged = nodesEventSource.dragged;
+    this.drawingDragged = drawingsEventSource.dragged;
   }
 
   @Input('show-interface-labels') 
@@ -118,59 +120,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.graphLayout.disconnect(this.svg);
-    this.onNodeDraggingSubscription.unsubscribe();
-    this.onNodeClickedSubscription.unsubscribe();
-    this.onNodeDraggedSubscription.unsubscribe();
-    this.onChangesDetected.unsubscribe();
-    this.mapListener.onDestroy();
-  }
-
   ngOnInit() {
     if (this.parentNativeElement !== null) {
       this.createGraph(this.parentNativeElement);
     }
     this.context.size = this.getSize();
-
-    this.onNodeDraggingSubscription = this.nodeWidget.onNodeDragging.subscribe((eventNode: NodeDragging) => {
-      let nodes = this.selectionManager.getSelectedNodes();
-      
-      if (nodes.filter((n: Node) => n.node_id === eventNode.node.node_id).length === 0) {
-        this.selectionManager.setSelectedNodes([eventNode.node]);
-        nodes = this.selectionManager.getSelectedNodes();
-      }
-
-      nodes.forEach((node: Node) => {
-        node.x += eventNode.event.dx;
-        node.y += eventNode.event.dy;
-
-        this.nodesWidget.redrawNode(this.svg, node);
-        const links = this.links.filter((link) => link.target.node_id === node.node_id || link.source.node_id === node.node_id);
-        links.forEach((link) => {
-          this.linksWidget.redrawLink(this.svg, link);
-        });
-      });
-
-    });
-
-    this.onNodeDraggedSubscription = this.nodeWidget.onNodeDragged.subscribe((eventNode: NodeDragged) => {
-      let nodes = this.selectionManager.getSelectedNodes();
-      
-      if (nodes.filter((n: Node) => n.node_id === eventNode.node.node_id).length === 0) {
-        this.selectionManager.setSelectedNodes([eventNode.node]);
-        nodes = this.selectionManager.getSelectedNodes();
-      }
-
-      nodes.forEach((node) => {
-        this.onNodeDragged.emit(new NodeDragged(eventNode.event, node));
-      });
-      
-    });
-
-    this.onNodeClickedSubscription = this.nodeWidget.onNodeClicked.subscribe((nodeClickedEvent: NodeClicked) => {
-      this.selectionManager.setSelectedNodes([nodeClickedEvent.node]);
-    });
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
@@ -178,7 +132,13 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    this.mapListener.onInit(this.svg);
+    this.mapListeners.onInit(this.svg);
+  }
+
+  ngOnDestroy() {
+    this.graphLayout.disconnect(this.svg);
+    this.onChangesDetected.unsubscribe();
+    this.mapListeners.onDestroy();
   }
 
   public createGraph(domElement: HTMLElement) {

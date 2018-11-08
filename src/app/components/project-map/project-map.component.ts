@@ -30,6 +30,8 @@ import { MapChangeDetectorRef } from '../../cartography/services/map-change-dete
 import { NodeContextMenu, NodeDragged } from '../../cartography/events/nodes';
 import { LinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
+import { DraggedDataEvent } from '../../cartography/events/event-source';
+import { DrawingService } from '../../services/drawing.service';
 
 
 @Component({
@@ -70,6 +72,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private symbolService: SymbolService,
     private nodeService: NodeService,
     private linkService: LinkService,
+    private drawingService: DrawingService,
     private progressService: ProgressService,
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
@@ -216,12 +219,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(nodeEvent: NodeDragged) {
-    this.nodesDataSource.update(nodeEvent.node);
+  onNodeDragged(draggedEvent: DraggedDataEvent<Node>) {
+    this.nodesDataSource.update(draggedEvent.datum);
     this.nodeService
-      .updatePosition(this.server, nodeEvent.node, nodeEvent.node.x, nodeEvent.node.y)
-      .subscribe((n: Node) => {
-        this.nodesDataSource.update(n);
+      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
+      .subscribe((node: Node) => {
+        this.nodesDataSource.update(node);
+      });
+  }
+
+  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing>) {
+    this.drawingsDataSource.update(draggedEvent.datum);
+    this.drawingService
+      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
+      .subscribe((drawing: Drawing) => {
+        this.drawingsDataSource.update(drawing);
       });
   }
 

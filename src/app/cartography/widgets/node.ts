@@ -118,23 +118,5 @@ export class NodeWidget implements Widget {
           }
           return n.label.y + bbox.height - NodeWidget.NODE_LABEL_MARGIN;
         });
-  
-    const callback = function (this: SVGGElement, n: Node) {
-      const e: D3DragEvent<SVGGElement, Node, Node> = event;
-      self.onNodeDragging.emit(new NodeDragging(e, n));
-    };
-
-    const dragging = () => {
-      return drag<SVGGElement, Node>()
-        .on('drag', callback)
-        .on('end', (n: Node) => {
-          const e: D3DragEvent<SVGGElement, Node, Node> = event;
-          self.onNodeDragged.emit(new NodeDragged(e, n));
-        });
-    };
-
-    if (this.draggingEnabled) {
-      node_body_merge.call(dragging());
-    }
   }
 }

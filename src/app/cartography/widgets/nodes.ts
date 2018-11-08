@@ -5,12 +5,15 @@ import { Node } from "../models/node";
 import { SVGSelection } from "../models/types";
 import { Layer  } from "../models/layer";
 import { NodeWidget } from "./node";
+import { Draggable } from "../events/draggable";
 
 
 @Injectable()
 export class NodesWidget implements Widget {
   static NODE_LABEL_MARGIN = 3;
 
+  public draggable = new Draggable<SVGGElement, Node>();
+  
   constructor(
     private nodeWidget: NodeWidget
   ) {
@@ -44,6 +47,8 @@ export class NodesWidget implements Widget {
     node
       .exit()
         .remove();
+
+    this.draggable.call(merge);
   }
 
   private selectNode(view: SVGSelection, node: Node) {

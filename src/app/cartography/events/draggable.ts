@@ -3,6 +3,8 @@ import { drag, DraggedElementBaseType } from "d3-drag";
 import { event } from "d3-selection";
 
 class DraggableEvent {
+  public x: number;
+  public y: number;
   public dx: number;
   public dy: number;
 }
@@ -46,18 +48,24 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
         const evt = new DraggableStart<Datum>(datum);
         evt.dx = event.dx;
         evt.dy = event.dy;
+        evt.x = event.x;
+        evt.y = event.y;
         this.start.emit(evt);
       })
       .on('drag', (datum: Datum) => {
         const evt = new DraggableDrag<Datum>(datum);
         evt.dx = event.dx;
         evt.dy = event.dy;
+        evt.x = event.x;
+        evt.y = event.y;
         this.drag.emit(evt);
       })
       .on('end', (datum: Datum) => {
         const evt = new DraggableEnd<Datum>(datum);
         evt.dx = event.dx;
         evt.dy = event.dy;
+        evt.x = event.x;
+        evt.y = event.y;
         this.end.emit(evt);
       });
   }
