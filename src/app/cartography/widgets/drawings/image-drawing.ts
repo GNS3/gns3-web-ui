@@ -3,11 +3,11 @@ import { Injectable } from "@angular/core";
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { ImageElement } from "../../models/drawings/image-element";
-import { DrawingWidget } from "./drawing-widget";
+import { DrawingShapeWidget } from "./drawing-widget";
 
 
 @Injectable()
-export class ImageDrawingWidget implements DrawingWidget {
+export class ImageDrawingWidget implements DrawingShapeWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGImageElement, ImageElement>('image.image_element')

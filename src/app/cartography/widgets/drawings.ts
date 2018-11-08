@@ -10,7 +10,7 @@ import { ImageDrawingWidget } from "./drawings/image-drawing";
 import { RectDrawingWidget } from "./drawings/rect-drawing";
 import { LineDrawingWidget } from "./drawings/line-drawing";
 import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
-import { DrawingWidget } from "./drawings/drawing-widget";
+import { DrawingShapeWidget } from "./drawings/drawing-widget";
 import { event } from "d3-selection";
 import { D3DragEvent, drag } from "d3-drag";
 import { Draggable } from "../events/draggable";
@@ -18,7 +18,7 @@ import { Draggable } from "../events/draggable";
 
 @Injectable()
 export class DrawingsWidget implements Widget {
-  private drawingWidgets: DrawingWidget[] = [];
+  private drawingWidgets: DrawingShapeWidget[] = [];
 
   public draggable = new Draggable<SVGGElement, Drawing>();
 

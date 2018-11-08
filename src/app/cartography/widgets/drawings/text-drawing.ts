@@ -3,13 +3,13 @@ import { Injectable } from "@angular/core";
 import { SVGSelection } from "../../models/types";
 import { TextElement } from "../../models/drawings/text-element";
 import { Drawing } from "../../models/drawing";
-import { DrawingWidget } from "./drawing-widget";
+import { DrawingShapeWidget } from "./drawing-widget";
 import { FontFixer } from "../../helpers/font-fixer";
 import { select } from "d3-selection";
 
 
 @Injectable()
-export class TextDrawingWidget implements DrawingWidget {
+export class TextDrawingWidget implements DrawingShapeWidget {
   static MARGIN = 4;
 
   constructor(

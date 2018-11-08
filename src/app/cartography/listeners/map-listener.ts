@@ -37,6 +37,12 @@ export class MapListener {
       });
     });
 
+    this.end = this.drawingsWidget.draggable.end.subscribe((evt: DraggableStart<Drawing>) => {
+      let drawings = this.selectionManager.getSelectedDrawings();
+      drawings.forEach((drawing: Drawing) => {
+        
+      });
+    });
   }
 
   public onDestroy() {
