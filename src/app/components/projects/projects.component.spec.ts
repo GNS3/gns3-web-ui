@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule } from "@angular/material";
+import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule } from "@angular/material";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
@@ -34,6 +34,7 @@ describe('ProjectsComponent', () => {
         MatTooltipModule,
         MatIconModule,
         MatSortModule,
+        MatDialogModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
       ],
