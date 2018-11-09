@@ -238,8 +238,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.inReadOnlyMode = value;
     if (value) {
       this.tools.selection = false;
-    }
-    else {
+    } else {
       this.tools.selection = true;
     }
   }
