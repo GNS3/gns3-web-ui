@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 
 import { Converter } from "../converter";
-import { MapPort } from "../../models/map/map-port";
 import { Port } from "../../../models/port";
+import { MapPort } from "../../models/map/map-port";
 
 
 @Injectable()

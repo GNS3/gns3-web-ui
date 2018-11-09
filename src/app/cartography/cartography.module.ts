@@ -21,6 +21,20 @@ import { DrawingsDraggableListener } from './listeners/drawings-draggable-listen
 import { NodesDraggableListener } from './listeners/nodes-draggable-listener';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { NodesEventSource } from './events/nodes-event-source';
+import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
+import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
+import { LinkToMapLinkConverter } from './converters/map/link-to-map-link-converter';
+import { MapDrawingToDrawingConverter } from './converters/map/map-drawing-to-drawing-converter';
+import { MapLabelToLabelConverter } from './converters/map/map-label-to-label-converter';
+import { MapLinkNodeToLinkNodeConverter } from './converters/map/map-link-node-to-link-node-converter';
+import { MapLinkToLinkConverter } from './converters/map/map-link-to-link-converter';
+import { MapNodeToNodeConverter } from './converters/map/map-node-to-node-converter';
+import { MapPortToPortConverter } from './converters/map/map-port-to-port-converter';
+import { MapSymbolToSymbolConverter } from './converters/map/map-symbol-to-symbol-converter';
+import { NodeToMapNodeConverter } from './converters/map/node-to-map-node-converter';
+import { PortToMapPortConverter } from './converters/map/port-to-map-port-converter';
+import { SymbolToMapSymbolConverter } from './converters/map/symbol-to-map-symbol-converter';
+import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
 
 
 @NgModule({
@@ -49,6 +63,20 @@ import { NodesEventSource } from './events/nodes-event-source';
     NodesDraggableListener,
     DrawingsEventSource,
     NodesEventSource,
+    DrawingToMapDrawingConverter,
+    LabelToMapLabelConverter,
+    LinkToMapLinkConverter,
+    LinkNodeToMapLinkNodeConverter,
+    MapDrawingToDrawingConverter,
+    MapLabelToLabelConverter,
+    MapLinkNodeToLinkNodeConverter,
+    MapLinkToLinkConverter,
+    MapNodeToNodeConverter,
+    MapPortToPortConverter,
+    MapSymbolToSymbolConverter,
+    NodeToMapNodeConverter,
+    PortToMapPortConverter,
+    SymbolToMapSymbolConverter,
     ...D3_MAP_IMPORTS
   ],
   exports: [ MapComponent ]

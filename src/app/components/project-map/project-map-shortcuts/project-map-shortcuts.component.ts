@@ -37,14 +37,14 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
 
   onDeleteHandler(event: KeyboardEvent): boolean {
     if (!this.projectService.isReadOnly(this.project)) {
-      const selectedNodes = this.selectionManager.getSelectedNodes();
-      if (selectedNodes) {
-        selectedNodes.forEach((node) => {
-          this.nodesService.delete(this.server, node).subscribe(data => {
-            this.toaster.success("Node has been deleted");
-          });
-        });
-      }
+      // const selectedNodes = this.selectionManager.getSelectedNodes();
+      // if (selectedNodes) {
+      //   selectedNodes.forEach((node) => {
+      //     this.nodesService.delete(this.server, node).subscribe(data => {
+      //       this.toaster.success("Node has been deleted");
+      //     });
+      //   });
+      // }
     }
     return false;
   }

@@ -1,4 +1,5 @@
 import { MapLinkNode } from "./map-link-node";
+import { MapNode } from "./map-node";
 
 export class MapLink {
     id: string;
@@ -11,8 +12,8 @@ export class MapLink {
 
     distance: number; // this is not from server
     length: number; // this is not from server
-    source: Node; // this is not from server
-    target: Node; // this is not from server
+    source: MapNode; // this is not from server
+    target: MapNode; // this is not from server
 
     isSelected = false; // this is not from server
     x: number; // this is not from server

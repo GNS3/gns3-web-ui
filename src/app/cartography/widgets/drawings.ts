@@ -1,17 +1,17 @@
 import { Injectable } from "@angular/core";
 
 import { Widget } from "./widget";
-import { Drawing } from "../models/drawing";
 import { SVGSelection } from "../models/types";
 import { Layer } from "../models/layer";
 import { SvgToDrawingConverter } from "../helpers/svg-to-drawing-converter";
 import { Draggable } from "../events/draggable";
 import { DrawingWidget } from "./drawing";
+import { MapDrawing } from "../models/map/map-drawing";
 
 
 @Injectable()
 export class DrawingsWidget implements Widget {
-  public draggable = new Draggable<SVGGElement, Drawing>();
+  public draggable = new Draggable<SVGGElement, MapDrawing>();
   public draggingEnabled = false;
 
   // public onContextMenu = new EventEmitter<NodeContextMenu>();
@@ -26,15 +26,15 @@ export class DrawingsWidget implements Widget {
     this.svgToDrawingConverter = new SvgToDrawingConverter();
   }
 
-  public redrawDrawing(view: SVGSelection, drawing: Drawing) {
+  public redrawDrawing(view: SVGSelection, drawing: MapDrawing) {
     this.drawingWidget.draw(this.selectDrawing(view, drawing));
   }
 
   public draw(view: SVGSelection) {
     const drawing = view
-      .selectAll<SVGGElement, Drawing>("g.drawing")
+      .selectAll<SVGGElement, MapDrawing>("g.drawing")
       .data((layer: Layer) => {
-        layer.drawings.forEach((d: Drawing) => {
+        layer.drawings.forEach((d: MapDrawing) => {
           try {
             d.element = this.svgToDrawingConverter.convert(d.svg);
           } catch (error) {
@@ -42,14 +42,14 @@ export class DrawingsWidget implements Widget {
           }
         });
         return layer.drawings;
-      }, (l: Drawing) => {
-        return l.drawing_id;
+      }, (l: MapDrawing) => {
+        return l.id;
       });
 
     const drawing_enter = drawing.enter()
       .append<SVGGElement>('g')
         .attr('class', 'drawing')
-        .attr('drawing_id', (l: Drawing) => l.drawing_id)
+        .attr('drawing_id', (l: MapDrawing) => l.id)
 
     const merge = drawing.merge(drawing_enter);
 
@@ -64,7 +64,7 @@ export class DrawingsWidget implements Widget {
     }
   }
 
-  private selectDrawing(view: SVGSelection, drawing: Drawing) {
-    return view.selectAll<SVGGElement, Drawing>(`g.drawing[drawing_id="${drawing.drawing_id}"]`);
+  private selectDrawing(view: SVGSelection, drawing: MapDrawing) {
+    return view.selectAll<SVGGElement, MapDrawing>(`g.drawing[drawing_id="${drawing.id}"]`);
   }
 }

@@ -2,9 +2,9 @@ import { Injectable } from "@angular/core";
 
 import { Converter } from "../converter";
 import { MapNode } from "../../models/map/map-node";
-import { Node } from "../../models/node";
 import { MapLabelToLabelConverter } from "./map-label-to-label-converter";
 import { MapPortToPortConverter } from "./map-port-to-port-converter";
+import { Node } from "../../models/node";
 
 
 @Injectable()

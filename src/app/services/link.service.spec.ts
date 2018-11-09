@@ -14,7 +14,6 @@ describe('LinkService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let service: LinkService;
   let server: Server;
 
   beforeEach(() => {
@@ -32,7 +31,6 @@ describe('LinkService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    service = TestBed.get(LinkService);
     server = getTestServer();
   });
 

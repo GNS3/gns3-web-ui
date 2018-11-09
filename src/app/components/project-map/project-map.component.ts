@@ -31,6 +31,7 @@ import { LinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { DraggedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
+import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 
 
 @Component({
@@ -77,6 +78,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
     private selectionManager: SelectionManager,
+    private mapNodeToNode: MapNodeToNodeConverter,
     protected nodesDataSource: NodesDataSource,
     protected linksDataSource: LinksDataSource,
     protected drawingsDataSource: DrawingsDataSource,
@@ -187,8 +189,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   setUpMapCallbacks(project: Project) {
     const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+      const node = this.mapNodeToNode.convert(eventNode.node);
       this.nodeContextMenu.open(
-        eventNode.node,
+        node,
         eventNode.event.clientY,
         eventNode.event.clientX
       );

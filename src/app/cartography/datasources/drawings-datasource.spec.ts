@@ -1,21 +1,21 @@
 import { DrawingsDataSource } from "./drawings-datasource";
-import { Drawing } from "../models/drawing";
+import { MapDrawing } from "../models/drawing";
 
 
 describe('DrawingsDataSource', () => {
   let dataSource: DrawingsDataSource;
-  let data: Drawing[];
+  let data: MapDrawing[];
 
   beforeEach(() => {
     dataSource = new DrawingsDataSource();
-    dataSource.changes.subscribe((drawings: Drawing[]) => {
+    dataSource.changes.subscribe((drawings: MapDrawing[]) => {
       data = drawings;
     });
   });
 
   describe('Drawing can be updated', () => {
     beforeEach(() => {
-      const drawing = new Drawing();
+      const drawing = new MapDrawing();
       drawing.drawing_id = "1";
       drawing.project_id = "project1";
       dataSource.add(drawing);

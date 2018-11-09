@@ -1,23 +1,23 @@
 import { Context } from "../models/context";
-import { Node } from "../models/node";
-import { Link } from "../../models/link";
 import { NodesWidget } from "./nodes";
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { Drawing } from "../models/drawing";
 import { DrawingLineWidget } from "./drawing-line";
 import { SelectionTool } from "../tools/selection-tool";
 import { MovingTool } from "../tools/moving-tool";
 import { LayersWidget } from "./layers";
 import { LayersManager } from "../managers/layers-manager";
 import { Injectable } from "@angular/core";
+import { MapNode } from "../models/map/map-node";
+import { MapLink } from "../models/map/map-link";
+import { MapDrawing } from "../models/map/map-drawing";
 
 
 @Injectable()
 export class GraphLayout implements Widget {
-  private nodes: Node[] = [];
-  private links: Link[] = [];
-  private drawings: Drawing[] = [];
+  private nodes: MapNode[] = [];
+  private links: MapLink[] = [];
+  private drawings: MapDrawing[] = [];
 
   constructor(
     private nodesWidget: NodesWidget,
@@ -28,11 +28,11 @@ export class GraphLayout implements Widget {
   ) {
   }
 
-  public setNodes(nodes: Node[]) {
+  public setNodes(nodes: MapNode[]) {
     this.nodes = nodes;
   }
 
-  public setLinks(links: Link[]) {
+  public setLinks(links: MapLink[]) {
     this.links = links;
   }
 
@@ -40,7 +40,7 @@ export class GraphLayout implements Widget {
     return this.links;
   }
 
-  public setDrawings(drawings: Drawing[]) {
+  public setDrawings(drawings: MapDrawing[]) {
     this.drawings = drawings;
   }
 

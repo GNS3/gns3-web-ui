@@ -1,6 +1,6 @@
+import { Selectable } from "../managers/selection-manager";
 import { Label } from "./label";
 import { Port } from "../../models/port";
-import { Selectable } from "../managers/selection-manager";
 
 
 export class Node implements Selectable {

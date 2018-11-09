@@ -3,13 +3,9 @@ import {
 } from '@angular/core';
 import { Selection, select } from 'd3-selection';
 
-import { Node } from "../../models/node";
-import { Link } from "../../../models/link";
 import { GraphLayout } from "../../widgets/graph-layout";
 import { Context } from "../../models/context";
 import { Size } from "../../models/size";
-import { Drawing } from "../../models/drawing";
-import { Symbol } from '../../../models/symbol';
 import { NodesWidget } from '../../widgets/nodes';
 import { Subscription } from 'rxjs';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
@@ -25,6 +21,15 @@ import { DraggedDataEvent } from '../../events/event-source';
 import { NodesEventSource } from '../../events/nodes-event-source';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { DrawingsWidget } from '../../widgets/drawings';
+import { Node } from '../../models/node';
+import { Link } from '../../../models/link';
+import { Drawing } from '../../models/drawing';
+import { Symbol } from '../../../models/symbol';
+import { MapNodeToNodeConverter } from '../../converters/map/map-node-to-node-converter';
+import { NodeToMapNodeConverter } from '../../converters/map/node-to-map-node-converter';
+import { DrawingToMapDrawingConverter } from '../../converters/map/drawing-to-map-drawing-converter';
+import { LinkToMapLinkConverter } from '../../converters/map/link-to-map-link-converter';
+import { SymbolToMapSymbolConverter } from '../../converters/map/symbol-to-map-symbol-converter';
 
 
 @Component({
@@ -41,14 +46,16 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() nodeDragged: EventEmitter<DraggedDataEvent<Node>>;
-  @Output() drawingDragged: EventEmitter<DraggedDataEvent<Drawing>>;
+  @Output() nodeDragged = new EventEmitter<DraggedDataEvent<Node>>();
+  @Output() drawingDragged = new EventEmitter<DraggedDataEvent<Drawing>>();
   @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
   private onChangesDetected: Subscription;
+  private nodeDraggedSub: Subscription;
+  private drawingDraggedSub: Subscription;
 
   protected settings = {
     'show_interface_labels': true
@@ -59,6 +66,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
     private mapListeners: MapListeners,
+    private mapNodeToNode: MapNodeToNodeConverter,
+    private nodeToMapNode: NodeToMapNodeConverter,
+    private linkToMapLink: LinkToMapLinkConverter,
+    private drawingToMapDrawing: DrawingToMapDrawingConverter,
+    private symbolToMapSymbol: SymbolToMapSymbolConverter,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected nodeWidget: NodeWidget,
@@ -68,12 +80,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout,
-    nodesEventSource: NodesEventSource,
-    drawingsEventSource: DrawingsEventSource,
+    private nodesEventSource: NodesEventSource,
+    private drawingsEventSource: DrawingsEventSource,
     ) {
     this.parentNativeElement = element.nativeElement;
-    this.nodeDragged = nodesEventSource.dragged;
-    this.drawingDragged = drawingsEventSource.dragged;
   }
 
   @Input('show-interface-labels') 
@@ -138,6 +148,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
+    this.nodeDraggedSub = this.nodesEventSource.dragged.subscribe((evt) => {
+      const converted = this.mapNodeToNode.convert(evt.datum);
+      this.nodeDragged.emit(new DraggedDataEvent<Node>(converted));
+    });
+
     this.mapListeners.onInit(this.svg);
   }
 
@@ -145,6 +160,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
     this.mapListeners.onDestroy();
+    this.nodeDraggedSub.unsubscribe();
   }
 
   public createGraph(domElement: HTMLElement) {
@@ -168,11 +184,27 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       this.context.size = this.getSize();
     }
 
-    this.graphLayout.setNodes(this.nodes);
-    this.graphLayout.setLinks(this.links);
-    this.graphLayout.setDrawings(this.drawings);
+    this.setNodes(this.nodes);
+    this.setLinks(this.links);
+    this.setDrawings(this.drawings);
 
     this.redraw();
+  }
+
+  private setNodes(nodes: Node[]) {
+    this.graphLayout.setNodes(nodes.map((n) => this.nodeToMapNode.convert(n)));
+  }
+
+  private setLinks(links: Link[]) {
+    this.graphLayout.setLinks(links.map((l) => this.linkToMapLink.convert(l)));
+  }
+
+  private setDrawings(drawings: Drawing[]) {
+    this.graphLayout.setDrawings(drawings.map((d) => this.drawingToMapDrawing.convert(d)));
+  }
+
+  private setSymbols(symbols: Symbol[]) {
+    this.nodeWidget.setSymbols(symbols.map((s) => this.symbolToMapSymbol.convert(s)));
   }
 
   private onLinksChange(change: SimpleChange) {
@@ -203,7 +235,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private onSymbolsChange(change: SimpleChange) {
-    this.nodeWidget.setSymbols(this.symbols);
+    this.setSymbols(this.symbols);
   }
 
   public redraw() {

@@ -2,7 +2,7 @@ import { path } from "d3-path";
 
 import { Widget } from "../widget";
 import { SVGSelection } from "../../models/types";
-import { Link } from "../../../models/link";
+import { MapLink } from "../../models/map/map-link";
 
 class EthernetLinkPath {
   constructor(
@@ -13,7 +13,7 @@ class EthernetLinkPath {
 }
 
 export class EthernetLinkWidget implements Widget {
-  private linktoEthernetLink(link: Link) {
+  private linktoEthernetLink(link: MapLink) {
     return new EthernetLinkPath(
       [link.source.x + link.source.width / 2., link.source.y + link.source.height / 2.],
       [link.target.x + link.target.width / 2., link.target.y + link.target.height / 2.]
@@ -24,9 +24,9 @@ export class EthernetLinkWidget implements Widget {
 
     const link = view
       .selectAll<SVGPathElement, EthernetLinkPath>('path.ethernet_link')
-        .data((link) => {
-          if(link.link_type === 'ethernet') {
-            return [this.linktoEthernetLink(link)];
+        .data((l) => {
+          if (l.linkType === 'ethernet') {
+            return [this.linktoEthernetLink(l)];
           }
           return [];
         });

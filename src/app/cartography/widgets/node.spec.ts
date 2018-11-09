@@ -1,10 +1,10 @@
 
 import { TestSVGCanvas } from "../testing";
-import { Node } from "../models/node";
-import { Label } from "../models/label";
 import { CssFixer } from "../helpers/css-fixer";
 import { FontFixer } from "../helpers/font-fixer";
 import { NodeWidget } from "./node";
+import { MapNode } from "../models/map/map-node";
+import { MapLabel } from "../models/map/map-label";
 
 
 describe('NodesWidget', () => {
@@ -21,9 +21,9 @@ describe('NodesWidget', () => {
   });
 
   describe('draggable behaviour', () => {
-    let node: Node;
+    let node: MapNode;
     const tryToDrag = () => {
-      const drew = svg.canvas.selectAll<SVGGElement, Node>('g.node');
+      const drew = svg.canvas.selectAll<SVGGElement, MapNode>('g.node');
       const drewNode = drew.nodes()[0];
 
       drewNode.dispatchEvent(
@@ -38,12 +38,12 @@ describe('NodesWidget', () => {
     };
 
     beforeEach(() => {
-      node = new Node();
+      node = new MapNode();
       node.x = 100;
       node.y = 200;
       node.width = 100;
       node.height = 100;
-      node.label = new Label();
+      node.label = new MapLabel();
     });
 
     // it('should be draggable when enabled', () => {

@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 
 import { Converter } from "../converter";
+import { LabelToMapLabelConverter } from "./label-to-map-label-converter";
 import { LinkNode } from "../../../models/link-node";
 import { MapLinkNode } from "../../models/map/map-link-node";
-import { LabelToMapLabelConverter } from "./label-to-map-label-converter";
 
 
 @Injectable()
