@@ -1,25 +1,14 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatStepper, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material";
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material";
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { v4 as uuid } from 'uuid';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ProjectService } from '../../../services/project.service';
 import { Project } from '../../../models/project';
-import { ImportProjectConfirmationDialogComponent } from './import-project-confirmation-dialog/import-project-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ServerResponse } from '../../../models/serverResponse';
-
-export class Validator {
-    static projectNameValidator(projectName) {
-      var pattern = new RegExp(/[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?]/);
-
-      if(!pattern.test(projectName.value)) {
-        return null;
-      }
-
-      return { invalidName: true }
-    }
-}
+import { Validator } from '../models/validator';
 
 @Component({
     selector: 'app-import-project-dialog',
@@ -104,7 +93,7 @@ export class ImportProjectDialogComponent implements OnInit {
     }
 
     openConfirmationDialog(existingProject: Project) {
-        const dialogRef = this.dialog.open(ImportProjectConfirmationDialogComponent, {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
           width: '300px',
           height: '150px',
           data: {

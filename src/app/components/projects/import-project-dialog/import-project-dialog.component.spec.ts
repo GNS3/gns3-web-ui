@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImportProjectDialogComponent, Validator } from "./import-project-dialog.component";
+import { ImportProjectDialogComponent } from "./import-project-dialog.component";
 import { Server } from "../../../models/server";
-import { MatInputModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatStepperModule, MatFormFieldModule, MatDialogRef, MatDialog, MAT_DIALOG_DATA } from "@angular/material";
+import { MatInputModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { FileUploadModule, FileSelectDirective, FileItem, FileUploader, ParsedResponseHeaders } from "ng2-file-upload";
@@ -11,6 +11,7 @@ import { By } from '@angular/platform-browser';
 import { ProjectService } from '../../../services/project.service';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
+import { Validator } from '../models/validator';
 
 export class MockedProjectService {
     public projects: Project[] = [{
@@ -52,7 +53,6 @@ describe('ImportProjectDialogComponent', () => {
                 MatIconModule,
                 MatSortModule,
                 MatDialogModule,
-                MatStepperModule,
                 MatFormFieldModule,
                 MatInputModule,
                 NoopAnimationsModule,

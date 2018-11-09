@@ -6,6 +6,16 @@ a.table-link {
   color: #0097a7;
 }
 
+.snackabar-success {
+  background:#0097a7!important;
+  color: white!important;
+}
+
+.snackbar-error {
+  background: #B00020!important;
+  color: white!important;
+}
+
 app-root {
   width: 100%;
 }

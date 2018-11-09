@@ -28,8 +28,9 @@ import { ApplianceService } from "./services/appliance.service";
 import { LinkService } from "./services/link.service";
 
 import { ProjectsComponent } from './components/projects/projects.component';
+import { AddBlankProjectDialogComponent } from './components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ImportProjectDialogComponent } from './components/projects/import-project-dialog/import-project-dialog.component';
-import { ImportProjectConfirmationDialogComponent} from './components/projects/import-project-dialog/import-project-confirmation-dialog/import-project-confirmation-dialog.component';
+import { ConfirmationDialogComponent} from './components/projects/confirmation-dialog/confirmation-dialog.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
@@ -94,8 +95,9 @@ if (environment.production) {
     SnapshotMenuItemComponent,
     SnapshotsComponent,
     ProjectsComponent,
+    AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
-    ImportProjectConfirmationDialogComponent,
+    ConfirmationDialogComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
     NodeContextMenuComponent,
@@ -160,8 +162,9 @@ if (environment.production) {
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
     ApplianceListDialogComponent,
+    AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
-    ImportProjectConfirmationDialogComponent
+    ConfirmationDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })
