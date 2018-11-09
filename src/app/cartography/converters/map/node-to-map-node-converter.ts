@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 
-import { Converter } from "./converter";
-import { MapNode } from "../models/map/map-node";
-import { Node } from "../models/node";
+import { Converter } from "../converter";
+import { MapNode } from "../../models/map/map-node";
+import { Node } from "../../models/node";
 import { LabelToMapLabelConverter } from "./label-to-map-label-converter";
 import { PortToMapPortConverter } from "./port-to-map-port-converter";
 
