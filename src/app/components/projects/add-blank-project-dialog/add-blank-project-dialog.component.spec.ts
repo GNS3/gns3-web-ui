@@ -1,11 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AddBlankProjectDialogComponent } from "./add-blank-project-dialog.component";
 import { Server } from "../../../models/server";
-import { FormBuilder, ReactiveFormsModule, FormsModule, Validators, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatDialogModule, MatInputModule, MatFormFieldModule, MatDialogRef, MAT_DIALOG_DATA, MatSnackBarModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { DebugElement } from '@angular/core';
-import { Validator } from '../models/validator';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { of } from 'rxjs/internal/observable/of';
@@ -30,11 +28,11 @@ export class MockedProjectService {
         snap_to_grid: false,
     }];
   
-    list(server: Server) {
+    list() {
       return of(this.projects);
     }
 
-    add(server: Server, projectname: string, uuid: string){
+    add(){
         return of(this.projects.pop);
     }
 }
@@ -43,7 +41,6 @@ describe('AddBlankProjectDialogComponent', () => {
     let component: AddBlankProjectDialogComponent;
     let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
     let server: Server;
-    let formBuilder: FormBuilder;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -69,16 +66,12 @@ describe('AddBlankProjectDialogComponent', () => {
         server = new Server();
         server.ip = "localhost";
         server.port = 80;
-        formBuilder = new FormBuilder();
     }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(AddBlankProjectDialogComponent);
         component = fixture.componentInstance;
         component.server = server;
-        component.projectNameForm = formBuilder.group({
-            projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
-          });
         component.projectNameForm.controls['projectName'].setValue("ValidName");
         fixture.detectChanges();
     })

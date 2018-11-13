@@ -6,13 +6,14 @@ import { Server } from '../../../models/server';
 import { ProjectService } from '../../../services/project.service';
 import { v4 as uuid } from 'uuid';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { Validator } from '../models/validator';
+import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
     selector: 'app-add-blank-project-dialog',
     templateUrl: './add-blank-project-dialog.component.html',
-    styleUrls: ['./add-blank-project-dialog.component.css']
+    styleUrls: ['./add-blank-project-dialog.component.css'],
+    providers: [ProjectNameValidator]
 })
 export class AddBlankProjectDialogComponent implements OnInit {
     server: Server;
@@ -23,9 +24,10 @@ export class AddBlankProjectDialogComponent implements OnInit {
         private dialog: MatDialog,
         private projectService: ProjectService,
         private toasterService: ToasterService,
-        private formBuilder: FormBuilder) {
+        private formBuilder: FormBuilder,
+        private projectNameValidator: ProjectNameValidator) {
             this.projectNameForm = this.formBuilder.group({
-                projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
+                projectName: new FormControl(null, [Validators.required, projectNameValidator.get])
             });
         }
 

@@ -8,12 +8,13 @@ import { ProjectService } from '../../../services/project.service';
 import { Project } from '../../../models/project';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ServerResponse } from '../../../models/serverResponse';
-import { Validator } from '../models/validator';
+import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
     selector: 'app-import-project-dialog',
     templateUrl: 'import-project-dialog.component.html',
-    styleUrls: ['import-project-dialog.component.css']
+    styleUrls: ['import-project-dialog.component.css'],
+    providers: [ProjectNameValidator]
 })
 export class ImportProjectDialogComponent implements OnInit {
     uploader: FileUploader;
@@ -31,9 +32,10 @@ export class ImportProjectDialogComponent implements OnInit {
       public dialogRef: MatDialogRef<ImportProjectDialogComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any,
       private formBuilder: FormBuilder,
-      private projectService: ProjectService){
+      private projectService: ProjectService,
+      private projectNameValidator: ProjectNameValidator){
         this.projectNameForm = this.formBuilder.group({
-            projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
+            projectName: new FormControl(null, [Validators.required, projectNameValidator.get])
           });
       }
   

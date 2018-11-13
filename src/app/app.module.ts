@@ -71,6 +71,7 @@ import { SnapshotsComponent } from './components/snapshots/snapshots.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { MATERIAL_IMPORTS } from './material.imports';
 import { DrawingService } from './services/drawing.service';
+import { ProjectNameValidator } from './components/projects/models/projectNameValidator';
 
 
 if (environment.production) {
@@ -155,7 +156,8 @@ if (environment.production) {
     InRectangleHelper,
     DrawingsDataSource,
     ServerErrorHandler,
-    ServerDatabase
+    ServerDatabase,
+    ProjectNameValidator
   ],
   entryComponents: [
     AddServerDialogComponent,
