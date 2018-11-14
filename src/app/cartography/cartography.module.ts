@@ -37,6 +37,7 @@ import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-ma
 import { GraphDataManager } from './managers/graph-data-manager';
 import { SelectionUpdateListener } from './listeners/selection-update-listener';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from './datasources/map-datasource';
+import { SelectionListener } from './listeners/selection-listener';
 
 
 @NgModule({
@@ -63,6 +64,7 @@ import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbo
     SelectionUpdateListener,
     MapListeners,
     DraggableListener,
+    SelectionListener,
     DrawingsEventSource,
     NodesEventSource,
     DrawingToMapDrawingConverter,

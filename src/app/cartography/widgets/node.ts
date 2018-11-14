@@ -9,7 +9,7 @@ import { select, event } from "d3-selection";
 import { MapSymbol } from "../models/map/map-symbol";
 import { MapNode } from "../models/map/map-node";
 import { GraphDataManager } from "../managers/graph-data-manager";
-import { SelectionStore } from "../managers/selection-manager";
+import { SelectionManager } from "../managers/selection-manager";
 
 
 @Injectable()
@@ -25,7 +25,7 @@ export class NodeWidget implements Widget {
     private cssFixer: CssFixer,
     private fontFixer: FontFixer,
     private graphDataManager: GraphDataManager,
-    private selectionStore: SelectionStore
+    private selectionManager: SelectionManager
   ) {}
 
   public draw(view: SVGSelection) {
@@ -47,7 +47,7 @@ export class NodeWidget implements Widget {
           .attr('class', 'label');
 
     const node_body_merge = node_body.merge(node_body_enter)
-        .classed('selected', (n: MapNode) => this.selectionStore.isSelected(n))
+        .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
         .on("contextmenu", function (n: MapNode, i: number) {
           event.preventDefault();
           self.onContextMenu.emit(new NodeContextMenu(event, n));

@@ -28,7 +28,6 @@ import { Symbol } from '../../../models/symbol';
 import { MapNodeToNodeConverter } from '../../converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../converters/map/map-port-to-port-converter';
 import { GraphDataManager } from '../../managers/graph-data-manager';
-import { SelectionManager } from '../../managers/selection-manager';
 import { MapDrawingToDrawingConverter } from '../../converters/map/map-drawing-to-drawing-converter';
 
 
@@ -71,7 +70,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private mapNodeToNode: MapNodeToNodeConverter,
     private mapPortToPort: MapPortToPortConverter,
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
-    private selectionManager: SelectionManager,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected nodeWidget: NodeWidget,
@@ -150,8 +148,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.drawingDraggedSub = this.drawingsEventSource.dragged.subscribe((evt) => {
       this.drawingDragged.emit(new DraggedDataEvent<Drawing>(this.mapDrawingToDrawing.convert(evt.datum), evt.dx, evt.dy));
     });
-
-    this.selectionChanged = this.selectionManager.subscribe(this.selectionToolWidget.rectangleSelected);
 
     this.mapListeners.onInit(this.svg);
   }
