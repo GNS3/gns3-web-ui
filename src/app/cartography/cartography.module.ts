@@ -17,7 +17,6 @@ import { Context } from './models/context';
 import { D3_MAP_IMPORTS } from './d3-map.imports';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
 import { MapListeners } from './listeners/map-listeners';
-import { DrawingsDraggableListener } from './listeners/drawings-draggable-listener';
 import { NodesDraggableListener } from './listeners/nodes-draggable-listener';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { NodesEventSource } from './events/nodes-event-source';
@@ -35,6 +34,9 @@ import { NodeToMapNodeConverter } from './converters/map/node-to-map-node-conver
 import { PortToMapPortConverter } from './converters/map/port-to-map-port-converter';
 import { SymbolToMapSymbolConverter } from './converters/map/symbol-to-map-symbol-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
+import { GraphDataManager } from './managers/graph-data-manager';
+import { SelectionListener } from './listeners/selection-listener';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from './datasources/map-datasource';
 
 
 @NgModule({
@@ -58,8 +60,8 @@ import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-ma
     MapChangeDetectorRef,
     CanvasSizeDetector,
     Context,
+    SelectionListener,
     MapListeners,
-    DrawingsDraggableListener,
     NodesDraggableListener,
     DrawingsEventSource,
     NodesEventSource,
@@ -77,6 +79,11 @@ import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-ma
     NodeToMapNodeConverter,
     PortToMapPortConverter,
     SymbolToMapSymbolConverter,
+    GraphDataManager,
+    MapNodesDataSource,
+    MapLinksDataSource,
+    MapDrawingsDataSource,
+    MapSymbolsDataSource,
     ...D3_MAP_IMPORTS
   ],
   exports: [ MapComponent ]

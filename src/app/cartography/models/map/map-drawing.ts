@@ -1,6 +1,7 @@
 import { DrawingElement } from "../drawings/drawing-element";
+import { Indexed } from "../../datasources/map-datasource";
 
-export class MapDrawing {
+export class MapDrawing implements Indexed {
     id: string;
     projectId: string;
     rotation: number;

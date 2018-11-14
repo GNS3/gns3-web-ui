@@ -6,7 +6,7 @@ import { Symbol } from "../../models/symbol";
 
 @Injectable()
 export class SymbolsDataSource extends DataSource<Symbol> {
-  protected findIndex(symbol: Symbol) {
-    return this.data.findIndex((s: Symbol) => s.symbol_id === symbol.symbol_id);
+  protected getItemKey(symbol: Symbol) {
+    return symbol.symbol_id;
   }
 }

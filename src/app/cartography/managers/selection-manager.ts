@@ -1,40 +1,74 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 
 import { Subject } from "rxjs";
 import { Subscription } from "rxjs";
 
-import { NodesDataSource } from "../datasources/nodes-datasource";
-import { LinksDataSource } from "../datasources/links-datasource";
 import { InRectangleHelper } from "../helpers/in-rectangle-helper";
 import { Rectangle } from "../models/rectangle";
-import { DataSource } from "../datasources/datasource";
-import { InterfaceLabel } from "../models/interface-label";
-import { DrawingsDataSource } from "../datasources/drawings-datasource";
-import { MapNode } from "../models/map/map-node";
-import { MapLink } from "../models/map/map-link";
-import { MapDrawing } from "../models/map/map-drawing";
+import { GraphDataManager } from "./graph-data-manager";
+import { Indexed } from "../datasources/map-datasource";
 
 
-export interface Selectable {
-  x: number;
-  y: number;
-  is_selected: boolean;
+@Injectable()
+export class SelectionStore {
+  private selection: {[id:string]: any} = {};
+
+  public selected = new EventEmitter<any[]>();
+  public unselected = new EventEmitter<any[]>();
+
+  public set(items: Indexed[]) {
+    const dictItems = this.convertToKeyDict(items);
+
+    const selected = Object.keys(dictItems).filter((key) => {
+      return !this.isSelectedByKey(key);
+    }).map(key => dictItems[key]);
+
+    const unselected = Object.keys(this.selection).filter((key) => {
+      return !(key in dictItems);
+    }).map((key) => this.selection[key]);
+
+    this.selection = dictItems;
+
+    this.selected.emit(selected);
+    this.unselected.emit(unselected);
+  }
+
+  public get(): Indexed[] {
+    return Object.keys(this.selection).map(key => this.selection[key]);
+  }
+
+  public isSelected(item): boolean {
+    const key = this.getKey(item);
+    return this.isSelectedByKey(key);
+  }
+
+  private isSelectedByKey(key): boolean {
+    return key in this.selection;
+  }
+
+  private getKey(item: Indexed): string {
+    const type = item.constructor.name;
+    return `${type}-${item.id}`;
+  }
+
+  private convertToKeyDict(items: Indexed[]) {
+    const dict = {};
+    items.forEach((item) => {
+      dict[this.getKey(item)] = item;
+    });
+    return dict;
+  }
 }
+
 
 @Injectable()
 export class SelectionManager {
-  private selectedNodes: MapNode[] = [];
-  private selectedLinks: MapLink[] = [];
-  private selectedDrawings: MapDrawing[] = [];
-  private selectedInterfaceLabels: InterfaceLabel[] = [];
-
   private subscription: Subscription;
 
   constructor(
-    private nodesDataSource: NodesDataSource,
-    private linksDataSource: LinksDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private inRectangleHelper: InRectangleHelper
+    private graphDataManager: GraphDataManager,
+    private inRectangleHelper: InRectangleHelper,
+    private selectionStore: SelectionStore
   ) {}
 
   public subscribe(subject: Subject<Rectangle>) {
@@ -45,104 +79,31 @@ export class SelectionManager {
   }
 
   public onSelection(rectangle: Rectangle) {
-    // this.selectedNodes = this.getSelectedItemsInRectangle<MapNode>(this.nodesDataSource, rectangle);
-    // this.selectedLinks = this.getSelectedItemsInRectangle<MapLink>(this.linksDataSource, rectangle);
-    // this.selectedDrawings = this.getSelectedItemsInRectangle<MapDrawing>(this.drawingsDataSource, rectangle);
-    // don't select interfaces for now
-    // this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
-  }  
+    const selectedNodes = this.graphDataManager.getNodes().filter((node) => {
+      return this.inRectangleHelper.inRectangle(rectangle, node.x, node.y)
+    });
 
-  public getSelectedNodes() {
-    return this.selectedNodes;
+    const selectedLinks = this.graphDataManager.getLinks().filter((link) => {
+      return this.inRectangleHelper.inRectangle(rectangle, link.x, link.y)
+    });
+
+    const selectedDrawings = this.graphDataManager.getDrawings().filter((drawing) => {
+      return this.inRectangleHelper.inRectangle(rectangle, drawing.x, drawing.y)
+    });
+
+    const selected = [...selectedNodes, ...selectedLinks, ...selectedDrawings];
+
+    this.selectionStore.set(selected);
   }
 
-  public getSelectedLinks() {
-    return this.selectedLinks;
+  public getSelected() {
+    return this.selectionStore.get();
   }
 
-  public getSelectedDrawings() {
-    return this.selectedDrawings;
+  public setSelected(value: Indexed[]) {
+    this.selectionStore.set(value);
   }
-
-  public setSelectedNodes(nodes: MapNode[]) {
-    // this.selectedNodes = this.setSelectedItems<MapNode>(this.nodesDataSource, (node: MapNode) => {
-    //   return !!nodes.find((n: MapNode) => node.id === n.id);
-    // });
-  }
-
-  public setSelectedLinks(links: MapLink[]) {
-    // this.selectedLinks = this.setSelectedItems<MapLink>(this.linksDataSource, (link: MapLink) => {
-    //   return !!links.find((l: MapLink) => link.link_id === l.link_id);
-    // });
-  }
-
-  public setSelectedDrawings(drawings: MapDrawing[]) {
-    // this.selectedDrawings = this.setSelectedItems<MapDrawing>(this.drawingsDataSource, (drawing: MapDrawing) => {
-    //   return !!drawings.find((d: MapDrawing) => drawing.drawing_id === d.drawing_id);
-    // });
-  }
-
+  
   public clearSelection() {
-    this.setSelectedDrawings([]);
-    this.setSelectedLinks([]);
-    this.setSelectedNodes([]);
-  }
-
-  private getSelectedItemsInRectangle<T extends Selectable>(dataSource: DataSource<T>, rectangle: Rectangle) {
-    return this.setSelectedItems<T>(dataSource, (item: T) => {
-      return this.inRectangleHelper.inRectangle(rectangle, item.x, item.y);
-    });
-  }
-
-  private getSelectedInterfaceLabelsInRectangle(rectangle: Rectangle) {
-    // this.linksDataSource.getItems().forEach((link: MapLink) => {
-    //   if (!(link.source && link.target && link.nodes.length > 1)) {
-    //     return;
-    //   }
-
-    //   let updated = false;
-
-    //   let x = link.source.x + link.nodes[0].label.x;
-    //   let y = link.source.y + link.nodes[0].label.y;
-
-    //   if (this.inRectangleHelper.inRectangle(rectangle, x, y)) {
-    //     link.nodes[0].label.is_selected = true;
-    //     updated = true;
-    //   }
-
-    //   x = link.target.x + link.nodes[1].label.x;
-    //   y = link.target.y + link.nodes[1].label.y;
-
-    //   if (this.inRectangleHelper.inRectangle(rectangle, x, y)) {
-    //     link.nodes[1].label.is_selected = true;
-    //     updated = true;
-    //   }
-
-    //   if (updated) {
-    //     this.linksDataSource.update(link);
-    //   }
-    // });
-
-    return [];
-  }
-
-  private setSelected<T extends Selectable>(item: T, isSelected: boolean, dataSource: DataSource<T>): boolean {
-    if (item.is_selected !== isSelected) {
-      item.is_selected = isSelected;
-      dataSource.update(item);
-    }
-    return item.is_selected;
-  }
-
-  private setSelectedItems<T extends Selectable>(dataSource: DataSource<T>, discriminator: (item: T) => boolean) {
-    const selected: T[] = [];
-    dataSource.getItems().forEach((item: T) => {
-      const isSelected = discriminator(item);
-      this.setSelected<T>(item, isSelected, dataSource);
-      if (isSelected) {
-        selected.push(item);
-      }
-    });
-    return selected;
   }
 }

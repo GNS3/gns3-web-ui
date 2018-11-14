@@ -8,40 +8,18 @@ import { MovingTool } from "../tools/moving-tool";
 import { LayersWidget } from "./layers";
 import { LayersManager } from "../managers/layers-manager";
 import { Injectable } from "@angular/core";
-import { MapNode } from "../models/map/map-node";
-import { MapLink } from "../models/map/map-link";
-import { MapDrawing } from "../models/map/map-drawing";
 
 
 @Injectable()
 export class GraphLayout implements Widget {
-  private nodes: MapNode[] = [];
-  private links: MapLink[] = [];
-  private drawings: MapDrawing[] = [];
-
   constructor(
     private nodesWidget: NodesWidget,
     private drawingLineTool: DrawingLineWidget,
     private selectionTool: SelectionTool,
     private movingTool: MovingTool,
-    private layersWidget: LayersWidget
+    private layersWidget: LayersWidget,
+    private layersManager: LayersManager
   ) {
-  }
-
-  public setNodes(nodes: MapNode[]) {
-    this.nodes = nodes;
-  }
-
-  public setLinks(links: MapLink[]) {
-    this.links = links;
-  }
-
-  public getLinks() {
-    return this.links;
-  }
-
-  public setDrawings(drawings: MapDrawing[]) {
-    this.drawings = drawings;
   }
 
   public getNodesWidget() {
@@ -84,13 +62,7 @@ export class GraphLayout implements Widget {
         return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
       });
 
-    // @fix me
-    const layersManager = new LayersManager();
-    layersManager.setNodes(this.nodes);
-    layersManager.setDrawings(this.drawings);
-    layersManager.setLinks(this.links);
-
-    this.layersWidget.draw(canvas, layersManager.getLayersList());
+    this.layersWidget.draw(canvas, this.layersManager.getLayersList());
 
     this.drawingLineTool.draw(view, context);
     this.selectionTool.draw(view, context);

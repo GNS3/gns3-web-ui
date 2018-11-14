@@ -1,7 +1,8 @@
 import { MapLinkNode } from "./map-link-node";
 import { MapNode } from "./map-node";
+import { Indexed } from "../../datasources/map-datasource";
 
-export class MapLink {
+export class MapLink implements Indexed {
     id: string;
     captureFileName: string;
     captureFilePath: string;

@@ -77,7 +77,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
-    private selectionManager: SelectionManager,
     private mapNodeToNode: MapNodeToNodeConverter,
     protected nodesDataSource: NodesDataSource,
     protected linksDataSource: LinksDataSource,
@@ -137,6 +136,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         this.nodes = nodes;
+        console.log("update nodes");
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -198,12 +198,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(onContextMenu);
-
-    this.subscriptions.push(
-      this.selectionManager.subscribe(
-        this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
-    );
-
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -219,22 +213,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(draggedEvent: DraggedDataEvent<Node>) {
-    this.nodesDataSource.update(draggedEvent.datum);
-    this.nodeService
-      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
-      .subscribe((node: Node) => {
-        this.nodesDataSource.update(node);
-      });
+  onNodeDragged(draggedEvent: DraggedDataEvent<Node[]>) {
+    draggedEvent.datum.forEach((node: Node) => {
+      this.nodesDataSource.update(node);
+      this.nodeService
+        .updatePosition(this.server, node, node.x, node.y)
+        .subscribe((serverNode: Node) => {
+          this.nodesDataSource.update(serverNode);
+        });
+    });
   }
 
-  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing>) {
-    this.drawingsDataSource.update(draggedEvent.datum);
-    this.drawingService
-      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
-      .subscribe((drawing: Drawing) => {
-        this.drawingsDataSource.update(drawing);
-      });
+  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing[]>) {
+    draggedEvent.datum.forEach((drawing: Drawing) => {
+      this.drawingsDataSource.update(drawing);
+      this.drawingService
+        .updatePosition(this.server, drawing, drawing.x, drawing.y)
+        .subscribe((serverDrawing: Drawing) => {
+          this.drawingsDataSource.update(serverDrawing);
+        });
+    });
   }
 
   public set readonly(value) {

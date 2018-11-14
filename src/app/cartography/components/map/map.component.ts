@@ -26,10 +26,10 @@ import { Link } from '../../../models/link';
 import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { MapNodeToNodeConverter } from '../../converters/map/map-node-to-node-converter';
-import { NodeToMapNodeConverter } from '../../converters/map/node-to-map-node-converter';
-import { DrawingToMapDrawingConverter } from '../../converters/map/drawing-to-map-drawing-converter';
-import { LinkToMapLinkConverter } from '../../converters/map/link-to-map-link-converter';
-import { SymbolToMapSymbolConverter } from '../../converters/map/symbol-to-map-symbol-converter';
+import { MapPortToPortConverter } from '../../converters/map/map-port-to-port-converter';
+import { GraphDataManager } from '../../managers/graph-data-manager';
+import { SelectionManager } from '../../managers/selection-manager';
+import { MapDrawingToDrawingConverter } from '../../converters/map/map-drawing-to-drawing-converter';
 
 
 @Component({
@@ -46,8 +46,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() nodeDragged = new EventEmitter<DraggedDataEvent<Node>>();
-  @Output() drawingDragged = new EventEmitter<DraggedDataEvent<Drawing>>();
+  @Output() nodeDragged = new EventEmitter<DraggedDataEvent<Node[]>>();
+  @Output() drawingDragged = new EventEmitter<DraggedDataEvent<Drawing[]>>();
   @Output() onLinkCreated = new EventEmitter<LinkCreated>();
 
   private parentNativeElement: any;
@@ -56,21 +56,22 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private onChangesDetected: Subscription;
   private nodeDraggedSub: Subscription;
   private drawingDraggedSub: Subscription;
+  private selectionChanged: Subscription;
 
   protected settings = {
     'show_interface_labels': true
   };
 
   constructor(
+    private graphDataManager: GraphDataManager,
     private context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
     private mapListeners: MapListeners,
     private mapNodeToNode: MapNodeToNodeConverter,
-    private nodeToMapNode: NodeToMapNodeConverter,
-    private linkToMapLink: LinkToMapLinkConverter,
-    private drawingToMapDrawing: DrawingToMapDrawingConverter,
-    private symbolToMapSymbol: SymbolToMapSymbolConverter,
+    private mapPortToPort: MapPortToPortConverter,
+    private mapDrawingToDrawing: MapDrawingToDrawingConverter,
+    private selectionManager: SelectionManager,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected nodeWidget: NodeWidget,
@@ -122,12 +123,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       (changes['symbols'] && !changes['symbols'].isFirstChange())
     ) {
       if (this.svg.empty && !this.svg.empty()) {
-        if (changes['nodes']) {
-          this.onNodesChange(changes['nodes']);
-        }
-        if (changes['links']) {
-          this.onLinksChange(changes['links']);
-        }
         if (changes['symbols']) {
           this.onSymbolsChange(changes['symbols']);
         }
@@ -144,14 +139,21 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
-        this.reload();
+        this.redraw();
       }
     });
 
     this.nodeDraggedSub = this.nodesEventSource.dragged.subscribe((evt) => {
-      const converted = this.mapNodeToNode.convert(evt.datum);
-      this.nodeDragged.emit(new DraggedDataEvent<Node>(converted));
+      const converted = evt.datum.map((e) => this.mapNodeToNode.convert(e));
+      this.nodeDragged.emit(new DraggedDataEvent<Node[]>(converted));
     });
+
+    this.drawingDraggedSub = this.drawingsEventSource.dragged.subscribe((evt) => {
+      const converted = evt.datum.map((e) => this.mapDrawingToDrawing.convert(e));
+      this.drawingDragged.emit(new DraggedDataEvent<Drawing[]>(converted));
+    });
+
+    this.selectionChanged = this.selectionManager.subscribe(this.selectionToolWidget.rectangleSelected);
 
     this.mapListeners.onInit(this.svg);
   }
@@ -161,6 +163,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.onChangesDetected.unsubscribe();
     this.mapListeners.onDestroy();
     this.nodeDraggedSub.unsubscribe();
+    this.selectionChanged.unsubscribe();
   }
 
   public createGraph(domElement: HTMLElement) {
@@ -176,7 +179,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   protected linkCreated(evt) {
-    this.onLinkCreated.emit(evt);
+    const linkCreated = new LinkCreated(
+      this.mapNodeToNode.convert(evt.sourceNode),
+      this.mapPortToPort.convert(evt.sourcePort),
+      this.mapNodeToNode.convert(evt.targetNode),
+      this.mapPortToPort.convert(evt.targetPort)
+    );
+
+    this.onLinkCreated.emit(linkCreated);
   }
 
   private changeLayout() {
@@ -184,67 +194,20 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       this.context.size = this.getSize();
     }
 
-    this.setNodes(this.nodes);
-    this.setLinks(this.links);
-    this.setDrawings(this.drawings);
-
     this.redraw();
   }
 
-  private setNodes(nodes: Node[]) {
-    this.graphLayout.setNodes(nodes.map((n) => this.nodeToMapNode.convert(n)));
-  }
-
-  private setLinks(links: Link[]) {
-    this.graphLayout.setLinks(links.map((l) => this.linkToMapLink.convert(l)));
-  }
-
-  private setDrawings(drawings: Drawing[]) {
-    this.graphLayout.setDrawings(drawings.map((d) => this.drawingToMapDrawing.convert(d)));
-  }
-
-  private setSymbols(symbols: Symbol[]) {
-    this.nodeWidget.setSymbols(symbols.map((s) => this.symbolToMapSymbol.convert(s)));
-  }
-
-  private onLinksChange(change: SimpleChange) {
-    const nodes_by_id = {};
-    this.nodes.forEach((n: Node) => {
-      nodes_by_id[n.node_id] = n;
-    });
-
-    this.links.forEach((link: Link) => {
-      const source_id = link.nodes[0].node_id;
-      const target_id = link.nodes[1].node_id;
-      if (source_id in nodes_by_id) {
-        link.source = nodes_by_id[source_id];
-      }
-      if (target_id in nodes_by_id) {
-        link.target = nodes_by_id[target_id];
-      }
-
-      if (link.source && link.target) {
-        link.x = link.source.x + (link.target.x - link.source.x) * 0.5;
-        link.y = link.source.y + (link.target.y - link.source.y) * 0.5;
-      }
-    });
-  }
-
-  private onNodesChange(change: SimpleChange) {
-    this.onLinksChange(null);
-  }
 
   private onSymbolsChange(change: SimpleChange) {
-    this.setSymbols(this.symbols);
+    this.graphDataManager.setSymbols(this.symbols);
   }
 
-  public redraw() {
+  private redraw() {
+    this.graphDataManager.setNodes(this.nodes);
+    this.graphDataManager.setLinks(this.links);
+    this.graphDataManager.setDrawings(this.drawings);
+
     this.graphLayout.draw(this.svg, this.context);
-  }
-
-  public reload() {
-    this.onLinksChange(null);
-    this.redraw();
   }
 
   @HostListener('window:resize', ['$event'])

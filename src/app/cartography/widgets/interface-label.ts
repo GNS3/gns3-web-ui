@@ -33,8 +33,7 @@ export class InterfaceLabelWidget {
           Math.round(l.source.y + l.nodes[0].label.y),
           l.nodes[0].label.text,
           l.nodes[0].label.style,
-          l.nodes[0].label.rotation,
-          l.nodes[0].label.isSelected
+          l.nodes[0].label.rotation
         );
 
         const targetInterface = new InterfaceLabel(
@@ -44,8 +43,7 @@ export class InterfaceLabelWidget {
           Math.round( l.target.y + l.nodes[1].label.y),
           l.nodes[1].label.text,
           l.nodes[1].label.style,
-          l.nodes[1].label.rotation,
-          l.nodes[1].label.isSelected
+          l.nodes[1].label.rotation
         );
 
         if (this.enabled) {
@@ -81,7 +79,7 @@ export class InterfaceLabelWidget {
         const y = l.y + bbox.height;
         return `translate(${x}, ${y}) rotate(${l.rotation}, ${x}, ${y})`;
       })
-      .classed('selected', (l: InterfaceLabel) => l.is_selected);
+      .classed('selected', (l: InterfaceLabel) => false);
 
     // update label
     merge
@@ -95,7 +93,7 @@ export class InterfaceLabelWidget {
     // update surrounding rect
     merge
       .select<SVGRectElement>('rect.interface_label_border')
-        .attr('visibility', (l: InterfaceLabel) => l.is_selected ? 'visible' : 'hidden')
+        .attr('visibility', (l: InterfaceLabel) => false ? 'visible' : 'hidden')
         .attr('stroke-dasharray', '3,3')
         .attr('stroke-width', '0.5')
         .each(function (this: SVGRectElement, l: InterfaceLabel) {

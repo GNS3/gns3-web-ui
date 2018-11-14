@@ -8,6 +8,8 @@ import { FontFixer } from "../helpers/font-fixer";
 import { select, event } from "d3-selection";
 import { MapSymbol } from "../models/map/map-symbol";
 import { MapNode } from "../models/map/map-node";
+import { GraphDataManager } from "../managers/graph-data-manager";
+import { SelectionStore } from "../managers/selection-manager";
 
 
 @Injectable()
@@ -19,16 +21,12 @@ export class NodeWidget implements Widget {
   public onNodeDragged = new EventEmitter<NodeDragged>();
   public onNodeDragging = new EventEmitter<NodeDragging>();
 
-  private symbols: MapSymbol[] = [];
-
   constructor(
     private cssFixer: CssFixer,
     private fontFixer: FontFixer,
+    private graphDataManager: GraphDataManager,
+    private selectionStore: SelectionStore
   ) {}
-
-  public setSymbols(symbols: MapSymbol[]) {
-    this.symbols = symbols;
-  }
 
   public draw(view: SVGSelection) {
     const self = this;
@@ -49,7 +47,7 @@ export class NodeWidget implements Widget {
           .attr('class', 'label');
 
     const node_body_merge = node_body.merge(node_body_enter)
-        .classed('selected', (n: MapNode) => n.isSelected)
+        .classed('selected', (n: MapNode) => this.selectionStore.isSelected(n))
         .on("contextmenu", function (n: MapNode, i: number) {
           event.preventDefault();
           self.onContextMenu.emit(new NodeContextMenu(event, n));
@@ -62,7 +60,7 @@ export class NodeWidget implements Widget {
     node_body_merge
         .select<SVGImageElement>('image')
           .attr('xnode:href', (n: MapNode) => {
-            const symbol = this.symbols.find((s: MapSymbol) => s.id === n.symbol);
+            const symbol = this.graphDataManager.getSymbols().find((s: MapSymbol) => s.id === n.symbol);
             if (symbol) {
               return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
             }

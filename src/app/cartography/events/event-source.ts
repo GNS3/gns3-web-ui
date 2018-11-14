@@ -4,6 +4,4 @@ export class DataEventSource<T> {
   ) {}
 }
 
-
-// class CreatedDataEvent<T> extends DataEventSource<T> {}
 export class DraggedDataEvent<T> extends DataEventSource<T> {}

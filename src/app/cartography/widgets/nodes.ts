@@ -42,7 +42,7 @@ export class NodesWidget implements Widget {
         .attr('node_id', (n: MapNode) => n.id)
 
     const merge = node.merge(node_enter);
-
+    
     this.nodeWidget.draw(merge);
 
     node

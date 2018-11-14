@@ -8,6 +8,7 @@ import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-help
 import { InterfaceLabelWidget } from "./interface-label";
 import { InterfaceStatusWidget } from "./interface-status";
 import { MapLink } from "../models/map/map-link";
+import { SelectionStore } from "../managers/selection-manager";
 
 
 @Injectable()
@@ -16,7 +17,8 @@ export class LinkWidget implements Widget {
   constructor(
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
     private interfaceLabelWidget: InterfaceLabelWidget,
-    private interfaceStatusWidget: InterfaceStatusWidget
+    private interfaceStatusWidget: InterfaceStatusWidget,
+    private selectionStore: SelectionStore
   ) {}
 
   public draw(view: SVGSelection) {
@@ -41,7 +43,7 @@ export class LinkWidget implements Widget {
 
     link_body_merge
       .select<SVGPathElement>('path')
-        .classed('selected', (l: MapLink) => l.isSelected);
+        .classed('selected', (l: MapLink) => this.selectionStore.isSelected(l));
 
     this.interfaceLabelWidget.draw(link_body_merge);
     this.interfaceStatusWidget.draw(link_body_merge);
