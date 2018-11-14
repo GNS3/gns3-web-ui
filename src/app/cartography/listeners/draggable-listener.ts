@@ -15,7 +15,7 @@ import { DrawingsEventSource } from "../events/drawings-event-source";
 
 
 @Injectable()
-export class NodesDraggableListener {
+export class DraggableListener {
   private start: Subscription;
   private drag: Subscription;
   private end: Subscription;
@@ -32,7 +32,6 @@ export class NodesDraggableListener {
   }
 
   public onInit(svg: any) {
-
     this.start = merge(
       this.nodesWidget.draggable.start,
       this.drawingsWidget.draggable.start
@@ -51,7 +50,6 @@ export class NodesDraggableListener {
         }
       }
     });
-
 
     this.drag = merge(
       this.nodesWidget.draggable.drag,

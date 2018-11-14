@@ -17,7 +17,7 @@ import { Context } from './models/context';
 import { D3_MAP_IMPORTS } from './d3-map.imports';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
 import { MapListeners } from './listeners/map-listeners';
-import { NodesDraggableListener } from './listeners/nodes-draggable-listener';
+import { DraggableListener } from './listeners/draggable-listener';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { NodesEventSource } from './events/nodes-event-source';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
@@ -35,7 +35,7 @@ import { PortToMapPortConverter } from './converters/map/port-to-map-port-conver
 import { SymbolToMapSymbolConverter } from './converters/map/symbol-to-map-symbol-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
 import { GraphDataManager } from './managers/graph-data-manager';
-import { SelectionListener } from './listeners/selection-listener';
+import { SelectionUpdateListener } from './listeners/selection-update-listener';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from './datasources/map-datasource';
 
 
@@ -60,9 +60,9 @@ import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbo
     MapChangeDetectorRef,
     CanvasSizeDetector,
     Context,
-    SelectionListener,
+    SelectionUpdateListener,
     MapListeners,
-    NodesDraggableListener,
+    DraggableListener,
     DrawingsEventSource,
     NodesEventSource,
     DrawingToMapDrawingConverter,
