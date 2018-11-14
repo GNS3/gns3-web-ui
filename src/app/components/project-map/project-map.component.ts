@@ -214,8 +214,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onNodeDragged(draggedEvent: DraggedDataEvent<Node[]>) {
-    draggedEvent.datum.forEach((node: Node) => {
-      this.nodesDataSource.update(node);
+    draggedEvent.datum.forEach((n: Node) => {
+      const node = this.nodesDataSource.get(n.node_id);
+      node.x += draggedEvent.dx;
+      node.y += draggedEvent.dy;
+
       this.nodeService
         .updatePosition(this.server, node, node.x, node.y)
         .subscribe((serverNode: Node) => {
@@ -225,8 +228,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing[]>) {
-    draggedEvent.datum.forEach((drawing: Drawing) => {
-      this.drawingsDataSource.update(drawing);
+    draggedEvent.datum.forEach((d: Drawing) => {
+
+      const drawing = this.drawingsDataSource.get(d.drawing_id);
+      drawing.x += draggedEvent.dx;
+      drawing.y += draggedEvent.dy;
+
       this.drawingService
         .updatePosition(this.server, drawing, drawing.x, drawing.y)
         .subscribe((serverDrawing: Drawing) => {

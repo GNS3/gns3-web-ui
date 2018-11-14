@@ -145,12 +145,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.nodeDraggedSub = this.nodesEventSource.dragged.subscribe((evt) => {
       const converted = evt.datum.map((e) => this.mapNodeToNode.convert(e));
-      this.nodeDragged.emit(new DraggedDataEvent<Node[]>(converted));
+      this.nodeDragged.emit(new DraggedDataEvent<Node[]>(converted, evt.dx, evt.dy));
     });
 
     this.drawingDraggedSub = this.drawingsEventSource.dragged.subscribe((evt) => {
       const converted = evt.datum.map((e) => this.mapDrawingToDrawing.convert(e));
-      this.drawingDragged.emit(new DraggedDataEvent<Drawing[]>(converted));
+      this.drawingDragged.emit(new DraggedDataEvent<Drawing[]>(converted, evt.dx, evt.dy));
     });
 
     this.selectionChanged = this.selectionManager.subscribe(this.selectionToolWidget.rectangleSelected);

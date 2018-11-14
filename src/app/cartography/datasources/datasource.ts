@@ -38,13 +38,19 @@ export abstract class DataSource<T> {
     this.dataChange.next(this.data);
   }
 
+  public get(key: string | number) {
+    const index = this.data.findIndex((i: T) => this.getItemKey(i) === key);
+    if (index >= 0) {
+      return this.data[index];
+    }
+  }
+
   public update(item: T) {
     const index = this.findIndex(item);
     if (index >= 0) {
       const updated = Object.assign(this.data[index], item);
       this.data[index] = updated;
       this.dataChange.next(this.data);
-      console.log("Item updated");
       this.itemUpdated.next(updated);
     }
   }

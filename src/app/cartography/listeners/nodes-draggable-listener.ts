@@ -86,13 +86,15 @@ export class NodesDraggableListener {
       this.nodesWidget.draggable.end,
       this.drawingsWidget.draggable.end
     ).subscribe((evt: DraggableEnd<any>) => {
+      console.log(evt);
       const selected = this.selectionManager.getSelected();
 
       const updatedNodes = selected.filter((item) => item instanceof MapNode).map((item: MapNode) => item);
-      this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode[]>(updatedNodes))
 
       const updatedDrawings = selected.filter((item) => item instanceof MapDrawing).map((item: MapDrawing) => item);
-      this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing[]>(updatedDrawings));
+
+      this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode[]>(updatedNodes, evt.dx, evt.dy));
+      this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing[]>(updatedDrawings, evt.dx, evt.dy));
     });
 
   }

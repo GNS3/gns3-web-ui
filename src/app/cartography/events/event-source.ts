@@ -1,6 +1,8 @@
 export class DataEventSource<T> {
   constructor(
-    public datum: T
+    public datum: T,
+    public dx: number,
+    public dy: number
   ) {}
 }
 
