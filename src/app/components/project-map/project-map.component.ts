@@ -22,7 +22,6 @@ import { LinkService } from "../../services/link.service";
 import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
-import { SelectionManager } from "../../cartography/managers/selection-manager";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
@@ -136,7 +135,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         this.nodes = nodes;
-        console.log("update nodes");
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -213,33 +211,28 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(draggedEvent: DraggedDataEvent<Node[]>) {
-    draggedEvent.datum.forEach((n: Node) => {
-      const node = this.nodesDataSource.get(n.node_id);
-      node.x += draggedEvent.dx;
-      node.y += draggedEvent.dy;
+  onNodeDragged(draggedEvent: DraggedDataEvent<Node>) {
+    const node = this.nodesDataSource.get(draggedEvent.datum.node_id);
+    node.x += draggedEvent.dx;
+    node.y += draggedEvent.dy;
 
-      this.nodeService
-        .updatePosition(this.server, node, node.x, node.y)
-        .subscribe((serverNode: Node) => {
-          this.nodesDataSource.update(serverNode);
-        });
-    });
+    this.nodeService
+      .updatePosition(this.server, node, node.x, node.y)
+      .subscribe((serverNode: Node) => {
+        this.nodesDataSource.update(serverNode);
+      });
   }
 
-  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing[]>) {
-    draggedEvent.datum.forEach((d: Drawing) => {
+  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing>) {
+    const drawing = this.drawingsDataSource.get(draggedEvent.datum.drawing_id);
+    drawing.x += draggedEvent.dx;
+    drawing.y += draggedEvent.dy;
 
-      const drawing = this.drawingsDataSource.get(d.drawing_id);
-      drawing.x += draggedEvent.dx;
-      drawing.y += draggedEvent.dy;
-
-      this.drawingService
-        .updatePosition(this.server, drawing, drawing.x, drawing.y)
-        .subscribe((serverDrawing: Drawing) => {
-          this.drawingsDataSource.update(serverDrawing);
-        });
-    });
+    this.drawingService
+      .updatePosition(this.server, drawing, drawing.x, drawing.y)
+      .subscribe((serverDrawing: Drawing) => {
+        this.drawingsDataSource.update(serverDrawing);
+      });
   }
 
   public set readonly(value) {

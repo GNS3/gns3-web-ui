@@ -27,8 +27,6 @@ export class GraphDataManager {
   ) {}
 
   public setNodes(nodes: Node[]) {
-    console.log("set all nodes");
-    
     const mapNodes = nodes.map((n) => this.nodeToMapNode.convert(n));
     this.mapNodesDataSource.set(mapNodes);
 

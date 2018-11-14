@@ -15,7 +15,6 @@ export abstract class DataSource<T> {
       this.update(item);
     } else {
       this.data.push(item);
-      console.log("Item added");
       this.dataChange.next(this.data);
     }
   }

@@ -68,7 +68,6 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
         evt.dy = event.y - startEvt.y;
         evt.x = event.x;
         evt.y = event.y;
-        console.log(evt);
         this.end.emit(evt);
       });
   }
