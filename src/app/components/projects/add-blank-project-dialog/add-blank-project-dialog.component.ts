@@ -38,8 +38,10 @@ export class AddBlankProjectDialogComponent implements OnInit {
     }
 
     onAddClick() : void{
-        if (!this.projectNameForm.invalid){
-            this.projectService
+        if (this.projectNameForm.invalid){
+            return;
+        }
+        this.projectService
             .list(this.server)
             .subscribe((projects: Project[]) => {
                 const projectName = this.projectNameForm.controls['projectName'].value;
@@ -50,8 +52,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
                 } else {
                     this.addProject();  
                 }
-            });
-        }    
+            });  
     }
 
     onNoClick() : void{
