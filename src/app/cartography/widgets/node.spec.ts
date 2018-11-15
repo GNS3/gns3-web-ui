@@ -5,15 +5,26 @@ import { FontFixer } from "../helpers/font-fixer";
 import { NodeWidget } from "./node";
 import { MapNode } from "../models/map/map-node";
 import { MapLabel } from "../models/map/map-label";
+import { MockedGraphDataManager } from "../managers/graph-data-manager.spec";
+import { GraphDataManager } from "../managers/graph-data-manager";
+import { SelectionManager } from "../managers/selection-manager";
 
 
 describe('NodesWidget', () => {
   let svg: TestSVGCanvas;
   let widget: NodeWidget;
+  let graphData: MockedGraphDataManager;
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    widget = new NodeWidget(new CssFixer(), new FontFixer());
+    graphData = new MockedGraphDataManager();
+
+    // widget = new NodeWidget(
+    //   new CssFixer(),
+    //   new FontFixer(),
+    //   <GraphDataManager> <unknown> graphData,
+    //   new SelectionManager()
+    // );
   });
 
   afterEach(() => {

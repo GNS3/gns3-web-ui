@@ -16,7 +16,6 @@ import { Context } from "../models/context";
 describe('SelectionListener', () => {
   let selectionListener: SelectionListener;
   let manager: SelectionManager;
-  let selectedRectangleSubject: Subject<Rectangle>;
   let selectionTool: SelectionTool;
 
   beforeEach(() => {
@@ -43,8 +42,6 @@ describe('SelectionListener', () => {
 
     const graphData = instance(mockedGraphData);
     const inRectangleHelper = new InRectangleHelper();
-
-    selectedRectangleSubject = new Subject<Rectangle>();
 
     manager = new SelectionManager();
     selectionTool = new SelectionTool(new Context());
