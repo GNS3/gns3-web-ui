@@ -1,18 +1,18 @@
 import { TestSVGCanvas } from "../../testing";
 import { TextDrawingWidget } from "./text-drawing";
-import { Drawing } from "../../models/drawing";
 import { TextElement } from "../../models/drawings/text-element";
 import { FontFixer } from "../../helpers/font-fixer";
+import { MapDrawing } from "../../models/map/map-drawing";
 
 describe('TextDrawingWidget', () => {
   let svg: TestSVGCanvas;
   let widget: TextDrawingWidget;
-  let drawing: Drawing;
+  let drawing: MapDrawing;
 
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    drawing = new Drawing();
+    drawing = new MapDrawing();
     widget = new TextDrawingWidget(new FontFixer());
   });
 
@@ -32,7 +32,7 @@ describe('TextDrawingWidget', () => {
 
     drawing.element = text;
 
-    const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
+    const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
@@ -52,7 +52,7 @@ describe('TextDrawingWidget', () => {
     text.text = 'THIS' + "\n" + 'IS TEXT';
     drawing.element = text;
 
-    const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
+    const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
@@ -75,7 +75,7 @@ describe('TextDrawingWidget', () => {
     text.text = '   Text  with whitespaces';
     drawing.element = text;
 
-    const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
+    const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 

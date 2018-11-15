@@ -1,6 +1,4 @@
-import { Selectable } from "../managers/selection-manager";
-
-export class InterfaceLabel implements Selectable {
+export class InterfaceLabel {
   constructor(
     public link_id: string,
     public direction: string,
@@ -9,6 +7,5 @@ export class InterfaceLabel implements Selectable {
     public text: string,
     public style: string,
     public rotation = 0,
-    public is_selected = false
     ) {}
 }

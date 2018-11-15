@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Link } from "../../models/link";
+import { MapLink } from "../models/map/map-link";
 
 
 @Injectable()
@@ -30,11 +30,11 @@ export class MultiLinkCalculatorHelper {
     };
   }
 
-  public assignDataToLinks(links: Link[]) {
+  public assignDataToLinks(links: MapLink[]) {
     const links_from_nodes = {};
-    links.forEach((l: Link, i: number) => {
-      const sid = l.source.node_id;
-      const tid = l.target.node_id;
+    links.forEach((l: MapLink, i: number) => {
+      const sid = l.source.id;
+      const tid = l.target.id;
       const key = (sid < tid ? sid + "," + tid : tid + "," + sid);
       let idx = 1;
       if (!(key in links_from_nodes)) {

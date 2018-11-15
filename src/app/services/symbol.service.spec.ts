@@ -14,7 +14,6 @@ describe('SymbolService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let service: SymbolService;
   let server: Server;
 
   beforeEach(() => {
@@ -32,7 +31,6 @@ describe('SymbolService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    service = TestBed.get(SymbolService);
     server = getTestServer();
   });
 

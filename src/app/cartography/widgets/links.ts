@@ -2,10 +2,10 @@ import { Injectable } from "@angular/core";
 
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { Link } from "../../models/link";
 import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
 import { Layer } from "../models/layer";
 import { LinkWidget } from "./link";
+import { MapLink } from "../models/map/map-link";
 
 @Injectable()
 export class LinksWidget implements Widget {
@@ -15,32 +15,32 @@ export class LinksWidget implements Widget {
   ) {
   }
 
-  public redrawLink(view: SVGSelection, link: Link) {
+  public redrawLink(view: SVGSelection, link: MapLink) {
     this.linkWidget.draw(this.selectLink(view, link));
   }
 
   public draw(view: SVGSelection) {
     const link = view
-      .selectAll<SVGGElement, Link>("g.link")
+      .selectAll<SVGGElement, MapLink>("g.link")
       .data((layer: Layer) => {
         if (layer.links) {
-          const layer_links = layer.links.filter((l: Link) => {
+          const layer_links = layer.links.filter((l: MapLink) => {
               return l.target && l.source;
           });
           this.multiLinkCalculatorHelper.assignDataToLinks(layer_links);
           return layer_links;
         }
         return [];
-      }, (l: Link) => {
-        return l.link_id;
+      }, (l: MapLink) => {
+        return l.id;
       });
 
     const link_enter = link.enter()
       .append<SVGGElement>('g')
         .attr('class', 'link')
-        .attr('link_id', (l: Link) => l.link_id)
-        .attr('map-source', (l: Link) => l.source.node_id)
-        .attr('map-target', (l: Link) => l.target.node_id);
+        .attr('link_id', (l: MapLink) => l.id)
+        .attr('map-source', (l: MapLink) => l.source.id)
+        .attr('map-target', (l: MapLink) => l.target.id);
 
     const merge = link.merge(link_enter);
 
@@ -51,7 +51,7 @@ export class LinksWidget implements Widget {
         .remove();
   }
 
-  private selectLink(view: SVGSelection, link: Link) {
-    return view.selectAll<SVGGElement, Link>(`g.link[link_id="${link.link_id}"]`);
+  private selectLink(view: SVGSelection, link: MapLink) {
+    return view.selectAll<SVGGElement, MapLink>(`g.link[link_id="${link.id}"]`);
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 
 import { SVGSelection } from "../../models/types";
-import { Drawing } from "../../models/drawing";
 import { RectElement } from "../../models/drawings/rect-element";
 import { DrawingShapeWidget } from "./drawing-shape-widget";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
+import { MapDrawing } from "../../models/map/map-drawing";
 
 
 @Injectable()
@@ -16,7 +16,7 @@ export class RectDrawingWidget implements DrawingShapeWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGRectElement, RectElement>('rect.rect_element')
-        .data((d: Drawing) => {
+        .data((d: MapDrawing) => {
           return (d.element && d.element instanceof RectElement) ? [d.element] : [];
         });
 

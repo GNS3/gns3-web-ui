@@ -16,9 +16,11 @@ export class WebServiceMessage {
 
 @Injectable()
 export class ProjectWebServiceHandler {
-  constructor(private nodesDataSource: NodesDataSource,
-              private linksDataSource: LinksDataSource,
-              private drawingsDataSource: DrawingsDataSource) {}
+  constructor(
+    private nodesDataSource: NodesDataSource,
+    private linksDataSource: LinksDataSource,
+    private drawingsDataSource: DrawingsDataSource
+  ) {}
 
   public connect(ws: Subject<WebServiceMessage>) {
     const subscription = ws.subscribe((message: WebServiceMessage) => {

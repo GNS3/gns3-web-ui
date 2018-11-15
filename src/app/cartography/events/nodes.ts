@@ -1,9 +1,9 @@
-import { Node } from "../models/node";
+import { MapNode } from "../models/map/map-node";
 
 class NodeEvent {
     constructor(
         public event: any,
-        public node: Node
+        public node: MapNode
     ) {}
 }
 

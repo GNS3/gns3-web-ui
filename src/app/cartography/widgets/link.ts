@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core";
 
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { Link } from "../../models/link";
 import { SerialLinkWidget } from "./links/serial-link";
 import { EthernetLinkWidget } from "./links/ethernet-link";
 import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
 import { InterfaceLabelWidget } from "./interface-label";
 import { InterfaceStatusWidget } from "./interface-status";
+import { MapLink } from "../models/map/map-link";
+import { SelectionManager } from "../managers/selection-manager";
 
 
 @Injectable()
@@ -16,11 +17,12 @@ export class LinkWidget implements Widget {
   constructor(
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
     private interfaceLabelWidget: InterfaceLabelWidget,
-    private interfaceStatusWidget: InterfaceStatusWidget
+    private interfaceStatusWidget: InterfaceStatusWidget,
+    private selectionManager: SelectionManager
   ) {}
 
   public draw(view: SVGSelection) {
-    const link_body = view.selectAll<SVGGElement, Link>("g.link_body")
+    const link_body = view.selectAll<SVGGElement, MapLink>("g.link_body")
       .data((l) => [l]);
 
     const link_body_enter = link_body.enter()
@@ -41,7 +43,7 @@ export class LinkWidget implements Widget {
 
     link_body_merge
       .select<SVGPathElement>('path')
-        .classed('selected', (l: Link) => l.is_selected);
+        .classed('selected', (l: MapLink) => this.selectionManager.isSelected(l));
 
     this.interfaceLabelWidget.draw(link_body_merge);
     this.interfaceStatusWidget.draw(link_body_merge);

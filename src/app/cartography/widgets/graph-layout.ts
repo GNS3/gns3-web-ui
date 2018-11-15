@@ -1,10 +1,7 @@
 import { Context } from "../models/context";
-import { Node } from "../models/node";
-import { Link } from "../../models/link";
 import { NodesWidget } from "./nodes";
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { Drawing } from "../models/drawing";
 import { DrawingLineWidget } from "./drawing-line";
 import { SelectionTool } from "../tools/selection-tool";
 import { MovingTool } from "../tools/moving-tool";
@@ -15,33 +12,14 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class GraphLayout implements Widget {
-  private nodes: Node[] = [];
-  private links: Link[] = [];
-  private drawings: Drawing[] = [];
-
   constructor(
     private nodesWidget: NodesWidget,
     private drawingLineTool: DrawingLineWidget,
     private selectionTool: SelectionTool,
     private movingTool: MovingTool,
-    private layersWidget: LayersWidget
+    private layersWidget: LayersWidget,
+    private layersManager: LayersManager
   ) {
-  }
-
-  public setNodes(nodes: Node[]) {
-    this.nodes = nodes;
-  }
-
-  public setLinks(links: Link[]) {
-    this.links = links;
-  }
-
-  public getLinks() {
-    return this.links;
-  }
-
-  public setDrawings(drawings: Drawing[]) {
-    this.drawings = drawings;
   }
 
   public getNodesWidget() {
@@ -84,13 +62,7 @@ export class GraphLayout implements Widget {
         return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
       });
 
-    // @fix me
-    const layersManager = new LayersManager();
-    layersManager.setNodes(this.nodes);
-    layersManager.setDrawings(this.drawings);
-    layersManager.setLinks(this.links);
-
-    this.layersWidget.draw(canvas, layersManager.getLayersList());
+    this.layersWidget.draw(canvas, this.layersManager.getLayersList());
 
     this.drawingLineTool.draw(view, context);
     this.selectionTool.draw(view, context);

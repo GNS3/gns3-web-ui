@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 
 import { SVGSelection } from "../models/types";
-import { Link } from "../../models/link";
 import { InterfaceLabel } from "../models/interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { select } from "d3-selection";
+import { MapLink } from "../models/map/map-link";
 
 @Injectable()
 export class InterfaceLabelWidget {
@@ -25,27 +25,25 @@ export class InterfaceLabelWidget {
 
     const labels = selection
       .selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container')
-      .data((l: Link) => {
+      .data((l: MapLink) => {
         const sourceInterface = new InterfaceLabel(
-          l.link_id,
+          l.id,
           'source',
           Math.round(l.source.x + l.nodes[0].label.x),
           Math.round(l.source.y + l.nodes[0].label.y),
           l.nodes[0].label.text,
           l.nodes[0].label.style,
-          l.nodes[0].label.rotation,
-          l.nodes[0].label.is_selected
+          l.nodes[0].label.rotation
         );
 
         const targetInterface = new InterfaceLabel(
-          l.link_id,
+          l.id,
           'target',
           Math.round(  l.target.x + l.nodes[1].label.x),
           Math.round( l.target.y + l.nodes[1].label.y),
           l.nodes[1].label.text,
           l.nodes[1].label.style,
-          l.nodes[1].label.rotation,
-          l.nodes[1].label.is_selected
+          l.nodes[1].label.rotation
         );
 
         if (this.enabled) {
@@ -81,7 +79,7 @@ export class InterfaceLabelWidget {
         const y = l.y + bbox.height;
         return `translate(${x}, ${y}) rotate(${l.rotation}, ${x}, ${y})`;
       })
-      .classed('selected', (l: InterfaceLabel) => l.is_selected);
+      .classed('selected', (l: InterfaceLabel) => false);
 
     // update label
     merge
@@ -95,7 +93,7 @@ export class InterfaceLabelWidget {
     // update surrounding rect
     merge
       .select<SVGRectElement>('rect.interface_label_border')
-        .attr('visibility', (l: InterfaceLabel) => l.is_selected ? 'visible' : 'hidden')
+        .attr('visibility', (l: InterfaceLabel) => false ? 'visible' : 'hidden')
         .attr('stroke-dasharray', '3,3')
         .attr('stroke-width', '0.5')
         .each(function (this: SVGRectElement, l: InterfaceLabel) {
@@ -106,7 +104,7 @@ export class InterfaceLabelWidget {
 
           const border = InterfaceLabelWidget.SURROUNDING_TEXT_BORDER;
 
-          current.attr('width', bbox.width + border*2);
+          current.attr('width', bbox.width + border * 2);
           current.attr('height', bbox.height + border);
           current.attr('x', - border);
           current.attr('y', - bbox.height);

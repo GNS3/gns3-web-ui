@@ -14,7 +14,6 @@ describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let service: DrawingService;
   let server: Server;
 
   beforeEach(() => {
@@ -32,7 +31,6 @@ describe('DrawingService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    service = TestBed.get(DrawingService);
     server = getTestServer();
   });
 
