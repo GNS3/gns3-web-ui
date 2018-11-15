@@ -213,10 +213,11 @@
   dependencies:
     tslib "^1.9.0"
 
-"@ng-bootstrap/ng-bootstrap@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-2.2.0.tgz#acd514e878a1412f39d50eff691095ecc0882bf3"
-  integrity sha512-RUXYC00bTV/auJRRCUHFneOJStcLomKUTxpkp9GBdVNXmYaq+hg1IldHfWG7NLUEa7CcJ+vHB6YmKuktZ10HBw==
+"@ng-bootstrap/ng-bootstrap@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-3.0.0.tgz#d441172972c6b7969ff2c6e9c9c4306f300f3c61"
+  dependencies:
+    tslib "^1.9.0"
 
 "@ngtools/webpack@6.0.8":
   version "6.0.8"
