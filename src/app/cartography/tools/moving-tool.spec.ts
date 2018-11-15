@@ -12,7 +12,9 @@ describe('MovingTool', () => {
   let node: SVGSelection;
 
   beforeEach(() => {
-    tool = new MovingTool();
+    context = new Context();
+
+    tool = new MovingTool(context);
     svg = new TestSVGCanvas();
 
     node = svg.canvas
@@ -21,11 +23,8 @@ describe('MovingTool', () => {
       .attr('x', 10)
       .attr('y', 20);
 
-    context = new Context();
-
-    tool.connect(svg.svg, context);
+    tool.setEnabled(true);
     tool.draw(svg.svg, context);
-    tool.activate();
   });
 
   afterEach(() => {
@@ -86,7 +85,8 @@ describe('MovingTool', () => {
 
   describe('MovingTool can be deactivated', () => {
     beforeEach(() => {
-      tool.deactivate();
+      tool.setEnabled(false);
+      tool.draw(svg.svg, context);
 
       svg.svg.node().dispatchEvent(
         new MouseEvent('mousedown', {

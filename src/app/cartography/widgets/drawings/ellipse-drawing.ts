@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { SVGSelection } from "../../models/types";
 import { Drawing } from "../../models/drawing";
 import { EllipseElement } from "../../models/drawings/ellipse-element";
@@ -5,12 +7,12 @@ import { DrawingWidget } from "./drawing-widget";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
+@Injectable()
 export class EllipseDrawingWidget implements DrawingWidget {
-  private qtDasharrayFixer: QtDasharrayFixer;
 
-  constructor() {
-    this.qtDasharrayFixer = new QtDasharrayFixer();
-  }
+  constructor(
+    private qtDasharrayFixer: QtDasharrayFixer
+  ) {}
 
   public draw(view: SVGSelection) {
     const drawing = view
@@ -22,7 +24,7 @@ export class EllipseDrawingWidget implements DrawingWidget {
     const drawing_enter = drawing
       .enter()
         .append<SVGEllipseElement>('ellipse')
-        .attr('class', 'ellipse_element noselect');
+          .attr('class', 'ellipse_element noselect');
 
     const merge = drawing.merge(drawing_enter);
 
