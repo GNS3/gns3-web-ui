@@ -6,9 +6,9 @@ import { Subscription } from "rxjs";
 import { NodesDataSource } from "../datasources/nodes-datasource";
 import { LinksDataSource } from "../datasources/links-datasource";
 import { Node } from "../models/node";
-import { InRectangleHelper } from "../components/map/helpers/in-rectangle-helper";
+import { InRectangleHelper } from "../helpers/in-rectangle-helper";
 import { Rectangle } from "../models/rectangle";
-import { Link} from "../models/link";
+import { Link} from "../../models/link";
 import { DataSource } from "../datasources/datasource";
 import { Drawing } from "../models/drawing";
 import { InterfaceLabel } from "../models/interface-label";
@@ -38,14 +38,18 @@ export class SelectionManager {
 
   public subscribe(subject: Subject<Rectangle>) {
     this.subscription = subject.subscribe((rectangle: Rectangle) => {
-        this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
-        this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
-        this.selectedDrawings = this.getSelectedItemsInRectangle<Drawing>(this.drawingsDataSource, rectangle);
-        // don't select interfaces for now
-        // this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
+      this.onSelection(rectangle);
     });
     return this.subscription;
   }
+
+  public onSelection(rectangle: Rectangle) {
+    this.selectedNodes = this.getSelectedItemsInRectangle<Node>(this.nodesDataSource, rectangle);
+    this.selectedLinks = this.getSelectedItemsInRectangle<Link>(this.linksDataSource, rectangle);
+    this.selectedDrawings = this.getSelectedItemsInRectangle<Drawing>(this.drawingsDataSource, rectangle);
+    // don't select interfaces for now
+    // this.selectedInterfaceLabels = this.getSelectedInterfaceLabelsInRectangle(rectangle);
+  }  
 
   public getSelectedNodes() {
     return this.selectedNodes;

@@ -28,7 +28,10 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.deleteHotkey = new Hotkey('del', this.onDeleteHandler);
+    const self = this;
+    this.deleteHotkey = new Hotkey('del', (event: KeyboardEvent) => {
+      return self.onDeleteHandler(event);
+    });
     this.hotkeysService.add(this.deleteHotkey);
   }
 

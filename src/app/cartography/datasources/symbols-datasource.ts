@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 import { DataSource } from "./datasource";
-import { Symbol } from "../models/symbol";
+import { Symbol } from "../../models/symbol";
 
 
 @Injectable()

@@ -2,7 +2,6 @@ import { TestBed, inject } from '@angular/core/testing';
 import { PersistenceService, StorageType } from "angular-persistence";
 
 import { Settings, SettingsService } from './settings.service';
-import createSpyObj = jasmine.createSpyObj;
 
 
 export class MockedSettingsService {

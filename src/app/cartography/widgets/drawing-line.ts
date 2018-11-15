@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { line } from "d3-shape";
 import { mouse } from "d3-selection";
 
@@ -7,12 +9,13 @@ import { Point } from "../models/point";
 import { Context } from "../models/context";
 
 
+@Injectable()
 export class DrawingLineWidget {
   private drawingLine: DrawingLine = new DrawingLine();
   private selection: SVGSelection;
   private drawing = false;
   private data = {};
-
+  
   public start(x: number, y: number, data: {}) {
     const self = this;
 

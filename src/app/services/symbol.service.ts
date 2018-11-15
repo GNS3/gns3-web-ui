@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
-import { Symbol } from '../cartography/models/symbol';
+import { Symbol } from '../models/symbol';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 

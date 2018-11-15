@@ -1,7 +1,7 @@
 import { LayersManager } from "./layers-manager";
 import { Node } from "../models/node";
 import { Drawing } from "../models/drawing";
-import { Link } from "../models/link";
+import { Link } from "../../models/link";
 
 
 describe('LayersManager', () => {
