@@ -11,11 +11,9 @@ import { Subscription } from 'rxjs';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
-import { LinksWidget } from '../../widgets/links';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
-import { NodeWidget } from '../../widgets/node';
 import { MapListeners } from '../../listeners/map-listeners';
 import { DraggedDataEvent } from '../../events/event-source';
 import { NodesEventSource } from '../../events/nodes-event-source';
@@ -71,8 +69,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
-    protected nodeWidget: NodeWidget,
-    protected linksWidget: LinksWidget,
     protected drawingsWidget: DrawingsWidget,
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
