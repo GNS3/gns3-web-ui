@@ -1,5 +1,3 @@
-import { Subject} from "rxjs";
-
 import { Rectangle } from "../models/rectangle";
 import { InRectangleHelper } from "../helpers/in-rectangle-helper";
 import { MapNode } from "../models/map/map-node";

@@ -55,7 +55,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private onChangesDetected: Subscription;
   private nodeDraggedSub: Subscription;
   private drawingDraggedSub: Subscription;
-  private selectionChanged: Subscription;
 
   protected settings = {
     'show_interface_labels': true
@@ -83,6 +82,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private drawingsEventSource: DrawingsEventSource,
     ) {
     this.parentNativeElement = element.nativeElement;
+
+    this.selectionToolWidget.setEnabled(false);
+    this.movingToolWidget.setEnabled(false);
   }
 
   @Input('show-interface-labels') 
@@ -157,7 +159,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.onChangesDetected.unsubscribe();
     this.mapListeners.onDestroy();
     this.nodeDraggedSub.unsubscribe();
-    this.selectionChanged.unsubscribe();
+    this.drawingDraggedSub.unsubscribe();
   }
 
   public createGraph(domElement: HTMLElement) {
