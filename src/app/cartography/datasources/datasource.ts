@@ -20,8 +20,28 @@ export abstract class DataSource<T> {
   }
 
   public set(data: T[]) {
-    this.data = data;
+    data.forEach((item) => {
+      const index = this.findIndex(item);
+      if (index >= 0) {
+        const updated = Object.assign(this.data[index], item);
+        this.data[index] = updated;
+      }
+      else {
+        this.data.push(item);
+      }
+    });
+    
+    const toRemove = this.data.filter((item) => data.filter((i) => this.getItemKey(i) === this.getItemKey(item)).length === 0);
+    toRemove.forEach((item) => this.remove(item));
+
     this.dataChange.next(this.data);
+  }
+
+  public get(key: string | number) {
+    const index = this.data.findIndex((i: T) => this.getItemKey(i) === key);
+    if (index >= 0) {
+      return this.data[index];
+    }
   }
 
   public update(item: T) {
@@ -55,5 +75,9 @@ export abstract class DataSource<T> {
     this.dataChange.next(this.data);
   }
 
-  protected abstract findIndex(item: T): number;
+  private findIndex(item: T) {
+    return this.data.findIndex((i: T) => this.getItemKey(i) === this.getItemKey(item));
+  }
+
+  protected abstract getItemKey(item: T): any;
 }

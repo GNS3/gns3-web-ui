@@ -1,18 +1,21 @@
 import { Injectable } from "@angular/core";
 import { MapListener } from "./map-listener";
-import { DrawingsDraggableListener } from "./drawings-draggable-listener";
-import { NodesDraggableListener } from "./nodes-draggable-listener";
+import { DraggableListener } from "./draggable-listener";
+import { SelectionUpdateListener } from "./selection-update-listener";
+import { SelectionListener } from "./selection-listener";
 
 
 @Injectable()
 export class MapListeners {
   private listeners: MapListener[] = [];
   constructor(
-    private drawingsDraggableListener: DrawingsDraggableListener,
-    private nodesDraggableListener: NodesDraggableListener
+    private nodesDraggableListener: DraggableListener,
+    private selectionUpdateListener: SelectionUpdateListener,
+    private selectionListener: SelectionListener
   ) {
-    this.listeners.push(this.drawingsDraggableListener);
     this.listeners.push(this.nodesDraggableListener);
+    this.listeners.push(this.selectionUpdateListener);
+    this.listeners.push(this.selectionListener);
   }
 
   public onInit(svg: any) {

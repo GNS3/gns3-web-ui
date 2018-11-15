@@ -1,30 +1,20 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatStepper, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material";
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material";
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { v4 as uuid } from 'uuid';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ProjectService } from '../../../services/project.service';
 import { Project } from '../../../models/project';
-import { ImportProjectConfirmationDialogComponent } from './import-project-confirmation-dialog/import-project-confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ServerResponse } from '../../../models/serverResponse';
-
-export class Validator {
-    static projectNameValidator(projectName) {
-      var pattern = new RegExp(/[~`!#$%\^&*+=\[\]\\';,/{}|\\":<>\?]/);
-
-      if(!pattern.test(projectName.value)) {
-        return null;
-      }
-
-      return { invalidName: true }
-    }
-}
+import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
     selector: 'app-import-project-dialog',
     templateUrl: 'import-project-dialog.component.html',
-    styleUrls: ['import-project-dialog.component.css']
+    styleUrls: ['import-project-dialog.component.css'],
+    providers: [ProjectNameValidator]
 })
 export class ImportProjectDialogComponent implements OnInit {
     uploader: FileUploader;
@@ -42,9 +32,10 @@ export class ImportProjectDialogComponent implements OnInit {
       public dialogRef: MatDialogRef<ImportProjectDialogComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any,
       private formBuilder: FormBuilder,
-      private projectService: ProjectService){
+      private projectService: ProjectService,
+      private projectNameValidator: ProjectNameValidator){
         this.projectNameForm = this.formBuilder.group({
-            projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
+            projectName: new FormControl(null, [Validators.required, projectNameValidator.get])
           });
       }
   
@@ -104,7 +95,7 @@ export class ImportProjectDialogComponent implements OnInit {
     }
 
     openConfirmationDialog(existingProject: Project) {
-        const dialogRef = this.dialog.open(ImportProjectConfirmationDialogComponent, {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
           width: '300px',
           height: '150px',
           data: {

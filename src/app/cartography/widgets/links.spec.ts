@@ -5,10 +5,10 @@ import { Selection } from "d3-selection";
 import { TestSVGCanvas } from "../testing";
 import { Layer } from "../models/layer";
 import { LinksWidget } from "./links";
-import { Node } from "../models/node";
-import { Link } from "../../models/link";
 import { LinkWidget } from "./link";
 import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
+import { MapNode } from "../models/map/map-node";
+import { MapLink } from "../models/map/map-link";
 
 
 describe('LinksWidget', () => {
@@ -23,21 +23,21 @@ describe('LinksWidget', () => {
     linkWidget = instance(mock(LinkWidget));
     widget = new LinksWidget(new MultiLinkCalculatorHelper(), linkWidget);
 
-    const node_1 = new Node();
-    node_1.node_id = "1";
+    const node_1 = new MapNode();
+    node_1.id = "1";
     node_1.x = 10;
     node_1.y = 10;
 
-    const node_2 = new Node();
-    node_2.node_id = "2";
+    const node_2 = new MapNode();
+    node_2.id = "2";
     node_2.x = 100;
     node_2.y = 100;
 
-    const link_1 = new Link();
-    link_1.link_id = "link1";
+    const link_1 = new MapLink();
+    link_1.id = "link1";
     link_1.source = node_1;
     link_1.target = node_2;
-    link_1.link_type = "ethernet";
+    link_1.linkType = "ethernet";
 
     layer = new Layer();
     layer.index = 1;
@@ -67,7 +67,7 @@ describe('LinksWidget', () => {
   it('should draw links', () => {
     widget.draw(layersEnter);
 
-    const drew = svg.canvas.selectAll<SVGGElement, Link>('g.link');
+    const drew = svg.canvas.selectAll<SVGGElement, MapLink>('g.link');
     const linkNode = drew.nodes()[0];
     expect(linkNode.getAttribute('link_id')).toEqual('link1');
     expect(linkNode.getAttribute('map-source')).toEqual('1');

@@ -1,12 +1,12 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
-import { Port } from '../../../models/port';
 import { DrawingLineWidget } from '../../widgets/drawing-line';
-import { Node } from '../../models/node';
 import { Subscription } from 'rxjs';
 import { NodeSelectInterfaceComponent } from '../node-select-interface/node-select-interface.component';
-import { LinkCreated } from '../../events/links';
+import { MapLinkCreated } from '../../events/links';
 import { NodeClicked } from '../../events/nodes';
 import { NodeWidget } from '../../widgets/node';
+import { MapNode } from '../../models/map/map-node';
+import { MapPort } from '../../models/map/map-port';
 
 
 @Component({
@@ -17,7 +17,7 @@ import { NodeWidget } from '../../widgets/node';
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
   
-  @Output('linkCreated') linkCreated = new EventEmitter<LinkCreated>();
+  @Output('linkCreated') linkCreated = new EventEmitter<MapLinkCreated>();
 
   private onNodeClicked: Subscription;
 
@@ -37,18 +37,18 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if(this.drawingLineTool.isDrawing()) {
+    if (this.drawingLineTool.isDrawing()) {
       this.drawingLineTool.stop();
     }
     this.onNodeClicked.unsubscribe();
   }
 
   public onChooseInterface(event) {
-    const node: Node = event.node;
-    const port: Port = event.port;
+    const node: MapNode = event.node;
+    const port: MapPort = event.port;
     if (this.drawingLineTool.isDrawing()) {
       const data = this.drawingLineTool.stop();
-      this.linkCreated.emit(new LinkCreated(data['node'], data['port'], node, port));
+      this.linkCreated.emit(new MapLinkCreated(data['node'], data['port'], node, port));
     } else {
       this.drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
         'node': node,

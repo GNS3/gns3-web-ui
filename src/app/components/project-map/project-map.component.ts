@@ -22,7 +22,6 @@ import { LinkService } from "../../services/link.service";
 import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
-import { SelectionManager } from "../../cartography/managers/selection-manager";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
@@ -31,6 +30,7 @@ import { LinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { DraggedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
+import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 
 
 @Component({
@@ -76,7 +76,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
-    private selectionManager: SelectionManager,
+    private mapNodeToNode: MapNodeToNodeConverter,
     protected nodesDataSource: NodesDataSource,
     protected linksDataSource: LinksDataSource,
     protected drawingsDataSource: DrawingsDataSource,
@@ -187,20 +187,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   setUpMapCallbacks(project: Project) {
     const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+      const node = this.mapNodeToNode.convert(eventNode.node);
       this.nodeContextMenu.open(
-        eventNode.node,
+        node,
         eventNode.event.clientY,
         eventNode.event.clientX
       );
     });
 
     this.subscriptions.push(onContextMenu);
-
-    this.subscriptions.push(
-      this.selectionManager.subscribe(
-        this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
-    );
-
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -217,20 +212,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onNodeDragged(draggedEvent: DraggedDataEvent<Node>) {
-    this.nodesDataSource.update(draggedEvent.datum);
+    const node = this.nodesDataSource.get(draggedEvent.datum.node_id);
+    node.x += draggedEvent.dx;
+    node.y += draggedEvent.dy;
+
     this.nodeService
-      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
-      .subscribe((node: Node) => {
-        this.nodesDataSource.update(node);
+      .updatePosition(this.server, node, node.x, node.y)
+      .subscribe((serverNode: Node) => {
+        this.nodesDataSource.update(serverNode);
       });
   }
 
   onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing>) {
-    this.drawingsDataSource.update(draggedEvent.datum);
+    const drawing = this.drawingsDataSource.get(draggedEvent.datum.drawing_id);
+    drawing.x += draggedEvent.dx;
+    drawing.y += draggedEvent.dy;
+
     this.drawingService
-      .updatePosition(this.server, draggedEvent.datum, draggedEvent.datum.x, draggedEvent.datum.y)
-      .subscribe((drawing: Drawing) => {
-        this.drawingsDataSource.update(drawing);
+      .updatePosition(this.server, drawing, drawing.x, drawing.y)
+      .subscribe((serverDrawing: Drawing) => {
+        this.drawingsDataSource.update(serverDrawing);
       });
   }
 
@@ -238,8 +239,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.inReadOnlyMode = value;
     if (value) {
       this.tools.selection = false;
-    }
-    else {
+    } else {
       this.tools.selection = true;
     }
   }

@@ -1,19 +1,19 @@
 import { TestSVGCanvas } from "../../testing";
-import { Drawing } from "../../models/drawing";
 import { RectDrawingWidget } from "./rect-drawing";
 import { RectElement } from "../../models/drawings/rect-element";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
+import { MapDrawing } from "../../models/map/map-drawing";
 
 
 describe('RectDrawingWidget', () => {
   let svg: TestSVGCanvas;
   let widget: RectDrawingWidget;
-  let drawing: Drawing;
+  let drawing: MapDrawing;
 
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    drawing = new Drawing();
+    drawing = new MapDrawing();
     widget = new RectDrawingWidget(new QtDasharrayFixer());
   });
 
@@ -32,7 +32,7 @@ describe('RectDrawingWidget', () => {
     rect.height = 200;
     drawing.element = rect;
 
-    const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
+    const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 

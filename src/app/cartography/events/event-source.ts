@@ -1,9 +1,9 @@
 export class DataEventSource<T> {
   constructor(
-    public datum: T
+    public datum: T,
+    public dx: number,
+    public dy: number
   ) {}
 }
 
-
-// class CreatedDataEvent<T> extends DataEventSource<T> {}
 export class DraggedDataEvent<T> extends DataEventSource<T> {}

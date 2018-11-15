@@ -23,14 +23,6 @@ export class SelectionTool {
   ) {}
 
   public setEnabled(enabled) {
-    if (this.enabled != enabled) {
-      if (enabled) {
-        this.needsActivate = true;
-      }
-      else {
-        this.needsDeactivate = true;
-      }
-    }
     this.enabled = enabled;
   }
 
@@ -80,13 +72,17 @@ export class SelectionTool {
         .attr("visibility", "hidden");
     }
 
-    if(this.needsActivate) {
+    const tool = canvas.select<SVGGElement>("g.selection-line-tool");
+    const status = tool.attr('status');
+
+
+    if(status !== 'activated' && this.enabled) {
       this.activate(selection);
-      this.needsActivate = false;
+      tool.attr('activated');
     }
-    if(this.needsDeactivate) {
+    if(status !== 'deactivated' && !this.enabled)  {
       this.deactivate(selection);
-      this.needsDeactivate = false;
+      tool.attr('deactivated');
     }
   }
 

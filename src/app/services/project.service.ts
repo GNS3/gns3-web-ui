@@ -12,47 +12,53 @@ import { SettingsService } from "./settings.service";
 @Injectable()
 export class ProjectService {
 
-  constructor(private httpServer: HttpServer,
-              private settingsService: SettingsService) { }
+  constructor(
+    private httpServer: HttpServer,
+    private settingsService: SettingsService) {}
 
   get(server: Server, project_id: string) {
     return this.httpServer
-                .get<Project>(server, `/projects/${project_id}`);
+      .get<Project>(server, `/projects/${project_id}`);
   }
 
   open(server: Server, project_id: string) {
     return this.httpServer
-                .post<Project>(server, `/projects/${project_id}/open`, {});
+      .post<Project>(server, `/projects/${project_id}/open`, {});
   }
 
   close(server: Server, project_id: string) {
     return this.httpServer
-                .post<Project>(server, `/projects/${project_id}/close`, {});
+      .post<Project>(server, `/projects/${project_id}/close`, {});
   }
 
   list(server: Server) {
     return this.httpServer
-                .get<Project[]>(server, '/projects');
+      .get<Project[]>(server, '/projects');
   }
 
   nodes(server: Server, project_id: string) {
     return this.httpServer
-                .get<Node[]>(server, `/projects/${project_id}/nodes`);
+      .get<Node[]>(server, `/projects/${project_id}/nodes`);
   }
 
   links(server: Server, project_id: string) {
     return this.httpServer
-                .get<Link[]>(server, `/projects/${project_id}/links`);
+      .get<Link[]>(server, `/projects/${project_id}/links`);
   }
 
   drawings(server: Server, project_id: string) {
     return this.httpServer
-                .get<Drawing[]>(server, `/projects/${project_id}/drawings`);
+      .get<Drawing[]>(server, `/projects/${project_id}/drawings`);
+  }
+
+  add(server: Server, project_name: string, project_id: string): Observable<any>{
+    return this.httpServer
+                .post<Project>(server, `/projects`, { "name": project_name, "project_id": project_id});
   }
 
   delete(server: Server, project_id: string): Observable<any> {
     return this.httpServer
-                .delete(server, `/projects/${project_id}`);
+      .delete(server, `/projects/${project_id}`);
   }
 
   notificationsPath(server: Server, project_id: string): string {
