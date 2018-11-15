@@ -8,6 +8,7 @@ import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
+import { Router } from '@angular/router';
 
 export class MockedProjectService {
     public projects: Project[] = [{
@@ -41,6 +42,15 @@ describe('AddBlankProjectDialogComponent', () => {
     let component: AddBlankProjectDialogComponent;
     let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
     let server: Server;
+    let router = {
+        navigate: jasmine.createSpy('navigate')
+    };
+    let toaster = {
+        success: jasmine.createSpy('success')
+    };
+    let dialogRef = {
+        close: jasmine.createSpy('close')
+    };
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -54,10 +64,11 @@ describe('AddBlankProjectDialogComponent', () => {
                 MatSnackBarModule
             ],
             providers: [
-                { provide: MatDialogRef },
+                { provide: MatDialogRef, useValue: dialogRef },
                 { provide: MAT_DIALOG_DATA },
                 { provide: ProjectService, useClass: MockedProjectService },
-                { provide: ToasterService }
+                { provide: ToasterService, useValue: toaster },
+                { provide: Router, useValue: router }
             ],
             declarations : [AddBlankProjectDialogComponent]
         })
@@ -107,5 +118,15 @@ describe('AddBlankProjectDialogComponent', () => {
         component.onAddClick();
 
         expect(component.openConfirmationDialog).toHaveBeenCalled();
+    });
+
+    it('should redirect to newly created project', () => {
+        component.projectNameForm.controls['projectName'].setValue("validName");
+        
+        component.addProject();
+
+        expect(dialogRef.close).toHaveBeenCalled();
+        expect(toaster.success).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalled();
     });
 });

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Project } from '../../../models/project';
@@ -21,6 +22,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
 
     constructor(
         public dialogRef: MatDialogRef<AddBlankProjectDialogComponent>,
+        private router: Router,
         private dialog: MatDialog,
         private projectService: ProjectService,
         private toasterService: ToasterService,
@@ -64,6 +66,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
             .subscribe((project: Project) => {
                 this.dialogRef.close();
                 this.toasterService.success(`Project ${project.name} added`)
+                this.router.navigate(['/server', this.server.id, 'project', project.project_id]);
             });
     }
 

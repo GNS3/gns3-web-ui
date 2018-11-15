@@ -106,10 +106,6 @@ export class ProjectsComponent implements OnInit {
     })
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
-
-    dialogRef.afterClosed().subscribe(() => {
-      this.refresh();
-    });
   }
 
   importProject(){
