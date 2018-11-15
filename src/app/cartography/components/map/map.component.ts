@@ -82,9 +82,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private drawingsEventSource: DrawingsEventSource,
     ) {
     this.parentNativeElement = element.nativeElement;
-
-    this.selectionToolWidget.setEnabled(false);
-    this.movingToolWidget.setEnabled(false);
   }
 
   @Input('show-interface-labels') 
