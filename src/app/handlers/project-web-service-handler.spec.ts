@@ -7,7 +7,7 @@ import { NodesDataSource } from "../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../cartography/datasources/links-datasource";
 import { DrawingsDataSource } from "../cartography/datasources/drawings-datasource";
 import { Node } from "../cartography/models/node";
-import { Link } from "../cartography/models/link";
+import { Link } from "../models/link";
 import { Drawing } from "../cartography/models/drawing";
 
 

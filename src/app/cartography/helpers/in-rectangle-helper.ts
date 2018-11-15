@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 
-import { Selectable } from "../../../managers/selection-manager";
-import { Rectangle } from "../../../models/rectangle";
+import { Rectangle } from "../models/rectangle";
 
 
 @Injectable()

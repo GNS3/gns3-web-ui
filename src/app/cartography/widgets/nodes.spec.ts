@@ -3,6 +3,8 @@ import { TestSVGCanvas } from "../testing";
 import { NodesWidget } from "./nodes";
 import { Node } from "../models/node";
 import { Label } from "../models/label";
+import { CssFixer } from "../helpers/css-fixer";
+import { FontFixer } from "../helpers/font-fixer";
 
 
 describe('NodesWidget', () => {
@@ -11,7 +13,10 @@ describe('NodesWidget', () => {
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    widget = new NodesWidget();
+    widget = new NodesWidget(
+      new CssFixer(),
+      new FontFixer()
+    );
   });
 
   afterEach(() => {

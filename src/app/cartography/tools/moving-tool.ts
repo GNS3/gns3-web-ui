@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { D3ZoomEvent, zoom, ZoomBehavior} from "d3-zoom";
 import { event } from "d3-selection";
 
@@ -5,33 +7,49 @@ import { SVGSelection} from "../models/types";
 import { Context} from "../models/context";
 
 
+@Injectable()
 export class MovingTool {
-  private selection: SVGSelection;
-  private context: Context;
   private zoom: ZoomBehavior<SVGSVGElement, any>;
-
-  constructor() {
+  private enabled = false;
+  private needsDeactivate = false;
+  private needsActivate = false;
+  
+  constructor(
+    private context: Context
+  ) {
     this.zoom = zoom<SVGSVGElement, any>()
         .scaleExtent([1 / 2, 8]);
   }
 
-  public connect(selection: SVGSelection, context: Context) {
-    this.selection = selection;
-    this.context = context;
-
+  public setEnabled(enabled) {
+    if (this.enabled != enabled) {
+      if (enabled) {
+        this.needsActivate = true;
+      }
+      else {
+        this.needsDeactivate = true;
+      }
+    }
+    this.enabled = enabled;
   }
 
   public draw(selection: SVGSelection, context: Context) {
-    this.selection = selection;
-    this.context = context;
+    if(this.needsActivate) {
+      this.activate(selection);
+      this.needsActivate = false;
+    }
+    if(this.needsDeactivate) {
+      this.deactivate(selection);
+      this.needsDeactivate = false;
+    }
   }
 
-  public activate() {
+  private activate(selection: SVGSelection) {
     const self = this;
 
     const onZoom = function(this: SVGSVGElement) {
 
-      const canvas = self.selection.select<SVGGElement>("g.canvas");
+      const canvas = selection.select<SVGGElement>("g.canvas");
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr(
       'transform',
@@ -48,12 +66,12 @@ export class MovingTool {
     };
 
     this.zoom.on('zoom', onZoom);
-    this.selection.call(this.zoom);
+    selection.call(this.zoom);
   }
 
-  public deactivate() {
+  private deactivate(selection: SVGSelection) {
     // d3.js preserves event `mousedown.zoom` and blocks selection
-    this.selection.on('mousedown.zoom', null);
+    selection.on('mousedown.zoom', null);
     this.zoom.on('zoom', null);
   }
 }

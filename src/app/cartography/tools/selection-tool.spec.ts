@@ -16,18 +16,17 @@ describe('SelectionTool', () => {
   let selected_rectangle: Rectangle;
 
   beforeEach(() => {
-    tool = new SelectionTool();
+    context = new Context();
+    tool = new SelectionTool(context);
     tool.rectangleSelected.subscribe((rectangle: Rectangle) => {
       selected_rectangle = rectangle;
     });
 
     svg = new TestSVGCanvas();
-    context = new Context();
 
-    tool.connect(svg.svg, context);
+    tool.setEnabled(true);
     tool.draw(svg.svg, context);
-    tool.activate();
-
+    
     selection_line_tool = svg.svg.select('g.selection-line-tool');
     path_selection = selection_line_tool.select('path.selection');
   });
@@ -105,7 +104,9 @@ describe('SelectionTool', () => {
 
   describe('SelectionTool can be deactivated', () => {
     beforeEach(() => {
-      tool.deactivate();
+      tool.setEnabled(false);
+      tool.draw(svg.svg, context);
+      
       svg.svg.node().dispatchEvent(new MouseEvent('mousedown', {clientX: 100, clientY: 100}));
     });
 
