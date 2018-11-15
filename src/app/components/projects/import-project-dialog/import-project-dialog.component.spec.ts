@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImportProjectDialogComponent, Validator } from "./import-project-dialog.component";
+import { ImportProjectDialogComponent } from "./import-project-dialog.component";
 import { Server } from "../../../models/server";
-import { MatInputModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatStepperModule, MatFormFieldModule, MatDialogRef, MatDialog, MAT_DIALOG_DATA } from "@angular/material";
+import { MatInputModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { FileUploadModule, FileSelectDirective, FileItem, FileUploader, ParsedResponseHeaders } from "ng2-file-upload";
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FileUploadModule, FileSelectDirective, FileItem, ParsedResponseHeaders } from "ng2-file-upload";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { ProjectService } from '../../../services/project.service';
@@ -31,7 +31,7 @@ export class MockedProjectService {
         snap_to_grid: false,
     }];
   
-    list(server: Server) {
+    list() {
       return of(this.projects);
     }
 }
@@ -42,7 +42,6 @@ describe('ImportProjectDialogComponent', () => {
     let server: Server;
     let debugElement: DebugElement;
     let fileSelectDirective: FileSelectDirective;
-    let formBuilder: FormBuilder;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -52,7 +51,6 @@ describe('ImportProjectDialogComponent', () => {
                 MatIconModule,
                 MatSortModule,
                 MatDialogModule,
-                MatStepperModule,
                 MatFormFieldModule,
                 MatInputModule,
                 NoopAnimationsModule,
@@ -73,7 +71,6 @@ describe('ImportProjectDialogComponent', () => {
         server = new Server();
         server.ip = "localhost";
         server.port = 80;
-        formBuilder = new FormBuilder();
     }));
 
     beforeEach(() => {
@@ -81,15 +78,12 @@ describe('ImportProjectDialogComponent', () => {
         debugElement = fixture.debugElement;
         component = fixture.componentInstance;
         component.server = server;
-        component.projectNameForm = formBuilder.group({
-            projectName: new FormControl(null, [Validators.required, Validator.projectNameValidator])
-          });
         component.projectNameForm.controls['projectName'].setValue("ValidName");
         fixture.detectChanges();
 
         debugElement = fixture.debugElement.query(By.directive(FileSelectDirective));
         fileSelectDirective = debugElement.injector.get(FileSelectDirective) as FileSelectDirective;
-        component.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {};
+        component.uploader.onErrorItem = () => {};
     });
 
     it('should be created', () => {

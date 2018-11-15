@@ -15,6 +15,7 @@ import { SettingsService, Settings } from "../../services/settings.service";
 import { ProgressService } from "../../common/progress/progress.service";
 
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 
 @Component({
   selector: 'app-projects',
@@ -97,6 +98,14 @@ export class ProjectsComponent implements OnInit {
     }, () => {}, () => {
       this.progressService.deactivate();
     });
+  }
+
+  addBlankProject(){
+    const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
+      width: '550px',
+    })
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
   }
 
   importProject(){
