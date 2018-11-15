@@ -50,6 +50,11 @@ export class ProjectService {
                 .get<Drawing[]>(server, `/projects/${project_id}/drawings`);
   }
 
+  add(server: Server, project_name: string, project_id: string): Observable<any>{
+    return this.httpServer
+                .post<Project>(server, `/projects`, { "name": project_name, "project_id": project_id});
+  }
+
   delete(server: Server, project_id: string): Observable<any> {
     return this.httpServer
                 .delete(server, `/projects/${project_id}`);

@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule, MatDialog } from "@angular/material";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { Component, NgModule } from '@angular/core';
-import { Project } from '../../../../models/project';
-import { ImportProjectConfirmationDialogComponent } from './import-project-confirmation-dialog.component';
+import { Project } from '../../../models/project';
+import { ConfirmationDialogComponent } from './confirmation-dialog.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
 
-describe('ImportProjectConfirmationDialogComponent', () => {
+describe('ConfirmationDialogComponent', () => {
   let dialog: MatDialog;
   let overlayContainerElement: HTMLElement;
 
@@ -53,7 +53,7 @@ describe('ImportProjectConfirmationDialogComponent', () => {
         }
     };
 
-    dialog.open(ImportProjectConfirmationDialogComponent, config);
+    dialog.open(ConfirmationDialogComponent, config);
     noop.detectChanges();
 
     const message = overlayContainerElement.querySelector('span');
@@ -68,7 +68,7 @@ describe('ImportProjectConfirmationDialogComponent', () => {
         }
     };
 
-    dialog.open(ImportProjectConfirmationDialogComponent, config);
+    dialog.open(ConfirmationDialogComponent, config);
     noop.detectChanges();
 
     const message = overlayContainerElement.querySelector('span');
@@ -83,7 +83,7 @@ describe('ImportProjectConfirmationDialogComponent', () => {
         }
     };
 
-    let dialogRef = dialog.open(ImportProjectConfirmationDialogComponent, config);
+    let dialogRef = dialog.open(ConfirmationDialogComponent, config);
     noop.detectChanges();
     const button = overlayContainerElement.querySelector('button');
     spyOn(dialogRef.componentInstance.dialogRef, 'close');
@@ -100,7 +100,7 @@ describe('ImportProjectConfirmationDialogComponent', () => {
         }
     };
 
-    let dialogRef = dialog.open(ImportProjectConfirmationDialogComponent, config);
+    let dialogRef = dialog.open(ConfirmationDialogComponent, config);
     noop.detectChanges();
     const button: HTMLButtonElement = overlayContainerElement.querySelector('.confirmButton');
     spyOn(dialogRef.componentInstance.dialogRef, 'close');
@@ -116,7 +116,7 @@ describe('ImportProjectConfirmationDialogComponent', () => {
 class NoopComponent {}
 
 const TEST_DIRECTIVES = [
-    ImportProjectConfirmationDialogComponent,
+    ConfirmationDialogComponent,
     NoopComponent
 ];
 
@@ -125,7 +125,7 @@ const TEST_DIRECTIVES = [
     exports: TEST_DIRECTIVES,
     declarations: TEST_DIRECTIVES,
     entryComponents: [
-      ImportProjectConfirmationDialogComponent
+      ConfirmationDialogComponent
     ],
 })
 class DialogTestModule { }

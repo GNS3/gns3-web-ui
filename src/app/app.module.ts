@@ -28,8 +28,9 @@ import { ApplianceService } from "./services/appliance.service";
 import { LinkService } from "./services/link.service";
 
 import { ProjectsComponent } from './components/projects/projects.component';
+import { AddBlankProjectDialogComponent } from './components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ImportProjectDialogComponent } from './components/projects/import-project-dialog/import-project-dialog.component';
-import { ImportProjectConfirmationDialogComponent} from './components/projects/import-project-dialog/import-project-confirmation-dialog/import-project-confirmation-dialog.component';
+import { ConfirmationDialogComponent} from './components/projects/confirmation-dialog/confirmation-dialog.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
@@ -70,6 +71,7 @@ import { SnapshotsComponent } from './components/snapshots/snapshots.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { MATERIAL_IMPORTS } from './material.imports';
 import { DrawingService } from './services/drawing.service';
+import { ProjectNameValidator } from './components/projects/models/projectNameValidator';
 
 
 if (environment.production) {
@@ -94,8 +96,9 @@ if (environment.production) {
     SnapshotMenuItemComponent,
     SnapshotsComponent,
     ProjectsComponent,
+    AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
-    ImportProjectConfirmationDialogComponent,
+    ConfirmationDialogComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
     NodeContextMenuComponent,
@@ -153,15 +156,17 @@ if (environment.production) {
     InRectangleHelper,
     DrawingsDataSource,
     ServerErrorHandler,
-    ServerDatabase
+    ServerDatabase,
+    ProjectNameValidator
   ],
   entryComponents: [
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
     ApplianceListDialogComponent,
+    AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
-    ImportProjectConfirmationDialogComponent
+    ConfirmationDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })
