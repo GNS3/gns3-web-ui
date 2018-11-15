@@ -34,18 +34,15 @@ describe('LocalServerComponent', () => {
     })
     .compileComponents();
 
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(LocalServerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should create and redirect to server', fakeAsync(() => {
     expect(component).toBeTruthy();
     expect(serverService.getLocalServer).toHaveBeenCalled();
-    // @FIXME: somehow shows it's never called
-    // expect(router.navigate).toHaveBeenCalledWith('/server', 99, 'projects');
+    tick();
+    expect(router.navigate).toHaveBeenCalledWith(['/server', 99, 'projects']);
   }));
 });

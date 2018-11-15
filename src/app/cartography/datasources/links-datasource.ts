@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 import { DataSource } from "./datasource";
-import { Link} from "../models/link";
+import { Link} from "../../models/link";
 
 
 @Injectable()
