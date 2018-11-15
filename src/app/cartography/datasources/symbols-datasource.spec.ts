@@ -1,5 +1,5 @@
 import { SymbolsDataSource } from "./symbols-datasource";
-import { Symbol } from "../models/symbol";
+import { Symbol } from "../../models/symbol";
 
 
 describe('SymbolsDataSource', () => {
@@ -8,7 +8,7 @@ describe('SymbolsDataSource', () => {
 
   beforeEach(() => {
     dataSource = new SymbolsDataSource();
-    dataSource.connect().subscribe((symbols: Symbol[]) => {
+    dataSource.changes.subscribe((symbols: Symbol[]) => {
       data = symbols;
     });
   });

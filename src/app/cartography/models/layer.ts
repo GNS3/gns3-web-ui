@@ -1,16 +1,13 @@
 import {Drawing} from "./drawing";
-import {Link} from "./link";
+import {Link} from "../../models/link";
 import {Node} from "./node";
 
 export class Layer {
-  index: number;
-  nodes: Node[];
-  drawings: Drawing[];
-  links: Link[];
-
-  constructor() {
-    this.nodes = [];
-    this.drawings = [];
-    this.links = [];
+  constructor(
+    public index?: number,
+    public nodes: Node[] = [],
+    public drawings: Drawing[] = [],
+    public links: Link[] = []
+  ) {
   }
 }

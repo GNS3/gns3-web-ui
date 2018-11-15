@@ -2,6 +2,7 @@ import { TestSVGCanvas } from "../../testing";
 import { Drawing } from "../../models/drawing";
 import { LineDrawingWidget } from "./line-drawing";
 import { LineElement } from "../../models/drawings/line-element";
+import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
 
 
 describe('LineDrawingWidget', () => {
@@ -13,7 +14,7 @@ describe('LineDrawingWidget', () => {
   beforeEach(() => {
     svg = new TestSVGCanvas();
     drawing = new Drawing();
-    widget = new LineDrawingWidget();
+    widget = new LineDrawingWidget(new QtDasharrayFixer());
   });
 
   afterEach(() => {

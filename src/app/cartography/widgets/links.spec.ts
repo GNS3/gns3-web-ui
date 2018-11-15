@@ -1,4 +1,4 @@
-import { anything, instance, mock, verify } from "ts-mockito";
+import { instance, mock } from "ts-mockito";
 import { Selection } from "d3-selection";
 
 
@@ -6,8 +6,9 @@ import { TestSVGCanvas } from "../testing";
 import { Layer } from "../models/layer";
 import { LinksWidget } from "./links";
 import { Node } from "../models/node";
-import { Link } from "../models/link";
-import { InterfaceLabelWidget } from "./interface-label";
+import { Link } from "../../models/link";
+import { LinkWidget } from "./link";
+import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
 
 
 describe('LinksWidget', () => {
@@ -15,10 +16,12 @@ describe('LinksWidget', () => {
   let widget: LinksWidget;
   let layersEnter: Selection<SVGGElement, Layer, SVGGElement, any>;
   let layer: Layer;
+  let mockedLinkWidget: LinkWidget;
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    widget = new LinksWidget();
+    mockedLinkWidget = instance(mock(LinkWidget));
+    widget = new LinksWidget(new MultiLinkCalculatorHelper(), mockedLinkWidget);
 
     const node_1 = new Node();
     node_1.node_id = "1";
@@ -62,9 +65,9 @@ describe('LinksWidget', () => {
   });
 
   it('should draw links', () => {
-    const interfaceLabelWidgetMock = mock(InterfaceLabelWidget);
-    const interfaceLabelWidget = instance(interfaceLabelWidgetMock);
-    spyOn(widget, 'getInterfaceLabelWidget').and.returnValue(interfaceLabelWidget);
+    const linkWidgetMock = mock(LinkWidget);
+    const linkWidget = instance(linkWidgetMock);
+    spyOn(widget, 'getLinkWidget').and.returnValue(linkWidget);
 
     widget.draw(layersEnter);
 
@@ -73,9 +76,6 @@ describe('LinksWidget', () => {
     expect(linkNode.getAttribute('link_id')).toEqual('link1');
     expect(linkNode.getAttribute('map-source')).toEqual('1');
     expect(linkNode.getAttribute('map-target')).toEqual('2');
-    expect(linkNode.getAttribute('transform')).toEqual('translate (0, 0)');
-
-    verify(interfaceLabelWidgetMock.draw(anything())).called();
   });
 
 });
