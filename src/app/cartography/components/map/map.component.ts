@@ -12,21 +12,14 @@ import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { LinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { MapListeners } from '../../listeners/map-listeners';
-import { DraggedDataEvent } from '../../events/event-source';
-import { NodesEventSource } from '../../events/nodes-event-source';
-import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { DrawingsWidget } from '../../widgets/drawings';
 import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
 import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
-import { MapNodeToNodeConverter } from '../../converters/map/map-node-to-node-converter';
-import { MapPortToPortConverter } from '../../converters/map/map-port-to-port-converter';
 import { GraphDataManager } from '../../managers/graph-data-manager';
-import { MapDrawingToDrawingConverter } from '../../converters/map/map-drawing-to-drawing-converter';
 
 
 @Component({
@@ -43,16 +36,10 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() nodeDragged = new EventEmitter<DraggedDataEvent<Node>>();
-  @Output() drawingDragged = new EventEmitter<DraggedDataEvent<Drawing>>();
-  @Output() onLinkCreated = new EventEmitter<LinkCreated>();
-
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
   private onChangesDetected: Subscription;
-  private nodeDraggedSub: Subscription;
-  private drawingDraggedSub: Subscription;
 
   protected settings = {
     'show_interface_labels': true
@@ -64,9 +51,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
     private mapListeners: MapListeners,
-    private mapNodeToNode: MapNodeToNodeConverter,
-    private mapPortToPort: MapPortToPortConverter,
-    private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected drawingsWidget: DrawingsWidget,
@@ -74,8 +58,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout,
-    private nodesEventSource: NodesEventSource,
-    private drawingsEventSource: DrawingsEventSource,
     ) {
     this.parentNativeElement = element.nativeElement;
   }
@@ -136,14 +118,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    this.nodeDraggedSub = this.nodesEventSource.dragged.subscribe((evt) => {
-      this.nodeDragged.emit(new DraggedDataEvent<Node>(this.mapNodeToNode.convert(evt.datum), evt.dx, evt.dy));
-    });
-
-    this.drawingDraggedSub = this.drawingsEventSource.dragged.subscribe((evt) => {
-      this.drawingDragged.emit(new DraggedDataEvent<Drawing>(this.mapDrawingToDrawing.convert(evt.datum), evt.dx, evt.dy));
-    });
-
     this.mapListeners.onInit(this.svg);
   }
 
@@ -151,8 +125,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
     this.mapListeners.onDestroy();
-    this.nodeDraggedSub.unsubscribe();
-    this.drawingDraggedSub.unsubscribe();
   }
 
   public createGraph(domElement: HTMLElement) {
@@ -165,17 +137,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   public getSize(): Size {
     return this.canvasSizeDetector.getOptimalSize(this.width, this.height);
-  }
-
-  protected linkCreated(evt) {
-    const linkCreated = new LinkCreated(
-      this.mapNodeToNode.convert(evt.sourceNode),
-      this.mapPortToPort.convert(evt.sourcePort),
-      this.mapNodeToNode.convert(evt.targetNode),
-      this.mapPortToPort.convert(evt.targetPort)
-    );
-
-    this.onLinkCreated.emit(linkCreated);
   }
 
   private changeLayout() {

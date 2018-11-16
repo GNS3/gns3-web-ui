@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from "@angular/core";
 
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { NodeContextMenu, NodeClicked, NodeDragged, NodeDragging } from "../events/nodes";
+import { NodeContextMenu, NodeClicked } from "../events/nodes";
 import { CssFixer } from "../helpers/css-fixer";
 import { FontFixer } from "../helpers/font-fixer";
 import { select, event } from "d3-selection";
@@ -18,8 +18,6 @@ export class NodeWidget implements Widget {
 
   public onContextMenu = new EventEmitter<NodeContextMenu>();
   public onNodeClicked = new EventEmitter<NodeClicked>();
-  public onNodeDragged = new EventEmitter<NodeDragged>();
-  public onNodeDragging = new EventEmitter<NodeDragging>();
 
   constructor(
     private cssFixer: CssFixer,
