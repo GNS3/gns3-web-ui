@@ -7,6 +7,7 @@ import { NodeClicked } from '../../events/nodes';
 import { NodeWidget } from '../../widgets/node';
 import { MapNode } from '../../models/map/map-node';
 import { MapPort } from '../../models/map/map-port';
+import { LinksEventSource } from '../../events/links-event-source';
 
 
 @Component({
@@ -17,13 +18,14 @@ import { MapPort } from '../../models/map/map-port';
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
   
-  @Output('linkCreated') linkCreated = new EventEmitter<MapLinkCreated>();
+  // @Output('linkCreated') linkCreated = new EventEmitter<MapLinkCreated>();
 
   private onNodeClicked: Subscription;
 
   constructor(
     private drawingLineTool: DrawingLineWidget,
-    private nodeWidget: NodeWidget
+    private nodeWidget: NodeWidget,
+    private linksEventSource: LinksEventSource
   ) { }
 
   ngOnInit() {
@@ -48,7 +50,7 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
     const port: MapPort = event.port;
     if (this.drawingLineTool.isDrawing()) {
       const data = this.drawingLineTool.stop();
-      this.linkCreated.emit(new MapLinkCreated(data['node'], data['port'], node, port));
+      this.linksEventSource.created.emit(new MapLinkCreated(data['node'], data['port'], node, port));
     } else {
       this.drawingLineTool.start(node.x + node.width / 2., node.y + node.height / 2., {
         'node': node,
