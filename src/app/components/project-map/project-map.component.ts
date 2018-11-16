@@ -26,11 +26,17 @@ import { DrawingsDataSource } from "../../cartography/datasources/drawings-datas
 import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 import { NodeContextMenu } from '../../cartography/events/nodes';
-import { LinkCreated } from '../../cartography/events/links';
+import { MapLinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { DraggedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
+import { NodesEventSource } from '../../cartography/events/nodes-event-source';
+import { DrawingsEventSource } from '../../cartography/events/drawings-event-source';
+import { MapNode } from '../../cartography/models/map/map-node';
+import { LinksEventSource } from '../../cartography/events/links-event-source';
+import { MapDrawing } from '../../cartography/models/map/map-drawing';
+import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 
 
 @Component({
@@ -77,9 +83,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
     private mapNodeToNode: MapNodeToNodeConverter,
-    protected nodesDataSource: NodesDataSource,
-    protected linksDataSource: LinksDataSource,
-    protected drawingsDataSource: DrawingsDataSource,
+    private mapPortToPort: MapPortToPortConverter,
+    private nodesDataSource: NodesDataSource,
+    private linksDataSource: LinksDataSource,
+    private drawingsDataSource: DrawingsDataSource,
+    private nodesEventSource: NodesEventSource,
+    private drawingsEventSource: DrawingsEventSource,
+    private linksEventSource: LinksEventSource
   ) {}
 
   ngOnInit() {
@@ -144,6 +154,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })
+    );
+
+    this.subscriptions.push(
+      this.nodesEventSource.dragged.subscribe((evt) => this.onNodeDragged(evt))
+    );
+
+    this.subscriptions.push(
+      this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt))
+    );
+
+    this.subscriptions.push(
+      this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt))
     );
   }
 
@@ -211,8 +233,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(draggedEvent: DraggedDataEvent<Node>) {
-    const node = this.nodesDataSource.get(draggedEvent.datum.node_id);
+  private onNodeDragged(draggedEvent: DraggedDataEvent<MapNode>) {
+    const node = this.nodesDataSource.get(draggedEvent.datum.id);
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
@@ -223,8 +245,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onDrawingDragged(draggedEvent: DraggedDataEvent<Drawing>) {
-    const drawing = this.drawingsDataSource.get(draggedEvent.datum.drawing_id);
+  private onDrawingDragged(draggedEvent: DraggedDataEvent<MapDrawing>) {
+    const drawing = this.drawingsDataSource.get(draggedEvent.datum.id);
     drawing.x += draggedEvent.dx;
     drawing.y += draggedEvent.dy;
 
@@ -232,6 +254,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       .updatePosition(this.server, drawing, drawing.x, drawing.y)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
+      });
+  }
+
+  private onLinkCreated(linkCreated: MapLinkCreated) {
+    const sourceNode = this.mapNodeToNode.convert(linkCreated.sourceNode);
+    const sourcePort = this.mapPortToPort.convert(linkCreated.sourcePort);
+    const targetNode = this.mapNodeToNode.convert(linkCreated.targetNode);
+    const targetPort = this.mapPortToPort.convert(linkCreated.targetPort);
+    
+    this.linkService
+      .createLink(this.server, sourceNode, sourcePort, targetNode, targetPort)
+      .subscribe(() => {
+        this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
+          this.linksDataSource.set(links);
+        });
       });
   }
 
@@ -257,16 +294,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleDrawLineMode() {
     this.tools.draw_link = !this.tools.draw_link;
-  }
-
-  public onLinkCreated(linkCreated: LinkCreated) {
-    this.linkService
-      .createLink(this.server, linkCreated.sourceNode, linkCreated.sourcePort, linkCreated.targetNode, linkCreated.targetPort)
-      .subscribe(() => {
-        this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
-          this.linksDataSource.set(links);
-        });
-      });
   }
 
   public toggleShowInterfaceLabels(enabled: boolean) {
