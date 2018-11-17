@@ -62,7 +62,7 @@
     "@angular/cli": "^6.0.8",
     "@angular/compiler-cli": "^6.0.7",
     "@angular/language-service": "^6.0.7",
-    "@types/jasmine": "~2.8.8",
+    "@types/jasmine": "~3.0.0",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~10.7.0",
     "@sentry/electron": "^0.7.0",
