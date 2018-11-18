@@ -47,7 +47,7 @@
     "d3-ng2-service": "^2.1.0",
     "electron-settings": "^3.2.0",
     "material-design-icons": "^3.0.1",
-    "ngx-electron": "^1.0.4",
+    "ngx-electron": "^2.0.0",
     "notosans-fontface": "^1.1.0",
     "npm-check-updates": "^2.14.1",
     "raven-js": "^3.24.1",
