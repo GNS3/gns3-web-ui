@@ -7,6 +7,8 @@ import { Server } from '../../../models/server';
 import { ToasterService } from '../../../services/toaster.service';
 import { Project } from "../../../models/project";
 import { ProjectService } from "../../../services/project.service";
+import { MapNode } from '../../../cartography/models/map/map-node';
+import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 
 
 @Component({
@@ -16,7 +18,6 @@ import { ProjectService } from "../../../services/project.service";
 export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
   @Input() project: Project;
   @Input() server: Server;
-  @Input() selectionManager: SelectionManager;
 
   private deleteHotkey: Hotkey;
 
@@ -24,7 +25,9 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
     private hotkeysService: HotkeysService,
     private toaster: ToasterService,
     private nodesService: NodeService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private mapNodeToNode: MapNodeToNodeConverter,
+    private selectionManager: SelectionManager
   ) { }
 
   ngOnInit() {
@@ -37,14 +40,14 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
 
   onDeleteHandler(event: KeyboardEvent): boolean {
     if (!this.projectService.isReadOnly(this.project)) {
-      const selectedNodes = this.selectionManager.getSelectedNodes();
-      if (selectedNodes) {
-        selectedNodes.forEach((node) => {
-          this.nodesService.delete(this.server, node).subscribe(data => {
-            this.toaster.success("Node has been deleted");
-          });
+      const selected = this.selectionManager.getSelected();
+
+      selected.filter((item) => item instanceof MapNode).forEach((item: MapNode) => {
+        const node = this.mapNodeToNode.convert(item);
+        this.nodesService.delete(this.server, node).subscribe(data => {
+          this.toaster.success("Node has been deleted");
         });
-      }
+      });
     }
     return false;
   }

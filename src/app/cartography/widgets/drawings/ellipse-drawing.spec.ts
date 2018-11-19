@@ -1,19 +1,19 @@
 import { TestSVGCanvas } from "../../testing";
-import { Drawing } from "../../models/drawing";
-import { EllipseDrawingWidget } from "./ellipse-drawing";
 import { EllipseElement } from "../../models/drawings/ellipse-element";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
+import { MapDrawing } from "../../models/map/map-drawing";
+import { EllipseDrawingWidget } from "./ellipse-drawing";
 
 
 describe('EllipseDrawingWidget', () => {
   let svg: TestSVGCanvas;
   let widget: EllipseDrawingWidget;
-  let drawing: Drawing;
+  let drawing: MapDrawing;
 
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
-    drawing = new Drawing();
+    drawing = new MapDrawing();
     widget = new EllipseDrawingWidget(new QtDasharrayFixer());
   });
 
@@ -34,7 +34,7 @@ describe('EllipseDrawingWidget', () => {
     ellipse.ry = 40;
     drawing.element = ellipse;
 
-    const drawings = svg.canvas.selectAll<SVGGElement, Drawing>('g.drawing').data([drawing]);
+    const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
     const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 

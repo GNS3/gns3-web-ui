@@ -1,9 +1,8 @@
 import { Label } from "./label";
 import { Port } from "../../models/port";
-import { Selectable } from "../managers/selection-manager";
 
 
-export class Node implements Selectable {
+export class Node {
   command_line: string;
   compute_id: string;
   console: number;
@@ -26,5 +25,4 @@ export class Node implements Selectable {
   x: number;
   y: number;
   z: number;
-  is_selected = false;
 }

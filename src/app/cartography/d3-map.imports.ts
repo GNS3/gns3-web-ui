@@ -14,11 +14,14 @@ import { ImageDrawingWidget } from './widgets/drawings/image-drawing';
 import { RectDrawingWidget } from './widgets/drawings/rect-drawing';
 import { TextDrawingWidget } from './widgets/drawings/text-drawing';
 import { LineDrawingWidget } from './widgets/drawings/line-drawing';
+import { NodeWidget } from './widgets/node';
+import { DrawingWidget } from './widgets/drawing';
 
 export const D3_MAP_IMPORTS = [
     GraphLayout,
     LinksWidget,
     NodesWidget,
+    NodeWidget,
     DrawingsWidget,
     DrawingLineWidget,
     SelectionTool,
@@ -32,4 +35,5 @@ export const D3_MAP_IMPORTS = [
     LineDrawingWidget,
     RectDrawingWidget,
     TextDrawingWidget,
+    DrawingWidget
 ];

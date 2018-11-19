@@ -1,9 +1,8 @@
 import { Node } from "../cartography/models/node";
 import { LinkNode } from "./link-node";
-import { Selectable } from "../cartography/managers/selection-manager";
 
 
-export class Link implements Selectable {
+export class Link {
   capture_file_name: string;
   capture_file_path: string;
   capturing: boolean;
@@ -18,7 +17,6 @@ export class Link implements Selectable {
   source: Node; // this is not from server
   target: Node; // this is not from server
 
-  is_selected = false; // this is not from server
   x: number; // this is not from server
   y: number; // this is not from server
 }
