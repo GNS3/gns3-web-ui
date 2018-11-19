@@ -48,7 +48,7 @@ describe('SelectionTool', () => {
 
     it('path should be visible and have parameters', () => {
         expect(path_selection.attr('visibility')).toEqual('visible');
-        expect(path_selection.attr('d')).toEqual('M92,100 l0,0 l0,0 l0,0z');
+        expect(path_selection.attr('d')).toEqual('M100,108 l0,0 l0,0 l0,0z');
     });
   });
 
@@ -59,7 +59,7 @@ describe('SelectionTool', () => {
     });
 
     it('path should have got changed parameters', () => {
-        expect(path_selection.attr('d')).toEqual('M92,100 l200,0 l0,200 l-200,0z');
+        expect(path_selection.attr('d')).toEqual('M100,108 l200,0 l0,200 l-200,0z');
     });
   });
 
@@ -75,7 +75,7 @@ describe('SelectionTool', () => {
     });
 
     it('rectangle should be selected', () => {
-      expect(selected_rectangle).toEqual(new Rectangle(92, 100, 100, 100));
+      expect(selected_rectangle).toEqual(new Rectangle(100, 108, 100, 100));
     });
 
     describe('SelectionTool can deselect after click outside', () => {
@@ -85,7 +85,7 @@ describe('SelectionTool', () => {
       });
 
       it('rectangle should be selected', () => {
-        expect(selected_rectangle).toEqual(new Rectangle(292, 300, 0, 0));
+        expect(selected_rectangle).toEqual(new Rectangle(300, 308, 0, 0));
       });
     });
   });
@@ -98,7 +98,7 @@ describe('SelectionTool', () => {
     });
 
     it('rectangle should be selected', () => {
-      expect(selected_rectangle).toEqual(new Rectangle(92, 100, 100, 100));
+      expect(selected_rectangle).toEqual(new Rectangle(100, 108, 100, 100));
     });
   });
 
@@ -123,7 +123,7 @@ describe('SelectionTool', () => {
     });
 
     it('path should have d adjusted for transformation', () => {
-        expect(path_selection.attr('d')).toEqual('M-8,0 l0,0 l0,0 l0,0z');
+        expect(path_selection.attr('d')).toEqual('M0,8 l0,0 l0,0 l0,0z');
     });
   });
 });
