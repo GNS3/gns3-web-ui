@@ -1,7 +1,7 @@
 import * as Raven from 'raven-js';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from '@angular/common/http';
 
@@ -12,7 +12,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HotkeyModule } from 'angular2-hotkeys';
 import { PersistenceModule } from 'angular-persistence';
 import { NgxElectronModule } from 'ngx-electron';
-
+import { FileUploadModule } from 'ng2-file-upload';
 import { AppRoutingModule } from './app-routing.module';
 
 import { VersionService } from './services/version.service';
@@ -28,6 +28,9 @@ import { ApplianceService } from "./services/appliance.service";
 import { LinkService } from "./services/link.service";
 
 import { ProjectsComponent } from './components/projects/projects.component';
+import { AddBlankProjectDialogComponent } from './components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
+import { ImportProjectDialogComponent } from './components/projects/import-project-dialog/import-project-dialog.component';
+import { ConfirmationDialogComponent} from './components/projects/confirmation-dialog/confirmation-dialog.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
@@ -67,6 +70,8 @@ import { CreateSnapshotDialogComponent } from './components/snapshots/create-sna
 import { SnapshotsComponent } from './components/snapshots/snapshots.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { MATERIAL_IMPORTS } from './material.imports';
+import { DrawingService } from './services/drawing.service';
+import { ProjectNameValidator } from './components/projects/models/projectNameValidator';
 
 
 if (environment.production) {
@@ -91,6 +96,9 @@ if (environment.production) {
     SnapshotMenuItemComponent,
     SnapshotsComponent,
     ProjectsComponent,
+    AddBlankProjectDialogComponent,
+    ImportProjectDialogComponent,
+    ConfirmationDialogComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
     NodeContextMenuComponent,
@@ -112,13 +120,15 @@ if (environment.production) {
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     CdkTableModule,
     CartographyModule,
     HotkeyModule.forRoot(),
     PersistenceModule,
     NgxElectronModule,
-    ...MATERIAL_IMPORTS
+    FileUploadModule,
+    MATERIAL_IMPORTS
   ],
   providers: [
     SettingsService,
@@ -131,6 +141,7 @@ if (environment.production) {
     ApplianceService,
     NodeService,
     LinkService,
+    DrawingService,
     IndexedDbService,
     HttpServer,
     SnapshotService,
@@ -145,13 +156,17 @@ if (environment.production) {
     InRectangleHelper,
     DrawingsDataSource,
     ServerErrorHandler,
-    ServerDatabase
+    ServerDatabase,
+    ProjectNameValidator
   ],
   entryComponents: [
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
-    ApplianceListDialogComponent
+    ApplianceListDialogComponent,
+    AddBlankProjectDialogComponent,
+    ImportProjectDialogComponent,
+    ConfirmationDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })

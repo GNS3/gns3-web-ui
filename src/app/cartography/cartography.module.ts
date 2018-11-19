@@ -1,6 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatMenuModule, MatIconModule } from '@angular/material';
+
 import { MapComponent } from './components/map/map.component';
+import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
+import { NodeSelectInterfaceComponent } from './components/node-select-interface/node-select-interface.component';
+
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
 import { MultiLinkCalculatorHelper } from './helpers/multi-link-calculator-helper';
@@ -8,26 +13,33 @@ import { SvgToDrawingConverter } from './helpers/svg-to-drawing-converter';
 import { QtDasharrayFixer } from './helpers/qt-dasharray-fixer';
 import { LayersManager } from './managers/layers-manager';
 import { MapChangeDetectorRef } from './services/map-change-detector-ref';
-import { GraphLayout } from './widgets/graph-layout';
-import { LinksWidget } from './widgets/links';
-import { NodesWidget } from './widgets/nodes';
-import { DrawingsWidget } from './widgets/drawings';
-import { DrawingLineWidget } from './widgets/drawing-line';
-import { SelectionTool } from './tools/selection-tool';
-import { MovingTool } from './tools/moving-tool';
-import { LayersWidget } from './widgets/layers';
-import { LinkWidget } from './widgets/link';
-import { InterfaceStatusWidget } from './widgets/interface-status';
-import { InterfaceLabelWidget } from './widgets/interface-label';
-import { EllipseDrawingWidget } from './widgets/drawings/ellipse-drawing';
-import { ImageDrawingWidget } from './widgets/drawings/image-drawing';
-import { RectDrawingWidget } from './widgets/drawings/rect-drawing';
-import { TextDrawingWidget } from './widgets/drawings/text-drawing';
-import { LineDrawingWidget } from './widgets/drawings/line-drawing';
 import { Context } from './models/context';
-import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
-import { NodeSelectInterfaceComponent } from './components/node-select-interface/node-select-interface.component';
-import { MatMenuModule, MatIconModule } from '@angular/material';
+import { D3_MAP_IMPORTS } from './d3-map.imports';
+import { CanvasSizeDetector } from './helpers/canvas-size-detector';
+import { MapListeners } from './listeners/map-listeners';
+import { DraggableListener } from './listeners/draggable-listener';
+import { DrawingsEventSource } from './events/drawings-event-source';
+import { NodesEventSource } from './events/nodes-event-source';
+import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
+import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
+import { LinkToMapLinkConverter } from './converters/map/link-to-map-link-converter';
+import { MapDrawingToDrawingConverter } from './converters/map/map-drawing-to-drawing-converter';
+import { MapLabelToLabelConverter } from './converters/map/map-label-to-label-converter';
+import { MapLinkNodeToLinkNodeConverter } from './converters/map/map-link-node-to-link-node-converter';
+import { MapLinkToLinkConverter } from './converters/map/map-link-to-link-converter';
+import { MapNodeToNodeConverter } from './converters/map/map-node-to-node-converter';
+import { MapPortToPortConverter } from './converters/map/map-port-to-port-converter';
+import { MapSymbolToSymbolConverter } from './converters/map/map-symbol-to-symbol-converter';
+import { NodeToMapNodeConverter } from './converters/map/node-to-map-node-converter';
+import { PortToMapPortConverter } from './converters/map/port-to-map-port-converter';
+import { SymbolToMapSymbolConverter } from './converters/map/symbol-to-map-symbol-converter';
+import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
+import { GraphDataManager } from './managers/graph-data-manager';
+import { SelectionUpdateListener } from './listeners/selection-update-listener';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from './datasources/map-datasource';
+import { SelectionListener } from './listeners/selection-listener';
+import { LinksEventSource } from './events/links-event-source';
+
 
 @NgModule({
   imports: [
@@ -48,24 +60,36 @@ import { MatMenuModule, MatIconModule } from '@angular/material';
     QtDasharrayFixer,
     LayersManager,
     MapChangeDetectorRef,
-    GraphLayout,
-    LinksWidget,
-    NodesWidget,
-    DrawingsWidget,
-    DrawingLineWidget,
-    SelectionTool,
-    MovingTool,
-    LayersWidget,
-    LinkWidget,
-    InterfaceStatusWidget,
-    InterfaceLabelWidget,
-    EllipseDrawingWidget,
-    ImageDrawingWidget,
-    LineDrawingWidget,
-    RectDrawingWidget,
-    TextDrawingWidget,
+    CanvasSizeDetector,
     Context,
+    SelectionUpdateListener,
+    MapListeners,
+    DraggableListener,
+    SelectionListener,
+    DrawingsEventSource,
+    NodesEventSource,
+    LinksEventSource,
+    DrawingToMapDrawingConverter,
+    LabelToMapLabelConverter,
+    LinkToMapLinkConverter,
+    LinkNodeToMapLinkNodeConverter,
+    MapDrawingToDrawingConverter,
+    MapLabelToLabelConverter,
+    MapLinkNodeToLinkNodeConverter,
+    MapLinkToLinkConverter,
+    MapNodeToNodeConverter,
+    MapPortToPortConverter,
+    MapSymbolToSymbolConverter,
+    NodeToMapNodeConverter,
+    PortToMapPortConverter,
+    SymbolToMapSymbolConverter,
+    GraphDataManager,
+    MapNodesDataSource,
+    MapLinksDataSource,
+    MapDrawingsDataSource,
+    MapSymbolsDataSource,
+    ...D3_MAP_IMPORTS
   ],
-  exports: [MapComponent]
+  exports: [ MapComponent ]
 })
 export class CartographyModule { }

@@ -2,7 +2,7 @@ import { path } from "d3-path";
 
 import { Widget } from "../widget";
 import { SVGSelection } from "../../models/types";
-import { Link } from "../../../models/link";
+import { MapLink } from "../../models/map/map-link";
 
 
 class SerialLinkPath {
@@ -18,7 +18,7 @@ class SerialLinkPath {
 
 export class SerialLinkWidget implements Widget {
 
-  private linkToSerialLink(link: Link) {
+  private linkToSerialLink(link: MapLink) {
     const source = {
       'x': link.source.x + link.source.width / 2,
       'y': link.source.y + link.source.height / 2
@@ -60,9 +60,9 @@ export class SerialLinkWidget implements Widget {
 
     const link = view
       .selectAll<SVGPathElement, SerialLinkPath>('path.serial_link')
-        .data((link) => {
-          if(link.link_type === 'serial') {
-            return [this.linkToSerialLink(link)];
+        .data((l) => {
+          if (l.linkType === 'serial') {
+            return [this.linkToSerialLink(l)];
           }
           return [];
         });

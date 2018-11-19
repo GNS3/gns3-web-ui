@@ -1,14 +1,14 @@
 import { Injectable } from "@angular/core";
 
 import { SVGSelection } from "../../models/types";
-import { Drawing } from "../../models/drawing";
 import { EllipseElement } from "../../models/drawings/ellipse-element";
-import { DrawingWidget } from "./drawing-widget";
+import { DrawingShapeWidget } from "./drawing-shape-widget";
 import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
+import { MapDrawing } from "../../models/map/map-drawing";
 
 
 @Injectable()
-export class EllipseDrawingWidget implements DrawingWidget {
+export class EllipseDrawingWidget implements DrawingShapeWidget {
 
   constructor(
     private qtDasharrayFixer: QtDasharrayFixer
@@ -17,7 +17,7 @@ export class EllipseDrawingWidget implements DrawingWidget {
   public draw(view: SVGSelection) {
     const drawing = view
       .selectAll<SVGEllipseElement, EllipseElement>('ellipse.ellipse_element')
-        .data((d: Drawing) => {
+        .data((d: MapDrawing) => {
           return (d.element && d.element instanceof EllipseElement) ? [d.element] : [];
         });
 

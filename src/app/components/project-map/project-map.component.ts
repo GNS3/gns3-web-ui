@@ -22,13 +22,21 @@ import { LinkService } from "../../services/link.service";
 import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
 import { LinksDataSource } from "../../cartography/datasources/links-datasource";
 import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
-import { SelectionManager } from "../../cartography/managers/selection-manager";
-import { InRectangleHelper } from "../../cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
 import { ProgressService } from "../../common/progress/progress.service";
-import { NodeEvent } from '../../cartography/widgets/nodes';
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
-import { LinkCreated } from '../../cartography/components/draw-link-tool/draw-link-tool.component';
+import { NodeContextMenu } from '../../cartography/events/nodes';
+import { MapLinkCreated } from '../../cartography/events/links';
+import { NodeWidget } from '../../cartography/widgets/node';
+import { DraggedDataEvent } from '../../cartography/events/event-source';
+import { DrawingService } from '../../services/drawing.service';
+import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
+import { NodesEventSource } from '../../cartography/events/nodes-event-source';
+import { DrawingsEventSource } from '../../cartography/events/drawings-event-source';
+import { MapNode } from '../../cartography/models/map/map-node';
+import { LinksEventSource } from '../../cartography/events/links-event-source';
+import { MapDrawing } from '../../cartography/models/map/map-drawing';
+import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 
 
 @Component({
@@ -56,33 +64,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private inReadOnlyMode = false;
 
-  protected selectionManager: SelectionManager;
-
   @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
-  private subscriptions: Subscription[];
+  private subscriptions: Subscription[] = [];
 
   constructor(
-              private route: ActivatedRoute,
-              private serverService: ServerService,
-              private projectService: ProjectService,
-              private symbolService: SymbolService,
-              private nodeService: NodeService,
-              private linkService: LinkService,
-              private progressService: ProgressService,
-              private projectWebServiceHandler: ProjectWebServiceHandler,
-              private mapChangeDetectorRef: MapChangeDetectorRef,
-              protected nodesDataSource: NodesDataSource,
-              protected linksDataSource: LinksDataSource,
-              protected drawingsDataSource: DrawingsDataSource,
-              ) {
-    this.selectionManager = new SelectionManager(
-      this.nodesDataSource, this.linksDataSource, this.drawingsDataSource, new InRectangleHelper());
-
-    this.subscriptions = [];
-  }
+    private route: ActivatedRoute,
+    private serverService: ServerService,
+    private projectService: ProjectService,
+    private symbolService: SymbolService,
+    private nodeService: NodeService,
+    private linkService: LinkService,
+    private drawingService: DrawingService,
+    private progressService: ProgressService,
+    private projectWebServiceHandler: ProjectWebServiceHandler,
+    private mapChangeDetectorRef: MapChangeDetectorRef,
+    private nodeWidget: NodeWidget,
+    private mapNodeToNode: MapNodeToNodeConverter,
+    private mapPortToPort: MapPortToPortConverter,
+    private nodesDataSource: NodesDataSource,
+    private linksDataSource: LinksDataSource,
+    private drawingsDataSource: DrawingsDataSource,
+    private nodesEventSource: NodesEventSource,
+    private drawingsEventSource: DrawingsEventSource,
+    private linksEventSource: LinksEventSource
+  ) {}
 
   ngOnInit() {
     this.progressService.activate();
@@ -147,6 +155,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChangeDetectorRef.detectChanges();
       })
     );
+
+    this.subscriptions.push(
+      this.nodesEventSource.dragged.subscribe((evt) => this.onNodeDragged(evt))
+    );
+
+    this.subscriptions.push(
+      this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt))
+    );
+
+    this.subscriptions.push(
+      this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt))
+    );
   }
 
   onProjectLoad(project: Project) {
@@ -188,23 +208,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks(project: Project) {
-    this.mapChild.graphLayout.getNodesWidget().setDraggingEnabled(!this.readonly);
-
-    const onContextMenu = this.mapChild.graphLayout.getNodesWidget().onContextMenu.subscribe((eventNode: NodeEvent) => {
+    const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+      const node = this.mapNodeToNode.convert(eventNode.node);
       this.nodeContextMenu.open(
-        eventNode.node,
+        node,
         eventNode.event.clientY,
         eventNode.event.clientX
       );
     });
 
     this.subscriptions.push(onContextMenu);
-
-    this.subscriptions.push(
-      this.selectionManager.subscribe(
-        this.mapChild.graphLayout.getSelectionTool().rectangleSelected)
-    );
-
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -220,12 +233,42 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  onNodeDragged(nodeEvent: NodeEvent) {
-    this.nodesDataSource.update(nodeEvent.node);
+  private onNodeDragged(draggedEvent: DraggedDataEvent<MapNode>) {
+    const node = this.nodesDataSource.get(draggedEvent.datum.id);
+    node.x += draggedEvent.dx;
+    node.y += draggedEvent.dy;
+
     this.nodeService
-      .updatePosition(this.server, nodeEvent.node, nodeEvent.node.x, nodeEvent.node.y)
-      .subscribe((n: Node) => {
-        this.nodesDataSource.update(n);
+      .updatePosition(this.server, node, node.x, node.y)
+      .subscribe((serverNode: Node) => {
+        this.nodesDataSource.update(serverNode);
+      });
+  }
+
+  private onDrawingDragged(draggedEvent: DraggedDataEvent<MapDrawing>) {
+    const drawing = this.drawingsDataSource.get(draggedEvent.datum.id);
+    drawing.x += draggedEvent.dx;
+    drawing.y += draggedEvent.dy;
+
+    this.drawingService
+      .updatePosition(this.server, drawing, drawing.x, drawing.y)
+      .subscribe((serverDrawing: Drawing) => {
+        this.drawingsDataSource.update(serverDrawing);
+      });
+  }
+
+  private onLinkCreated(linkCreated: MapLinkCreated) {
+    const sourceNode = this.mapNodeToNode.convert(linkCreated.sourceNode);
+    const sourcePort = this.mapPortToPort.convert(linkCreated.sourcePort);
+    const targetNode = this.mapNodeToNode.convert(linkCreated.targetNode);
+    const targetPort = this.mapPortToPort.convert(linkCreated.targetPort);
+    
+    this.linkService
+      .createLink(this.server, sourceNode, sourcePort, targetNode, targetPort)
+      .subscribe(() => {
+        this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
+          this.linksDataSource.set(links);
+        });
       });
   }
 
@@ -233,8 +276,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.inReadOnlyMode = value;
     if (value) {
       this.tools.selection = false;
-    }
-    else {
+    } else {
       this.tools.selection = true;
     }
   }
@@ -252,16 +294,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleDrawLineMode() {
     this.tools.draw_link = !this.tools.draw_link;
-  }
-
-  public onLinkCreated(linkCreated: LinkCreated) {
-    this.linkService
-      .createLink(this.server, linkCreated.sourceNode, linkCreated.sourcePort, linkCreated.targetNode, linkCreated.targetPort)
-      .subscribe(() => {
-        this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
-          this.linksDataSource.set(links);
-        });
-      });
   }
 
   public toggleShowInterfaceLabels(enabled: boolean) {

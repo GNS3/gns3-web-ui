@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 import { PersistenceService, StorageType } from "angular-persistence";
 
 import { Settings, SettingsService } from './settings.service';
@@ -23,7 +23,7 @@ describe('SettingsService', () => {
     persistenceService = TestBed.get(PersistenceService);
   });
 
-  afterEach(() => {
+  beforeEach(() => {
     persistenceService.removeAll(StorageType.LOCAL);
   });
 
@@ -69,7 +69,7 @@ describe('SettingsService', () => {
     });
   }));
 
-  it('should execute subscriber', inject([SettingsService], (service: SettingsService) => {
+  it('should execute subscriber', inject([SettingsService], fakeAsync((service: SettingsService) => {
     let changedSettings: Settings;
 
     service.set('crash_reports', true);
@@ -79,7 +79,7 @@ describe('SettingsService', () => {
     service.set('crash_reports', false);
 
     expect(changedSettings.crash_reports).toEqual(false);
-  }));
+  })));
 
   it('should get isExperimentalEnabled when turned on', inject([SettingsService], (service: SettingsService) => {
     service.set('experimental_features', true);

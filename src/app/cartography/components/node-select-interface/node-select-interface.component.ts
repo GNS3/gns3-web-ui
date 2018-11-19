@@ -1,8 +1,8 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, OnDestroy} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
-import {DomSanitizer} from "@angular/platform-browser";
-import {Node} from "../../../cartography/models/node";
-import {Port} from "../../../models/port";
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { MatMenuTrigger } from "@angular/material";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MapNode } from '../../models/map/map-node';
+import { MapPort } from '../../models/map/map-port';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   protected topPosition;
   protected leftPosition;
 
-  public node: Node;
+  public node: MapNode;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -35,13 +35,13 @@ export class NodeSelectInterfaceComponent implements OnInit {
     this.changeDetector.detectChanges();
   }
 
-  public open(node: Node, top: number, left: number) {
+  public open(node: MapNode, top: number, left: number) {
     this.node = node;
     this.setPosition(top, left);
     this.contextMenu.openMenu();
   }
 
-  public chooseInterface(port: Port) {
+  public chooseInterface(port: MapPort) {
     this.onChooseInterface.emit({
       'node': this.node,
       'port': port

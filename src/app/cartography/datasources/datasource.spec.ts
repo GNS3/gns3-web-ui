@@ -6,9 +6,9 @@ class Item {
 
 
 class TestDataSource extends DataSource<Item> {
-  protected findIndex(item: Item) {
-    return this.data.findIndex((i: Item) => i.id === item.id);
-  }
+  protected getItemKey(item: Item) {
+    return item.id;
+  };
 }
 
 

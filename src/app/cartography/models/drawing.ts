@@ -1,7 +1,6 @@
-import { Selectable } from "../managers/selection-manager";
 import { DrawingElement } from "./drawings/drawing-element";
 
-export class Drawing implements Selectable {
+export class Drawing {
   drawing_id: string;
   project_id: string;
   rotation: number;
@@ -9,6 +8,5 @@ export class Drawing implements Selectable {
   x: number;
   y: number;
   z: number;
-  is_selected = false;
   element: DrawingElement; // @todo; move to context
 }

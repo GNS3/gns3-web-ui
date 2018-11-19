@@ -1,7 +1,7 @@
 import { LayersManager } from "./layers-manager";
-import { Node } from "../models/node";
-import { Drawing } from "../models/drawing";
-import { Link } from "../../models/link";
+import { MapDrawing } from "../models/map/map-drawing";
+import { MapLink } from "../models/map/map-link";
+import { MapNode } from "../models/map/map-node";
 
 
 describe('LayersManager', () => {
@@ -12,9 +12,9 @@ describe('LayersManager', () => {
   });
 
   it('nodes should be added', () => {
-    const node_1 = new Node();
+    const node_1 = new MapNode();
     node_1.z = 1;
-    const node_2 = new Node();
+    const node_2 = new MapNode();
     node_2.z = 2;
 
     manager.setNodes([node_1, node_2]);
@@ -27,9 +27,9 @@ describe('LayersManager', () => {
   });
 
   it('drawings should be added', () => {
-    const drawing_1 = new Drawing();
+    const drawing_1 = new MapDrawing();
     drawing_1.z = 1;
-    const drawing_2 = new Drawing();
+    const drawing_2 = new MapDrawing();
     drawing_2.z = 2;
 
     manager.setDrawings([drawing_1, drawing_2]);
@@ -42,17 +42,17 @@ describe('LayersManager', () => {
   });
 
   it('links should be added', () => {
-    const node_1 = new Node();
+    const node_1 = new MapNode();
     node_1.z = 1;
 
-    const node_2 = new Node();
+    const node_2 = new MapNode();
     node_2.z = 2;
 
-    const link_1 = new Link();
+    const link_1 = new MapLink();
     link_1.source = node_1;
     link_1.target = node_1;
 
-    const link_2 = new Link();
+    const link_2 = new MapLink();
     link_2.source = node_1;
     link_2.target = node_1;
 
@@ -64,9 +64,9 @@ describe('LayersManager', () => {
   });
 
   it('layers should be cleared', () => {
-    const node_1 = new Node();
+    const node_1 = new MapNode();
     node_1.z = 1;
-    const node_2 = new Node();
+    const node_2 = new MapNode();
     node_2.z = 2;
 
     manager.setNodes([node_1, node_2]);

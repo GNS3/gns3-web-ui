@@ -4,8 +4,8 @@ import { select } from "d3-selection";
 
 import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
-import { Link } from "../../models/link";
 import { LinkStatus } from "../models/link-status";
+import { MapLink } from "../models/map/map-link";
 
 
 @Injectable()
@@ -13,8 +13,8 @@ export class InterfaceStatusWidget implements Widget {
   constructor() {}
 
   public draw(view: SVGSelection) {
-    view.each(function (this: SVGGElement, l: Link) {
-      const link_group = select<SVGGElement, Link>(this);
+    view.each(function (this: SVGGElement, l: MapLink) {
+      const link_group = select<SVGGElement, MapLink>(this);
       const link_path = link_group.select<SVGPathElement>('path');
 
       const start_point: SVGPoint = link_path.node().getPointAtLength(45);

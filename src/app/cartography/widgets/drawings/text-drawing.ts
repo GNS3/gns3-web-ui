@@ -2,14 +2,14 @@ import { Injectable } from "@angular/core";
 
 import { SVGSelection } from "../../models/types";
 import { TextElement } from "../../models/drawings/text-element";
-import { Drawing } from "../../models/drawing";
-import { DrawingWidget } from "./drawing-widget";
+import { DrawingShapeWidget } from "./drawing-shape-widget";
 import { FontFixer } from "../../helpers/font-fixer";
 import { select } from "d3-selection";
+import { MapDrawing } from "../../models/map/map-drawing";
 
 
 @Injectable()
-export class TextDrawingWidget implements DrawingWidget {
+export class TextDrawingWidget implements DrawingShapeWidget {
   static MARGIN = 4;
 
   constructor(
@@ -20,7 +20,7 @@ export class TextDrawingWidget implements DrawingWidget {
 
     const drawing = view
       .selectAll<SVGTextElement, TextElement>('text.text_element')
-        .data((d: Drawing) => {
+        .data((d: MapDrawing) => {
           return (d.element && d.element instanceof TextElement) ? [d.element] : [];
         });
 

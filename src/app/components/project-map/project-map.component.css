@@ -31,17 +31,14 @@ g.node:hover {
   left: 50%;
 }
 
-/*g.node text {*/
-  /*font-family: Roboto !important;*/
-/*}*/
-
-
 svg.map image:hover, svg.map image.chosen, g.selected {
   -webkit-filter: grayscale(100%);
   -moz-filter: grayscale(100%);
   -ms-filter: grayscale(100%);
   -o-filter: grayscale(100%);
   filter: grayscale(100%);
+  filter: gray;
+  filter: url("#grayscale"); /* Chrome doesn't support CSS filters on SVG */
 }
 
 path.selected {

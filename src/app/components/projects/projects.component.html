@@ -1,6 +1,10 @@
 <div class="content">
   <div class="default-header">
-    <h1>Projects</h1>
+    <div class="row">
+      <h1 class="col">Projects</h1>
+      <button class="col" mat-raised-button color="primary" (click)="addBlankProject()" class="add-button">Add blank project</button>
+      <button class="col" mat-raised-button color="primary" (click)="importProject()" class="import-button">Import project</button>
+    </div>
   </div>
   <div class="default-content">
 
@@ -33,6 +37,5 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
       </mat-table>
     </div>
-
   </div>
 </div>

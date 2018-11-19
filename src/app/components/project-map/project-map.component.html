@@ -10,8 +10,7 @@
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
     [draw-link-tool]="tools.draw_link"
-    (onNodeDragged)="onNodeDragged($event)"
-    (onLinkCreated)="onLinkCreated($event)"
+    [readonly]="inReadOnlyMode"
   ></app-map>
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
@@ -86,6 +85,5 @@
 <app-project-map-shortcuts 
   *ngIf="project"
   [project]="project"
-  [server]="server"
-  [selectionManager]="selectionManager">
+  [server]="server">
 </app-project-map-shortcuts>
