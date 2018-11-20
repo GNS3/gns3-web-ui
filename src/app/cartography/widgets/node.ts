@@ -44,6 +44,10 @@ export class NodeWidget implements Widget {
         .append<SVGTextElement>('text')
           .attr('class', 'label');
 
+    node_body_enter
+      .append<SVGRectElement>('rect')
+        .attr('class', 'label_selection');
+
     const node_body_merge = node_body.merge(node_body_enter)
         .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
         .on("contextmenu", function (n: MapNode, i: number) {
@@ -83,6 +87,7 @@ export class NodeWidget implements Widget {
   
     node_body_merge
       .select<SVGTextElement>('text.label')
+        .attr('label_id', (n: MapNode) => n.label.id)
         // .attr('y', (n: Node) => n.label.y - n.height / 2. + 10)  // @todo: server computes y in auto way
         .attr('style', (n: MapNode) => {
           let styles = this.cssFixer.fix(n.label.style);
@@ -107,6 +112,28 @@ export class NodeWidget implements Widget {
             return - n.height / 2. - bbox.height ;
           }
           return n.label.y + bbox.height - NodeWidget.NODE_LABEL_MARGIN;
+        })
+        .attr('transform', (node) => {
+          return `rotate(${node.label.rotation}, 0, 0)`;
+        })
+
+    node_body_merge
+      .select<SVGRectElement>('rect.label_selection')
+      .attr('visibility', (n: MapNode) => this.selectionManager.isSelected(n.label) ? 'visible' : 'hidden')
+        .attr('stroke', 'black')
+        .attr('stroke-dasharray', '3,3')
+        .attr('stroke-width', '0.5')
+        .attr('fill', 'none')
+        .each(function (this: SVGRectElement, node: MapNode) {
+          const current = select(this);
+          const textLabel = node_body_merge.select<SVGTextElement>(`text[label_id="${node.label.id}"]`);
+          const bbox = textLabel.node().getBBox();
+          const border = 2;
+
+          current.attr('width', bbox.width + border * 2);
+          current.attr('height', bbox.height + border * 2);
+          current.attr('x', bbox.x - border);
+          current.attr('y', bbox.y - border);
         });
   }
 }

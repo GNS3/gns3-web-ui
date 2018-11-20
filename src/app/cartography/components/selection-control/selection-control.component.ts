@@ -26,7 +26,7 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
       const selectedNodes = this.graphDataManager.getNodes().filter((node) => {
         return this.inRectangleHelper.inRectangle(rectangle, node.x, node.y)
       });
-  
+
       const selectedLinks = this.graphDataManager.getLinks().filter((link) => {
         return this.inRectangleHelper.inRectangle(rectangle, link.x, link.y)
       });
@@ -35,7 +35,18 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
         return this.inRectangleHelper.inRectangle(rectangle, drawing.x, drawing.y)
       });
   
-      const selected = [...selectedNodes, ...selectedLinks, ...selectedDrawings];
+      const selectedLabels = this.graphDataManager.getNodes().filter((node) => {
+        const labelX = node.x + node.label.x;
+        const labelY = node.y + node.label.y;
+        return this.inRectangleHelper.inRectangle(rectangle, labelX, labelY);
+      }).map((node) => node.label);
+
+      const selected = [
+        ...selectedNodes,
+        ...selectedLinks,
+        ...selectedDrawings,
+        ...selectedLabels
+      ];
   
       this.selectionManager.setSelected(selected);
     });

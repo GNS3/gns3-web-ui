@@ -23,7 +23,7 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
         mapNode.consoleHost = node.console_host;
         mapNode.firstPortName = node.first_port_name;
         mapNode.height = node.height;
-        mapNode.label = this.labelToMapLabel.convert(node.label);
+        mapNode.label = this.labelToMapLabel.convert(node.label, { node_id: node.node_id });
         mapNode.name = node.name;
         mapNode.nodeDirectory = node.node_directory;
         mapNode.nodeType = node.node_type;
