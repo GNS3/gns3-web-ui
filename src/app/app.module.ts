@@ -72,6 +72,7 @@ import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-
 import { MATERIAL_IMPORTS } from './material.imports';
 import { DrawingService } from './services/drawing.service';
 import { ProjectNameValidator } from './components/projects/models/projectNameValidator';
+import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 
 
 if (environment.production) {
@@ -113,6 +114,7 @@ if (environment.production) {
     LocalServerComponent,
     ProgressComponent,
     ServerDiscoveryComponent,
+    NodeSelectInterfaceComponent
   ],
   imports: [
     NgbModule.forRoot(),

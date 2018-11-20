@@ -1,0 +1,28 @@
+<svg:g
+  class="text_container"
+  [attr.transform]="transform"
+  width="100"
+  height="100"
+  >
+  <svg:rect
+    stroke-dasharray="3,3"
+    stroke-width="0.5"
+    fill="none"
+    stroke="black"
+    [attr.x]="rectX"
+    [attr.y]="rectY"
+    [attr.width]="rectWidth"
+    [attr.height]="rectHeight"
+  />
+
+  <svg:text
+    #textSvg
+    class="interface_label"
+    [attr.style]="sanitizedStyle"
+    [attr.x]="borderSize"
+    [attr.y]="-borderSize"
+  >
+    {{ text }}
+  </svg:text>
+</svg:g>
+

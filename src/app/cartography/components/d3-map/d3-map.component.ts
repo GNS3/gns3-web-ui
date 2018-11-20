@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter, Output
+  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter, Output, ViewChild
 } from '@angular/core';
 import { Selection, select } from 'd3-selection';
 
@@ -13,7 +13,6 @@ import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
-import { MapListeners } from '../../listeners/map-listeners';
 import { DrawingsWidget } from '../../widgets/drawings';
 import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
@@ -23,11 +22,11 @@ import { GraphDataManager } from '../../managers/graph-data-manager';
 
 
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  selector: 'app-d3-map',
+  templateUrl: './d3-map.component.html',
+  styleUrls: ['./d3-map.component.scss']
 })
-export class MapComponent implements OnInit, OnChanges, OnDestroy {
+export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
@@ -35,6 +34,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() width = 1500;
   @Input() height = 600;
+
+  @ViewChild('svg') svgRef: ElementRef;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -50,7 +51,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     private context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
-    private mapListeners: MapListeners,
     protected element: ElementRef,
     protected nodesWidget: NodesWidget,
     protected drawingsWidget: DrawingsWidget,
@@ -117,14 +117,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
         this.redraw();
       }
     });
-
-    this.mapListeners.onInit(this.svg);
   }
 
   ngOnDestroy() {
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
-    this.mapListeners.onDestroy();
   }
 
   public createGraph(domElement: HTMLElement) {
