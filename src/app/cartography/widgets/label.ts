@@ -105,7 +105,7 @@ export class LabelWidget implements Widget {
           return l.y + bbox.height - LabelWidget.NODE_LABEL_MARGIN;
         })
         .attr('transform', (l: MapLabel) => {
-          return `rotate(${l.rotation}, 0, 0)`;
+          return `rotate(${l.rotation}, ${l.x}, ${l.y})`;
         })
 
   label_body_merge
