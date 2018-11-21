@@ -125,6 +125,7 @@ export class LabelWidget implements Widget {
         current.attr('height', bbox.height + border * 2);
         current.attr('x', bbox.x - border);
         current.attr('y', bbox.y - border);
+        current.attr('transform', `rotate(${l.rotation}, ${bbox.x - border}, ${bbox.y - border})`);
       });
   }
 
