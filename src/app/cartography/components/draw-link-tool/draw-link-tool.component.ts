@@ -42,7 +42,7 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
     if (this.drawingLineTool.isDrawing()) {
       this.drawingLineTool.stop();
     }
-    this.onNodeClicked.unsubscribe();
+    // this.onNodeClicked.unsubscribe();
   }
 
   public onChooseInterface(event) {
