@@ -88,8 +88,13 @@ g.node text,
   height: 24px !important;
   font-size: 13px !important;
   padding: 0 6px;
+  outline: none !important;
 }
 
 .context-menu-items .mat-menu-item .mat-icon {
   margin-right: 3px;
+}
+
+.context-menu-items .mat-menu-item:focus {
+  background: none;
 }

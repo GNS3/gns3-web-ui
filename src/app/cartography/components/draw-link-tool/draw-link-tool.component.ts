@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { DrawingLineWidget } from '../../widgets/drawing-line';
 import { Subscription } from 'rxjs';
-import { NodeSelectInterfaceComponent } from '../node-select-interface/node-select-interface.component';
+// import { NodeSelectInterfaceComponent } from '../node-select-interface/node-select-interface.component';
 import { MapLinkCreated } from '../../events/links';
 import { NodeClicked } from '../../events/nodes';
 import { NodeWidget } from '../../widgets/node';
@@ -16,7 +16,7 @@ import { LinksEventSource } from '../../events/links-event-source';
   styleUrls: ['./draw-link-tool.component.scss']
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
-  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
+  // @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
   
   // @Output('linkCreated') linkCreated = new EventEmitter<MapLinkCreated>();
 
@@ -29,13 +29,13 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.onNodeClicked = this.nodeWidget.onNodeClicked.subscribe((eventNode: NodeClicked) => {
-        this.nodeSelectInterfaceMenu.open(
-          eventNode.node,
-          eventNode.event.clientY,
-          eventNode.event.clientX
-        );
-    });
+    // this.onNodeClicked = this.nodeWidget.onNodeClicked.subscribe((eventNode: NodeClicked) => {
+    //     this.nodeSelectInterfaceMenu.open(
+    //       eventNode.node,
+    //       eventNode.event.clientY,
+    //       eventNode.event.clientX
+    //     );
+    // });
   }
 
   ngOnDestroy() {

@@ -5,6 +5,7 @@ import { InterfaceLabel } from "../models/interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { select } from "d3-selection";
 import { MapLink } from "../models/map/map-link";
+import { FontFixer } from "../helpers/font-fixer";
 
 @Injectable()
 export class InterfaceLabelWidget {
@@ -13,7 +14,8 @@ export class InterfaceLabelWidget {
   private enabled = true;
 
   constructor(
-    private cssFixer: CssFixer
+    private cssFixer: CssFixer,
+    private fontFixer: FontFixer
   ) {
   }
 
@@ -85,7 +87,11 @@ export class InterfaceLabelWidget {
     merge
       .select<SVGTextElement>('text.interface_label')
         .text((l: InterfaceLabel) => l.text)
-        .attr('style', (l: InterfaceLabel) => this.cssFixer.fix(l.style))
+        .attr('style', (l: InterfaceLabel) => {
+          let styles = this.cssFixer.fix(l.style);
+          styles = this.fontFixer.fixStyles(styles);
+          return styles;
+        })
         .attr('x', -InterfaceLabelWidget.SURROUNDING_TEXT_BORDER)
         .attr('y', -InterfaceLabelWidget.SURROUNDING_TEXT_BORDER);
 

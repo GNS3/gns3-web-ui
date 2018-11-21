@@ -8,6 +8,7 @@ import { MapNode } from "../models/map/map-node";
 import { MapLink } from "../models/map/map-link";
 import { MapLinkNode } from "../models/map/map-link-node";
 import { MapLabel } from "../models/map/map-label";
+import { FontFixer } from "../helpers/font-fixer";
 
 
 describe('InterfaceLabelsWidget', () => {
@@ -67,7 +68,7 @@ describe('InterfaceLabelsWidget', () => {
       .exit()
         .remove();
 
-    widget = new InterfaceLabelWidget(new CssFixer());
+    widget = new InterfaceLabelWidget(new CssFixer(), new FontFixer());
   });
 
   afterEach(() => {

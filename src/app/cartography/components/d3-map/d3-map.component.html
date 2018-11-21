@@ -1,0 +1,14 @@
+<svg
+  #svg
+  class="map"
+  preserveAspectRatio="none"
+>
+  <filter id="grayscale">
+    <feColorMatrix id="feGrayscale" type="saturate" values="0"/>
+  </filter>
+</svg>
+
+<app-draw-link-tool *ngIf="drawLinkTool"></app-draw-link-tool>
+<app-selection-control></app-selection-control>
+<app-selection-select></app-selection-select>
+<app-draggable-selection [svg]="svg"></app-draggable-selection>

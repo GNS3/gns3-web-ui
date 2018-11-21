@@ -10,6 +10,7 @@ import { NodeService } from './node.service';
 import { Appliance } from '../models/appliance';
 import { Project } from '../models/project';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
+import { Label } from '../cartography/models/label';
 
 describe('NodeService', () => {
   let httpClient: HttpClient;
@@ -101,6 +102,35 @@ describe('NodeService', () => {
       'y': 20
     });
   }));
+
+  it('should update label of node', inject([NodeService], (service: NodeService) => {
+    const node = new Node();
+    node.project_id = "myproject";
+    node.node_id = "id";
+
+    const label = new Label();
+    label.rotation = 10;
+    label.style = "my style";
+    label.text = "my text";
+    label.x = 10;
+    label.y = 20;
+
+    service.updateLabel(server, node, label).subscribe();
+
+    const req = httpTestingController.expectOne(
+      'http://127.0.0.1:3080/v2/projects/myproject/nodes/id');
+    expect(req.request.method).toEqual("PUT");
+    expect(req.request.body).toEqual({
+      'label': {
+        'rotation': 10,
+        'style': 'my style',
+        'text': 'my text',
+        'x': 10,
+        'y': 20,
+      }
+    });
+  }));
+
 
   it('should update node', inject([NodeService], (service: NodeService) => {
     const node = new Node();

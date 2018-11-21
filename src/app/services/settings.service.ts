@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { PersistenceService, StorageType } from "angular-persistence";
-import { Subject } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 
 
 export interface Settings {
   crash_reports: boolean;
   experimental_features: boolean;
+  angular_map: boolean;
 }
 
 
@@ -14,7 +14,8 @@ export interface Settings {
 export class SettingsService {
   static DEFAULTS: Settings = {
     'crash_reports': true,
-    'experimental_features': false
+    'experimental_features': false,
+    'angular_map': false
   };
 
   private settingsSubject: BehaviorSubject<Settings>;
