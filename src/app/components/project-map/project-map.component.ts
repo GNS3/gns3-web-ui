@@ -28,7 +28,7 @@ import { MapChangeDetectorRef } from '../../cartography/services/map-change-dete
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { MapLinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
-import { DraggedDataEvent } from '../../cartography/events/event-source';
+import { DraggedDataEvent, ResizedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { NodesEventSource } from '../../cartography/events/nodes-event-source';
@@ -282,23 +282,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  private onDrawingResized(resizedEvent: DraggedDataEvent<MapDrawing>) {
-    console.log("ready to save");
-    
+  private onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
-    console.log(resizedEvent.datum.svg);
-
     let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
-    console.log(resizedEvent.datum);
-
-    /*
+    
     this.drawingService
-      .updatePosition(this.server, drawing, drawing.x, drawing.y)
+      .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
       .subscribe((serverDrawing: Drawing) => {
-        //this.drawingsDataSource.update(serverDrawing);
-        //<svg height="100" width="198"><rect fill="#ffffff" fill-opacity="1.0" height="100" stroke="#000000" stroke-width="2" width="198" /></svg>
-        console.log(serverDrawing.svg);
-      });*/
+        this.drawingsDataSource.update(serverDrawing);
+      });
   }
 
   public set readonly(value) {

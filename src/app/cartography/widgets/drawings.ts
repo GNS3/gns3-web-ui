@@ -81,6 +81,7 @@ export class DrawingsWidget implements Widget {
           (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += evt.dy/2;
           (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += evt.dy/2;
         }
+        
         datum.element.height = (datum.element.height + evt.dy) < 0 ? 1: datum.element.height += evt.dy;
         this.redrawDrawing(view, datum);
       })
@@ -123,6 +124,15 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
+
+        const evt = new ResizingEnd<MapDrawing>();
+        evt.x = datum.x;
+        evt.y = datum. y;
+        evt.width = datum.element.width;
+        evt.height = datum.element.height;
+        evt.datum = datum;
+
+        this.resizingFinished.emit(evt);
       });
 
     let x: number;
@@ -151,6 +161,15 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
+
+        const evt = new ResizingEnd<MapDrawing>();
+        evt.x = datum.x;
+        evt.y = datum. y;
+        evt.width = datum.element.width;
+        evt.height = datum.element.height;
+        evt.datum = datum;
+        
+        this.resizingFinished.emit(evt);
       });
 
     let left = drag()
@@ -169,6 +188,15 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
+
+        const evt = new ResizingEnd<MapDrawing>();
+        evt.x = datum.x;
+        evt.y = datum. y;
+        evt.width = datum.element.width;
+        evt.height = datum.element.height;
+        evt.datum = datum;
+
+        this.resizingFinished.emit(evt);
       });
 
     merge

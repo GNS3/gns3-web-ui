@@ -20,6 +20,15 @@ export class DrawingService {
       });
   }
 
+  updateSizeAndPosition(server: Server, drawing: Drawing, x: number, y: number, svg: string): Observable<Drawing> {
+    return this.httpServer
+      .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+        'svg': svg,
+        'x': x,
+        'y': y
+      })
+  }
+
   update(server: Server, drawing: Drawing): Observable<Drawing> {
     return this.httpServer
       .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
