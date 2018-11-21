@@ -36,6 +36,9 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
       });
   
       const selectedLabels = this.graphDataManager.getNodes().filter((node) => {
+        if (node.label === undefined) {
+          return false;
+        }
         const labelX = node.x + node.label.x;
         const labelY = node.y + node.label.y;
         return this.inRectangleHelper.inRectangle(rectangle, labelX, labelY);

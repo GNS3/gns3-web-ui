@@ -95,12 +95,6 @@ export class LabelWidget implements Widget {
           //   // center
           //   bbox = this.getBBox();
           //   return - n.height / 2. - bbox.height ;
-      // selected.filter((item) => item instanceof MapLabel).forEach((label: MapLabel) => {
-      //   label.x += evt.dx;
-      //   label.y += evt.dy;
-      //   console.log("test");
-      //   // this.drawingsWidget.redrawDrawing(svg, label);
-      // });
           // }
           return l.y + bbox.height - LabelWidget.NODE_LABEL_MARGIN;
         })
