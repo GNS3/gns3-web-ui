@@ -37,6 +37,7 @@ import { LinksEventSource } from '../../cartography/events/links-event-source';
 import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 import { SettingsService, Settings } from '../../services/settings.service';
+import { MapLabel } from '../../cartography/models/map/map-label';
 
 
 @Component({
@@ -161,6 +162,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
+      this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt))
+    );
+
+    this.subscriptions.push(
       this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt))
     );
 
@@ -240,6 +245,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.nodeService
       .updatePosition(this.server, node, node.x, node.y)
+      .subscribe((serverNode: Node) => {
+        this.nodesDataSource.update(serverNode);
+      });
+  }
+
+  private onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {
+    const node = this.nodesDataSource.get(draggedEvent.datum.nodeId);
+    node.label.x += draggedEvent.dx;
+    node.label.y += draggedEvent.dy;
+
+    this.nodeService
+      .updateLabel(this.server, node, node.label)
       .subscribe((serverNode: Node) => {
         this.nodesDataSource.update(serverNode);
       });

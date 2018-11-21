@@ -7,6 +7,7 @@ import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import {Appliance} from "../models/appliance";
+import { Label } from '../cartography/models/label';
 
 
 @Injectable()
@@ -39,6 +40,19 @@ export class NodeService {
                 .put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
                   'x': x,
                   'y': y
+                });
+  }
+
+  updateLabel(server: Server, node: Node, label: Label): Observable<Node> {
+    return this.httpServer
+                .put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+                  'label': {
+                    'rotation': label.rotation,
+                    'style': label.style,
+                    'text': label.text,
+                    'x': label.x,
+                    'y': label.y
+                  }
                 });
   }
 
