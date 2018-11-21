@@ -37,6 +37,7 @@ import { MapNode } from '../../cartography/models/map/map-node';
 import { LinksEventSource } from '../../cartography/events/links-event-source';
 import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
+import { MapDrawingToSvgConverter } from '../../cartography/converters/map/map-drawing-to-svg-converter';
 
 
 @Component({
@@ -60,6 +61,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     'selection': true,
     'moving': false,
     'draw_link': false
+  };
+
+  protected drawTools = {
+    'isRectangleChosen': false
   };
 
   private inReadOnlyMode = false;
@@ -89,7 +94,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private drawingsDataSource: DrawingsDataSource,
     private nodesEventSource: NodesEventSource,
     private drawingsEventSource: DrawingsEventSource,
-    private linksEventSource: LinksEventSource
+    private linksEventSource: LinksEventSource,
+    private mapDrawingToSvgConverter: MapDrawingToSvgConverter
   ) {}
 
   ngOnInit() {
@@ -162,6 +168,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt))
+    );
+
+    this.subscriptions.push(
+      this.drawingsEventSource.resized.subscribe((evt) => this.onDrawingResized(evt))
     );
 
     this.subscriptions.push(
@@ -272,6 +282,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
+  private onDrawingResized(resizedEvent: DraggedDataEvent<MapDrawing>) {
+    console.log("ready to save");
+    
+    const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
+    console.log(resizedEvent.datum.svg);
+
+    let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
+    console.log(resizedEvent.datum);
+
+    /*
+    this.drawingService
+      .updatePosition(this.server, drawing, drawing.x, drawing.y)
+      .subscribe((serverDrawing: Drawing) => {
+        //this.drawingsDataSource.update(serverDrawing);
+        //<svg height="100" width="198"><rect fill="#ffffff" fill-opacity="1.0" height="100" stroke="#000000" stroke-width="2" width="198" /></svg>
+        console.log(serverDrawing.svg);
+      });*/
+  }
+
   public set readonly(value) {
     this.inReadOnlyMode = value;
     if (value) {
@@ -296,8 +325,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.tools.draw_link = !this.tools.draw_link;
   }
 
+  public onRectangleCreated(rectangleCreated: any) {
+    this.drawTools.isRectangleChosen = false;
+  }
+
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
+  }
+
+  public drawRectangle() {
+    this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
   }
 
   public ngOnDestroy() {

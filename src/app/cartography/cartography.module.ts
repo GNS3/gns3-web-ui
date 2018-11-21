@@ -5,6 +5,7 @@ import { MatMenuModule, MatIconModule } from '@angular/material';
 import { MapComponent } from './components/map/map.component';
 import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
 import { NodeSelectInterfaceComponent } from './components/node-select-interface/node-select-interface.component';
+import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.components';
 
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
@@ -20,6 +21,7 @@ import { MapListeners } from './listeners/map-listeners';
 import { DraggableListener } from './listeners/draggable-listener';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { NodesEventSource } from './events/nodes-event-source';
+import { MapDrawingToSvgConverter } from './converters/map/map-drawing-to-svg-converter';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
 import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
 import { LinkToMapLinkConverter } from './converters/map/link-to-map-link-converter';
@@ -50,7 +52,8 @@ import { LinksEventSource } from './events/links-event-source';
   declarations: [
     MapComponent,
     DrawLinkToolComponent,
-    NodeSelectInterfaceComponent
+    NodeSelectInterfaceComponent,
+    DrawingResizingComponent
   ],
   providers: [
     CssFixer,
@@ -69,6 +72,7 @@ import { LinksEventSource } from './events/links-event-source';
     DrawingsEventSource,
     NodesEventSource,
     LinksEventSource,
+    MapDrawingToSvgConverter,
     DrawingToMapDrawingConverter,
     LabelToMapLabelConverter,
     LinkToMapLinkConverter,

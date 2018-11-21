@@ -19,7 +19,7 @@ export class RectDrawingWidget implements DrawingShapeWidget {
         .data((d: MapDrawing) => {
           return (d.element && d.element instanceof RectElement) ? [d.element] : [];
         });
-
+        
     const drawing_enter = drawing
       .enter()
         .append<SVGRectElement>('rect')

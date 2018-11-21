@@ -6,4 +6,5 @@ import { MapDrawing } from "../models/map/map-drawing";
 @Injectable()
 export class DrawingsEventSource {
   public dragged = new EventEmitter<DraggedDataEvent<MapDrawing>>();
+  public resized = new EventEmitter<DraggedDataEvent<MapDrawing>>();
 }

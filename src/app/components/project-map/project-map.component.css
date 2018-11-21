@@ -18,6 +18,69 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+.draw-menu{
+  position: fixed;
+  background: transparent;
+  top: 20px;
+  left: 92px;
+  width: 320px !important;
+  height: 72px !important;
+}
+
+.draw-menu2{
+  position: fixed;
+  background: transparent;
+  top: 20px;
+  left: 92px;
+  width: 320px !important;
+  height: 72px !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.draw-menu button{
+  outline: none;
+}
+
+.drawer-container{
+  height: 72px !important;
+  background: transparent;
+}
+
+.drawer{
+  width: 320px !important;
+  height: 72px !important;
+  background:#263238;
+}
+
+.drawer-content{
+  background: transparent;
+}
+
+.drawer-button{
+  height: 72px;
+  width: 64px!important;
+  background: #263238;
+  padding: 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+
+.drawer-arrow-button{
+  width: 40px;
+  height: 72px;
+  padding-top: 16px;
+  background:#263238;
+  position: fixed;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.drawer-buttons{
+  background:#263238;
+  padding-top: 16px;
+  height: 72px;
+}
+
 .project-toolbar .mat-toolbar-multiple-rows {
   width: auto !important;
 }
@@ -39,6 +102,10 @@ svg.map image:hover, svg.map image.chosen, g.selected {
   filter: grayscale(100%);
   filter: gray;
   filter: url("#grayscale"); /* Chrome doesn't support CSS filters on SVG */
+}
+
+g.selected line {
+  stroke: black;
 }
 
 path.selected {
