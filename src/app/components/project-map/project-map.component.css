@@ -81,6 +81,10 @@ g.node:hover {
   height: 72px;
 }
 
+.selected{
+  stroke: #263238;
+}
+
 .project-toolbar .mat-toolbar-multiple-rows {
   width: auto !important;
 }

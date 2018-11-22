@@ -53,7 +53,7 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private graphDataManager: GraphDataManager,
-    private context: Context,
+    public context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
     private mapListeners: MapListeners,
@@ -89,7 +89,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('draw-link-tool') drawLinkTool: boolean;
 
-  @Input('is-rectangle-chosen') isRectangleChosen: boolean;
+  //@Input('drawing-selected') selectedDrawing: string;
+  public drawingSelected = "";
 
   @Input('readonly') set readonly(value) {
     this.nodesWidget.draggingEnabled = !value;
@@ -104,14 +105,14 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       (changes['nodes'] && !changes['nodes'].isFirstChange()) ||
       (changes['links'] && !changes['links'].isFirstChange()) ||
       (changes['symbols'] && !changes['symbols'].isFirstChange() ||
-      (changes['isRectangleChosen'] && !changes['isRectangleChosen'].isFirstChange()))
+      (changes['drawing-selected'] && !changes['drawing-selected'].isFirstChange()))
     ) {
       if (this.svg.empty && !this.svg.empty()) {
         if (changes['symbols']) {
           this.onSymbolsChange(changes['symbols']);
         }
-        if (changes['isRectangleChosen']){
-          this.onDrawingRectangleActive();
+        if (changes['drawing-selected']){
+          this.onDrawingSelected();
         }
         this.changeLayout();
       }
@@ -159,7 +160,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.redraw();
   }
 
-
   private onSymbolsChange(change: SimpleChange) {
     this.graphDataManager.setSymbols(this.symbols);
   }
@@ -171,41 +171,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.draw(this.svg, this.context);
   }
 
-  private onDrawingRectangleActive(){
-    var map = document.getElementsByClassName('map')[0];
-    console.log(this.drawings);
-
-    map.addEventListener('click', (event: MouseEvent) => {
-      console.log(event);
-
-      this.svg.select('g.drawings')
-        .append<SVGElement>('g')
-        .attr("class", 'drawing')
-        .append<SVGGElement>('g')
-        .attr("class", 'drawing_body')
-        .attr('transform', `translate(${event.clientX-1000},${event.clientY-500}) rotate(0)`)
-        .append<SVGRectElement>('rect')
-        .attr('class', 'rect_element noselect')
-        .attr('fill', '#ffffff')
-        .attr('fill-opacity', '1')
-        .attr('stroke', '#000000')
-        .attr('stroke-width', 2)
-        .attr('width', 200)
-        .attr('height', 100);
-
-      let newRectangle = new Drawing;
-      /*drawing_id: string;
-      project_id: string;
-      rotation: number;
-      svg: string;
-      x: number;
-      y: number;
-      z: number;
-      is_selected = false;
-      element: DrawingElement;*/
-
-      //this.onRectangleCreated.emit(null);
-    }, {once : true});
+  private onDrawingSelected(){
+    this.context.getZeroZeroTransformationPoint().y;
   }
 
   @HostListener('window:resize', ['$event'])

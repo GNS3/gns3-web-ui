@@ -70,19 +70,50 @@ export class DrawingsWidget implements Widget {
       this.draggable.call(merge);
     }
 
+    let y: number;
+    let dy: number;
+    let topEdge: number;
+    let isReflected: boolean = false;
     let bottom = drag()
       .on('start', (datum: MapDrawing) => {
-        document.body.style.cursor = "ns-resize";
+        document.body.style.cursor = "ns-resize"; 
+        topEdge = datum.y; 
       })
       .on('drag', (datum: MapDrawing) => {
         const evt = event;
+        console.log("bottom drag event ", evt);
 
-        if (datum.element instanceof EllipseElement){
-          (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += evt.dy/2;
-          (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += evt.dy/2;
+        if (!isReflected) {
+          if ((datum.element.height + evt.dy) < 0) {
+            isReflected = true;
+            y = topEdge;
+            datum.element.height = Math.abs(datum.element.height + evt.dy);
+          } else {
+            datum.element.height += evt.dy;
+
+            if (datum.element instanceof EllipseElement){
+              (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += evt.dy/2;
+              (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += evt.dy/2;
+            }
+          }
+        } else {
+          dy =  y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
+          y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+          
+          if ((datum.element.height + dy) < 0){
+            y = topEdge;
+            isReflected = false;
+            datum.element.height = Math.abs(datum.element.height + evt.dy);
+          } else {
+            datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+            datum.element.height += dy;
+            if (datum.element instanceof EllipseElement) {
+              (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += dy/2;
+              (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += dy/2;
+            }
+          }
         }
-        
-        datum.element.height = (datum.element.height + evt.dy) < 0 ? 1: datum.element.height += evt.dy;
+
         this.redrawDrawing(view, datum);
       })
       .on('end', (datum: MapDrawing) => {
@@ -98,30 +129,53 @@ export class DrawingsWidget implements Widget {
         this.resizingFinished.emit(evt);
       });
 
-    let y: number;
-    let dy: number;
+    //let y: number;
+    //let dy: number;
+    let bottomEdge: number;
+    //let isReflected: boolean = false;
     let top = drag()
-      .on('start', () => {
+      .on('start', (datum: MapDrawing) => {
         y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        bottomEdge = y + datum.element.height;
         document.body.style.cursor = "ns-resize";
       })
-      .on('drag', (datum: MapDrawing) => {
-        const evt = event;
-        dy =  y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
-        y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
-        
-        if ((datum.element.height + dy) < 0){
-          datum.element.height = 1;
-        } else {
-          datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
-          datum.element.height += dy;
-          if (datum.element instanceof EllipseElement) {
-            (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += dy/2;
-            (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += dy/2;
-          }
-        }
-        this.redrawDrawing(view, datum);
-      })
+      // .on('drag', (datum: MapDrawing) => {
+      //   const evt = event;
+
+      //   if (!isReflected) {
+      //     dy =  y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
+      //     y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+      //     console.log(y);
+
+      //     if ((datum.element.height + dy) < 0){
+      //       y = bottomEdge;
+      //       isReflected = true;
+      //       datum.element.height = Math.abs(datum.element.height + evt.dy);
+      //     } else {
+      //       datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+      //       datum.element.height += dy;
+      //       if (datum.element instanceof EllipseElement) {
+      //         (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += dy/2;
+      //         (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += dy/2;
+      //       }
+      //     }
+      //   } else {
+      //     if ((datum.element.height + evt.dy) < 0) {
+      //       isReflected = false;
+      //       y = bottomEdge;
+      //       datum.element.height = Math.abs(datum.element.height + evt.dy);
+      //     } else {
+      //       datum.element.height += evt.dy;
+
+      //       if (datum.element instanceof EllipseElement){
+      //         (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += evt.dy/2;
+      //         (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += evt.dy/2;
+      //       }
+      //     }
+      //   }
+
+      //   this.redrawDrawing(view, datum);
+      //})
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
 
@@ -132,7 +186,7 @@ export class DrawingsWidget implements Widget {
         evt.height = datum.element.height;
         evt.datum = datum;
 
-        this.resizingFinished.emit(evt);
+        //this.resizingFinished.emit(evt);
       });
 
     let x: number;

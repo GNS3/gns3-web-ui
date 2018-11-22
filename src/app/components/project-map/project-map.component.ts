@@ -38,6 +38,11 @@ import { LinksEventSource } from '../../cartography/events/links-event-source';
 import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 import { MapDrawingToSvgConverter } from '../../cartography/converters/map/map-drawing-to-svg-converter';
+import { DrawingElement } from '../../cartography/models/drawings/drawing-element';
+import { RectElement } from '../../cartography/models/drawings/rect-element';
+import { EllipseElement } from '../../cartography/models/drawings/ellipse-element';
+import { LineElement } from '../../cartography/models/drawings/line-element';
+import { EventListener } from '@angular/core/src/debug/debug_node';
 
 
 @Component({
@@ -64,8 +69,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected drawTools = {
-    'isRectangleChosen': false
+    'isRectangleChosen': false,
+    'isEllipseChosen': false,
+    'isLineChosen': false
   };
+
+  protected selectedDrawing: string;
 
   private inReadOnlyMode = false;
 
@@ -285,6 +294,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
     let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
+    console.log(svgString);
     
     this.drawingService
       .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
@@ -318,15 +328,110 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onRectangleCreated(rectangleCreated: any) {
-    this.drawTools.isRectangleChosen = false;
+    //this.drawTools.isRectangleChosen = false;
   }
 
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
   }
 
-  public drawRectangle() {
-    this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
+  public addDrawing(selectedObject: string) {
+    switch (selectedObject) {
+      case "rectangle":
+        this.drawTools.isEllipseChosen = false;
+        this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
+        this.drawTools.isLineChosen = false;
+        break;
+      case "ellipse":
+        this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
+        this.drawTools.isRectangleChosen = false;
+        this.drawTools.isLineChosen = false;
+        break;
+      case "line":
+        this.drawTools.isEllipseChosen = false;
+        this.drawTools.isRectangleChosen = false;
+        this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
+        break;
+    }
+    console.log(this.drawTools);
+
+    this.selectedDrawing = selectedObject;
+    var map = document.getElementsByClassName('map')[0];
+
+    let mapDrawing: MapDrawing = this.getDrawingMock(selectedObject);
+    let context = this.mapChild.context;
+    let converter = this.mapDrawingToSvgConverter;
+    console.log(mapDrawing);
+
+    function listener(event: MouseEvent) {
+      let x = event.clientX - context.getZeroZeroTransformationPoint().x;
+      let y = event.clientY - context.getZeroZeroTransformationPoint().y;
+      let svg = converter.convert(mapDrawing);
+      console.log(svg);
+
+      // this.drawingService
+      //   .add(this.server, this.project.project_id, x, y, svg)
+      //   .subscribe((serverDrawing: Drawing) => {
+      //     this.drawingsDataSource.add(serverDrawing);
+      //   });
+      //   this.resetDrawToolChoice();
+    }
+
+    map.removeEventListener('click', listener, true);
+    //let ev = new EventListener('click', listener);
+    map.addEventListener('click', listener, {once : true});
+  }
+
+  public resetDrawToolChoice(){
+    this.drawTools.isRectangleChosen = false;
+    this.drawTools.isEllipseChosen = false;
+    this.drawTools.isLineChosen = false;
+  }
+
+  public getDrawingMock(objectType: string): MapDrawing {
+    let drawingElement: DrawingElement;
+
+    switch (objectType) {
+      case "rectangle":
+        let rect = new RectElement();
+        rect.fill = "#ffffff";
+        rect.fill_opacity = 1.0;
+        rect.stroke = "#000000";
+        rect.stroke_width = 2;
+        rect.width = 200;
+        rect.height = 100;
+        drawingElement = rect;
+        break;
+      case "ellipse":
+        let ellipse = new EllipseElement();
+        ellipse.fill = "#ffffff";
+        ellipse.fill_opacity = 1.0;
+        ellipse.stroke = "#000000";
+        ellipse.stroke_width = 2;
+        ellipse.cx = 100;
+        ellipse.cy = 100;
+        ellipse.rx = 100;
+        ellipse.ry = 100;
+        ellipse.width = 200;
+        ellipse.height = 200;
+        drawingElement = ellipse;
+        break;
+      case "line":
+        let line = new LineElement();
+        line.stroke = "#000000";
+        line.stroke_width = 2;
+        line.x1 = 0;
+        line.x2 = 200;
+        line.y1 = 0;
+        line.y2 = 0;
+        line.width = 100;
+        line.height = 0;
+        drawingElement = line;
+    }
+
+    let mapDrawing = new MapDrawing();
+    mapDrawing.element = drawingElement;
+    return mapDrawing;
   }
 
   public ngOnDestroy() {

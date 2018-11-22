@@ -11,7 +11,6 @@
     [moving-tool]="tools.moving"
     [draw-link-tool]="tools.draw_link"
     [readonly]="inReadOnlyMode"
-    [is-rectangle-chosen]="drawTools.isRectangleChosen"
     (nodeDragged)="onNodeDragged($event)"
     (drawingDragged)="onDrawingDragged($event)"
     (onLinkCreated)="onLinkCreated($event)"
@@ -89,18 +88,15 @@
           <button mat-icon-button class="drawer-button">
             <mat-icon>picture_in_picture</mat-icon>
           </button>
-          <button mat-icon-button class="drawer-button" (click)="drawRectangle()">
+          <button mat-icon-button class="drawer-button" [color]="drawTools.isRectangleChosen ? 'primary': 'basic'" (click)="addDrawing('rectangle')">
             <mat-icon>crop_3_2</mat-icon>
           </button>
-          <button mat-icon-button class="drawer-button">
+          <button mat-icon-button class="drawer-button" [color]="drawTools.isEllipseChosen ? 'primary': 'basic'" (click)="addDrawing('ellipse')">
             <mat-icon>panorama_fish_eye</mat-icon>
-            <!-- <svg height="72" width="64">
-              <circle cx="32" cy="36" r="20" stroke="white" stroke-width="2" fill="transparent"/>
-            </svg> -->
           </button>
-          <button mat-icon-button class="drawer-button">
+          <button mat-icon-button class="drawer-button" (click)="addDrawing('line')">
             <svg height="40" width="40">
-              <line x1="30" y1="10" x2="10" y2="30" style="stroke:white;stroke-width:2" />
+              <line [ngClass]="{active: drawTools.isLineChosen}" x1="30" y1="10" x2="10" y2="30" style="stroke:white;stroke-width:2" />
             </svg>
           </button>
           <button mat-icon-button class="drawer-arrow-button" (click)="drawer.toggle()">
