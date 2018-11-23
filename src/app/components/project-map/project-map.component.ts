@@ -42,7 +42,6 @@ import { DrawingElement } from '../../cartography/models/drawings/drawing-elemen
 import { RectElement } from '../../cartography/models/drawings/rect-element';
 import { EllipseElement } from '../../cartography/models/drawings/ellipse-element';
 import { LineElement } from '../../cartography/models/drawings/line-element';
-import { EventListener } from '@angular/core/src/debug/debug_node';
 
 
 @Component({
@@ -59,7 +58,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   project: Project;
   public server: Server;
-
+  private drawListener: Function;
   private ws: Subject<any>;
 
   protected tools = {
@@ -327,15 +326,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.tools.draw_link = !this.tools.draw_link;
   }
 
-  public onRectangleCreated(rectangleCreated: any) {
-    //this.drawTools.isRectangleChosen = false;
-  }
-
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
   }
 
   public addDrawing(selectedObject: string) {
+    if (selectedObject === this.selectedDrawing){
+      var map = document.getElementsByClassName('map')[0];
+      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
+      this.resetDrawToolChoice();
+      return;
+    }
+
     switch (selectedObject) {
       case "rectangle":
         this.drawTools.isEllipseChosen = false;
@@ -353,39 +355,40 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
         break;
     }
-    console.log(this.drawTools);
 
     this.selectedDrawing = selectedObject;
     var map = document.getElementsByClassName('map')[0];
-
     let mapDrawing: MapDrawing = this.getDrawingMock(selectedObject);
-    let context = this.mapChild.context;
-    let converter = this.mapDrawingToSvgConverter;
-    console.log(mapDrawing);
 
-    function listener(event: MouseEvent) {
-      let x = event.clientX - context.getZeroZeroTransformationPoint().x;
-      let y = event.clientY - context.getZeroZeroTransformationPoint().y;
-      let svg = converter.convert(mapDrawing);
-      console.log(svg);
+    let listener = (event: MouseEvent) => {
+      let x = event.clientX - this.mapChild.context.getZeroZeroTransformationPoint().x;
+      let y = event.clientY - this.mapChild.context.getZeroZeroTransformationPoint().y;
+      let svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-      // this.drawingService
-      //   .add(this.server, this.project.project_id, x, y, svg)
-      //   .subscribe((serverDrawing: Drawing) => {
-      //     this.drawingsDataSource.add(serverDrawing);
-      //   });
-      //   this.resetDrawToolChoice();
+      this.drawingService
+        .add(this.server, this.project.project_id, x, y, svg)
+        .subscribe((serverDrawing: Drawing) => {
+          this.drawingsDataSource.add(serverDrawing);
+        });
+        this.resetDrawToolChoice();
     }
 
-    map.removeEventListener('click', listener, true);
-    //let ev = new EventListener('click', listener);
-    map.addEventListener('click', listener, {once : true});
+    map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
+    this.drawListener = listener;
+    map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
   }
 
   public resetDrawToolChoice(){
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
+    this.selectedDrawing = "";
+  }
+
+  public hideMenu(){
+    var map = document.getElementsByClassName('map')[0];
+    map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
+    this.resetDrawToolChoice();
   }
 
   public getDrawingMock(objectType: string): MapDrawing {

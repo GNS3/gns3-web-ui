@@ -104,15 +104,11 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       (changes['drawings'] && !changes['drawings'].isFirstChange()) ||
       (changes['nodes'] && !changes['nodes'].isFirstChange()) ||
       (changes['links'] && !changes['links'].isFirstChange()) ||
-      (changes['symbols'] && !changes['symbols'].isFirstChange() ||
-      (changes['drawing-selected'] && !changes['drawing-selected'].isFirstChange()))
+      (changes['symbols'] && !changes['symbols'].isFirstChange())
     ) {
       if (this.svg.empty && !this.svg.empty()) {
         if (changes['symbols']) {
           this.onSymbolsChange(changes['symbols']);
-        }
-        if (changes['drawing-selected']){
-          this.onDrawingSelected();
         }
         this.changeLayout();
       }
@@ -169,10 +165,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setLinks(this.links);
     this.graphDataManager.setDrawings(this.drawings);
     this.graphLayout.draw(this.svg, this.context);
-  }
-
-  private onDrawingSelected(){
-    this.context.getZeroZeroTransformationPoint().y;
   }
 
   @HostListener('window:resize', ['$event'])
