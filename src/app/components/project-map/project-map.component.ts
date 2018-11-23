@@ -104,7 +104,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodesEventSource: NodesEventSource,
     private drawingsEventSource: DrawingsEventSource,
     private linksEventSource: LinksEventSource,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter
+    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private settingsService: SettingsService,
   ) {}
 
@@ -312,7 +312,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
     let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
-    console.log(svgString);
     
     this.drawingService
       .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)

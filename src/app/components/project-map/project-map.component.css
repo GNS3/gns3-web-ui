@@ -108,7 +108,7 @@ svg.map image:hover, svg.map image.chosen, g.selected {
 }
 
 g.selected line {
-  stroke: black;
+  stroke: transparent;
 }
 
 path.selected {

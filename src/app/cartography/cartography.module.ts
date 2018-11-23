@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatIconModule } from '@angular/material';
 
 import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
-import { NodeSelectInterfaceComponent } from './components/node-select-interface/node-select-interface.component';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.components';
 
 import { CssFixer } from './helpers/css-fixer';

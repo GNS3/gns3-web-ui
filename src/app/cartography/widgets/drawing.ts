@@ -9,8 +9,6 @@ import { RectDrawingWidget } from "./drawings/rect-drawing";
 import { LineDrawingWidget } from "./drawings/line-drawing";
 import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
 import { MapDrawing } from "../models/map/map-drawing";
-import { drag } from "d3-drag";
-import { event } from "d3-selection";
 import { SelectionManager } from "../managers/selection-manager";
 
 @Injectable()
@@ -67,8 +65,6 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.top')
         .attr('stroke', 'transparent')
         .attr('stroke-width', '8px')
-        // .attr('stroke-dashoffset', '0')
-        // .attr('stroke-dasharray', '3')
         .attr('x1', '0')
         .attr('x2', (drawing) => drawing.element.width)
         .attr('y1', '0')
@@ -80,8 +76,6 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.bottom')
         .attr('stroke', 'transparent')
         .attr('stroke-width', '8px')
-        // .attr('stroke-dashoffset', '0')
-        // .attr('stroke-dasharray', '3')
         .attr('x1', '0')
         .attr('x2', (drawing) => drawing.element.width)
         .attr('y1', (drawing) => drawing.element.height)
@@ -93,8 +87,6 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.right')
         .attr('stroke', 'transparent')
         .attr('stroke-width', '8px')
-        // .attr('stroke-dashoffset', '0')
-        // .attr('stroke-dasharray', '3')
         .attr('x1', '0')
         .attr('x2', '0')
         .attr('y1', '0')
@@ -106,8 +98,6 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.left')
         .attr('stroke', 'transparent')
         .attr('stroke-width', '8px')
-        // .attr('stroke-dashoffset', '0')
-        // .attr('stroke-dasharray', '3')
         .attr('x1', (drawing) => drawing.element.width)
         .attr('x2', (drawing) => drawing.element.width)
         .attr('y1', '0')
