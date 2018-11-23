@@ -5,6 +5,7 @@ import { Subject } from "rxjs";
 import { SVGSelection } from "../models/types";
 import { Context } from "../models/context";
 import { Rectangle } from "../models/rectangle";
+import { SelectionEventSource } from "../events/selection-event-source";
 
 
 @Injectable()
@@ -15,11 +16,10 @@ export class SelectionTool {
 
   private path;
   private enabled = false;
-  private needsDeactivate = false;
-  private needsActivate = false;
 
   public constructor(
-    private context: Context
+    private context: Context,
+    private selectionEventSource: SelectionEventSource
   ) {}
 
   public setEnabled(enabled) {
@@ -107,7 +107,7 @@ export class SelectionTool {
     const y = Math.min(start[1], end[1]);
     const width = Math.abs(start[0] - end[0]);
     const height = Math.abs(start[1] - end[1]);
-    this.rectangleSelected.next(new Rectangle(x, y, width, height));
+    this.selectionEventSource.selected.next(new Rectangle(x, y, width, height));
   }
 
   private rect(x: number, y: number, w: number, h: number) {

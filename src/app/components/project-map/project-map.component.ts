@@ -9,7 +9,6 @@ import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
 import { SymbolService } from '../../services/symbol.service';
 import { Link } from "../../models/link";
-import { MapComponent } from "../../cartography/components/map/map.component";
 import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
 import { Server } from "../../models/server";
@@ -42,6 +41,9 @@ import { DrawingElement } from '../../cartography/models/drawings/drawing-elemen
 import { RectElement } from '../../cartography/models/drawings/rect-element';
 import { EllipseElement } from '../../cartography/models/drawings/ellipse-element';
 import { LineElement } from '../../cartography/models/drawings/line-element';
+import { SettingsService, Settings } from '../../services/settings.service';
+import { MapLabel } from '../../cartography/models/map/map-label';
+import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 
 
 @Component({
@@ -66,6 +68,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     'moving': false,
     'draw_link': false
   };
+  protected settings: Settings;
 
   protected drawTools = {
     'isRectangleChosen': false,
@@ -77,12 +80,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private inReadOnlyMode = false;
 
-  @ViewChild(MapComponent) mapChild: MapComponent;
-
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
+  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
 
   private subscriptions: Subscription[] = [];
-
   constructor(
     private route: ActivatedRoute,
     private serverService: ServerService,
@@ -104,11 +105,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private drawingsEventSource: DrawingsEventSource,
     private linksEventSource: LinksEventSource,
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter
+    private settingsService: SettingsService,
   ) {}
 
   ngOnInit() {
+    this.settings = this.settingsService.getAll();
+    
     this.progressService.activate();
-
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const server_id = parseInt(paramMap.get('server_id'), 10);
 
@@ -172,6 +175,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.nodesEventSource.dragged.subscribe((evt) => this.onNodeDragged(evt))
+    );
+
+    this.subscriptions.push(
+      this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt))
     );
 
     this.subscriptions.push(
@@ -258,6 +265,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.nodeService
       .updatePosition(this.server, node, node.x, node.y)
+      .subscribe((serverNode: Node) => {
+        this.nodesDataSource.update(serverNode);
+      });
+  }
+
+  private onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {
+    const node = this.nodesDataSource.get(draggedEvent.datum.nodeId);
+    node.label.x += draggedEvent.dx;
+    node.label.y += draggedEvent.dy;
+
+    this.nodeService
+      .updateLabel(this.server, node, node.label)
       .subscribe((serverNode: Node) => {
         this.nodesDataSource.update(serverNode);
       });

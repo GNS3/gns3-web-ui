@@ -1,5 +1,6 @@
 <div *ngIf="project" class="project-map">
-  <app-map
+  <app-d3-map
+    *ngIf="!settings.angular_map"
     [symbols]="symbols"
     [nodes]="nodes"
     [links]="links"
@@ -15,7 +16,23 @@
     (drawingDragged)="onDrawingDragged($event)"
     (onLinkCreated)="onLinkCreated($event)"
     (onDrawingResized)="onDrawingResized($event)"
-  ></app-map>
+  ></app-d3-map>
+
+  <app-experimental-map
+    *ngIf="settings.angular_map"
+    [symbols]="symbols"
+    [nodes]="nodes"
+    [links]="links"
+    [drawings]="drawings"
+    [width]="project.scene_width"
+    [height]="project.scene_height"
+    [show-interface-labels]="project.show_interface_labels"
+    [selection-tool]="tools.selection"
+    [moving-tool]="tools.moving"
+    [draw-link-tool]="tools.draw_link"
+    [readonly]="inReadOnlyMode"
+  ></app-experimental-map>
+
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
 

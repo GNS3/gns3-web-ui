@@ -23,8 +23,13 @@ export class SelectionManager {
 
     this.selection = dictItems;
 
-    this.selected.emit(selected);
-    this.unselected.emit(unselected);
+    if (selected.length > 0) {
+      this.selected.emit(selected);
+    }
+    
+    if (unselected.length > 0) {
+      this.unselected.emit(unselected);
+    }
   }
 
   public getSelected(): Indexed[] {

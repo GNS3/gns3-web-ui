@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatIconModule } from '@angular/material';
 
-import { MapComponent } from './components/map/map.component';
 import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
 import { NodeSelectInterfaceComponent } from './components/node-select-interface/node-select-interface.component';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.components';
@@ -15,10 +14,9 @@ import { QtDasharrayFixer } from './helpers/qt-dasharray-fixer';
 import { LayersManager } from './managers/layers-manager';
 import { MapChangeDetectorRef } from './services/map-change-detector-ref';
 import { Context } from './models/context';
+import { ANGULAR_MAP_DECLARATIONS } from './angular-map.imports';
 import { D3_MAP_IMPORTS } from './d3-map.imports';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
-import { MapListeners } from './listeners/map-listeners';
-import { DraggableListener } from './listeners/draggable-listener';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { NodesEventSource } from './events/nodes-event-source';
 import { MapDrawingToSvgConverter } from './converters/map/map-drawing-to-svg-converter';
@@ -37,10 +35,14 @@ import { PortToMapPortConverter } from './converters/map/port-to-map-port-conver
 import { SymbolToMapSymbolConverter } from './converters/map/symbol-to-map-symbol-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
 import { GraphDataManager } from './managers/graph-data-manager';
-import { SelectionUpdateListener } from './listeners/selection-update-listener';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from './datasources/map-datasource';
-import { SelectionListener } from './listeners/selection-listener';
 import { LinksEventSource } from './events/links-event-source';
+import { D3MapComponent } from './components/d3-map/d3-map.component';
+import { ExperimentalMapComponent } from './components/experimental-map/experimental-map.component';
+import { SelectionEventSource } from './events/selection-event-source';
+import { SelectionControlComponent } from './components/selection-control/selection-control.component';
+import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
+import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 
 
 @NgModule({
@@ -50,10 +52,14 @@ import { LinksEventSource } from './events/links-event-source';
     MatIconModule
   ],
   declarations: [
-    MapComponent,
+    D3MapComponent,
+    ExperimentalMapComponent,
     DrawLinkToolComponent,
-    NodeSelectInterfaceComponent,
-    DrawingResizingComponent
+    DrawingResizingComponent,
+    ...ANGULAR_MAP_DECLARATIONS,
+    SelectionControlComponent,
+    SelectionSelectComponent,
+    DraggableSelectionComponent
   ],
   providers: [
     CssFixer,
@@ -65,10 +71,6 @@ import { LinksEventSource } from './events/links-event-source';
     MapChangeDetectorRef,
     CanvasSizeDetector,
     Context,
-    SelectionUpdateListener,
-    MapListeners,
-    DraggableListener,
-    SelectionListener,
     DrawingsEventSource,
     NodesEventSource,
     LinksEventSource,
@@ -92,8 +94,9 @@ import { LinksEventSource } from './events/links-event-source';
     MapLinksDataSource,
     MapDrawingsDataSource,
     MapSymbolsDataSource,
+    SelectionEventSource,
     ...D3_MAP_IMPORTS
   ],
-  exports: [ MapComponent ]
+  exports: [ D3MapComponent, ExperimentalMapComponent ]
 })
 export class CartographyModule { }

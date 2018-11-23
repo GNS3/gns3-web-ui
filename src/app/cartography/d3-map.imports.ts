@@ -16,12 +16,14 @@ import { TextDrawingWidget } from './widgets/drawings/text-drawing';
 import { LineDrawingWidget } from './widgets/drawings/line-drawing';
 import { NodeWidget } from './widgets/node';
 import { DrawingWidget } from './widgets/drawing';
+import { LabelWidget } from './widgets/label';
 
 export const D3_MAP_IMPORTS = [
     GraphLayout,
     LinksWidget,
     NodesWidget,
     NodeWidget,
+    LabelWidget,
     DrawingsWidget,
     DrawingLineWidget,
     SelectionTool,
