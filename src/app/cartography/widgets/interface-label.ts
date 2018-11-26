@@ -9,6 +9,7 @@ import { SelectionManager } from "../managers/selection-manager";
 import { MapLinkNode } from "../models/map/map-link-node";
 import { MapNode } from "../models/map/map-node";
 import { Draggable } from "../events/draggable";
+import { MapSettingsManager } from "../managers/map-settings-manager";
 
 @Injectable()
 export class InterfaceLabelWidget {
@@ -20,7 +21,8 @@ export class InterfaceLabelWidget {
   constructor(
     private cssFixer: CssFixer,
     private fontFixer: FontFixer,
-    private selectionManager: SelectionManager
+    private selectionManager: SelectionManager,
+    private mapSettings: MapSettingsManager
   ) {
   }
 
@@ -121,7 +123,8 @@ export class InterfaceLabelWidget {
       .exit()
       .remove();
 
-    this.draggable.call(merge);
-      
+    if(!this.mapSettings.isReadOnly) {
+      this.draggable.call(merge);
+    }
   }
 }

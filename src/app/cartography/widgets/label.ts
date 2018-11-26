@@ -9,6 +9,7 @@ import { MapNode } from "../models/map/map-node";
 import { SelectionManager } from "../managers/selection-manager";
 import { Draggable } from "../events/draggable";
 import { MapLabel } from "../models/map/map-label";
+import { MapSettingsManager } from "../managers/map-settings-manager";
 
 
 @Injectable()
@@ -20,7 +21,8 @@ export class LabelWidget implements Widget {
   constructor(
     private cssFixer: CssFixer,
     private fontFixer: FontFixer,
-    private selectionManager: SelectionManager
+    private selectionManager: SelectionManager,
+    private mapSettings: MapSettingsManager,
   ) {}
 
   public redrawLabel(view: SVGSelection, label: MapLabel) {
@@ -47,7 +49,9 @@ export class LabelWidget implements Widget {
       .exit()
         .remove();
 
-    this.draggable.call(label_view);
+    if(!this.mapSettings.isReadOnly) {
+      this.draggable.call(label_view);
+    }
   }
 
 

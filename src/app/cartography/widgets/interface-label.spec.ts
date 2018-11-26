@@ -9,6 +9,7 @@ import { MapLinkNode } from "../models/map/map-link-node";
 import { MapLabel } from "../models/map/map-label";
 import { FontFixer } from "../helpers/font-fixer";
 import { SelectionManager } from "../managers/selection-manager";
+import { MapSettingsManager } from "../managers/map-settings-manager";
 
 
 describe('InterfaceLabelsWidget', () => {
@@ -16,6 +17,7 @@ describe('InterfaceLabelsWidget', () => {
   let widget: InterfaceLabelWidget;
   let linksEnter: Selection<SVGGElement, MapLink, SVGGElement, any>;
   let links: MapLink[];
+  let mapSettings: MapSettingsManager;
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
@@ -68,7 +70,8 @@ describe('InterfaceLabelsWidget', () => {
       .exit()
         .remove();
 
-    widget = new InterfaceLabelWidget(new CssFixer(), new FontFixer(), new SelectionManager());
+    mapSettings = new MapSettingsManager();
+    widget = new InterfaceLabelWidget(new CssFixer(), new FontFixer(), new SelectionManager(), mapSettings);
   });
 
   afterEach(() => {
