@@ -96,7 +96,7 @@ export class LabelWidget implements Widget {
           //   bbox = this.getBBox();
           //   return - n.height / 2. - bbox.height ;
           // }
-          return l.y + bbox.height - LabelWidget.NODE_LABEL_MARGIN;
+          return l.y + bbox.height - LabelWidget.NODE_LABEL_MARGIN - bbox.height*0.14;
         })
         .attr('transform', (l: MapLabel) => {
           return `rotate(${l.rotation}, ${l.x}, ${l.y})`;
