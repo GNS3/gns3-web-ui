@@ -44,11 +44,35 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
         return this.inRectangleHelper.inRectangle(rectangle, labelX, labelY);
       }).map((node) => node.label);
 
+      const selectedInterfacesLabelsSources = this.graphDataManager.getLinks().filter((link) => {
+        if (link.source === undefined || link.nodes.length != 2 || link.nodes[0].label === undefined) {
+          return false;
+        }
+        const interfaceLabelX = link.source.x + link.nodes[0].label.x;
+        const interfaceLabelY = link.source.y + link.nodes[0].label.y;
+        return this.inRectangleHelper.inRectangle(rectangle, interfaceLabelX, interfaceLabelY);
+      }).map((link) => link.nodes[0]);
+
+      const selectedInterfacesLabelsTargets = this.graphDataManager.getLinks().filter((link) => {
+        if (link.target === undefined || link.nodes.length != 2 || link.nodes[1].label === undefined) {
+          return false;
+        }
+        const interfaceLabelX = link.target.x + link.nodes[1].label.x;
+        const interfaceLabelY = link.target.y + link.nodes[1].label.y;
+        return this.inRectangleHelper.inRectangle(rectangle, interfaceLabelX, interfaceLabelY);
+      }).map((link) => link.nodes[1]);
+
+      const selectedInterfaces = [
+        ...selectedInterfacesLabelsSources,
+        ...selectedInterfacesLabelsTargets,
+      ]
+
       const selected = [
         ...selectedNodes,
         ...selectedLinks,
         ...selectedDrawings,
-        ...selectedLabels
+        ...selectedLabels,
+        ...selectedInterfaces,
       ];
   
       this.selectionManager.setSelected(selected);

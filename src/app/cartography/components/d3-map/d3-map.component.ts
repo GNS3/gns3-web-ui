@@ -6,7 +6,6 @@ import { Selection, select } from 'd3-selection';
 import { GraphLayout } from "../../widgets/graph-layout";
 import { Context } from "../../models/context";
 import { Size } from "../../models/size";
-import { NodesWidget } from '../../widgets/nodes';
 import { Subscription } from 'rxjs';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
@@ -14,13 +13,13 @@ import { MovingTool } from '../../tools/moving-tool';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { MapLinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
-import { DrawingsWidget } from '../../widgets/drawings';
 import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
 import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { DraggedDataEvent } from '../../events/event-source';
+import { MapSettingsManager } from '../../managers/map-settings-manager';
 
 
 @Component({
@@ -56,9 +55,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     public context: Context,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private canvasSizeDetector: CanvasSizeDetector,
+    private mapSettings: MapSettingsManager,
     protected element: ElementRef,
-    protected nodesWidget: NodesWidget,
-    protected drawingsWidget: DrawingsWidget,
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
@@ -92,8 +90,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public drawingSelected = "";
 
   @Input('readonly') set readonly(value) {
-    this.nodesWidget.draggingEnabled = !value;
-    this.drawingsWidget.draggingEnabled = !value;
+    this.mapSettings.isReadOnly = value;
   }
   
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {

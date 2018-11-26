@@ -13,6 +13,7 @@ import { Context } from "../models/context";
 import { EllipseElement } from "../models/drawings/ellipse-element";
 import { ResizingEnd } from "../events/resizing";
 import { LineElement } from "../models/drawings/line-element";
+import { MapSettingsManager } from "../managers/map-settings-manager";
 
 
 @Injectable()
@@ -29,7 +30,8 @@ export class DrawingsWidget implements Widget {
   constructor(
     private drawingWidget: DrawingWidget,
     private svgToDrawingConverter: SvgToDrawingConverter,
-    private context: Context
+    private context: Context,
+    private mapSettings: MapSettingsManager
   ) {
     this.svgToDrawingConverter = new SvgToDrawingConverter();
   }
@@ -67,7 +69,7 @@ export class DrawingsWidget implements Widget {
       .exit()
         .remove();
 
-    if (this.draggingEnabled) {
+    if (!this.mapSettings.isReadOnly) {
       this.draggable.call(merge);
     }
 
