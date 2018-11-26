@@ -11,6 +11,7 @@ import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
 import { MapDrawing } from "../models/map/map-drawing";
 import { SelectionManager } from "../managers/selection-manager";
 import { LineElement } from "../models/drawings/line-element";
+import { EllipseElement } from "../models/drawings/ellipse-element";
 
 @Injectable()
 export class DrawingWidget implements Widget {
@@ -50,8 +51,8 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.top')
         .attr('stroke', 'transparent')
         .attr('stroke-width', '8px')
-        .attr('x1', '0')
-        .attr('x2', (drawing) => drawing.element.width)
+        .attr('x1', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cx - (drawing.element.width/10) : '0')
+        .attr('x2', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cx + (drawing.element.width/10) : drawing.element.width)
         .attr('y1', '0')
         .attr('y2', '0')
         .attr('draggable', 'true')
@@ -61,8 +62,8 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.bottom')
         .attr('stroke', 'transparent')
         .attr('stroke-width', '8px')
-        .attr('x1', '0')
-        .attr('x2', (drawing) => drawing.element.width)
+        .attr('x1', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cx - (drawing.element.width/10) : '0')
+        .attr('x2', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cx + (drawing.element.width/10) : drawing.element.width)
         .attr('y1', (drawing) => drawing.element.height)
         .attr('y2', (drawing) => drawing.element.height)
         .attr('draggable', 'true')
@@ -74,8 +75,8 @@ export class DrawingWidget implements Widget {
         .attr('stroke-width', '8px')
         .attr('x1', '0')
         .attr('x2', '0')
-        .attr('y1', '0')
-        .attr('y2', (drawing) => drawing.element.height)
+        .attr('y1', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cy - (drawing.element.height/10) : '0')
+        .attr('y2', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cy + (drawing.element.height/10) : drawing.element.height)
         .attr('draggable', 'true')
         .attr("cursor", "ew-resize");
 
@@ -85,8 +86,8 @@ export class DrawingWidget implements Widget {
         .attr('stroke-width', '8px')
         .attr('x1', (drawing) => drawing.element.width)
         .attr('x2', (drawing) => drawing.element.width)
-        .attr('y1', '0')
-        .attr('y2', (drawing) => drawing.element.height)
+        .attr('y1', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cy - (drawing.element.height/10) : '0')
+        .attr('y2', (drawing) => drawing.element instanceof EllipseElement ? drawing.element.cy + (drawing.element.height/10) : drawing.element.height)
         .attr('draggable', 'true')
         .attr("cursor", "ew-resize");
 

@@ -288,7 +288,6 @@ export class DrawingsWidget implements Widget {
       })
       .on('drag', (datum: MapDrawing) => {
         const evt = event;
-        console.log(datum);
         datum.element.width += evt.dx;
         datum.element.height += evt.dy;
         (datum.element as LineElement).x1 += evt.dx;
