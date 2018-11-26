@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 
 import { SVGSelection } from "../models/types";
-import { InterfaceLabel } from "../models/interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { select } from "d3-selection";
 import { MapLink } from "../models/map/map-link";
@@ -49,7 +48,7 @@ export class InterfaceLabelWidget {
     });
 
     const labels = merge_link_node_position
-      .selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container')
+      .selectAll<SVGGElement, [MapNode, MapLinkNode]>('g.interface_label_container')
       .data((nodeAndMapLinkNode: [MapNode, MapLinkNode]) => {
         if (this.enabled) {
           return [nodeAndMapLinkNode[1]];

@@ -1,7 +1,6 @@
 import { Selection } from "d3-selection";
 
 import { TestSVGCanvas } from "../testing";
-import { InterfaceLabel } from "../models/interface-label";
 import { InterfaceLabelWidget } from "./interface-label";
 import { CssFixer } from "../helpers/css-fixer";
 import { MapNode } from "../models/map/map-node";
@@ -9,6 +8,7 @@ import { MapLink } from "../models/map/map-link";
 import { MapLinkNode } from "../models/map/map-link-node";
 import { MapLabel } from "../models/map/map-label";
 import { FontFixer } from "../helpers/font-fixer";
+import { SelectionManager } from "../managers/selection-manager";
 
 
 describe('InterfaceLabelsWidget', () => {
@@ -68,7 +68,7 @@ describe('InterfaceLabelsWidget', () => {
       .exit()
         .remove();
 
-    widget = new InterfaceLabelWidget(new CssFixer(), new FontFixer());
+    widget = new InterfaceLabelWidget(new CssFixer(), new FontFixer(), new SelectionManager());
   });
 
   afterEach(() => {
@@ -78,24 +78,22 @@ describe('InterfaceLabelsWidget', () => {
   it('should draw interface labels', () => {
     widget.draw(linksEnter);
 
-    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container');
+    const drew = svg.canvas.selectAll<SVGGElement, MapLinkNode>('g.interface_label_container');
 
     expect(drew.nodes().length).toEqual(2);
 
     const sourceInterface = drew.nodes()[0] as Element;
 
-    expect(sourceInterface.getAttribute('transform')).toEqual('translate(110, 220) rotate(5, 110, 220)');
     const sourceIntefaceRect = sourceInterface.firstChild as Element;
-    expect(sourceIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_border');
+    expect(sourceIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_selection');
     const sourceIntefaceText = sourceInterface.children[1];
     expect(sourceIntefaceText.attributes.getNamedItem('class').value).toEqual('interface_label noselect');
     expect(sourceIntefaceText.attributes.getNamedItem('style').value).toEqual('font-size:12px');
 
     const targetInterface = drew.nodes()[1];
 
-    expect(targetInterface.getAttribute('transform')).toEqual('translate(270, 360) rotate(0, 270, 360)');
     const targetIntefaceRect = targetInterface.firstChild as Element;
-    expect(targetIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_border');
+    expect(targetIntefaceRect.attributes.getNamedItem('class').value).toEqual('interface_label_selection');
     const targetIntefaceText = targetInterface.children[1] as Element;
     expect(targetIntefaceText.attributes.getNamedItem('class').value).toEqual('interface_label noselect');
     expect(targetIntefaceText.attributes.getNamedItem('style').value).toEqual('');
@@ -106,7 +104,7 @@ describe('InterfaceLabelsWidget', () => {
     widget.setEnabled(false);
     widget.draw(linksEnter);
 
-    const drew = svg.canvas.selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container');
+    const drew = svg.canvas.selectAll<SVGGElement, MapLinkNode>('g.interface_label_container');
 
     expect(drew.nodes().length).toEqual(0);
   });
