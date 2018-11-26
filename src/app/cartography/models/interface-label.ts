@@ -1,5 +1,8 @@
-export class InterfaceLabel {
+import { Indexed } from "../datasources/map-datasource";
+
+export class InterfaceLabel implements Indexed {
   constructor(
+    public id: string,
     public link_id: string,
     public direction: string,
     public x: number,
