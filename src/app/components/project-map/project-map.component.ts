@@ -38,6 +38,7 @@ import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { MapLabel } from '../../cartography/models/map/map-label';
+import { MapLinkNode } from '../../cartography/models/map/map-link-node';
 
 
 @Component({
@@ -172,6 +173,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt))
     );
+
+    this.subscriptions.push(
+      this.linksEventSource.interfaceDragged.subscribe((evt) => this.onInterfaceLabelDragged(evt))
+    );
   }
 
   onProjectLoad(project: Project) {
@@ -271,6 +276,24 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       .updatePosition(this.server, drawing, drawing.x, drawing.y)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
+      });
+  }
+
+  private onInterfaceLabelDragged(draggedEvent: DraggedDataEvent<MapLinkNode>) {
+    const link = this.linksDataSource.get(draggedEvent.datum.linkId);
+    if (link.nodes[0].node_id === draggedEvent.datum.nodeId) {
+      link.nodes[0].label.x += draggedEvent.dx;
+      link.nodes[0].label.y += draggedEvent.dy;
+    }
+    if (link.nodes[1].node_id === draggedEvent.datum.nodeId) {
+      link.nodes[1].label.x += draggedEvent.dx;
+      link.nodes[1].label.y += draggedEvent.dy;
+    }
+
+    this.linkService
+      .updateNodes(this.server, link, link.nodes)
+      .subscribe((serverLink: Link) => {
+        this.linksDataSource.update(serverLink);
       });
   }
 
