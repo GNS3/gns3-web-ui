@@ -18,7 +18,7 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.draw-menu{
+.draw-menu {
   position: fixed;
   background: transparent;
   top: 20px;
@@ -27,26 +27,30 @@ g.node:hover {
   height: 72px !important;
 }
 
-.draw-menu button{
+.draw-menu button {
   outline: none;
 }
 
-.drawer-container{
+.drawer-container {
   height: 72px !important;
   background: transparent;
 }
 
-.drawer{
+.shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.drawer {
   width: 232px !important;
   height: 72px !important;
   background:#263238;
 }
 
-.drawer-content{
+.drawer-content {
   background: transparent;
 }
 
-.drawer-button{
+.drawer-button {
   height: 72px;
   width: 64px!important;
   background: #263238;
@@ -56,7 +60,7 @@ g.node:hover {
   background-color: transparent;
 }
 
-.drawer-arrow-button-right{
+.drawer-arrow-button-right {
   width: 40px;
   height: 72px;
   padding-top: 16px;
@@ -64,7 +68,7 @@ g.node:hover {
   position: fixed;
 }
 
-.drawer-arrow-button-left{
+.drawer-arrow-button-left {
   width: 40px;
   height: 72px;
   margin-left: 192px;
@@ -72,7 +76,7 @@ g.node:hover {
   position: fixed;
 }
 
-.drawer-buttons{
+.drawer-buttons {
   background:#263238;
   padding-top: 16px;
   height: 72px;
@@ -105,10 +109,6 @@ svg.map image:hover, svg.map image.chosen, g.selected {
   filter: grayscale(100%);
   filter: gray;
   filter: url("#grayscale"); /* Chrome doesn't support CSS filters on SVG */
-}
-
-g.selected line {
-  stroke: transparent;
 }
 
 path.selected {

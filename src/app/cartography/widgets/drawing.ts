@@ -10,6 +10,7 @@ import { LineDrawingWidget } from "./drawings/line-drawing";
 import { EllipseDrawingWidget } from "./drawings/ellipse-drawing";
 import { MapDrawing } from "../models/map/map-drawing";
 import { SelectionManager } from "../managers/selection-manager";
+import { LineElement } from "../models/drawings/line-element";
 
 @Injectable()
 export class DrawingWidget implements Widget {
@@ -39,22 +40,6 @@ export class DrawingWidget implements Widget {
     const drawing_body_enter = drawing_body.enter()
       .append<SVGGElement>('g')
         .attr("class", "drawing_body")
-    
-    drawing_body_enter
-      .append<SVGAElement>('line')
-        .attr("class", "top");
-
-    drawing_body_enter
-      .append<SVGAElement>('line')
-        .attr("class", "bottom");
-
-    drawing_body_enter
-      .append<SVGAElement>('line')
-        .attr("class", "right");
-
-    drawing_body_enter
-      .append<SVGAElement>('line')
-        .attr("class", "left");
 
     const drawing_body_merge = drawing_body.merge(drawing_body_enter)
       .attr('transform', (d: MapDrawing) => {
@@ -104,6 +89,26 @@ export class DrawingWidget implements Widget {
         .attr('y2', (drawing) => drawing.element.height)
         .attr('draggable', 'true')
         .attr("cursor", "ew-resize");
+
+    drawing_body_merge
+      .select<SVGAElement>('circle.left')
+        .attr('draggable', 'true')
+        .attr('fill', 'transparent')
+        .attr('stroke', 'transparent')
+        .attr('cx', (drawing) => (drawing.element as LineElement).x1)
+        .attr('cy', (drawing) => (drawing.element as LineElement).y1)
+        .attr('r', 10)
+        .attr("cursor", "move");
+
+    drawing_body_merge
+      .select<SVGAElement>('circle.right')
+        .attr('draggable', 'true')
+        .attr('fill', 'transparent')
+        .attr('stroke', 'transparent')
+        .attr('cx', (drawing) => (drawing.element as LineElement).x2)
+        .attr('cy', (drawing) => (drawing.element as LineElement).y2)
+        .attr('r', 10)
+        .attr("cursor", "move");
 
     drawing_body_merge
       .classed('selected', (n: MapDrawing) => this.selectionManager.isSelected(n));

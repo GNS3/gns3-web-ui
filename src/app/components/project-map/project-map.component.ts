@@ -73,7 +73,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   protected drawTools = {
     'isRectangleChosen': false,
     'isEllipseChosen': false,
-    'isLineChosen': false
+    'isLineChosen': false,
+    'visibility': false
   };
 
   protected selectedDrawing: string;
@@ -407,6 +408,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     var map = document.getElementsByClassName('map')[0];
     map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
     this.resetDrawToolChoice();
+    this.drawTools.visibility = false;
+  }
+
+  public showMenu(){
+    this.drawTools.visibility = true;
   }
 
   public getDrawingMock(objectType: string): MapDrawing {

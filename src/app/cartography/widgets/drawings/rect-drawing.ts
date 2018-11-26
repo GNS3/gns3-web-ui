@@ -9,6 +9,7 @@ import { MapDrawing } from "../../models/map/map-drawing";
 
 @Injectable()
 export class RectDrawingWidget implements DrawingShapeWidget {
+  
   constructor(
     private qtDasharrayFixer: QtDasharrayFixer
   ) {}
@@ -19,7 +20,23 @@ export class RectDrawingWidget implements DrawingShapeWidget {
         .data((d: MapDrawing) => {
           return (d.element && d.element instanceof RectElement) ? [d.element] : [];
         });
-        
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "top");
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "bottom");
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "right");
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "left");
+    
     const drawing_enter = drawing
       .enter()
         .append<SVGRectElement>('rect')

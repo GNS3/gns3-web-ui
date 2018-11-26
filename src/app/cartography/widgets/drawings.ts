@@ -12,6 +12,7 @@ import { MapDrawing } from "../models/map/map-drawing";
 import { Context } from "../models/context";
 import { EllipseElement } from "../models/drawings/ellipse-element";
 import { ResizingEnd } from "../events/resizing";
+import { LineElement } from "../models/drawings/line-element";
 
 
 @Injectable()
@@ -118,15 +119,7 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
-
-        const evt = new ResizingEnd<MapDrawing>();
-        evt.x = datum.x;
-        evt.y = datum. y;
-        evt.width = datum.element.width;
-        evt.height = datum.element.height;
-        evt.datum = datum;
-
-        this.resizingFinished.emit(evt);
+        this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
     let top = drag()
@@ -173,15 +166,7 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
-
-        const evt = new ResizingEnd<MapDrawing>();
-        evt.x = datum.x;
-        evt.y = datum. y;
-        evt.width = datum.element.width;
-        evt.height = datum.element.height;
-        evt.datum = datum;
-
-        this.resizingFinished.emit(evt);
+        this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
     let x: number;
@@ -232,15 +217,7 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
-
-        const evt = new ResizingEnd<MapDrawing>();
-        evt.x = datum.x;
-        evt.y = datum. y;
-        evt.width = datum.element.width;
-        evt.height = datum.element.height;
-        evt.datum = datum;
-        
-        this.resizingFinished.emit(evt);
+        this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
     let left = drag()
@@ -285,15 +262,42 @@ export class DrawingsWidget implements Widget {
       })
       .on('end', (datum: MapDrawing) => {
         document.body.style.cursor = "initial";
+        this.resizingFinished.emit(this.createResizingEvent(datum));
+      });
 
-        const evt = new ResizingEnd<MapDrawing>();
-        evt.x = datum.x;
-        evt.y = datum. y;
-        evt.width = datum.element.width;
-        evt.height = datum.element.height;
-        evt.datum = datum;
+    let circleMoveRight = drag()
+      .on('start', () => {
+        document.body.style.cursor = "move";
+      })
+      .on('drag', (datum: MapDrawing) => {
+        const evt = event;
+        datum.element.width += evt.dx;
+        datum.element.height += evt.dy;
+        (datum.element as LineElement).x2 += evt.dx;
+        (datum.element as LineElement).y2 += evt.dy;
+        this.redrawDrawing(view, datum);
+      })
+      .on('end', (datum: MapDrawing) => {
+        document.body.style.cursor = "initial";
+        this.resizingFinished.emit(this.createResizingEvent(datum));
+      });
 
-        this.resizingFinished.emit(evt);
+    let circleMoveLeft = drag()
+      .on('start', () => {
+        document.body.style.cursor = "move";
+      })
+      .on('drag', (datum: MapDrawing) => {
+        const evt = event;
+        console.log(datum);
+        datum.element.width += evt.dx;
+        datum.element.height += evt.dy;
+        (datum.element as LineElement).x1 += evt.dx;
+        (datum.element as LineElement).y1 += evt.dy;
+        this.redrawDrawing(view, datum);
+      })
+      .on('end', (datum: MapDrawing) => {
+        document.body.style.cursor = "initial";
+        this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
     merge
@@ -311,6 +315,24 @@ export class DrawingsWidget implements Widget {
     merge
       .select<SVGAElement>('line.left')
       .call(left);
+
+    merge
+      .select<SVGAElement>('circle.right')
+      .call(circleMoveRight)
+
+    merge
+      .select<SVGAElement>('circle.left')
+      .call(circleMoveLeft)
+  }
+
+  private createResizingEvent(datum: MapDrawing){
+    const evt = new ResizingEnd<MapDrawing>();
+    evt.x = datum.x;
+    evt.y = datum. y;
+    evt.width = datum.element.width;
+    evt.height = datum.element.height;
+    evt.datum = datum;
+    return evt;
   }
 
   private selectDrawing(view: SVGSelection, drawing: MapDrawing) {

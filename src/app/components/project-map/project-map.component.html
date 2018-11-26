@@ -99,7 +99,7 @@
   </div>
 
   <div class="draw-menu">
-    <mat-drawer-container class="drawer-container">
+    <mat-drawer-container [ngClass]="{shadow: drawTools.visibility}" class="drawer-container">
       <mat-drawer #drawer class="drawer">
         <div class="drawer-buttons">
           <button mat-icon-button class="drawer-button" [color]="drawTools.isRectangleChosen ? 'primary': 'basic'" (click)="addDrawing('rectangle')">
@@ -121,8 +121,8 @@
         </div>
       </mat-drawer>
       <mat-drawer-content class="drawer-content">
-        <div class="drawer-arrow-button-right">
-          <button mat-icon-button (click)="drawer.toggle()">
+        <div [ngClass]="{shadow: !drawTools.visibility}" class="drawer-arrow-button-right">
+          <button mat-icon-button (click)="drawer.toggle(); showMenu()">
             <mat-icon>keyboard_arrow_right</mat-icon>
           </button>
         </div>
