@@ -28,7 +28,6 @@ export class InterfaceLabelWidget {
     const labels = selection
       .selectAll<SVGGElement, InterfaceLabel>('g.interface_label_container')
       .data((l: MapLink) => {
-        console.log( l.nodes[0].label);
         const sourceInterface = new InterfaceLabel(
           l.id,
           'source',
@@ -79,13 +78,9 @@ export class InterfaceLabelWidget {
       .attr('height', 100)
       .attr('transform', function(this: SVGGElement, l: InterfaceLabel) {
         const textLabel = merge.select<SVGTextElement>(`text[interface_label_id="${l.direction}-${l.link_id}"]`);
-
         const bbox = textLabel.node().getBBox();
-        console.log(bbox);
         const x = l.x ;
-        const y = l.y + bbox.height; //-17
-        // const x = l.x;
-        // const y = l.y + bbox.height;
+        const y = l.y + bbox.height;
         return `translate(${x}, ${y}) rotate(${l.rotation}, ${x}, ${y})`;
       })
       .classed('selected', (l: InterfaceLabel) => false);
