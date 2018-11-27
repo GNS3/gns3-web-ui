@@ -1,5 +1,3 @@
-import { DraggableComponent } from './components/draggable/draggable.component';
-import { SelectionComponent } from './components/selection/selection.component';
 import { NodeComponent } from './components/experimental-map/node/node.component';
 import { LinkComponent } from './components/experimental-map/link/link.component';
 import { StatusComponent } from './components/experimental-map/status/status.component';
@@ -10,6 +8,8 @@ import { LineComponent } from './components/experimental-map/drawing/drawings/li
 import { RectComponent } from './components/experimental-map/drawing/drawings/rect/rect.component';
 import { TextComponent } from './components/experimental-map/drawing/drawings/text/text.component';
 import { InterfaceLabelComponent } from './components/experimental-map/interface-label/interface-label.component';
+import { DraggableComponent } from './components/experimental-map/draggable/draggable.component';
+import { SelectionComponent } from './components/experimental-map/selection/selection.component';
 
 
 export const ANGULAR_MAP_DECLARATIONS = [

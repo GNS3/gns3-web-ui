@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, AfterViewInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { Point } from '../../models/point';
+import { Point } from 'src/app/cartography/models/point';
 
 
 export class DraggableDraggedEvent {
