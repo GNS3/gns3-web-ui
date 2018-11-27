@@ -9,6 +9,8 @@ import { MapNode } from "../models/map/map-node";
 import { GraphDataManager } from "../managers/graph-data-manager";
 import { SelectionManager } from "../managers/selection-manager";
 import { LabelWidget } from "./label";
+import { NodesEventSource } from '../events/nodes-event-source';
+import { ClickedDataEvent } from '../events/event-source';
 
 
 @Injectable()
@@ -19,7 +21,8 @@ export class NodeWidget implements Widget {
   constructor(
     private graphDataManager: GraphDataManager,
     private selectionManager: SelectionManager,
-    private labelWidget: LabelWidget
+    private labelWidget: LabelWidget,
+    private nodesEventSource: NodesEventSource,
   ) {}
 
   public draw(view: SVGSelection) {
@@ -42,8 +45,9 @@ export class NodeWidget implements Widget {
           event.preventDefault();
           self.onContextMenu.emit(new NodeContextMenu(event, n));
         })
-        .on('click', (n: MapNode) => {
-          this.onNodeClicked.emit(new NodeClicked(event, n));
+        .on('click', (node: MapNode) => {
+          this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.clientX, event.clientY))
+          // this.onNodeClicked.emit(new NodeClicked(event, n));
         });
 
     // update image of node

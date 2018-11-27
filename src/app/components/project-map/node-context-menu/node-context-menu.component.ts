@@ -20,7 +20,7 @@ export class NodeContextMenuComponent implements OnInit {
 
   protected topPosition;
   protected leftPosition;
-  public node: Node;
+  protected node: Node;
 
   constructor(
     private sanitizer: DomSanitizer,
