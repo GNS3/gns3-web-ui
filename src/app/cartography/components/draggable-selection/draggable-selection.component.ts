@@ -95,6 +95,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
 
         const links = this.graphDataManager.getLinks().filter(
           (link) => link.target.id === node.id || link.source.id === node.id);
+        
         links.forEach((link) => {
           this.linksWidget.redrawLink(svg, link);
         });
