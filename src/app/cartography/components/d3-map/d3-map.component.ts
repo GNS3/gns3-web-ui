@@ -36,9 +36,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @Output() nodeDragged = new EventEmitter<DraggedDataEvent<Node>>();
-  @Output() drawingDragged = new EventEmitter<DraggedDataEvent<Drawing>>();
-  @Output() onLinkCreated = new EventEmitter<MapLinkCreated>();
   @ViewChild('svg') svgRef: ElementRef;
 
   private parentNativeElement: any;
@@ -85,9 +82,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   @Input('draw-link-tool') drawLinkTool: boolean;
-
-  //@Input('drawing-selected') selectedDrawing: string;
-  public drawingSelected = "";
 
   @Input('readonly') set readonly(value) {
     this.mapSettings.isReadOnly = value;

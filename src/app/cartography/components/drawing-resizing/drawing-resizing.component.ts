@@ -12,7 +12,7 @@ import { ResizingEnd } from '../../events/resizing';
     styleUrls: ['./drawing-resizing.component.scss']
 })
 export class DrawingResizingComponent implements OnInit, OnDestroy{
-    private resizingFinished: Subscription;
+    resizingFinished: Subscription;
 
     constructor(
         private drawingsWidget: DrawingsWidget,
