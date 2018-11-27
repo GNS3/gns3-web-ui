@@ -214,4 +214,64 @@ fdescribe('DraggableSelectionComponent', () => {
       expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
     }));
   });
+
+  describe('drawings dragging', () => {
+    let drawingsWidgetStub: DrawingsWidget;
+    let selectionManagerStub: SelectionManager;
+    let drawing: MapDrawing;
+
+    beforeEach(() => {
+      drawingsWidgetStub = fixture.debugElement.injector.get(DrawingsWidget);
+      selectionManagerStub = fixture.debugElement.injector.get(SelectionManager);
+      drawing = new MapDrawing();
+      drawing.id = "drawingid";
+      drawing.x = 1;
+      drawing.y = 2;
+    });
+
+    it('should select drawing when started dragging', fakeAsync(() => {
+      drawingsWidgetStub.draggable.start.emit(new DraggableStart<MapDrawing>(drawing));
+      tick();
+      expect(selectionManagerStub.getSelected().length).toEqual(1);
+    }));
+
+    it('should ignore drawing when started dragging and node is in selection', fakeAsync(() => {
+      selectionManagerStub.setSelected([drawing]);
+      drawingsWidgetStub.draggable.start.emit(new DraggableStart<MapDrawing>(drawing));
+      tick();
+      expect(selectionManagerStub.getSelected().length).toEqual(1);
+    }));
+
+    it('should update drawing position when dragging', fakeAsync(() => {
+      spyOn(drawingsWidgetStub, 'redrawDrawing');
+      selectionManagerStub.setSelected([drawing]);
+
+      const dragEvent = new DraggableDrag<MapDrawing>(drawing);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      drawingsWidgetStub.draggable.drag.emit(dragEvent);
+      tick();
+      expect(drawingsWidgetStub.redrawDrawing).toHaveBeenCalledWith(select(fixture.componentInstance.svg), drawing);
+      expect(drawing.x).toEqual(11);
+      expect(drawing.y).toEqual(22);
+    }));
+
+    it('should emit event when drawing stopped dragging', fakeAsync(() => {
+      const drawingsEventSourceStub = fixture.debugElement.injector.get(DrawingsEventSource);
+      const spyDragged = spyOn(drawingsEventSourceStub.dragged, 'emit');
+
+      selectionManagerStub.setSelected([drawing]);
+      const dragEvent = new DraggableEnd<MapDrawing>(drawing);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      drawingsWidgetStub.draggable.end.emit(dragEvent);
+      tick();
+      expect(drawingsEventSourceStub.dragged.emit).toHaveBeenCalled();
+      expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(drawing);
+      expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
+      expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
+    }));
+  });
 });
