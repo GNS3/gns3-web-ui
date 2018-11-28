@@ -40,7 +40,7 @@ describe('DrawingService', () => {
 
   it('should be created', inject([DrawingService], (service: DrawingService) => {
     expect(service).toBeTruthy();
-  });
+  }));
 
   it('should updatePosition of drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
@@ -74,7 +74,7 @@ describe('DrawingService', () => {
       'y': 100,
       'svg': svgSample
     });
-  });
+  }));
 
   it('should update drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();

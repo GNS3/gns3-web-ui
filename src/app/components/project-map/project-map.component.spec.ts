@@ -71,10 +71,19 @@ export class MockedDrawingService {
   }
 }
 
-describe('ProjectMapComponent', () => {
+export class MockedDrawingsDataSource {
+  add() {}
+
+  get() { return of({})}
+
+  update() { return of({})}
+}
+
+fdescribe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
   let drawingService = new MockedDrawingService;
+  let drawingsDataSource = new MockedDrawingsDataSource;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -102,9 +111,7 @@ describe('ProjectMapComponent', () => {
         { provide: MapPortToPortConverter },
         { provide: NodesDataSource },
         { provide: LinksDataSource },
-        { provide: DrawingsDataSource, useValue: {
-          get: () => { return new Drawing }
-        } },
+        { provide: DrawingsDataSource, useValue: drawingsDataSource},
         { provide: NodesEventSource },
         { provide: DrawingsEventSource },
         { provide: LinksEventSource },
@@ -134,8 +141,7 @@ describe('ProjectMapComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  //cannot read subscribe of undefined need to be fixed
-  xit('should update position on resizing event', () => {
+  it('should update position on resizing event', () => {
     let drawingElement: DrawingElement;
     let rect = new RectElement();
     rect.fill = "#ffffff";
@@ -155,26 +161,25 @@ describe('ProjectMapComponent', () => {
     mapDrawing.z = 0;
     mapDrawing.element = drawingElement;
     let event = new ResizedDataEvent<MapDrawing>(mapDrawing,0,0,100,100);
-    spyOn(drawingService, 'updateSizeAndPosition');
+    spyOn(drawingService, 'updateSizeAndPosition').and.returnValue( Observable.of({}));
 
     component.onDrawingResized(event);
 
     expect(drawingService.updateSizeAndPosition).toHaveBeenCalled();
   });
 
-  //cannot read subscribe of undefined need to be fixed
-  xit('should add selected drawing', () => {
+  it('should add selected drawing', () => {
     component.mapChild = { context: {} } as D3MapComponent;
     component.project = { project_id: "1" } as Project;
     component.mapChild.context.getZeroZeroTransformationPoint = jasmine.createSpy('HTML element').and.callFake(() => { return {x: 0, y: 0}});
     var dummyElement = document.createElement('map');
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => { return ([dummyElement])});
-    spyOn(drawingService, 'add');
+    spyOn(drawingsDataSource, 'add');
 
     component.addDrawing("rectangle");
     dummyElement.click();
 
-    expect(drawingService.add).toHaveBeenCalled();
+    expect(drawingsDataSource.add).toHaveBeenCalled();
   });
 
   it('should hide draw tools when hide menu is called', () => {
