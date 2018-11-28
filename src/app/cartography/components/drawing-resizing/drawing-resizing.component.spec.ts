@@ -4,16 +4,16 @@ import { DrawingResizingComponent } from './drawing-resizing.component'
 import { DrawingsWidget } from '../../widgets/drawings';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Subscription } from 'rxjs';
 import { EventEmitter } from '@angular/core';
 import { ResizingEnd } from '../../events/resizing';
 import { MapDrawing } from '../../models/map/map-drawing';
 
 export class DrawingWidgetMock {
     resizingFinished = new EventEmitter<ResizingEnd<MapDrawing>>();
+    evt: any;
     constructor(){}
 
-    public emitEvent(){
+    emitEvent(){
         const evt = new ResizingEnd<MapDrawing>();
         evt.x = 0;
         evt.y = 0;
@@ -28,8 +28,8 @@ export class DrawingWidgetMock {
 describe('DrawizngResizingComponent', () => {
     let component: DrawingResizingComponent;
     let fixture: ComponentFixture<DrawingResizingComponent>;
-    let drawingWidgetMock = new DrawingWidgetMock;
-    let drawingEventSource = new DrawingsEventSource
+    let drawingsWidgetMock = new DrawingWidgetMock;
+    let drawingsEventSource = new DrawingsEventSource;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -37,8 +37,8 @@ describe('DrawizngResizingComponent', () => {
                 NoopAnimationsModule
             ],
             providers: [
-                { provide: DrawingsWidget, useValue: drawingWidgetMock },
-                { provide: DrawingsEventSource, useValue: drawingEventSource}
+                { provide: DrawingsWidget, useValue: drawingsWidgetMock },
+                { provide: DrawingsEventSource, useValue: drawingsEventSource}
             ],
             declarations: [
                 DrawingResizingComponent
@@ -50,6 +50,7 @@ describe('DrawizngResizingComponent', () => {
      beforeEach(() => {
         fixture = TestBed.createComponent(DrawingResizingComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
      });
 
      it('should create', () => {
@@ -57,11 +58,16 @@ describe('DrawizngResizingComponent', () => {
      });
 
      it('should emit event after size changes', () => {
-        spyOn(drawingEventSource.resized, 'emit');
+        spyOn(drawingsEventSource.resized, 'emit');
+        const evt = new ResizingEnd<MapDrawing>();
+        evt.x = 0;
+        evt.y = 0;
+        evt.width = 10;
+        evt.height = 10;
+        evt.datum = {} as MapDrawing;
 
-        drawingWidgetMock.emitEvent();
-        fixture.detectChanges();
+        drawingsWidgetMock.emitEvent();
 
-        expect(drawingEventSource.resized.emit).toHaveBeenCalled();        
+        expect(drawingsEventSource.resized.emit).toHaveBeenCalled();        
      });
 });

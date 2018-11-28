@@ -40,7 +40,7 @@ describe('DrawingService', () => {
 
   it('should be created', inject([DrawingService], (service: DrawingService) => {
     expect(service).toBeTruthy();
-  }));
+  });
 
   it('should updatePosition of drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
@@ -57,6 +57,24 @@ describe('DrawingService', () => {
       'y': 20
     });
   }));
+
+  it('should update size and position of drawing', inject([DrawingService], (service: DrawingService) => {
+    const drawing = new Drawing();
+    drawing.project_id = "myproject";
+    drawing.drawing_id = "id";
+    let svgSample = "<svg><test></svg>"
+
+    service.updateSizeAndPosition(server, drawing, 100, 100, svgSample).subscribe();
+
+    const req = httpTestingController.expectOne(
+      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+    expect(req.request.method).toEqual("PUT");
+    expect(req.request.body).toEqual({
+      'x': 100,
+      'y': 100,
+      'svg': svgSample
+    });
+  });
 
   it('should update drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();

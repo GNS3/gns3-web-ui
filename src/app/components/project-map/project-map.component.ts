@@ -93,7 +93,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private symbolService: SymbolService,
     private nodeService: NodeService,
     private linkService: LinkService,
-    private drawingService: DrawingService,
+    public drawingService: DrawingService,
     private progressService: ProgressService,
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
@@ -333,7 +333,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  private onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
+  public onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
     let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
     
