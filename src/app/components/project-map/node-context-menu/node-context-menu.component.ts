@@ -18,9 +18,9 @@ export class NodeContextMenuComponent implements OnInit {
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
-  protected topPosition;
-  protected leftPosition;
-  protected node: Node;
+  topPosition;
+  leftPosition;
+  node: Node;
 
   constructor(
     private sanitizer: DomSanitizer,
