@@ -23,7 +23,7 @@ import { select } from 'd3-selection';
 import { MapLink } from '../../models/map/map-link';
 
 
-fdescribe('DraggableSelectionComponent', () => {
+describe('DraggableSelectionComponent', () => {
   let component: DraggableSelectionComponent;
   let fixture: ComponentFixture<DraggableSelectionComponent>;
   let mockedGraphDataManager: MockedGraphDataManager;
@@ -184,11 +184,24 @@ fdescribe('DraggableSelectionComponent', () => {
       expect(node.y).toEqual(22);
     }));
 
-    it('should redraw related links when dragging node', fakeAsync(() => {
+    it('should redraw related links target when dragging node', fakeAsync(() => {
       spyOn(nodesWidgetStub, 'redrawNode');
       spyOn(linksWidgetStub, 'redrawLink');
       const link = new MapLink();
       link.target = node;
+      mockedGraphDataManager.setLinks([link]);
+      selectionManagerStub.setSelected([node]);
+      nodesWidgetStub.draggable.drag.emit(new DraggableDrag<MapNode>(node));
+
+      tick();
+      expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
+    }));
+
+    it('should redraw related links source when dragging node', fakeAsync(() => {
+      spyOn(nodesWidgetStub, 'redrawNode');
+      spyOn(linksWidgetStub, 'redrawLink');
+      const link = new MapLink();
+      link.source = node;
       mockedGraphDataManager.setLinks([link]);
       selectionManagerStub.setSelected([node]);
       nodesWidgetStub.draggable.drag.emit(new DraggableDrag<MapNode>(node));
@@ -272,6 +285,265 @@ fdescribe('DraggableSelectionComponent', () => {
       expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(drawing);
       expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
       expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
+    }));
+  });
+
+  describe('labels dragging', () => {
+    let labelWidgetStub: LabelWidget;
+    let selectionManagerStub: SelectionManager;
+    let label: MapLabel;
+
+    beforeEach(() => {
+      labelWidgetStub = fixture.debugElement.injector.get(LabelWidget);
+      selectionManagerStub = fixture.debugElement.injector.get(SelectionManager);
+      label = new MapLabel();
+      label.id = "labelid";
+      label.x = 1;
+      label.y = 2;
+    });
+
+    it('should select label when started dragging', fakeAsync(() => {
+      labelWidgetStub.draggable.start.emit(new DraggableStart<MapLabel>(label));
+      tick();
+      expect(selectionManagerStub.getSelected().length).toEqual(1);
+    }));
+
+    it('should ignore label when started dragging and node is in selection', fakeAsync(() => {
+      selectionManagerStub.setSelected([label]);
+      labelWidgetStub.draggable.start.emit(new DraggableStart<MapLabel>(label));
+      tick();
+      expect(selectionManagerStub.getSelected().length).toEqual(1);
+    }));
+
+    it('should update label position when dragging', fakeAsync(() => {
+      spyOn(labelWidgetStub, 'redrawLabel');
+      selectionManagerStub.setSelected([label]);
+      const node = new MapNode();
+      node.id = "nodeid";
+      node.label = label;
+      label.nodeId = node.id;
+
+      mockedGraphDataManager.setNodes([node]);
+
+      const dragEvent = new DraggableDrag<MapLabel>(label);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      labelWidgetStub.draggable.drag.emit(dragEvent);
+      tick();
+      expect(labelWidgetStub.redrawLabel).toHaveBeenCalledWith(select(fixture.componentInstance.svg), label);
+      expect(label.x).toEqual(11);
+      expect(label.y).toEqual(22);
+    }));
+
+    it('should not update label position when dragging and parent is selected', fakeAsync(() => {
+      spyOn(labelWidgetStub, 'redrawLabel');
+      const node = new MapNode();
+      node.id = "nodeid";
+      node.label = label;
+      label.nodeId = node.id;
+
+      selectionManagerStub.setSelected([label, node]);
+      mockedGraphDataManager.setNodes([node]);
+
+      const dragEvent = new DraggableDrag<MapLabel>(label);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      labelWidgetStub.draggable.drag.emit(dragEvent);
+      tick();
+      expect(labelWidgetStub.redrawLabel).not.toHaveBeenCalled();
+      expect(label.x).toEqual(1);
+      expect(label.y).toEqual(2);
+    }));
+
+
+    it('should emit event when label stopped dragging', fakeAsync(() => {
+      const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
+      const spyDragged = spyOn(nodesEventSourceStub.labelDragged, 'emit');
+
+      selectionManagerStub.setSelected([label]);
+      const dragEvent = new DraggableEnd<MapLabel>(label);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      labelWidgetStub.draggable.end.emit(dragEvent);
+      tick();
+      expect(nodesEventSourceStub.labelDragged.emit).toHaveBeenCalled();
+      expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(label);
+      expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
+      expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
+    }));
+
+    it('should not emit event when label stopped dragging and parent node is selected', fakeAsync(() => {
+      const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
+      spyOn(nodesEventSourceStub.labelDragged, 'emit');
+      const node = new MapNode();
+      node.id = "nodeid";
+      label.nodeId = node.id;
+
+      selectionManagerStub.setSelected([label, node]);
+      const dragEvent = new DraggableEnd<MapLabel>(label);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      labelWidgetStub.draggable.end.emit(dragEvent);
+      tick();
+      expect(nodesEventSourceStub.labelDragged.emit).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('interfaces labels dragging', () => {
+    let linksWidgetStub: LinksWidget;
+    let interfaceLabelWidgetStub: InterfaceLabelWidget;
+    let selectionManagerStub: SelectionManager;
+    let linkNode: MapLinkNode;
+
+    beforeEach(() => {
+      interfaceLabelWidgetStub = fixture.debugElement.injector.get(InterfaceLabelWidget);
+      linksWidgetStub = fixture.debugElement.injector.get(LinksWidget);
+      selectionManagerStub = fixture.debugElement.injector.get(SelectionManager);
+      linkNode = new MapLinkNode();
+      linkNode.label = new MapLabel();
+      linkNode.label.x = 1;
+      linkNode.label.y = 2;
+      linkNode.id = "linknodeid";
+    });
+
+    it('should select interface label when started dragging', fakeAsync(() => {
+      interfaceLabelWidgetStub.draggable.start.emit(new DraggableStart<MapLinkNode>(linkNode));
+      tick();
+      expect(selectionManagerStub.getSelected().length).toEqual(1);
+    }));
+
+    it('should ignore interface label when started dragging and node is in selection', fakeAsync(() => {
+      selectionManagerStub.setSelected([linkNode]);
+      interfaceLabelWidgetStub.draggable.start.emit(new DraggableStart<MapLinkNode>(linkNode));
+      tick();
+      expect(selectionManagerStub.getSelected().length).toEqual(1);
+    }));
+
+    it('should update interface label position when dragging first node', fakeAsync(() => {
+      spyOn(linksWidgetStub, 'redrawLink');
+      selectionManagerStub.setSelected([linkNode]);
+      const node = new MapNode();
+      node.id = "nodeid";
+      linkNode.nodeId = node.id;
+
+      const secondLinkNode = new MapLinkNode();
+      secondLinkNode.label = new MapLabel();
+      secondLinkNode.label.x = 1;
+      secondLinkNode.label.y = 2;
+      secondLinkNode.id = "secondlinknodeid";
+
+      const link = new MapLink();
+      link.nodes = [linkNode, secondLinkNode];
+
+      mockedGraphDataManager.setLinks([link]);
+
+      const dragEvent = new DraggableDrag<MapLinkNode>(linkNode);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      interfaceLabelWidgetStub.draggable.drag.emit(dragEvent);
+      tick();
+      expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
+      expect(linkNode.label.x).toEqual(11);
+      expect(linkNode.label.y).toEqual(22);
+    }));
+
+    it('should update interface label position when dragging second node', fakeAsync(() => {
+      spyOn(linksWidgetStub, 'redrawLink');
+      selectionManagerStub.setSelected([linkNode]);
+      const node = new MapNode();
+      node.id = "nodeid";
+      linkNode.nodeId = node.id;
+
+      const secondLinkNode = new MapLinkNode();
+      secondLinkNode.label = new MapLabel();
+      secondLinkNode.label.x = 1;
+      secondLinkNode.label.y = 2;
+      secondLinkNode.id = "secondlinknodeid";
+
+      const link = new MapLink();
+      link.nodes = [secondLinkNode, linkNode];
+
+      mockedGraphDataManager.setLinks([link]);
+
+      const dragEvent = new DraggableDrag<MapLinkNode>(linkNode);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      interfaceLabelWidgetStub.draggable.drag.emit(dragEvent);
+      tick();
+      expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
+      expect(linkNode.label.x).toEqual(11);
+      expect(linkNode.label.y).toEqual(22);
+    }));
+
+    it('should not update interface label position when dragging and parent node is selected', fakeAsync(() => {
+      spyOn(linksWidgetStub, 'redrawLink');
+      const node = new MapNode();
+      node.id = "nodeid";
+      linkNode.nodeId = node.id;
+
+      selectionManagerStub.setSelected([linkNode, node]);
+
+      const secondLinkNode = new MapLinkNode();
+      secondLinkNode.label = new MapLabel();
+      secondLinkNode.label.x = 1;
+      secondLinkNode.label.y = 2;
+      secondLinkNode.id = "secondlinknodeid";
+
+      const link = new MapLink();
+      link.nodes = [linkNode, secondLinkNode];
+
+      mockedGraphDataManager.setLinks([link]);
+
+      const dragEvent = new DraggableDrag<MapLinkNode>(linkNode);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      interfaceLabelWidgetStub.draggable.drag.emit(dragEvent);
+      tick();
+      expect(linksWidgetStub.redrawLink).not.toHaveBeenCalled();
+      expect(linkNode.label.x).toEqual(1);
+      expect(linkNode.label.y).toEqual(2);
+    }));
+
+    it('should emit event when interface label stopped dragging', fakeAsync(() => {
+      const linksEventSourceStub = fixture.debugElement.injector.get(LinksEventSource);
+      const spyDragged = spyOn(linksEventSourceStub.interfaceDragged, 'emit');
+
+      selectionManagerStub.setSelected([linkNode]);
+      const dragEvent = new DraggableEnd<MapLinkNode>(linkNode);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      interfaceLabelWidgetStub.draggable.end.emit(dragEvent);
+      tick();
+      expect(linksEventSourceStub.interfaceDragged.emit).toHaveBeenCalled();
+      expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(linkNode);
+      expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
+      expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
+    }));
+
+    it('should not emit event when interface label stopped dragging and parent node is selected', fakeAsync(() => {
+      const linksEventSourceStub = fixture.debugElement.injector.get(LinksEventSource);
+      spyOn(linksEventSourceStub.interfaceDragged, 'emit');
+
+      const node = new MapNode();
+      node.id = "nodeid";
+      linkNode.nodeId = node.id;
+
+      selectionManagerStub.setSelected([linkNode, node]);
+      const dragEvent = new DraggableEnd<MapLinkNode>(linkNode);
+      dragEvent.dx = 10;
+      dragEvent.dy = 20;
+
+      interfaceLabelWidgetStub.draggable.end.emit(dragEvent);
+      tick();
+      expect(linksEventSourceStub.interfaceDragged.emit).not.toHaveBeenCalled();
     }));
   });
 });
