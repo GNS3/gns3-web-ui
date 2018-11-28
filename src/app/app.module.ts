@@ -74,6 +74,7 @@ import { DrawingService } from './services/drawing.service';
 import { ProjectNameValidator } from './components/projects/models/projectNameValidator';
 import { MatSidenavModule } from '@angular/material';
 import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
+import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
 
 
 if (environment.production) {
@@ -115,7 +116,8 @@ if (environment.production) {
     LocalServerComponent,
     ProgressComponent,
     ServerDiscoveryComponent,
-    NodeSelectInterfaceComponent
+    NodeSelectInterfaceComponent,
+    DrawLinkToolComponent
   ],
   imports: [
     NgbModule.forRoot(),

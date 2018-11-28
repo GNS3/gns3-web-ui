@@ -25,5 +25,4 @@ export class MapNode implements Indexed {
     x: number;
     y: number;
     z: number;
-    isSelected = false;
 }

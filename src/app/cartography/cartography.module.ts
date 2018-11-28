@@ -2,9 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatIconModule } from '@angular/material';
 
-import { DrawLinkToolComponent } from './components/draw-link-tool/draw-link-tool.component';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
-
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
 import { MultiLinkCalculatorHelper } from './helpers/multi-link-calculator-helper';
@@ -54,7 +52,6 @@ import { MapSettingsManager } from './managers/map-settings-manager';
   declarations: [
     D3MapComponent,
     ExperimentalMapComponent,
-    DrawLinkToolComponent,
     DrawingResizingComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,

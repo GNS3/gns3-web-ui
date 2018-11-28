@@ -64,7 +64,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private drawListener: Function;
   private ws: Subject<any>;
 
-  protected tools = {
+  tools = {
     'selection': true,
     'moving': false,
     'draw_link': false

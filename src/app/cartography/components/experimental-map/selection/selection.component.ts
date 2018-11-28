@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, AfterViewInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { Observable, Subscription, Subject } from 'rxjs';
-import { Rectangle } from '../../models/rectangle';
+import { Rectangle } from '../../../models/rectangle';
 
 @Component({
   selector: '[app-selection]',

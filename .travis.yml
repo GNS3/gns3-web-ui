@@ -46,7 +46,7 @@ before_script:
    - greenkeeper-lockfile-update
    - npm install -g codecov
 
-script: yarn ng test --watch=false --code-coverage
+script: yarn coverage
 
 after_success:
   - codecov

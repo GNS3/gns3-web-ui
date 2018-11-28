@@ -17,3 +17,11 @@ export class ResizedDataEvent<T> {
     public height: number) {
   }
 }
+
+export class ClickedDataEvent<T> {
+  constructor(
+    public datum: T,
+    public x: number,
+    public y: number
+  ) {}
+}
