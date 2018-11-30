@@ -22,7 +22,7 @@ export class LabelWidget implements Widget {
     private cssFixer: CssFixer,
     private fontFixer: FontFixer,
     private selectionManager: SelectionManager,
-    private mapSettings: MapSettingsManager,
+    private mapSettings: MapSettingsManager
   ) {}
 
   public redrawLabel(view: SVGSelection, label: MapLabel) {
@@ -56,6 +56,8 @@ export class LabelWidget implements Widget {
 
 
   private drawLabel(view: SVGSelection) {
+    const self = this;
+
     const label_body = view.selectAll<SVGGElement, MapLabel>("g.label_body")
       .data((label) => [label]);
 
@@ -77,31 +79,14 @@ export class LabelWidget implements Widget {
     label_body_merge
       .select<SVGTextElement>('text.label')
         .attr('label_id', (l: MapLabel) => l.id)
-        // .attr('y', (n: Node) => n.label.y - n.height / 2. + 10)  // @todo: server computes y in auto way
         .attr('style', (l: MapLabel) => {
           let styles = this.cssFixer.fix(l.style);
           styles = this.fontFixer.fixStyles(styles);
           return styles;
         })
         .text((l: MapLabel) => l.text)
-        .attr('x', function (this: SVGTextElement, l: MapLabel) {
-          // if (l.x === null) {
-          //   // center
-          //   const bbox = this.getBBox();
-          //   return -bbox.width / 2.;
-          // }
-          return l.x + LabelWidget.NODE_LABEL_MARGIN;
-        })
-        .attr('y', function (this: SVGTextElement, l: MapLabel) {
-          let bbox = this.getBBox();
-
-          // if (n.label.x === null) {
-          //   // center
-          //   bbox = this.getBBox();
-          //   return - n.height / 2. - bbox.height ;
-          // }
-          return l.y + bbox.height - LabelWidget.NODE_LABEL_MARGIN - bbox.height*0.14;
-        })
+        .attr('x', (l: MapLabel) => l.x)
+        .attr('y', (l: MapLabel) => l.y)
         .attr('transform', (l: MapLabel) => {
           return `rotate(${l.rotation}, ${l.x}, ${l.y})`;
         })
