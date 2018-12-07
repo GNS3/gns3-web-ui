@@ -41,6 +41,8 @@ import { SelectionControlComponent } from './components/selection-control/select
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 import { MapSettingsManager } from './managers/map-settings-manager';
+import { FontBBoxCalculator } from './helpers/font-bbox-calculator';
+import { StylesToFontConverter } from './converters/styles-to-font-converter';
 
 
 @NgModule({
@@ -93,6 +95,8 @@ import { MapSettingsManager } from './managers/map-settings-manager';
     MapSymbolsDataSource,
     SelectionEventSource,
     MapSettingsManager,
+    FontBBoxCalculator,
+    StylesToFontConverter,
     ...D3_MAP_IMPORTS
   ],
   exports: [ D3MapComponent, ExperimentalMapComponent ]

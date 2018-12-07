@@ -46,8 +46,8 @@ import { MapLabel } from '../../cartography/models/map/map-label';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapLinkNode } from '../../cartography/models/map/map-link-node';
 import { TextElement } from '../../cartography/models/drawings/text-element';
-import { select } from 'd3-selection';
 import { FontFixer } from '../../cartography/helpers/font-fixer';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 
 
 @Component({
@@ -112,6 +112,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private linksEventSource: LinksEventSource,
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private settingsService: SettingsService,
+    private mapLabelToLabel: MapLabelToLabelConverter
   ) {}
 
   ngOnInit() {
@@ -259,7 +260,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   onNodeCreation(appliance: Appliance) {
     this.nodeService
       .createFromAppliance(this.server, this.project, appliance, 0, 0, 'local')
-      .subscribe(() => {
+      .subscribe((createdNode: Node) => {
         this.projectService
           .nodes(this.server, this.project.project_id)
           .subscribe((nodes: Node[]) => {
@@ -282,8 +283,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {
     const node = this.nodesDataSource.get(draggedEvent.datum.nodeId);
-    node.label.x += draggedEvent.dx;
-    node.label.y += draggedEvent.dy;
+    const mapLabel = draggedEvent.datum;
+    mapLabel.x += draggedEvent.dx;
+    mapLabel.y += draggedEvent.dy;
+
+    const label = this.mapLabelToLabel.convert(mapLabel);
+    node.label = label;
 
     this.nodeService
       .updateLabel(this.server, node, node.label)
