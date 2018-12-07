@@ -24,37 +24,6 @@ export class TextDrawingWidget implements DrawingShapeWidget {
           return (d.element && d.element instanceof TextElement) ? [d.element] : [];
         });
 
-    // drawing.enter()
-    //     .append("foreignObject")
-    //       .attr("width", (elem) => elem.width)
-    //       .attr("height", (elem) => elem.height)
-    //       .attr("visibility", "hidden")
-    //     .append("xhtml:div")
-    //       .attr("width", (elem) => elem.width)
-    //       .attr("height", (elem) => elem.height)
-    //       .attr('style', (text: TextElement) => {
-    //         const font = this.fontFixer.fix(text);
-    
-    //         const styles: string[] = [];
-    //         if (font.font_family) {
-    //           styles.push(`font-family: "${text.font_family}"`);
-    //         }
-    //         if (font.font_size) {
-    //           styles.push(`font-size: ${text.font_size}pt`);
-    //         }
-    //         if (font.font_weight) {
-    //           styles.push(`font-weight: ${text.font_weight}`);
-    //         }
-    //         styles.push(`color: ${text.fill}`);
-    //         return styles.join("; ");
-    //       })
-    //       .attr('text-decoration', (text) => text.text_decoration)
-    //       .attr('contenteditable', 'true')
-    //       .text((elem) => elem.text)
-    //       .on("dblclick", (_, index, textElements) => {
-    //         select(textElements[index]).attr("visibility", "visible");
-    //       });
-
     const drawing_enter = drawing
       .enter()
         .append<SVGTextElement>('text')
