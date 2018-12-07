@@ -23,7 +23,7 @@ g.node:hover {
   background: transparent;
   top: 20px;
   left: 92px;
-  width: 232px !important;
+  width: 296px !important;
   height: 72px !important;
 }
 
@@ -41,7 +41,7 @@ g.node:hover {
 }
 
 .drawer {
-  width: 232px !important;
+  width: 296px !important;
   height: 72px !important;
   background:#263238;
 }
@@ -51,7 +51,6 @@ g.node:hover {
 }
 
 .drawer-button {
-  height: 72px;
   width: 64px!important;
   background: #263238;
   padding: 0;
@@ -70,8 +69,7 @@ g.node:hover {
 
 .drawer-arrow-button-left {
   width: 40px;
-  height: 72px;
-  margin-left: 192px;
+  margin-left: 256px;
   background:#263238;
   position: fixed;
 }

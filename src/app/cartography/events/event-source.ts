@@ -14,8 +14,8 @@ export class ResizedDataEvent<T> {
     public x: number,
     public y: number,
     public width: number,
-    public height: number) {
-  }
+    public height: number
+    ) {}
 }
 
 export class ClickedDataEvent<T> {
@@ -23,5 +23,12 @@ export class ClickedDataEvent<T> {
     public datum: T,
     public x: number,
     public y: number
+  ) {}
+}
+
+export class EditedDataEvent {
+  constructor(
+    public id: string,
+    public editedText: string
   ) {}
 }

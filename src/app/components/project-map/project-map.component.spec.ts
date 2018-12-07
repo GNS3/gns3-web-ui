@@ -79,7 +79,7 @@ export class MockedDrawingsDataSource {
   update() { return of({})}
 }
 
-fdescribe('ProjectMapComponent', () => {
+describe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
   let drawingService = new MockedDrawingService;

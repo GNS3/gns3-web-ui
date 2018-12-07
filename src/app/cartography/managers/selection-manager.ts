@@ -24,6 +24,8 @@ export class SelectionManager {
     this.selection = dictItems;
 
     if (selected.length > 0) {
+      //console.log(selected);
+      
       this.selected.emit(selected);
     }
     

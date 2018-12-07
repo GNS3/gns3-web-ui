@@ -24,10 +24,91 @@ export class TextDrawingWidget implements DrawingShapeWidget {
           return (d.element && d.element instanceof TextElement) ? [d.element] : [];
         });
 
+    // drawing.enter()
+    //     .append("foreignObject")
+    //       .attr("width", (elem) => elem.width)
+    //       .attr("height", (elem) => elem.height)
+    //       .attr("visibility", "hidden")
+    //     .append("xhtml:div")
+    //       .attr("width", (elem) => elem.width)
+    //       .attr("height", (elem) => elem.height)
+    //       .attr('style', (text: TextElement) => {
+    //         const font = this.fontFixer.fix(text);
+    
+    //         const styles: string[] = [];
+    //         if (font.font_family) {
+    //           styles.push(`font-family: "${text.font_family}"`);
+    //         }
+    //         if (font.font_size) {
+    //           styles.push(`font-size: ${text.font_size}pt`);
+    //         }
+    //         if (font.font_weight) {
+    //           styles.push(`font-weight: ${text.font_weight}`);
+    //         }
+    //         styles.push(`color: ${text.fill}`);
+    //         return styles.join("; ");
+    //       })
+    //       .attr('text-decoration', (text) => text.text_decoration)
+    //       .attr('contenteditable', 'true')
+    //       .text((elem) => elem.text)
+    //       .on("dblclick", (_, index, textElements) => {
+    //         select(textElements[index]).attr("visibility", "visible");
+    //       });
+
     const drawing_enter = drawing
       .enter()
         .append<SVGTextElement>('text')
-        .attr('class', 'text_element noselect');
+        .attr('class', 'text_element noselect')
+        .on("dblclick", (elem, index, textElements) => {
+          console.log("Id: ", textElements[index].parentElement.parentElement.getAttribute("drawing_id"));
+
+          select(textElements[index])
+            .attr("visibility", "hidden");
+
+          select(textElements[index])
+            .classed("editingMode", true);
+
+          select(textElements[index].parentElement.parentElement.parentElement)
+            .append("foreignObject")
+              .attr("width", '1000px')
+              .attr("min-width", 'fit-content')
+              .attr("height", '100px')
+              .attr("id", "temporaryText")
+              .attr("transform", textElements[index].parentElement.getAttribute("transform"))
+            .append("xhtml:div")
+              .attr("width", "fit-content")
+              .attr("height", "fit-content")
+              .attr("class", "temporaryTextInside")
+              .attr('style', () => {
+                const styles: string[] = [];
+                styles.push(`white-space: pre-line`)
+                styles.push(`outline: 0px solid transparent`)
+                styles.push(`font-family: ${elem.font_family}`)
+                styles.push(`font-size: ${elem.font_size}pt!important`);
+                styles.push(`font-weight: ${elem.font_weight}`)
+                styles.push(`color: ${elem.fill}`);
+                return styles.join("; ");
+              })
+              .attr('text-decoration', elem.text_decoration)
+              .attr('contenteditable', 'true')
+              .text(elem.text)
+            .on("focusout", (elem, index, textElements) => {
+              let temporaryText = document.getElementsByClassName("temporaryTextInside")[0] as HTMLElement;
+              let savedText = temporaryText.innerText;
+
+              //let splittedText = savedText.split(/\r?\n/);
+              var temporaryElement = document.getElementById("temporaryText") as HTMLElement;
+              temporaryElement.remove();
+
+              view.selectAll<SVGTextElement, TextElement>('text.editingMode')
+                .attr("visibility", "visible")
+                .classed("editingMode", false)
+                .text(savedText);
+            });
+
+          var txtInside = document.getElementsByClassName("temporaryTextInside")[0] as HTMLElement;
+          txtInside.focus();
+        });
 
     const merge = drawing.merge(drawing_enter);
     merge
@@ -75,6 +156,7 @@ export class TextDrawingWidget implements DrawingShapeWidget {
         // approx and make it matching to GUI
         const tspan = select(this).selectAll<SVGTSpanElement, string>('tspan');
         const height = this.getBBox().height / tspan.size();
+        //return `translate(0, ${height})`;
         return `translate(${TextDrawingWidget.MARGIN}, ${height - TextDrawingWidget.MARGIN})`;
     });
 
