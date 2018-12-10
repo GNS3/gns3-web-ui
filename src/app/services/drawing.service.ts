@@ -38,6 +38,16 @@ export class DrawingService {
       })
   }
 
+  updateText(server: Server, drawing: Drawing, svg: string): Observable<Drawing> {
+    return this.httpServer
+      .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+        'svg': svg,
+        'x': drawing.x,
+        'y': drawing.y,
+        'z': drawing.z
+      });
+  }
+
   update(server: Server, drawing: Drawing): Observable<Drawing> {
     return this.httpServer
       .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {

@@ -1,3 +1,5 @@
+import { TextElement } from '../models/drawings/text-element';
+
 export class DataEventSource<T> {
   constructor(
     public datum: T,
@@ -26,9 +28,10 @@ export class ClickedDataEvent<T> {
   ) {}
 }
 
-export class EditedDataEvent {
+export class TextEditedDataEvent {
   constructor(
-    public id: string,
-    public editedText: string
+    public textDrawingId: string,
+    public editedText: string,
+    public textElement: TextElement
   ) {}
 }

@@ -29,8 +29,6 @@ export class SelectionTool {
   private activate(selection) {
     const self = this;
 
-    console.log("test!!!", selection);
-
     selection.on("mousedown", function() {
       const subject = select(window);
       const parent = this.parentElement;

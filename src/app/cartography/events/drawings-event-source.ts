@@ -7,4 +7,5 @@ import { MapDrawing } from "../models/map/map-drawing";
 export class DrawingsEventSource {
   public dragged = new EventEmitter<DraggedDataEvent<MapDrawing>>();
   public resized = new EventEmitter<ResizedDataEvent<MapDrawing>>();
+  public textEdited = new EventEmitter<any>();
 }

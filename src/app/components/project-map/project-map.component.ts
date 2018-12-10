@@ -27,7 +27,7 @@ import { MapChangeDetectorRef } from '../../cartography/services/map-change-dete
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { MapLinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
-import { DraggedDataEvent, ResizedDataEvent, EditedDataEvent } from '../../cartography/events/event-source';
+import { DraggedDataEvent, ResizedDataEvent, EditedDataEvent, TextEditedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { NodesEventSource } from '../../cartography/events/nodes-event-source';
@@ -196,6 +196,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
+      this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt))
+    );
+
+    this.subscriptions.push(
       this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt))
     );
 
@@ -348,8 +352,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onDrawingEdited(editedEvent: EditedDataEvent){
+  public onTextEdited(evt: TextEditedDataEvent){
+    //<svg height=\"100\" width=\"100\"><text fill=\"#000000\" fill-opacity=\"0\" font-family=\"Noto Sans\" font-size=\"11\" font-weight=\"bold\">this is one another text\nto save\n</text></svg>
+    //let splittedText = evt.editedText.split(/\r?\n/);
+    let mapDrawing: MapDrawing = new MapDrawing();
+    mapDrawing.element = evt.textElement;
+    (mapDrawing.element as TextElement).text = evt.editedText;
+    let svgString = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
+    let drawing = this.drawingsDataSource.get(evt.textDrawingId);
+
+    this.drawingService
+      .updateText(this.server, drawing, svgString)
+      .subscribe((serverDrawing: Drawing) => {
+        this.drawingsDataSource.update(serverDrawing);
+    });
   }
 
   public set readonly(value) {

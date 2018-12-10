@@ -5,6 +5,7 @@ import { DrawingsWidget } from './widgets/drawings';
 import { DrawingLineWidget } from './widgets/drawing-line';
 import { SelectionTool } from './tools/selection-tool';
 import { MovingTool } from './tools/moving-tool';
+import {TextEditingTool} from './tools/text-editing-tool';
 import { LayersWidget } from './widgets/layers';
 import { LinkWidget } from './widgets/link';
 import { InterfaceStatusWidget } from './widgets/interface-status';
@@ -28,6 +29,7 @@ export const D3_MAP_IMPORTS = [
     DrawingLineWidget,
     SelectionTool,
     MovingTool,
+    TextEditingTool,
     LayersWidget,
     LinkWidget,
     InterfaceStatusWidget,

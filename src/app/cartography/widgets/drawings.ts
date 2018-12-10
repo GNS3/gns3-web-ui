@@ -90,9 +90,7 @@ export class DrawingsWidget implements Widget {
           if ((datum.element.height + evt.dy) < 0) {
             isReflectedVertical = true;
             y = topEdge;
-            console.log(y);
             datum.element.height = Math.abs(datum.element.height + evt.dy);
-            console.log(datum.element.height);
           } else {
             datum.element.height += evt.dy;
       
@@ -108,9 +106,7 @@ export class DrawingsWidget implements Widget {
           if ((datum.element.height + dy) < 0){
             isReflectedVertical = false;
             y = topEdge;
-            console.log(y);
             datum.element.height = Math.abs(datum.element.height + evt.dy);
-            console.log(datum.element.height);
           } else {
             datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
             datum.element.height += dy;

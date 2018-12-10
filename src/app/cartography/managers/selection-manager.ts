@@ -23,9 +23,7 @@ export class SelectionManager {
 
     this.selection = dictItems;
 
-    if (selected.length > 0) {
-      //console.log(selected);
-      
+    if (selected.length > 0) {      
       this.selected.emit(selected);
     }
     

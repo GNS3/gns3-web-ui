@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatIconModule } from '@angular/material';
 
-import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
 import { MultiLinkCalculatorHelper } from './helpers/multi-link-calculator-helper';
@@ -41,6 +40,8 @@ import { SelectionControlComponent } from './components/selection-control/select
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 import { MapSettingsManager } from './managers/map-settings-manager';
+import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
+import { TextEditingComponent } from './components/text-editing/text-editing.component';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import { MapSettingsManager } from './managers/map-settings-manager';
     D3MapComponent,
     ExperimentalMapComponent,
     DrawingResizingComponent,
+    TextEditingComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,
