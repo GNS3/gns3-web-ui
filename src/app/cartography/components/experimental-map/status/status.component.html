@@ -1,0 +1,21 @@
+<svg:g *ngIf="status && point && direction">
+  <svg:circle
+    *ngIf="status == 'started'"
+    class="status_started"
+    [attr.cx]="point.x"
+    [attr.cy]="point.y"
+    r="6"
+    fill="#2ecc71"
+  />
+
+  <svg:rect
+    *ngIf="status == 'stopped'"
+    class="status_stopped"
+    [attr.x]="point.x - 10/2"
+    [attr.y]="point.y - 10/2"
+    width="10"
+    height="10"
+    r="6"
+    fill="red"
+  />
+</svg:g>

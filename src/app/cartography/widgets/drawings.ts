@@ -7,12 +7,12 @@ import { SvgToDrawingConverter } from "../helpers/svg-to-drawing-converter";
 import { Draggable } from "../events/draggable";
 import { DrawingWidget } from "./drawing";
 import { MapDrawing } from "../models/map/map-drawing";
+import { MapSettingsManager } from "../managers/map-settings-manager";
 
 
 @Injectable()
 export class DrawingsWidget implements Widget {
   public draggable = new Draggable<SVGGElement, MapDrawing>();
-  public draggingEnabled = false;
 
   // public onContextMenu = new EventEmitter<NodeContextMenu>();
   // public onDrawingClicked = new EventEmitter<NodeClicked>();
@@ -22,6 +22,7 @@ export class DrawingsWidget implements Widget {
   constructor(
     private drawingWidget: DrawingWidget,
     private svgToDrawingConverter: SvgToDrawingConverter,
+    private mapSettings: MapSettingsManager
   ) {
     this.svgToDrawingConverter = new SvgToDrawingConverter();
   }
@@ -59,7 +60,7 @@ export class DrawingsWidget implements Widget {
       .exit()
         .remove();
 
-    if (this.draggingEnabled) {
+    if (!this.mapSettings.isReadOnly) {
       this.draggable.call(merge);
     }
   }

@@ -22,7 +22,8 @@
     "distlinux": "yarn buildforelectron && electron-builder --linux --x64",
     "distwin": "yarn buildforelectron && electron-builder --win --x64",
     "distmac": "yarn buildforelectron && electron-builder --mac --x64",
-    "release": "build"
+    "release": "build",
+    "coverage": "ng test --watch=false --code-coverage"
   },
   "private": true,
   "dependencies": {
@@ -91,8 +92,5 @@
     "ignore": [
       "typescript"
     ]
-  },
-  "comments": [
-    "Typescript should remain below 2.8.0, @todo: check later if packages were adjusted"
-  ]
+  }
 }

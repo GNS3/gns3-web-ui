@@ -11,6 +11,7 @@ import { Drawing } from "../models/drawing";
 import { Symbol } from "../../models/symbol";
 import { LayersManager } from "./layers-manager";
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from "../datasources/map-datasource";
+import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
 
 @Injectable()
 export class GraphDataManager {
@@ -23,7 +24,8 @@ export class GraphDataManager {
     private linkToMapLink: LinkToMapLinkConverter,
     private drawingToMapDrawing: DrawingToMapDrawingConverter,
     private symbolToMapSymbol: SymbolToMapSymbolConverter,
-    private layersManager: LayersManager
+    private layersManager: LayersManager,
+    private multiLinkCalculator: MultiLinkCalculatorHelper
   ) {}
 
   public setNodes(nodes: Node[]) {
@@ -98,6 +100,8 @@ export class GraphDataManager {
         link.y = link.source.y + (link.target.y - link.source.y) * 0.5;
       }
     });
+
+    this.multiLinkCalculator.assignDataToLinks(this.getLinks());
   }
 
 }

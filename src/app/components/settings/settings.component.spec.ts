@@ -45,7 +45,8 @@ describe('SettingsComponent', () => {
   it('should get and save new settings', () => {
     const settings = {
       'crash_reports': true,
-      'experimental_features': true
+      'experimental_features': true,
+      'angular_map': false
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');

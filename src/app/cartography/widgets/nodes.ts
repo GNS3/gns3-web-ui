@@ -6,6 +6,7 @@ import { Layer  } from "../models/layer";
 import { NodeWidget } from "./node";
 import { Draggable } from "../events/draggable";
 import { MapNode } from "../models/map/map-node";
+import { MapSettingsManager } from "../managers/map-settings-manager";
 
 
 @Injectable()
@@ -13,10 +14,10 @@ export class NodesWidget implements Widget {
   static NODE_LABEL_MARGIN = 3;
 
   public draggable = new Draggable<SVGGElement, MapNode>();
-  public draggingEnabled = false;
 
   constructor(
-    private nodeWidget: NodeWidget
+    private nodeWidget: NodeWidget,
+    private mapSettings: MapSettingsManager
   ) {
   }
 
@@ -49,7 +50,7 @@ export class NodesWidget implements Widget {
       .exit()
         .remove();
 
-    if (this.draggingEnabled) {
+    if (!this.mapSettings.isReadOnly) {
       this.draggable.call(merge);
     }
   }

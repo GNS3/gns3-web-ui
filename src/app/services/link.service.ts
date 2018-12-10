@@ -5,6 +5,8 @@ import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
 import {Port} from "../models/port";
+import { Link } from '../models/link';
+import { LinkNode } from '../models/link-node';
 
 @Injectable()
 export class LinkService {
@@ -33,4 +35,27 @@ export class LinkService {
         ]});
   }
 
+  updateNodes(
+    server: Server, link: Link, nodes: LinkNode[]) {
+    const requestNodes = nodes.map((linkNode) => {
+      return {
+        node_id: linkNode.node_id,
+        port_number: linkNode.port_number,
+        adapter_number: linkNode.adapter_number,
+        label: {
+          rotation: linkNode.label.rotation,
+          style: linkNode.label.style,
+          text: linkNode.label.text,
+          x: linkNode.label.x,
+          y: linkNode.label.y
+        }
+      }
+    });
+
+    return this.httpServer
+      .put(
+        server,
+        `/projects/${link.project_id}/links/${link.link_id}`,
+        {"nodes": requestNodes});
+  }
 }

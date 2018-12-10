@@ -64,7 +64,7 @@ export class TextDrawingWidget implements DrawingShapeWidget {
       .text((line) => line)
         .attr('xml:space', 'preserve')
         .attr('x', 0)
-        .attr("dy", (line, i) => i === 0 ? '0em' : '1.2em');
+        .attr("dy", (line, i) => i === 0 ? '0em' : '1.4em');
 
     lines
       .exit()

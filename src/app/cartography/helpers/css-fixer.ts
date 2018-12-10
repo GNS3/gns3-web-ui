@@ -6,7 +6,7 @@ import { Injectable } from "@angular/core";
 @Injectable()
 export class CssFixer {
 
-  public fix(styles: string) {
+  public fix(styles: string): string {
     const ast = csstree.parse(styles, {
       'context': 'declarationList'
     });

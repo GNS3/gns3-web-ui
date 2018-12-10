@@ -23,6 +23,9 @@ import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
 import { Node } from '../../../cartography/models/node';
+import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
+import { CssFixer } from '../../../cartography/helpers/css-fixer';
+import { FontFixer } from '../../../cartography/helpers/font-fixer';
 
 
 describe('ProjectMapShortcutsComponent', () => {
@@ -56,7 +59,11 @@ describe('ProjectMapShortcutsComponent', () => {
         SettingsService,
         MapNodeToNodeConverter,
         MapLabelToLabelConverter,
-        MapPortToPortConverter
+        MapPortToPortConverter,
+        MapLabelToLabelConverter,
+        FontBBoxCalculator,
+        CssFixer,
+        FontFixer
       ],
       declarations: [ ProjectMapShortcutsComponent ]
     })
