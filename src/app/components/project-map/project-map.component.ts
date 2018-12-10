@@ -7,7 +7,6 @@ import { map, mergeMap } from "rxjs/operators";
 
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
-import { SymbolService } from '../../services/symbol.service';
 import { Link } from "../../models/link";
 import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
@@ -53,8 +52,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public links: Link[] = [];
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
-
-  project: Project;
+  public project: Project;
   public server: Server;
 
   private ws: Subject<any>;
@@ -64,6 +62,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     'moving': false,
     'draw_link': false
   };
+
   protected settings: Settings;
 
   private inReadOnlyMode = false;
@@ -71,11 +70,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
   private subscriptions: Subscription[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private serverService: ServerService,
     private projectService: ProjectService,
-    private symbolService: SymbolService,
     private nodeService: NodeService,
     private linkService: LinkService,
     private drawingService: DrawingService,
@@ -134,12 +133,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(routeSub);
 
     this.subscriptions.push(
-      this.symbolService.symbols.subscribe((symbols: Symbol[]) => {
-        this.symbols = symbols;
-      })
-    );
-
-    this.subscriptions.push(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         this.mapChangeDetectorRef.detectChanges();
@@ -148,6 +141,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
+        nodes.forEach((node: Node) => {
+          node.symbol_url = `http://${this.server.ip}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
+        });
+
         this.nodes = nodes;
         this.mapChangeDetectorRef.detectChanges();
       })
@@ -184,12 +181,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   onProjectLoad(project: Project) {
     this.readonly = this.projectService.isReadOnly(project);
 
-    const subscription = this.symbolService
-      .load(this.server)
+    const subscription = this.projectService
+      .nodes(this.server, project.project_id)
       .pipe(
-        mergeMap(() => {
-          return this.projectService.nodes(this.server, project.project_id);
-        }),
         mergeMap((nodes: Node[]) => {
           this.nodesDataSource.set(nodes);
           return this.projectService.links(this.server, project.project_id);

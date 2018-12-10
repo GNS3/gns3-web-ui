@@ -21,6 +21,7 @@ export class Node {
   project_id: string;
   status: string;
   symbol: string;
+  symbol_url: string; // @TODO: full URL to symbol, move to MapNode once converters are moved to app module
   width: number;
   x: number;
   y: number;

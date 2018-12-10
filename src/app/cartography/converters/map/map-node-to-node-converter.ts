@@ -5,9 +5,6 @@ import { MapNode } from "../../models/map/map-node";
 import { MapLabelToLabelConverter } from "./map-label-to-label-converter";
 import { MapPortToPortConverter } from "./map-port-to-port-converter";
 import { Node } from "../../models/node";
-import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
-import { CssFixer } from '../../helpers/css-fixer';
-import { FontFixer } from '../../helpers/font-fixer';
 
 
 @Injectable()
@@ -36,6 +33,7 @@ export class MapNodeToNodeConverter implements Converter<MapNode, Node> {
     node.project_id = mapNode.projectId;
     node.status = mapNode.status;
     node.symbol = mapNode.symbol;
+    node.symbol_url = mapNode.symbolUrl;
     node.width = mapNode.width;
     node.x = mapNode.x;
     node.y = mapNode.y;

@@ -18,6 +18,7 @@ import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
+import { Server } from '../../../models/server';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
+  @Input() server: Server;
 
   @Input() width = 1500;
   @Input() height = 600;
