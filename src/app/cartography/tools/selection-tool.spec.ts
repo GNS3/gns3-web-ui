@@ -1,10 +1,9 @@
-import { select } from "d3-selection";
-
 import { SelectionTool } from "./selection-tool";
 import { Context } from "../models/context";
 import { SVGSelection } from "../models/types";
 import { Rectangle } from "../models/rectangle";
 import { TestSVGCanvas } from "../testing";
+import { SelectionEventSource } from "../events/selection-event-source";
 
 
 describe('SelectionTool', () => {
@@ -14,11 +13,14 @@ describe('SelectionTool', () => {
   let selection_line_tool: SVGSelection;
   let path_selection: SVGSelection;
   let selected_rectangle: Rectangle;
+  let selection_event_source: SelectionEventSource;
 
   beforeEach(() => {
     context = new Context();
-    tool = new SelectionTool(context);
-    tool.rectangleSelected.subscribe((rectangle: Rectangle) => {
+    selection_event_source = new SelectionEventSource();
+
+    tool = new SelectionTool(context, selection_event_source);
+    selection_event_source.selected.subscribe((rectangle: Rectangle) => {
       selected_rectangle = rectangle;
     });
 

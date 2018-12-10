@@ -7,3 +7,11 @@ export class DataEventSource<T> {
 }
 
 export class DraggedDataEvent<T> extends DataEventSource<T> {}
+
+export class ClickedDataEvent<T> {
+  constructor(
+    public datum: T,
+    public x: number,
+    public y: number
+  ) {}
+}

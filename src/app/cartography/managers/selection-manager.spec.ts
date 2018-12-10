@@ -1,6 +1,15 @@
 import { MapNode } from "../models/map/map-node";
 import { SelectionManager } from "./selection-manager";
 
+export class SelectionManagerMock {
+  public items = [];
+  setSelected(items: any) {
+    this.items = items;
+  }
+  getSelected() {
+    return this.items;
+  }
+}
 
 describe('SelectionManager', () => {
   let manager: SelectionManager;

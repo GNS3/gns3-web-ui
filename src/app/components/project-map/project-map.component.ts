@@ -9,7 +9,6 @@ import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
 import { SymbolService } from '../../services/symbol.service';
 import { Link } from "../../models/link";
-import { MapComponent } from "../../cartography/components/map/map.component";
 import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
 import { Server } from "../../models/server";
@@ -37,6 +36,10 @@ import { MapNode } from '../../cartography/models/map/map-node';
 import { LinksEventSource } from '../../cartography/events/links-event-source';
 import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
+import { SettingsService, Settings } from '../../services/settings.service';
+import { MapLabel } from '../../cartography/models/map/map-label';
+import { MapLinkNode } from '../../cartography/models/map/map-link-node';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 
 
 @Component({
@@ -56,20 +59,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private ws: Subject<any>;
 
-  protected tools = {
+  tools = {
     'selection': true,
     'moving': false,
     'draw_link': false
   };
+  protected settings: Settings;
 
   private inReadOnlyMode = false;
-
-  @ViewChild(MapComponent) mapChild: MapComponent;
 
   @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
 
   private subscriptions: Subscription[] = [];
-
   constructor(
     private route: ActivatedRoute,
     private serverService: ServerService,
@@ -89,12 +90,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private drawingsDataSource: DrawingsDataSource,
     private nodesEventSource: NodesEventSource,
     private drawingsEventSource: DrawingsEventSource,
-    private linksEventSource: LinksEventSource
+    private linksEventSource: LinksEventSource,
+    private settingsService: SettingsService,
+    private mapLabelToLabel: MapLabelToLabelConverter
   ) {}
 
   ngOnInit() {
+    this.settings = this.settingsService.getAll();
+    
     this.progressService.activate();
-
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const server_id = parseInt(paramMap.get('server_id'), 10);
 
@@ -161,11 +165,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
+      this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt))
+    );
+
+    this.subscriptions.push(
       this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt))
     );
 
     this.subscriptions.push(
       this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt))
+    );
+
+    this.subscriptions.push(
+      this.linksEventSource.interfaceDragged.subscribe((evt) => this.onInterfaceLabelDragged(evt))
     );
   }
 
@@ -224,7 +236,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   onNodeCreation(appliance: Appliance) {
     this.nodeService
       .createFromAppliance(this.server, this.project, appliance, 0, 0, 'local')
-      .subscribe(() => {
+      .subscribe((createdNode: Node) => {
         this.projectService
           .nodes(this.server, this.project.project_id)
           .subscribe((nodes: Node[]) => {
@@ -245,6 +257,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
+  private onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {
+    const node = this.nodesDataSource.get(draggedEvent.datum.nodeId);
+    const mapLabel = draggedEvent.datum;
+    mapLabel.x += draggedEvent.dx;
+    mapLabel.y += draggedEvent.dy;
+
+    const label = this.mapLabelToLabel.convert(mapLabel);
+    node.label = label;
+
+    this.nodeService
+      .updateLabel(this.server, node, node.label)
+      .subscribe((serverNode: Node) => {
+        this.nodesDataSource.update(serverNode);
+      });
+  }
+
   private onDrawingDragged(draggedEvent: DraggedDataEvent<MapDrawing>) {
     const drawing = this.drawingsDataSource.get(draggedEvent.datum.id);
     drawing.x += draggedEvent.dx;
@@ -254,6 +282,24 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       .updatePosition(this.server, drawing, drawing.x, drawing.y)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
+      });
+  }
+
+  private onInterfaceLabelDragged(draggedEvent: DraggedDataEvent<MapLinkNode>) {
+    const link = this.linksDataSource.get(draggedEvent.datum.linkId);
+    if (link.nodes[0].node_id === draggedEvent.datum.nodeId) {
+      link.nodes[0].label.x += draggedEvent.dx;
+      link.nodes[0].label.y += draggedEvent.dy;
+    }
+    if (link.nodes[1].node_id === draggedEvent.datum.nodeId) {
+      link.nodes[1].label.x += draggedEvent.dx;
+      link.nodes[1].label.y += draggedEvent.dy;
+    }
+
+    this.linkService
+      .updateNodes(this.server, link, link.nodes)
+      .subscribe((serverLink: Link) => {
+        this.linksDataSource.update(serverLink);
       });
   }
 

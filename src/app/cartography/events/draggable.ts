@@ -44,9 +44,13 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
 
   private behaviour() {
     let startEvt;
-
+    let lastX: number;
+    let lastY: number;
     return drag<GElement, Datum>()
       .on('start', (datum: Datum) => {
+        lastX = event.sourceEvent.clientX;
+        lastY = event.sourceEvent.clientY;
+
         startEvt = new DraggableStart<Datum>(datum);
         startEvt.dx = event.dx;
         startEvt.dy = event.dy;
@@ -56,18 +60,17 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
       })
       .on('drag', (datum: Datum) => {
         const evt = new DraggableDrag<Datum>(datum);
-        evt.dx = event.dx;
-        evt.dy = event.dy;
-        evt.x = event.x;
-        evt.y = event.y;
+        evt.dx = event.sourceEvent.clientX - lastX;
+        evt.dy = event.sourceEvent.clientY - lastY;
+        lastX = event.sourceEvent.clientX;
+        lastY = event.sourceEvent.clientY;
+
         this.drag.emit(evt);
       })
       .on('end', (datum: Datum) => {
         const evt = new DraggableEnd<Datum>(datum);
         evt.dx = event.x - startEvt.x;
         evt.dy = event.y - startEvt.y;
-        evt.x = event.x;
-        evt.y = event.y;
         this.end.emit(evt);
       });
   }

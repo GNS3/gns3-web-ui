@@ -1,0 +1,41 @@
+<svg #svg 
+    class="map"
+    preserveAspectRatio="none" 
+    [attr.width]="width"
+    [attr.height]="height"
+    >
+    <g [attr.transform]="transform">
+        <g *ngFor="let layer of layers">
+            <g class="links">
+                <g 
+                    *ngFor="let link of layer.links"
+                    [app-link]="link" 
+                    [show-interface-labels]="settings.show_interface_labels"
+                ></g>
+                <!-- [node-changed]="nodeChanged" -->
+            </g>
+            <g class="nodes">
+                <g 
+                    *ngFor="let node of layer.nodes"
+                    [app-node]="node" 
+                    [symbols]="symbols"
+                ></g>
+                <!-- [node-changed]="nodeChanged"
+                (valueChange)="onNodeChanged($event)" -->
+            </g>
+            <g class="drawings">
+                <g 
+                    *ngFor="let drawing of layer.drawings"
+                    [app-drawing]="drawing" >
+                </g>
+            </g>
+        </g>
+    </g>
+
+    <g [app-selection]="svg"></g>
+    <!-- (selected)="onSelection($event)" -->
+
+    <filter id="grayscale">
+        <feColorMatrix id="feGrayscale" type="saturate" values="0"/>
+    </filter>
+</svg> 
