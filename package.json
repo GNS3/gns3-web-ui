@@ -92,8 +92,5 @@
     "ignore": [
       "typescript"
     ]
-  },
-  "comments": [
-    "Typescript should remain below 2.8.0, @todo: check later if packages were adjusted"
-  ]
+  }
 }

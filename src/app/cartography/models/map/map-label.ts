@@ -7,5 +7,7 @@ export class MapLabel implements Indexed {
   text: string;
   x: number;
   y: number;
+  originalX: number;
+  originalY: number;
   nodeId: string;
 }
