@@ -18,6 +18,10 @@ Please use GNS3 WebUI bundled in `gns3server` and `gns3`.
 
 ## Development
 
+### Branches policy
+
+On branch `master` you can find the latest codebase including under development features. If you are looking for stable version with features promoted to be included in the current/next release please switch to `stable` branch.
+
 ### Installation
 
 We're using [yarn](https://yarnpkg.com/lang/en/) for packages installation:

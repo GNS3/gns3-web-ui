@@ -67,7 +67,7 @@ describe('TextDrawingWidget', () => {
 
     expect(drew.nodes()[1].innerHTML).toEqual('IS TEXT');
     expect(drew.nodes()[1].getAttribute('x')).toEqual('0');
-    expect(drew.nodes()[1].getAttribute('dy')).toEqual('1.2em');
+    expect(drew.nodes()[1].getAttribute('dy')).toEqual('1.4em');
   });
 
   it('should draw whitespaces', () => {
