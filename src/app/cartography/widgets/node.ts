@@ -4,7 +4,6 @@ import { Widget } from "./widget";
 import { SVGSelection } from "../models/types";
 import { NodeContextMenu, NodeClicked } from "../events/nodes";
 import { select, event } from "d3-selection";
-import { MapSymbol } from "../models/map/map-symbol";
 import { MapNode } from "../models/map/map-node";
 import { GraphDataManager } from "../managers/graph-data-manager";
 import { SelectionManager } from "../managers/selection-manager";
@@ -47,20 +46,12 @@ export class NodeWidget implements Widget {
         })
         .on('click', (node: MapNode) => {
           this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.clientX, event.clientY))
-          // this.onNodeClicked.emit(new NodeClicked(event, n));
         });
 
     // update image of node
     node_body_merge
         .select<SVGImageElement>('image')
-          .attr('xnode:href', (n: MapNode) => {
-            const symbol = this.graphDataManager.getSymbols().find((s: MapSymbol) => s.id === n.symbol);
-            if (symbol) {
-              return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
-            }
-            // @todo; we need to have default image
-            return 'data:image/svg+xml;base64,none';
-          })
+          .attr('xnode:href', (n: MapNode) => n.symbolUrl)
           .attr('width', (n: MapNode) => n.width)
           .attr('height', (n: MapNode) => n.height)
           .attr('x', (n: MapNode) => 0)
