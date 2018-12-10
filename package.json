@@ -26,7 +26,8 @@
     "coverage": "ng test --watch=false --code-coverage",
     "prettier:base": "prettier",
     "prettier:check": "yarn prettier:base -- --list-different \"src/**/*.{ts,js,html,scss}\"",
-    "prettier:write": "yarn prettier:base -- --write \"src/**/*.{ts,js,html,scss}\""
+    "prettier:write": "yarn prettier:base -- --write \"src/**/*.{ts,js,html,scss}\"",
+    "generate-licenses-file": "yarn license-checker --production --csv --out licenses.csv"
   },
   "private": true,
   "dependencies": {
@@ -83,6 +84,7 @@
     "karma-coverage-istanbul-reporter": "^2.0.4",
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
+    "license-checker": "^24.0.1",
     "node-sass": "^4.11.0",
     "popper.js": "^1.14.6",
     "prettier": "^1.15.2",

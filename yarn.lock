@@ -1133,7 +1133,7 @@ arr-union@^3.1.0:
   resolved "https://registry.yarnpkg.com/arr-union/-/arr-union-3.1.0.tgz#e39b09aea9def866a8f206e288af63919bae39c4"
   integrity sha1-45sJrqne+Gao8gbiiK9jkZuuOcQ=
 
-array-find-index@^1.0.1:
+array-find-index@^1.0.1, array-find-index@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/array-find-index/-/array-find-index-1.0.2.tgz#df010aa1287e164bbda6f9723b0a96a1ec4187a1"
   integrity sha1-3wEKoSh+Fku9pvlyOwqWoexBh6E=
@@ -5640,6 +5640,22 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+license-checker@^24.0.1:
+  version "24.0.1"
+  resolved "https://registry.yarnpkg.com/license-checker/-/license-checker-24.0.1.tgz#242b2f13bcf5842fc3a42d0d94c14d161e141816"
+  integrity sha512-9qgTmu3aAk4e2L6fWQLLVcip/tZJ0x2K8ZfmEIo8nsB3cibSw/Lp/YplBiOOI3SfnEfLb50T3rDq3X6gai4dEw==
+  dependencies:
+    chalk "^2.4.1"
+    debug "^3.1.0"
+    mkdirp "^0.5.1"
+    nopt "^4.0.1"
+    read-installed "~4.0.3"
+    semver "^5.5.0"
+    spdx "^0.5.1"
+    spdx-correct "^3.0.0"
+    spdx-satisfies "^4.0.0"
+    treeify "^1.1.0"
+
 license-webpack-plugin@2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/license-webpack-plugin/-/license-webpack-plugin-2.0.2.tgz#9d34b521cb7fca8527945310b05be6ef0248b687"
@@ -8680,6 +8696,15 @@ spawn-please@^0.3.0:
   resolved "https://registry.yarnpkg.com/spawn-please/-/spawn-please-0.3.0.tgz#db338ec4cff63abc69f1d0e08cee9eb8bebd9d11"
   integrity sha1-2zOOxM/2Orxp8dDgjO6euL69nRE=
 
+spdx-compare@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/spdx-compare/-/spdx-compare-1.0.0.tgz#2c55f117362078d7409e6d7b08ce70a857cd3ed7"
+  integrity sha512-C1mDZOX0hnu0ep9dfmuoi03+eOdDoz2yvK79RxbcrVEG1NO1Ph35yW102DHWKN4pk80nwCgeMmSY5L25VE4D9A==
+  dependencies:
+    array-find-index "^1.0.2"
+    spdx-expression-parse "^3.0.0"
+    spdx-ranges "^2.0.0"
+
 spdx-correct@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.1.0.tgz#fb83e504445268f154b074e218c87c003cd31df4"
@@ -8687,6 +8712,11 @@ spdx-correct@^3.0.0:
   dependencies:
     spdx-expression-parse "^3.0.0"
     spdx-license-ids "^3.0.0"
+
+spdx-exceptions@^1.0.0:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/spdx-exceptions/-/spdx-exceptions-1.0.5.tgz#9d21ac4da4bdb71d060fb74e5a67531d032cbba6"
+  integrity sha1-nSGsTaS9tx0GD7dOWmdTHQMsu6Y=
 
 spdx-exceptions@^2.1.0:
   version "2.2.0"
@@ -8701,10 +8731,37 @@ spdx-expression-parse@^3.0.0:
     spdx-exceptions "^2.1.0"
     spdx-license-ids "^3.0.0"
 
+spdx-license-ids@^1.0.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-1.2.2.tgz#c9df7a3424594ade6bd11900d596696dc06bac57"
+  integrity sha1-yd96NCRZSt5r0RkA1ZZpbcBrrFc=
+
 spdx-license-ids@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.2.tgz#a59efc09784c2a5bada13cfeaf5c75dd214044d2"
   integrity sha512-qky9CVt0lVIECkEsYbNILVnPvycuEBkXoMFLRWsREkomQLevYhtRKC+R91a5TOAQ3bCMjikRwhyaRqj1VYatYg==
+
+spdx-ranges@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/spdx-ranges/-/spdx-ranges-2.0.0.tgz#257686798e5edb41d45c1aba3d3f1bb47af8d5ec"
+  integrity sha512-AUUXLfqkwD7GlzZkXv8ePPCpPjeVWI9xJCfysL8re/uKb6H10umMnC7bFRsHmLJan4fslUtekAgpHlSgLc/7mA==
+
+spdx-satisfies@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/spdx-satisfies/-/spdx-satisfies-4.0.0.tgz#ebc79eec88b68ac75618e2e5ee94fbc347587552"
+  integrity sha512-OcARj6U1OuVv98SVrRqgrR30sVocONtoPpnX8Xz4vXNrFVedqtbgkA+0KmQoXIQ2xjfltPPRVIMeNzKEFLWWKQ==
+  dependencies:
+    spdx-compare "^1.0.0"
+    spdx-expression-parse "^3.0.0"
+    spdx-ranges "^2.0.0"
+
+spdx@^0.5.1:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/spdx/-/spdx-0.5.2.tgz#76a428b9b97e7904ef83e62a4af0d06fdb50c265"
+  integrity sha512-WQbfCQT2uKLsDllnO9ItpcGUiiF1O/ZvBGCyqFZRg122HgiZubpwpZiM7BkmH19HC3XR3Z+DFMGJNzXSPebG8A==
+  dependencies:
+    spdx-exceptions "^1.0.0"
+    spdx-license-ids "^1.0.0"
 
 spdy-transport@^2.0.18:
   version "2.1.1"
@@ -9214,6 +9271,11 @@ tree-kill@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.0.tgz#5846786237b4239014f05db156b643212d4c6f36"
   integrity sha512-DlX6dR0lOIRDFxI0mjL9IYg6OTncLm/Zt+JiBhE5OlFcAR8yc9S7FFXU9so0oda47frdM/JFsk7UjNt9vscKcg==
+
+treeify@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/treeify/-/treeify-1.1.0.tgz#4e31c6a463accd0943879f30667c4fdaff411bb8"
+  integrity sha512-1m4RA7xVAJrSGrrXGs0L3YTwyvBs2S8PbRHaLZAkFw7JR8oIFwYtysxlBZhYIa7xSyiYJKZ3iGrrk55cGA3i9A==
 
 trim-newlines@^1.0.0:
   version "1.0.0"
