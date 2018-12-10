@@ -23,7 +23,10 @@
     "distwin": "yarn buildforelectron && electron-builder --win --x64",
     "distmac": "yarn buildforelectron && electron-builder --mac --x64",
     "release": "build",
-    "coverage": "ng test --watch=false --code-coverage"
+    "coverage": "ng test --watch=false --code-coverage",
+    "prettier:base": "prettier",
+    "prettier:check": "yarn prettier:base -- --list-different \"src/**/*.{ts,js,html,scss}\"",
+    "prettier:write": "yarn prettier:base -- --write \"src/**/*.{ts,js,html,scss}\""
   },
   "private": true,
   "dependencies": {
@@ -82,10 +85,12 @@
     "karma-jasmine-html-reporter": "^1.4.0",
     "node-sass": "^4.10.0",
     "popper.js": "^1.14.5",
+    "prettier": "^1.15.2",
     "protractor": "~5.4.1",
     "ts-mockito": "^2.3.1",
     "ts-node": "~7.0.1",
     "tslint": "~5.11.0",
+    "tslint-config-prettier": "^1.16.0",
     "typescript": "3.1.6"
   },
   "greenkeeper": {
