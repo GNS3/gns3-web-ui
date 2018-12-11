@@ -21,6 +21,7 @@ export class MapNode implements Indexed {
     projectId: string;
     status: string;
     symbol: string;
+    symbolUrl: string;
     width: number;
     x: number;
     y: number;

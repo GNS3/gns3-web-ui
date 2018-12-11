@@ -22,6 +22,7 @@ import { DraggedDataEvent } from '../../events/event-source';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { TextEditingTool } from '../../tools/text-editing-tool';
 import { TextAddingComponent } from '../text-adding/text-adding.component';
+import { Server } from '../../../models/server';
 
 
 @Component({
@@ -34,6 +35,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
+  @Input() server: Server;
 
   @Input() width = 1500;
   @Input() height = 600;
