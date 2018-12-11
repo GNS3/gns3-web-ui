@@ -23,7 +23,7 @@ import { HttpServer, ServerErrorHandler } from "./services/http-server.service";
 import { SnapshotService } from "./services/snapshot.service";
 import { ProgressDialogService } from "./common/progress-dialog/progress-dialog.service";
 import { NodeService } from "./services/node.service";
-import { ApplianceService } from "./services/appliance.service";
+import { TemplateService } from "./services/template.service";
 import { LinkService } from "./services/link.service";
 
 import { ProjectsComponent } from './components/projects/projects.component';
@@ -39,8 +39,8 @@ import { ServersComponent, AddServerDialogComponent } from './components/servers
 import { NodeContextMenuComponent } from './components/project-map/node-context-menu/node-context-menu.component';
 import { StartNodeActionComponent } from './components/project-map/node-context-menu/actions/start-node-action/start-node-action.component';
 import { StopNodeActionComponent } from './components/project-map/node-context-menu/actions/stop-node-action/stop-node-action.component';
-import { ApplianceComponent } from './components/appliance/appliance.component';
-import { ApplianceListDialogComponent } from './components/appliance/appliance-list-dialog/appliance-list-dialog.component';
+import { TemplateComponent } from './components/template/template.component';
+import { TemplateListDialogComponent } from './components/template/template-list-dialog/template-list-dialog.component';
 import { CartographyModule } from './cartography/cartography.module';
 import { ToasterService } from './services/toaster.service';
 import { ProjectWebServiceHandler } from "./handlers/project-web-service-handler";
@@ -105,8 +105,8 @@ if (environment.production) {
     NodeContextMenuComponent,
     StartNodeActionComponent,
     StopNodeActionComponent,
-    ApplianceComponent,
-    ApplianceListDialogComponent,
+    TemplateComponent,
+    TemplateListDialogComponent,
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     ProjectMapShortcutsComponent,
@@ -140,7 +140,7 @@ if (environment.production) {
     ProjectService,
     SymbolService,
     ServerService,
-    ApplianceService,
+    TemplateService,
     NodeService,
     LinkService,
     DrawingService,
@@ -165,7 +165,7 @@ if (environment.production) {
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
-    ApplianceListDialogComponent,
+    TemplateListDialogComponent,
     AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
     ConfirmationDialogComponent

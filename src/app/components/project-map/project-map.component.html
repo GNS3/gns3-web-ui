@@ -85,10 +85,10 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >
-        <app-appliance 
+        <app-template 
           [server]="server"
           (onNodeCreation)="onNodeCreation($event)"
-        ></app-appliance>
+        ></app-template>
       </mat-toolbar-row>
 
     </mat-toolbar>

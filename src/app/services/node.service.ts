@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
-import {Appliance} from "../models/appliance";
+import {Template} from "../models/template";
 import { Label } from '../cartography/models/label';
 
 
@@ -25,13 +25,13 @@ export class NodeService {
                 .post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/stop`, {});
   }
 
-  createFromAppliance(
-    server: Server, project: Project, appliance: Appliance,
+  createFromTemplate(
+    server: Server, project: Project, template: Template,
     x: number, y: number, compute_id: string) {
     return this.httpServer
                 .post(
                   server,
-                  `/projects/${project.project_id}/appliances/${appliance.appliance_id}`,
+                  `/projects/${project.project_id}/templates/${template.template_id}`,
                   {'x': x, 'y': y, 'compute_id': compute_id});
   }
 

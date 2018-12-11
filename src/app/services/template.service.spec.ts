@@ -2,17 +2,17 @@ import { TestBed,  } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient } from "@angular/common/http";
 
-import { ApplianceService } from './appliance.service';
+import { TemplateService } from './template.service';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 
 
 
-describe('ApplianceService', () => {
+describe('TemplateService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let service: ApplianceService;
+  let service: TemplateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -21,14 +21,14 @@ describe('ApplianceService', () => {
         AppTestingModule
       ],
       providers: [
-        ApplianceService,
+        TemplateService,
         HttpServer
       ]
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(ApplianceService);
+    service = TestBed.get(TemplateService);
   });
 
   afterEach(() => {
@@ -43,7 +43,7 @@ describe('ApplianceService', () => {
 
     service.list(server).subscribe(() => {});
 
-    httpTestingController.expectOne('http://127.0.0.1:3080/v2/appliances');
+    httpTestingController.expectOne('http://127.0.0.1:3080/v2/templates');
 
   });
 });
