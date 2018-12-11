@@ -1,5 +1,5 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import { MatCardModule } from "@angular/material";
+import { MatCardModule, MatDividerModule } from "@angular/material";
 
 import { Observable } from "rxjs/Rx";
 
@@ -23,7 +23,7 @@ describe('ServerDiscoveryComponent', () => {
     mockedServerService = new MockedServerService();
     mockedVersionService = new MockedVersionService();
     TestBed.configureTestingModule({
-      imports: [ MatCardModule ],
+      imports: [ MatCardModule, MatDividerModule ],
       providers: [
         { provide: VersionService, useFactory: () => mockedVersionService },
         { provide: ServerService, useFactory: () => mockedServerService },

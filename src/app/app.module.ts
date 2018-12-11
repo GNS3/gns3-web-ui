@@ -8,7 +8,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { D3Service } from 'd3-ng2-service';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HotkeyModule } from 'angular2-hotkeys';
 import { PersistenceModule } from 'angular-persistence';
 import { NgxElectronModule } from 'ngx-electron';
@@ -120,7 +119,6 @@ if (environment.production) {
     DrawLinkToolComponent
   ],
   imports: [
-    NgbModule.forRoot(),
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,

@@ -1,8 +1,8 @@
-import { Component, Inject, OnInit, Injectable } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { DataSource } from "@angular/cdk/collections";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { Observable, BehaviorSubject, merge } from "rxjs";
+import { Observable, merge } from "rxjs";
 import { map } from "rxjs/operators";
 
 import { Server } from "../../models/server";
