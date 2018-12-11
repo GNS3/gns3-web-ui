@@ -47,7 +47,7 @@ g.node:hover {
 }
 
 .drawer-content {
-  background: transparent;
+  background: #F0F0F0!important;
 }
 
 .drawer-button {
@@ -84,8 +84,8 @@ g.node:hover {
   flex-direction: row;
 }
 
-.mat-sidenav-backdrop.mat-sidenav-shown{
-  background-color: transparent !important;
+.mat-drawer-backdrop.mat-drawer-shown {
+  background-color: transparent;
 }
 
 .selected {

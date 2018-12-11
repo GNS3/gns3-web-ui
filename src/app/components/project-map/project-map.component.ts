@@ -467,7 +467,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.drawTools.visibility = true;
     },
-    100);
+    400);
   }
 
   public getDrawingMock(objectType: string, text?: string): MapDrawing {
