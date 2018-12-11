@@ -46,6 +46,10 @@ export class DrawingWidget implements Widget {
       .attr('transform', (d: MapDrawing) => {
         return `translate(${d.x},${d.y}) rotate(${d.rotation})`;
       });
+    
+    this.drawingWidgets.forEach((widget) => {
+      widget.draw(drawing_body_merge);
+    });
 
     drawing_body_merge
       .select<SVGAElement>('line.top')
@@ -112,11 +116,7 @@ export class DrawingWidget implements Widget {
         .attr("cursor", "move");
 
     drawing_body_merge
-      .classed('selected', (n: MapDrawing) => this.selectionManager.isSelected(n));
-    
-    this.drawingWidgets.forEach((widget) => {
-      widget.draw(drawing_body_merge);
-    });
+      .classed('drawing_selected', (n: MapDrawing) => this.selectionManager.isSelected(n));
 
   }
 }
