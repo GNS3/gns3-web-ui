@@ -354,8 +354,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onTextEdited(evt: TextEditedDataEvent){
-    //<svg height=\"100\" width=\"100\"><text fill=\"#000000\" fill-opacity=\"0\" font-family=\"Noto Sans\" font-size=\"11\" font-weight=\"bold\">this is one another text\nto save\n</text></svg>
-    //let splittedText = evt.editedText.split(/\r?\n/);
     let mapDrawing: MapDrawing = new MapDrawing();
     mapDrawing.element = evt.textElement;
     (mapDrawing.element as TextElement).text = evt.editedText;
