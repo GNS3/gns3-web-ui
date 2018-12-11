@@ -31,6 +31,10 @@ g.node:hover {
   outline: none;
 }
 
+.mat-drawer-content {
+  display: inline !important;
+}
+
 .drawer-container {
   height: 72px !important;
   background: transparent;
