@@ -27,7 +27,7 @@ import { MapChangeDetectorRef } from '../../cartography/services/map-change-dete
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { MapLinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
-import { DraggedDataEvent, ResizedDataEvent, EditedDataEvent, TextEditedDataEvent } from '../../cartography/events/event-source';
+import { DraggedDataEvent, ResizedDataEvent, TextEditedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { NodesEventSource } from '../../cartography/events/nodes-event-source';
@@ -48,6 +48,7 @@ import { MapLinkNode } from '../../cartography/models/map/map-link-node';
 import { TextElement } from '../../cartography/models/drawings/text-element';
 import { FontFixer } from '../../cartography/helpers/font-fixer';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { select } from 'd3-selection';
 
 
 @Component({
@@ -70,7 +71,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   tools = {
     'selection': true,
     'moving': false,
-    'draw_link': false
+    'draw_link': false,
+    'text_editing': true
   };
   protected settings: Settings;
 

@@ -33,7 +33,7 @@ export class TextEditingTool {
                 .classed("editingMode", true);
 
             this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute("drawing_id");
-            //simply get canvas
+
             select(textElements[index].parentElement.parentElement.parentElement)
                 .append("foreignObject")
                 .attr("width", '1000px')
@@ -41,7 +41,7 @@ export class TextEditingTool {
                 .attr("height", '100px')
                 .attr("id", "temporaryText")
                 .attr("transform", textElements[index].parentElement.getAttribute("transform"))
-                .append("xhtml:div")
+                .append("xhtml:span")
                 .attr("width", "fit-content")
                 .attr("height", "fit-content")
                 .attr("class", "temporaryTextInside")

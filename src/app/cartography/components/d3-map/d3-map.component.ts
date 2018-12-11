@@ -20,6 +20,8 @@ import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { DraggedDataEvent } from '../../events/event-source';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
+import { TextEditingTool } from '../../tools/text-editing-tool';
+import { TextAddingComponent } from '../text-adding/text-adding.component';
 
 
 @Component({
@@ -37,6 +39,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
 
   @ViewChild('svg') svgRef: ElementRef;
+  @ViewChild(TextAddingComponent) textAddingComponent: TextAddingComponent;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -46,6 +49,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected settings = {
     'show_interface_labels': true
   };
+
+  ngAfterInit(){
+    console.log(this.textAddingComponent);
+  }
 
   constructor(
     private graphDataManager: GraphDataManager,
@@ -57,6 +64,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
+    protected textEditingToolWidget: TextEditingTool,
     public graphLayout: GraphLayout,
     ) {
     this.parentNativeElement = element.nativeElement;
@@ -78,6 +86,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('selection-tool')
   set selectionTool(value) {
     this.selectionToolWidget.setEnabled(value);
+    this.mapChangeDetectorRef.detectChanges();
+  }
+
+  @Input('text-editing-tool')
+  set textEditingTool(value){
+    this.textEditingToolWidget.setEnabled(value);
     this.mapChangeDetectorRef.detectChanges();
   }
 

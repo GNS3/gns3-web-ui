@@ -23,6 +23,10 @@ export class TextEditingComponent implements OnInit, OnDestroy{
         });
     }
 
+    onTextAddingChosen() {
+
+    }
+
     ngOnDestroy() {
         this.textEditingFinished.unsubscribe();
     }
