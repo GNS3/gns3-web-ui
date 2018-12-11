@@ -467,7 +467,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.drawTools.visibility = true;
     },
-    400);
+    200);
   }
 
   public getDrawingMock(objectType: string, text?: string): MapDrawing {
@@ -536,49 +536,43 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       var map = document.getElementsByClassName('map')[0];
 
       let addTextListener = (event: MouseEvent) => {
-        let x = event.clientX - this.mapChild.context.getZeroZeroTransformationPoint().x;
-        let y = event.clientY - this.mapChild.context.getZeroZeroTransformationPoint().y;
 
-        const svgElement = select("g.canvas");
-        svgElement
-          .append("foreignObject")
-            .attr("id", "temporaryText")
-            .attr("transform", `translate(${x},${y}) rotate(0)`)
-            .attr("width", '1000px')
-          .append("xhtml:div")
-            .attr("class", "temporaryTextInside")
-            .attr('style', () => {
-              const styles: string[] = [];
-              styles.push(`font-family: Noto Sans`)
-              styles.push(`font-size: 11pt`);
-              styles.push(`font-weight: bold`)
-              styles.push(`color: #000000`);
-              return styles.join("; ");
-            })
-            .attr("width", 'fit-content')
-            .attr("height", 'max-content')
-            .attr('contenteditable', 'true')
-            .text("")
-            .on("focusout", () => {
-              let elem = document.getElementsByClassName("temporaryTextInside")[0] as HTMLElement;
-              let savedText = elem.innerText;
+        var div = document.createElement('div');
+        div.style.width = "fit-content";
+        div.style.left = event.clientX.toString() + 'px';
+        div.style.top = (event.clientY - 10).toString() + 'px';
+        div.style.position = "absolute";
+        div.style.zIndex = "99";
 
-              let drawing = this.getDrawingMock("text", savedText);
-              (drawing.element as TextElement).text = savedText;
-              let svgText = this.mapDrawingToSvgConverter.convert(drawing);
+        div.style.fontFamily = "Noto Sans";
+        div.style.fontSize = "11pt";
+        div.style.fontWeight = "bold";
+        div.style.color = "#000000";
 
-              this.drawingService
-                .add(this.server, this.project.project_id, x, y, svgText)
-                .subscribe((serverDrawing: Drawing) => {
-                 var temporaryElement = document.getElementById("temporaryText") as HTMLElement;
-                 temporaryElement.remove();
-                  this.drawingsDataSource.add(serverDrawing);
-                });
+        div.setAttribute("contenteditable", "true");
+
+        document.body.appendChild(div);
+        div.innerText = "";
+        div.focus();
+        document.body.style.cursor = "text";
+
+        div.addEventListener("focusout", () => {
+          let savedText = div.innerText;
+
+          let drawing = this.getDrawingMock("text", savedText);
+          (drawing.element as TextElement).text = savedText;
+          let svgText = this.mapDrawingToSvgConverter.convert(drawing);
+
+          this.drawingService
+            .add(this.server, this.project.project_id, event.clientX - this.mapChild.context.getZeroZeroTransformationPoint().x, event.clientY - this.mapChild.context.getZeroZeroTransformationPoint().y, svgText)
+            .subscribe((serverDrawing: Drawing) => {
+              document.body.style.cursor = "default";
+              div.remove();
+              this.drawingsDataSource.add(serverDrawing);
             });
+        });
 
-          var elem = document.getElementsByClassName("temporaryTextInside")[0] as HTMLElement;
-          elem.focus();
-          this.resetDrawToolChoice();
+        this.resetDrawToolChoice();
       }
 
       map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
