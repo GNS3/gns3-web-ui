@@ -48,6 +48,7 @@ import { MapLinkNode } from '../../cartography/models/map/map-link-node';
 import { TextElement } from '../../cartography/models/drawings/text-element';
 import { FontFixer } from '../../cartography/helpers/font-fixer';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { select } from 'd3-selection';
 
 
 @Component({
