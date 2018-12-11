@@ -48,6 +48,7 @@ import { TextElement } from '../../cartography/models/drawings/text-element';
 import { FontFixer } from '../../cartography/helpers/font-fixer';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 import { select } from 'd3-selection';
+import { delay } from 'q';
 
 
 @Component({
@@ -463,7 +464,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public showMenu(){
-    this.drawTools.visibility = true;
+    setTimeout(() => {
+      this.drawTools.visibility = true;
+    },
+    100);
   }
 
   public getDrawingMock(objectType: string, text?: string): MapDrawing {

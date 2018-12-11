@@ -51,7 +51,9 @@ g.node:hover {
 }
 
 .drawer-button {
-  width: 64px!important;
+  width: 40px;
+  margin-right: 12px!important;
+  margin-left: 12px!important;
   background: #263238;
   padding: 0;
   border: none;
@@ -80,6 +82,10 @@ g.node:hover {
   height: 72px;
   display: flex;
   flex-direction: row;
+}
+
+.mat-sidenav-backdrop.mat-sidenav-shown{
+  background-color: transparent !important;
 }
 
 .selected {
