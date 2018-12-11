@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApplianceListDialogComponent } from './appliance-list-dialog.component';
+import { TemplateListDialogComponent } from './template-list-dialog.component';
 
-describe('ApplianceListDialogComponent', () => {
-  let component: ApplianceListDialogComponent;
-  let fixture: ComponentFixture<ApplianceListDialogComponent>;
+describe('TemplateListDialogComponent', () => {
+  let component: TemplateListDialogComponent;
+  let fixture: ComponentFixture<TemplateListDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplianceListDialogComponent ]
+      declarations: [ TemplateListDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApplianceListDialogComponent);
+    fixture = TestBed.createComponent(TemplateListDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -6,33 +6,33 @@ import { Observable, BehaviorSubject, fromEvent, merge } from "rxjs";
 import { debounceTime, distinctUntilChanged, map } from "rxjs/operators";
 
 import { Server } from "../../../models/server";
-import { ApplianceService } from "../../../services/appliance.service";
-import { Appliance } from "../../../models/appliance";
+import { TemplateService } from "../../../services/template.service";
+import { Template } from "../../../models/template";
 
 
 @Component({
-  selector: 'app-appliance-list-dialog',
-  templateUrl: './appliance-list-dialog.component.html',
-  styleUrls: ['./appliance-list-dialog.component.scss']
+  selector: 'app-template-list-dialog',
+  templateUrl: './template-list-dialog.component.html',
+  styleUrls: ['./template-list-dialog.component.scss']
 })
-export class ApplianceListDialogComponent implements OnInit {
+export class TemplateListDialogComponent implements OnInit {
   server: Server;
-  applianceDatabase: ApplianceDatabase;
-  dataSource: ApplianceDataSource;
+  templateDatabase: TemplateDatabase;
+  dataSource: TemplateDataSource;
   displayedColumns = ['name'];
 
   @ViewChild('filter') filter: ElementRef;
 
   constructor(
-    public dialogRef: MatDialogRef<ApplianceListDialogComponent>,
-    private applianceService: ApplianceService,
+    public dialogRef: MatDialogRef<TemplateListDialogComponent>,
+    private templateService: TemplateService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.server = data['server'];
   }
 
   ngOnInit() {
-    this.applianceDatabase = new ApplianceDatabase(this.server, this.applianceService);
-    this.dataSource = new ApplianceDataSource(this.applianceDatabase);
+    this.templateDatabase = new TemplateDatabase(this.server, this.templateService);
+    this.dataSource = new TemplateDataSource(this.templateDatabase);
 
     fromEvent(this.filter.nativeElement, 'keyup').pipe(
       debounceTime(150),
@@ -49,48 +49,48 @@ export class ApplianceListDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  addNode(appliance: Appliance): void {
-    this.dialogRef.close(appliance);
+  addNode(template: Template): void {
+    this.dialogRef.close(template);
   }
 
 }
 
 
-export class ApplianceDatabase {
-  dataChange: BehaviorSubject<Appliance[]> = new BehaviorSubject<Appliance[]>([]);
+export class TemplateDatabase {
+  dataChange: BehaviorSubject<Template[]> = new BehaviorSubject<Template[]>([]);
 
-  get data(): Appliance[] {
+  get data(): Template[] {
     return this.dataChange.value;
   }
 
-  constructor(private server: Server, private applianceService: ApplianceService) {
-    this.applianceService
+  constructor(private server: Server, private templateService: TemplateService) {
+    this.templateService
       .list(this.server)
-      .subscribe((appliances) => {
-        this.dataChange.next(appliances);
+      .subscribe((templates) => {
+        this.dataChange.next(templates);
       });
   }
 
 };
 
-export class ApplianceDataSource extends DataSource<Appliance> {
+export class TemplateDataSource extends DataSource<Template> {
   filterChange = new BehaviorSubject('');
 
   get filter(): string { return this.filterChange.value; }
   set filter(filter: string) { this.filterChange.next(filter); }
 
-  constructor(private applianceDatabase: ApplianceDatabase) {
+  constructor(private templateDatabase: TemplateDatabase) {
     super();
   }
 
-  connect(): Observable<Appliance[]> {
+  connect(): Observable<Template[]> {
     const displayDataChanges = [
-      this.applianceDatabase.dataChange,
+      this.templateDatabase.dataChange,
       this.filterChange,
     ];
 
     return merge(...displayDataChanges).pipe(map(() => {
-      return this.applianceDatabase.data.slice().filter((item: Appliance) => {
+      return this.templateDatabase.data.slice().filter((item: Template) => {
         const searchStr = (item.name).toLowerCase();
         return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
       });

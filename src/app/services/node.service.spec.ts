@@ -7,7 +7,7 @@ import { Server } from '../models/server';
 import { Node } from '../cartography/models/node';
 import { getTestServer } from './testing';
 import { NodeService } from './node.service';
-import { Appliance } from '../models/appliance';
+import { Template } from '../models/template';
 import { Project } from '../models/project';
 import { AppTestingModule } from "../testing/app-testing/app-testing.module";
 import { Label } from '../cartography/models/label';
@@ -72,16 +72,16 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({});
   }));
 
-  it('should createFromAppliance node', inject([NodeService], (service: NodeService) => {
+  it('should createFromTemplate node', inject([NodeService], (service: NodeService) => {
     const project = new Project();
     project.project_id = "myproject";
-    const appliance = new Appliance();
-    appliance.appliance_id = "myappliance";
+    const template = new Template();
+    template.template_id = "mytemplate";
 
-    service.createFromAppliance(server, project, appliance, 10, 20, "compute").subscribe();
+    service.createFromTemplate(server, project, template, 10, 20, "compute").subscribe();
 
     const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/appliances/myappliance');
+      'http://127.0.0.1:3080/v2/projects/myproject/templates/mytemplate');
     expect(req.request.method).toEqual("POST");
     expect(req.request.body).toEqual({
       'x': 10, 'y': 20, 'compute_id': 'compute'});
