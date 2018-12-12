@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { DraggedDataEvent, ResizedDataEvent } from "./event-source";
+import { DraggedDataEvent, ResizedDataEvent, TextAddedDataEvent, TextEditedDataEvent } from "./event-source";
 import { MapDrawing } from "../models/map/map-drawing";
 
 
@@ -7,5 +7,6 @@ import { MapDrawing } from "../models/map/map-drawing";
 export class DrawingsEventSource {
   public dragged = new EventEmitter<DraggedDataEvent<MapDrawing>>();
   public resized = new EventEmitter<ResizedDataEvent<MapDrawing>>();
-  public textEdited = new EventEmitter<any>();
+  public textAdded = new EventEmitter<TextAddedDataEvent>();
+  public textEdited = new EventEmitter<TextEditedDataEvent>();
 }

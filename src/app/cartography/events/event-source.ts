@@ -17,12 +17,20 @@ export class ResizedDataEvent<T> {
     public y: number,
     public width: number,
     public height: number
-    ) {}
+  ) {}
 }
 
 export class ClickedDataEvent<T> {
   constructor(
     public datum: T,
+    public x: number,
+    public y: number
+  ) {}
+}
+
+export class TextAddedDataEvent {
+  constructor(
+    public savedText: string,
     public x: number,
     public y: number
   ) {}

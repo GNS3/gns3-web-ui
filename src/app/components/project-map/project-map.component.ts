@@ -26,7 +26,7 @@ import { MapChangeDetectorRef } from '../../cartography/services/map-change-dete
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { MapLinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
-import { DraggedDataEvent, ResizedDataEvent, TextEditedDataEvent } from '../../cartography/events/event-source';
+import { DraggedDataEvent, ResizedDataEvent, TextEditedDataEvent, TextAddedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { NodesEventSource } from '../../cartography/events/nodes-event-source';
@@ -195,6 +195,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
+      this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt))
+    );
+
+    this.subscriptions.push(
       this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt))
     );
 
@@ -349,6 +353,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
+      });
+  }
+
+  public onTextAdded(evt: TextAddedDataEvent){
+    this.resetDrawToolChoice();
+
+    let drawing = this.getDrawingMock("text", evt.savedText);
+    (drawing.element as TextElement).text = evt.savedText;
+    let svgText = this.mapDrawingToSvgConverter.convert(drawing);
+
+    this.drawingService
+      .add(this.server, this.project.project_id, evt.x - this.mapChild.context.getZeroZeroTransformationPoint().x, evt.y - this.mapChild.context.getZeroZeroTransformationPoint().y, svgText)
+      .subscribe((serverDrawing: Drawing) => {
+        document.body.style.cursor = "default";
+        this.drawingsDataSource.add(serverDrawing);
       });
   }
 
@@ -510,7 +529,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         break;
       case "text":
         let textElement = new TextElement();
-        textElement.height = 100; //should be calculated
+        textElement.height = 100;
         textElement.width = 100;
         textElement.text = text;
         textElement.fill = "#000000";
@@ -531,55 +550,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (!this.drawTools.isAddingTextChosen){
       this.resetDrawToolChoice();
       this.drawTools.isAddingTextChosen = true;
-      var map = document.getElementsByClassName('map')[0];
-
-      let addTextListener = (event: MouseEvent) => {
-
-        var div = document.createElement('div');
-        div.style.width = "fit-content";
-        div.style.left = event.clientX.toString() + 'px';
-        div.style.top = (event.clientY - 10).toString() + 'px';
-        div.style.position = "absolute";
-        div.style.zIndex = "99";
-
-        div.style.fontFamily = "Noto Sans";
-        div.style.fontSize = "11pt";
-        div.style.fontWeight = "bold";
-        div.style.color = "#000000";
-
-        div.setAttribute("contenteditable", "true");
-
-        document.body.appendChild(div);
-        div.innerText = "";
-        div.focus();
-        document.body.style.cursor = "text";
-
-        div.addEventListener("focusout", () => {
-          let savedText = div.innerText;
-
-          let drawing = this.getDrawingMock("text", savedText);
-          (drawing.element as TextElement).text = savedText;
-          let svgText = this.mapDrawingToSvgConverter.convert(drawing);
-
-          this.drawingService
-            .add(this.server, this.project.project_id, event.clientX - this.mapChild.context.getZeroZeroTransformationPoint().x, event.clientY - this.mapChild.context.getZeroZeroTransformationPoint().y, svgText)
-            .subscribe((serverDrawing: Drawing) => {
-              document.body.style.cursor = "default";
-              div.remove();
-              this.drawingsDataSource.add(serverDrawing);
-            });
-        });
-
-        this.resetDrawToolChoice();
-      }
-
-      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-      this.drawListener = addTextListener;
-      map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
     } else {
       this.resetDrawToolChoice();
-      var map = document.getElementsByClassName('map')[0];
-      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
     }
   }
 

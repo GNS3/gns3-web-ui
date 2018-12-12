@@ -23,6 +23,7 @@ import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { TextEditingTool } from '../../tools/text-editing-tool';
 import { TextAddingComponent } from '../text-adding/text-adding.component';
 import { Server } from '../../../models/server';
+import { TextAddingTool } from '../../tools/text-adding-tool';
 
 
 @Component({
@@ -66,6 +67,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
+    protected textAddingToolWidget: TextAddingTool,
     protected textEditingToolWidget: TextEditingTool,
     public graphLayout: GraphLayout,
     ) {
@@ -88,6 +90,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('selection-tool')
   set selectionTool(value) {
     this.selectionToolWidget.setEnabled(value);
+    this.mapChangeDetectorRef.detectChanges();
+  }
+
+  @Input('text-adding-tool')
+  set textAddingTool(value){
+    this.textAddingToolWidget.setEnabled(value);
     this.mapChangeDetectorRef.detectChanges();
   }
 
