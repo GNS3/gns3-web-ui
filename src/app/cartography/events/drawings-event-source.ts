@@ -9,4 +9,5 @@ export class DrawingsEventSource {
   public resized = new EventEmitter<ResizedDataEvent<MapDrawing>>();
   public textAdded = new EventEmitter<TextAddedDataEvent>();
   public textEdited = new EventEmitter<TextEditedDataEvent>();
+  public textSaved = new EventEmitter<any>();
 }

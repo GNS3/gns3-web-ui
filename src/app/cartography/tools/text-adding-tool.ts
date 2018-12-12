@@ -1,15 +1,19 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { TextAddedDataEvent } from '../events/event-source';
+import { DrawingsEventSource } from '../events/drawings-event-source';
 
 
 @Injectable()
 export class TextAddingTool {
-    private enabled;
     private listener: Function;
+    private temporaryElement: HTMLDivElement;
     public addingFinished = new EventEmitter<any>();
 
+    constructor(
+        private drawingEventSource: DrawingsEventSource
+    ){}
+
     public setEnabled(enabled){
-        this.enabled = enabled;
         if (enabled){
             this.activate();
         } else {
@@ -26,37 +30,43 @@ export class TextAddingTool {
         var map = document.getElementsByClassName('map')[0];
 
         let addTextListener = (event: MouseEvent) => {
-    
-            var div = document.createElement('div');
-            div.style.width = "fit-content";
-            div.style.left = event.clientX.toString() + 'px';
-            div.style.top = (event.clientY).toString() + 'px';
-            div.style.position = "absolute";
-            div.style.zIndex = "99";
-    
-            div.style.fontFamily = "Noto Sans";
-            div.style.fontSize = "11pt";
-            div.style.fontWeight = "bold";
-            div.style.color = "#000000";
-    
-            div.setAttribute("contenteditable", "true");
-    
-            document.body.appendChild(div);
-            div.innerText = "";
-            div.focus();
+            this.temporaryElement = this.getTemporaryElement(event.clientX, event.clientY);
+            document.body.appendChild(this.temporaryElement);
+            this.temporaryElement.focus();
             document.body.style.cursor = "text";
     
-            div.addEventListener("focusout", () => {
-                let savedText = div.innerText;
+            this.temporaryElement.addEventListener("focusout", () => {
+                let savedText = this.temporaryElement.innerText;
                 this.addingFinished.emit(new TextAddedDataEvent(savedText, event.clientX, event.clientY));
 
-                document.body.style.cursor = "default";
-                div.remove();
+                this.drawingEventSource.textSaved.subscribe((evt:boolean) => {
+                    if(evt){
+                        this.temporaryElement.remove();
+                        document.body.style.cursor = "default";
+                    }
+                });
             });
         }
 
         map.removeEventListener('click', this.listener as EventListenerOrEventListenerObject);
         this.listener = addTextListener;
         map.addEventListener('click', this.listener as EventListenerOrEventListenerObject, {once : true});
-    }   
+    }
+
+    private getTemporaryElement(x:number, y:number): HTMLDivElement{
+        var elem = document.createElement('div');
+        elem.style.width = "fit-content";
+        elem.style.left = x.toString() + 'px';
+        elem.style.top = y.toString() + 'px';
+        elem.style.position = "absolute";
+        elem.style.zIndex = "99";
+        elem.style.fontFamily = "Noto Sans";
+        elem.style.fontSize = "11pt";
+        elem.style.fontWeight = "bold";
+        elem.style.color = "#000000";
+        elem.setAttribute("contenteditable", "true");
+        elem.innerText = "";
+
+        return elem;
+    }
 }

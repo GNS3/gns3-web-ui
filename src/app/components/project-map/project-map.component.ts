@@ -356,7 +356,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onTextAdded(evt: TextAddedDataEvent){
+  public onTextAdded(evt: TextAddedDataEvent) {
     this.resetDrawToolChoice();
 
     let drawing = this.getDrawingMock("text", evt.savedText);
@@ -368,10 +368,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       .subscribe((serverDrawing: Drawing) => {
         document.body.style.cursor = "default";
         this.drawingsDataSource.add(serverDrawing);
+        this.drawingsEventSource.textSaved.emit(true);
       });
   }
 
-  public onTextEdited(evt: TextEditedDataEvent){
+  public onTextEdited(evt: TextEditedDataEvent) {
     let mapDrawing: MapDrawing = new MapDrawing();
     mapDrawing.element = evt.textElement;
     (mapDrawing.element as TextElement).text = evt.editedText;
@@ -383,6 +384,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       .updateText(this.server, drawing, svgString)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
+        this.drawingsEventSource.textSaved.emit(true);
     });
   }
 
@@ -465,7 +467,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
   }
 
-  public resetDrawToolChoice(){
+  public resetDrawToolChoice() {
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
@@ -473,14 +475,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.selectedDrawing = "";
   }
 
-  public hideMenu(){
+  public hideMenu() {
     var map = document.getElementsByClassName('map')[0];
     map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
     this.resetDrawToolChoice();
     this.drawTools.visibility = false;
   }
 
-  public showMenu(){
+  public showMenu() {
     setTimeout(() => {
       this.drawTools.visibility = true;
     },
@@ -546,10 +548,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     return mapDrawing;
   }
 
-  public addText(){
+  public addText() {
     if (!this.drawTools.isAddingTextChosen){
       this.resetDrawToolChoice();
       this.drawTools.isAddingTextChosen = true;
+      var map = document.getElementsByClassName('map')[0];
+      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
     } else {
       this.resetDrawToolChoice();
     }
