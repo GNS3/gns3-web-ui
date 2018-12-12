@@ -41,6 +41,7 @@ import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { HttpServer } from '../../services/http-server.service';
 import { Server } from '../../models/server';
 import { ResizedDataEvent } from '../../cartography/events/event-source';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 
 export class MockedProgressService {
   public activate() {}
@@ -118,7 +119,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapDrawingToSvgConverter, useValue: {
           convert: () => { return ''}
         } },
-        { provide: SettingsService, useClass: MockedSettingsService }
+        { provide: SettingsService, useClass: MockedSettingsService },
+        { provide: MapLabelToLabelConverter}
       ],
       declarations: [
         ProjectMapComponent,
