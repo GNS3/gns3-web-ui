@@ -55,6 +55,7 @@ export class TextAddingTool {
 
     private getTemporaryElement(x:number, y:number): HTMLDivElement{
         var elem = document.createElement('div');
+        elem.style.paddingLeft = "4px";
         elem.style.width = "fit-content";
         elem.style.left = x.toString() + 'px';
         elem.style.top = y.toString() + 'px';

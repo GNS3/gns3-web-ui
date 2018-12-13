@@ -4,6 +4,7 @@ import { select } from 'd3-selection';
 import { TextElement } from '../models/drawings/text-element';
 import { TextEditedDataEvent } from '../events/event-source';
 import { DrawingsEventSource } from '../events/drawings-event-source';
+import { Context } from '../models/context';
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class TextEditingTool {
     public editingFinished = new EventEmitter<any>();
 
     constructor(
-        private drawingEventSource: DrawingsEventSource
+        private drawingEventSource: DrawingsEventSource,
+        private context: Context
     ){}
 
     public setEnabled(enabled) {
@@ -29,7 +31,6 @@ export class TextEditingTool {
 
         selection.selectAll<SVGTextElement, TextElement>('text.text_element')
             .on("dblclick", (elem, index, textElements) => {
-
             this.editedElement = elem;
             
             select(textElements[index])
@@ -40,16 +41,15 @@ export class TextEditingTool {
 
             this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute("drawing_id");
 
-            var splitted = textElements[index].parentElement.getAttribute("transform").split(/\(|\)/);
-            var x = Number(splitted[1].split(/,/)[0]);
-            var y = Number(splitted[1].split(/,/)[1]);
-            console.log(x);
-            console.log(y);
+            var transformData = textElements[index].parentElement.getAttribute("transform").split(/\(|\)/);
+            var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x;
+            var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y;
 
             this.temporaryElement = document.createElement('div');
+            this.temporaryElement.style.paddingLeft = "4px";
             this.temporaryElement.style.width = "fit-content";
-            this.temporaryElement.style.left = '100px';//x.toString() + 'px';
-            this.temporaryElement.style.top = '100px';//y.toString() + 'px';
+            this.temporaryElement.style.left = x.toString() + 'px';
+            this.temporaryElement.style.top = y.toString() + 'px';
             this.temporaryElement.style.position = "absolute";
             this.temporaryElement.style.zIndex = "99";
             this.temporaryElement.style.fontFamily = elem.font_family;
