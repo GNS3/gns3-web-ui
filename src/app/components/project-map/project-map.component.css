@@ -18,6 +18,84 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+.draw-menu {
+  position: fixed;
+  background: transparent;
+  top: 20px;
+  left: 92px;
+  width: 296px !important;
+  height: 72px !important;
+}
+
+.draw-menu button {
+  outline: none;
+}
+
+.mat-drawer-content {
+  display: inline !important;
+}
+
+.drawer-container {
+  height: 72px !important;
+  background: transparent;
+}
+
+.shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.drawer {
+  width: 296px !important;
+  height: 72px !important;
+  background:#263238;
+}
+
+.drawer-content {
+  background: #F0F0F0!important;
+}
+
+.drawer-button {
+  width: 40px;
+  margin-right: 12px!important;
+  margin-left: 12px!important;
+  background: #263238;
+  padding: 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+
+.drawer-arrow-button-right {
+  width: 40px;
+  height: 72px;
+  padding-top: 16px;
+  background:#263238;
+  position: fixed;
+}
+
+.drawer-arrow-button-left {
+  width: 40px;
+  margin-left: 256px;
+  background:#263238;
+  position: fixed;
+}
+
+.drawer-buttons {
+  background:#263238;
+  padding-top: 16px;
+  height: 72px;
+  display: flex;
+  flex-direction: row;
+}
+
+.mat-drawer-backdrop.mat-drawer-shown {
+  background-color: transparent;
+}
+
+.selected {
+  stroke: #0097a7!important;
+}
+
 .project-toolbar .mat-toolbar-multiple-rows {
   width: auto !important;
 }

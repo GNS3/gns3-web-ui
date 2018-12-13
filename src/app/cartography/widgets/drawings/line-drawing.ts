@@ -21,8 +21,15 @@ export class LineDrawingWidget implements DrawingShapeWidget {
           return (d.element && d.element instanceof LineElement) ? [d.element] : [];
         });
 
-    const drawing_enter = drawing
-      .enter()
+    drawing.enter()
+        .append<SVGCircleElement>('circle')
+        .attr('class', 'right');
+
+    drawing.enter()
+        .append<SVGCircleElement>('circle')
+        .attr('class', 'left');
+    
+    const drawing_enter = drawing.enter()
         .append<SVGLineElement>('line')
         .attr('class', 'line_element noselect');
 

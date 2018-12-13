@@ -10,8 +10,13 @@
     [show-interface-labels]="project.show_interface_labels"
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
+    [text-editing-tool]="tools.text_editing"
     [draw-link-tool]="tools.draw_link"
     [readonly]="inReadOnlyMode"
+    (nodeDragged)="onNodeDragged($event)"
+    (drawingDragged)="onDrawingDragged($event)"
+    (onLinkCreated)="onLinkCreated($event)"
+    (onDrawingResized)="onDrawingResized($event)"
   ></app-d3-map>
 
   <app-experimental-map
@@ -92,6 +97,41 @@
       </mat-toolbar-row>
 
     </mat-toolbar>
+  </div>
+
+  <div class="draw-menu">
+    <mat-drawer-container [ngClass]="{shadow: drawTools.visibility}" class="drawer-container">
+      <mat-drawer #drawer class="drawer">
+        <div class="drawer-buttons">
+          <button matTooltip="Add a note" mat-icon-button class="drawer-button" [color]="drawTools.isAddingTextChosen ? 'primary': 'basic'" (click)="addText()">
+            <mat-icon>create</mat-icon>
+          </button>
+          <button matTooltip="Draw a rectangle" mat-icon-button class="drawer-button" [color]="drawTools.isRectangleChosen ? 'primary': 'basic'" (click)="addDrawing('rectangle')">
+            <mat-icon>crop_3_2</mat-icon>
+          </button>
+          <button matTooltip="Draw an ellipse" mat-icon-button class="drawer-button" [color]="drawTools.isEllipseChosen ? 'primary': 'basic'" (click)="addDrawing('ellipse')">
+            <mat-icon>panorama_fish_eye</mat-icon>
+          </button>
+          <button matTooltip="Draw line" mat-icon-button class="drawer-button" (click)="addDrawing('line')">
+            <svg height="40" width="40">
+              <line [ngClass]="{selected: drawTools.isLineChosen}" x1="30" y1="10" x2="10" y2="30" style="stroke:white;stroke-width:2" />
+            </svg>
+          </button>
+          <div class="drawer-arrow-button-left">
+              <button mat-icon-button (click)="drawer.toggle(); hideMenu()">
+                  <mat-icon>keyboard_arrow_left</mat-icon>
+              </button>
+            </div>
+        </div>
+      </mat-drawer>
+      <mat-drawer-content class="drawer-content">
+        <div [ngClass]="{shadow: !drawTools.visibility}" class="drawer-arrow-button-right">
+          <button mat-icon-button (click)="drawer.toggle(); showMenu()">
+            <mat-icon>keyboard_arrow_right</mat-icon>
+          </button>
+        </div>
+      </mat-drawer-content>
+    </mat-drawer-container>
   </div>
 
   <app-node-context-menu [project]="project" [server]="server"></app-node-context-menu>

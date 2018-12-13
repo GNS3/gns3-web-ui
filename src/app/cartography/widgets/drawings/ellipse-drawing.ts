@@ -21,6 +21,22 @@ export class EllipseDrawingWidget implements DrawingShapeWidget {
           return (d.element && d.element instanceof EllipseElement) ? [d.element] : [];
         });
 
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "top");
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "bottom");
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "right");
+
+    drawing.enter()
+      .append<SVGAElement>('line')
+        .attr("class", "left");
+
     const drawing_enter = drawing
       .enter()
         .append<SVGEllipseElement>('ellipse')
