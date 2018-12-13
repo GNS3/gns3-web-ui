@@ -36,13 +36,8 @@ export class TextAddingTool {
             document.body.style.cursor = "text";
     
             this.temporaryElement.addEventListener("focusout", () => {
-                let innerText = this.temporaryElement.innerText;
-                let splittedText = innerText.split(/\r?\n/);
-                if (splittedText[splittedText[length-1]] === ""){
-                    innerText.slice(0, -1); 
-                }
-                
-                this.addingFinished.emit(new TextAddedDataEvent(innerText, event.clientX, event.clientY));
+                let innerText = this.temporaryElement.innerText;                
+                this.addingFinished.emit(new TextAddedDataEvent(innerText.replace(/\n$/, ""), event.clientX, event.clientY));
 
                 this.drawingEventSource.textSaved.subscribe((evt:boolean) => {
                     if(evt){
