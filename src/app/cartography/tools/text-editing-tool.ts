@@ -46,6 +46,7 @@ export class TextEditingTool {
             var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y;
 
             this.temporaryElement = document.createElement('div');
+            this.temporaryElement.className = "temporaryElement";
             this.temporaryElement.style.paddingLeft = "4px";
             this.temporaryElement.style.width = "fit-content";
             this.temporaryElement.style.left = x.toString() + 'px';
