@@ -62,8 +62,13 @@ export class TextEditingTool {
             this.temporaryElement.innerText = elem.text;
 
             this.temporaryElement.addEventListener("focusout", () => {
-                let savedText = this.temporaryElement.innerText;
-                this.editingFinished.emit(new TextEditedDataEvent(this.editingDrawingId, savedText, this.editedElement));
+                let innerText = this.temporaryElement.innerText;
+                let splittedText = innerText.split(/\r?\n/);
+                if (splittedText[splittedText[length-1]] === ""){
+                    innerText.slice(0, -1); 
+                }
+    
+                this.editingFinished.emit(new TextEditedDataEvent(this.editingDrawingId, innerText, this.editedElement));
 
                 this.drawingEventSource.textSaved.subscribe((evt:boolean) => {
                     if(evt){

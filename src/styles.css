@@ -16,13 +16,9 @@ a.table-link {
   color: white!important;
 }
 
-.temporaryElement{
-  margin-top: -10px;
-}
-
 @-moz-document url-prefix() {
   .temporaryElement{
-      margin-top: -11px;
+      line-height: 1.4em;
   }
 }
 
