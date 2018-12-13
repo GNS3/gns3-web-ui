@@ -174,7 +174,6 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         if (isParentNodeSelected) {
           return;
         }
-
         this.linksEventSource.interfaceDragged.emit(new DraggedDataEvent<MapLinkNode>(label, evt.dx, evt.dy));
       });
 
