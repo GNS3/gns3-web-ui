@@ -99,7 +99,7 @@
     </mat-toolbar>
   </div>
 
-  <div class="draw-menu">
+  <div class="draw-menu" *ngIf="!inReadOnlyMode">
     <mat-drawer-container [ngClass]="{shadow: drawTools.visibility}" class="drawer-container">
       <mat-drawer #drawer class="drawer">
         <div class="drawer-buttons">
