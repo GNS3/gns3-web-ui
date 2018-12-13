@@ -103,6 +103,23 @@ describe('NodeService', () => {
     });
   }));
 
+
+  it('should updatePosition of node and round to integer', inject([NodeService], (service: NodeService) => {
+    const node = new Node();
+    node.project_id = "myproject";
+    node.node_id = "id";
+
+    service.updatePosition(server, node, 10.1, 20.6).subscribe();
+
+    const req = httpTestingController.expectOne(
+      'http://127.0.0.1:3080/v2/projects/myproject/nodes/id');
+    expect(req.request.method).toEqual("PUT");
+    expect(req.request.body).toEqual({
+      'x': 10,
+      'y': 21
+    });
+  }));
+
   it('should update label of node', inject([NodeService], (service: NodeService) => {
     const node = new Node();
     node.project_id = "myproject";

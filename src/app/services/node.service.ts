@@ -38,8 +38,8 @@ export class NodeService {
   updatePosition(server: Server, node: Node, x: number, y: number): Observable<Node> {
     return this.httpServer
                 .put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
-                  'x': x,
-                  'y': y
+                  'x': Math.round(x),
+                  'y': Math.round(y)
                 });
   }
 
