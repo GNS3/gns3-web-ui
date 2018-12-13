@@ -38,6 +38,10 @@ g.node:hover {
   }
 }
 
+.mat-drawer-content {
+  height: auto !important;
+}
+
 
 .drawer-container {
   height: 72px !important;
