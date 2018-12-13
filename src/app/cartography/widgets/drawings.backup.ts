@@ -78,44 +78,69 @@ export class DrawingsWidget implements Widget {
     let topEdge: number;
     let bottomEdge: number;
     let isReflectedVertical: boolean = false;
+    let startEvent;
     let bottom = drag()
       .on('start', (datum: MapDrawing) => {
         document.body.style.cursor = "ns-resize"; 
         topEdge = datum.y; 
+        console.log("started");
+        y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        // startEvent = event;
       })
       .on('drag', (datum: MapDrawing) => {
         const evt = event;
-
-        if (!isReflectedVertical) {
-          if ((datum.element.height + evt.dy) < 0) {
-            isReflectedVertical = true;
-            y = topEdge;
-            datum.element.height = Math.abs(datum.element.height + evt.dy);
-          } else {
-            datum.element.height += evt.dy;
-      
-            if (datum.element instanceof EllipseElement){
-              (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += evt.dy/2;
-              (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += evt.dy/2;
-            }
-          }
-        } else {
-          dy =  y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
-          y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
-          
-          if ((datum.element.height + dy) < 0){
-            isReflectedVertical = false;
-            y = topEdge;
-            datum.element.height = Math.abs(datum.element.height + evt.dy);
-          } else {
-            datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
-            datum.element.height += dy;
-            if (datum.element instanceof EllipseElement) {
-              (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += dy/2;
-              (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += dy/2;
-            }
-          }
+        dy =  y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
+        y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        let height = datum.element.height - dy;
+        if(height < 0) {
+          // height = datum.y - startEvent.y;
+          datum.y += height;
+          height = topEdge - datum.y;
+          // console.log(topEdge - datum.y);
         }
+        console.log("Height", height);
+        datum.element.height = height;
+
+        // datum.element.height -= dy;
+        // if(datum.element.height < 0) {
+        //   datum.y -= datum.element.height;
+        //   datum.element.height = Math.abs(datum.element.height);
+        // }
+
+        // if (!isReflectedVertical) {
+        //   if ((datum.element.height + evt.dy) < 0) {
+        //     isReflectedVertical = true;
+        //     y = topEdge;
+        //     console.log(y);
+        //     datum.element.height = Math.abs(datum.element.height + evt.dy);
+        //     console.log(datum.element.height);
+        //   } else {
+        //     datum.element.height += evt.dy;
+      
+        //     if (datum.element instanceof EllipseElement){
+        //       (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += evt.dy/2;
+        //       (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + evt.dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += evt.dy/2;
+        //     }
+        //   }
+        // } else {
+        //   dy =  y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
+        //   y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+          
+        //   if ((datum.element.height + dy) < 0){
+        //     isReflectedVertical = false;
+        //     y = topEdge;
+        //     console.log(y);
+        //     datum.element.height = Math.abs(datum.element.height + evt.dy);
+        //     console.log(datum.element.height);
+        //   } else {
+        //     datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        //     datum.element.height += dy;
+        //     if (datum.element instanceof EllipseElement) {
+        //       (datum.element as EllipseElement).cy = (datum.element as EllipseElement).cy + dy/2 < 0 ? 1 : (datum.element as EllipseElement).cy += dy/2;
+        //       (datum.element as EllipseElement).ry = (datum.element as EllipseElement).ry + dy/2 < 0 ? 1 : (datum.element as EllipseElement).ry += dy/2;
+        //     }
+        //   }
+        // }
 
         this.redrawDrawing(view, datum);
       })

@@ -75,6 +75,7 @@ export class TextDrawingWidget implements DrawingShapeWidget {
         // approx and make it matching to GUI
         const tspan = select(this).selectAll<SVGTSpanElement, string>('tspan');
         const height = this.getBBox().height / tspan.size();
+        //return `translate(0, ${height})`;
         return `translate(${TextDrawingWidget.MARGIN}, ${height - TextDrawingWidget.MARGIN})`;
     });
 

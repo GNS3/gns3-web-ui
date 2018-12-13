@@ -15,6 +15,7 @@ import { D3_MAP_IMPORTS } from './d3-map.imports';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { NodesEventSource } from './events/nodes-event-source';
+import { MapDrawingToSvgConverter } from './converters/map/map-drawing-to-svg-converter';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
 import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
 import { LinkToMapLinkConverter } from './converters/map/link-to-map-link-converter';
@@ -39,6 +40,9 @@ import { SelectionControlComponent } from './components/selection-control/select
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 import { MapSettingsManager } from './managers/map-settings-manager';
+import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
+import { TextAddingComponent } from './components/text-adding/text-adding.component';
+import { TextEditingComponent } from './components/text-editing/text-editing.component';
 import { FontBBoxCalculator } from './helpers/font-bbox-calculator';
 import { StylesToFontConverter } from './converters/styles-to-font-converter';
 
@@ -52,6 +56,9 @@ import { StylesToFontConverter } from './converters/styles-to-font-converter';
   declarations: [
     D3MapComponent,
     ExperimentalMapComponent,
+    DrawingResizingComponent,
+    TextAddingComponent,
+    TextEditingComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,
@@ -70,6 +77,7 @@ import { StylesToFontConverter } from './converters/styles-to-font-converter';
     DrawingsEventSource,
     NodesEventSource,
     LinksEventSource,
+    MapDrawingToSvgConverter,
     DrawingToMapDrawingConverter,
     LabelToMapLabelConverter,
     LinkToMapLinkConverter,
