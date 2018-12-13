@@ -32,7 +32,7 @@ export class NodeService {
                 .post(
                   server,
                   `/projects/${project.project_id}/templates/${template.template_id}`,
-                  {'x': x, 'y': y, 'compute_id': compute_id});
+                  {'x': Math.round(x), 'y': Math.round(y), 'compute_id': compute_id});
   }
 
   updatePosition(server: Server, node: Node, x: number, y: number): Observable<Node> {
@@ -50,8 +50,8 @@ export class NodeService {
                     'rotation': label.rotation,
                     'style': label.style,
                     'text': label.text,
-                    'x': label.x,
-                    'y': label.y
+                    'x': Math.round(label.x),
+                    'y': Math.round(label.y)
                   }
                 });
   }
@@ -59,8 +59,8 @@ export class NodeService {
   update(server: Server, node: Node): Observable<Node> {
     return this.httpServer
                 .put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
-                  'x': node.x,
-                  'y': node.y,
+                  'x': Math.round(node.x),
+                  'y': Math.round(node.y),
                   'z': node.z
                 });
   }
