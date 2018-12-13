@@ -1,5 +1,5 @@
-export class Appliance {
-  appliance_id: string;
+export class Template {
+  template_id: string;
   builtin: boolean;
   category: string;
   compute_id: string;

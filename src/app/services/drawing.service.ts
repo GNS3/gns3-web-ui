@@ -16,16 +16,16 @@ export class DrawingService {
     return this.httpServer
       .post<Drawing>(server, `/projects/${project_id}/drawings`, {
         'svg': svg,
-        'x': x,
-        'y': y
+        'x': Math.round(x),
+        'y': Math.round(y)
       });
   }
 
   updatePosition(server: Server, drawing: Drawing, x: number, y: number): Observable<Drawing> {
     return this.httpServer
       .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
-        'x': x,
-        'y': y
+        'x': Math.round(x),
+        'y': Math.round(y)
       });
   }
 
@@ -33,8 +33,8 @@ export class DrawingService {
     return this.httpServer
       .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
         'svg': svg,
-        'x': x,
-        'y': y
+        'x': Math.round(x),
+        'y': Math.round(y)
       })
   }
 
@@ -42,8 +42,8 @@ export class DrawingService {
     return this.httpServer
       .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
         'svg': svg,
-        'x': drawing.x,
-        'y': drawing.y,
+        'x': Math.round(drawing.x),
+        'y': Math.round(drawing.y),
         'z': drawing.z
       });
   }
@@ -51,8 +51,8 @@ export class DrawingService {
   update(server: Server, drawing: Drawing): Observable<Drawing> {
     return this.httpServer
       .put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
-        'x': drawing.x,
-        'y': drawing.y,
+        'x': Math.round(drawing.x),
+        'y': Math.round(drawing.y),
         'z': drawing.z
       });
   }

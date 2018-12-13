@@ -3,17 +3,17 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Server } from "../models/server";
 import { HttpServer } from "./http-server.service";
-import {Appliance} from "../models/appliance";
+import {Template} from "../models/template";
 import {Observable} from "rxjs";
 
 @Injectable()
-export class ApplianceService {
+export class TemplateService {
 
   constructor(private httpServer: HttpServer) { }
 
-  list(server: Server): Observable<Appliance[]> {
+  list(server: Server): Observable<Template[]> {
     return this.httpServer
-                .get<Appliance[]>(server, '/appliances') as Observable<Appliance[]>;
+                .get<Template[]>(server, '/templates') as Observable<Template[]>;
   }
 
 }

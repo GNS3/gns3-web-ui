@@ -13,7 +13,7 @@ import { ProjectService } from '../../services/project.service';
 import { Server } from "../../models/server";
 import { Drawing } from "../../cartography/models/drawing";
 import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.component";
-import { Appliance } from "../../models/appliance";
+import { Template } from "../../models/template";
 import { NodeService } from "../../services/node.service";
 import { Symbol } from "../../models/symbol";
 import { LinkService } from "../../services/link.service";
@@ -260,9 +260,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapChangeDetectorRef.detectChanges();
   }
 
-  onNodeCreation(appliance: Appliance) {
+  onNodeCreation(template: Template) {
     this.nodeService
-      .createFromAppliance(this.server, this.project, appliance, 0, 0, 'local')
+      .createFromTemplate(this.server, this.project, template, 0, 0, 'local')
       .subscribe((createdNode: Node) => {
         this.projectService
           .nodes(this.server, this.project.project_id)

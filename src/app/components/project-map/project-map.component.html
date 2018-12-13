@@ -91,16 +91,16 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly" >
-        <app-appliance 
+        <app-template 
           [server]="server"
           (onNodeCreation)="onNodeCreation($event)"
-        ></app-appliance>
+        ></app-template>
       </mat-toolbar-row>
 
     </mat-toolbar>
   </div>
 
-  <div class="draw-menu">
+  <div class="draw-menu" *ngIf="!inReadOnlyMode">
     <mat-drawer-container [ngClass]="{shadow: drawTools.visibility}" class="drawer-container">
       <mat-drawer #drawer class="drawer">
         <div class="drawer-buttons">
