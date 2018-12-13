@@ -31,9 +31,13 @@ g.node:hover {
   outline: none;
 }
 
-.mat-drawer-content {
-  display: inline !important;
+@-moz-document url-prefix() {
+  /** fixes gray background of drawing menu on Firefox **/
+  .mat-drawer-content {
+    display: inline !important;
+  }
 }
+
 
 .drawer-container {
   height: 72px !important;
@@ -90,10 +94,6 @@ g.node:hover {
 
 .mat-drawer-backdrop.mat-drawer-shown {
   background-color: transparent;
-}
-
-.selected {
-  stroke: #0097a7!important;
 }
 
 .project-toolbar .mat-toolbar-multiple-rows {
