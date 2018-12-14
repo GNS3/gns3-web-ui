@@ -146,3 +146,9 @@
 </app-project-map-shortcuts>
 
 <app-draw-link-tool *ngIf="tools.draw_link"></app-draw-link-tool>
+<app-add-drawing
+  [project]="project"
+  [server]="server"
+  [selectedDrawing]="selectedDrawing"
+  (drawingSaved)="onDrawingSaved($event)">
+</app-add-drawing>
