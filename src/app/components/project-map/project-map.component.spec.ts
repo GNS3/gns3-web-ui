@@ -42,6 +42,7 @@ import { HttpServer } from '../../services/http-server.service';
 import { Server } from '../../models/server';
 import { ResizedDataEvent } from '../../cartography/events/event-source';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { DrawingsFactory } from '../../cartography/helpers/drawings-factory';
 
 export class MockedProgressService {
   public activate() {}
@@ -116,6 +117,7 @@ describe('ProjectMapComponent', () => {
         { provide: NodesEventSource },
         { provide: DrawingsEventSource },
         { provide: LinksEventSource },
+        { provide: DrawingsFactory },
         { provide: MapDrawingToSvgConverter, useValue: {
           convert: () => { return ''}
         } },
@@ -193,10 +195,4 @@ describe('ProjectMapComponent', () => {
 
     expect(component.resetDrawToolChoice).toHaveBeenCalled();
   });
-
-  it('should return drawing mock of correct type'), () => {
-    let mock = component.getDrawingMock('rectangle');
-
-    expect(mock instanceof RectElement).toBe(true);
-  }
 });

@@ -74,8 +74,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     'isRectangleChosen': false,
     'isEllipseChosen': false,
     'isLineChosen': false,
-    'visibility': false,
-    'isAddingTextChosen': false
+    'isTextChosen': false,
+    'visibility': false
   };
 
   protected selectedDrawing: string;
@@ -397,46 +397,45 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public addDrawing(selectedObject: string) {
-    if (selectedObject === this.selectedDrawing){
-      this.selectedDrawing = "";
-      return;
-    }
-
     switch (selectedObject) {
       case "rectangle":
-        this.drawTools.isAddingTextChosen = false;
+        this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
         this.drawTools.isLineChosen = false;
         break;
       case "ellipse":
-        this.drawTools.isAddingTextChosen = false;
+        this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = false;
         break;
       case "line":
-        this.drawTools.isAddingTextChosen = false;
+        this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
         break;
+      case "text":
+        this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
+        this.drawTools.isEllipseChosen = false;
+        this.drawTools.isRectangleChosen = false;
+        this.drawTools.isLineChosen = false;
+        break;
     }
 
-    this.selectedDrawing = selectedObject;
+    this.selectedDrawing = this.selectedDrawing === selectedObject ? "" : selectedObject;
   }
 
   public resetDrawToolChoice(){
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
-    this.drawTools.isAddingTextChosen = false;
+    this.drawTools.isTextChosen = false;
     this.selectedDrawing = "";
   }
 
   public hideMenu(){
-    var map = document.getElementsByClassName('map')[0];
-    map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
     this.resetDrawToolChoice();
     this.drawTools.visibility = false;
   }
@@ -446,62 +445,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.drawTools.visibility = true;
     },
     200);
-  }
-
-  public addText(){
-    if (!this.drawTools.isAddingTextChosen){
-      this.resetDrawToolChoice();
-      this.drawTools.isAddingTextChosen = true;
-      var map = document.getElementsByClassName('map')[0];
-
-      let addTextListener = (event: MouseEvent) => {
-
-        var div = document.createElement('div');
-        div.style.width = "fit-content";
-        div.style.left = event.clientX.toString() + 'px';
-        div.style.top = (event.clientY - 10).toString() + 'px';
-        div.style.position = "absolute";
-        div.style.zIndex = "99";
-
-        div.style.fontFamily = "Noto Sans";
-        div.style.fontSize = "11pt";
-        div.style.fontWeight = "bold";
-        div.style.color = "#000000";
-
-        div.setAttribute("contenteditable", "true");
-
-        document.body.appendChild(div);
-        div.innerText = "";
-        div.focus();
-        document.body.style.cursor = "text";
-
-        div.addEventListener("focusout", () => {
-          let savedText = div.innerText;
-
-          let drawing = this.drawingsFactory.getDrawingMock("text");
-          (drawing.element as TextElement).text = savedText;
-          let svgText = this.mapDrawingToSvgConverter.convert(drawing);
-
-          this.drawingService
-            .add(this.server, this.project.project_id, event.clientX - this.mapChild.context.getZeroZeroTransformationPoint().x, event.clientY - this.mapChild.context.getZeroZeroTransformationPoint().y, svgText)
-            .subscribe((serverDrawing: Drawing) => {
-              document.body.style.cursor = "default";
-              div.remove();
-              this.drawingsDataSource.add(serverDrawing);
-            });
-        });
-
-        this.resetDrawToolChoice();
-      }
-
-      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-      this.drawListener = addTextListener;
-      map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
-    } else {
-      this.resetDrawToolChoice();
-      var map = document.getElementsByClassName('map')[0];
-      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-    }
   }
 
   public ngOnDestroy() {

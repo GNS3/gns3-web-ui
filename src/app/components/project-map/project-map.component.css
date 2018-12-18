@@ -113,6 +113,10 @@ g.node:hover {
   left: 50%;
 }
 
+line.selected {
+  stroke: #0097a7!important;
+}
+
 svg.map image:hover, svg.map image.chosen, g.selected {
   -webkit-filter: grayscale(100%);
   -moz-filter: grayscale(100%);

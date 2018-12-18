@@ -103,7 +103,7 @@
     <mat-drawer-container [ngClass]="{shadow: drawTools.visibility}" class="drawer-container">
       <mat-drawer #drawer class="drawer">
         <div class="drawer-buttons">
-          <button matTooltip="Add a note" mat-icon-button class="drawer-button" [color]="drawTools.isAddingTextChosen ? 'primary': 'basic'" (click)="addText()">
+          <button matTooltip="Add a note" mat-icon-button class="drawer-button" [color]="drawTools.isTextChosen ? 'primary': 'basic'" (click)="addDrawing('text')">
             <mat-icon>create</mat-icon>
           </button>
           <button matTooltip="Draw a rectangle" mat-icon-button class="drawer-button" [color]="drawTools.isRectangleChosen ? 'primary': 'basic'" (click)="addDrawing('rectangle')">
@@ -146,6 +146,7 @@
 </app-project-map-shortcuts>
 
 <app-draw-link-tool *ngIf="tools.draw_link"></app-draw-link-tool>
+
 <app-add-drawing
   [project]="project"
   [server]="server"
