@@ -86,13 +86,8 @@ export class InterfaceLabelWidget {
           styles = this.fontFixer.fixStyles(styles);
           return styles;
         })
-        .attr('x', function (this: SVGTextElement, l: MapLinkNode) {
-          return l.label.x;
-        })
-        .attr('y', function (this: SVGTextElement, l: MapLinkNode) {
-          let bbox = this.getBBox();
-          return l.label.y + bbox.height;
-        })
+        .attr('x', (l: MapLinkNode) => l.label.x)
+        .attr('y', (l: MapLinkNode) => l.label.y)
         .attr('transform', (l: MapLinkNode) => {
           return `rotate(${l.label.rotation}, ${l.label.x}, ${l.label.y})`;
         })

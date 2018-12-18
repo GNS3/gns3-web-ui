@@ -36,17 +36,13 @@ import { LinksEventSource } from '../../cartography/events/links-event-source';
 import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 import { MapDrawingToSvgConverter } from '../../cartography/converters/map/map-drawing-to-svg-converter';
-import { DrawingElement } from '../../cartography/models/drawings/drawing-element';
-import { RectElement } from '../../cartography/models/drawings/rect-element';
-import { EllipseElement } from '../../cartography/models/drawings/ellipse-element';
-import { LineElement } from '../../cartography/models/drawings/line-element';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { MapLabel } from '../../cartography/models/map/map-label';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapLinkNode } from '../../cartography/models/map/map-link-node';
 import { TextElement } from '../../cartography/models/drawings/text-element';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
-import { select } from 'd3-selection';
+import { DrawingsFactory } from '../../cartography/helpers/drawings-factory';
 
 
 @Component({
@@ -78,8 +74,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     'isRectangleChosen': false,
     'isEllipseChosen': false,
     'isLineChosen': false,
-    'visibility': false,
-    'isAddingTextChosen': false
+    'isTextChosen': false,
+    'visibility': false
   };
 
   protected selectedDrawing: string;
@@ -112,7 +108,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private linksEventSource: LinksEventSource,
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private settingsService: SettingsService,
-    private mapLabelToLabel: MapLabelToLabelConverter
+    private mapLabelToLabel: MapLabelToLabelConverter,
+    private drawingsFactory: DrawingsFactory
   ) {}
 
   ngOnInit() {
@@ -192,10 +189,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.drawingsEventSource.resized.subscribe((evt) => this.onDrawingResized(evt))
-    );
-
-    this.subscriptions.push(
-      this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt))
     );
 
     this.subscriptions.push(
@@ -356,23 +349,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onTextAdded(evt: TextAddedDataEvent) {
+  public onDrawingSaved(evt: boolean){
     this.resetDrawToolChoice();
-
-    let drawing = this.getDrawingMock("text", evt.savedText);
-    (drawing.element as TextElement).text = evt.savedText;
-    let svgText = this.mapDrawingToSvgConverter.convert(drawing);
-
-    this.drawingService
-      .add(this.server, this.project.project_id, evt.x - this.mapChild.context.getZeroZeroTransformationPoint().x, evt.y - this.mapChild.context.getZeroZeroTransformationPoint().y, svgText)
-      .subscribe((serverDrawing: Drawing) => {
-        document.body.style.cursor = "default";
-        this.drawingsDataSource.add(serverDrawing);
-        this.drawingsEventSource.textSaved.emit(true);
-      });
   }
 
-  public onTextEdited(evt: TextEditedDataEvent) {
+  public onTextEdited(evt: TextEditedDataEvent){
     let mapDrawing: MapDrawing = new MapDrawing();
     mapDrawing.element = evt.textElement;
     (mapDrawing.element as TextElement).text = evt.editedText;
@@ -417,67 +398,45 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public addDrawing(selectedObject: string) {
-    if (selectedObject === this.selectedDrawing){
-      var map = document.getElementsByClassName('map')[0];
-      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-      this.resetDrawToolChoice();
-      return;
-    }
-
     switch (selectedObject) {
       case "rectangle":
-        this.drawTools.isAddingTextChosen = false;
+        this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
         this.drawTools.isLineChosen = false;
         break;
       case "ellipse":
-        this.drawTools.isAddingTextChosen = false;
+        this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = false;
         break;
       case "line":
-        this.drawTools.isAddingTextChosen = false;
+        this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
         break;
+      case "text":
+        this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
+        this.drawTools.isEllipseChosen = false;
+        this.drawTools.isRectangleChosen = false;
+        this.drawTools.isLineChosen = false;
+        break;
     }
 
-    this.selectedDrawing = selectedObject;
-    var map = document.getElementsByClassName('map')[0];
-    let mapDrawing: MapDrawing = this.getDrawingMock(selectedObject);
-
-    let listener = (event: MouseEvent) => {
-      let x = event.clientX - this.mapChild.context.getZeroZeroTransformationPoint().x;
-      let y = event.clientY - this.mapChild.context.getZeroZeroTransformationPoint().y;
-      let svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
-
-      this.drawingService
-        .add(this.server, this.project.project_id, x, y, svg)
-        .subscribe((serverDrawing: Drawing) => {
-          this.drawingsDataSource.add(serverDrawing);
-        });
-        this.resetDrawToolChoice();
-    }
-
-    map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-    this.drawListener = listener;
-    map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
+    this.selectedDrawing = this.selectedDrawing === selectedObject ? "" : selectedObject;
   }
 
   public resetDrawToolChoice() {
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
-    this.drawTools.isAddingTextChosen = false;
+    this.drawTools.isTextChosen = false;
     this.selectedDrawing = "";
   }
 
-  public hideMenu() {
-    var map = document.getElementsByClassName('map')[0];
-    map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
+  public hideMenu(){
     this.resetDrawToolChoice();
     this.drawTools.visibility = false;
   }
@@ -487,76 +446,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.drawTools.visibility = true;
     },
     200);
-  }
-
-  public getDrawingMock(objectType: string, text?: string): MapDrawing {
-    let drawingElement: DrawingElement;
-
-    switch (objectType) {
-      case "rectangle":
-        let rectElement = new RectElement();
-        rectElement.fill = "#ffffff";
-        rectElement.fill_opacity = 1.0;
-        rectElement.stroke = "#000000";
-        rectElement.stroke_width = 2;
-        rectElement.width = 200;
-        rectElement.height = 100;
-        drawingElement = rectElement;
-        break;
-      case "ellipse":
-        let ellipseElement = new EllipseElement();
-        ellipseElement.fill = "#ffffff";
-        ellipseElement.fill_opacity = 1.0;
-        ellipseElement.stroke = "#000000";
-        ellipseElement.stroke_width = 2;
-        ellipseElement.cx = 100;
-        ellipseElement.cy = 100;
-        ellipseElement.rx = 100;
-        ellipseElement.ry = 100;
-        ellipseElement.width = 200;
-        ellipseElement.height = 200;
-        drawingElement = ellipseElement;
-        break;
-      case "line":
-        let lineElement = new LineElement();
-        lineElement.stroke = "#000000";
-        lineElement.stroke_width = 2;
-        lineElement.x1 = 0;
-        lineElement.x2 = 200;
-        lineElement.y1 = 0;
-        lineElement.y2 = 0;
-        lineElement.width = 100;
-        lineElement.height = 0;
-        drawingElement = lineElement;
-        break;
-      case "text":
-        let textElement = new TextElement();
-        textElement.height = 100;
-        textElement.width = 100;
-        textElement.text = text;
-        textElement.fill = "#000000";
-        textElement.fill_opacity = 0;
-        textElement.font_family = "Noto Sans";
-        textElement.font_size = 11;
-        textElement.font_weight = "bold";
-        drawingElement = textElement;
-        break;
-    }
-
-    let mapDrawing = new MapDrawing();
-    mapDrawing.element = drawingElement;
-    return mapDrawing;
-  }
-
-  public addText() {
-    if (!this.drawTools.isAddingTextChosen){
-      this.resetDrawToolChoice();
-      this.drawTools.isAddingTextChosen = true;
-      var map = document.getElementsByClassName('map')[0];
-      map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-    } else {
-      this.resetDrawToolChoice();
-    }
   }
 
   public ngOnDestroy() {

@@ -4,6 +4,7 @@ import { MatMenuModule, MatIconModule } from '@angular/material';
 
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
+import { DrawingsFactory } from './helpers/drawings-factory';
 import { MultiLinkCalculatorHelper } from './helpers/multi-link-calculator-helper';
 import { SvgToDrawingConverter } from './helpers/svg-to-drawing-converter';
 import { QtDasharrayFixer } from './helpers/qt-dasharray-fixer';
@@ -67,6 +68,7 @@ import { StylesToFontConverter } from './converters/styles-to-font-converter';
   providers: [
     CssFixer,
     FontFixer,
+    DrawingsFactory,
     MultiLinkCalculatorHelper,
     SvgToDrawingConverter,
     QtDasharrayFixer,

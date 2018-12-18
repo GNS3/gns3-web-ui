@@ -11,14 +11,12 @@ import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { MapLinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
 import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
-import { DraggedDataEvent } from '../../events/event-source';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { TextEditingTool } from '../../tools/text-editing-tool';
 import { TextAddingComponent } from '../text-adding/text-adding.component';
@@ -52,10 +50,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected settings = {
     'show_interface_labels': true
   };
-
-  ngAfterInit(){
-    console.log(this.textAddingComponent);
-  }
 
   constructor(
     private graphDataManager: GraphDataManager,
