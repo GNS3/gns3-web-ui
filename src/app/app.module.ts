@@ -75,6 +75,8 @@ import { MatSidenavModule } from '@angular/material';
 import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
 import { AddDrawingComponent } from './components/project-map/add-drawing/add-drawing.component';
+import { DrawingResizedComponent } from './components/drawings-listeners/drawing-resized/drawing-resized.component';
+import { TextEditedComponent } from './components/drawings-listeners/text-edited/text-edited.component';
 
 
 if (environment.production) {
@@ -118,7 +120,9 @@ if (environment.production) {
     ServerDiscoveryComponent,
     NodeSelectInterfaceComponent,
     DrawLinkToolComponent,
-    AddDrawingComponent
+    AddDrawingComponent,
+    DrawingResizedComponent,
+    TextEditedComponent
   ],
   imports: [
     BrowserModule,

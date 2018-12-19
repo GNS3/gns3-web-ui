@@ -4,7 +4,7 @@ import { MatMenuModule, MatIconModule } from '@angular/material';
 
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
-import { DrawingsFactory } from './helpers/drawings-factory';
+import { DefaultDrawingsFactory } from './helpers/default-drawings-factory';
 import { MultiLinkCalculatorHelper } from './helpers/multi-link-calculator-helper';
 import { SvgToDrawingConverter } from './helpers/svg-to-drawing-converter';
 import { QtDasharrayFixer } from './helpers/qt-dasharray-fixer';
@@ -46,6 +46,10 @@ import { TextAddingComponent } from './components/text-adding/text-adding.compon
 import { TextEditingComponent } from './components/text-editing/text-editing.component';
 import { FontBBoxCalculator } from './helpers/font-bbox-calculator';
 import { StylesToFontConverter } from './converters/styles-to-font-converter';
+import { TextElementFactory } from './helpers/drawings-factory/text-element-factory';
+import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-element-factory';
+import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
+import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
 
 
 @NgModule({
@@ -68,7 +72,11 @@ import { StylesToFontConverter } from './converters/styles-to-font-converter';
   providers: [
     CssFixer,
     FontFixer,
-    DrawingsFactory,
+    DefaultDrawingsFactory,
+    TextElementFactory,
+    EllipseElementFactory,
+    RectangleElementFactory,
+    LineElementFactory,
     MultiLinkCalculatorHelper,
     SvgToDrawingConverter,
     QtDasharrayFixer,

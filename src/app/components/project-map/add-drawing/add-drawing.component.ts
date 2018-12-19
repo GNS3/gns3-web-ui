@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChange, Output, EventEmitter } from "@angular/core";
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingService } from '../../../services/drawing.service';
-import { DrawingsFactory } from '../../../cartography/helpers/drawings-factory';
+import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
@@ -27,7 +27,7 @@ export class AddDrawingComponent implements OnChanges {
     constructor(
         private drawingService: DrawingService,
         private drawingsDataSource: DrawingsDataSource,
-        private drawingsFactory: DrawingsFactory,
+        private drawingsFactory: DefaultDrawingsFactory,
         private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
         private context: Context
     ){}

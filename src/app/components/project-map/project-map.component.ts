@@ -26,7 +26,7 @@ import { MapChangeDetectorRef } from '../../cartography/services/map-change-dete
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { MapLinkCreated } from '../../cartography/events/links';
 import { NodeWidget } from '../../cartography/widgets/node';
-import { DraggedDataEvent, ResizedDataEvent, TextEditedDataEvent, TextAddedDataEvent } from '../../cartography/events/event-source';
+import { DraggedDataEvent } from '../../cartography/events/event-source';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { NodesEventSource } from '../../cartography/events/nodes-event-source';
@@ -40,9 +40,8 @@ import { SettingsService, Settings } from '../../services/settings.service';
 import { MapLabel } from '../../cartography/models/map/map-label';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapLinkNode } from '../../cartography/models/map/map-link-node';
-import { TextElement } from '../../cartography/models/drawings/text-element';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
-import { DrawingsFactory } from '../../cartography/helpers/drawings-factory';
+import { DefaultDrawingsFactory } from '../../cartography/helpers/default-drawings-factory';
 
 
 @Component({
@@ -109,7 +108,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private settingsService: SettingsService,
     private mapLabelToLabel: MapLabelToLabelConverter,
-    private drawingsFactory: DrawingsFactory
+    private drawingsFactory: DefaultDrawingsFactory
   ) {}
 
   ngOnInit() {
@@ -185,14 +184,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt))
-    );
-
-    this.subscriptions.push(
-      this.drawingsEventSource.resized.subscribe((evt) => this.onDrawingResized(evt))
-    );
-
-    this.subscriptions.push(
-      this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt))
     );
 
     this.subscriptions.push(
@@ -338,35 +329,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
-    const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
-    let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
-    
-    this.drawingService
-      .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
-      });
-  }
-
   public onDrawingSaved(evt: boolean){
     this.resetDrawToolChoice();
-  }
-
-  public onTextEdited(evt: TextEditedDataEvent){
-    let mapDrawing: MapDrawing = new MapDrawing();
-    mapDrawing.element = evt.textElement;
-    (mapDrawing.element as TextElement).text = evt.editedText;
-    let svgString = this.mapDrawingToSvgConverter.convert(mapDrawing);
-
-    let drawing = this.drawingsDataSource.get(evt.textDrawingId);
-
-    this.drawingService
-      .updateText(this.server, drawing, svgString)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
-        this.drawingsEventSource.textSaved.emit(true);
-    });
   }
 
   public set readonly(value) {

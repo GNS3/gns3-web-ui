@@ -1,7 +1,9 @@
 import { DrawingElementFactory } from './drawing-element-factory';
 import { DrawingElement } from '../../models/drawings/drawing-element';
 import { RectElement } from '../../models/drawings/rect-element';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class RectangleElementFactory implements DrawingElementFactory{
 
     getDrawingElement() : DrawingElement {

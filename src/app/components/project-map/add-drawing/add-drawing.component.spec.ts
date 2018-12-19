@@ -1,6 +1,6 @@
 import { AddDrawingComponent } from "./add-drawing.component";
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { DrawingsFactory } from '../../../cartography/helpers/drawings-factory';
+import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
 import { DrawingService } from '../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
@@ -15,7 +15,7 @@ describe('AddDrawingComponent', () => {
             providers: [
                 { provide: DrawingService },
                 { provide: DrawingsDataSource },
-                { provide: DrawingsFactory },
+                { provide: DefaultDrawingsFactory },
                 { provide: MapDrawingToSvgConverter },
                 { provide: Context }
             ],

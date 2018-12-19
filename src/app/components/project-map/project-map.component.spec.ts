@@ -42,7 +42,7 @@ import { HttpServer } from '../../services/http-server.service';
 import { Server } from '../../models/server';
 import { ResizedDataEvent } from '../../cartography/events/event-source';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
-import { DrawingsFactory } from '../../cartography/helpers/drawings-factory';
+import { DefaultDrawingsFactory } from '../../cartography/helpers/default-drawings-factory';
 
 export class MockedProgressService {
   public activate() {}
@@ -117,7 +117,7 @@ describe('ProjectMapComponent', () => {
         { provide: NodesEventSource },
         { provide: DrawingsEventSource },
         { provide: LinksEventSource },
-        { provide: DrawingsFactory },
+        { provide: DefaultDrawingsFactory },
         { provide: MapDrawingToSvgConverter, useValue: {
           convert: () => { return ''}
         } },

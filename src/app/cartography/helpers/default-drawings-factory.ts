@@ -7,17 +7,26 @@ import { DrawingElementFactory } from './drawings-factory/drawing-element-factor
 import { MapDrawing } from '../models/map/map-drawing';
 
 @Injectable()
-export class DrawingsFactory {
+export class DefaultDrawingsFactory {
     private factory: DrawingElementFactory;
-    private availablefactories = {
-        'text': new TextElementFactory,
-        'ellipse': new EllipseElementFactory,
-        'rectangle': new RectangleElementFactory,
-        'line': new LineElementFactory
-    };
+    private availableFactories: {[ key: string]: DrawingElementFactory};
+
+    constructor(
+        private textElementFactory: TextElementFactory,
+        private ellipseElementFactory: EllipseElementFactory,
+        private rectangleElementFactory: RectangleElementFactory,
+        private lineElementFactory: LineElementFactory
+    ){
+        this.availableFactories = {
+            'text': this.textElementFactory,
+            'ellipse': this.ellipseElementFactory,
+            'rectangle': this.rectangleElementFactory,
+            'line': this.lineElementFactory
+        };
+    }
 
     getDrawingMock(drawingType: string){
-        this.factory = this.availablefactories[drawingType];
+        this.factory = this.availableFactories[drawingType];
 
         let mapDrawing = new MapDrawing();
         mapDrawing.element = this.factory.getDrawingElement();

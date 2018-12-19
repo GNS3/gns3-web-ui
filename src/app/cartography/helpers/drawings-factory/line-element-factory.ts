@@ -1,7 +1,9 @@
 import { DrawingElementFactory } from './drawing-element-factory';
 import { DrawingElement } from '../../models/drawings/drawing-element';
 import { LineElement } from '../../models/drawings/line-element';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class LineElementFactory implements DrawingElementFactory{
 
     getDrawingElement(): DrawingElement{
