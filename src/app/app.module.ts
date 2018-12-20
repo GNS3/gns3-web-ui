@@ -77,6 +77,11 @@ import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/d
 import { AddDrawingComponent } from './components/project-map/add-drawing/add-drawing.component';
 import { DrawingResizedComponent } from './components/drawings-listeners/drawing-resized/drawing-resized.component';
 import { TextEditedComponent } from './components/drawings-listeners/text-edited/text-edited.component';
+import { NodeDraggedComponent } from './components/drawings-listeners/node-dragged/node-dragged.component';
+import { NodeLabelDraggedComponent } from './components/drawings-listeners/node-label-dragged/node-label-dragged.component';
+import { DrawingDraggedComponent } from './components/drawings-listeners/drawing-dragged/drawing-dragged.component';
+import { LinkCreatedComponent } from './components/drawings-listeners/link-created/link-created.component';
+import { InterfaceLabelDraggedComponent } from './components/drawings-listeners/interface-label-dragged/interface-label-dragged.component';
 
 
 if (environment.production) {
@@ -122,7 +127,12 @@ if (environment.production) {
     DrawLinkToolComponent,
     AddDrawingComponent,
     DrawingResizedComponent,
-    TextEditedComponent
+    TextEditedComponent,
+    NodeDraggedComponent,
+    NodeLabelDraggedComponent,
+    DrawingDraggedComponent,
+    LinkCreatedComponent,
+    InterfaceLabelDraggedComponent
   ],
   imports: [
     BrowserModule,

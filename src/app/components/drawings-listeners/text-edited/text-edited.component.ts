@@ -31,7 +31,7 @@ export class TextEditedComponent implements OnInit, OnDestroy{
         this.textEdited = this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt));
     }
 
-    public onTextEdited(evt: TextEditedDataEvent){
+    onTextEdited(evt: TextEditedDataEvent){
         let mapDrawing: MapDrawing = new MapDrawing();
         mapDrawing.element = evt.textElement;
         (mapDrawing.element as TextElement).text = evt.editedText;

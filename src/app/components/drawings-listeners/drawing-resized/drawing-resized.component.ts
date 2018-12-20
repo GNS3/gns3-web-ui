@@ -30,13 +30,13 @@ export class DrawingResizedComponent implements OnInit, OnDestroy{
         this.drawingResized = this.drawingsEventSource.resized.subscribe((evt) => this.onDrawingResized(evt))
     }
 
-    public onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
+    onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {
         const drawing = this.drawingsDataSource.get(resizedEvent.datum.id);
         let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
         
         this.drawingService
-          .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
-          .subscribe((serverDrawing: Drawing) => {
+        .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
+        .subscribe((serverDrawing: Drawing) => {
             this.drawingsDataSource.update(serverDrawing);
         });
     }

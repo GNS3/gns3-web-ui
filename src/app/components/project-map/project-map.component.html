@@ -11,7 +11,7 @@
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
     [text-editing-tool]="tools.text_editing"
-    [text-adding-tool]="drawTools.isAddingTextChosen"
+    [text-adding-tool]="drawTools.isTextChosen"
     [draw-link-tool]="tools.draw_link"
     [readonly]="inReadOnlyMode"
     (nodeDragged)="onNodeDragged($event)"
@@ -155,5 +155,10 @@
   (drawingSaved)="onDrawingSaved($event)">
 </app-add-drawing>
 
+<app-drawing-dragged [server]="server"></app-drawing-dragged>
 <app-drawing-resized [server]="server"></app-drawing-resized>
+<app-interface-label-dragged [server]="server"></app-interface-label-dragged>
+<app-link-created [server]="server" [project]="project"></app-link-created>
+<app-node-dragged [server]="server"></app-node-dragged>
+<app-node-label-dragged [server]="server"></app-node-label-dragged>
 <app-text-edited [server]="server"></app-text-edited>
