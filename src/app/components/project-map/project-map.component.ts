@@ -26,7 +26,6 @@ import { NodeContextMenu } from '../../cartography/events/nodes';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
-import { LinksEventSource } from '../../cartography/events/links-event-source';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 
@@ -86,7 +85,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
-    private linksEventSource: LinksEventSource,
     private settingsService: SettingsService
   ) {}
 
@@ -151,10 +149,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })
-    );
-
-    this.subscriptions.push(
-      this.linksEventSource.interfaceDragged.subscribe((evt) => this.onInterfaceLabelDragged(evt))
     );
   }
 
