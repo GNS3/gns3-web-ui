@@ -44,6 +44,9 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { DefaultDrawingsFactory } from '../../cartography/helpers/default-drawings-factory';
 import { Label } from '../../cartography/models/label';
 import { Node } from '../../cartography/models/node';
+import { Port } from '../../models/port';
+import { Link } from '../../models/link';
+import { LinkNode } from '../../models/link-node';
 
 export class MockedProgressService {
   public activate() {}
@@ -54,6 +57,10 @@ export class MockedNodeService {
   constructor() {}
 
   updateLabel(server: Server, node: Node, label: Label): Observable<Node> {
+    return of(this.node);
+  }
+
+  updatePosition(server: Server, node: Node, x: number, y: number): Observable<Node> {
     return of(this.node);
   }
 }
@@ -84,6 +91,18 @@ export class MockedDrawingService {
 
   updateText(_server: Server, _drawing: Drawing, _svg: string): Observable<Drawing> {
     return of(this.drawing);
+  }
+}
+
+export class MockedLinkService {
+  constructor() {}
+
+  createLink(server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
+    return of({});
+  }
+
+  updateNodes(server: Server, link: Link, nodes: LinkNode[]){
+    return of({});
   }
 }
 
