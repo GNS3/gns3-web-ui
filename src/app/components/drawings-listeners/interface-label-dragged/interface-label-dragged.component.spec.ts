@@ -4,17 +4,14 @@ import { MockedLinkService } from '../../project-map/project-map.component.spec'
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { LinkService } from '../../../services/link.service';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
-import { LinkCreatedComponent } from '../link-created/link-created.component';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { DrawingElement } from '../../../cartography/models/drawings/drawing-element';
-import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Observable } from 'rxjs';
 import { MapLabel } from '../../../cartography/models/map/map-label';
 import { Link } from '../../../models/link';
 import { Label } from '../../../cartography/models/label';
 
-fdescribe('InterfaceLabelDraggedComponent', () => {
+describe('InterfaceLabelDraggedComponent', () => {
     let component: InterfaceLabelDraggedComponent;
     let fixture: ComponentFixture<InterfaceLabelDraggedComponent>;
     let mockedLinkService = new MockedLinkService;

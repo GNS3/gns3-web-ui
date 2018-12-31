@@ -22,6 +22,7 @@ import { TextEditingTool } from '../../tools/text-editing-tool';
 import { TextAddingComponent } from '../text-adding/text-adding.component';
 import { Server } from '../../../models/server';
 import { TextAddingTool } from '../../tools/text-adding-tool';
+import { ToolsService } from '../../../services/tools.service';
 
 
 @Component({
@@ -46,6 +47,9 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
   private onChangesDetected: Subscription;
+  private subscriptions: Subscription[] = [];
+
+  private drawLinkTool: boolean;
 
   protected settings = {
     'show_interface_labels': true
@@ -64,6 +68,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected textAddingToolWidget: TextAddingTool,
     protected textEditingToolWidget: TextEditingTool,
     public graphLayout: GraphLayout,
+    private toolsService: ToolsService
     ) {
     this.parentNativeElement = element.nativeElement;
   }
@@ -74,32 +79,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.interfaceLabelWidget.setEnabled(value);
     this.mapChangeDetectorRef.detectChanges();
   }
-
-  @Input('moving-tool')
-  set movingTool(value) {
-    this.movingToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('selection-tool')
-  set selectionTool(value) {
-    this.selectionToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('text-adding-tool')
-  set textAddingTool(value){
-    this.textAddingToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('text-editing-tool')
-  set textEditingTool(value){
-    this.textEditingToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('draw-link-tool') drawLinkTool: boolean;
 
   @Input('readonly') set readonly(value) {
     this.mapSettings.isReadOnly = value;
@@ -134,11 +113,48 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.redraw();
       }
     });
+
+    this.subscriptions.push(
+      this.toolsService.isTextAddingToolActivated.subscribe((value: boolean) => {
+        this.textAddingToolWidget.setEnabled(value);
+        this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    this.subscriptions.push(
+      this.toolsService.isTextEditingToolActivated.subscribe((value: boolean) => {
+        this.textEditingToolWidget.setEnabled(value);
+        this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    this.subscriptions.push(
+      this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
+        this.movingToolWidget.setEnabled(value);
+        this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    this.subscriptions.push(
+      this.toolsService.isSelectionToolActivated.subscribe((value: boolean) => {
+        this.selectionToolWidget.setEnabled(value);
+        this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    this.subscriptions.push(
+      this.toolsService.isDrawLinkToolActivated.subscribe((value: boolean) => {
+        this.drawLinkTool = value;
+      })
+    );
   }
 
   ngOnDestroy() {
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
+    this.subscriptions.forEach((subscription: Subscription) => {
+      subscription.unsubscribe();
+    });
   }
 
   public createGraph(domElement: HTMLElement) {

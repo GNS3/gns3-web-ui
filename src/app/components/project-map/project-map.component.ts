@@ -28,6 +28,7 @@ import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
+import { ToolsService } from '../../services/tools.service';
 
 
 @Component({
@@ -43,6 +44,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
+  public selectedDrawing: string;
   private ws: Subject<any>;
 
   tools = {
@@ -61,8 +63,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     'isTextChosen': false,
     'visibility': false
   };
-
-  protected selectedDrawing: string;
 
   private inReadOnlyMode = false;
 
@@ -85,7 +85,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private toolsService: ToolsService
   ) {}
 
   ngOnInit() {
@@ -221,8 +222,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.inReadOnlyMode = value;
     if (value) {
       this.tools.selection = false;
+      this.toolsService.selectionToolActivation(false);
     } else {
       this.tools.selection = true;
+      this.toolsService.selectionToolActivation(true);
     }
   }
 
@@ -232,13 +235,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
+    this.toolsService.movingToolActivation(this.tools.moving);
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
+      this.toolsService.selectionToolActivation(this.tools.selection);
     }
   }
 
   public toggleDrawLineMode() {
     this.tools.draw_link = !this.tools.draw_link;
+    this.toolsService.drawLinkToolActivation(this.tools.draw_link);
   }
 
   public toggleShowInterfaceLabels(enabled: boolean) {
@@ -270,6 +276,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = false;
+        this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
         break;
     }
 
@@ -282,6 +289,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.drawTools.isLineChosen = false;
     this.drawTools.isTextChosen = false;
     this.selectedDrawing = "";
+    this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
   }
 
   public hideMenu(){

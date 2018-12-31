@@ -82,6 +82,7 @@ import { NodeLabelDraggedComponent } from './components/drawings-listeners/node-
 import { DrawingDraggedComponent } from './components/drawings-listeners/drawing-dragged/drawing-dragged.component';
 import { LinkCreatedComponent } from './components/drawings-listeners/link-created/link-created.component';
 import { InterfaceLabelDraggedComponent } from './components/drawings-listeners/interface-label-dragged/interface-label-dragged.component';
+import { ToolsService } from './services/tools.service';
 
 
 if (environment.production) {
@@ -177,7 +178,8 @@ if (environment.production) {
     DrawingsDataSource,
     ServerErrorHandler,
     ServerDatabase,
-    ProjectNameValidator
+    ProjectNameValidator,
+    ToolsService
   ],
   entryComponents: [
     AddServerDialogComponent,
