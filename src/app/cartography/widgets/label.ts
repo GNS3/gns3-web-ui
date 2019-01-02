@@ -39,7 +39,7 @@ export class LabelWidget implements Widget {
     const label_enter = label_view.enter()
       .append<SVGGElement>('g')
         .attr('class', 'label_container')
-        .attr('label_id', (l: MapLabel) => l.id)
+        .attr('label_id', (label: MapLabel) => label.id)
 
     const merge = label_view.merge(label_enter);
 
@@ -56,8 +56,6 @@ export class LabelWidget implements Widget {
 
 
   private drawLabel(view: SVGSelection) {
-    const self = this;
-
     const label_body = view.selectAll<SVGGElement, MapLabel>("g.label_body")
       .data((label) => [label]);
 
@@ -78,17 +76,17 @@ export class LabelWidget implements Widget {
 
     label_body_merge
       .select<SVGTextElement>('text.label')
-        .attr('label_id', (l: MapLabel) => l.id)
-        .attr('style', (l: MapLabel) => {
-          let styles = this.cssFixer.fix(l.style);
+        .attr('label_id', (label: MapLabel) => label.id)
+        .attr('style', (label: MapLabel) => {
+          let styles = this.cssFixer.fix(label.style);
           styles = this.fontFixer.fixStyles(styles);
           return styles;
         })
-        .text((l: MapLabel) => l.text)
-        .attr('x', (l: MapLabel) => l.x)
-        .attr('y', (l: MapLabel) => l.y)
-        .attr('transform', (l: MapLabel) => {
-          return `rotate(${l.rotation}, ${l.x}, ${l.y})`;
+        .text((label: MapLabel) => label.text)
+        .attr('x', (label: MapLabel) => label.x)
+        .attr('y', (label: MapLabel) => label.y)
+        .attr('transform', (label: MapLabel) => {
+          return `rotate(${label.rotation}, ${label.x}, ${label.y})`;
         })
 
   label_body_merge
@@ -98,9 +96,9 @@ export class LabelWidget implements Widget {
       .attr('stroke-dasharray', '3,3')
       .attr('stroke-width', '0.5')
       .attr('fill', 'none')
-      .each(function (this: SVGRectElement, l: MapLabel) {
+      .each(function (this: SVGRectElement, label: MapLabel) {
         const current = select(this);
-        const textLabel = label_body_merge.select<SVGTextElement>(`text[label_id="${l.id}"]`);
+        const textLabel = label_body_merge.select<SVGTextElement>(`text[label_id="${label.id}"]`);
         const bbox = textLabel.node().getBBox();
         const border = 2;
 
@@ -108,7 +106,7 @@ export class LabelWidget implements Widget {
         current.attr('height', bbox.height + border * 2);
         current.attr('x', bbox.x - border);
         current.attr('y', bbox.y - border);
-        current.attr('transform', `rotate(${l.rotation}, ${bbox.x - border}, ${bbox.y - border})`);
+        current.attr('transform', `rotate(${label.rotation},  ${label.x}, ${label.y})`);
       });
   }
 
