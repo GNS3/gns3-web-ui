@@ -52,3 +52,6 @@ win:
 
 nsis:
   perMachine: true
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  license: "LICENSE"

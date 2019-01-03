@@ -84,7 +84,7 @@ def download_command(arguments):
     shutil.rmtree(SOURCE_DESTINATION, ignore_errors=True)
     os.makedirs(SOURCE_DESTINATION)
 
-    download("https://github.com/GNS3/gns3-server/archive/2.1.zip", SOURCE_ZIP)
+    download("https://github.com/GNS3/gns3-server/archive/2.2.zip", SOURCE_ZIP)
 
     files = unzip(SOURCE_ZIP, SOURCE_DESTINATION)
     source_directory = os.path.join(SOURCE_DESTINATION, files[0].filename)
