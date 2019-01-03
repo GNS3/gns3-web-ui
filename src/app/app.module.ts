@@ -83,6 +83,7 @@ import { DrawingDraggedComponent } from './components/drawings-listeners/drawing
 import { LinkCreatedComponent } from './components/drawings-listeners/link-created/link-created.component';
 import { InterfaceLabelDraggedComponent } from './components/drawings-listeners/interface-label-dragged/interface-label-dragged.component';
 import { ToolsService } from './services/tools.service';
+import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
 
 
 if (environment.production) {
@@ -128,6 +129,7 @@ if (environment.production) {
     DrawLinkToolComponent,
     AddDrawingComponent,
     DrawingResizedComponent,
+    TextAddedComponent,
     TextEditedComponent,
     NodeDraggedComponent,
     NodeLabelDraggedComponent,

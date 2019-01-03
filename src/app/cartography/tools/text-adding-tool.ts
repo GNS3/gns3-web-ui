@@ -10,15 +10,15 @@ export class TextAddingTool {
     public addingFinished = new EventEmitter<any>();
 
     constructor(
-        private drawingEventSource: DrawingsEventSource
+        private drawingEventSource: DrawingsEventSource,
     ){}
 
     public setEnabled(enabled){
-        if (enabled){
-            this.activate();
-        } else {
-            this.deactivate();
-        }
+        // if (enabled){
+        //     this.activate();
+        // } else {
+        //     this.deactivate();
+        // }
     }
 
     private deactivate(){

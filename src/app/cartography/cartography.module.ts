@@ -50,6 +50,7 @@ import { TextElementFactory } from './helpers/drawings-factory/text-element-fact
 import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-element-factory';
 import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
+import { TemporaryTextElementComponent } from './components/temporary-text-element/temporary-text-element.component';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import { LineElementFactory } from './helpers/drawings-factory/line-element-fact
     DrawingResizingComponent,
     TextAddingComponent,
     TextEditingComponent,
+    TemporaryTextElementComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,

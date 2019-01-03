@@ -9,7 +9,7 @@ import { TextEditedDataEvent } from '../../events/event-source';
     template: `<ng-content></ng-content>`,
     styleUrls: ['./text-editing.component.scss']
 })
-export class TextEditingComponent implements OnInit, OnDestroy{
+export class TextEditingComponent implements OnInit, OnDestroy {
     textEditingFinished: Subscription;
 
     constructor(

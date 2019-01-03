@@ -11,7 +11,7 @@ import { TextAddedDataEvent } from '../../events/event-source';
     template: `<ng-content></ng-content>`,
     styleUrls: ['./text-adding.component.scss']
 })
-export class TextAddingComponent implements OnInit, OnDestroy{
+export class TextAddingComponent implements OnInit, OnDestroy {
     textAddingFinished: Subscription;
 
     constructor(

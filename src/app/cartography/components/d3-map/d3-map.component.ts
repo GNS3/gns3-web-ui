@@ -116,7 +116,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.toolsService.isTextAddingToolActivated.subscribe((value: boolean) => {
-        this.textAddingToolWidget.setEnabled(value);
+        //this.textAddingToolWidget.setEnabled(value);
         this.mapChangeDetectorRef.detectChanges();
       })
     );

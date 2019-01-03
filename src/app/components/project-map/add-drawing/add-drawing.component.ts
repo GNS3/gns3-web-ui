@@ -37,7 +37,7 @@ export class AddDrawingComponent implements OnChanges {
             if(this.availableDrawings.includes(changes['selectedDrawing'].currentValue)){
                 this.addDrawing(changes['selectedDrawing'].currentValue);
             } else if (changes['selectedDrawing'].currentValue === "text") {
-                this.addText();
+                //this.addText();
             } else {
                 document.getElementsByClassName('map')[0].removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
             }
