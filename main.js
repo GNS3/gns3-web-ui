@@ -48,6 +48,10 @@ const createServerProc = () => {
       }
     });
 
+    if (serverPath == null) {
+      console.error('gns3server cannot be found');
+    }
+
     if (serverPath != null) {
       serverProc = require('child_process').execFile(serverPath, []);
 
@@ -113,8 +117,8 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// app.on('ready', createServerProc);
-// app.on('will-quit', exitServerProc);
+app.on('ready', createServerProc);
+app.on('will-quit', exitServerProc);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
