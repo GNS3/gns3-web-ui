@@ -1,7 +1,7 @@
 const { init } = require('@sentry/electron');
 const fs = require('fs');
 
-const { ipcRenderer } = require('electron')
+const { ipcMain } = require('electron')
 
 let crashReportsEnabled = true;
 const DSN =
@@ -16,7 +16,7 @@ const shouldSendCallback = () => {
 };
 
 
-ipcRenderer.on('settings.changed', function (event, settings) {
+ipcMain.on('settings.changed', function (event, settings) {
   crashReportsEnabled = settings.crash_reports;
 });
 
