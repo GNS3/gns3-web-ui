@@ -19,9 +19,7 @@ import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { TextEditingTool } from '../../tools/text-editing-tool';
-import { TextAddingComponent } from '../text-adding/text-adding.component';
 import { Server } from '../../../models/server';
-import { TextAddingTool } from '../../tools/text-adding-tool';
 import { ToolsService } from '../../../services/tools.service';
 
 
@@ -41,7 +39,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
 
   @ViewChild('svg') svgRef: ElementRef;
-  @ViewChild(TextAddingComponent) textAddingComponent: TextAddingComponent;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -65,7 +62,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
-    protected textAddingToolWidget: TextAddingTool,
     protected textEditingToolWidget: TextEditingTool,
     public graphLayout: GraphLayout,
     private toolsService: ToolsService
@@ -113,13 +109,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.redraw();
       }
     });
-
-    this.subscriptions.push(
-      this.toolsService.isTextAddingToolActivated.subscribe((value: boolean) => {
-        //this.textAddingToolWidget.setEnabled(value);
-        this.mapChangeDetectorRef.detectChanges();
-      })
-    );
 
     this.subscriptions.push(
       this.toolsService.isTextEditingToolActivated.subscribe((value: boolean) => {

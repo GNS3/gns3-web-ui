@@ -13,10 +13,9 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
     @Input('svg') svg: SVGSVGElement;
 
-    //should cover all style variables that can change
-    private leftPosition: string;
-    private topPosition: string;
-    private innerText: string;
+    private leftPosition: string = '0px';
+    private topPosition: string = '0px';
+    private innerText: string = '';
     private isActive: boolean = true;
     private mapListener: Function;
     private textListener: Function;
@@ -25,14 +24,11 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     constructor(
         private drawingsEventSource: DrawingsEventSource,
         private toolsService: ToolsService
-    ){
-        this.leftPosition = '100px';
-        this.topPosition = '100px';
-        this.innerText = '';
-    }
+    ){}
 
     ngOnInit(){
         this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {
+            this.isActive = isActive;
             isActive ? this.activate() : this.decativate()
         });
     }
@@ -45,11 +41,10 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
             this.temporaryTextElement.nativeElement.focus();
 
             let textListener = () => {
-                console.log("textListener: ", this.innerText);
-                this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
+                this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
                 this.svg.removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
                 this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
-                this.innerText = '';
+                this.isActive = false;
             }
             this.textListener = textListener;
             this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
@@ -64,6 +59,6 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(){
-
+        this.toolsService.isTextAddingToolActivated.unsubscribe();
     }
 }

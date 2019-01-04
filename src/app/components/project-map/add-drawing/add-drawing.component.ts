@@ -8,7 +8,6 @@ import { Server } from '../../../models/server';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Context } from '../../../cartography/models/context';
-import { TextElement } from '../../../cartography/models/drawings/text-element';
 
 
 @Component({
@@ -36,11 +35,9 @@ export class AddDrawingComponent implements OnChanges {
         if(changes['selectedDrawing'] && !changes['selectedDrawing'].isFirstChange()){
             if(this.availableDrawings.includes(changes['selectedDrawing'].currentValue)){
                 this.addDrawing(changes['selectedDrawing'].currentValue);
-            } else if (changes['selectedDrawing'].currentValue === "text") {
-                //this.addText();
-            } else {
+            } else if (!(changes['selectedDrawing'].currentValue === "text")) {
                 document.getElementsByClassName('map')[0].removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-            }
+            } 
         }
     }
 
@@ -63,52 +60,6 @@ export class AddDrawingComponent implements OnChanges {
         let map = document.getElementsByClassName('map')[0];
         map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
         this.drawListener = listener;
-        map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
-    }
-
-    addText(){
-        let addTextListener = (event: MouseEvent) => {
-          let textBox = document.createElement('div');
-          textBox.style.width = "fit-content";
-          textBox.style.left = event.clientX.toString() + 'px';
-          textBox.style.top = (event.clientY - 10).toString() + 'px';
-          textBox.style.position = "absolute";
-          textBox.style.zIndex = "99";
-  
-          textBox.style.fontFamily = "Noto Sans";
-          textBox.style.fontSize = "11pt";
-          textBox.style.fontWeight = "bold";
-          textBox.style.color = "#000000";
-  
-          textBox.setAttribute("contenteditable", "true");
-  
-          document.body.appendChild(textBox);
-          textBox.innerText = "";
-          textBox.focus();
-          document.body.style.cursor = "text";
-  
-          textBox.addEventListener("focusout", () => {
-            let savedText = textBox.innerText;
-  
-            let drawing = this.drawingsFactory.getDrawingMock("text");
-            (drawing.element as TextElement).text = savedText;
-            let svgText = this.mapDrawingToSvgConverter.convert(drawing);
-  
-            this.drawingService
-              .add(this.server, this.project.project_id, event.clientX - this.context.getZeroZeroTransformationPoint().x, event.clientY - this.context.getZeroZeroTransformationPoint().y, svgText)
-              .subscribe((serverDrawing: Drawing) => {
-                document.body.style.cursor = "default";
-                textBox.remove();
-
-                this.drawingsDataSource.add(serverDrawing);
-                this.drawingSaved.emit(true);
-              });
-          });
-        }
-
-        let map = document.getElementsByClassName('map')[0];
-        map.removeEventListener('click', this.drawListener as EventListenerOrEventListenerObject);
-        this.drawListener = addTextListener;
         map.addEventListener('click', this.drawListener as EventListenerOrEventListenerObject, {once : true});
     }
 }

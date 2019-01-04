@@ -10,6 +10,7 @@ import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Server } from '../../../models/server';
 import { Project } from '../../../models/project';
 import { Drawing } from '../../../cartography/models/drawing';
+import { Context } from '../../../cartography/models/context';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class TextAddedComponent implements OnInit, OnDestroy{
         private drawingsDataSource: DrawingsDataSource,
         private drawingsEventSource: DrawingsEventSource,
         private drawingsFactory: DefaultDrawingsFactory,
-        private mapDrawingToSvgConverter: MapDrawingToSvgConverter
+        private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
+        private context: Context
     ){}
     
     ngOnInit(){
@@ -36,14 +38,12 @@ export class TextAddedComponent implements OnInit, OnDestroy{
     }
 
     onTextAdded(evt: TextAddedDataEvent){
-        console.log(evt);
-  
         let drawing = this.drawingsFactory.getDrawingMock("text");
-        (drawing.element as TextElement).text = "evtsavedText";
+        (drawing.element as TextElement).text = evt.savedText;
         let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
         this.drawingService
-          .add(this.server, this.project.project_id, -55, -400, svgText)
+          .add(this.server, this.project.project_id, evt.x - this.context.getZeroZeroTransformationPoint().x, evt.y - this.context.getZeroZeroTransformationPoint().y, svgText)
           .subscribe((serverDrawing: Drawing) => {
             this.drawingsDataSource.add(serverDrawing);
             this.drawingSaved.emit(true);
