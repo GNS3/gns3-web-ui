@@ -29,6 +29,8 @@ export class TextEditingTool {
             return;
         }
 
+        console.log("From service", selection.selectAll<SVGTextElement, TextElement>('text.text_element'));
+
         selection.selectAll<SVGTextElement, TextElement>('text.text_element')
             .on("dblclick", (elem, index, textElements) => {
             this.editedElement = elem;

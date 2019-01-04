@@ -3,11 +3,11 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class ToolsService {
-    isSelectionToolActivated = new Subject<boolean>();
-    isMovingToolActivated = new Subject<boolean>();
-    isTextEditingToolActivated = new Subject<boolean>();
-    isTextAddingToolActivated = new Subject<boolean>();
-    isDrawLinkToolActivated = new Subject<boolean>();
+    public isSelectionToolActivated = new Subject<boolean>();
+    public isMovingToolActivated = new Subject<boolean>();
+    public isTextEditingToolActivated = new Subject<boolean>();
+    public isTextAddingToolActivated = new Subject<boolean>();
+    public isDrawLinkToolActivated = new Subject<boolean>();
 
     constructor(){}
 

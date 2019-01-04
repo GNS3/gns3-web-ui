@@ -50,6 +50,7 @@ import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-elemen
 import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
 import { TemporaryTextElementComponent } from './components/temporary-text-element/temporary-text-element.component';
+import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
 
 
 @NgModule({
@@ -61,6 +62,7 @@ import { TemporaryTextElementComponent } from './components/temporary-text-eleme
   declarations: [
     D3MapComponent,
     ExperimentalMapComponent,
+    DrawingAddingComponent,
     DrawingResizingComponent,
     TextEditingComponent,
     TemporaryTextElementComponent,
