@@ -76,6 +76,7 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
+      nodeIntegration: true, 
       preload: path.join(__dirname, 'sentry.js')
     }
   });
@@ -117,8 +118,8 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-app.on('ready', createServerProc);
-app.on('will-quit', exitServerProc);
+// app.on('ready', createServerProc);
+// app.on('will-quit', exitServerProc);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
