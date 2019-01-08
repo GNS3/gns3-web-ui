@@ -20,6 +20,13 @@ export class ResizedDataEvent<T> {
   ) {}
 }
 
+export class AddedDataEvent {
+  constructor(
+    public x: number,
+    public y: number
+  ) {}
+}
+
 export class ClickedDataEvent<T> {
   constructor(
     public datum: T,

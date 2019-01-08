@@ -143,12 +143,12 @@
 
 <app-draw-link-tool *ngIf="tools.draw_link"></app-draw-link-tool>
 
-<app-add-drawing
+<app-drawing-added
   [server]="server"
   [project]="project"
   [selectedDrawing]="selectedDrawing"
   (drawingSaved)="onDrawingSaved($event)">
-</app-add-drawing>
+</app-drawing-added>
 <app-drawing-dragged [server]="server"></app-drawing-dragged>
 <app-drawing-resized [server]="server"></app-drawing-resized>
 <app-interface-label-dragged [server]="server"></app-interface-label-dragged>
@@ -158,6 +158,6 @@
 <app-text-added 
   [server]="server" 
   [project]="project"
-  (drawingSaved)="onDrawingSaved($event)"
-></app-text-added>
+  (drawingSaved)="onDrawingSaved($event)">
+</app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
