@@ -6,7 +6,6 @@ import { Server } from '../../../models/server';
 import { Project } from '../../../models/project';
 import { Subscription } from 'rxjs';
 import { DrawingService } from '../../../services/drawing.service';
-import { Context } from '../../../cartography/models/context';
 import { Drawing } from '../../../cartography/models/drawing';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { AddedDataEvent } from '../../../cartography/events/event-source';
@@ -29,8 +28,7 @@ export class DrawingAddedComponent implements OnInit, OnDestroy{
         private drawingsDataSource: DrawingsDataSource,
         private drawingsEventSource: DrawingsEventSource,
         private drawingsFactory: DefaultDrawingsFactory,
-        private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-        private context: Context
+        private mapDrawingToSvgConverter: MapDrawingToSvgConverter
     ){}
 
     ngOnInit(){

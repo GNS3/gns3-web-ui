@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { Context } from '../../models/context';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -13,6 +14,7 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
     @Input('svg') svg: SVGSVGElement;
 
     private mapListener: Function;
+    private drawingSelected: Subscription;
 
     constructor(
         private drawingsEventSource: DrawingsEventSource,
@@ -20,7 +22,7 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
     ){}
 
     ngOnInit(){
-        this.drawingsEventSource.selected.subscribe((evt) => {
+        this.drawingSelected =  this.drawingsEventSource.selected.subscribe((evt) => {
             evt === "" ? this.deactivate() : this.activate();
         });    
     }
@@ -44,6 +46,6 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(){
-        this.drawingsEventSource.selected.unsubscribe();
+        this.drawingSelected.unsubscribe();
     }
 }
