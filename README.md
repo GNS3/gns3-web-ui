@@ -116,6 +116,9 @@ You may use `bump` to achieve that:
 
 In case you would like to create a new staging release. Please create draft release on github, like `0.0.1-dev1`. After successful build you can find artifacts there. 
 
+### Updating signing certificate for Windows
+
+Please follow this guide: [code-signing](https://www.electron.build/code-signing), use `certmgr.msc` exporting tool to limit the size of certificate.
 
 ## Further help
 
