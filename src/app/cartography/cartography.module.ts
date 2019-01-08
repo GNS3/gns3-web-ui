@@ -42,7 +42,6 @@ import { SelectionSelectComponent } from './components/selection-select/selectio
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 import { MapSettingsManager } from './managers/map-settings-manager';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
-import { TextEditingComponent } from './components/text-editing/text-editing.component';
 import { FontBBoxCalculator } from './helpers/font-bbox-calculator';
 import { StylesToFontConverter } from './converters/styles-to-font-converter';
 import { TextElementFactory } from './helpers/drawings-factory/text-element-factory';
@@ -64,7 +63,6 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     ExperimentalMapComponent,
     DrawingAddingComponent,
     DrawingResizingComponent,
-    TextEditingComponent,
     TemporaryTextElementComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,

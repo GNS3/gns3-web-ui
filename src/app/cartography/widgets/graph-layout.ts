@@ -8,7 +8,6 @@ import { MovingTool } from "../tools/moving-tool";
 import { LayersWidget } from "./layers";
 import { LayersManager } from "../managers/layers-manager";
 import { Injectable } from "@angular/core";
-import { TextEditingTool } from '../tools/text-editing-tool';
 
 
 @Injectable()
@@ -18,7 +17,6 @@ export class GraphLayout implements Widget {
     private drawingLineTool: DrawingLineWidget,
     private selectionTool: SelectionTool,
     private movingTool: MovingTool,
-    private textEditingTool: TextEditingTool,
     private layersWidget: LayersWidget,
     private layersManager: LayersManager
   ) {
@@ -69,7 +67,6 @@ export class GraphLayout implements Widget {
     this.drawingLineTool.draw(view, context);
     this.selectionTool.draw(view, context);
     this.movingTool.draw(view, context);
-    this.textEditingTool.draw(view);
   }
 
   disconnect(view: SVGSelection) {

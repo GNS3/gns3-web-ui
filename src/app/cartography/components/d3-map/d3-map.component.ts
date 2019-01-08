@@ -18,9 +18,9 @@ import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
-import { TextEditingTool } from '../../tools/text-editing-tool';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
+import { TemporaryTextElementComponent } from '../temporary-text-element/temporary-text-element.component';
 
 
 @Component({
@@ -39,6 +39,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
 
   @ViewChild('svg') svgRef: ElementRef;
+  @ViewChild('temporaryTextElement') temporaryTextElement: TemporaryTextElementComponent;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -62,7 +63,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
-    protected textEditingToolWidget: TextEditingTool,
     public graphLayout: GraphLayout,
     private toolsService: ToolsService
     ) {
@@ -109,13 +109,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.redraw();
       }
     });
-
-    this.subscriptions.push(
-      this.toolsService.isTextEditingToolActivated.subscribe((value: boolean) => {
-        this.textEditingToolWidget.setEnabled(value);
-        this.mapChangeDetectorRef.detectChanges();
-      })
-    );
 
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
@@ -175,6 +168,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setLinks(this.links);
     this.graphDataManager.setDrawings(this.drawings);
     this.graphLayout.draw(this.svg, this.context);
+    this.temporaryTextElement.activateTextEditing();
   }
 
   @HostListener('window:resize', ['$event'])

@@ -1,11 +1,12 @@
 import { Component, ViewChild, ElementRef, OnInit, Input, EventEmitter, OnDestroy } from "@angular/core";
 import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { TextAddedDataEvent } from '../../events/event-source';
+import { TextAddedDataEvent, TextEditedDataEvent } from '../../events/event-source';
 import { ToolsService } from '../../../services/tools.service';
-import { SVGSelection } from '../../models/types';
-import { Selection, select } from 'd3-selection';
+import { select } from 'd3-selection';
 import { TextElement } from '../../models/drawings/text-element';
 import { Context } from '../../models/context';
+import { Subscription } from 'rxjs';
+
 
 @Component({
     selector: 'app-temporary-text-element',
@@ -16,18 +17,18 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
     @Input('svg') svg: SVGSVGElement;
 
-    private leftPosition: string = '0px';
-    private topPosition: string = '0px';
-    private innerText: string = '';
-    private isActive: boolean = false;
-    private mapListener: Function;
-    private textListener: Function;
-    public addingFinished = new EventEmitter<any>();
+    private isActive: boolean = true;
+    private leftPosition: string;
+    private topPosition: string;
+    private innerText: string = "";s
 
-    private enabled = true;
     private editingDrawingId: string;
     private editedElement: any;
-    private temporaryElement: HTMLDivElement;
+
+    private mapListener: Function;
+    private textListener: Function;
+    private textAddingSubscription: Subscription;
+    public addingFinished = new EventEmitter<any>();
     
     constructor(
         private drawingsEventSource: DrawingsEventSource,
@@ -36,9 +37,9 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     ){}
 
     ngOnInit(){
-        this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {
+        this.textAddingSubscription = this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {
             this.isActive = isActive;
-            isActive ? this.activate() : this.deactivate()
+            this.isActive ? this.activate() : this.deactivate()
         });
 
         this.activateTextEditing();
@@ -48,13 +49,13 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
         let addTextListener = (event: MouseEvent) => {
             this.leftPosition = event.clientX.toString() + 'px';
             this.topPosition = event.clientY.toString() + 'px';
+
             this.temporaryTextElement.nativeElement.focus();
 
             let textListener = () => {
                 this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
                 this.deactivate();
                 this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
-                this.isActive = false;
             }
             this.textListener = textListener;
             this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
@@ -71,16 +72,38 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
 
     activateTextEditing(){
         const rootElement = select(this.svg);
-        console.log("From component ", rootElement.selectAll<SVGTextElement, TextElement>('text.text_element'));
 
         rootElement.selectAll<SVGTextElement, TextElement>('text.text_element')
             .on("dblclick", (elem, index, textElements) => {
+                this.isActive = true;
                 this.editedElement = elem;
+
                 select(textElements[index])
                     .attr("visibility", "hidden");
 
                 select(textElements[index])
                     .classed("editingMode", true);
+
+                this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute("drawing_id");
+                var transformData = textElements[index].parentElement.getAttribute("transform").split(/\(|\)/);
+                var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x;
+                var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y;
+                this.leftPosition = x.toString() + 'px';
+                this.topPosition = y.toString() + 'px';
+                this.innerText = elem.text;
+
+                this.temporaryTextElement.nativeElement.addEventListener("focusout", () => {
+                    let innerText = this.temporaryTextElement.nativeElement.innerText;
+                    this.drawingsEventSource.textEdited.emit(new TextEditedDataEvent(this.editingDrawingId, innerText.replace(/\n$/, ""), this.editedElement));
+    
+                    rootElement.selectAll<SVGTextElement, TextElement>('text.editingMode')
+                        .attr("visibility", "visible")
+                        .classed("editingMode", false);
+
+                    this.isActive = false;
+                });
+
+                this.temporaryTextElement.nativeElement.focus();
             });
     }
 
