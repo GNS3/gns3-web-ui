@@ -1,6 +1,11 @@
 {
   "name": "gns3-web-ui",
   "version": "0.0.1-beta.0",
+  "author": {
+    "name": "GNS3 Technology Inc.",
+    "email": "developers@gns3.com"
+  },
+  "description": "Graphical Network Simulator-3 is a network software emulator.",
   "license": "GPLv3",
   "main": "main.js",
   "repository": {
