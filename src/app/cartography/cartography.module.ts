@@ -48,7 +48,7 @@ import { TextElementFactory } from './helpers/drawings-factory/text-element-fact
 import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-element-factory';
 import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
-import { TemporaryTextElementComponent } from './components/temporary-text-element/temporary-text-element.component';
+import { TextEditorComponent } from './components/text-editor/text-editor.component';
 import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
 
 
@@ -63,7 +63,7 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     ExperimentalMapComponent,
     DrawingAddingComponent,
     DrawingResizingComponent,
-    TemporaryTextElementComponent,
+    TextEditorComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,

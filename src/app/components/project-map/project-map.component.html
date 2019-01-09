@@ -147,7 +147,7 @@
   [server]="server"
   [project]="project"
   [selectedDrawing]="selectedDrawing"
-  (drawingSaved)="onDrawingSaved($event)">
+  (drawingSaved)="onDrawingSaved()">
 </app-drawing-added>
 <app-drawing-dragged [server]="server"></app-drawing-dragged>
 <app-drawing-resized [server]="server"></app-drawing-resized>
@@ -158,6 +158,6 @@
 <app-text-added 
   [server]="server" 
   [project]="project"
-  (drawingSaved)="onDrawingSaved($event)">
+  (drawingSaved)="onDrawingSaved()">
 </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>

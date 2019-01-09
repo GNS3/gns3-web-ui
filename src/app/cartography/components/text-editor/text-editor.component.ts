@@ -9,18 +9,16 @@ import { Subscription } from 'rxjs';
 
 
 @Component({
-    selector: 'app-temporary-text-element',
-    templateUrl: './temporary-text-element.component.html',
-    styleUrls: ['./temporary-text-element.component.scss']
+    selector: 'app-text-editor',
+    templateUrl: './text-editor.component.html',
+    styleUrls: ['./text-editor.component.scss']
 })
-export class TemporaryTextElementComponent implements OnInit, OnDestroy {
+export class TextEditorComponent implements OnInit, OnDestroy {
     @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
     @Input('svg') svg: SVGSVGElement;
 
-    private isActive: boolean = true;
     private leftPosition: string = '0px';
     private topPosition: string = '0px';
-    private display: string = 'none';
     private innerText: string = '';
 
     private editingDrawingId: string;
@@ -40,39 +38,36 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
 
     ngOnInit(){
         this.textAddingSubscription = this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {
-            isActive ? this.activate() : this.deactivate()
+            isActive ? this.activateTextAdding() : this.deactivateTextAdding()
         });
 
         this.activateTextEditing();
     }
 
-    activate(){
+    activateTextAdding(){
         let addTextListener = (event: MouseEvent) => {
             this.leftPosition = event.clientX.toString() + 'px';
             this.topPosition = (event.clientY + window.pageYOffset).toString() + 'px';
             this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
-
             this.temporaryTextElement.nativeElement.focus();
-            // //this.renderer.selectRootElement('#temporaryElement').focus();
 
             let textListener = () => {
                 this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
-                this.deactivate();
+                this.deactivateTextAdding();
                 this.innerText = '';
                 this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
                 this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
-                this.display = 'none';
             }
             this.textListener = textListener;
             this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
         }
 
-        this.deactivate();
+        this.deactivateTextAdding();
         this.mapListener = addTextListener;
         this.svg.addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
     }
 
-    deactivate(){
+    deactivateTextAdding(){
         this.svg.removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
     }
 
@@ -119,6 +114,6 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(){
-        this.toolsService.isTextAddingToolActivated.unsubscribe();
+        this.textAddingSubscription.unsubscribe();
     }
 }
