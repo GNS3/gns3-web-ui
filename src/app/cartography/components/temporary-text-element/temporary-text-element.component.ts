@@ -17,10 +17,10 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
     @Input('svg') svg: SVGSVGElement;
 
-    private isActive: boolean = true;
-    private leftPosition: string;
-    private topPosition: string;
-    private innerText: string = "";s
+    private isActive: boolean = false;
+    private leftPosition: string = '0px';
+    private topPosition: string = '0px';
+    private innerText: string = '';
 
     private editingDrawingId: string;
     private editedElement: any;
@@ -38,8 +38,7 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
 
     ngOnInit(){
         this.textAddingSubscription = this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {
-            this.isActive = isActive;
-            this.isActive ? this.activate() : this.deactivate()
+            isActive ? this.activate() : this.deactivate()
         });
 
         this.activateTextEditing();
@@ -48,17 +47,23 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     activate(){
         let addTextListener = (event: MouseEvent) => {
             this.leftPosition = event.clientX.toString() + 'px';
-            this.topPosition = event.clientY.toString() + 'px';
+            this.topPosition = (event.clientY + window.pageYOffset).toString() + 'px';
+            this.isActive = true;
 
-            this.temporaryTextElement.nativeElement.focus();
+            setTimeout(() => {
+                this.temporaryTextElement.nativeElement.focus();
 
-            let textListener = () => {
-                this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
-                this.deactivate();
-                this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
-            }
-            this.textListener = textListener;
-            this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+                let textListener = () => {
+                    this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
+                    this.deactivate();
+                    this.innerText = '';
+                    this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
+                    this.isActive = false;
+                }
+                this.textListener = textListener;
+                this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+            },
+            100);
         }
 
         this.deactivate();
@@ -84,26 +89,32 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
                 select(textElements[index])
                     .classed("editingMode", true);
 
-                this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute("drawing_id");
-                var transformData = textElements[index].parentElement.getAttribute("transform").split(/\(|\)/);
-                var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x;
-                var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y;
-                this.leftPosition = x.toString() + 'px';
-                this.topPosition = y.toString() + 'px';
-                this.innerText = elem.text;
-
-                this.temporaryTextElement.nativeElement.addEventListener("focusout", () => {
-                    let innerText = this.temporaryTextElement.nativeElement.innerText;
-                    this.drawingsEventSource.textEdited.emit(new TextEditedDataEvent(this.editingDrawingId, innerText.replace(/\n$/, ""), this.editedElement));
+                setTimeout(() => {
+                    this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute("drawing_id");
+                    var transformData = textElements[index].parentElement.getAttribute("transform").split(/\(|\)/);
+                    var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x;
+                    var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y;
+                    this.leftPosition = x.toString() + 'px';
+                    this.topPosition = y.toString() + 'px';
+                    this.temporaryTextElement.nativeElement.innerText = elem.text;
     
-                    rootElement.selectAll<SVGTextElement, TextElement>('text.editingMode')
-                        .attr("visibility", "visible")
-                        .classed("editingMode", false);
-
-                    this.isActive = false;
-                });
-
-                this.temporaryTextElement.nativeElement.focus();
+                    let listener =  () => {
+                        let innerText = this.temporaryTextElement.nativeElement.innerText;
+                        this.drawingsEventSource.textEdited.emit(new TextEditedDataEvent(this.editingDrawingId, innerText.replace(/\n$/, ""), this.editedElement));
+        
+                        rootElement.selectAll<SVGTextElement, TextElement>('text.editingMode')
+                            .attr("visibility", "visible")
+                            .classed("editingMode", false);
+    
+                        this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
+                        this.isActive = false;
+                        this.innerText = '';
+                    };
+                    this.textListener = listener;
+                    this.temporaryTextElement.nativeElement.addEventListener("focusout", this.textListener);
+                    this.temporaryTextElement.nativeElement.focus();
+                },
+                100);
             });
     }
 
