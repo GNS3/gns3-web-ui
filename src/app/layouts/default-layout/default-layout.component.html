@@ -8,9 +8,22 @@
 
     <span class="fill-space"></span>
 
-    <button mat-button routerLink="/settings" >
-      <mat-icon>settings</mat-icon>
+    <button mat-button [matMenuTriggerFor]="menu" >
+      <mat-icon>more_vert</mat-icon>
     </button>
+
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <button mat-menu-item routerLink="/installed-software" [disabled]="!isInstalledSoftwareAvailable">
+        <mat-icon>cloud_download</mat-icon>
+        <span>Installed software</span>
+      </button>
+    </mat-menu>
+
+
   </mat-toolbar>
 </header>
 
@@ -21,6 +34,6 @@
 <app-progress></app-progress>
 
 <footer class="footer mat-app-background">
-  GNS3 Web UI demo &copy; 2018
+  GNS3 Web UI &copy; 2019
 </footer>
 

@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-default-layout',
@@ -7,10 +8,14 @@ import {Component, OnInit, ViewEncapsulation} from '@angular/core';
   styleUrls: ['./default-layout.component.css']
 })
 export class DefaultLayoutComponent implements OnInit {
+  public isInstalledSoftwareAvailable = false;
 
-  constructor() { }
+  constructor(
+    private electronService: ElectronService
+  ) { }
 
   ngOnInit() {
+    this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
   }
 
 }

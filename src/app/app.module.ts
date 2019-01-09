@@ -74,6 +74,7 @@ import { ProjectNameValidator } from './components/projects/models/projectNameVa
 import { MatSidenavModule } from '@angular/material';
 import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
+import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 
 
 if (environment.production) {
@@ -116,7 +117,8 @@ if (environment.production) {
     ProgressComponent,
     ServerDiscoveryComponent,
     NodeSelectInterfaceComponent,
-    DrawLinkToolComponent
+    DrawLinkToolComponent,
+    InstalledSoftwareComponent
   ],
   imports: [
     BrowserModule,
