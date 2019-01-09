@@ -28,4 +28,10 @@ export class InstalledSoftwareService {
       }
     });
   }
+
+  install(software) {
+    const installedSoftware = this.electronService.remote.require('./installed-software.js')
+      .install(software);
+    
+  }
 }

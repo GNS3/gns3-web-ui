@@ -1,4 +1,5 @@
 var commandExistsSync = require('command-exists').sync;
+var app = require('electron').app;
 
 exports.getInstalledSoftware = (softwareList) => {
   const installed = {};
@@ -18,3 +19,12 @@ exports.getInstalledSoftware = (softwareList) => {
   return installed;
 }
 
+exports.install = (software) => {
+  var type = software.type;
+
+  if (type == 'web') {
+
+  }
+
+  console.log(app.getAppPath());
+}

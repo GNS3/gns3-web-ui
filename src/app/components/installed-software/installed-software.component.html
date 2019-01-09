@@ -14,7 +14,7 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row;" style="text-align: right">
-              <button mat-button color="primary" (click)="install(row)" disabled="row.installed">
+              <button mat-button color="primary" (click)="install(row)" [disabled]="row.installed">
                 <ng-container *ngIf="row.installed">Installed</ng-container>
                 <ng-container *ngIf="!row.installed">Install</ng-container>
               </button>

@@ -20,6 +20,11 @@ export class InstalledSoftwareComponent implements OnInit {
     this.dataSource = new InstalledSoftwareDataSource(this.installedSoftwareService);
   }
 
+  install(software) {
+    this.installedSoftwareService.install({
+      type: 'web'
+    });
+  }
 }
 
 export class InstalledSoftwareDataSource extends DataSource<any> {
