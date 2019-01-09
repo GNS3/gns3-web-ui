@@ -35,7 +35,7 @@ import { ToolsService } from '../../services/tools.service';
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
-  styleUrls: ['./project-map.component.css'],
+  styleUrls: ['./project-map.component.scss'],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];

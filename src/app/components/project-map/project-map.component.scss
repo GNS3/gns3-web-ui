@@ -18,17 +18,63 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.draw-menu {
+#show-menu-wrapper {
   position: fixed;
   background: transparent;
   top: 20px;
   left: 92px;
-  width: 296px !important;
-  height: 72px !important;
+  background:#263238;
+  height: 72px;
+  padding-top: 16px;
+
+  .arrow-button {
+    outline: 0!important;
+  }
 }
 
-.draw-menu button {
-  outline: none;
+.shadowed {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#menu-wrapper {
+  position: fixed;
+  background: transparent;
+  top: 20px;
+  left: 92px;
+  background:#263238;
+  height: 72px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  transition: 35s;
+  width: 0;
+  overflow: hidden;
+  transition: 0.15s;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+  .menu-button {
+    outline: 0!important;
+    transition: 0.5s;
+    margin-bottom: 16px;
+    width: 40px;
+    margin-right: 12px!important;
+    margin-left: 12px!important;
+    background: #263238;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+  }
+
+  .arrow-button {
+    outline: 0!important;
+    transition: 0.5s;
+    margin-bottom: 16px;
+  }
+}
+
+.extended {
+  width: 296px!important;
+  height: 100%;
+  overflow: hidden;
 }
 
 @-moz-document url-prefix() {
@@ -38,62 +84,8 @@ g.node:hover {
   }
 }
 
-.mat-drawer-content {
-  height: auto !important;
-}
-
-
-.drawer-container {
-  height: 72px !important;
-  background: transparent;
-}
-
 .shadow {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-.drawer {
-  width: 296px !important;
-  height: 72px !important;
-  background:#263238;
-}
-
-.drawer-content {
-  background: #F0F0F0!important;
-}
-
-.drawer-button {
-  width: 40px;
-  margin-right: 12px!important;
-  margin-left: 12px!important;
-  background: #263238;
-  padding: 0;
-  border: none;
-  outline: none;
-  background-color: transparent;
-}
-
-.drawer-arrow-button-right {
-  width: 40px;
-  height: 72px;
-  padding-top: 16px;
-  background:#263238;
-  position: fixed;
-}
-
-.drawer-arrow-button-left {
-  width: 40px;
-  margin-left: 256px;
-  background:#263238;
-  position: fixed;
-}
-
-.drawer-buttons {
-  background:#263238;
-  padding-top: 16px;
-  height: 72px;
-  display: flex;
-  flex-direction: row;
 }
 
 .mat-drawer-backdrop.mat-drawer-shown {
