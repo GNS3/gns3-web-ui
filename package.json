@@ -51,6 +51,7 @@
     "angular2-hotkeys": "^2.1.4",
     "angular2-indexeddb": "^1.2.3",
     "bootstrap": "4.2.1",
+    "command-exists": "^1.2.8",
     "core-js": "^2.6.1",
     "css-tree": "^1.0.0-alpha.29",
     "d3-ng2-service": "^2.1.0",

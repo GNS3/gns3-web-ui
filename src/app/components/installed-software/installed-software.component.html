@@ -3,34 +3,20 @@
       <h1>Installed software</h1>
     </div>
     <div class="default-content">
-      <!-- <div class="example-container mat-elevation-z8">
+      <div class="example-container mat-elevation-z8">
         <mat-table #table [dataSource]="dataSource">
-  
-          <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
-            <mat-cell *matCellDef="let row;"> {{row.id}} </mat-cell>
-          </ng-container>
   
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-            <mat-cell *matCellDef="let row;"> <a [routerLink]="['/server', row.id, 'projects']" class="table-link">{{row.name}}</a></mat-cell>
-          </ng-container>
-  
-          <ng-container matColumnDef="ip">
-            <mat-header-cell *matHeaderCellDef> IP </mat-header-cell>
-            <mat-cell *matCellDef="let row;"> {{row.ip}} </mat-cell>
-          </ng-container>
-  
-          <ng-container matColumnDef="port">
-            <mat-header-cell *matHeaderCellDef> Port </mat-header-cell>
-            <mat-cell *matCellDef="let row;"> {{row.port}} </mat-cell>
+            <mat-cell *matCellDef="let row;">{{ row.name }}</mat-cell>
           </ng-container>
   
           <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row;" style="text-align: right">
-              <button mat-icon-button (click)="deleteServer(row)">
-                <mat-icon aria-label="Remove server">delete</mat-icon>
+              <button mat-button color="primary" (click)="install(row)" disabled="row.installed">
+                <ng-container *ngIf="row.installed">Installed</ng-container>
+                <ng-container *ngIf="!row.installed">Install</ng-container>
               </button>
             </mat-cell>
           </ng-container>
@@ -40,9 +26,6 @@
         </mat-table>
       </div>
   
-      <div class="buttons-bar">
-        <button mat-raised-button color="primary" (click)="createModal()">Add server</button>
-      </div> -->
     </div>
   </div>
   
