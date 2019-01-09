@@ -1,5 +1,6 @@
-<div *ngIf="isActive" #temporaryTextElement class="temporaryElement" contenteditable="true" 
+<div #temporaryTextElement id="temporaryElement" class="temporaryElement" contenteditable="true" 
     [style.top]=topPosition 
-    [style.left]=leftPosition>
+    [style.left]=leftPosition
+    [style.display]=display>
     {{innerText}}
 </div>

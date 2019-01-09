@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, Input, EventEmitter, OnDestroy } from "@angular/core";
+import { Component, ViewChild, ElementRef, OnInit, Input, EventEmitter, OnDestroy, Renderer2 } from "@angular/core";
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { TextAddedDataEvent, TextEditedDataEvent } from '../../events/event-source';
 import { ToolsService } from '../../../services/tools.service';
@@ -17,9 +17,10 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
     @Input('svg') svg: SVGSVGElement;
 
-    private isActive: boolean = false;
+    private isActive: boolean = true;
     private leftPosition: string = '0px';
     private topPosition: string = '0px';
+    private display: string = 'none';
     private innerText: string = '';
 
     private editingDrawingId: string;
@@ -33,7 +34,8 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
     constructor(
         private drawingsEventSource: DrawingsEventSource,
         private toolsService: ToolsService,
-        private context: Context
+        private context: Context,
+        private renderer: Renderer2
     ){}
 
     ngOnInit(){
@@ -48,22 +50,21 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
         let addTextListener = (event: MouseEvent) => {
             this.leftPosition = event.clientX.toString() + 'px';
             this.topPosition = (event.clientY + window.pageYOffset).toString() + 'px';
-            this.isActive = true;
+            this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
 
-            setTimeout(() => {
-                this.temporaryTextElement.nativeElement.focus();
+            this.temporaryTextElement.nativeElement.focus();
+            // //this.renderer.selectRootElement('#temporaryElement').focus();
 
-                let textListener = () => {
-                    this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
-                    this.deactivate();
-                    this.innerText = '';
-                    this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
-                    this.isActive = false;
-                }
-                this.textListener = textListener;
-                this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
-            },
-            100);
+            let textListener = () => {
+                this.drawingsEventSource.textAdded.emit(new TextAddedDataEvent(this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ""), event.clientX, event.clientY));
+                this.deactivate();
+                this.innerText = '';
+                this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
+                this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
+                this.display = 'none';
+            }
+            this.textListener = textListener;
+            this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
         }
 
         this.deactivate();
@@ -80,7 +81,7 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
 
         rootElement.selectAll<SVGTextElement, TextElement>('text.text_element')
             .on("dblclick", (elem, index, textElements) => {
-                this.isActive = true;
+                this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
                 this.editedElement = elem;
 
                 select(textElements[index])
@@ -89,7 +90,6 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
                 select(textElements[index])
                     .classed("editingMode", true);
 
-                setTimeout(() => {
                     this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute("drawing_id");
                     var transformData = textElements[index].parentElement.getAttribute("transform").split(/\(|\)/);
                     var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x;
@@ -106,16 +106,16 @@ export class TemporaryTextElementComponent implements OnInit, OnDestroy {
                             .attr("visibility", "visible")
                             .classed("editingMode", false);
     
-                        this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
-                        this.isActive = false;
                         this.innerText = '';
+                        this.temporaryTextElement.nativeElement.innerText = '';
+                        this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
+
+                        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
                     };
                     this.textListener = listener;
                     this.temporaryTextElement.nativeElement.addEventListener("focusout", this.textListener);
                     this.temporaryTextElement.nativeElement.focus();
-                },
-                100);
-            });
+                });
     }
 
     ngOnDestroy(){
