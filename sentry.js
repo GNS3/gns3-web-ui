@@ -1,6 +1,7 @@
 const { init } = require('@sentry/electron');
 const fs = require('fs');
-const { ipcMain } = require('electron');
+
+const { ipcMain } = require('electron')
 
 let crashReportsEnabled = true;
 const DSN =

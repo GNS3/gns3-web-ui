@@ -13,7 +13,7 @@
     if (userAgent.indexOf(' electron/') > -1) {
       var base = document.getElementsByTagName('base');
       if(base.length > 0) {
-        base.href ='./';
+        base[0].href ='./';
       }
       else {
         document.write('<base href="./" />');

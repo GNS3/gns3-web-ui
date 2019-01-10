@@ -48,6 +48,10 @@ const createServerProc = () => {
       }
     });
 
+    if (serverPath == null) {
+      console.error('gns3server cannot be found');
+    }
+
     if (serverPath != null) {
       serverProc = require('child_process').execFile(serverPath, []);
 
@@ -72,6 +76,7 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
+      nodeIntegration: true, 
       preload: path.join(__dirname, 'sentry.js')
     }
   });
