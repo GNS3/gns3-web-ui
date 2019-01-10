@@ -5,14 +5,15 @@ import { Node } from "../../../cartography/models/node";
 import { Server } from "../../../models/server";
 import { Project } from "../../../models/project";
 import { ProjectService } from "../../../services/project.service";
+import { Drawing } from '../../../cartography/models/drawing';
 
 
 @Component({
-  selector: 'app-node-context-menu',
-  templateUrl: './node-context-menu.component.html',
-  styleUrls: ['./node-context-menu.component.scss']
+  selector: 'app-context-menu',
+  templateUrl: './context-menu.component.html',
+  styleUrls: ['./context-menu.component.scss']
 })
-export class NodeContextMenuComponent implements OnInit {
+export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
   @Input() server: Server;
 
@@ -21,6 +22,9 @@ export class NodeContextMenuComponent implements OnInit {
   topPosition;
   leftPosition;
   node: Node;
+  drawing: Drawing;
+  private hasNodeCapabilities: boolean = false;
+  private hasDrawingCapabilities: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -37,10 +41,30 @@ export class NodeContextMenuComponent implements OnInit {
     this.changeDetector.detectChanges();
   }
 
-  public open(node: Node, top: number, left: number) {
+  public openMenuForNode(node: Node, top: number, left: number) {
+    this.resetCapabilities();
+    this.hasNodeCapabilities = true;
+
     this.node = node;
     this.setPosition(top, left);
+
     this.contextMenu.openMenu();
   }
 
+  public openMenuForDrawing(drawing: Drawing, top: number, left: number) {
+    this.resetCapabilities();
+    this.hasDrawingCapabilities = true;
+
+    this.drawing = drawing;
+    this.setPosition(top, left);
+
+    this.contextMenu.openMenu();
+  }
+
+  private resetCapabilities() {
+    this.node = null;
+    this.drawing = null;
+    this.hasDrawingCapabilities = false;
+    this.hasNodeCapabilities = false;
+  }
 }

@@ -12,7 +12,7 @@ import { ServerService } from "../../services/server.service";
 import { ProjectService } from '../../services/project.service';
 import { Server } from "../../models/server";
 import { Drawing } from "../../cartography/models/drawing";
-import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.component";
+import { ContextMenuComponent } from "./context-menu/context-menu.component";
 import { Template } from "../../models/template";
 import { NodeService } from "../../services/node.service";
 import { Symbol } from "../../models/symbol";
@@ -24,11 +24,14 @@ import { ProgressService } from "../../common/progress/progress.service";
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { NodeWidget } from '../../cartography/widgets/node';
+import { DrawingsWidget } from '../../cartography/widgets/drawings';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { ToolsService } from '../../services/tools.service';
+import { DrawingContextMenu } from '../../cartography/events/event-source';
+import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 
 
 @Component({
@@ -66,7 +69,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private inReadOnlyMode = false;
 
-  @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
+  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
 
   private subscriptions: Subscription[] = [];
@@ -81,7 +84,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
+    private drawingsWidget: DrawingsWidget,
     private mapNodeToNode: MapNodeToNodeConverter,
+    private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
@@ -189,16 +194,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks() {
-    const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+    const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.nodeContextMenu.open(
+      this.contextMenu.openMenuForNode(
         node,
         eventNode.event.clientY,
         eventNode.event.clientX
       );
     });
 
-    this.subscriptions.push(onContextMenu);
+    const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
+      const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
+      this.contextMenu.openMenuForDrawing(
+        drawing,
+        eventDrawing.event.clientY,
+        eventDrawing.event.clientX
+      );
+    });
+    
+    this.subscriptions.push(onNodeContextMenu);
+    this.subscriptions.push(onDrawingContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 

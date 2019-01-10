@@ -1,4 +1,5 @@
 import { TextElement } from '../models/drawings/text-element';
+import { MapDrawing } from '../models/map/map-drawing';
 
 export class DataEventSource<T> {
   constructor(
@@ -48,5 +49,12 @@ export class TextEditedDataEvent {
     public textDrawingId: string,
     public editedText: string,
     public textElement: TextElement
+  ) {}
+}
+
+export class DrawingContextMenu {
+  constructor(
+    public event: any,
+    public drawing: MapDrawing
   ) {}
 }
