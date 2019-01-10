@@ -87,7 +87,7 @@
     "karma-coverage-istanbul-reporter": "^2.0.4",
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
-    "license-checker": "^24.1.0",
+    "license-checker": "^25.0.0",
     "node-sass": "^4.11.0",
     "popper.js": "^1.14.6",
     "prettier": "^1.15.2",
