@@ -6,6 +6,7 @@ import { MapDrawing } from '../../models/map/map-drawing';
 import { ResizedDataEvent } from '../../events/event-source';
 import { ResizingEnd } from '../../events/resizing';
 
+
 @Component({
     selector: 'app-drawing-resizing',
     template: `<ng-content></ng-content>`,

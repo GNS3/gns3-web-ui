@@ -16,6 +16,12 @@ a.table-link {
   color: white!important;
 }
 
+@-moz-document url-prefix() {
+  .temporaryElement{
+      line-height: 1.4em;
+  }
+}
+
 app-root {
   width: 100%;
 }

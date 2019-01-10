@@ -74,7 +74,18 @@ import { ProjectNameValidator } from './components/projects/models/projectNameVa
 import { MatSidenavModule } from '@angular/material';
 import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
+
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
+import { DrawingResizedComponent } from './components/drawings-listeners/drawing-resized/drawing-resized.component';
+import { TextEditedComponent } from './components/drawings-listeners/text-edited/text-edited.component';
+import { NodeDraggedComponent } from './components/drawings-listeners/node-dragged/node-dragged.component';
+import { NodeLabelDraggedComponent } from './components/drawings-listeners/node-label-dragged/node-label-dragged.component';
+import { DrawingDraggedComponent } from './components/drawings-listeners/drawing-dragged/drawing-dragged.component';
+import { LinkCreatedComponent } from './components/drawings-listeners/link-created/link-created.component';
+import { InterfaceLabelDraggedComponent } from './components/drawings-listeners/interface-label-dragged/interface-label-dragged.component';
+import { ToolsService } from './services/tools.service';
+import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
+import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
 
 
 if (environment.production) {
@@ -118,7 +129,16 @@ if (environment.production) {
     ServerDiscoveryComponent,
     NodeSelectInterfaceComponent,
     DrawLinkToolComponent,
-    InstalledSoftwareComponent
+    InstalledSoftwareComponent,
+    DrawingAddedComponent,
+    DrawingResizedComponent,
+    TextAddedComponent,
+    TextEditedComponent,
+    NodeDraggedComponent,
+    NodeLabelDraggedComponent,
+    DrawingDraggedComponent,
+    LinkCreatedComponent,
+    InterfaceLabelDraggedComponent
   ],
   imports: [
     BrowserModule,
@@ -163,7 +183,8 @@ if (environment.production) {
     DrawingsDataSource,
     ServerErrorHandler,
     ServerDatabase,
-    ProjectNameValidator
+    ProjectNameValidator,
+    ToolsService
   ],
   entryComponents: [
     AddServerDialogComponent,

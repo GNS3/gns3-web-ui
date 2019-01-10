@@ -23,7 +23,7 @@ export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
         } else if (mapDrawing.element instanceof LineElement) {
             elem = `<line stroke=\"${mapDrawing.element.stroke}\" stroke-width=\"${mapDrawing.element.stroke_width}\" x1=\"${mapDrawing.element.x1}\" x2=\"${mapDrawing.element.x2}\" y1=\"${mapDrawing.element.y1}\" y2=\"${mapDrawing.element.y2}\" />`
         } else if (mapDrawing.element instanceof TextElement) {
-            elem = `<text fill=\"${mapDrawing.element.fill}\" fill-opacity=\"${mapDrawing.element.fill_opacity}\" font-family=\"${mapDrawing.element.font_family}\" font-size=\"${mapDrawing.element.font_size}\" font-weight=\"${mapDrawing.element.font_weight}\">${mapDrawing.element.text}</text>`;
+            elem = `<text fill=\"${mapDrawing.element.fill}\" fill-opacity=\"1.0\" font-family=\"${mapDrawing.element.font_family}\" font-size=\"${mapDrawing.element.font_size}\" font-weight=\"${mapDrawing.element.font_weight}\">${mapDrawing.element.text}</text>`;
         } else return "";
 
         return `<svg height=\"${mapDrawing.element.height}\" width=\"${mapDrawing.element.width}\">${elem}</svg>`;

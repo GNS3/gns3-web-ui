@@ -17,7 +17,8 @@ export class DrawingService {
       .post<Drawing>(server, `/projects/${project_id}/drawings`, {
         'svg': svg,
         'x': Math.round(x),
-        'y': Math.round(y)
+        'y': Math.round(y),
+        'z': 1
       });
   }
 

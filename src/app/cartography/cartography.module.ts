@@ -4,6 +4,7 @@ import { MatMenuModule, MatIconModule } from '@angular/material';
 
 import { CssFixer } from './helpers/css-fixer';
 import { FontFixer } from './helpers/font-fixer';
+import { DefaultDrawingsFactory } from './helpers/default-drawings-factory';
 import { MultiLinkCalculatorHelper } from './helpers/multi-link-calculator-helper';
 import { SvgToDrawingConverter } from './helpers/svg-to-drawing-converter';
 import { QtDasharrayFixer } from './helpers/qt-dasharray-fixer';
@@ -41,10 +42,14 @@ import { SelectionSelectComponent } from './components/selection-select/selectio
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 import { MapSettingsManager } from './managers/map-settings-manager';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
-import { TextAddingComponent } from './components/text-adding/text-adding.component';
-import { TextEditingComponent } from './components/text-editing/text-editing.component';
 import { FontBBoxCalculator } from './helpers/font-bbox-calculator';
 import { StylesToFontConverter } from './converters/styles-to-font-converter';
+import { TextElementFactory } from './helpers/drawings-factory/text-element-factory';
+import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-element-factory';
+import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
+import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
+import { TextEditorComponent } from './components/text-editor/text-editor.component';
+import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
 
 
 @NgModule({
@@ -56,9 +61,9 @@ import { StylesToFontConverter } from './converters/styles-to-font-converter';
   declarations: [
     D3MapComponent,
     ExperimentalMapComponent,
+    DrawingAddingComponent,
     DrawingResizingComponent,
-    TextAddingComponent,
-    TextEditingComponent,
+    TextEditorComponent,
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,
@@ -67,6 +72,11 @@ import { StylesToFontConverter } from './converters/styles-to-font-converter';
   providers: [
     CssFixer,
     FontFixer,
+    DefaultDrawingsFactory,
+    TextElementFactory,
+    EllipseElementFactory,
+    RectangleElementFactory,
+    LineElementFactory,
     MultiLinkCalculatorHelper,
     SvgToDrawingConverter,
     QtDasharrayFixer,
