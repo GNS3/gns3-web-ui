@@ -14,37 +14,39 @@ import { ProjectWebServiceHandler } from '../../handlers/project-web-service-han
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
-import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
-import { NodesEventSource } from '../../cartography/events/nodes-event-source';
-import { DrawingsEventSource } from '../../cartography/events/drawings-event-source';
-import { LinksEventSource } from '../../cartography/events/links-event-source';
-import { MapDrawingToSvgConverter } from '../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../cartography/datasources/drawings-datasource';
 import { CommonModule } from '@angular/common';
 import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SymbolService } from '../../services/symbol.service';
 import { MockedSettingsService } from '../../services/settings.service.spec';
 import { MockedServerService } from '../../services/server.service.spec';
 import { MockedProjectService } from '../../services/project.service.spec';
 import { Observable } from 'rxjs/Rx';
 import { Drawing } from '../../cartography/models/drawing';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
-import { Project } from '../../models/project';
 import { of } from 'rxjs';
-import { DrawingElement } from '../../cartography/models/drawings/drawing-element';
-import { RectElement } from '../../cartography/models/drawings/rect-element';
-import { MapDrawing } from '../../cartography/models/map/map-drawing';
-import { HttpServer } from '../../services/http-server.service';
 import { Server } from '../../models/server';
-import { ResizedDataEvent } from '../../cartography/events/event-source';
-import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { Node } from '../../cartography/models/node';
+import { ToolsService } from '../../services/tools.service';
 
 export class MockedProgressService {
   public activate() {}
+}
+
+export class MockedNodeService {
+  public node = { label: {} } as Node;
+  constructor() {}
+
+  updateLabel(): Observable<Node> {
+    return of(this.node);
+  }
+
+  updatePosition(): Observable<Node> {
+    return of(this.node);
+  }
 }
 
 export class MockedDrawingService {
@@ -70,9 +72,33 @@ export class MockedDrawingService {
   delete(_server: Server, _drawing: Drawing){
     return of(this.drawing);
   }
+
+  updateText(_server: Server, _drawing: Drawing, _svg: string): Observable<Drawing> {
+    return of(this.drawing);
+  }
+}
+
+export class MockedLinkService {
+  constructor() {}
+
+  createLink() {
+    return of({});
+  }
+
+  updateNodes(){
+    return of({});
+  }
 }
 
 export class MockedDrawingsDataSource {
+  add() {}
+
+  get() { return of({})}
+
+  update() { return of({})}
+}
+
+export class MockedNodesDataSource {
   add() {}
 
   get() { return of({})}
@@ -100,7 +126,6 @@ describe('ProjectMapComponent', () => {
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },
         { provide: ProjectService, useClass: MockedProjectService },
-        { provide: SymbolService },
         { provide: NodeService },
         { provide: LinkService },
         { provide: DrawingService, useValue: drawingService},
@@ -109,18 +134,11 @@ describe('ProjectMapComponent', () => {
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
         { provide: MapNodeToNodeConverter },
-        { provide: MapPortToPortConverter },
         { provide: NodesDataSource },
         { provide: LinksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource},
-        { provide: NodesEventSource },
-        { provide: DrawingsEventSource },
-        { provide: LinksEventSource },
-        { provide: MapDrawingToSvgConverter, useValue: {
-          convert: () => { return ''}
-        } },
         { provide: SettingsService, useClass: MockedSettingsService },
-        { provide: MapLabelToLabelConverter}
+        { provide: ToolsService }
       ],
       declarations: [
         ProjectMapComponent,
@@ -143,47 +161,6 @@ describe('ProjectMapComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update position on resizing event', () => {
-    let drawingElement: DrawingElement;
-    let rect = new RectElement();
-    rect.fill = "#ffffff";
-    rect.fill_opacity = 1.0;
-    rect.stroke = "#000000";
-    rect.stroke_width = 2;
-    rect.width = 200;
-    rect.height = 100;
-    drawingElement = rect;
-    let mapDrawing = new MapDrawing;
-    mapDrawing.id = '1';
-    mapDrawing.projectId = '1';
-    mapDrawing.rotation = 1;
-    mapDrawing.svg = '';
-    mapDrawing.x = 0;
-    mapDrawing.y = 0;
-    mapDrawing.z = 0;
-    mapDrawing.element = drawingElement;
-    let event = new ResizedDataEvent<MapDrawing>(mapDrawing,0,0,100,100);
-    spyOn(drawingService, 'updateSizeAndPosition').and.returnValue( Observable.of({}));
-
-    component.onDrawingResized(event);
-
-    expect(drawingService.updateSizeAndPosition).toHaveBeenCalled();
-  });
-
-  it('should add selected drawing', () => {
-    component.mapChild = { context: {} } as D3MapComponent;
-    component.project = { project_id: "1" } as Project;
-    component.mapChild.context.getZeroZeroTransformationPoint = jasmine.createSpy('HTML element').and.callFake(() => { return {x: 0, y: 0}});
-    var dummyElement = document.createElement('map');
-    document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => { return ([dummyElement])});
-    spyOn(drawingsDataSource, 'add');
-
-    component.addDrawing("rectangle");
-    dummyElement.click();
-
-    expect(drawingsDataSource.add).toHaveBeenCalled();
-  });
-
   it('should hide draw tools when hide menu is called', () => {
     var dummyElement = document.createElement('map');
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => { return ([dummyElement])});
@@ -194,9 +171,11 @@ describe('ProjectMapComponent', () => {
     expect(component.resetDrawToolChoice).toHaveBeenCalled();
   });
 
-  it('should return drawing mock of correct type'), () => {
-    let mock = component.getDrawingMock('rectangle');
+  it('should reset choice on draw menu after saving drawing', () => {
+    spyOn(component, 'resetDrawToolChoice');
 
-    expect(mock instanceof RectElement).toBe(true);
-  }
+    component.onDrawingSaved();
+
+    expect(component.resetDrawToolChoice).toHaveBeenCalled();
+  });
 });

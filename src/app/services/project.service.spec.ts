@@ -35,6 +35,10 @@ export class MockedProjectService {
   isReadOnly(project) {
     return project.readonly;
   }
+
+  links(server: Server, project_id: string) {
+    return of([]);
+  }
 }
 
 

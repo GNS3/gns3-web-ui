@@ -25,7 +25,7 @@ export class DrawingWidgetMock {
     }    
 }
 
-describe('DrawizngResizingComponent', () => {
+describe('DrawingResizingComponent', () => {
     let component: DrawingResizingComponent;
     let fixture: ComponentFixture<DrawingResizingComponent>;
     let drawingsWidgetMock = new DrawingWidgetMock;
@@ -47,15 +47,15 @@ describe('DrawizngResizingComponent', () => {
         .compileComponents();
     }));
 
-     beforeEach(() => {
+    beforeEach(() => {
         fixture = TestBed.createComponent(DrawingResizingComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-     });
+    });
 
-     it('should create', () => {
+    it('should create', () => {
         expect(component).toBeTruthy();
-     });
+    });
 
      it('should emit event after size changes', () => {
         spyOn(drawingsEventSource.resized, 'emit');

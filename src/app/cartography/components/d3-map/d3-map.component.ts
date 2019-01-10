@@ -11,18 +11,16 @@ import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
 import { MovingTool } from '../../tools/moving-tool';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { MapLinkCreated } from '../../events/links';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
 import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
-import { DraggedDataEvent } from '../../events/event-source';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
-import { TextEditingTool } from '../../tools/text-editing-tool';
-import { TextAddingComponent } from '../text-adding/text-adding.component';
 import { Server } from '../../../models/server';
+import { ToolsService } from '../../../services/tools.service';
+import { TextEditorComponent } from '../text-editor/text-editor.component';
 
 
 @Component({
@@ -41,20 +39,19 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() height = 600;
 
   @ViewChild('svg') svgRef: ElementRef;
-  @ViewChild(TextAddingComponent) textAddingComponent: TextAddingComponent;
+  @ViewChild('textEditor') textEditor: TextEditorComponent;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
   private onChangesDetected: Subscription;
+  private subscriptions: Subscription[] = [];
+
+  private drawLinkTool: boolean;
 
   protected settings = {
     'show_interface_labels': true
   };
-
-  ngAfterInit(){
-    console.log(this.textAddingComponent);
-  }
 
   constructor(
     private graphDataManager: GraphDataManager,
@@ -66,8 +63,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected interfaceLabelWidget: InterfaceLabelWidget,
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
-    protected textEditingToolWidget: TextEditingTool,
     public graphLayout: GraphLayout,
+    private toolsService: ToolsService
     ) {
     this.parentNativeElement = element.nativeElement;
   }
@@ -78,26 +75,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.interfaceLabelWidget.setEnabled(value);
     this.mapChangeDetectorRef.detectChanges();
   }
-
-  @Input('moving-tool')
-  set movingTool(value) {
-    this.movingToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('selection-tool')
-  set selectionTool(value) {
-    this.selectionToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('text-editing-tool')
-  set textEditingTool(value){
-    this.textEditingToolWidget.setEnabled(value);
-    this.mapChangeDetectorRef.detectChanges();
-  }
-
-  @Input('draw-link-tool') drawLinkTool: boolean;
 
   @Input('readonly') set readonly(value) {
     this.mapSettings.isReadOnly = value;
@@ -132,11 +109,34 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.redraw();
       }
     });
+
+    this.subscriptions.push(
+      this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
+        this.movingToolWidget.setEnabled(value);
+        this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    this.subscriptions.push(
+      this.toolsService.isSelectionToolActivated.subscribe((value: boolean) => {
+        this.selectionToolWidget.setEnabled(value);
+        this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    this.subscriptions.push(
+      this.toolsService.isDrawLinkToolActivated.subscribe((value: boolean) => {
+        this.drawLinkTool = value;
+      })
+    );
   }
 
   ngOnDestroy() {
     this.graphLayout.disconnect(this.svg);
     this.onChangesDetected.unsubscribe();
+    this.subscriptions.forEach((subscription: Subscription) => {
+      subscription.unsubscribe();
+    });
   }
 
   public createGraph(domElement: HTMLElement) {
@@ -168,6 +168,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setLinks(this.links);
     this.graphDataManager.setDrawings(this.drawings);
     this.graphLayout.draw(this.svg, this.context);
+    this.textEditor.activateTextEditing();
   }
 
   @HostListener('window:resize', ['$event'])
