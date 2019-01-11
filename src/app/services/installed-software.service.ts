@@ -7,11 +7,22 @@ import { ElectronService } from 'ngx-electron';
 export class InstalledSoftwareService {
   private software = [{
     name: 'ls',
-    commands: ['ls']
+    commands: ['ls'],
+    installed: false
   }, {
     name: 'telnet',
-    commands: ['telnet']
-  }]
+    commands: ['telnet'],
+    installed: false
+  }, {
+    name: 'SolarPuTTY',
+    commands: [
+      'SolarPuTTY.exe'
+    ],
+    type: 'web',
+    resource: 'exe',
+    binary: 'SolarPuTTY.exe',
+    installed: false
+  }];
 
   constructor(
     private electronService: ElectronService
@@ -22,10 +33,8 @@ export class InstalledSoftwareService {
       .getInstalledSoftware(this.software);
     
     return this.software.map((software) => {
-      return {
-        name: software.name,
-        installed: installedSoftware[software.name].length > 0
-      }
+      software.installed = installedSoftware[software.name].length > 0;
+      return software;
     });
   }
 
