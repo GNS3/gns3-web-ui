@@ -1,5 +1,16 @@
 var commandExistsSync = require('command-exists').sync;
 var app = require('electron').app;
+var fs = require('fs');
+var util = require('util');
+var fetch = require('node-fetch')
+var stream = require('stream');
+var path = require('path');
+const { spawn } = require('child_process');
+const { ipcMain } = require('electron')
+
+var pipeline = util.promisify(stream.pipeline);
+
+
 
 exports.getInstalledSoftware = (softwareList) => {
   const installed = {};
@@ -19,12 +30,21 @@ exports.getInstalledSoftware = (softwareList) => {
   return installed;
 }
 
-exports.install = (software) => {
-  var type = software.type;
+ipcMain.on('installed-software-install', async function (event, software) {
+  const softwarePath = path.join(app.getAppPath(), software.binary);
 
-  if (type == 'web') {
-
+  if (software.type == 'web') {
+    var response = await fetch(software.resource);
+    await pipeline(
+      response.body,
+      fs.createWriteStream(softwarePath)
+    );
   }
 
-  console.log(app.getAppPath());
-}
+  const command = `${softwarePath}`;  
+  const child = spawn(command, software.installation_arguments);
+  child.on('exit', () => {
+    console.log("exited");
+  });
+  event.sender.send('installed-software-installed', { success: true});
+});

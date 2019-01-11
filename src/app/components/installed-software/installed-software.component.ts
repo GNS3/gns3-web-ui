@@ -21,9 +21,7 @@ export class InstalledSoftwareComponent implements OnInit {
   }
 
   install(software) {
-    this.installedSoftwareService.install({
-      type: 'web'
-    });
+    this.installedSoftwareService.install(software);
   }
 }
 
