@@ -19,6 +19,7 @@ export class MapDrawingToDrawingConverter implements Converter<MapDrawing, Drawi
         drawing.x = mapDrawing.x;
         drawing.y = mapDrawing.y;
         drawing.z = mapDrawing.z;
+        drawing.element = mapDrawing.element;
         return drawing;
     }
 }

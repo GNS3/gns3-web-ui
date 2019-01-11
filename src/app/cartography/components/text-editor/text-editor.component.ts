@@ -17,9 +17,9 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
     @Input('svg') svg: SVGSVGElement;
 
-    private leftPosition: string = '0px';
-    private topPosition: string = '0px';
-    private innerText: string = '';
+    leftPosition: string = '0px';
+    topPosition: string = '0px';
+    innerText: string = '';
 
     private editingDrawingId: string;
     private editedElement: any;

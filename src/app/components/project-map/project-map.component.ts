@@ -313,10 +313,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public showMenu() {
-    setTimeout(() => {
-      this.drawTools.visibility = true;
-    },
-    200);
+    this.drawTools.visibility = true;
   }
 
   public ngOnDestroy() {

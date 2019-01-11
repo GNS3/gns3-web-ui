@@ -1,8 +1,11 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Server } from '../../../../../models/server';
-import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { DrawingService } from '../../../../../services/drawing.service';
+import { MatDialog } from '@angular/material';
+import { Project } from '../../../../../models/project';
+import { TextElement } from '../../../../../cartography/models/drawings/text-element';
+import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
+import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 
 
 @Component({
@@ -11,14 +14,36 @@ import { DrawingService } from '../../../../../services/drawing.service';
 })
 export class EditStyleActionComponent implements OnInit {
     @Input() server: Server;
+    @Input() project: Project;
     @Input() drawing: Drawing;
 
     constructor(
-        private drawingsDataSource: DrawingsDataSource,
-        private drawingService: DrawingService
+        private dialog: MatDialog
     ) {}
 
     ngOnInit() {}
 
-    editStyle(){}
+    editStyle() {
+        this.drawing.element instanceof TextElement ? this.openTextEditor() : this.openStyleEditor(); 
+    }
+
+    openStyleEditor() {
+        const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
+            width: '550px',
+        });
+        let instance = dialogRef.componentInstance;
+        instance.server = this.server;
+        instance.project = this.project;
+        instance.drawing = this.drawing;
+    }
+
+    openTextEditor() {
+        const dialogRef = this.dialog.open(TextEditorDialogComponent, {
+            width: '550px',
+        });
+        let instance = dialogRef.componentInstance;
+        instance.server = this.server;
+        instance.project = this.project;
+        instance.drawing = this.drawing;
+    }
 }
