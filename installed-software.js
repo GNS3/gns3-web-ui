@@ -59,9 +59,7 @@ ipcMain.on('installed-software-install', async function (event, software) {
           message: error.message
         });
       }
-      
     }
-
   }
   
   let child; 
@@ -74,16 +72,17 @@ ipcMain.on('installed-software-install', async function (event, software) {
   }
   
   child.on('exit', () => {
-    console.log("exited");
+    event.sender.send(responseChannel, { 
+      success: true
+    });
   });
 
   child.on('error', (err) => {
-    console.log(err);
+    event.sender.send(responseChannel, { 
+      success: false,
+      message: err.message
+    });
   });
 
   child.stdin.end();
-  
-  event.sender.send(responseChannel, { 
-    success: true
-  });
 });

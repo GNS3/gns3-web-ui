@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { InstalledSoftwareService } from '../../services/installed-software.service';
 import { DataSource } from '@angular/cdk/table';
 import { Observable, of, BehaviorSubject } from 'rxjs';
@@ -13,15 +13,23 @@ export class InstalledSoftwareComponent implements OnInit {
   displayedColumns = ['name', 'actions'];
 
   constructor(
-    private installedSoftwareService: InstalledSoftwareService
+    private installedSoftwareService: InstalledSoftwareService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     this.dataSource = new InstalledSoftwareDataSource(this.installedSoftwareService);
   }
-  
+
   onInstalled(event) {
     this.dataSource.refresh();
+    console.log("On installed", event);
+    /**
+     * During software installation we are not performing any user action
+     * in browser hence Angular doesn't know something suppose to change.
+     * Here we ask to detect changes manually.
+     */
+    this.changeDetectorRef.detectChanges();
   }
 }
 

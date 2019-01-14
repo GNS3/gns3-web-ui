@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy, OnChanges } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 
 @Component({
@@ -6,7 +6,7 @@ import { ElectronService } from 'ngx-electron';
   templateUrl: './install-software.component.html',
   styleUrls: ['./install-software.component.scss']
 })
-export class InstallSoftwareComponent implements OnInit, OnDestroy {
+export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   @Input('software')
   software: any;
 
@@ -26,13 +26,15 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy {
       this.updateButton();
       this.installedChanged.emit(data);
     });
-    this.updateButton();
   }
 
   ngOnDestroy() {
     this.electronService.ipcRenderer.removeAllListeners(this.responseChannel);
   }
 
+  ngOnChanges() {
+    this.updateButton();
+  }
 
   install() {
     this.disabled = true;
@@ -44,7 +46,7 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy {
     return `installed-software-installed-${this.software.name}`;
   }
 
-  updateButton() {
+  private updateButton() {
     this.disabled = this.software.installed;
 
     if (this.software.installed) {
