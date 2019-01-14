@@ -34,11 +34,21 @@ ipcMain.on('installed-software-install', async function (event, software) {
   const softwarePath = path.join(app.getAppPath(), software.binary);
 
   if (software.type == 'web') {
-    var response = await fetch(software.resource);
-    await pipeline(
-      response.body,
-      fs.createWriteStream(softwarePath)
-    );
+    try {
+      var response = await fetch(software.resource);
+      if (response.status != 200) {
+        throw new Error(`Cannot download file ${software.resource}, response status = ${response.status}`);
+      }
+      await pipeline(
+        response.body,
+        fs.createWriteStream(softwarePath)
+      );
+    } catch(error) {
+      event.sender.send('installed-software-installed', {
+        success: false,
+        message: error.message
+      });
+    }
   }
 
   const command = `${softwarePath}`;  
@@ -46,5 +56,8 @@ ipcMain.on('installed-software-install', async function (event, software) {
   child.on('exit', () => {
     console.log("exited");
   });
-  event.sender.send('installed-software-installed', { success: true});
+
+  event.sender.send('installed-software-installed', { 
+    success: true
+  });
 });

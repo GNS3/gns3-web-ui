@@ -23,6 +23,16 @@ export class InstalledSoftwareService {
     binary: 'SolarPuTTY.exe',
     installation_arguments: ['--only-ask'],
     installed: false
+  }, {
+    name: 'Wireshark',
+    commands: [
+      'Wireshark.exe'
+    ],
+    type: 'web',
+    resource: 'https://1.na.dl.wireshark.org/win64/all-versions/Wireshark-win64-2.6.3.exe',
+    binary: 'Wireshark.exe',
+    installation_arguments: [],
+    installed: false
   }];
 
   constructor(
