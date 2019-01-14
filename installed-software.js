@@ -41,7 +41,8 @@ async function downloadFile(resource, softwarePath) {
 }
 
 ipcMain.on('installed-software-install', async function (event, software) {
-  const softwarePath = path.join(app.getAppPath(), software.binary);
+  const softwarePath = path.join(app.getPath('temp'), software.binary);
+  const responseChannel = `installed-software-installed-${software.name}`;
 
   if (software.type == 'web') {
     const exists = fs.existsSync(softwarePath);
@@ -53,7 +54,7 @@ ipcMain.on('installed-software-install', async function (event, software) {
       try {
         await downloadFile(software.resource, softwarePath);
       } catch(error) {
-        event.sender.send('installed-software-installed', {
+        event.sender.send(responseChannel, {
           success: false,
           message: error.message
         });
@@ -82,7 +83,7 @@ ipcMain.on('installed-software-install', async function (event, software) {
 
   child.stdin.end();
   
-  event.sender.send('installed-software-installed', { 
+  event.sender.send(responseChannel, { 
     success: true
   });
 });

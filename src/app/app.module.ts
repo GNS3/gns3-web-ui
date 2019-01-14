@@ -86,6 +86,7 @@ import { InterfaceLabelDraggedComponent } from './components/drawings-listeners/
 import { ToolsService } from './services/tools.service';
 import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
 import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
+import { InstallSoftwareComponent } from './components/installed-software/install-software/install-software.component';
 
 
 if (environment.production) {
@@ -138,7 +139,8 @@ if (environment.production) {
     NodeLabelDraggedComponent,
     DrawingDraggedComponent,
     LinkCreatedComponent,
-    InterfaceLabelDraggedComponent
+    InterfaceLabelDraggedComponent,
+    InstallSoftwareComponent
   ],
   imports: [
     BrowserModule,

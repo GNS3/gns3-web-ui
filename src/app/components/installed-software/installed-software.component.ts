@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InstalledSoftwareService } from '../../services/installed-software.service';
 import { DataSource } from '@angular/cdk/table';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-installed-software',
@@ -19,22 +19,28 @@ export class InstalledSoftwareComponent implements OnInit {
   ngOnInit() {
     this.dataSource = new InstalledSoftwareDataSource(this.installedSoftwareService);
   }
-
-  install(software) {
-    this.installedSoftwareService.install(software);
+  
+  onInstalled(event) {
+    this.dataSource.refresh();
   }
 }
 
 export class InstalledSoftwareDataSource extends DataSource<any> {
+  installed = new BehaviorSubject([]);
+
   constructor(private installedSoftwareService: InstalledSoftwareService) {
     super();
   }
 
   connect(): Observable<any[]> {
-    const installed = this.installedSoftwareService.list();
-    return of(installed);
+    this.refresh();
+    return this.installed;
   }
 
   disconnect() {}
+
+  refresh() {
+    this.installed.next(this.installedSoftwareService.list());
+  }
 
 }

@@ -32,10 +32,7 @@ export class InstalledSoftwareService {
   constructor(
     private electronService: ElectronService
   ) { 
-    this.electronService.ipcRenderer.on('installed-software-installed', (event, data) => {
-      console.log("installed", data);
-    });
-  }
+}
 
   list() {
     const installedSoftware = this.electronService.remote.require('./installed-software.js')
@@ -47,7 +44,4 @@ export class InstalledSoftwareService {
     });
   }
 
-  install(software) {
-    this.electronService.ipcRenderer.send('installed-software-install', software);
-  }
 }
