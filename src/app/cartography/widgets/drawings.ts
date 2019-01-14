@@ -14,6 +14,7 @@ import { EllipseElement } from "../models/drawings/ellipse-element";
 import { ResizingEnd } from "../events/resizing";
 import { LineElement } from "../models/drawings/line-element";
 import { MapSettingsManager } from "../managers/map-settings-manager";
+import { DrawingContextMenu } from '../events/event-source';
 
 
 @Injectable()
@@ -21,6 +22,7 @@ export class DrawingsWidget implements Widget {
   public draggable = new Draggable<SVGGElement, MapDrawing>();
   public draggingEnabled = false;
   public resizingFinished = new EventEmitter<ResizingEnd<MapDrawing>>();
+  public onContextMenu = new EventEmitter<DrawingContextMenu>();
 
   // public onContextMenu = new EventEmitter<NodeContextMenu>();
   // public onDrawingClicked = new EventEmitter<NodeClicked>();
@@ -60,6 +62,10 @@ export class DrawingsWidget implements Widget {
       .append<SVGGElement>('g')
         .attr('class', 'drawing')
         .attr('drawing_id', (l: MapDrawing) => l.id)
+        .on('contextmenu', (l: MapDrawing) => {
+          event.preventDefault();
+          this.onContextMenu.emit(new DrawingContextMenu(event, l));
+        })
 
     const merge = drawing.merge(drawing_enter);
 

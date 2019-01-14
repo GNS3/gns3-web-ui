@@ -31,6 +31,8 @@ import { of } from 'rxjs';
 import { Server } from '../../models/server';
 import { Node } from '../../cartography/models/node';
 import { ToolsService } from '../../services/tools.service';
+import { DrawingsWidget } from '../../cartography/widgets/drawings';
+import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 
 export class MockedProgressService {
   public activate() {}
@@ -133,7 +135,9 @@ describe('ProjectMapComponent', () => {
         { provide: ProjectWebServiceHandler },
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
+        { provide: DrawingsWidget },
         { provide: MapNodeToNodeConverter },
+        { provide: MapDrawingToDrawingConverter },
         { provide: NodesDataSource },
         { provide: LinksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource},

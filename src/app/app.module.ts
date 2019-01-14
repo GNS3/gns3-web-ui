@@ -36,9 +36,9 @@ import { AppComponent } from './app.component';
 
 import { ProjectMapComponent } from './components/project-map/project-map.component';
 import { ServersComponent, AddServerDialogComponent } from './components/servers/servers.component';
-import { NodeContextMenuComponent } from './components/project-map/node-context-menu/node-context-menu.component';
-import { StartNodeActionComponent } from './components/project-map/node-context-menu/actions/start-node-action/start-node-action.component';
-import { StopNodeActionComponent } from './components/project-map/node-context-menu/actions/stop-node-action/stop-node-action.component';
+import { ContextMenuComponent } from './components/project-map/context-menu/context-menu.component';
+import { StartNodeActionComponent } from './components/project-map/context-menu/actions/start-node-action/start-node-action.component';
+import { StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
 import { TemplateComponent } from './components/template/template.component';
 import { TemplateListDialogComponent } from './components/template/template-list-dialog/template-list-dialog.component';
 import { CartographyModule } from './cartography/cartography.module';
@@ -50,8 +50,9 @@ import { SymbolsDataSource } from "./cartography/datasources/symbols-datasource"
 import { SelectionManager } from "./cartography/managers/selection-manager";
 import { InRectangleHelper } from "./cartography/helpers/in-rectangle-helper";
 import { DrawingsDataSource } from "./cartography/datasources/drawings-datasource";
-import { MoveLayerDownActionComponent } from './components/project-map/node-context-menu/actions/move-layer-down-action/move-layer-down-action.component';
-import { MoveLayerUpActionComponent } from './components/project-map/node-context-menu/actions/move-layer-up-action/move-layer-up-action.component';
+import { EditStyleActionComponent } from './components/project-map/context-menu/actions/edit-style-action/edit-style-action.component';
+import { MoveLayerDownActionComponent } from './components/project-map/context-menu/actions/move-layer-down-action/move-layer-down-action.component';
+import { MoveLayerUpActionComponent } from './components/project-map/context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 import { ProjectMapShortcutsComponent } from './components/project-map/project-map-shortcuts/project-map-shortcuts.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { SettingsService } from "./services/settings.service";
@@ -113,13 +114,14 @@ if (environment.production) {
     ConfirmationDialogComponent,
     DefaultLayoutComponent,
     ProgressDialogComponent,
-    NodeContextMenuComponent,
+    ContextMenuComponent,
     StartNodeActionComponent,
     StopNodeActionComponent,
     TemplateComponent,
     TemplateListDialogComponent,
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
+    EditStyleActionComponent,
     ProjectMapShortcutsComponent,
     SettingsComponent,
     LocalServerComponent,
