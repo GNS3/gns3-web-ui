@@ -3,7 +3,8 @@
   <mat-menu #contextMenu="matMenu" class="context-menu-items">
     <app-start-node-action *ngIf="hasNodeCapabilities" [server]="server" [node]="node"></app-start-node-action>
     <app-stop-node-action *ngIf="hasNodeCapabilities" [server]="server" [node]="node"></app-stop-node-action>
-    <app-edit-style-action *ngIf="hasDrawingCapabilities" [server]="server" [project]="project" [drawing]="drawing"></app-edit-style-action>
+    <app-edit-style-action *ngIf="hasDrawingCapabilities && !isTextElement" [server]="server" [project]="project" [drawing]="drawing"></app-edit-style-action>
+    <app-edit-text-action *ngIf="hasDrawingCapabilities && isTextElement" [server]="server" [project]="project" [drawing]="drawing"></app-edit-text-action>
     <app-move-layer-up-action *ngIf="!projectService.isReadOnly(project)" [server]="server" [node]="node" [drawing]="drawing"></app-move-layer-up-action>
     <app-move-layer-down-action *ngIf="!projectService.isReadOnly(project)" [server]="server" [node]="node" [drawing]="drawing"></app-move-layer-down-action>
   </mat-menu>

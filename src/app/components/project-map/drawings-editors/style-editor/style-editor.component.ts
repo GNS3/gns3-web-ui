@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Server } from '../../../../models/server';
 import { Project } from '../../../../models/project';
 import { Drawing } from '../../../../cartography/models/drawing';
-import { MatDialogRef, MatDialog } from '@angular/material';
+import { MatDialogRef } from '@angular/material';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingService } from '../../../../services/drawing.service';
@@ -18,10 +18,10 @@ export class StyleEditorDialogComponent implements OnInit {
     server: Server;
     project: Project;
     drawing: Drawing;
+    rotation: string;
 
     constructor(
         public dialogRef: MatDialogRef<StyleEditorDialogComponent>,
-        private dialog: MatDialog,
         private drawingToMapDrawingConverter: DrawingToMapDrawingConverter,
         private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
         private drawingService: DrawingService,
@@ -29,7 +29,7 @@ export class StyleEditorDialogComponent implements OnInit {
     ){}
 
     ngOnInit() {
-        console.log(this.drawing.element);
+        this.rotation = this.drawing.rotation.toString();
     }
 
     onNoClick() {
@@ -37,8 +37,12 @@ export class StyleEditorDialogComponent implements OnInit {
     }
 
     onYesClick() {
+        this.drawing.rotation = +this.rotation;
         let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
+        mapDrawing.element = this.drawing.element;
+
         this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
+
         this.drawingService
             .update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
                 this.drawingsDataSource.update(serverDrawing);

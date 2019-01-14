@@ -86,6 +86,8 @@ import { ToolsService } from './services/tools.service';
 import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
 import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
+import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
+import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
 
 
 if (environment.production) {
@@ -123,6 +125,7 @@ if (environment.production) {
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     EditStyleActionComponent,
+    EditTextActionComponent,
     ProjectMapShortcutsComponent,
     SettingsComponent,
     LocalServerComponent,
@@ -139,7 +142,8 @@ if (environment.production) {
     DrawingDraggedComponent,
     LinkCreatedComponent,
     InterfaceLabelDraggedComponent,
-    StyleEditorDialogComponent
+    StyleEditorDialogComponent,
+    TextEditorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -195,7 +199,8 @@ if (environment.production) {
     AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
     ConfirmationDialogComponent,
-    StyleEditorDialogComponent
+    StyleEditorDialogComponent,
+    TextEditorDialogComponent
   ],
   bootstrap: [ AppComponent ]
 })
