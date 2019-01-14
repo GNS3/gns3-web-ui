@@ -92,6 +92,11 @@ export class TextEditorComponent implements OnInit, OnDestroy {
                     this.leftPosition = x.toString() + 'px';
                     this.topPosition = y.toString() + 'px';
                     this.temporaryTextElement.nativeElement.innerText = elem.text;
+
+                    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'color', elem.fill);
+                    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', elem.font_family);
+                    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', `${elem.font_size}pt`);
+                    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', elem.font_weight);
     
                     let listener =  () => {
                         let innerText = this.temporaryTextElement.nativeElement.innerText;
@@ -105,6 +110,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
                         this.temporaryTextElement.nativeElement.innerText = '';
                         this.temporaryTextElement.nativeElement.removeEventListener("focusout", this.textListener);
 
+                        this.clearStyle();
                         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
                     };
                     this.textListener = listener;
@@ -115,5 +121,12 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(){
         this.textAddingSubscription.unsubscribe();
+    }
+
+    clearStyle(){
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'color', '#000000');
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', 'Noto Sans');
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', '11pt');
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', 'bold');
     }
 }

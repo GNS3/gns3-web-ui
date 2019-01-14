@@ -117,6 +117,8 @@ describe('DrawingService', () => {
     drawing.x = 10;
     drawing.y = 20;
     drawing.z = 30;
+    drawing.rotation = 0;
+    drawing.svg = '<svg></svg>';
 
     service.update(server, drawing).subscribe();
 
@@ -126,7 +128,9 @@ describe('DrawingService', () => {
     expect(req.request.body).toEqual({
       'x': 10,
       'y': 20,
-      'z': 30
+      'z': 30,
+      'rotation': 0,
+      'svg': '<svg></svg>'
     });
   }));
 

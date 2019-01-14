@@ -23,7 +23,7 @@ export class EditStyleActionComponent implements OnInit {
 
     editStyle() {
         const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
-            width: '550px',
+            width: '450px',
         });
         let instance = dialogRef.componentInstance;
         instance.server = this.server;

@@ -1,6 +1,8 @@
 .item {
     display: flex;
     height: 25px;
+    font-size:10pt;
+    margin-bottom: 10px;
 }
 
 .item-name {
@@ -9,6 +11,8 @@
 
 .item-value {
     width: 70%;
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 .input-color {
