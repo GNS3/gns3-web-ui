@@ -6,31 +6,25 @@ import { ElectronService } from 'ngx-electron';
 })
 export class InstalledSoftwareService {
   private software = [{
-    name: 'ls',
-    commands: ['ls'],
-    installed: false
-  }, {
-    name: 'telnet',
-    commands: ['telnet'],
-    installed: false
-  }, {
     name: 'SolarPuTTY',
-    commands: [
+    locations: [
       'SolarPuTTY.exe'
     ],
     type: 'web',
     resource: '.exe',
     binary: 'SolarPuTTY.exe',
+    sudo: false,
     installation_arguments: ['--only-ask'],
     installed: false
   }, {
     name: 'Wireshark',
-    commands: [
-      'Wireshark.exe'
+    locations: [
+      'C:\\Program Files\\Wireshark\\Wireshark.exe'
     ],
     type: 'web',
     resource: 'https://1.na.dl.wireshark.org/win64/all-versions/Wireshark-win64-2.6.3.exe',
     binary: 'Wireshark.exe',
+    sudo: true,
     installation_arguments: [],
     installed: false
   }];

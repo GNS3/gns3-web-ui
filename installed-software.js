@@ -10,53 +10,78 @@ const { ipcMain } = require('electron')
 
 var pipeline = util.promisify(stream.pipeline);
 
-
-
 exports.getInstalledSoftware = (softwareList) => {
   const installed = {};
   for(var software of softwareList) {
     var name = software.name;
-    var commands = software.commands;
+    var locations = software.locations;
     
     installed[name] = [];
 
-    for(var command of commands) {
-      var exists = commandExistsSync(command);
+    for(var location of locations) {
+      // var exists = commandExistsSync(command);
+      var exists = fs.existsSync(location);
       if(exists) {
-        installed[name].push(command);
+        installed[name].push(location);
       }
     }
   }
   return installed;
 }
 
+async function downloadFile(resource, softwarePath) {
+  var response = await fetch(resource);
+  if (response.status != 200) {
+    throw new Error(`Cannot download file ${resource}, response status = ${response.status}`);
+  }
+  await pipeline(
+    response.body,
+    fs.createWriteStream(softwarePath)
+  );
+}
+
 ipcMain.on('installed-software-install', async function (event, software) {
   const softwarePath = path.join(app.getAppPath(), software.binary);
 
   if (software.type == 'web') {
-    try {
-      var response = await fetch(software.resource);
-      if (response.status != 200) {
-        throw new Error(`Cannot download file ${software.resource}, response status = ${response.status}`);
-      }
-      await pipeline(
-        response.body,
-        fs.createWriteStream(softwarePath)
-      );
-    } catch(error) {
-      event.sender.send('installed-software-installed', {
-        success: false,
-        message: error.message
-      });
+    const exists = fs.existsSync(softwarePath);
+    if (exists) {
+      console.log(`Skipping downloading file due to '${softwarePath}' path exists`);
     }
-  }
+    else {
+      console.log(`File '${softwarePath}' doesn't exist. Downloading file.`);
+      try {
+        await downloadFile(software.resource, softwarePath);
+      } catch(error) {
+        event.sender.send('installed-software-installed', {
+          success: false,
+          message: error.message
+        });
+      }
+      
+    }
 
-  const command = `${softwarePath}`;  
-  const child = spawn(command, software.installation_arguments);
+  }
+  
+  let child; 
+
+  if (software.sudo) {
+    child = spawn('powershell.exe', ['Start-Process', '-FilePath', `"${softwarePath}"`]);
+  }
+  else {
+    child = spawn(softwarePath, software.installation_arguments);
+  }
+  
   child.on('exit', () => {
     console.log("exited");
   });
 
+  child.on('error', (err) => {
+    console.log(err);
+  });
+
+  child.stdin.end();
+  
   event.sender.send('installed-software-installed', { 
     success: true
   });
