@@ -1,14 +1,14 @@
 <h1 mat-dialog-title>Text editor</h1>
-<span *ngIf="drawing.element.fill" class="item">
+<span *ngIf="element.fill" class="item">
     <div class="item-name">Fill color:</div>
-    <input class="input-color" type="color" (ngModelChange)="changeTextColor($event)" [(ngModel)]="drawing.element.fill"/>
+    <input class="input-color" type="color" (ngModelChange)="changeTextColor($event)" [(ngModel)]="element.fill"/>
 </span>
 <span class="item">
     <div class="item-name">Rotation:</div>
     <input class="item-value" matInput type="text" [(ngModel)]="rotation"/>
 </span>
 <span>
-    <textarea #textArea id="textArea" class="text" [(ngModel)]="drawing.element.text">
+    <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text">
     </textarea>
 </span>
 <div mat-dialog-actions>
