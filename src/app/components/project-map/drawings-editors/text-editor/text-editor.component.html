@@ -1,5 +1,5 @@
 <h1 mat-dialog-title>Text editor</h1>
-<span *ngIf="drawing.element.fill" class="item">
+<span *ngIf="element.fill" class="item">
     <div class="item-name">Fill color:</div>
     <input class="input-color" type="color" (ngModelChange)="changeTextColor($event)" [(ngModel)]="element.fill"/>
 </span>
