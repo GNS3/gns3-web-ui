@@ -21,6 +21,7 @@ export class TextEditorDialogComponent implements OnInit {
     server: Server;
     project: Project;
     drawing: Drawing;
+    element: TextElement;
     rotation: string;
 
     constructor(
@@ -35,11 +36,11 @@ export class TextEditorDialogComponent implements OnInit {
     ngOnInit() {
         this.rotation = this.drawing.rotation.toString();
 
-        let textElement = this.drawing.element as TextElement;
-        this.renderer.setStyle(this.textArea.nativeElement, 'color', textElement.fill);
-        this.renderer.setStyle(this.textArea.nativeElement, 'font-family', textElement.font_family);
-        this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${textElement.font_size}pt`);
-        this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', textElement.font_weight);
+        this.element = this.drawing.element as TextElement;
+        this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
+        this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
+        this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${this.element.font_size}pt`);
+        this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', this.element.font_weight);
     }
 
     onNoClick() {
@@ -48,6 +49,8 @@ export class TextEditorDialogComponent implements OnInit {
 
     onYesClick() {
         this.drawing.rotation = +this.rotation;
+        this.drawing.element = this.element;
+        
         let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
         mapDrawing.element = this.drawing.element;
 

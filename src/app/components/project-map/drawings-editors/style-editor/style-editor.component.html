@@ -1,19 +1,19 @@
 <h1 mat-dialog-title>Style editor</h1>
-<span *ngIf="drawing.element.fill" class="item">
+<span *ngIf="element.fill" class="item">
     <div class="item-name">Fill color: </div>
-    <input class="input-color" type='color' [(ngModel)]="drawing.element.fill"/>
+    <input class="input-color" type='color' [(ngModel)]="element.fill"/>
 </span>
 <span class="item">
     <div class="item-name">Border color: </div>
-    <input class="input-color" type='color' [(ngModel)]="drawing.element.stroke"/>
+    <input class="input-color" type='color' [(ngModel)]="element.stroke"/>
 </span>
 <span class="item">
     <div class="item-name">Border width: </div>
-    <input class="item-value" matInput type="text" [(ngModel)]="drawing.element.stroke_width"/>
+    <input class="item-value" matInput type="text" [(ngModel)]="element.stroke_width"/>
 </span>
-<span *ngIf="drawing.element.stroke_dasharray" class="item">
+<span *ngIf="element.stroke_dasharray" class="item">
     <div class="item-name">Border style: </div>
-    <input class="item-value" matInput type="text" [(ngModel)]="drawing.element.stroke_dasharray"/>
+    <input class="item-value" matInput type="text" [(ngModel)]="element.stroke_dasharray"/>
 </span>
 <span class="item">
     <div class="item-name">Rotation: </div>
