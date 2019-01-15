@@ -6,6 +6,7 @@ import { Server } from "../../../models/server";
 import { Project } from "../../../models/project";
 import { ProjectService } from "../../../services/project.service";
 import { Drawing } from '../../../cartography/models/drawing';
+import { TextElement } from '../../../cartography/models/drawings/text-element';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class ContextMenuComponent implements OnInit {
   drawing: Drawing;
   private hasNodeCapabilities: boolean = false;
   private hasDrawingCapabilities: boolean = false;
+  private isTextElement: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -54,6 +56,7 @@ export class ContextMenuComponent implements OnInit {
   public openMenuForDrawing(drawing: Drawing, top: number, left: number) {
     this.resetCapabilities();
     this.hasDrawingCapabilities = true;
+    this.isTextElement = drawing.element instanceof TextElement;
 
     this.drawing = drawing;
     this.setPosition(top, left);
@@ -66,5 +69,6 @@ export class ContextMenuComponent implements OnInit {
     this.drawing = null;
     this.hasDrawingCapabilities = false;
     this.hasNodeCapabilities = false;
+    this.isTextElement = false;
   }
 }

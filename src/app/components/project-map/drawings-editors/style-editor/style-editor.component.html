@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>Style editor</h1>
+<span *ngIf="drawing.element.fill" class="item">
+    <div class="item-name">Fill color: </div>
+    <input class="input-color" type='color' [(ngModel)]="drawing.element.fill"/>
+</span>
+<span class="item">
+    <div class="item-name">Border color: </div>
+    <input class="input-color" type='color' [(ngModel)]="drawing.element.stroke"/>
+</span>
+<span class="item">
+    <div class="item-name">Border width: </div>
+    <input class="item-value" matInput type="text" [(ngModel)]="drawing.element.stroke_width"/>
+</span>
+<span *ngIf="drawing.element.stroke_dasharray" class="item">
+    <div class="item-name">Border style: </div>
+    <input class="item-value" matInput type="text" [(ngModel)]="drawing.element.stroke_dasharray"/>
+</span>
+<span class="item">
+    <div class="item-name">Rotation: </div>
+    <input class="item-value" matInput type="text" [(ngModel)]="rotation"/>
+</span>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

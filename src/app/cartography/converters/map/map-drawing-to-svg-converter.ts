@@ -15,7 +15,7 @@ export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
 
     convert(mapDrawing: MapDrawing) {
         let elem = ``;
-
+        
         if (mapDrawing.element instanceof RectElement) {
             elem = `<rect fill=\"${mapDrawing.element.fill}\" fill-opacity=\"${mapDrawing.element.fill_opacity}\" height=\"${mapDrawing.element.height}\" width=\"${mapDrawing.element.width}\" stroke=\"${mapDrawing.element.stroke}\" stroke-width=\"${mapDrawing.element.stroke_width}\" />`;
         } else if (mapDrawing.element instanceof EllipseElement) {

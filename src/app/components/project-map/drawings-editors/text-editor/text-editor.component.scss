@@ -1,0 +1,33 @@
+.item {
+    display: flex;
+    height: 25px;
+    font-size:10pt;
+    margin-bottom: 10px;
+}
+
+.item-name {
+    width: 30%;
+}
+
+.item-value {
+    width: 70%;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.input-color {
+    padding: 0px;
+    border-width: 0px;
+    width: 70%;
+    background-color: transparent;
+    outline: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+.text {
+    width: 100%;
+    height: 150px;
+}
