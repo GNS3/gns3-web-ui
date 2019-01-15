@@ -1,14 +1,13 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
-import { DataSource } from "@angular/cdk/collections";
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { DataSource } from '@angular/cdk/collections';
 
-import { Observable, BehaviorSubject, fromEvent, merge } from "rxjs";
-import { debounceTime, distinctUntilChanged, map } from "rxjs/operators";
+import { Observable, BehaviorSubject, fromEvent, merge } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
-import { Server } from "../../../models/server";
-import { TemplateService } from "../../../services/template.service";
-import { Template } from "../../../models/template";
-
+import { Server } from '../../../models/server';
+import { TemplateService } from '../../../services/template.service';
+import { Template } from '../../../models/template';
 
 @Component({
   selector: 'app-template-list-dialog',
@@ -26,7 +25,8 @@ export class TemplateListDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,
     private templateService: TemplateService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
     this.server = data['server'];
   }
 
@@ -34,15 +34,17 @@ export class TemplateListDialogComponent implements OnInit {
     this.templateDatabase = new TemplateDatabase(this.server, this.templateService);
     this.dataSource = new TemplateDataSource(this.templateDatabase);
 
-    fromEvent(this.filter.nativeElement, 'keyup').pipe(
-      debounceTime(150),
-      distinctUntilChanged()
-    )
-    .subscribe(() => {
-      if (!this.dataSource) { return; }
-      this.dataSource.filter = this.filter.nativeElement.value;
-    });
-
+    fromEvent(this.filter.nativeElement, 'keyup')
+      .pipe(
+        debounceTime(150),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        if (!this.dataSource) {
+          return;
+        }
+        this.dataSource.filter = this.filter.nativeElement.value;
+      });
   }
 
   onNoClick(): void {
@@ -52,9 +54,7 @@ export class TemplateListDialogComponent implements OnInit {
   addNode(template: Template): void {
     this.dialogRef.close(template);
   }
-
 }
-
 
 export class TemplateDatabase {
   dataChange: BehaviorSubject<Template[]> = new BehaviorSubject<Template[]>([]);
@@ -64,39 +64,38 @@ export class TemplateDatabase {
   }
 
   constructor(private server: Server, private templateService: TemplateService) {
-    this.templateService
-      .list(this.server)
-      .subscribe((templates) => {
-        this.dataChange.next(templates);
-      });
+    this.templateService.list(this.server).subscribe(templates => {
+      this.dataChange.next(templates);
+    });
   }
+}
 
-};
-
-export class TemplateDataSource extends DataSource<Template> {
+export class TemplateDataSource extends DataSource<Template> {
   filterChange = new BehaviorSubject('');
 
-  get filter(): string { return this.filterChange.value; }
-  set filter(filter: string) { this.filterChange.next(filter); }
+  get filter(): string {
+    return this.filterChange.value;
+  }
+  set filter(filter: string) {
+    this.filterChange.next(filter);
+  }
 
   constructor(private templateDatabase: TemplateDatabase) {
     super();
   }
 
   connect(): Observable<Template[]> {
-    const displayDataChanges = [
-      this.templateDatabase.dataChange,
-      this.filterChange,
-    ];
+    const displayDataChanges = [this.templateDatabase.dataChange, this.filterChange];
 
-    return merge(...displayDataChanges).pipe(map(() => {
-      return this.templateDatabase.data.slice().filter((item: Template) => {
-        const searchStr = (item.name).toLowerCase();
-        return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
-      });
-    }));
+    return merge(...displayDataChanges).pipe(
+      map(() => {
+        return this.templateDatabase.data.slice().filter((item: Template) => {
+          const searchStr = item.name.toLowerCase();
+          return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
+        });
+      })
+    );
   }
 
   disconnect() {}
-
 }

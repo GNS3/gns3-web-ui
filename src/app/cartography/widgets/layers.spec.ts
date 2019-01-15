@@ -1,12 +1,11 @@
-import { instance, mock, when, verify } from "ts-mockito";
+import { instance, mock, when, verify } from 'ts-mockito';
 
-import { TestSVGCanvas } from "../testing";
-import { LayersWidget } from "./layers";
-import { Layer } from "../models/layer";
-import { LinksWidget } from "./links";
-import { NodesWidget } from "./nodes";
-import { DrawingsWidget } from "./drawings";
-
+import { TestSVGCanvas } from '../testing';
+import { LayersWidget } from './layers';
+import { Layer } from '../models/layer';
+import { LinksWidget } from './links';
+import { NodesWidget } from './nodes';
+import { DrawingsWidget } from './drawings';
 
 describe('LayersWidget', () => {
   let svg: TestSVGCanvas;
@@ -75,5 +74,4 @@ describe('LayersWidget', () => {
     expect(drew.nodes()[0].getAttribute('data-index')).toEqual('3');
     expect(drew.nodes()[1].getAttribute('data-index')).toEqual('2');
   });
-
 });

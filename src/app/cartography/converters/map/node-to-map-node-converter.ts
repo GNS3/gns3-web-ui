@@ -1,14 +1,13 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-import { Converter } from "../converter";
-import { MapNode } from "../../models/map/map-node";
-import { Node } from "../../models/node";
-import { LabelToMapLabelConverter } from "./label-to-map-label-converter";
-import { PortToMapPortConverter } from "./port-to-map-port-converter";
+import { Converter } from '../converter';
+import { MapNode } from '../../models/map/map-node';
+import { Node } from '../../models/node';
+import { LabelToMapLabelConverter } from './label-to-map-label-converter';
+import { PortToMapPortConverter } from './port-to-map-port-converter';
 import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
 import { CssFixer } from '../../helpers/css-fixer';
 import { FontFixer } from '../../helpers/font-fixer';
-
 
 @Injectable()
 export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
@@ -19,7 +18,7 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     private cssFixer: CssFixer,
     private fontFixer: FontFixer
   ) {}
-    
+
   convert(node: Node) {
     const mapNode = new MapNode();
     mapNode.id = node.node_id;
@@ -35,7 +34,7 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     mapNode.nodeType = node.node_type;
     mapNode.portNameFormat = node.port_name_format;
     mapNode.portSegmentSize = node.port_segment_size;
-    mapNode.ports = node.ports.map((port) => this.portToMapPort.convert(port));
+    mapNode.ports = node.ports.map(port => this.portToMapPort.convert(port));
     mapNode.projectId = node.project_id;
     mapNode.status = node.status;
     mapNode.symbol = node.symbol;
@@ -45,17 +44,16 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     mapNode.y = node.y;
     mapNode.z = node.z;
 
-
     if (mapNode.label !== undefined) {
       const fixedCss = this.cssFixer.fix(mapNode.label.style);
       const fixedFont = this.fontFixer.fixStyles(fixedCss);
       const box = this.fontBBoxCalculator.calculate(mapNode.label.text, fixedFont);
 
       if (node.label.x === null || node.label.y === null) {
-        mapNode.label.x = node.width / 2. - box.width / 2. + 3;
+        mapNode.label.x = node.width / 2 - box.width / 2 + 3;
         mapNode.label.y = -8;
       }
     }
-    return mapNode;        
+    return mapNode;
   }
 }

@@ -1,9 +1,8 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
-import {DomSanitizer} from "@angular/platform-browser";
-import {Node} from "../../../cartography/models/node";
-import {Port} from "../../../models/port";
-
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatMenuTrigger } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Node } from '../../../cartography/models/node';
+import { Port } from '../../../models/port';
 
 @Component({
   selector: 'app-node-select-interface',
@@ -19,17 +18,15 @@ export class NodeSelectInterfaceComponent implements OnInit {
   protected leftPosition;
   public node: Node;
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private changeDetector: ChangeDetectorRef) {}
+  constructor(private sanitizer: DomSanitizer, private changeDetector: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.setPosition(0, 0);
   }
 
   public setPosition(top: number, left: number) {
-    this.topPosition = this.sanitizer.bypassSecurityTrustStyle(top + "px");
-    this.leftPosition = this.sanitizer.bypassSecurityTrustStyle(left + "px");
+    this.topPosition = this.sanitizer.bypassSecurityTrustStyle(top + 'px');
+    this.leftPosition = this.sanitizer.bypassSecurityTrustStyle(left + 'px');
     this.changeDetector.detectChanges();
   }
 
@@ -41,8 +38,8 @@ export class NodeSelectInterfaceComponent implements OnInit {
 
   public chooseInterface(port: Port) {
     this.onChooseInterface.emit({
-      'node': this.node,
-      'port': port
+      node: this.node,
+      port: port
     });
   }
 }

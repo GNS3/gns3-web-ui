@@ -1,6 +1,6 @@
-import { EventEmitter } from "@angular/core";
-import { drag, DraggedElementBaseType } from "d3-drag";
-import { event } from "d3-selection";
+import { EventEmitter } from '@angular/core';
+import { drag, DraggedElementBaseType } from 'd3-drag';
+import { event } from 'd3-selection';
 
 class DraggableEvent {
   public x: number;
@@ -10,25 +10,19 @@ class DraggableEvent {
 }
 
 export class DraggableStart<T> extends DraggableEvent {
-  constructor(
-    public datum: T
-  ){
+  constructor(public datum: T) {
     super();
   }
 }
 
 export class DraggableDrag<T> extends DraggableEvent {
-  constructor(
-    public datum: T
-  ){
+  constructor(public datum: T) {
     super();
   }
 }
 
 export class DraggableEnd<T> extends DraggableEvent {
-  constructor(
-    public datum: T
-  ){
+  constructor(public datum: T) {
     super();
   }
 }

@@ -1,12 +1,11 @@
-import { SvgConverter } from "./svg-converter";
-import { ImageElement } from "../../models/drawings/image-element";
-
+import { SvgConverter } from './svg-converter';
+import { ImageElement } from '../../models/drawings/image-element';
 
 export class ImageConverter implements SvgConverter {
   convert(element: Element): ImageElement {
     const drawing = new ImageElement();
 
-    const data = element.attributes.getNamedItem("xlink:href");
+    const data = element.attributes.getNamedItem('xlink:href');
     if (data) {
       drawing.data = data.value;
     }

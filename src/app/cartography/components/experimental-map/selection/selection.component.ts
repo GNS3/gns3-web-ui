@@ -9,7 +9,7 @@ import { Rectangle } from '../../../models/rectangle';
 })
 export class SelectionComponent implements OnInit, AfterViewInit {
   @Input('app-selection') svg: SVGSVGElement;
-  
+
   private startX: number;
   private startY: number;
 
@@ -20,25 +20,20 @@ export class SelectionComponent implements OnInit, AfterViewInit {
   visible = false;
   draggable: Subscription;
 
-
   @Output('selected') rectangleSelected = new EventEmitter<Rectangle>();
 
-  constructor(
-    private ref: ChangeDetectorRef
-  ) { }
+  constructor(private ref: ChangeDetectorRef) {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 
   ngAfterViewInit() {
     const down = Observable.fromEvent(this.svg, 'mousedown').do((e: MouseEvent) => e.preventDefault());
 
     down.subscribe((e: MouseEvent) => {
-      if(e.target !== this.svg) {
+      if (e.target !== this.svg) {
         return;
       }
-      
+
       this.started = true;
       this.startX = e.clientX + window.scrollX;
       this.startY = e.clientY + window.scrollY;
@@ -48,51 +43,48 @@ export class SelectionComponent implements OnInit, AfterViewInit {
       this.ref.detectChanges();
     });
 
-    const up = Observable.fromEvent(document, 'mouseup')
-    .do((e: MouseEvent) => {
+    const up = Observable.fromEvent(document, 'mouseup').do((e: MouseEvent) => {
       e.preventDefault();
     });
 
-    const mouseMove = Observable.fromEvent(document, 'mousemove')
-    .do((e: MouseEvent) => e.stopPropagation());
+    const mouseMove = Observable.fromEvent(document, 'mousemove').do((e: MouseEvent) => e.stopPropagation());
 
-    const scrollWindow = Observable.fromEvent(document, 'scroll')
-    .startWith({});
+    const scrollWindow = Observable.fromEvent(document, 'scroll').startWith({});
 
     const move = Observable.combineLatest(mouseMove, scrollWindow);
 
     const drag = down.mergeMap((md: MouseEvent) => {
       return move
-          .map(([mm, s]) => mm)
-          .do((mm: MouseEvent) => {
-            if(!this.started) {
+        .map(([mm, s]) => mm)
+        .do((mm: MouseEvent) => {
+          if (!this.started) {
+            return;
+          }
+          this.visible = true;
+          this.width = mm.clientX - this.startX + window.scrollX;
+          this.height = mm.clientY - this.startY + window.scrollY;
+
+          this.ref.detectChanges();
+
+          this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
+        })
+        .skipUntil(
+          up.take(1).do((e: MouseEvent) => {
+            if (!this.started) {
               return;
             }
-            this.visible = true;
-            this.width = mm.clientX - this.startX + window.scrollX;
-            this.height = mm.clientY - this.startY + window.scrollY;
+            this.visible = false;
+            this.started = false;
+
+            this.width = e.clientX - this.startX + window.scrollX;
+            this.height = e.clientY - this.startY + window.scrollY;
 
             this.ref.detectChanges();
 
             this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
           })
-          .skipUntil(up
-              .take(1)
-              .do((e: MouseEvent) => {
-                if(!this.started) {
-                  return;
-                }
-                this.visible = false;
-                this.started = false;
-
-                this.width = e.clientX - this.startX + window.scrollX;
-                this.height = e.clientY - this.startY + window.scrollY;
-
-                this.ref.detectChanges();
-
-                this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
-              }))
-          .take(1);
+        )
+        .take(1);
     });
 
     this.draggable = drag.subscribe((e: MouseEvent) => {
@@ -109,7 +101,7 @@ export class SelectionComponent implements OnInit, AfterViewInit {
   }
 
   private rect(x: number, y: number, w: number, h: number) {
-    return "M" + [x, y] + " l" + [w, 0] + " l" + [0, h] + " l" + [-w, 0] + "z";
+    return 'M' + [x, y] + ' l' + [w, 0] + ' l' + [0, h] + ' l' + [-w, 0] + 'z';
   }
 
   private selectedEvent(start, end) {

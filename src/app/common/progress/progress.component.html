@@ -1,20 +1,11 @@
 <div class="overlay" *ngIf="visible || error">
-  <div class="loading-spinner" *ngIf="visible && !error">
-    <mat-spinner color="primary">
-    </mat-spinner>
-  </div>
+  <div class="loading-spinner" *ngIf="visible && !error"><mat-spinner color="primary"> </mat-spinner></div>
   <div class="error-state" *ngIf="error">
     <div class="error-icon"><mat-icon>error_outline</mat-icon></div>
     <div>Error occurred: {{ error.message }}</div>
     <div>
-      <button mat-button (click)="refresh()" matTooltip="Refresh page" >
-        <mat-icon>refresh</mat-icon>
-      </button>
-      <button mat-button routerLink="/" matTooltip="Go to home" >
-        <mat-icon>home</mat-icon>
-      </button>
+      <button mat-button (click)="refresh()" matTooltip="Refresh page"><mat-icon>refresh</mat-icon></button>
+      <button mat-button routerLink="/" matTooltip="Go to home"><mat-icon>home</mat-icon></button>
     </div>
   </div>
 </div>
-
-

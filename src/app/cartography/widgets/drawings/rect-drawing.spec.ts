@@ -1,15 +1,13 @@
-import { TestSVGCanvas } from "../../testing";
-import { RectDrawingWidget } from "./rect-drawing";
-import { RectElement } from "../../models/drawings/rect-element";
-import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
-import { MapDrawing } from "../../models/map/map-drawing";
-
+import { TestSVGCanvas } from '../../testing';
+import { RectDrawingWidget } from './rect-drawing';
+import { RectElement } from '../../models/drawings/rect-element';
+import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { MapDrawing } from '../../models/map/map-drawing';
 
 describe('RectDrawingWidget', () => {
   let svg: TestSVGCanvas;
   let widget: RectDrawingWidget;
   let drawing: MapDrawing;
-
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
@@ -23,17 +21,20 @@ describe('RectDrawingWidget', () => {
 
   it('should draw rect drawing', () => {
     const rect = new RectElement();
-    rect.fill = "#FFFFFF";
+    rect.fill = '#FFFFFF';
     rect.fill_opacity = 1.0;
-    rect.stroke = "#000000";
+    rect.stroke = '#000000';
     rect.stroke_width = 2.0;
-    rect.stroke_dasharray = "5,25,25";
+    rect.stroke_dasharray = '5,25,25';
     rect.width = 100;
     rect.height = 200;
     drawing.element = rect;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
+    const drawings_enter = drawings
+      .enter()
+      .append<SVGGElement>('g')
+      .classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

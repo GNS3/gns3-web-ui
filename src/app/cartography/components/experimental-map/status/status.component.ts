@@ -1,27 +1,23 @@
 import { Component, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
 
-
 @Component({
   selector: '[app-status]',
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss'],
+  styleUrls: ['./status.component.scss']
 })
-export class StatusComponent  {
+export class StatusComponent {
   static STOPPED_STATUS_RECT_WIDTH = 10;
 
   data = {
-    'status': '',
-    'path': null,
-    'direction': null,
-    'd': null
+    status: '',
+    path: null,
+    direction: null,
+    d: null
   };
 
-  constructor(
-    protected element: ElementRef,
-    private ref: ChangeDetectorRef
-  ) {}
+  constructor(protected element: ElementRef, private ref: ChangeDetectorRef) {}
 
-  @Input('app-status') 
+  @Input('app-status')
   set status(value) {
     this.data.status = value;
     this.ref.markForCheck();
@@ -54,7 +50,7 @@ export class StatusComponent  {
   get direction() {
     return this.data.direction;
   }
-  
+
   get path() {
     return this.data.path;
   }
@@ -79,5 +75,4 @@ export class StatusComponent  {
     }
     return this.targetStatusPoint;
   }
-
 }

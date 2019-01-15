@@ -1,4 +1,4 @@
 export class ServerResponse {
-    message: string;
-    status: number;
+  message: string;
+  status: number;
 }

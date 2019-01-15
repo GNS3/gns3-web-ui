@@ -1,4 +1,4 @@
-import { Indexed } from "../../datasources/map-datasource";
+import { Indexed } from '../../datasources/map-datasource';
 
 export class MapLabel implements Indexed {
   id: string;

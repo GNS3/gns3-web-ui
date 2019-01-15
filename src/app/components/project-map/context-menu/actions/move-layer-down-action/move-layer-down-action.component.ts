@@ -29,17 +29,13 @@ export class MoveLayerDownActionComponent implements OnInit {
     if (this.node) {
       this.node.z--;
       this.nodesDataSource.update(this.node);
-      
-      this.nodeService
-        .update(this.server, this.node)
-        .subscribe((node: Node) => {});
-    } else if(this.drawing) {
+
+      this.nodeService.update(this.server, this.node).subscribe((node: Node) => {});
+    } else if (this.drawing) {
       this.drawing.z--;
       this.drawingsDataSource.update(this.drawing);
 
-      this.drawingService
-        .update(this.server, this.drawing)
-        .subscribe((drawing: Drawing) => {});
+      this.drawingService.update(this.server, this.drawing).subscribe((drawing: Drawing) => {});
     }
   }
 }

@@ -7,8 +7,7 @@ import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { SymbolService } from './symbol.service';
 import { Symbol } from '../models/symbol';
-import { AppTestingModule } from "../testing/app-testing/app-testing.module";
-
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 
 describe('SymbolService', () => {
   let httpClient: HttpClient;
@@ -18,14 +17,8 @@ describe('SymbolService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AppTestingModule
-      ],
-      providers: [
-        HttpServer,
-        SymbolService
-      ]
+      imports: [HttpClientTestingModule, AppTestingModule],
+      providers: [HttpServer, SymbolService]
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -45,29 +38,25 @@ describe('SymbolService', () => {
   it('should list symbols', inject([SymbolService], (service: SymbolService) => {
     service.list(server).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/symbols');
-    expect(req.request.method).toEqual("GET");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols');
+    expect(req.request.method).toEqual('GET');
   }));
 
   it('should get raw symbol', inject([SymbolService], (service: SymbolService) => {
     service.raw(server, ':my/tested.png').subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/symbols/:my/tested.png/raw');
-    expect(req.request.method).toEqual("GET");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols/:my/tested.png/raw');
+    expect(req.request.method).toEqual('GET');
   }));
 
   it('should load symbols', inject([SymbolService], (service: SymbolService) => {
     service.load(server).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/symbols');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols');
 
-    req.flush([{ 'symbol_id': 'myid' }]);
+    req.flush([{ symbol_id: 'myid' }]);
 
-    const raw = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/symbols/myid/raw');
+    const raw = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols/myid/raw');
     raw.flush('myraw');
 
     service.symbols.subscribe(symbols => {
@@ -79,9 +68,9 @@ describe('SymbolService', () => {
 
   it('should get symbols', inject([SymbolService], (service: SymbolService) => {
     const symbol = new Symbol();
-    symbol.symbol_id = "myid";
+    symbol.symbol_id = 'myid';
     service.symbols.next([symbol]);
 
-    expect(service.get("myid").symbol_id).toEqual("myid");
+    expect(service.get('myid').symbol_id).toEqual('myid');
   }));
 });

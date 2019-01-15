@@ -8,9 +8,8 @@ describe('EllipseComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EllipseComponent ]
-    })
-    .compileComponents();
+      declarations: [EllipseComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

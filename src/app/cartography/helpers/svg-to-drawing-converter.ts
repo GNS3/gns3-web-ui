@@ -1,12 +1,11 @@
-import { Injectable } from "@angular/core";
-import { DrawingElement } from "../models/drawings/drawing-element";
-import { SvgConverter } from "./svg-to-drawing-converter/svg-converter";
-import { TextConverter } from "./svg-to-drawing-converter/text-converter";
-import { ImageConverter } from "./svg-to-drawing-converter/image-converter";
-import { RectConverter } from "./svg-to-drawing-converter/rect-converter";
-import { LineConverter } from "./svg-to-drawing-converter/line-converter";
-import { EllipseConverter } from "./svg-to-drawing-converter/ellipse-converter";
-
+import { Injectable } from '@angular/core';
+import { DrawingElement } from '../models/drawings/drawing-element';
+import { SvgConverter } from './svg-to-drawing-converter/svg-converter';
+import { TextConverter } from './svg-to-drawing-converter/text-converter';
+import { ImageConverter } from './svg-to-drawing-converter/image-converter';
+import { RectConverter } from './svg-to-drawing-converter/rect-converter';
+import { LineConverter } from './svg-to-drawing-converter/line-converter';
+import { EllipseConverter } from './svg-to-drawing-converter/ellipse-converter';
 
 @Injectable()
 export class SvgToDrawingConverter {
@@ -16,11 +15,11 @@ export class SvgToDrawingConverter {
   constructor() {
     this.parser = new DOMParser();
     this.elementParsers = {
-      'text': new TextConverter(),
-      'image': new ImageConverter(),
-      'rect': new RectConverter(),
-      'line': new LineConverter(),
-      'ellipse': new EllipseConverter()
+      text: new TextConverter(),
+      image: new ImageConverter(),
+      rect: new RectConverter(),
+      line: new LineConverter(),
+      ellipse: new EllipseConverter()
     };
   }
 
@@ -60,6 +59,4 @@ export class SvgToDrawingConverter {
 
     return drawing;
   }
-
-
 }

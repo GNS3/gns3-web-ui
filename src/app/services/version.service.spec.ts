@@ -6,8 +6,8 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { VersionService } from './version.service';
-import { AppTestingModule } from "../testing/app-testing/app-testing.module";
-import {Observable} from "rxjs/Rx";
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { Observable } from 'rxjs/Rx';
 
 export class MockedVersionService {
   public response: Observable<any>;
@@ -16,7 +16,6 @@ export class MockedVersionService {
     return this.response;
   }
 }
-
 
 describe('VersionService', () => {
   let httpClient: HttpClient;
@@ -27,14 +26,8 @@ describe('VersionService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AppTestingModule
-      ],
-      providers: [
-        HttpServer,
-        VersionService
-      ]
+      imports: [HttpClientTestingModule, AppTestingModule],
+      providers: [HttpServer, VersionService]
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -55,8 +48,7 @@ describe('VersionService', () => {
   it('should get version', inject([VersionService], (service: VersionService) => {
     service.get(server).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/version');
-    expect(req.request.method).toEqual("GET");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/version');
+    expect(req.request.method).toEqual('GET');
   }));
 });

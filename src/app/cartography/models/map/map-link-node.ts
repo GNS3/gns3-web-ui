@@ -1,5 +1,5 @@
-import { MapLabel } from "./map-label";
-import { Indexed } from "../../datasources/map-datasource";
+import { MapLabel } from './map-label';
+import { Indexed } from '../../datasources/map-datasource';
 
 export class MapLinkNode implements Indexed {
   id: string;

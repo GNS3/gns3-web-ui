@@ -1,4 +1,4 @@
-import { DrawingResizedComponent } from "./drawing-resized.component";
+import { DrawingResizedComponent } from './drawing-resized.component';
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { DrawingService } from '../../../services/drawing.service';
 import { MockedDrawingService, MockedDrawingsDataSource } from '../../project-map/project-map.component.spec';
@@ -11,58 +11,55 @@ import { DrawingElement } from '../../../cartography/models/drawings/drawing-ele
 import { Observable } from 'rxjs';
 
 describe('DrawingResizedComponent', () => {
-    let component: DrawingResizedComponent;
-    let fixture: ComponentFixture<DrawingResizedComponent>;
-    let mockedDrawingService = new MockedDrawingService;
-    let mockedDrawingsDataSource = new MockedDrawingsDataSource;
-    let mockedDrawingsEventSource = new DrawingsEventSource;
-    let mockedMapDrawingToSvgConverter = new MapDrawingToSvgConverter;
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            providers: [
-                { provide: DrawingService, useValue: mockedDrawingService },
-                { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
-                { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
-                { provide: MapDrawingToSvgConverter, useValue: mockedMapDrawingToSvgConverter }
-            ],
-            declarations: [
-                DrawingResizedComponent
-            ]
-        })
-        .compileComponents();
-    }));
+  let component: DrawingResizedComponent;
+  let fixture: ComponentFixture<DrawingResizedComponent>;
+  let mockedDrawingService = new MockedDrawingService();
+  let mockedDrawingsDataSource = new MockedDrawingsDataSource();
+  let mockedDrawingsEventSource = new DrawingsEventSource();
+  let mockedMapDrawingToSvgConverter = new MapDrawingToSvgConverter();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(DrawingResizedComponent);
-        component = fixture.componentInstance;
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DrawingService, useValue: mockedDrawingService },
+        { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
+        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
+        { provide: MapDrawingToSvgConverter, useValue: mockedMapDrawingToSvgConverter }
+      ],
+      declarations: [DrawingResizedComponent]
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(DrawingResizedComponent);
+    component = fixture.componentInstance;
+  });
 
-    it('should call drawing service when drawing is resized', () => {
-        fixture.detectChanges();
-        const mapDrawingElement: DrawingElement = {
-            width: 100,
-            height: 100
-        };
-        const mapDrawing: MapDrawing = {
-            id: "sampleId",
-            projectId: "sampleprojectId",
-            rotation: 0,
-            svg: "sampleSvg",
-            x: 0,
-            y: 0,
-            z: 0,
-            element: mapDrawingElement
-        };
-        const drawingResizedDataEvent = new ResizedDataEvent<MapDrawing>(mapDrawing, 0, 0, 100, 100);
-        spyOn(mockedDrawingService, 'updateSizeAndPosition').and.returnValue( Observable.of({}));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        mockedDrawingsEventSource.resized.emit(drawingResizedDataEvent);
+  it('should call drawing service when drawing is resized', () => {
+    fixture.detectChanges();
+    const mapDrawingElement: DrawingElement = {
+      width: 100,
+      height: 100
+    };
+    const mapDrawing: MapDrawing = {
+      id: 'sampleId',
+      projectId: 'sampleprojectId',
+      rotation: 0,
+      svg: 'sampleSvg',
+      x: 0,
+      y: 0,
+      z: 0,
+      element: mapDrawingElement
+    };
+    const drawingResizedDataEvent = new ResizedDataEvent<MapDrawing>(mapDrawing, 0, 0, 100, 100);
+    spyOn(mockedDrawingService, 'updateSizeAndPosition').and.returnValue(Observable.of({}));
 
-        expect(mockedDrawingService.updateSizeAndPosition).toHaveBeenCalled();
-    });
+    mockedDrawingsEventSource.resized.emit(drawingResizedDataEvent);
+
+    expect(mockedDrawingService.updateSizeAndPosition).toHaveBeenCalled();
+  });
 });

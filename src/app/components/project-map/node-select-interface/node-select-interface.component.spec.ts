@@ -8,9 +8,8 @@ describe('NodeSelectInterfaceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NodeSelectInterfaceComponent ]
-    })
-    .compileComponents();
+      declarations: [NodeSelectInterfaceComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

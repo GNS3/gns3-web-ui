@@ -1,6 +1,5 @@
-import { Label } from "./label";
-import { Port } from "../../models/port";
-
+import { Label } from './label';
+import { Port } from '../../models/port';
 
 export class Node {
   command_line: string;

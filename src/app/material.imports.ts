@@ -1,23 +1,23 @@
 import {
-    MatButtonModule,
-    MatCardModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatDialogModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatCheckboxModule,
-    MatListModule,
-    MatExpansionModule,
-    MatSortModule,
-    MatSelectModule,
-    MatTooltipModule
-  } from '@angular/material';
+  MatButtonModule,
+  MatCardModule,
+  MatMenuModule,
+  MatToolbarModule,
+  MatIconModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatTableModule,
+  MatDialogModule,
+  MatProgressBarModule,
+  MatProgressSpinnerModule,
+  MatSnackBarModule,
+  MatCheckboxModule,
+  MatListModule,
+  MatExpansionModule,
+  MatSortModule,
+  MatSelectModule,
+  MatTooltipModule
+} from '@angular/material';
 
 export const MATERIAL_IMPORTS = [
   MatButtonModule,
@@ -37,5 +37,5 @@ export const MATERIAL_IMPORTS = [
   MatExpansionModule,
   MatSortModule,
   MatSelectModule,
-  MatTooltipModule,
+  MatTooltipModule
 ];

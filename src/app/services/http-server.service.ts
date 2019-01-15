@@ -2,45 +2,53 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
-import { catchError } from "rxjs/operators";
+import { catchError } from 'rxjs/operators';
 
-import {Server} from "../models/server";
-
+import { Server } from '../models/server';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
-  headers?: HttpHeaders | {
-      [header: string]: string | string[];
-  };
+  headers?:
+    | HttpHeaders
+    | {
+        [header: string]: string | string[];
+      };
   observe?: 'body';
-  params?: HttpParams | {
-      [param: string]: string | string[];
-  };
+  params?:
+    | HttpParams
+    | {
+        [param: string]: string | string[];
+      };
   reportProgress?: boolean;
   responseType?: 'json';
   withCredentials?: boolean;
 };
 
 export type TextOptions = {
-  headers?: HttpHeaders | {
-      [header: string]: string | string[];
-  };
+  headers?:
+    | HttpHeaders
+    | {
+        [header: string]: string | string[];
+      };
   observe?: 'body';
-  params?: HttpParams | {
-      [param: string]: string | string[];
-  };
+  params?:
+    | HttpParams
+    | {
+        [param: string]: string | string[];
+      };
   reportProgress?: boolean;
   responseType: 'text';
   withCredentials?: boolean;
 };
 
 export type HeadersOptions = {
-    headers?: HttpHeaders | {
+  headers?:
+    | HttpHeaders
+    | {
         [header: string]: string | string[];
-    };
+      };
 };
 /* tslint:enable:interface-over-type-literal */
-
 
 export class ServerError extends Error {
   public originalError: Error;
@@ -62,21 +70,16 @@ export class ServerErrorHandler {
     let err: Error = error;
 
     if (error.name === 'HttpErrorResponse' && error.status === 0) {
-      err = ServerError.fromError("Server is unreachable", error);
+      err = ServerError.fromError('Server is unreachable', error);
     }
 
     return throwError(err);
   }
 }
 
-
 @Injectable()
 export class HttpServer {
-
-  constructor(
-    private http: HttpClient,
-    private errorHandler: ServerErrorHandler
-  ) { }
+  constructor(private http: HttpClient, private errorHandler: ServerErrorHandler) {}
 
   get<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
@@ -145,7 +148,7 @@ export class HttpServer {
   private getJsonOptions(options: JsonOptions): JsonOptions {
     if (!options) {
       return {
-        responseType: "json"
+        responseType: 'json'
       };
     }
     return options;
@@ -154,7 +157,7 @@ export class HttpServer {
   private getTextOptions(options: TextOptions): TextOptions {
     if (!options) {
       return {
-        responseType: "text"
+        responseType: 'text'
       };
     }
     return options;
@@ -171,7 +174,7 @@ export class HttpServer {
       options.headers = {};
     }
 
-    if (server.authorization === "basic") {
+    if (server.authorization === 'basic') {
       const credentials = btoa(`${server.login}:${server.password}`);
       options.headers['Authorization'] = `Basic ${credentials}`;
     }
@@ -181,5 +184,4 @@ export class HttpServer {
       options: options
     };
   }
-
 }

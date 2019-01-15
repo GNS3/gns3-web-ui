@@ -1,11 +1,20 @@
 import {
-  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit,
-  SimpleChange, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChange,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  ViewChild
 } from '@angular/core';
 
-import { GraphLayout } from "../../widgets/graph-layout";
-import { Context } from "../../models/context";
-import { Size } from "../../models/size";
+import { GraphLayout } from '../../widgets/graph-layout';
+import { Context } from '../../models/context';
+import { Size } from '../../models/size';
 import { Subscription } from 'rxjs';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
@@ -15,7 +24,6 @@ import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { LayersManager } from '../../managers/layers-manager';
-
 
 @Component({
   selector: 'app-experimental-map',
@@ -29,7 +37,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
   // @Input() changed: EventEmitter<any>;
-  
+
   // @Input('node-updated') nodeUpdated: EventEmitter<any>;
 
   @Input() width = 1500;
@@ -40,7 +48,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   private changesDetected: Subscription;
 
   protected settings = {
-    'show_interface_labels': true
+    show_interface_labels: true
   };
 
   constructor(
@@ -50,11 +58,10 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
     private canvasSizeDetector: CanvasSizeDetector,
     private changeDetectorRef: ChangeDetectorRef,
     private layersManger: LayersManager,
-    public graphLayout: GraphLayout,
-    ) {
-  }
+    public graphLayout: GraphLayout
+  ) {}
 
-  @Input('show-interface-labels') 
+  @Input('show-interface-labels')
   set showInterfaceLabels(value) {
     this.settings.show_interface_labels = value;
     this.mapChangeDetectorRef.detectChanges();
@@ -72,11 +79,9 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('draw-link-tool') drawLinkTool: boolean;
 
-  @Input('readonly') set readonly(value) {
-  }
-  
-  ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
-  }
+  @Input('readonly') set readonly(value) {}
+
+  ngOnChanges(changes: { [propKey: string]: SimpleChange }) {}
 
   ngOnInit() {
     // this.changeDetectorRef.detach();
@@ -89,7 +94,6 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
 
       this.changeDetectorRef.detectChanges();
     });
-
 
     // this.changedSubscription = this.changed.subscribe(() => {
     //   this.changeDetectorRef.detectChanges();
@@ -123,9 +127,6 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
     return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
   }
 
-
   @HostListener('window:resize', ['$event'])
-  onResize(event) {
-
-  }
+  onResize(event) {}
 }

@@ -1,4 +1,4 @@
-import { DrawingElement } from "./drawings/drawing-element";
+import { DrawingElement } from './drawings/drawing-element';
 
 export class Drawing {
   drawing_id: string;

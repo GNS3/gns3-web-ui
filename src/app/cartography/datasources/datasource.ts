@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject, Subject } from 'rxjs';
 
 export abstract class DataSource<T> {
   protected data: T[] = [];
@@ -20,19 +20,20 @@ export abstract class DataSource<T> {
   }
 
   public set(data: T[]) {
-    data.forEach((item) => {
+    data.forEach(item => {
       const index = this.findIndex(item);
       if (index >= 0) {
         const updated = Object.assign(this.data[index], item);
         this.data[index] = updated;
-      }
-      else {
+      } else {
         this.data.push(item);
       }
     });
-    
-    const toRemove = this.data.filter((item) => data.filter((i) => this.getItemKey(i) === this.getItemKey(item)).length === 0);
-    toRemove.forEach((item) => this.remove(item));
+
+    const toRemove = this.data.filter(
+      item => data.filter(i => this.getItemKey(i) === this.getItemKey(item)).length === 0
+    );
+    toRemove.forEach(item => this.remove(item));
 
     this.dataChange.next(this.data);
   }

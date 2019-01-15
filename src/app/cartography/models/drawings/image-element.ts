@@ -1,5 +1,4 @@
-import { DrawingElement } from "./drawing-element";
-
+import { DrawingElement } from './drawing-element';
 
 export class ImageElement implements DrawingElement {
   height: number;

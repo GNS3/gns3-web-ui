@@ -1,11 +1,5 @@
-<svg
-  #svg
-  class="map"
-  preserveAspectRatio="none"
->
-  <filter id="grayscale">
-    <feColorMatrix id="feGrayscale" type="saturate" values="0"/>
-  </filter>
+<svg #svg class="map" preserveAspectRatio="none">
+  <filter id="grayscale"><feColorMatrix id="feGrayscale" type="saturate" values="0" /></filter>
 </svg>
 
 <app-drawing-adding [svg]="svg"></app-drawing-adding>

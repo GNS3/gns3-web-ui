@@ -1,5 +1,10 @@
-<div #temporaryTextElement id="temporaryElement" class="temporaryElement" contenteditable="true" 
-    [style.top]=topPosition 
-    [style.left]=leftPosition>
-    {{innerText}}
+<div
+  #temporaryTextElement
+  id="temporaryElement"
+  class="temporaryElement"
+  contenteditable="true"
+  [style.top]="topPosition"
+  [style.left]="leftPosition"
+>
+  {{ innerText }}
 </div>

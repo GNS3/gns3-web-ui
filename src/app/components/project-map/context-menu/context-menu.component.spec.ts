@@ -15,18 +15,11 @@ describe('ContextMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatMenuModule,
-        BrowserModule
-      ],
-      providers: [
-        { provide: ChangeDetectorRef },
-        { provide: ProjectService, useClass: MockedProjectService }
-      ],
-      declarations: [ ContextMenuComponent ],
-      schemas:  [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      imports: [MatMenuModule, BrowserModule],
+      providers: [{ provide: ChangeDetectorRef }, { provide: ProjectService, useClass: MockedProjectService }],
+      declarations: [ContextMenuComponent],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -40,8 +33,8 @@ describe('ContextMenuComponent', () => {
   });
 
   it('should reset capabilities while opening menu for node', () => {
-    component.contextMenu = { openMenu(){} } as MatMenuTrigger;
-    var spy = spyOn<any>(component, "resetCapabilities");
+    component.contextMenu = { openMenu() {} } as MatMenuTrigger;
+    var spy = spyOn<any>(component, 'resetCapabilities');
 
     component.openMenuForNode(null, 0, 0);
 
@@ -49,10 +42,10 @@ describe('ContextMenuComponent', () => {
   });
 
   it('should reset capabilities while opening menu for drawing', () => {
-    component.contextMenu = { openMenu(){} } as MatMenuTrigger;
+    component.contextMenu = { openMenu() {} } as MatMenuTrigger;
     let drawing = {} as Drawing;
     drawing.element = new RectElement();
-    var spy = spyOn<any>(component, "resetCapabilities");
+    var spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
     component.openMenuForDrawing(drawing, 0, 0);
 
@@ -60,10 +53,10 @@ describe('ContextMenuComponent', () => {
   });
 
   it('should set correct flag while drawing is text element', () => {
-    component.contextMenu = { openMenu(){} } as MatMenuTrigger;
+    component.contextMenu = { openMenu() {} } as MatMenuTrigger;
     let drawing = {} as Drawing;
     drawing.element = new TextElement();
-    var spy = spyOn<any>(component, "resetCapabilities");
+    var spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
     component.openMenuForDrawing(drawing, 0, 0);
 

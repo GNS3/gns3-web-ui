@@ -8,9 +8,8 @@ describe('D3MapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ D3MapComponent ]
-    })
-    .compileComponents();
+      declarations: [D3MapComponent]
+    }).compileComponents();
   }));
 
   // beforeEach(() => {

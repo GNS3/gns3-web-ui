@@ -12,17 +12,14 @@ export class TextComponent implements OnInit, DoCheck {
   static MARGIN = 4;
 
   @Input('app-text') text: TextElement;
-  
+
   @ViewChild('text') textRef: ElementRef;
 
   lines: string[] = [];
 
-  transformation = "";
+  transformation = '';
 
-  constructor(
-    private fontFixer: FontFixer,
-    private sanitizer: DomSanitizer
-  ) { }
+  constructor(private fontFixer: FontFixer, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
     this.lines = this.getLines(this.text.text);
@@ -31,7 +28,7 @@ export class TextComponent implements OnInit, DoCheck {
   ngDoCheck() {
     this.transformation = this.calculateTransformation();
   }
-  
+
   get style() {
     const font = this.fontFixer.fix(this.text);
 
@@ -45,7 +42,7 @@ export class TextComponent implements OnInit, DoCheck {
     if (font.font_weight) {
       styles.push(`font-weight: ${this.text.font_weight}`);
     }
-    return this.sanitizer.bypassSecurityTrustStyle(styles.join("; "));
+    return this.sanitizer.bypassSecurityTrustStyle(styles.join('; '));
   }
 
   get textDecoration() {
@@ -54,7 +51,7 @@ export class TextComponent implements OnInit, DoCheck {
 
   calculateTransformation() {
     const tspans = this.textRef.nativeElement.getElementsByTagName('tspan');
-    if(tspans.length > 0) {
+    if (tspans.length > 0) {
       const height = this.textRef.nativeElement.getBBox().height / tspans.length;
       return `translate(${TextComponent.MARGIN}, ${height - TextComponent.MARGIN})`;
     }
@@ -62,7 +59,6 @@ export class TextComponent implements OnInit, DoCheck {
   }
 
   getLines(text: string) {
-    return text.split(/\r?\n/)
+    return text.split(/\r?\n/);
   }
-
 }

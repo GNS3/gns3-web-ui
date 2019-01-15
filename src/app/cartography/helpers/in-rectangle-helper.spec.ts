@@ -1,7 +1,5 @@
-import { InRectangleHelper } from "./in-rectangle-helper";
-import { Rectangle } from "../models/rectangle";
-
-
+import { InRectangleHelper } from './in-rectangle-helper';
+import { Rectangle } from '../models/rectangle';
 
 describe('InRectangleHelper', () => {
   let inRectangleHelper: InRectangleHelper;

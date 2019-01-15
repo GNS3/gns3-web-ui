@@ -1,20 +1,21 @@
 <div mat-dialog-content>
-    <div class="example-header">
-      <mat-form-field floatPlaceholder="never">
-        <input matInput #filter placeholder="Filter templates">
-      </mat-form-field>
-    </div>
+  <div class="example-header">
+    <mat-form-field floatPlaceholder="never">
+      <input matInput #filter placeholder="Filter templates" />
+    </mat-form-field>
+  </div>
 
-    <mat-table #table [dataSource]="dataSource">
+  <mat-table #table [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <a (click)="addNode(row)" href="javascript:void(0);" class="table-link">{{ row.name }}</a>
+      </mat-cell>
+    </ng-container>
 
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-        <mat-cell *matCellDef="let row;"> <a (click)="addNode(row)" href='javascript:void(0);' class="table-link">{{row.name}}</a> </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Close</button>

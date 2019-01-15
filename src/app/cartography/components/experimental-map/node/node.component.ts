@@ -1,7 +1,17 @@
 import {
-  Component, OnInit, Input, ElementRef, 
-  ViewChild, ChangeDetectorRef, ChangeDetectionStrategy, Output,
-  EventEmitter, OnDestroy, OnChanges, AfterViewInit } from '@angular/core';
+  Component,
+  OnInit,
+  Input,
+  ElementRef,
+  ViewChild,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+  OnDestroy,
+  OnChanges,
+  AfterViewInit
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { CssFixer } from '../../../helpers/css-fixer';
@@ -26,9 +36,9 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
   @Input('app-node') node: MapNode;
   @Input('symbols') symbols: Symbol[];
   @Input('node-changed') nodeChanged: EventEmitter<Node>;
-   
+
   // @Output() valueChange = new EventEmitter<Node>();
-  
+
   nodeChangedSubscription: Subscription;
 
   private labelHeight = 0;
@@ -40,7 +50,7 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
     protected element: ElementRef,
     private cd: ChangeDetectorRef,
     private nodesEventSource: NodesEventSource
-  ) { }
+  ) {}
 
   ngOnInit() {
     // this.nodeChangedSubscription = this.nodeChanged.subscribe((node: Node) => {
@@ -72,9 +82,8 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
 
   OnDragged(evt) {
     this.cd.detectChanges();
-    this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(this.node, evt.dx, evt.dy))
+    this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(this.node, evt.dx, evt.dy));
   }
-
 
   get symbol(): string {
     const symbol = this.symbols.find((s: Symbol) => s.symbol_id === this.node.symbol);
@@ -86,7 +95,6 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
   }
 
   get label_style() {
-
     let styles = this.cssFixer.fix(this.node.label.style);
     styles = this.fontFixer.fixStyles(styles);
     return this.sanitizer.bypassSecurityTrustStyle(styles);
@@ -96,18 +104,18 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
     if (this.node.label.x === null) {
       // center
       const bbox = this.label.nativeElement.getBBox();
-     
-      return -bbox.width / 2.;
+
+      return -bbox.width / 2;
     }
     return this.node.label.x + NodeComponent.NODE_LABEL_MARGIN;
   }
 
   get label_y(): number {
     this.labelHeight = this.getLabelHeight();
-    
+
     if (this.node.label.x === null) {
       // center
-      return - this.node.height / 2. - this.labelHeight ;
+      return -this.node.height / 2 - this.labelHeight;
     }
     return this.node.label.y + this.labelHeight - NodeComponent.NODE_LABEL_MARGIN;
   }

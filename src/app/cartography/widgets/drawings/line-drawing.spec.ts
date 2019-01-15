@@ -1,15 +1,13 @@
-import { TestSVGCanvas } from "../../testing";
-import { LineDrawingWidget } from "./line-drawing";
-import { LineElement } from "../../models/drawings/line-element";
-import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
-import { MapDrawing } from "../../models/map/map-drawing";
-
+import { TestSVGCanvas } from '../../testing';
+import { LineDrawingWidget } from './line-drawing';
+import { LineElement } from '../../models/drawings/line-element';
+import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { MapDrawing } from '../../models/map/map-drawing';
 
 describe('LineDrawingWidget', () => {
   let svg: TestSVGCanvas;
   let widget: LineDrawingWidget;
   let drawing: MapDrawing;
-
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
@@ -23,9 +21,9 @@ describe('LineDrawingWidget', () => {
 
   it('should draw line drawing', () => {
     const line = new LineElement();
-    line.stroke = "#000000";
+    line.stroke = '#000000';
     line.stroke_width = 2.0;
-    line.stroke_dasharray = "5,25,25";
+    line.stroke_dasharray = '5,25,25';
     line.x1 = 10;
     line.x2 = 20;
     line.y1 = 30;
@@ -33,7 +31,10 @@ describe('LineDrawingWidget', () => {
     drawing.element = line;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
+    const drawings_enter = drawings
+      .enter()
+      .append<SVGGElement>('g')
+      .classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { MatSort, MatSortable, MatDialog } from "@angular/material";
+import { MatSort, MatSortable, MatDialog } from '@angular/material';
 
-import { DataSource } from "@angular/cdk/collections";
+import { DataSource } from '@angular/cdk/collections';
 
-import { map, switchMap } from "rxjs//operators";
-import { BehaviorSubject, Observable, merge } from "rxjs";
+import { map, switchMap } from 'rxjs//operators';
+import { BehaviorSubject, Observable, merge } from 'rxjs';
 
-import { Project } from "../../models/project";
-import { ProjectService } from "../../services/project.service";
-import { Server } from "../../models/server";
-import { ServerService } from "../../services/server.service";
-import { SettingsService, Settings } from "../../services/settings.service";
-import { ProgressService } from "../../common/progress/progress.service";
+import { Project } from '../../models/project';
+import { ProjectService } from '../../services/project.service';
+import { Server } from '../../models/server';
+import { ServerService } from '../../services/server.service';
+import { SettingsService, Settings } from '../../services/settings.service';
+import { ProgressService } from '../../common/progress/progress.service';
 
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
@@ -31,22 +31,20 @@ export class ProjectsComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private route: ActivatedRoute,
-              private serverService: ServerService,
-              private projectService: ProjectService,
-              private settingsService: SettingsService,
-              private progressService: ProgressService,
-              private dialog: MatDialog
-              ) {
-
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private serverService: ServerService,
+    private projectService: ProjectService,
+    private settingsService: SettingsService,
+    private progressService: ProgressService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.sort.sort(<MatSortable>{
-        id: 'name',
-        start: 'asc'
-      }
-    );
+      id: 'name',
+      start: 'asc'
+    });
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
 
     this.route.paramMap
@@ -65,13 +63,14 @@ export class ProjectsComponent implements OnInit {
   }
 
   refresh() {
-    this.projectService
-      .list(this.server)
-      .subscribe((projects: Project[]) => {
+    this.projectService.list(this.server).subscribe(
+      (projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
-      }, (error) => {
+      },
+      error => {
         this.progressService.setError(error);
-      });
+      }
+    );
   }
 
   delete(project: Project) {
@@ -83,44 +82,51 @@ export class ProjectsComponent implements OnInit {
   open(project: Project) {
     this.progressService.activate();
 
-    this.projectService.open(this.server, project.project_id).subscribe(() => {
-      this.refresh();
-    }, () => {}, () => {
-      this.progressService.deactivate();
-    });
+    this.projectService.open(this.server, project.project_id).subscribe(
+      () => {
+        this.refresh();
+      },
+      () => {},
+      () => {
+        this.progressService.deactivate();
+      }
+    );
   }
 
   close(project: Project) {
     this.progressService.activate();
 
-    this.projectService.close(this.server, project.project_id).subscribe(() => {
-      this.refresh();
-    }, () => {}, () => {
-      this.progressService.deactivate();
-    });
+    this.projectService.close(this.server, project.project_id).subscribe(
+      () => {
+        this.refresh();
+      },
+      () => {},
+      () => {
+        this.progressService.deactivate();
+      }
+    );
   }
 
-  addBlankProject(){
+  addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      width: '550px',
-    })
+      width: '550px'
+    });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
   }
 
-  importProject(){
+  importProject() {
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      width: '550px',
+      width: '550px'
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server; 
+    instance.server = this.server;
 
     dialogRef.afterClosed().subscribe(() => {
       this.refresh();
     });
   }
 }
-
 
 export class ProjectDatabase {
   dataChange: BehaviorSubject<Project[]> = new BehaviorSubject<Project[]>([]);
@@ -142,35 +148,32 @@ export class ProjectDatabase {
   }
 }
 
-export class ProjectDataSource extends DataSource<any> {
-
+export class ProjectDataSource extends DataSource<any> {
   constructor(private projectDatabase: ProjectDatabase, private sort: MatSort) {
     super();
   }
 
   connect(): Observable<Project[]> {
-    const displayDataChanges = [
-      this.projectDatabase.dataChange,
-      this.sort.sortChange,
-    ];
+    const displayDataChanges = [this.projectDatabase.dataChange, this.sort.sortChange];
 
-    return merge(...displayDataChanges).pipe(map(() => {
-      if (!this.sort.active || this.sort.direction === '') {
-        return this.projectDatabase.data;
-      }
+    return merge(...displayDataChanges).pipe(
+      map(() => {
+        if (!this.sort.active || this.sort.direction === '') {
+          return this.projectDatabase.data;
+        }
 
-      return this.projectDatabase.data.sort((a, b) => {
-        const propertyA = a[this.sort.active];
-        const propertyB = b[this.sort.active];
+        return this.projectDatabase.data.sort((a, b) => {
+          const propertyA = a[this.sort.active];
+          const propertyB = b[this.sort.active];
 
-        const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
-        const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
+          const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
+          const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
 
-        return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
-      });
-    }));
+          return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+        });
+      })
+    );
   }
 
   disconnect() {}
-
 }

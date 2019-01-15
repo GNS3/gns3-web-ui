@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Observable } from "rxjs/Rx";
-import { map } from "rxjs//operators";
+import { Observable } from 'rxjs/Rx';
+import { map } from 'rxjs//operators';
 
-import { Server } from "../../../models/server";
-import { VersionService } from "../../../services/version.service";
-import { Version } from "../../../models/version";
+import { Server } from '../../../models/server';
+import { VersionService } from '../../../services/version.service';
+import { Version } from '../../../models/version';
 import { forkJoin } from 'rxjs';
 import { ServerService } from '../../../services/server.service';
 import { ServerDatabase } from '../../../services/server.database';
-
 
 @Component({
   selector: 'app-server-discovery',
@@ -17,7 +16,8 @@ import { ServerDatabase } from '../../../services/server.database';
   styleUrls: ['./server-discovery.component.scss']
 })
 export class ServerDiscoveryComponent implements OnInit {
-  private defaultServers = [{
+  private defaultServers = [
+    {
       ip: '127.0.0.1',
       port: 3080
     }
@@ -40,12 +40,12 @@ export class ServerDiscoveryComponent implements OnInit {
       Observable.fromPromise(this.serverService.findAll()).pipe(map((s: Server[]) => s)),
       this.discovery()
     ).subscribe(([local, discovered]) => {
-      local.forEach((added) => {
-        discovered = discovered.filter((server) => {
+      local.forEach(added => {
+        discovered = discovered.filter(server => {
           return !(server.ip == added.ip && server.port == added.port);
         });
       });
-      if(discovered.length > 0) {
+      if (discovered.length > 0) {
         this.discoveredServer = discovered.shift();
       }
     });
@@ -54,15 +54,17 @@ export class ServerDiscoveryComponent implements OnInit {
   discovery(): Observable<Server[]> {
     const queries: Observable<Server>[] = [];
 
-    this.defaultServers.forEach((testServer) => {
-      queries.push(this.isServerAvailable(testServer.ip, testServer.port).catch((err) => {
-        return Observable.of(null);
-      }));
+    this.defaultServers.forEach(testServer => {
+      queries.push(
+        this.isServerAvailable(testServer.ip, testServer.port).catch(err => {
+          return Observable.of(null);
+        })
+      );
     });
 
-    return new Observable<Server[]>((observer) => {
-      forkJoin(queries).subscribe((discoveredServers) => {
-        observer.next(discoveredServers.filter((s) => s != null));
+    return new Observable<Server[]>(observer => {
+      forkJoin(queries).subscribe(discoveredServers => {
+        observer.next(discoveredServers.filter(s => s != null));
         observer.complete();
       });
     });
@@ -80,7 +82,7 @@ export class ServerDiscoveryComponent implements OnInit {
   }
 
   accept(server: Server) {
-    if(server.name == null) {
+    if (server.name == null) {
       server.name = server.ip;
     }
 

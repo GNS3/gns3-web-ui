@@ -7,8 +7,7 @@ import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { SnapshotService } from './snapshot.service';
 import { Snapshot } from '../models/snapshot';
-import { AppTestingModule } from "../testing/app-testing/app-testing.module";
-
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 
 describe('SnapshotService', () => {
   let httpClient: HttpClient;
@@ -19,14 +18,8 @@ describe('SnapshotService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AppTestingModule
-      ],
-      providers: [
-        HttpServer,
-        SnapshotService
-      ]
+      imports: [HttpClientTestingModule, AppTestingModule],
+      providers: [HttpServer, SnapshotService]
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -46,19 +39,17 @@ describe('SnapshotService', () => {
 
   it('should create snapshot', inject([SnapshotService], (service: SnapshotService) => {
     const snapshot = new Snapshot();
-    service.create(server, "myproject", snapshot).subscribe();
+    service.create(server, 'myproject', snapshot).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/snapshots');
-    expect(req.request.method).toEqual("POST");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/snapshots');
+    expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(snapshot);
   }));
 
   it('should list snapshots', inject([SnapshotService], (service: SnapshotService) => {
-    service.list(server, "myproject").subscribe();
+    service.list(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(
-    'http://127.0.0.1:3080/v2/projects/myproject/snapshots');
-    expect(req.request.method).toEqual("GET");
-  }))
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/snapshots');
+    expect(req.request.method).toEqual('GET');
+  }));
 });

@@ -1,18 +1,16 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 
 import { LocalServerComponent } from './local-server.component';
-import { ServerService } from "../../services/server.service";
-import { MockedServerService } from "../../services/server.service.spec";
-import { Server } from "../../models/server";
-
+import { ServerService } from '../../services/server.service';
+import { MockedServerService } from '../../services/server.service.spec';
+import { Server } from '../../models/server';
 
 describe('LocalServerComponent', () => {
   let component: LocalServerComponent;
   let fixture: ComponentFixture<LocalServerComponent>;
   let router: any;
   let serverService: any;
-
 
   beforeEach(async(() => {
     router = {
@@ -26,13 +24,9 @@ describe('LocalServerComponent', () => {
     spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
 
     TestBed.configureTestingModule({
-      providers: [
-        { provide: Router, useValue: router },
-        { provide: ServerService, useValue: serverService }
-      ],
-      declarations: [ LocalServerComponent ]
-    })
-    .compileComponents();
+      providers: [{ provide: Router, useValue: router }, { provide: ServerService, useValue: serverService }],
+      declarations: [LocalServerComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LocalServerComponent);
     component = fixture.componentInstance;

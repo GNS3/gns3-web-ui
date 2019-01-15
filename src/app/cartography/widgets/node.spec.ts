@@ -1,14 +1,12 @@
-
-import { TestSVGCanvas } from "../testing";
-import { CssFixer } from "../helpers/css-fixer";
-import { FontFixer } from "../helpers/font-fixer";
-import { NodeWidget } from "./node";
-import { MapNode } from "../models/map/map-node";
-import { MapLabel } from "../models/map/map-label";
-import { MockedGraphDataManager } from "../managers/graph-data-manager.spec";
-import { GraphDataManager } from "../managers/graph-data-manager";
-import { SelectionManager } from "../managers/selection-manager";
-
+import { TestSVGCanvas } from '../testing';
+import { CssFixer } from '../helpers/css-fixer';
+import { FontFixer } from '../helpers/font-fixer';
+import { NodeWidget } from './node';
+import { MapNode } from '../models/map/map-node';
+import { MapLabel } from '../models/map/map-label';
+import { MockedGraphDataManager } from '../managers/graph-data-manager.spec';
+import { GraphDataManager } from '../managers/graph-data-manager';
+import { SelectionManager } from '../managers/selection-manager';
 
 describe('NodesWidget', () => {
   let svg: TestSVGCanvas;
@@ -39,13 +37,17 @@ describe('NodesWidget', () => {
 
       drewNode.dispatchEvent(
         new MouseEvent('mousedown', {
-          clientX: 150, clientY: 250, relatedTarget: drewNode,
-          screenY: 1024, screenX: 1024, view: window
+          clientX: 150,
+          clientY: 250,
+          relatedTarget: drewNode,
+          screenY: 1024,
+          screenX: 1024,
+          view: window
         })
       );
 
-      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 300, clientY: 300}));
-      window.dispatchEvent(new MouseEvent('mouseup', {clientX: 300, clientY: 300, view: window}));
+      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 300, clientY: 300 }));
+      window.dispatchEvent(new MouseEvent('mouseup', { clientX: 300, clientY: 300, view: window }));
     };
 
     beforeEach(() => {
@@ -76,6 +78,5 @@ describe('NodesWidget', () => {
     //   expect(node.x).toEqual(100);
     //   expect(node.y).toEqual(200);
     // });
-
   });
 });

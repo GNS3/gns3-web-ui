@@ -1,5 +1,5 @@
-import { MapLink } from "../../../../models/map/map-link";
+import { MapLink } from '../../../../models/map/map-link';
 
 export interface LinkStrategy {
-    d(link: MapLink): string;
+  d(link: MapLink): string;
 }

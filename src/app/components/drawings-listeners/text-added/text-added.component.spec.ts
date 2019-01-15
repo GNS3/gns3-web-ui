@@ -1,4 +1,4 @@
-import { TextAddedComponent } from "./text-added.component";
+import { TextAddedComponent } from './text-added.component';
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { DrawingService } from '../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -16,48 +16,49 @@ import { LineElementFactory } from '../../../cartography/helpers/drawings-factor
 import { Project } from '../../../models/project';
 
 describe('TextAddedComponent', () => {
-    let component: TextAddedComponent;
-    let fixture: ComponentFixture<TextAddedComponent>;
-    let mockedDrawingService = new MockedDrawingService;
-    let mockedDrawingsDataSource = new MockedDrawingsDataSource;
-    let mockedDrawingsEventSource = new DrawingsEventSource;
-    let mockedDrawingsFactory = new DefaultDrawingsFactory(new TextElementFactory,
-        new EllipseElementFactory, new RectangleElementFactory, new LineElementFactory);
+  let component: TextAddedComponent;
+  let fixture: ComponentFixture<TextAddedComponent>;
+  let mockedDrawingService = new MockedDrawingService();
+  let mockedDrawingsDataSource = new MockedDrawingsDataSource();
+  let mockedDrawingsEventSource = new DrawingsEventSource();
+  let mockedDrawingsFactory = new DefaultDrawingsFactory(
+    new TextElementFactory(),
+    new EllipseElementFactory(),
+    new RectangleElementFactory(),
+    new LineElementFactory()
+  );
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            providers: [
-                { provide: DrawingService, useValue: mockedDrawingService },
-                { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
-                { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
-                { provide: DefaultDrawingsFactory, useValue: mockedDrawingsFactory },
-                { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
-                { provide: Context, useClass: Context}
-            ],
-            declarations: [
-                TextAddedComponent
-            ]
-        })
-        .compileComponents();
-    }));
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DrawingService, useValue: mockedDrawingService },
+        { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
+        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
+        { provide: DefaultDrawingsFactory, useValue: mockedDrawingsFactory },
+        { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
+        { provide: Context, useClass: Context }
+      ],
+      declarations: [TextAddedComponent]
+    }).compileComponents();
+  }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(TextAddedComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TextAddedComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-    it('should call drawing service when text added', () => {
-        component.project = { project_id: "sampleId" } as Project;
-        const textAddedDataEvent = new TextAddedDataEvent("savedText", 0 ,0);
-        spyOn(mockedDrawingService, 'add').and.returnValue( Observable.of({}));
+  it('should call drawing service when text added', () => {
+    component.project = { project_id: 'sampleId' } as Project;
+    const textAddedDataEvent = new TextAddedDataEvent('savedText', 0, 0);
+    spyOn(mockedDrawingService, 'add').and.returnValue(Observable.of({}));
 
-        mockedDrawingsEventSource.textAdded.emit(textAddedDataEvent);
+    mockedDrawingsEventSource.textAdded.emit(textAddedDataEvent);
 
-        expect(mockedDrawingService.add).toHaveBeenCalled();
-    });
+    expect(mockedDrawingService.add).toHaveBeenCalled();
+  });
 });
