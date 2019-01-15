@@ -1,22 +1,21 @@
-import { SvgConverter } from "./svg-converter";
-import { LineElement } from "../../models/drawings/line-element";
-
+import { SvgConverter } from './svg-converter';
+import { LineElement } from '../../models/drawings/line-element';
 
 export class LineConverter implements SvgConverter {
   convert(element: Element): LineElement {
     const drawing = new LineElement();
 
-    const stroke = element.attributes.getNamedItem("stroke");
+    const stroke = element.attributes.getNamedItem('stroke');
     if (stroke) {
       drawing.stroke = stroke.value;
     }
 
-    const stroke_width = element.attributes.getNamedItem("stroke-width");
+    const stroke_width = element.attributes.getNamedItem('stroke-width');
     if (stroke) {
       drawing.stroke_width = parseInt(stroke_width.value, 10);
     }
 
-    const stroke_dasharray = element.attributes.getNamedItem("stroke-dasharray");
+    const stroke_dasharray = element.attributes.getNamedItem('stroke-dasharray');
     if (stroke_dasharray) {
       drawing.stroke_dasharray = stroke_dasharray.value;
     }

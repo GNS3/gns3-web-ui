@@ -2,7 +2,7 @@ import * as Raven from 'raven-js';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CdkTableModule } from "@angular/cdk/table";
+import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,20 +16,20 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { VersionService } from './services/version.service';
 import { ProjectService } from './services/project.service';
-import { SymbolService } from "./services/symbol.service";
-import { ServerService } from "./services/server.service";
-import { IndexedDbService } from "./services/indexed-db.service";
-import { HttpServer, ServerErrorHandler } from "./services/http-server.service";
-import { SnapshotService } from "./services/snapshot.service";
-import { ProgressDialogService } from "./common/progress-dialog/progress-dialog.service";
-import { NodeService } from "./services/node.service";
-import { TemplateService } from "./services/template.service";
-import { LinkService } from "./services/link.service";
+import { SymbolService } from './services/symbol.service';
+import { ServerService } from './services/server.service';
+import { IndexedDbService } from './services/indexed-db.service';
+import { HttpServer, ServerErrorHandler } from './services/http-server.service';
+import { SnapshotService } from './services/snapshot.service';
+import { ProgressDialogService } from './common/progress-dialog/progress-dialog.service';
+import { NodeService } from './services/node.service';
+import { TemplateService } from './services/template.service';
+import { LinkService } from './services/link.service';
 
 import { ProjectsComponent } from './components/projects/projects.component';
 import { AddBlankProjectDialogComponent } from './components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ImportProjectDialogComponent } from './components/projects/import-project-dialog/import-project-dialog.component';
-import { ConfirmationDialogComponent} from './components/projects/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from './components/projects/confirmation-dialog/confirmation-dialog.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ProgressDialogComponent } from './common/progress-dialog/progress-dialog.component';
 import { AppComponent } from './app.component';
@@ -43,28 +43,28 @@ import { TemplateComponent } from './components/template/template.component';
 import { TemplateListDialogComponent } from './components/template/template-list-dialog/template-list-dialog.component';
 import { CartographyModule } from './cartography/cartography.module';
 import { ToasterService } from './services/toaster.service';
-import { ProjectWebServiceHandler } from "./handlers/project-web-service-handler";
-import { LinksDataSource } from "./cartography/datasources/links-datasource";
-import { NodesDataSource } from "./cartography/datasources/nodes-datasource";
-import { SymbolsDataSource } from "./cartography/datasources/symbols-datasource";
-import { SelectionManager } from "./cartography/managers/selection-manager";
-import { InRectangleHelper } from "./cartography/helpers/in-rectangle-helper";
-import { DrawingsDataSource } from "./cartography/datasources/drawings-datasource";
+import { ProjectWebServiceHandler } from './handlers/project-web-service-handler';
+import { LinksDataSource } from './cartography/datasources/links-datasource';
+import { NodesDataSource } from './cartography/datasources/nodes-datasource';
+import { SymbolsDataSource } from './cartography/datasources/symbols-datasource';
+import { SelectionManager } from './cartography/managers/selection-manager';
+import { InRectangleHelper } from './cartography/helpers/in-rectangle-helper';
+import { DrawingsDataSource } from './cartography/datasources/drawings-datasource';
 import { EditStyleActionComponent } from './components/project-map/context-menu/actions/edit-style-action/edit-style-action.component';
 import { MoveLayerDownActionComponent } from './components/project-map/context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from './components/project-map/context-menu/actions/move-layer-up-action/move-layer-up-action.component';
 import { ProjectMapShortcutsComponent } from './components/project-map/project-map-shortcuts/project-map-shortcuts.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { SettingsService } from "./services/settings.service";
+import { SettingsService } from './services/settings.service';
 
 import { LocalServerComponent } from './components/local-server/local-server.component';
 import { ProgressComponent } from './common/progress/progress.component';
-import { ProgressService } from "./common/progress/progress.service";
-import { version } from "./version";
-import { ToasterErrorHandler } from "./common/error-handlers/toaster-error-handler";
-import { environment } from "../environments/environment";
-import { RavenState } from "./common/error-handlers/raven-state-communicator";
-import { ServerDiscoveryComponent } from "./components/servers/server-discovery/server-discovery.component";
+import { ProgressService } from './common/progress/progress.service';
+import { version } from './version';
+import { ToasterErrorHandler } from './common/error-handlers/toaster-error-handler';
+import { environment } from '../environments/environment';
+import { RavenState } from './common/error-handlers/raven-state-communicator';
+import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
 import { ServerDatabase } from './services/server.database';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
 import { SnapshotsComponent } from './components/snapshots/snapshots.component';
@@ -89,18 +89,14 @@ import { StyleEditorDialogComponent } from './components/project-map/drawings-ed
 import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
 
-
 if (environment.production) {
-  Raven
-    .config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
-      shouldSendCallback: () => {
-        return RavenState.shouldSend;
-      },
-      release: version
-    })
-    .install();
+  Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
+    shouldSendCallback: () => {
+      return RavenState.shouldSend;
+    },
+    release: version
+  }).install();
 }
-
 
 @NgModule({
   declarations: [
@@ -202,6 +198,6 @@ if (environment.production) {
     StyleEditorDialogComponent,
     TextEditorDialogComponent
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

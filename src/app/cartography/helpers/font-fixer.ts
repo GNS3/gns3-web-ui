@@ -1,16 +1,15 @@
 import * as csstree from 'css-tree';
-import { Injectable } from "@angular/core";
-import { Font } from "../models/font";
-
+import { Injectable } from '@angular/core';
+import { Font } from '../models/font';
 
 /**
  * GNS3 GUI doesn't update font when cannot find font in user system, this fixer fixes it
  */
 @Injectable()
 export class FontFixer {
-  static DEFAULT_FONT = "TypeWriter";
+  static DEFAULT_FONT = 'TypeWriter';
   static DEFAULT_SIZE = 10;
-  static REPLACE_BY_FONT = "Noto Sans";
+  static REPLACE_BY_FONT = 'Noto Sans';
   static REPLACE_BY_SIZE = 11;
 
   public fix(font: Font): Font {
@@ -22,17 +21,17 @@ export class FontFixer {
   }
 
   public fixStyles(styles: string) {
-   const ast = csstree.parse(styles, {
-      'context': 'declarationList'
+    const ast = csstree.parse(styles, {
+      context: 'declarationList'
     });
 
     let fontFamilyPointer = null;
     let fontSizePointer = null;
     let isByIdentifier = true;
 
-    ast.children.forEach((child) => {
+    ast.children.forEach(child => {
       if (child.property === 'font-family') {
-        child.value.children.forEach((value) => {
+        child.value.children.forEach(value => {
           if (value.type === 'Identifier') {
             fontFamilyPointer = value;
           }
@@ -43,7 +42,7 @@ export class FontFixer {
         });
       }
       if (child.property === 'font-size') {
-        child.value.children.forEach((value) => {
+        child.value.children.forEach(value => {
           if (value.type === 'Dimension') {
             fontSizePointer = value;
           }
@@ -62,8 +61,8 @@ export class FontFixer {
       }
 
       const fixedFont = this.fix({
-        'font_family': fontFamilyValue.split('"').join(''),
-        'font_size': parseInt(fontSizeValue, 10),
+        font_family: fontFamilyValue.split('"').join(''),
+        font_size: parseInt(fontSizeValue, 10)
       } as Font);
 
       if (isByIdentifier) {

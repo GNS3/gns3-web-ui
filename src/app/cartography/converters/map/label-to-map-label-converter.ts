@@ -1,12 +1,11 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-import { Converter } from "../converter";
-import { Label } from "../../models/label";
-import { MapLabel } from "../../models/map/map-label";
+import { Converter } from '../converter';
+import { Label } from '../../models/label';
+import { MapLabel } from '../../models/map/map-label';
 import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
 import { CssFixer } from '../../helpers/css-fixer';
 import { FontFixer } from '../../helpers/font-fixer';
-
 
 @Injectable()
 export class LabelToMapLabelConverter implements Converter<Label, MapLabel> {
@@ -15,7 +14,7 @@ export class LabelToMapLabelConverter implements Converter<Label, MapLabel> {
     private cssFixer: CssFixer,
     private fontFixer: FontFixer
   ) {}
-  convert(label: Label, paramaters?: {[node_id: string]: string}) {
+  convert(label: Label, paramaters?: { [node_id: string]: string }) {
     const mapLabel = new MapLabel();
     mapLabel.rotation = label.rotation;
     mapLabel.style = label.style;
@@ -33,7 +32,7 @@ export class LabelToMapLabelConverter implements Converter<Label, MapLabel> {
     const fixedCss = this.cssFixer.fix(mapLabel.style);
     const fixedFont = this.fontFixer.fixStyles(fixedCss);
     const box = this.fontBBoxCalculator.calculate(mapLabel.text, fixedFont);
-    
+
     if (mapLabel.x !== null) {
       mapLabel.x += 3;
     }

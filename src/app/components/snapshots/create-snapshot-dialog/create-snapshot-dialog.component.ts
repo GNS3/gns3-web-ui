@@ -8,13 +8,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./create-snapshot-dialog.component.scss']
 })
 export class CreateSnapshotDialogComponent {
-
   snapshot: Snapshot = new Snapshot();
 
   constructor(
     public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-  }
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 
   onAddClick(): void {
     this.dialogRef.close(this.snapshot);

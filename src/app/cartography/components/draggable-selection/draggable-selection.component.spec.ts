@@ -22,7 +22,6 @@ import { MapLinkNode } from '../../models/map/map-link-node';
 import { select } from 'd3-selection';
 import { MapLink } from '../../models/map/map-link';
 
-
 describe('DraggableSelectionComponent', () => {
   let component: DraggableSelectionComponent;
   let fixture: ComponentFixture<DraggableSelectionComponent>;
@@ -62,7 +61,7 @@ describe('DraggableSelectionComponent', () => {
     interfaceLabelDragEventEmitter = new EventEmitter<DraggableDrag<MapLinkNode>>();
     interfaceLabelEndEventEmitter = new EventEmitter<DraggableEnd<MapLinkNode>>();
 
-    const nodesWidgetStub = { 
+    const nodesWidgetStub = {
       redrawNode: () => {},
       draggable: {
         start: nodesStartEventEmitter,
@@ -71,7 +70,7 @@ describe('DraggableSelectionComponent', () => {
       }
     };
 
-    const drawingsWidgetStub = { 
+    const drawingsWidgetStub = {
       redrawDrawing: () => {},
       draggable: {
         start: drawingsStartEventEmitter,
@@ -80,7 +79,7 @@ describe('DraggableSelectionComponent', () => {
       }
     };
     const linksWidgetStub = {
-      redrawLink: () => {},
+      redrawLink: () => {}
     };
 
     const labelWidgetStub = {
@@ -91,7 +90,7 @@ describe('DraggableSelectionComponent', () => {
         end: labelEndEventEmitter
       }
     };
-    
+
     const interfaceLabelWidgetStub = {
       draggable: {
         start: interfaceLabelStartEventEmitter,
@@ -101,14 +100,14 @@ describe('DraggableSelectionComponent', () => {
     };
 
     const nodesEventSourceStub = {
-      dragged: { emit: () => {}},
-      labelDragged: { emit: () => {}}
+      dragged: { emit: () => {} },
+      labelDragged: { emit: () => {} }
     };
     const drawingsEventSourceStub = {
-      dragged: { emit: () => {}}
+      dragged: { emit: () => {} }
     };
     const linksEventSourceStub = {
-      interfaceDragged: { emit: () => {}}
+      interfaceDragged: { emit: () => {} }
     };
 
     TestBed.configureTestingModule({
@@ -122,11 +121,10 @@ describe('DraggableSelectionComponent', () => {
         { provide: NodesEventSource, useValue: nodesEventSourceStub },
         { provide: DrawingsEventSource, useValue: drawingsEventSourceStub },
         { provide: GraphDataManager, useValue: mockedGraphDataManager },
-        { provide: LinksEventSource, useValue: linksEventSourceStub },
+        { provide: LinksEventSource, useValue: linksEventSourceStub }
       ],
-      declarations: [ DraggableSelectionComponent ]
-    })
-    .compileComponents();
+      declarations: [DraggableSelectionComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -151,7 +149,7 @@ describe('DraggableSelectionComponent', () => {
       linksWidgetStub = fixture.debugElement.injector.get(LinksWidget);
       selectionManagerStub = fixture.debugElement.injector.get(SelectionManager);
       node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       node.x = 1;
       node.y = 2;
     });
@@ -237,7 +235,7 @@ describe('DraggableSelectionComponent', () => {
       drawingsWidgetStub = fixture.debugElement.injector.get(DrawingsWidget);
       selectionManagerStub = fixture.debugElement.injector.get(SelectionManager);
       drawing = new MapDrawing();
-      drawing.id = "drawingid";
+      drawing.id = 'drawingid';
       drawing.x = 1;
       drawing.y = 2;
     });
@@ -297,7 +295,7 @@ describe('DraggableSelectionComponent', () => {
       labelWidgetStub = fixture.debugElement.injector.get(LabelWidget);
       selectionManagerStub = fixture.debugElement.injector.get(SelectionManager);
       label = new MapLabel();
-      label.id = "labelid";
+      label.id = 'labelid';
       label.x = 1;
       label.y = 2;
     });
@@ -319,7 +317,7 @@ describe('DraggableSelectionComponent', () => {
       spyOn(labelWidgetStub, 'redrawLabel');
       selectionManagerStub.setSelected([label]);
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       node.label = label;
       label.nodeId = node.id;
 
@@ -339,7 +337,7 @@ describe('DraggableSelectionComponent', () => {
     it('should not update label position when dragging and parent is selected', fakeAsync(() => {
       spyOn(labelWidgetStub, 'redrawLabel');
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       node.label = label;
       label.nodeId = node.id;
 
@@ -356,7 +354,6 @@ describe('DraggableSelectionComponent', () => {
       expect(label.x).toEqual(1);
       expect(label.y).toEqual(2);
     }));
-
 
     it('should emit event when label stopped dragging', fakeAsync(() => {
       const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
@@ -379,7 +376,7 @@ describe('DraggableSelectionComponent', () => {
       const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
       spyOn(nodesEventSourceStub.labelDragged, 'emit');
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       label.nodeId = node.id;
 
       selectionManagerStub.setSelected([label, node]);
@@ -407,7 +404,7 @@ describe('DraggableSelectionComponent', () => {
       linkNode.label = new MapLabel();
       linkNode.label.x = 1;
       linkNode.label.y = 2;
-      linkNode.id = "linknodeid";
+      linkNode.id = 'linknodeid';
     });
 
     it('should select interface label when started dragging', fakeAsync(() => {
@@ -427,14 +424,14 @@ describe('DraggableSelectionComponent', () => {
       spyOn(linksWidgetStub, 'redrawLink');
       selectionManagerStub.setSelected([linkNode]);
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       linkNode.nodeId = node.id;
 
       const secondLinkNode = new MapLinkNode();
       secondLinkNode.label = new MapLabel();
       secondLinkNode.label.x = 1;
       secondLinkNode.label.y = 2;
-      secondLinkNode.id = "secondlinknodeid";
+      secondLinkNode.id = 'secondlinknodeid';
 
       const link = new MapLink();
       link.nodes = [linkNode, secondLinkNode];
@@ -456,14 +453,14 @@ describe('DraggableSelectionComponent', () => {
       spyOn(linksWidgetStub, 'redrawLink');
       selectionManagerStub.setSelected([linkNode]);
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       linkNode.nodeId = node.id;
 
       const secondLinkNode = new MapLinkNode();
       secondLinkNode.label = new MapLabel();
       secondLinkNode.label.x = 1;
       secondLinkNode.label.y = 2;
-      secondLinkNode.id = "secondlinknodeid";
+      secondLinkNode.id = 'secondlinknodeid';
 
       const link = new MapLink();
       link.nodes = [secondLinkNode, linkNode];
@@ -484,7 +481,7 @@ describe('DraggableSelectionComponent', () => {
     it('should not update interface label position when dragging and parent node is selected', fakeAsync(() => {
       spyOn(linksWidgetStub, 'redrawLink');
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       linkNode.nodeId = node.id;
 
       selectionManagerStub.setSelected([linkNode, node]);
@@ -493,7 +490,7 @@ describe('DraggableSelectionComponent', () => {
       secondLinkNode.label = new MapLabel();
       secondLinkNode.label.x = 1;
       secondLinkNode.label.y = 2;
-      secondLinkNode.id = "secondlinknodeid";
+      secondLinkNode.id = 'secondlinknodeid';
 
       const link = new MapLink();
       link.nodes = [linkNode, secondLinkNode];
@@ -533,7 +530,7 @@ describe('DraggableSelectionComponent', () => {
       spyOn(linksEventSourceStub.interfaceDragged, 'emit');
 
       const node = new MapNode();
-      node.id = "nodeid";
+      node.id = 'nodeid';
       linkNode.nodeId = node.id;
 
       selectionManagerStub.setSelected([linkNode, node]);

@@ -1,17 +1,22 @@
-import { Injectable } from "@angular/core";
-import { Node } from "../models/node";
-import { NodeToMapNodeConverter } from "../converters/map/node-to-map-node-converter";
-import { LinkToMapLinkConverter } from "../converters/map/link-to-map-link-converter";
-import { DrawingToMapDrawingConverter } from "../converters/map/drawing-to-map-drawing-converter";
-import { SymbolToMapSymbolConverter } from "../converters/map/symbol-to-map-symbol-converter";
-import { MapNode } from "../models/map/map-node";
-import { MapLink } from "../models/map/map-link";
-import { Link } from "../../models/link";
-import { Drawing } from "../models/drawing";
-import { Symbol } from "../../models/symbol";
-import { LayersManager } from "./layers-manager";
-import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from "../datasources/map-datasource";
-import { MultiLinkCalculatorHelper } from "../helpers/multi-link-calculator-helper";
+import { Injectable } from '@angular/core';
+import { Node } from '../models/node';
+import { NodeToMapNodeConverter } from '../converters/map/node-to-map-node-converter';
+import { LinkToMapLinkConverter } from '../converters/map/link-to-map-link-converter';
+import { DrawingToMapDrawingConverter } from '../converters/map/drawing-to-map-drawing-converter';
+import { SymbolToMapSymbolConverter } from '../converters/map/symbol-to-map-symbol-converter';
+import { MapNode } from '../models/map/map-node';
+import { MapLink } from '../models/map/map-link';
+import { Link } from '../../models/link';
+import { Drawing } from '../models/drawing';
+import { Symbol } from '../../models/symbol';
+import { LayersManager } from './layers-manager';
+import {
+  MapNodesDataSource,
+  MapLinksDataSource,
+  MapDrawingsDataSource,
+  MapSymbolsDataSource
+} from '../datasources/map-datasource';
+import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 
 @Injectable()
 export class GraphDataManager {
@@ -29,7 +34,7 @@ export class GraphDataManager {
   ) {}
 
   public setNodes(nodes: Node[]) {
-    const mapNodes = nodes.map((n) => this.nodeToMapNode.convert(n));
+    const mapNodes = nodes.map(n => this.nodeToMapNode.convert(n));
     this.mapNodesDataSource.set(mapNodes);
 
     this.assignDataToLinks();
@@ -37,7 +42,7 @@ export class GraphDataManager {
   }
 
   public setLinks(links: Link[]) {
-    const mapLinks = links.map((l) => this.linkToMapLink.convert(l));
+    const mapLinks = links.map(l => this.linkToMapLink.convert(l));
     this.mapLinksDataSource.set(mapLinks);
 
     this.assignDataToLinks();
@@ -45,14 +50,14 @@ export class GraphDataManager {
   }
 
   public setDrawings(drawings: Drawing[]) {
-    const mapDrawings = drawings.map((d) => this.drawingToMapDrawing.convert(d));
+    const mapDrawings = drawings.map(d => this.drawingToMapDrawing.convert(d));
     this.mapDrawingsDataSource.set(mapDrawings);
 
     this.onDataUpdate();
   }
 
   public setSymbols(symbols: Symbol[]) {
-    const mapSymbols = symbols.map((s) => this.symbolToMapSymbol.convert(s));
+    const mapSymbols = symbols.map(s => this.symbolToMapSymbol.convert(s));
     this.mapSymbolsDataSource.set(mapSymbols);
   }
 
@@ -103,5 +108,4 @@ export class GraphDataManager {
 
     this.multiLinkCalculator.assignDataToLinks(this.getLinks());
   }
-
 }

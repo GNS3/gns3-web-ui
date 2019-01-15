@@ -11,11 +11,8 @@ import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 export class SelectionSelectComponent implements OnInit, OnDestroy {
   private onSelected: Subscription;
   private onUnselected: Subscription;
-  
-  constructor(
-    private selectionManager: SelectionManager,
-    private mapChangeDetectorRef: MapChangeDetectorRef
-  ) { }
+
+  constructor(private selectionManager: SelectionManager, private mapChangeDetectorRef: MapChangeDetectorRef) {}
 
   ngOnInit() {
     this.onSelected = this.selectionManager.selected.subscribe(() => {
@@ -30,5 +27,4 @@ export class SelectionSelectComponent implements OnInit, OnDestroy {
     this.onSelected.unsubscribe();
     this.onUnselected.unsubscribe();
   }
-
 }

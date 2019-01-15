@@ -1,14 +1,12 @@
-<svg:text #text
+<svg:text
+  #text
   class="text_element noselect"
   [attr.style]="style"
   [attr.text-decoration]="textDecoration"
   [attr.fill]="text.fill"
   [attr.transform]="transformation"
 >
-  <svg:tspan
-    *ngFor="let line of lines; index as i"
-    xml:space="preserve"
-    x="0"
-    [attr.dy]="i == 0 ? '0em' : '1.4em'"
-  >{{line}}</svg:tspan>
+  <svg:tspan *ngFor="let line of lines; index as i" xml:space="preserve" x="0" [attr.dy]="i == 0 ? '0em' : '1.4em'">
+    {{ line }}
+  </svg:tspan>
 </svg:text>

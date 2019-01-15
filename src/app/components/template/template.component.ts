@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatDialog} from "@angular/material";
-import {TemplateListDialogComponent} from "./template-list-dialog/template-list-dialog.component";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 
-import {Server} from "../../models/server";
-import {Template} from "../../models/template";
+import { Server } from '../../models/server';
+import { Template } from '../../models/template';
 
 @Component({
   selector: 'app-template',
@@ -14,7 +14,7 @@ export class TemplateComponent implements OnInit {
   @Input() server: Server;
   @Output() onNodeCreation = new EventEmitter<any>();
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit() {}
 
@@ -23,7 +23,7 @@ export class TemplateComponent implements OnInit {
       width: '600px',
       height: '560px',
       data: {
-        'server': this.server
+        server: this.server
       }
     });
 

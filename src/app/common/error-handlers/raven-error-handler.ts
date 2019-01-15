@@ -1,9 +1,8 @@
-import { ErrorHandler, Inject, Injector } from "@angular/core";
+import { ErrorHandler, Inject, Injector } from '@angular/core';
 
-import { SettingsService } from "../../services/settings.service";
-import { environment } from "../../../environments/environment";
-import { RavenState } from "./raven-state-communicator";
-
+import { SettingsService } from '../../services/settings.service';
+import { environment } from '../../../environments/environment';
+import { RavenState } from './raven-state-communicator';
 
 export class RavenErrorHandler implements ErrorHandler {
   constructor(@Inject(Injector) protected injector: Injector) {}

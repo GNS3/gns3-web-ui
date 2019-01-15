@@ -16,23 +16,22 @@ describe('SelectionControlComponent', () => {
   let selectionEventSource: SelectionEventSource;
 
   beforeEach(() => {
-
     const mockedGraphData = mock(GraphDataManager);
 
     const node_1 = new MapNode();
-    node_1.id = "test1";
-    node_1.name = "Node 1";
+    node_1.id = 'test1';
+    node_1.name = 'Node 1';
     node_1.x = 150;
     node_1.y = 150;
 
     const node_2 = new MapNode();
-    node_2.id = "test2";
-    node_2.name = "Node 2";
+    node_2.id = 'test2';
+    node_2.name = 'Node 2';
     node_2.x = 300;
     node_2.y = 300;
 
     const link_1 = new MapLink();
-    link_1.id = "test1";
+    link_1.id = 'test1';
 
     when(mockedGraphData.getNodes()).thenReturn([node_1, node_2]);
     when(mockedGraphData.getLinks()).thenReturn([link_1]);
@@ -50,7 +49,7 @@ describe('SelectionControlComponent', () => {
 
   afterEach(() => {
     component.ngOnDestroy();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

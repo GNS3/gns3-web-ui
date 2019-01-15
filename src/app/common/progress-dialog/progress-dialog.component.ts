@@ -1,6 +1,5 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-progress-dialog',
@@ -12,17 +11,11 @@ export class ProgressDialogComponent implements OnInit {
 
   public value: 50;
 
-  constructor(
-    public dialogRef: MatDialogRef<ProgressDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-  }
-
+  constructor(public dialogRef: MatDialogRef<ProgressDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   onCancelClick(): void {
     this.dialogRef.close(ProgressDialogComponent.CANCELLED);
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

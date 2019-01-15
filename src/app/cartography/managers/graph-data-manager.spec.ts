@@ -30,7 +30,7 @@ export class MockedGraphDataManager {
 
   public setSymbols(value) {
     this.symbols = value;
-  } 
+  }
 
   public getSymbols() {
     return this.symbols;

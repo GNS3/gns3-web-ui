@@ -7,11 +7,9 @@ import { ImageElement } from '../../../../../models/drawings/image-element';
   styleUrls: ['./image.component.scss']
 })
 export class ImageComponent implements OnInit {
-
   @Input('app-image') image: ImageElement;
-  
-  constructor() { }
 
-  ngOnInit() {
-  }
+  constructor() {}
+
+  ngOnInit() {}
 }

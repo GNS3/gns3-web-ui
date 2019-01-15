@@ -1,5 +1,4 @@
-import { DrawingElement } from "./drawing-element";
-
+import { DrawingElement } from './drawing-element';
 
 export class EllipseElement implements DrawingElement {
   height: number;

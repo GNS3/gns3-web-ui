@@ -24,13 +24,13 @@ export class SnapshotMenuItemComponent implements OnInit {
     private snapshotService: SnapshotService,
     private progressDialogService: ProgressDialogService,
     private toaster: ToasterService
-  ) { }
+  ) {}
 
   ngOnInit() {}
 
   public createSnapshotModal() {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
-      width: '250px',
+      width: '250px'
     });
 
     dialogRef.afterClosed().subscribe(snapshot => {
@@ -39,16 +39,19 @@ export class SnapshotMenuItemComponent implements OnInit {
 
         const progress = this.progressDialogService.open();
 
-        const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
-          progress.close();
-        }, (response) => {
-          const error = response.json();
-          this.toaster.error(`Cannot create snapshot: ${error.message}`);
-          progress.close();
-        });
+        const subscription = creation.subscribe(
+          (created_snapshot: Snapshot) => {
+            this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
+            progress.close();
+          },
+          response => {
+            const error = response.json();
+            this.toaster.error(`Cannot create snapshot: ${error.message}`);
+            progress.close();
+          }
+        );
 
-        progress.afterClosed().subscribe((result) => {
+        progress.afterClosed().subscribe(result => {
           if (result === ProgressDialogComponent.CANCELLED) {
             subscription.unsubscribe();
           }
@@ -56,5 +59,4 @@ export class SnapshotMenuItemComponent implements OnInit {
       }
     });
   }
-
 }

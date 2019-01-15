@@ -1,15 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatExpansionModule } from "@angular/material";
-import { FormsModule } from "@angular/forms";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatCheckboxModule, MatExpansionModule } from '@angular/material';
+import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { PersistenceModule } from "angular-persistence";
+import { PersistenceModule } from 'angular-persistence';
 
 import { SettingsComponent } from './settings.component';
-import { SettingsService } from "../../services/settings.service";
-import { ToasterService } from "../../services/toaster.service";
-import { MockedToasterService } from "../../services/toaster.service.spec";
-
+import { SettingsService } from '../../services/settings.service';
+import { ToasterService } from '../../services/toaster.service';
+import { MockedToasterService } from '../../services/toaster.service.spec';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -18,16 +17,10 @@ describe('SettingsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatExpansionModule, MatCheckboxModule, FormsModule,
-        PersistenceModule, BrowserAnimationsModule ],
-      providers: [
-        SettingsService,
-        { provide: ToasterService, useClass: MockedToasterService }
-      ],
-      declarations: [ SettingsComponent ]
-    })
-    .compileComponents();
+      imports: [MatExpansionModule, MatCheckboxModule, FormsModule, PersistenceModule, BrowserAnimationsModule],
+      providers: [SettingsService, { provide: ToasterService, useClass: MockedToasterService }],
+      declarations: [SettingsComponent]
+    }).compileComponents();
 
     settingsService = TestBed.get(SettingsService);
   }));
@@ -44,9 +37,9 @@ describe('SettingsComponent', () => {
 
   it('should get and save new settings', () => {
     const settings = {
-      'crash_reports': true,
-      'experimental_features': true,
-      'angular_map': false
+      crash_reports: true,
+      experimental_features: true,
+      angular_map: false
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');
@@ -57,6 +50,4 @@ describe('SettingsComponent', () => {
     component.save();
     expect(setAll).toHaveBeenCalledWith(settings);
   });
-
-
 });

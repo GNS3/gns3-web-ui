@@ -8,9 +8,8 @@ describe('StopNodeActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StopNodeActionComponent ]
-    })
-    .compileComponents();
+      declarations: [StopNodeActionComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

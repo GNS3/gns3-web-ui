@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingService } from '../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -12,45 +12,50 @@ import { Project } from '../../../models/project';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Context } from '../../../cartography/models/context';
 
-
 @Component({
-    selector: 'app-text-added',
-    templateUrl: './text-added.component.html',
-    styleUrls: ['./text-added.component.css']
+  selector: 'app-text-added',
+  templateUrl: './text-added.component.html',
+  styleUrls: ['./text-added.component.css']
 })
-export class TextAddedComponent implements OnInit, OnDestroy{
-    @Input() server: Server;
-    @Input() project: Project;
-    @Output() drawingSaved = new EventEmitter<boolean>();
-    private textAdded: Subscription;
+export class TextAddedComponent implements OnInit, OnDestroy {
+  @Input() server: Server;
+  @Input() project: Project;
+  @Output() drawingSaved = new EventEmitter<boolean>();
+  private textAdded: Subscription;
 
-    constructor(
-        private drawingService: DrawingService,
-        private drawingsDataSource: DrawingsDataSource,
-        private drawingsEventSource: DrawingsEventSource,
-        private drawingsFactory: DefaultDrawingsFactory,
-        private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-        private context: Context
-    ){}
-    
-    ngOnInit(){
-        this.textAdded = this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt));
-    }
+  constructor(
+    private drawingService: DrawingService,
+    private drawingsDataSource: DrawingsDataSource,
+    private drawingsEventSource: DrawingsEventSource,
+    private drawingsFactory: DefaultDrawingsFactory,
+    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
+    private context: Context
+  ) {}
 
-    onTextAdded(evt: TextAddedDataEvent){
-        let drawing = this.drawingsFactory.getDrawingMock("text");
-        (drawing.element as TextElement).text = evt.savedText;
-        let svgText = this.mapDrawingToSvgConverter.convert(drawing);
+  ngOnInit() {
+    this.textAdded = this.drawingsEventSource.textAdded.subscribe(evt => this.onTextAdded(evt));
+  }
 
-        this.drawingService
-          .add(this.server, this.project.project_id, evt.x - this.context.getZeroZeroTransformationPoint().x, evt.y - this.context.getZeroZeroTransformationPoint().y, svgText)
-          .subscribe((serverDrawing: Drawing) => {
-            this.drawingsDataSource.add(serverDrawing);
-            this.drawingSaved.emit(true);
-          });
-    }
+  onTextAdded(evt: TextAddedDataEvent) {
+    let drawing = this.drawingsFactory.getDrawingMock('text');
+    (drawing.element as TextElement).text = evt.savedText;
+    let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
-    ngOnDestroy(){
-        this.textAdded.unsubscribe();
-    }
+    this.drawingService
+      .add(
+        this.server,
+        this.project.project_id,
+        evt.x - this.context.getZeroZeroTransformationPoint().x,
+        evt.y - this.context.getZeroZeroTransformationPoint().y,
+        svgText
+      )
+      .subscribe((serverDrawing: Drawing) => {
+        this.drawingsDataSource.add(serverDrawing);
+        this.drawingSaved.emit(true);
+      });
+  }
+
+  ngOnDestroy() {
+    this.textAdded.unsubscribe();
+  }
 }

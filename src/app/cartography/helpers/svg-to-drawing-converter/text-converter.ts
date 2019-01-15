@@ -1,6 +1,5 @@
-import { SvgConverter } from "./svg-converter";
-import { TextElement } from "../../models/drawings/text-element";
-
+import { SvgConverter } from './svg-converter';
+import { TextElement } from '../../models/drawings/text-element';
 
 export class TextConverter implements SvgConverter {
   convert(element: Element): TextElement {
@@ -37,7 +36,6 @@ export class TextConverter implements SvgConverter {
     if (text_decoration) {
       drawing.text_decoration = text_decoration.value;
     }
-
 
     return drawing;
   }

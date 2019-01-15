@@ -32,7 +32,12 @@ import { PortToMapPortConverter } from './converters/map/port-to-map-port-conver
 import { SymbolToMapSymbolConverter } from './converters/map/symbol-to-map-symbol-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
 import { GraphDataManager } from './managers/graph-data-manager';
-import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from './datasources/map-datasource';
+import {
+  MapNodesDataSource,
+  MapLinksDataSource,
+  MapDrawingsDataSource,
+  MapSymbolsDataSource
+} from './datasources/map-datasource';
 import { LinksEventSource } from './events/links-event-source';
 import { D3MapComponent } from './components/d3-map/d3-map.component';
 import { ExperimentalMapComponent } from './components/experimental-map/experimental-map.component';
@@ -51,13 +56,8 @@ import { LineElementFactory } from './helpers/drawings-factory/line-element-fact
 import { TextEditorComponent } from './components/text-editor/text-editor.component';
 import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
 
-
 @NgModule({
-  imports: [
-    CommonModule,
-    MatMenuModule,
-    MatIconModule
-  ],
+  imports: [CommonModule, MatMenuModule, MatIconModule],
   declarations: [
     D3MapComponent,
     ExperimentalMapComponent,
@@ -113,6 +113,6 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     StylesToFontConverter,
     ...D3_MAP_IMPORTS
   ],
-  exports: [ D3MapComponent, ExperimentalMapComponent ]
+  exports: [D3MapComponent, ExperimentalMapComponent]
 })
-export class CartographyModule { }
+export class CartographyModule {}

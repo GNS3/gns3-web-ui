@@ -1,22 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule } from "@angular/material";
-import { RouterTestingModule } from "@angular/router/testing";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule } from '@angular/material';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import { Observable, of } from "rxjs";
+import { Observable, of } from 'rxjs';
 
 import { ProjectsComponent } from './projects.component';
-import { ServerService } from "../../services/server.service";
-import { MockedServerService } from "../../services/server.service.spec";
-import { ProjectService } from "../../services/project.service";
-import { MockedProjectService } from "../../services/project.service.spec";
-import { SettingsService } from "../../services/settings.service";
-import { MockedSettingsService } from "../../services/settings.service.spec";
-import { ProgressService } from "../../common/progress/progress.service";
-import { Server } from "../../models/server";
-import { Settings } from "../../services/settings.service";
-import { Project } from "../../models/project";
-
+import { ServerService } from '../../services/server.service';
+import { MockedServerService } from '../../services/server.service.spec';
+import { ProjectService } from '../../services/project.service';
+import { MockedProjectService } from '../../services/project.service.spec';
+import { SettingsService } from '../../services/settings.service';
+import { MockedSettingsService } from '../../services/settings.service.spec';
+import { ProgressService } from '../../common/progress/progress.service';
+import { Server } from '../../models/server';
+import { Settings } from '../../services/settings.service';
+import { Project } from '../../models/project';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -36,7 +35,7 @@ describe('ProjectsComponent', () => {
         MatSortModule,
         MatDialogModule,
         NoopAnimationsModule,
-        RouterTestingModule.withRoutes([]),
+        RouterTestingModule.withRoutes([])
       ],
       providers: [
         { provide: ServerService, useClass: MockedServerService },
@@ -44,9 +43,8 @@ describe('ProjectsComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         ProgressService
       ],
-      declarations: [ ProjectsComponent ]
-    })
-    .compileComponents();
+      declarations: [ProjectsComponent]
+    }).compileComponents();
 
     serverService = TestBed.get(ServerService);
     settingsService = TestBed.get(SettingsService);
@@ -76,19 +74,17 @@ describe('ProjectsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   describe('ProjectComponent open', () => {
     let project: Project;
 
     beforeEach(() => {
       project = new Project();
-      project.project_id = "1";
+      project.project_id = '1';
 
       spyOn(projectService, 'open').and.returnValue(of(project));
 
       component.server = server;
     });
-
 
     it('should open project', () => {
       component.open(project);
@@ -104,13 +100,12 @@ describe('ProjectsComponent', () => {
 
     beforeEach(() => {
       project = new Project();
-      project.project_id = "1";
+      project.project_id = '1';
 
       spyOn(projectService, 'close').and.returnValue(of(project));
 
       component.server = server;
     });
-
 
     it('should close project', () => {
       component.close(project);

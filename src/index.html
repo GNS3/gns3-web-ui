@@ -1,43 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>GNS3 Web UI</title>
-  <!-- It's important to have base here because of the script below //-->
-  <base href="/">
+  <head>
+    <meta charset="utf-8" />
+    <title>GNS3 Web UI</title>
+    <!-- It's important to have base here because of the script below //-->
+    <base href="/" />
 
-  <script>
-    var userAgent = navigator.userAgent.toLowerCase();
+    <script>
+      var userAgent = navigator.userAgent.toLowerCase();
 
-    //in case we're running in electron because we need it for resources
-    if (userAgent.indexOf(' electron/') > -1) {
-      var base = document.getElementsByTagName('base');
-      if(base.length > 0) {
-        base[0].href ='./';
+      //in case we're running in electron because we need it for resources
+      if (userAgent.indexOf(' electron/') > -1) {
+        var base = document.getElementsByTagName('base');
+        if (base.length > 0) {
+          base[0].href = './';
+        } else {
+          document.write('<base href="./" />');
+        }
       }
-      else {
-        document.write('<base href="./" />');
-      }
-    }
-  </script>
+    </script>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
 
-  <script type="application/javascript">
-    // Github Pages redirection
-    (function(){
-      var redirect = sessionStorage.redirect;
-      delete sessionStorage.redirect;
-      if (redirect && redirect != location.href) {
-        history.replaceState(null, null, redirect);
-      }
-    })();
-  </script>
-
-</head>
-<body class="mat-app-background">
-  <app-root></app-root>
-</body>
-
+    <script type="application/javascript">
+      // Github Pages redirection
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect != location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+  </head>
+  <body class="mat-app-background">
+    <app-root></app-root>
+  </body>
 </html>

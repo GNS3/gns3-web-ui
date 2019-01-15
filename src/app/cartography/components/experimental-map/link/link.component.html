@@ -1,11 +1,12 @@
-<svg:g 
+<svg:g
   class="link"
   [attr.link_id]="link.id"
   [attr.map-source]="link.source.id"
   [attr.map-target]="link.target.id"
   [attr.transform]="transform"
 >
-  <svg:path #path
+  <svg:path
+    #path
     *ngIf="link.linkType == 'ethernet'"
     class="ethernet_link"
     stroke="#000"
@@ -13,7 +14,8 @@
     [attr.d]="d"
   />
 
-  <svg:path #path
+  <svg:path
+    #path
     *ngIf="link.linkType == 'serial'"
     class="serial_link"
     stroke="#B22222"
@@ -22,25 +24,15 @@
     [attr.d]="d"
   />
 
-  <svg:g 
-    [app-status]="link.source.status"
-    [direction]="'source'"
-    [path]="path"
-    [d]="d"
-  />
+  <svg:g [app-status]="link.source.status" [direction]="'source'" [path]="path" [d]="d" />
 
-  <svg:g 
-    [app-status]="link.target.status"
-    [direction]="'target'"
-    [path]="path"
-    [d]="d"
-  />
+  <svg:g [app-status]="link.target.status" [direction]="'target'" [path]="path" [d]="d" />
 
   <svg:g
     *ngIf="showInterfaceLabels"
     [app-interface-label]
-    [x]="link.source.x+link.nodes[0].label.x"
-    [y]="link.source.y+link.nodes[0].label.y"
+    [x]="link.source.x + link.nodes[0].label.x"
+    [y]="link.source.y + link.nodes[0].label.y"
     [text]="link.nodes[0].label.text"
     [style]="link.nodes[0].label.style"
     [rotation]="link.nodes[0].label.rotation"
@@ -49,11 +41,10 @@
   <svg:g
     *ngIf="showInterfaceLabels"
     [app-interface-label]
-    [x]="link.target.x+link.nodes[1].label.x"
-    [y]="link.target.y+link.nodes[1].label.y"
+    [x]="link.target.x + link.nodes[1].label.x"
+    [y]="link.target.y + link.nodes[1].label.y"
     [text]="link.nodes[1].label.text"
     [style]="link.nodes[1].label.style"
     [rotation]="link.nodes[1].label.rotation"
   />
-
 </svg:g>

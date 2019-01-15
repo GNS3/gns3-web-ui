@@ -1,15 +1,13 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-import { Converter } from "../converter";
-import { Drawing } from "../../models/drawing";
-import { MapDrawing } from "../../models/map/map-drawing";
-
+import { Converter } from '../converter';
+import { Drawing } from '../../models/drawing';
+import { MapDrawing } from '../../models/map/map-drawing';
 
 @Injectable()
 export class DrawingToMapDrawingConverter implements Converter<Drawing, MapDrawing> {
-  constructor(
-  ) {}
-  
+  constructor() {}
+
   convert(drawing: Drawing) {
     const mapDrawing = new MapDrawing();
     mapDrawing.id = drawing.drawing_id;

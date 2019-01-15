@@ -2,7 +2,6 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { ProgressService, State } from './progress.service';
 
-
 describe('ProgressService', () => {
   let progressService: ProgressService;
 

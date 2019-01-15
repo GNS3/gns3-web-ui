@@ -8,9 +8,8 @@ describe('SnapshotMenuItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SnapshotMenuItemComponent ]
-    })
-    .compileComponents();
+      declarations: [SnapshotMenuItemComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

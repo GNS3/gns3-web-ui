@@ -1,9 +1,8 @@
-import { Context } from "../models/context";
-import { SVGSelection } from "../models/types";
-import { MovingTool } from "./moving-tool";
-import { TestSVGCanvas } from "../testing";
-import { Size } from "../models/size";
-
+import { Context } from '../models/context';
+import { SVGSelection } from '../models/types';
+import { MovingTool } from './moving-tool';
+import { TestSVGCanvas } from '../testing';
+import { Size } from '../models/size';
 
 describe('MovingTool', () => {
   let tool: MovingTool;
@@ -35,13 +34,17 @@ describe('MovingTool', () => {
     beforeEach(() => {
       svg.svg.node().dispatchEvent(
         new MouseEvent('mousedown', {
-          clientX: 100, clientY: 100, relatedTarget: svg.svg.node(),
-          screenY: 1024, screenX: 1024, view: window
+          clientX: 100,
+          clientY: 100,
+          relatedTarget: svg.svg.node(),
+          screenY: 1024,
+          screenX: 1024,
+          view: window
         })
       );
 
-      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 200, clientY: 200}));
-      window.dispatchEvent(new MouseEvent('mouseup', {clientX: 200, clientY: 200, view: window}));
+      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 200, clientY: 200 }));
+      window.dispatchEvent(new MouseEvent('mouseup', { clientX: 200, clientY: 200, view: window }));
     });
 
     it('canvas should transformed', () => {
@@ -62,13 +65,17 @@ describe('MovingTool', () => {
 
       svg.svg.node().dispatchEvent(
         new MouseEvent('mousedown', {
-          clientX: 100, clientY: 100, relatedTarget: svg.svg.node(),
-          screenY: 1024, screenX: 1024, view: window
+          clientX: 100,
+          clientY: 100,
+          relatedTarget: svg.svg.node(),
+          screenY: 1024,
+          screenX: 1024,
+          view: window
         })
       );
 
-      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 200, clientY: 200}));
-      window.dispatchEvent(new MouseEvent('mouseup', {clientX: 200, clientY: 200, view: window}));
+      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 200, clientY: 200 }));
+      window.dispatchEvent(new MouseEvent('mouseup', { clientX: 200, clientY: 200, view: window }));
     });
 
     it('canvas should transformed', () => {
@@ -82,7 +89,6 @@ describe('MovingTool', () => {
     });
   });
 
-
   describe('MovingTool can be deactivated', () => {
     beforeEach(() => {
       tool.setEnabled(false);
@@ -90,12 +96,16 @@ describe('MovingTool', () => {
 
       svg.svg.node().dispatchEvent(
         new MouseEvent('mousedown', {
-          clientX: 100, clientY: 100, relatedTarget: svg.svg.node(),
-          screenY: 1024, screenX: 1024, view: window
+          clientX: 100,
+          clientY: 100,
+          relatedTarget: svg.svg.node(),
+          screenY: 1024,
+          screenX: 1024,
+          view: window
         })
       );
 
-      window.dispatchEvent(new MouseEvent('mousemove', {clientX: 200, clientY: 200}));
+      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 200, clientY: 200 }));
     });
 
     it('canvas cannot be transformed', () => {

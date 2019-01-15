@@ -1,4 +1,4 @@
-export type ServerAuthorization = "basic" | "none";
+export type ServerAuthorization = 'basic' | 'none';
 
 export class Server {
   id: number;

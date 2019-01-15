@@ -11,18 +11,17 @@ import { InterfaceLabelComponent } from './components/experimental-map/interface
 import { DraggableComponent } from './components/experimental-map/draggable/draggable.component';
 import { SelectionComponent } from './components/experimental-map/selection/selection.component';
 
-
 export const ANGULAR_MAP_DECLARATIONS = [
-    NodeComponent,
-    LinkComponent,
-    StatusComponent,
-    DrawingComponent,
-    EllipseComponent,
-    ImageComponent,
-    LineComponent,
-    RectComponent,
-    TextComponent,
-    DraggableComponent,
-    SelectionComponent,
-    InterfaceLabelComponent
+  NodeComponent,
+  LinkComponent,
+  StatusComponent,
+  DrawingComponent,
+  EllipseComponent,
+  ImageComponent,
+  LineComponent,
+  RectComponent,
+  TextComponent,
+  DraggableComponent,
+  SelectionComponent,
+  InterfaceLabelComponent
 ];

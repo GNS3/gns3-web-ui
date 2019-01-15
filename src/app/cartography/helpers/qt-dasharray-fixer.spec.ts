@@ -1,5 +1,4 @@
-import { QtDasharrayFixer } from "./qt-dasharray-fixer";
-
+import { QtDasharrayFixer } from './qt-dasharray-fixer';
 
 describe('QtDashArrayFixer', () => {
   let fixer: QtDasharrayFixer;

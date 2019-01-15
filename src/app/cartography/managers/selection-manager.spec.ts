@@ -1,5 +1,5 @@
-import { MapNode } from "../models/map/map-node";
-import { SelectionManager } from "./selection-manager";
+import { MapNode } from '../models/map/map-node';
+import { SelectionManager } from './selection-manager';
 
 export class SelectionManagerMock {
   public items = [];
@@ -17,13 +17,11 @@ describe('SelectionManager', () => {
   beforeEach(() => {
     manager = new SelectionManager();
   });
-  
 
   it('nodes should be manually selected', () => {
     const node = new MapNode();
-    node.id = "test1";
+    node.id = 'test1';
     manager.setSelected([node]);
     expect(manager.getSelected().length).toEqual(1);
   });
-
 });

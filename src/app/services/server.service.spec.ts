@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ServerService } from './server.service';
-import { Server } from "../models/server";
-import { IndexedDbService } from "./indexed-db.service";
-import { AngularIndexedDB } from "angular2-indexeddb";
+import { Server } from '../models/server';
+import { IndexedDbService } from './indexed-db.service';
+import { AngularIndexedDB } from 'angular2-indexeddb';
 import Spy = jasmine.Spy;
-
 
 export class MockedServerService {
   public servers: Server[] = [];
@@ -38,7 +37,6 @@ export class MockedServerService {
   }
 }
 
-
 describe('ServerService', () => {
   let indexedDbService: IndexedDbService;
   let db: AngularIndexedDB;
@@ -53,10 +51,7 @@ describe('ServerService', () => {
     openDatabaseSpy = spyOn(db, 'openDatabase').and.returnValue(Promise.resolve(true));
 
     TestBed.configureTestingModule({
-      providers: [
-        ServerService,
-        { provide: IndexedDbService, useValue: indexedDbService}
-      ]
+      providers: [ServerService, { provide: IndexedDbService, useValue: indexedDbService }]
     });
 
     service = TestBed.get(ServerService);
@@ -70,7 +65,7 @@ describe('ServerService', () => {
     const evnt = {
       currentTarget: {
         result: {
-          createObjectStore: function () {}
+          createObjectStore: function() {}
         }
       }
     };
@@ -80,7 +75,10 @@ describe('ServerService', () => {
     const upgradeCallback = openDatabaseSpy.calls.first().args[1];
     upgradeCallback(evnt);
 
-    expect(evnt.currentTarget.result.createObjectStore).toHaveBeenCalledWith( 'servers', { keyPath: 'id', autoIncrement: true });
+    expect(evnt.currentTarget.result.createObjectStore).toHaveBeenCalledWith('servers', {
+      keyPath: 'id',
+      autoIncrement: true
+    });
   });
 
   describe('operations on records', () => {
@@ -91,39 +89,39 @@ describe('ServerService', () => {
       record.name = 'test';
     });
 
-    it('should get an object', (done) => {
+    it('should get an object', done => {
       spyOn(db, 'getByKey').and.returnValue(Promise.resolve([record]));
 
-      service.get(1).then((result) => {
+      service.get(1).then(result => {
         expect(db.getByKey).toHaveBeenCalledWith('servers', 1);
         expect(result).toEqual([record]);
         done();
       });
     });
 
-    it('should create an object', (done) => {
+    it('should create an object', done => {
       const created = new Server();
       created.id = 22;
 
       spyOn(db, 'add').and.returnValue(Promise.resolve(created));
 
-      service.create(record).then((result) => {
+      service.create(record).then(result => {
         expect(db.add).toHaveBeenCalledWith('servers', record);
         done();
       });
     });
 
-    it('should update an object', (done) => {
+    it('should update an object', done => {
       spyOn(db, 'update').and.returnValue(Promise.resolve(record));
 
-      service.update(record).then((result) => {
+      service.update(record).then(result => {
         expect(db.update).toHaveBeenCalledWith('servers', record);
         expect(result).toEqual(record);
         done();
       });
     });
 
-    it('should delete an object', (done) => {
+    it('should delete an object', done => {
       record.id = 88;
 
       spyOn(db, 'delete').and.returnValue(Promise.resolve());
@@ -135,17 +133,17 @@ describe('ServerService', () => {
     });
   });
 
-  it('should call findAll', (done) => {
+  it('should call findAll', done => {
     spyOn(db, 'getAll').and.returnValue(Promise.resolve(true));
 
-    service.findAll().then((result) => {
-        expect(result).toEqual(true);
-        expect(db.getAll).toHaveBeenCalledWith('servers');
-        done();
+    service.findAll().then(result => {
+      expect(result).toEqual(true);
+      expect(db.getAll).toHaveBeenCalledWith('servers');
+      done();
     });
   });
 
-  it('should create local server when missing', (done) => {
+  it('should create local server when missing', done => {
     spyOn(db, 'getAll').and.returnValue(Promise.resolve([]));
     spyOn(service, 'create').and.returnValue(Promise.resolve(new Server()));
 
@@ -156,12 +154,12 @@ describe('ServerService', () => {
     expectedServer.is_local = true;
 
     service.getLocalServer('hostname', 9999).then(() => {
-      expect(service.create).toHaveBeenCalledWith(expectedServer)
+      expect(service.create).toHaveBeenCalledWith(expectedServer);
       done();
     });
   });
 
-  it('should update local server when found', (done) => {
+  it('should update local server when found', done => {
     const server = new Server();
     server.name = 'local';
     server.ip = 'hostname';
@@ -179,5 +177,4 @@ describe('ServerService', () => {
       done();
     });
   });
-
 });
