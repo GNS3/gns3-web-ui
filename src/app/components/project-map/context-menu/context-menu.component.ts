@@ -28,12 +28,12 @@ export class ContextMenuComponent implements OnInit {
   nodes: Node[] = [];
   labels: Label[] = [];
 
-  private hasTextCapabilities: boolean = false;
+  hasTextCapabilities: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
     private changeDetector: ChangeDetectorRef,
-    protected projectService: ProjectService
+    public projectService: ProjectService
   ) {}
 
   ngOnInit() {

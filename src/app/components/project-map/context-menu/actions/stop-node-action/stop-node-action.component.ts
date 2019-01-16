@@ -10,7 +10,7 @@ import { Node } from '../../../../../cartography/models/node';
 export class StopNodeActionComponent implements OnInit {
   @Input() server: Server;
   @Input() nodes: Node[];
-  private isNodeWithStartedStatus: boolean;
+  isNodeWithStartedStatus: boolean;
 
   constructor(private nodeService: NodeService) {}
 
