@@ -38,3 +38,12 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 input[type="color"]::-webkit-color-swatch {
 	border: none;
 }
+
+.modal-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-form-container > * {
+  width: 100%;
+}

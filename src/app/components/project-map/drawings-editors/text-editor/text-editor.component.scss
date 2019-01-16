@@ -43,3 +43,12 @@ input[type="color"]::-webkit-color-swatch {
   width: 100%;
   height: 150px;
 }
+
+.modal-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-form-container > * {
+  width: 100%;
+}
