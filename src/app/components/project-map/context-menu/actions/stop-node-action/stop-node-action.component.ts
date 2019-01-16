@@ -9,13 +9,22 @@ import { Node } from '../../../../../cartography/models/node';
 })
 export class StopNodeActionComponent implements OnInit {
   @Input() server: Server;
-  @Input() node: Node;
+  @Input() nodes: Node[];
+  isNodeWithStartedStatus: boolean;
 
   constructor(private nodeService: NodeService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.nodes.forEach((node) => {
+      if (node.status === 'started') {
+        this.isNodeWithStartedStatus = true;
+      }
+    });
+  }
 
-  stopNode() {
-    this.nodeService.stop(this.server, this.node).subscribe((n: Node) => {});
+  stopNodes() {
+    this.nodes.forEach((node) => {
+      this.nodeService.stop(this.server, node).subscribe((n: Node) => {});
+    });
   }
 }

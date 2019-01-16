@@ -13,8 +13,8 @@ import { DrawingService } from '../../../../../services/drawing.service';
 })
 export class MoveLayerDownActionComponent implements OnInit {
   @Input() server: Server;
-  @Input() node: Node;
-  @Input() drawing: Drawing;
+  @Input() nodes: Node[];
+  @Input() drawings: Drawing[];
 
   constructor(
     private nodesDataSource: NodesDataSource,
@@ -26,16 +26,18 @@ export class MoveLayerDownActionComponent implements OnInit {
   ngOnInit() {}
 
   moveLayerDown() {
-    if (this.node) {
-      this.node.z--;
-      this.nodesDataSource.update(this.node);
+    this.nodes.forEach((node) => {
+      node.z--;
+      this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.server, this.node).subscribe((node: Node) => {});
-    } else if (this.drawing) {
-      this.drawing.z--;
-      this.drawingsDataSource.update(this.drawing);
+      this.nodeService.update(this.server, node).subscribe((node: Node) => {});
+    });
 
-      this.drawingService.update(this.server, this.drawing).subscribe((drawing: Drawing) => {});
-    }
+    this.drawings.forEach((drawing) => {
+      drawing.z--;
+      this.drawingsDataSource.update(drawing);
+
+      this.drawingService.update(this.server, drawing).subscribe((drawing: Drawing) => {});
+    });
   }
 }

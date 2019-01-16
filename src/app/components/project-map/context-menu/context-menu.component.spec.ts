@@ -16,7 +16,10 @@ describe('ContextMenuComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
-      providers: [{ provide: ChangeDetectorRef }, { provide: ProjectService, useClass: MockedProjectService }],
+      providers: [
+        { provide: ChangeDetectorRef }, 
+        { provide: ProjectService, useClass: MockedProjectService }
+      ],
       declarations: [ContextMenuComponent],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -59,6 +62,15 @@ describe('ContextMenuComponent', () => {
     var spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
     component.openMenuForDrawing(drawing, 0, 0);
+
+    expect(spy.calls.any()).toBeTruthy();
+  });
+
+  it('should reset capabilities while opening menu for list of elements', () => {
+    component.contextMenu = { openMenu() {} } as MatMenuTrigger;
+    var spy = spyOn<any>(component, 'resetCapabilities');
+    spyOn(component, 'setPosition').and.callFake(() => {});
+    component.openMenuForListOfElements([], [], [], 0, 0);
 
     expect(spy.calls.any()).toBeTruthy();
   });

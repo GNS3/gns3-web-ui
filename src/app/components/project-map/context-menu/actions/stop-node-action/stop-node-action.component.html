@@ -1,4 +1,4 @@
-<button mat-menu-item *ngIf="node.status == 'started'" (click)="stopNode()">
+<button mat-menu-item *ngIf="isNodeWithStartedStatus" (click)="stopNodes()">
   <mat-icon>stop</mat-icon>
   <span>Stop</span>
 </button>

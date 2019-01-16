@@ -45,6 +45,10 @@ export class MockedProjectService {
   add() {
     return of(this.projects.pop);
   }
+
+  isReadOnly(project: Project){
+    return false;
+  }
 }
 
 describe('AddBlankProjectDialogComponent', () => {

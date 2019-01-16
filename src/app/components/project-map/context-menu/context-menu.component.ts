@@ -7,6 +7,8 @@ import { Project } from '../../../models/project';
 import { ProjectService } from '../../../services/project.service';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
+import { Label } from '../../../cartography/models/label';
+
 
 @Component({
   selector: 'app-context-menu',
@@ -21,16 +23,17 @@ export class ContextMenuComponent implements OnInit {
 
   topPosition;
   leftPosition;
-  node: Node;
-  drawing: Drawing;
-  private hasNodeCapabilities: boolean = false;
-  private hasDrawingCapabilities: boolean = false;
-  private isTextElement: boolean = false;
+
+  drawings: Drawing[] = [];
+  nodes: Node[] = [];
+  labels: Label[] = [];
+
+  hasTextCapabilities: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
     private changeDetector: ChangeDetectorRef,
-    protected projectService: ProjectService
+    public projectService: ProjectService
   ) {}
 
   ngOnInit() {
@@ -43,32 +46,49 @@ export class ContextMenuComponent implements OnInit {
     this.changeDetector.detectChanges();
   }
 
-  public openMenuForNode(node: Node, top: number, left: number) {
+  public openMenuForDrawing(drawing: Drawing, top: number, left: number) {
     this.resetCapabilities();
-    this.hasNodeCapabilities = true;
+    this.hasTextCapabilities = drawing.element instanceof TextElement;
 
-    this.node = node;
+    this.drawings = [drawing];
     this.setPosition(top, left);
 
     this.contextMenu.openMenu();
   }
 
-  public openMenuForDrawing(drawing: Drawing, top: number, left: number) {
+  public openMenuForNode(node: Node, top: number, left: number) {
     this.resetCapabilities();
-    this.hasDrawingCapabilities = true;
-    this.isTextElement = drawing.element instanceof TextElement;
 
-    this.drawing = drawing;
+    this.nodes = [node];
+    this.setPosition(top, left);
+
+    this.contextMenu.openMenu();
+  }
+
+  public openMenuForLabel(label: Label, top: number, left: number) {
+    this.resetCapabilities();
+
+    this.labels = [label];
+    this.setPosition(top, left);
+
+    this.contextMenu.openMenu();
+  }
+
+  public openMenuForListOfElements(drawings: Drawing[], nodes: Node[], labels: Label[], top: number, left: number) {
+    this.resetCapabilities();
+
+    this.drawings = drawings;
+    this.nodes = nodes;
+    this.labels = labels;
     this.setPosition(top, left);
 
     this.contextMenu.openMenu();
   }
 
   private resetCapabilities() {
-    this.node = null;
-    this.drawing = null;
-    this.hasDrawingCapabilities = false;
-    this.hasNodeCapabilities = false;
-    this.isTextElement = false;
+    this.drawings = [];
+    this.nodes = [];
+    this.labels = [];
+    this.hasTextCapabilities = false;
   }
 }
