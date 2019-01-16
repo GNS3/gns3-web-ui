@@ -33,6 +33,9 @@ import { Node } from '../../cartography/models/node';
 import { ToolsService } from '../../services/tools.service';
 import { DrawingsWidget } from '../../cartography/widgets/drawings';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { SelectionManager } from '../../cartography/managers/selection-manager';
+import { SelectionTool } from '../../cartography/tools/selection-tool';
 
 export class MockedProgressService {
   public activate() {}
@@ -139,11 +142,14 @@ describe('ProjectMapComponent', () => {
         { provide: DrawingsWidget },
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },
+        { provide: MapLabelToLabelConverter },
         { provide: NodesDataSource },
         { provide: LinksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
         { provide: SettingsService, useClass: MockedSettingsService },
-        { provide: ToolsService }
+        { provide: ToolsService },
+        { provide: SelectionManager },
+        { provide: SelectionTool }
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]

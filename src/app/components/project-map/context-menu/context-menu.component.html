@@ -1,31 +1,30 @@
-<div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition" *ngIf="node || drawing">
+<div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
   <span [matMenuTriggerFor]="contextMenu"></span>
   <mat-menu #contextMenu="matMenu" class="context-menu-items">
-    <app-start-node-action *ngIf="hasNodeCapabilities" [server]="server" [node]="node"></app-start-node-action>
-    <app-stop-node-action *ngIf="hasNodeCapabilities" [server]="server" [node]="node"></app-stop-node-action>
-    <app-edit-style-action
-      *ngIf="hasDrawingCapabilities && !isTextElement"
+    <app-start-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-start-node-action>
+    <app-stop-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-stop-node-action>
+    <app-edit-style-action *ngIf="drawings.length===1 && !hasTextCapabilities"
       [server]="server"
       [project]="project"
-      [drawing]="drawing"
+      [drawing]="drawings[0]"
     ></app-edit-style-action>
     <app-edit-text-action
-      *ngIf="hasDrawingCapabilities && isTextElement"
+      *ngIf="drawings.length===1 && hasTextCapabilities"
       [server]="server"
       [project]="project"
-      [drawing]="drawing"
+      [drawing]="drawings[0]"
     ></app-edit-text-action>
     <app-move-layer-up-action
       *ngIf="!projectService.isReadOnly(project)"
       [server]="server"
-      [node]="node"
-      [drawing]="drawing"
+      [nodes]="nodes"
+      [drawings]="drawings"
     ></app-move-layer-up-action>
     <app-move-layer-down-action
       *ngIf="!projectService.isReadOnly(project)"
       [server]="server"
-      [node]="node"
-      [drawing]="drawing"
+      [nodes]="nodes"
+      [drawings]="drawings"
     ></app-move-layer-down-action>
   </mat-menu>
 </div>

@@ -32,6 +32,14 @@ import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.compo
 import { ToolsService } from '../../services/tools.service';
 import { DrawingContextMenu } from '../../cartography/events/event-source';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
+import { SelectionManager } from '../../cartography/managers/selection-manager';
+import { SelectionTool } from '../../cartography/tools/selection-tool';
+import { MapDrawing } from '../../cartography/models/map/map-drawing';
+import { MapLabel } from '../../cartography/models/map/map-label';
+import { Label } from '../../cartography/models/label';
+import { MapNode } from '../../cartography/models/map/map-node';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+
 
 @Component({
   selector: 'app-project-map',
@@ -86,11 +94,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private drawingsWidget: DrawingsWidget,
     private mapNodeToNode: MapNodeToNodeConverter,
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
+    private mapLabelToLabel: MapLabelToLabelConverter,
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
     private settingsService: SettingsService,
-    private toolsService: ToolsService
+    private toolsService: ToolsService,
+    private selectionManager: SelectionManager,
+    private selectionTool: SelectionTool
   ) {}
 
   ngOnInit() {
@@ -206,8 +217,30 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
     });
 
+    const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
+      const selectedItems = this.selectionManager.getSelected();
+      if (selectedItems.length === 0) return;
+
+      let drawings: Drawing[] = [];
+      let nodes: Node[] = [];
+      let labels: Label[] = [];
+
+      selectedItems.forEach((elem) => {
+        if (elem instanceof MapDrawing) {
+          drawings.push(this.mapDrawingToDrawing.convert(elem));
+        } else if (elem instanceof MapNode) {
+          nodes.push(this.mapNodeToNode.convert(elem));
+        } else if (elem instanceof MapLabel) {
+          labels.push(this.mapLabelToLabel.convert(elem));
+        }
+      });
+
+      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, event.clientY, event.clientX);
+    });
+
     this.subscriptions.push(onNodeContextMenu);
     this.subscriptions.push(onDrawingContextMenu);
+    this.subscriptions.push(onContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 

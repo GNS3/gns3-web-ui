@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { mouse, select } from 'd3-selection';
+import { Injectable, EventEmitter } from '@angular/core';
+import { mouse, select, event } from 'd3-selection';
 import { Subject } from 'rxjs';
 
 import { SVGSelection } from '../models/types';
@@ -12,20 +12,39 @@ export class SelectionTool {
   static readonly SELECTABLE_CLASS = '.selectable';
 
   public rectangleSelected = new Subject<Rectangle>();
+  public contextMenuOpened = new EventEmitter<any>();
 
   private path;
   private enabled = false;
 
-  public constructor(private context: Context, private selectionEventSource: SelectionEventSource) {}
+  public constructor(
+    private context: Context, 
+    private selectionEventSource: SelectionEventSource
+  ) {}
+
+  public disableContextMenu(){
+
+  }
 
   public setEnabled(enabled) {
     this.enabled = enabled;
+    this.contextMenuOpened.emit(true);
   }
 
   private activate(selection) {
     const self = this;
 
     selection.on('mousedown', function() {
+      // prevent deselection on right click
+      if (event.button == 2) {
+        selection.on('contextmenu', () => {
+          event.preventDefault();
+        });
+
+        self.contextMenuOpened.emit(event);
+        return;
+      }
+
       const subject = select(window);
       const parent = this.parentElement;
 
