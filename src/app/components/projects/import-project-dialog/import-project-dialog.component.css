@@ -4,7 +4,7 @@
 
 .file-button{
     height: 50px;
-    width: 20%;
+    width: 30%;
     margin-top: 10px;
     padding: 0px;
 }
@@ -16,7 +16,7 @@
 
 .file-name-form-field {
     margin-left: 5%; 
-    width: 65%; 
+    width: 60%; 
 }
 
 .delete-button {
