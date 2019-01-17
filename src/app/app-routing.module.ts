@@ -7,6 +7,7 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { LocalServerComponent } from './components/local-server/local-server.component';
+import { PreferencesComponent } from './components/preferences/preferences.component';
 
 const routes: Routes = [
   {
@@ -17,7 +18,8 @@ const routes: Routes = [
       { path: 'servers', component: ServersComponent },
       { path: 'local', component: LocalServerComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
-      { path: 'settings', component: SettingsComponent }
+      { path: 'settings', component: SettingsComponent },
+      { path: 'preferences', component: PreferencesComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

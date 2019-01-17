@@ -78,6 +78,12 @@
       <mat-toolbar-row *ngIf="!readonly">
         <app-template [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-template>
       </mat-toolbar-row>
+
+      <mat-toolbar-row *ngIf="!readonly">
+        <button mat-icon-button routerLink="/preferences">
+          <mat-icon>settings_applications</mat-icon>
+        </button>
+      </mat-toolbar-row>
     </mat-toolbar>
   </div>
 

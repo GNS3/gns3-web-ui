@@ -88,6 +88,7 @@ import { DrawingAddedComponent } from './components/drawings-listeners/drawing-a
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
 import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
+import { PreferencesComponent } from './components/preferences/preferences.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -124,6 +125,7 @@ if (environment.production) {
     EditTextActionComponent,
     ProjectMapShortcutsComponent,
     SettingsComponent,
+    PreferencesComponent,
     LocalServerComponent,
     ProgressComponent,
     ServerDiscoveryComponent,
