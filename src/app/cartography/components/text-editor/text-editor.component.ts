@@ -60,6 +60,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         );
         this.deactivateTextAdding();
         this.innerText = '';
+        this.temporaryTextElement.nativeElement.innerText = '';
         this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
       };
