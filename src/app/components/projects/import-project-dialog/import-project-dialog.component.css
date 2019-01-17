@@ -3,9 +3,9 @@
 }
 
 .file-button{
-    height: 50px;
-    width: 30%;
-    margin-top: 10px;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 10px;
     padding: 0px;
 }
 
@@ -15,8 +15,7 @@
 }
 
 .file-name-form-field {
-    margin-left: 5%; 
-    width: 60%; 
+    width: 100%; 
 }
 
 .delete-button {
