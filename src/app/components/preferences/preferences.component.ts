@@ -1,4 +1,8 @@
 import { Component, OnInit } from "@angular/core";
+import { Server } from '../../models/server';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ServerService } from '../../services/server.service';
+import { switchMap } from 'rxjs/operators';
 
 
 @Component({
@@ -7,9 +11,13 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./preferences.component.scss']
 })
 export class PreferencesComponent implements OnInit {
+    public serverId: string = "";
 
-    constructor() {}
+    constructor(
+        private route: ActivatedRoute
+    ) {}
 
-    ngOnInit() {}
-
+    ngOnInit() {
+        this.serverId = this.route.snapshot.paramMap.get("server_id");
+    }
 }

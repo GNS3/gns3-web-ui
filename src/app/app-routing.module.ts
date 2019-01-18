@@ -8,6 +8,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { SettingsComponent } from './components/settings/settings.component';
 import { LocalServerComponent } from './components/local-server/local-server.component';
 import { PreferencesComponent } from './components/preferences/preferences.component';
+import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 
 const routes: Routes = [
   {
@@ -19,7 +20,8 @@ const routes: Routes = [
       { path: 'local', component: LocalServerComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
-      { path: 'preferences', component: PreferencesComponent }
+      { path: 'server/:server_id/preferences', component: PreferencesComponent },
+      { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

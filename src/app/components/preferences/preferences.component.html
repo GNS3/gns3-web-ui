@@ -5,22 +5,29 @@
         </div>
     </div>
     <div class="default-content">
-        <mat-sidenav-container class="sidenav-container" style="height:500px;">
-
-            <mat-sidenav
-                opened="true" 
-                disableClose="true">
-                <mat-nav-list>
-                    <a mat-list-item href="/first-page">General</a>
-                    <a mat-list-item href="/second-page">QEMU</a>
-                    <a mat-list-item href="/third-page">VirtualBox</a>
-                </mat-nav-list>
-            </mat-sidenav>
-
-            <mat-sidenav-content>
-                <router-outlet></router-outlet>
-            </mat-sidenav-content>
-
-        </mat-sidenav-container>
+        <div class="example-container mat-elevation-z8">
+            <mat-nav-list>
+                <mat-list-item>
+                    <button mat-button routerLink="/server/{{serverId}}/preferences/general">
+                        General
+                    </button>
+                </mat-list-item>
+                <mat-list-item>
+                    <button mat-button routerLink="/server/{{serverId}}/preferences/qemu">
+                        QEMU
+                    </button>
+                </mat-list-item>
+                <mat-list-item>
+                    <button mat-button routerLink="/server/{{serverId}}/preferences/virtualbox">
+                        VirtualBox
+                    </button>
+                </mat-list-item>
+                <mat-list-item>
+                    <button mat-button routerLink="/server/{{serverId}}/preferences/vmware">
+                        VMware
+                    </button>
+                </mat-list-item>
+            </mat-nav-list>
+        </div>
     </div>
 </div>
