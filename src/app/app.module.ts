@@ -91,6 +91,7 @@ import { TextEditorDialogComponent } from './components/project-map/drawings-edi
 import { PreferencesComponent } from './components/preferences/preferences.component';
 import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 import { ServerSettingsService } from './services/server-settings.service';
+import { QemuVirtualMachinesComponent } from './components/preferences/qemu/qemu-virtual-machines/qemu-virtual-machines.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -144,7 +145,8 @@ if (environment.production) {
     InterfaceLabelDraggedComponent,
     StyleEditorDialogComponent,
     TextEditorDialogComponent,
-    QemuPreferencesComponent
+    QemuPreferencesComponent,
+    QemuVirtualMachinesComponent
   ],
   imports: [
     BrowserModule,

@@ -9,6 +9,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { LocalServerComponent } from './components/local-server/local-server.component';
 import { PreferencesComponent } from './components/preferences/preferences.component';
 import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
+import { QemuVirtualMachinesComponent } from './components/preferences/qemu/qemu-virtual-machines/qemu-virtual-machines.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
-      { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent }
+      { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
+      { path: 'server/:server_id/preferences/qemu/templates', component: QemuVirtualMachinesComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

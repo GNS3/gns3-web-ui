@@ -7,6 +7,7 @@ import { ServerService } from '../../../../services/server.service';
 import { ServerSettings } from '../../../../models/serverSettings';
 import { Qemu } from '../../../../models/server-settings-models/qemu';
 import { ToasterService } from '../../../../services/toaster.service';
+import { QemuSettings } from '../../../../models/settings/qemu';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { ToasterService } from '../../../../services/toaster.service';
 })
 export class QemuPreferencesComponent implements OnInit {
     server: Server;
-    settings: ServerSettings;
+    settings: QemuSettings;
 
     constructor(
         private route: ActivatedRoute,
@@ -35,24 +36,33 @@ export class QemuPreferencesComponent implements OnInit {
         )
         .subscribe((server: Server) => {
           this.server = server;
-          this.serverSettingsService.get(this.server).subscribe((settings: ServerSettings) => {
+          this.serverSettingsService.getSettingsForQemu(this.server).subscribe((settings: QemuSettings) => {
             this.settings = settings;
           });
         });
     }
 
     apply(){
-        if(!this.settings.Qemu.enable_hardware_acceleration){
-            this.settings.Qemu.require_hardware_acceleration = false;
+        if(!this.settings.enable_hardware_acceleration){
+            this.settings.require_hardware_acceleration = false;
         }
-        
-        this.serverSettingsService.update(this.server, this.settings)
-            .subscribe((serverSettings: ServerSettings) => {
+
+        this.serverSettingsService.updateSettingsForQemu(this.server, this.settings)
+            .subscribe((qemuSettings: QemuSettings) => {
                 this.toasterService.success(`Changes applied`);
             });
     }
 
     restoreDefaults(){
+        let defaultSettings : QemuSettings = {
+            enable_hardware_acceleration: true,
+            require_hardware_acceleration: true
+        };
 
+        this.serverSettingsService.updateSettingsForQemu(this.server, defaultSettings)
+        .subscribe((qemuSettings: QemuSettings) => {
+            this.settings = qemuSettings;
+            this.toasterService.success(`Restored to default settings`);
+        });
     }
 }
