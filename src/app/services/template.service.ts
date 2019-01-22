@@ -5,6 +5,7 @@ import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { Template } from '../models/template';
 import { Observable } from 'rxjs';
+import { QemuTemplate } from '../models/templates/qemu-template';
 
 @Injectable()
 export class TemplateService {

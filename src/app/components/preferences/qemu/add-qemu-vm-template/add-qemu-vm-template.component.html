@@ -1,0 +1,48 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New QEMU template</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="example-container mat-elevation-z8">
+            <mat-vertical-stepper [linear]="true">
+                <mat-step label="QEMU VM Name">
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" placeholder="Please choose a descriptive name for your new QEMU virtual machine"/>
+                    </mat-form-field><br/>
+                    <mat-checkbox>
+                        This is a legacy ASA VM
+                    </mat-checkbox>
+                </mat-step>
+                <mat-step label="QEMU binary and memory">
+                    <mat-form-field class="form-field">
+                        <mat-select placeholder="Qemu binary" [(ngModel)]="selectedBinary">
+                            <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
+                                {{binary.path}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field><br/>
+                    <mat-form-field class="form-field">
+                        <input matInput type="number" placeholder="RAM" [(ngModel)]="ramMemory"/>
+                    </mat-form-field>
+                </mat-step>
+                <mat-step label="Console type">
+                    <mat-form-field class="form-field">
+                        <mat-select placeholder="Console type" [(ngModel)]="selectedConsoleType">
+                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-step>
+                <mat-step label="Disk image">
+                    <mat-radio-group>
+                        <mat-radio-button value="1" (click)="setradio('Male')">Existing image</mat-radio-button>
+                        <mat-radio-button value="2" (click)="setradio('Male')">New image</mat-radio-button>
+                    </mat-radio-group>
+                </mat-step>
+            </mat-vertical-stepper>
+        </div>
+    </div>
+</div>

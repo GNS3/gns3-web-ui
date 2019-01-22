@@ -4,10 +4,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Server } from '../../../../models/server';
 import { switchMap } from 'rxjs/operators';
 import { ServerService } from '../../../../services/server.service';
-import { ServerSettings } from '../../../../models/serverSettings';
-import { Qemu } from '../../../../models/server-settings-models/qemu';
 import { ToasterService } from '../../../../services/toaster.service';
-import { QemuSettings } from '../../../../models/settings/qemu';
+import { QemuSettings } from '../../../../models/settings/qemu-settings';
 
 
 @Component({

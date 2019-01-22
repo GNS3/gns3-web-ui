@@ -91,7 +91,10 @@ import { TextEditorDialogComponent } from './components/project-map/drawings-edi
 import { PreferencesComponent } from './components/preferences/preferences.component';
 import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 import { ServerSettingsService } from './services/server-settings.service';
-import { QemuVirtualMachinesComponent } from './components/preferences/qemu/qemu-virtual-machines/qemu-virtual-machines.component';
+import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
+import { AddQemuVmTemplateComponent } from './components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
+import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
+import { QemuService } from './services/qemu.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -146,7 +149,9 @@ if (environment.production) {
     StyleEditorDialogComponent,
     TextEditorDialogComponent,
     QemuPreferencesComponent,
-    QemuVirtualMachinesComponent
+    QemuVmTemplatesComponent,
+    AddQemuVmTemplateComponent,
+    QemuVmTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -193,7 +198,8 @@ if (environment.production) {
     ServerDatabase,
     ProjectNameValidator,
     ToolsService,
-    ServerSettingsService
+    ServerSettingsService,
+    QemuService
   ],
   entryComponents: [
     AddServerDialogComponent,

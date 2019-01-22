@@ -9,7 +9,9 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { LocalServerComponent } from './components/local-server/local-server.component';
 import { PreferencesComponent } from './components/preferences/preferences.component';
 import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
-import { QemuVirtualMachinesComponent } from './components/preferences/qemu/qemu-virtual-machines/qemu-virtual-machines.component';
+import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
+import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
+import { AddQemuVmTemplateComponent } from './components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
 
 const routes: Routes = [
   {
@@ -23,7 +25,9 @@ const routes: Routes = [
       { path: 'settings', component: SettingsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
-      { path: 'server/:server_id/preferences/qemu/templates', component: QemuVirtualMachinesComponent }
+      { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },
+      { path: 'server/:server_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }
