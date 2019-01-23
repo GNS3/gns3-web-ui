@@ -1,44 +1,21 @@
 import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
+import { ExternalSoftwareDefinitionService } from './external-software-definition.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class InstalledSoftwareService {
-  private software = [{
-    name: 'SolarPuTTY',
-    locations: [
-      'SolarPuTTY.exe'
-    ],
-    type: 'web',
-    resource: '.exe',
-    binary: 'SolarPuTTY.exe',
-    sudo: false,
-    installation_arguments: ['--only-ask'],
-    installed: false
-  }, {
-    name: 'Wireshark',
-    locations: [
-      'C:\\Program Files\\Wireshark\\Wireshark.exe'
-    ],
-    type: 'web',
-    resource: 'https://1.na.dl.wireshark.org/win64/all-versions/Wireshark-win64-2.6.3.exe',
-    binary: 'Wireshark.exe',
-    sudo: true,
-    installation_arguments: [],
-    installed: false
-  }];
-
   constructor(
-    private electronService: ElectronService
-  ) { 
-}
+    private electronService: ElectronService,
+    private externalSoftwareDefinition: ExternalSoftwareDefinitionService
+  ) { }
 
   list() {
+    const softwareDefinition = this.externalSoftwareDefinition.get();
+
     const installedSoftware = this.electronService.remote.require('./installed-software.js')
-      .getInstalledSoftware(this.software);
+      .getInstalledSoftware(softwareDefinition);
     
-    return this.software.map((software) => {
+    return softwareDefinition.map((software) => {
       software.installed = installedSoftware[software.name].length > 0;
       return software;
     });
