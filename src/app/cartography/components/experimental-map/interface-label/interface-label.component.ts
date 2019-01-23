@@ -13,15 +13,15 @@ export class InterfaceLabelComponent implements OnInit {
   @ViewChild('textSvg') textRef: ElementRef;
 
   private label = {
-    'x': 0,
-    'y': 0,
-    'text': '',
-    'style': '',
-    'rotation': 0
+    x: 0,
+    y: 0,
+    text: '',
+    style: '',
+    rotation: 0
   };
 
   borderSize = 5;
-  
+
   textWidth = 0;
   textHeight = 0;
 
@@ -30,10 +30,9 @@ export class InterfaceLabelComponent implements OnInit {
     private ref: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     private cssFixer: CssFixer
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   @Input('x')
   set x(value) {
@@ -82,7 +81,7 @@ export class InterfaceLabelComponent implements OnInit {
   }
 
   get rectWidth() {
-    return this.textRef.nativeElement.getBBox().width + this.borderSize*2;
+    return this.textRef.nativeElement.getBBox().width + this.borderSize * 2;
   }
 
   get rectHeight() {

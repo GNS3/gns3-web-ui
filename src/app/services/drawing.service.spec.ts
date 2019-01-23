@@ -7,8 +7,7 @@ import { Server } from '../models/server';
 import { Drawing } from '../cartography/models/drawing';
 import { getTestServer } from './testing';
 import { DrawingService } from './drawing.service';
-import { AppTestingModule } from "../testing/app-testing/app-testing.module";
-
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;
@@ -18,14 +17,8 @@ describe('DrawingService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AppTestingModule
-      ],
-      providers: [
-        HttpServer,
-        DrawingService
-      ]
+      imports: [HttpClientTestingModule, AppTestingModule],
+      providers: [HttpServer, DrawingService]
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -44,102 +37,102 @@ describe('DrawingService', () => {
 
   it('should updatePosition of drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
-    drawing.project_id = "myproject";
-    drawing.drawing_id = "id";
+    drawing.project_id = 'myproject';
+    drawing.drawing_id = 'id';
 
     service.updatePosition(server, drawing, 10, 20).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
-    expect(req.request.method).toEqual("PUT");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+    expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
-      'x': 10,
-      'y': 20
+      x: 10,
+      y: 20
     });
   }));
 
   it('should updatePosition of drawing and round to integer', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
-    drawing.project_id = "myproject";
-    drawing.drawing_id = "id";
+    drawing.project_id = 'myproject';
+    drawing.drawing_id = 'id';
 
     service.updatePosition(server, drawing, 10.1, 20.6).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
-    expect(req.request.method).toEqual("PUT");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+    expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
-      'x': 10,
-      'y': 21
+      x: 10,
+      y: 21
     });
   }));
 
   it('should update size and position of drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
-    drawing.project_id = "myproject";
-    drawing.drawing_id = "id";
-    let svgSample = "<svg><test></svg>"
+    drawing.project_id = 'myproject';
+    drawing.drawing_id = 'id';
+    let svgSample = '<svg><test></svg>';
 
     service.updateSizeAndPosition(server, drawing, 100, 100, svgSample).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
-    expect(req.request.method).toEqual("PUT");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+    expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
-      'x': 100,
-      'y': 100,
-      'svg': svgSample
+      x: 100,
+      y: 100,
+      svg: svgSample
     });
   }));
 
-  it('should update size and position of drawing and round to integer', inject([DrawingService], (service: DrawingService) => {
-    const drawing = new Drawing();
-    drawing.project_id = "myproject";
-    drawing.drawing_id = "id";
-    let svgSample = "<svg><test></svg>"
+  it('should update size and position of drawing and round to integer', inject(
+    [DrawingService],
+    (service: DrawingService) => {
+      const drawing = new Drawing();
+      drawing.project_id = 'myproject';
+      drawing.drawing_id = 'id';
+      let svgSample = '<svg><test></svg>';
 
-    service.updateSizeAndPosition(server, drawing, 100.1, 100.6, svgSample).subscribe();
+      service.updateSizeAndPosition(server, drawing, 100.1, 100.6, svgSample).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
-    expect(req.request.method).toEqual("PUT");
-    expect(req.request.body).toEqual({
-      'x': 100,
-      'y': 101,
-      'svg': svgSample
-    });
-  }));
+      const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+      expect(req.request.method).toEqual('PUT');
+      expect(req.request.body).toEqual({
+        x: 100,
+        y: 101,
+        svg: svgSample
+      });
+    }
+  ));
 
   it('should update drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
-    drawing.project_id = "myproject";
-    drawing.drawing_id = "id";
+    drawing.project_id = 'myproject';
+    drawing.drawing_id = 'id';
     drawing.x = 10;
     drawing.y = 20;
     drawing.z = 30;
+    drawing.rotation = 0;
+    drawing.svg = '<svg></svg>';
 
     service.update(server, drawing).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
-    expect(req.request.method).toEqual("PUT");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+    expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
-      'x': 10,
-      'y': 20,
-      'z': 30
+      x: 10,
+      y: 20,
+      z: 30,
+      rotation: 0,
+      svg: '<svg></svg>'
     });
   }));
 
   it('should delete drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
-    drawing.project_id = "myproject";
-    drawing.drawing_id = "id";
+    drawing.project_id = 'myproject';
+    drawing.drawing_id = 'id';
 
     service.delete(server, drawing).subscribe();
 
-    const req = httpTestingController.expectOne(
-      'http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
-    expect(req.request.method).toEqual("DELETE");
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
+    expect(req.request.method).toEqual('DELETE');
   }));
-
 });

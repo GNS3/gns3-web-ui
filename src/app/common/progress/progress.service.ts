@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from "rxjs";
-
+import { BehaviorSubject } from 'rxjs';
 
 export class State {
   public visible: boolean;
@@ -36,5 +35,4 @@ export class ProgressService {
   public deactivate() {
     this.state.next(new State(false));
   }
-
 }

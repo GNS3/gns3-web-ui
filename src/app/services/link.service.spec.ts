@@ -8,7 +8,7 @@ import { Server } from '../models/server';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
 import { getTestServer } from './testing';
-import { AppTestingModule } from "../testing/app-testing/app-testing.module";
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 
 describe('LinkService', () => {
   let httpClient: HttpClient;
@@ -18,14 +18,8 @@ describe('LinkService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        AppTestingModule
-      ],
-      providers: [
-        HttpServer,
-        LinkService
-      ]
+      imports: [HttpClientTestingModule, AppTestingModule],
+      providers: [HttpServer, LinkService]
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -44,15 +38,15 @@ describe('LinkService', () => {
 
   it('should create link', inject([LinkService], (service: LinkService) => {
     const sourceNode = new Node();
-    sourceNode.project_id = "myproject";
-    sourceNode.node_id = "sourceid";
+    sourceNode.project_id = 'myproject';
+    sourceNode.node_id = 'sourceid';
 
     const sourcePort = new Port();
     sourcePort.port_number = 1;
     sourcePort.adapter_number = 2;
 
     const targetNode = new Node();
-    targetNode.node_id = "targetid";
+    targetNode.node_id = 'targetid';
 
     const targetPort = new Port();
     targetPort.port_number = 3;
@@ -61,18 +55,20 @@ describe('LinkService', () => {
     service.createLink(server, sourceNode, sourcePort, targetNode, targetPort).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/links');
-    expect(req.request.method).toEqual("POST");
-    expect(req.request.body).toEqual({"nodes": [
-      {
-        node_id: "sourceid",
-        port_number: 1,
-        adapter_number: 2
-      },
-      {
-        node_id: "targetid",
-        port_number: 3,
-        adapter_number: 4
-      }
-    ]});
+    expect(req.request.method).toEqual('POST');
+    expect(req.request.body).toEqual({
+      nodes: [
+        {
+          node_id: 'sourceid',
+          port_number: 1,
+          adapter_number: 2
+        },
+        {
+          node_id: 'targetid',
+          port_number: 3,
+          adapter_number: 4
+        }
+      ]
+    });
   }));
 });

@@ -16,12 +16,12 @@ import { DrawingsEventSource } from '../../../events/drawings-event-source';
 })
 export class DrawingComponent implements OnInit {
   @Input('app-drawing') drawing: MapDrawing;
-  
+
   constructor(
     private svgToDrawingConverter: SvgToDrawingConverter,
     private drawingsEventSource: DrawingsEventSource,
-    private cd: ChangeDetectorRef,
-  ) { }
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     try {
@@ -39,7 +39,7 @@ export class DrawingComponent implements OnInit {
 
   OnDragged(evt) {
     this.cd.detectChanges();
-    this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing>(this.drawing, evt.dx, evt.dy))
+    this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing>(this.drawing, evt.dx, evt.dy));
   }
 
   is(element, type: string) {
@@ -47,19 +47,19 @@ export class DrawingComponent implements OnInit {
       return false;
     }
 
-    if (type === "ellipse") {
+    if (type === 'ellipse') {
       return element instanceof EllipseElement;
     }
-    if (type === "image") {
+    if (type === 'image') {
       return element instanceof ImageElement;
     }
-    if (type === "line") {
+    if (type === 'line') {
       return element instanceof LineElement;
     }
-    if (type === "rect") {
+    if (type === 'rect') {
       return element instanceof RectElement;
     }
-    if (type === "text") {
+    if (type === 'text') {
       return element instanceof TextElement;
     }
     return false;

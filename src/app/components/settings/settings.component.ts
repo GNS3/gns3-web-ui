@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SettingsService } from "../../services/settings.service";
-import { ToasterService } from "../../services/toaster.service";
+import { SettingsService } from '../../services/settings.service';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-settings',
@@ -10,10 +10,7 @@ import { ToasterService } from "../../services/toaster.service";
 export class SettingsComponent implements OnInit {
   settings = { ...SettingsService.DEFAULTS };
 
-  constructor(
-    private settingsService: SettingsService,
-    private toaster: ToasterService
-  ) { }
+  constructor(private settingsService: SettingsService, private toaster: ToasterService) {}
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
@@ -21,6 +18,6 @@ export class SettingsComponent implements OnInit {
 
   save() {
     this.settingsService.setAll(this.settings);
-    this.toaster.success("Settings have been saved.");
+    this.toaster.success('Settings have been saved.');
   }
 }

@@ -1,8 +1,7 @@
-import { Injectable, EventEmitter } from "@angular/core";
-import { MapLinkCreated } from "./links";
-import { MapLinkNode } from "../models/map/map-link-node";
-import { DraggedDataEvent } from "./event-source";
-
+import { Injectable, EventEmitter } from '@angular/core';
+import { MapLinkCreated } from './links';
+import { MapLinkNode } from '../models/map/map-link-node';
+import { DraggedDataEvent } from './event-source';
 
 @Injectable()
 export class LinksEventSource {

@@ -1,9 +1,12 @@
-app-root, app-project-map, .project-map, app-map {
+app-root,
+app-project-map,
+.project-map,
+app-map {
   width: auto;
 }
 
 svg.map {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 
 g.node:hover {
@@ -23,12 +26,12 @@ g.node:hover {
   background: transparent;
   top: 20px;
   left: 92px;
-  background:#263238;
+  background: #263238;
   height: 72px;
   padding-top: 16px;
 
   .arrow-button {
-    outline: 0!important;
+    outline: 0 !important;
   }
 }
 
@@ -41,7 +44,7 @@ g.node:hover {
   background: transparent;
   top: 20px;
   left: 92px;
-  background:#263238;
+  background: #263238;
   height: 72px;
   padding-top: 16px;
   padding-bottom: 16px;
@@ -52,12 +55,12 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
   .menu-button {
-    outline: 0!important;
+    outline: 0 !important;
     transition: 0.5s;
     margin-bottom: 16px;
     width: 40px;
-    margin-right: 12px!important;
-    margin-left: 12px!important;
+    margin-right: 12px !important;
+    margin-left: 12px !important;
     background: #263238;
     padding: 0;
     border: none;
@@ -65,14 +68,14 @@ g.node:hover {
   }
 
   .arrow-button {
-    outline: 0!important;
+    outline: 0 !important;
     transition: 0.5s;
     margin-bottom: 16px;
   }
 }
 
 .extended {
-  width: 296px!important;
+  width: 296px !important;
   height: 100%;
   overflow: hidden;
 }
@@ -100,23 +103,25 @@ g.node:hover {
   position: absolute;
   top: 50%;
   width: 100px;
-  margin-left:-50px;
+  margin-left: -50px;
   margin-top: -50px;
   left: 50%;
 }
 
 line.selected {
-  stroke: #0097a7!important;
+  stroke: #0097a7 !important;
 }
 
-svg.map image:hover, svg.map image.chosen, g.selected {
+svg.map image:hover,
+svg.map image.chosen,
+g.selected {
   -webkit-filter: grayscale(100%);
   -moz-filter: grayscale(100%);
   -ms-filter: grayscale(100%);
   -o-filter: grayscale(100%);
   filter: grayscale(100%);
   filter: gray;
-  filter: url("#grayscale"); /* Chrome doesn't support CSS filters on SVG */
+  filter: url('#grayscale'); /* Chrome doesn't support CSS filters on SVG */
 }
 
 path.selected {
@@ -130,13 +135,12 @@ path.selected {
 
 .selection-line-tool .selection {
   fill: #7ccbe1;
-  stroke:  #66aec2 ;
+  stroke: #66aec2;
   fill-opacity: 0.3;
   stroke-opacity: 0.7;
   stroke-width: 1;
   stroke-dasharray: 5, 5;
 }
-
 
 g.node text,
 .noselect {
@@ -152,13 +156,12 @@ g.node text,
 .project-toolbar button {
   outline: 0;
   border: none;
-  -moz-outline-style: none
+  -moz-outline-style: none;
 }
 
 .options-item {
   padding-left: 15px;
   padding-right: 15px;
-
 }
 
 .context-menu-items .mat-menu-item {

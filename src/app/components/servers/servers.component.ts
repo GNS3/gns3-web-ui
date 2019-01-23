@@ -1,15 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { DataSource } from "@angular/cdk/collections";
+import { DataSource } from '@angular/cdk/collections';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { Observable, merge } from "rxjs";
-import { map } from "rxjs/operators";
+import { Observable, merge } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { Server } from "../../models/server";
-import { ServerService } from "../../services/server.service";
+import { Server } from '../../models/server';
+import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
-
-
 
 @Component({
   selector: 'app-server-list',
@@ -23,7 +21,8 @@ export class ServersComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private serverService: ServerService,
-    private serverDatabase: ServerDatabase) {}
+    private serverDatabase: ServerDatabase
+  ) {}
 
   ngOnInit() {
     this.serverService.findAll().then((servers: Server[]) => {
@@ -35,7 +34,7 @@ export class ServersComponent implements OnInit {
 
   createModal() {
     const dialogRef = this.dialog.open(AddServerDialogComponent, {
-      width: '350px',
+      width: '350px'
     });
 
     dialogRef.afterClosed().subscribe(server => {
@@ -52,25 +51,18 @@ export class ServersComponent implements OnInit {
       this.serverDatabase.remove(server);
     });
   }
-
 }
 
 @Component({
   selector: 'app-add-server-dialog',
-  templateUrl: 'add-server-dialog.html',
+  templateUrl: 'add-server-dialog.html'
 })
 export class AddServerDialogComponent implements OnInit {
   server: Server = new Server();
 
-  authorizations = [
-    {'key': 'none', name: 'No authorization'},
-    {'key': 'basic', name: 'Basic authorization'}
-  ];
+  authorizations = [{ key: 'none', name: 'No authorization' }, { key: 'basic', name: 'Basic authorization' }];
 
-  constructor(
-    public dialogRef: MatDialogRef<AddServerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-  }
+  constructor(public dialogRef: MatDialogRef<AddServerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {
     this.server.authorization = 'none';
@@ -83,10 +75,9 @@ export class AddServerDialogComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
-
 }
 
-export class ServerDataSource extends DataSource<Server> {
+export class ServerDataSource extends DataSource<Server> {
   constructor(private serverDatabase: ServerDatabase) {
     super();
   }
@@ -94,10 +85,10 @@ export class ServerDataSource extends DataSource<Server> {
   connect(): Observable<Server[]> {
     return merge(this.serverDatabase.dataChange).pipe(
       map(() => {
-      return this.serverDatabase.data;
-    }));
+        return this.serverDatabase.data;
+      })
+    );
   }
 
   disconnect() {}
-
 }

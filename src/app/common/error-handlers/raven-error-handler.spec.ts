@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { PersistenceService } from "angular-persistence";
+import { PersistenceService } from 'angular-persistence';
 
-import { SettingsService } from "../../services/settings.service";
-import { RavenErrorHandler } from "./raven-error-handler";
-import { environment } from "../../../environments/environment";
-
+import { SettingsService } from '../../services/settings.service';
+import { RavenErrorHandler } from './raven-error-handler';
+import { environment } from '../../../environments/environment';
 
 describe('RavenErrorHandler', () => {
   let handler: RavenErrorHandler;

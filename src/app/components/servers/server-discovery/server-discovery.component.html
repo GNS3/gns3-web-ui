@@ -1,6 +1,7 @@
 <mat-card class="info" *ngIf="discoveredServer">
   <mat-card-content align="center">
-  We've discovered GNS3 server on <b>{{ discoveredServer.ip }}:{{ discoveredServer.port }}</b>, would you like to add to the list?
+    We've discovered GNS3 server on <b>{{ discoveredServer.ip }}:{{ discoveredServer.port }}</b
+    >, would you like to add to the list?
   </mat-card-content>
   <mat-card-actions align="right">
     <button mat-button color="accent" (click)="ignore(discoveredServer)">NO</button>

@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import { ElectronService } from 'ngx-electron';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-default-layout',

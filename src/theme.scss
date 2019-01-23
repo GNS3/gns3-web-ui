@@ -7,7 +7,7 @@
 
 // Define a theme.
 $primary: mat-palette($mat-cyan, 700, 500, 900);
-$accent:  mat-palette($mat-blue-grey, A200, A100, A700);
+$accent: mat-palette($mat-blue-grey, A200, A100, A700);
 
 $theme: mat-dark-theme($primary, $accent);
 
@@ -16,11 +16,11 @@ $dark-background: mat-dark-theme($dark-palette, $primary);
 
 $mat-dark-theme-background: (
   status-bar: black,
-  app-bar:    map_get($mat-blue-grey, 900),
+  app-bar: map_get($mat-blue-grey, 900),
   background: map_get($mat-blue-grey, 900),
-  hover:      rgba(white, 0.04),
-  card:       map_get($mat-blue-grey, 900),
-  dialog:     map_get($mat-blue-grey, 900),
+  hover: rgba(white, 0.04),
+  card: map_get($mat-blue-grey, 900),
+  dialog: map_get($mat-blue-grey, 900),
   disabled-button: $white-12-opacity,
   raised-button: map-get($mat-grey, 800),
   focused-button: $white-6-opacity,
@@ -28,10 +28,15 @@ $mat-dark-theme-background: (
   selected-disabled-button: map_get($mat-grey, 800),
   disabled-button-toggle: black,
   unselected-chip: map_get($mat-grey, 700),
-  disabled-list-option: black,
+  disabled-list-option: black
 );
 
-$theme: map-merge($theme, (background: $mat-dark-theme-background));
+$theme: map-merge(
+  $theme,
+  (
+    background: $mat-dark-theme-background
+  )
+);
 
 @include mat-core-theme($theme);
 @include mat-autocomplete-theme($theme);

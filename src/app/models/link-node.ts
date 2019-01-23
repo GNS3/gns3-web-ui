@@ -1,4 +1,4 @@
-import { Label } from "../cartography/models/label";
+import { Label } from '../cartography/models/label';
 
 export class LinkNode {
   node_id: string;

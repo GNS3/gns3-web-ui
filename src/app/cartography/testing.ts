@@ -1,5 +1,4 @@
-import { select, Selection } from "d3-selection";
-
+import { select, Selection } from 'd3-selection';
 
 export class TestSVGCanvas {
   public svg: Selection<SVGSVGElement, any, HTMLElement, any>;
@@ -11,16 +10,16 @@ export class TestSVGCanvas {
 
   public create() {
     this.svg = select('body')
-        .append<SVGSVGElement>('svg')
-        .attr('width', 1000)
-        .attr('height', 1000);
+      .append<SVGSVGElement>('svg')
+      .attr('width', 1000)
+      .attr('height', 1000);
 
-    this.canvas = this.svg
-        .append<SVGGElement>('g')
-        .attr('class', 'canvas');
+    this.canvas = this.svg.append<SVGGElement>('g').attr('class', 'canvas');
   }
 
   public destroy() {
-    select('body').selectAll('svg').remove();
+    select('body')
+      .selectAll('svg')
+      .remove();
   }
 }

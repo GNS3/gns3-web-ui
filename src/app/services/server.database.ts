@@ -1,14 +1,13 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { Server } from "../models/server";
-
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { Server } from '../models/server';
 
 @Injectable()
 export class ServerDatabase {
   dataChange: BehaviorSubject<Server[]> = new BehaviorSubject<Server[]>([]);
 
   constructor() {}
-  
+
   get data(): Server[] {
     return this.dataChange.value;
   }

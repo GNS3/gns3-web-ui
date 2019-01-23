@@ -8,9 +8,8 @@ describe('MoveLayerUpActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MoveLayerUpActionComponent ]
-    })
-    .compileComponents();
+      declarations: [MoveLayerUpActionComponent]
+    }).compileComponents();
   }));
 
   // beforeEach(() => {

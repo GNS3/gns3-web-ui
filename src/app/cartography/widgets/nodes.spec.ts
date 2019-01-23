@@ -1,10 +1,8 @@
-
-import { TestSVGCanvas } from "../testing";
-import { NodesWidget } from "./nodes";
-import { NodeWidget } from "./node";
-import { instance, mock } from "ts-mockito";
-import { MapSettingsManager } from "../managers/map-settings-manager";
-
+import { TestSVGCanvas } from '../testing';
+import { NodesWidget } from './nodes';
+import { NodeWidget } from './node';
+import { instance, mock } from 'ts-mockito';
+import { MapSettingsManager } from '../managers/map-settings-manager';
 
 describe('NodesWidget', () => {
   let svg: TestSVGCanvas;
@@ -20,5 +18,4 @@ describe('NodesWidget', () => {
   afterEach(() => {
     svg.destroy();
   });
-
 });

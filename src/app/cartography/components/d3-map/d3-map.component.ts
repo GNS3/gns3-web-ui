@@ -1,11 +1,21 @@
 import {
-  Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChange, EventEmitter, Output, ViewChild
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChange,
+  EventEmitter,
+  Output,
+  ViewChild
 } from '@angular/core';
 import { Selection, select } from 'd3-selection';
 
-import { GraphLayout } from "../../widgets/graph-layout";
-import { Context } from "../../models/context";
-import { Size } from "../../models/size";
+import { GraphLayout } from '../../widgets/graph-layout';
+import { Context } from '../../models/context';
+import { Size } from '../../models/size';
 import { Subscription } from 'rxjs';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { SelectionTool } from '../../tools/selection-tool';
@@ -21,7 +31,6 @@ import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
-
 
 @Component({
   selector: 'app-d3-map',
@@ -50,7 +59,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private drawLinkTool: boolean;
 
   protected settings = {
-    'show_interface_labels': true
+    show_interface_labels: true
   };
 
   constructor(
@@ -65,11 +74,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout,
     private toolsService: ToolsService
-    ) {
+  ) {
     this.parentNativeElement = element.nativeElement;
   }
 
-  @Input('show-interface-labels') 
+  @Input('show-interface-labels')
   set showInterfaceLabels(value) {
     this.settings.show_interface_labels = value;
     this.interfaceLabelWidget.setEnabled(value);
@@ -79,7 +88,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('readonly') set readonly(value) {
     this.mapSettings.isReadOnly = value;
   }
-  
+
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
     if (
       (changes['width'] && !changes['width'].isFirstChange()) ||
@@ -142,7 +151,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public createGraph(domElement: HTMLElement) {
     const rootElement = select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
-    this.graphLayout.connect(this.svg, this.context);
+    this.graphLayout.connect(
+      this.svg,
+      this.context
+    );
     this.graphLayout.draw(this.svg, this.context);
     this.mapChangeDetectorRef.hasBeenDrawn = true;
   }

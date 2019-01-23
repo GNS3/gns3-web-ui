@@ -1,13 +1,12 @@
-import { Injectable } from "@angular/core";
-import { Subject } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
-import { NodesDataSource } from "../cartography/datasources/nodes-datasource";
-import { LinksDataSource } from "../cartography/datasources/links-datasource";
-import { DrawingsDataSource } from "../cartography/datasources/drawings-datasource";
-import { Link } from "../models/link";
-import { Node } from "../cartography/models/node";
-import { Drawing } from "../cartography/models/drawing";
-
+import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
+import { LinksDataSource } from '../cartography/datasources/links-datasource';
+import { DrawingsDataSource } from '../cartography/datasources/drawings-datasource';
+import { Link } from '../models/link';
+import { Node } from '../cartography/models/node';
+import { Drawing } from '../cartography/models/drawing';
 
 export class WebServiceMessage {
   action: string;
@@ -37,7 +36,7 @@ export class ProjectWebServiceHandler {
         this.linksDataSource.add(message.event as Link);
       }
       if (message.action === 'link.updated') {
-       this.linksDataSource.update(message.event as Link);
+        this.linksDataSource.update(message.event as Link);
       }
       if (message.action === 'link.deleted') {
         this.linksDataSource.remove(message.event as Link);
@@ -46,7 +45,7 @@ export class ProjectWebServiceHandler {
         this.drawingsDataSource.add(message.event as Drawing);
       }
       if (message.action === 'drawing.updated') {
-       this.drawingsDataSource.update(message.event as Drawing);
+        this.drawingsDataSource.update(message.event as Drawing);
       }
       if (message.action === 'drawing.deleted') {
         this.drawingsDataSource.remove(message.event as Drawing);

@@ -31,6 +31,11 @@ import { of } from 'rxjs';
 import { Server } from '../../models/server';
 import { Node } from '../../cartography/models/node';
 import { ToolsService } from '../../services/tools.service';
+import { DrawingsWidget } from '../../cartography/widgets/drawings';
+import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { SelectionManager } from '../../cartography/managers/selection-manager';
+import { SelectionTool } from '../../cartography/tools/selection-tool';
 
 export class MockedProgressService {
   public activate() {}
@@ -53,23 +58,23 @@ export class MockedDrawingService {
   public drawing = {} as Drawing;
   constructor() {}
 
-  add(_server: Server, _project_id:string, _x: number, _y:number, _svg: string) {
+  add(_server: Server, _project_id: string, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
   }
 
-  updatePosition(_server: Server, _drawing: Drawing, _x: number, _y: number){
+  updatePosition(_server: Server, _drawing: Drawing, _x: number, _y: number) {
     return of(this.drawing);
   }
 
-  updateSizeAndPosition(_server: Server, _drawing: Drawing, _x: number, _y: number, _svg: string){
+  updateSizeAndPosition(_server: Server, _drawing: Drawing, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
   }
 
-  update(_server: Server, _drawing: Drawing){
+  update(_server: Server, _drawing: Drawing) {
     return of(this.drawing);
   }
 
-  delete(_server: Server, _drawing: Drawing){
+  delete(_server: Server, _drawing: Drawing) {
     return of(this.drawing);
   }
 
@@ -85,7 +90,7 @@ export class MockedLinkService {
     return of({});
   }
 
-  updateNodes(){
+  updateNodes() {
     return of({});
   }
 }
@@ -93,63 +98,62 @@ export class MockedLinkService {
 export class MockedDrawingsDataSource {
   add() {}
 
-  get() { return of({})}
+  get() {
+    return of({});
+  }
 
-  update() { return of({})}
+  update() {
+    return of({});
+  }
 }
 
 export class MockedNodesDataSource {
   add() {}
 
-  get() { return of({})}
+  get() {
+    return of({});
+  }
 
-  update() { return of({})}
+  update() {
+    return of({});
+  }
 }
 
 describe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
-  let drawingService = new MockedDrawingService;
-  let drawingsDataSource = new MockedDrawingsDataSource;
+  let drawingService = new MockedDrawingService();
+  let drawingsDataSource = new MockedDrawingsDataSource();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule
-      ],
+      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: NodeService },
         { provide: LinkService },
-        { provide: DrawingService, useValue: drawingService},
+        { provide: DrawingService, useValue: drawingService },
         { provide: ProgressService, useClass: MockedProgressService },
         { provide: ProjectWebServiceHandler },
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
+        { provide: DrawingsWidget },
         { provide: MapNodeToNodeConverter },
+        { provide: MapDrawingToDrawingConverter },
+        { provide: MapLabelToLabelConverter },
         { provide: NodesDataSource },
         { provide: LinksDataSource },
-        { provide: DrawingsDataSource, useValue: drawingsDataSource},
+        { provide: DrawingsDataSource, useValue: drawingsDataSource },
         { provide: SettingsService, useClass: MockedSettingsService },
-        { provide: ToolsService }
+        { provide: ToolsService },
+        { provide: SelectionManager },
+        { provide: SelectionTool }
       ],
-      declarations: [
-        ProjectMapComponent,
-        D3MapComponent,
-        ...ANGULAR_MAP_DECLARATIONS
-      ],
-      schemas: [
-        NO_ERRORS_SCHEMA
-      ]
-    })
-    .compileComponents();
+      declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -163,7 +167,9 @@ describe('ProjectMapComponent', () => {
 
   it('should hide draw tools when hide menu is called', () => {
     var dummyElement = document.createElement('map');
-    document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => { return ([dummyElement])});
+    document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
+      return [dummyElement];
+    });
     spyOn(component, 'resetDrawToolChoice');
 
     component.hideMenu();

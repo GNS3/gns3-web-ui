@@ -1,6 +1,5 @@
-import { Injectable } from "@angular/core";
-import { MapLink } from "../models/map/map-link";
-
+import { Injectable } from '@angular/core';
+import { MapLink } from '../models/map/map-link';
 
 @Injectable()
 export class MultiLinkCalculatorHelper {
@@ -8,9 +7,9 @@ export class MultiLinkCalculatorHelper {
 
   public linkTranslation(
     distance: number,
-    point0: {x: number, y: number},
-    point1: {x: number, y: number}): {dx: number, dy: number} {
-
+    point0: { x: number; y: number },
+    point1: { x: number; y: number }
+  ): { dx: number; dy: number } {
     const x1_x0 = point1.x - point0.x;
     const y1_y0 = point1.y - point0.y;
     let x2_x0;
@@ -20,7 +19,7 @@ export class MultiLinkCalculatorHelper {
       x2_x0 = 0;
       y2_y0 = distance;
     } else {
-      const angle = Math.atan((x1_x0) / (y1_y0));
+      const angle = Math.atan(x1_x0 / y1_y0);
       x2_x0 = -distance * Math.cos(angle);
       y2_y0 = distance * Math.sin(angle);
     }
@@ -35,14 +34,14 @@ export class MultiLinkCalculatorHelper {
     links.forEach((l: MapLink, i: number) => {
       const sid = l.source.id;
       const tid = l.target.id;
-      const key = (sid < tid ? sid + "," + tid : tid + "," + sid);
+      const key = sid < tid ? sid + ',' + tid : tid + ',' + sid;
       let idx = 1;
       if (!(key in links_from_nodes)) {
         links_from_nodes[key] = [i];
       } else {
         idx = links_from_nodes[key].push(i);
       }
-      l.distance =  (idx % 2 === 0 ? idx * this.LINK_WIDTH : (-idx + 1) * this.LINK_WIDTH);
+      l.distance = idx % 2 === 0 ? idx * this.LINK_WIDTH : (-idx + 1) * this.LINK_WIDTH;
     });
   }
 }

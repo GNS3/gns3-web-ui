@@ -5,11 +5,10 @@ import { SelectionManager } from '../../../cartography/managers/selection-manage
 import { NodeService } from '../../../services/node.service';
 import { Server } from '../../../models/server';
 import { ToasterService } from '../../../services/toaster.service';
-import { Project } from "../../../models/project";
-import { ProjectService } from "../../../services/project.service";
+import { Project } from '../../../models/project';
+import { ProjectService } from '../../../services/project.service';
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
-
 
 @Component({
   selector: 'app-project-map-shortcuts',
@@ -28,7 +27,7 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
     private projectService: ProjectService,
     private mapNodeToNode: MapNodeToNodeConverter,
     private selectionManager: SelectionManager
-  ) { }
+  ) {}
 
   ngOnInit() {
     const self = this;
@@ -42,12 +41,14 @@ export class ProjectMapShortcutsComponent implements OnInit, OnDestroy {
     if (!this.projectService.isReadOnly(this.project)) {
       const selected = this.selectionManager.getSelected();
 
-      selected.filter((item) => item instanceof MapNode).forEach((item: MapNode) => {
-        const node = this.mapNodeToNode.convert(item);
-        this.nodesService.delete(this.server, node).subscribe(data => {
-          this.toaster.success("Node has been deleted");
+      selected
+        .filter(item => item instanceof MapNode)
+        .forEach((item: MapNode) => {
+          const node = this.mapNodeToNode.convert(item);
+          this.nodesService.delete(this.server, node).subscribe(data => {
+            this.toaster.success('Node has been deleted');
+          });
         });
-      });
     }
     return false;
   }

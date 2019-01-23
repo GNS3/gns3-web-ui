@@ -1,8 +1,7 @@
-import { LayersManager } from "./layers-manager";
-import { MapDrawing } from "../models/map/map-drawing";
-import { MapLink } from "../models/map/map-link";
-import { MapNode } from "../models/map/map-node";
-
+import { LayersManager } from './layers-manager';
+import { MapDrawing } from '../models/map/map-drawing';
+import { MapLink } from '../models/map/map-link';
+import { MapNode } from '../models/map/map-node';
 
 describe('LayersManager', () => {
   let manager: LayersManager;

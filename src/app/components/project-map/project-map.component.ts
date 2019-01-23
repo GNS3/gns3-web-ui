@@ -2,40 +2,50 @@ import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@ang
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
-import { webSocket } from "rxjs/webSocket";
-import { map, mergeMap } from "rxjs/operators";
+import { webSocket } from 'rxjs/webSocket';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
-import { Link } from "../../models/link";
-import { ServerService } from "../../services/server.service";
+import { Link } from '../../models/link';
+import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';
-import { Server } from "../../models/server";
-import { Drawing } from "../../cartography/models/drawing";
-import { NodeContextMenuComponent } from "./node-context-menu/node-context-menu.component";
-import { Template } from "../../models/template";
-import { NodeService } from "../../services/node.service";
-import { Symbol } from "../../models/symbol";
-import { NodesDataSource } from "../../cartography/datasources/nodes-datasource";
-import { LinksDataSource } from "../../cartography/datasources/links-datasource";
-import { ProjectWebServiceHandler } from "../../handlers/project-web-service-handler";
-import { DrawingsDataSource } from "../../cartography/datasources/drawings-datasource";
-import { ProgressService } from "../../common/progress/progress.service";
+import { Server } from '../../models/server';
+import { Drawing } from '../../cartography/models/drawing';
+import { ContextMenuComponent } from './context-menu/context-menu.component';
+import { Template } from '../../models/template';
+import { NodeService } from '../../services/node.service';
+import { Symbol } from '../../models/symbol';
+import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
+import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
+import { DrawingsDataSource } from '../../cartography/datasources/drawings-datasource';
+import { ProgressService } from '../../common/progress/progress.service';
 import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
 import { NodeContextMenu } from '../../cartography/events/nodes';
 import { NodeWidget } from '../../cartography/widgets/node';
+import { DrawingsWidget } from '../../cartography/widgets/drawings';
 import { DrawingService } from '../../services/drawing.service';
 import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { ToolsService } from '../../services/tools.service';
+import { DrawingContextMenu } from '../../cartography/events/event-source';
+import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
+import { SelectionManager } from '../../cartography/managers/selection-manager';
+import { SelectionTool } from '../../cartography/tools/selection-tool';
+import { MapDrawing } from '../../cartography/models/map/map-drawing';
+import { MapLabel } from '../../cartography/models/map/map-label';
+import { Label } from '../../cartography/models/label';
+import { MapNode } from '../../cartography/models/map/map-node';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 
 
 @Component({
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
-  styleUrls: ['./project-map.component.scss'],
+  styleUrls: ['./project-map.component.scss']
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
@@ -48,25 +58,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private ws: Subject<any>;
 
   tools = {
-    'selection': true,
-    'moving': false,
-    'draw_link': false,
-    'text_editing': true
+    selection: true,
+    moving: false,
+    draw_link: false,
+    text_editing: true
   };
 
   protected settings: Settings;
 
   protected drawTools = {
-    'isRectangleChosen': false,
-    'isEllipseChosen': false,
-    'isLineChosen': false,
-    'isTextChosen': false,
-    'visibility': false
+    isRectangleChosen: false,
+    isEllipseChosen: false,
+    isLineChosen: false,
+    isTextChosen: false,
+    visibility: false
   };
 
   private inReadOnlyMode = false;
 
-  @ViewChild(NodeContextMenuComponent) nodeContextMenu: NodeContextMenuComponent;
+  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
 
   private subscriptions: Subscription[] = [];
@@ -81,48 +91,59 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
+    private drawingsWidget: DrawingsWidget,
     private mapNodeToNode: MapNodeToNodeConverter,
+    private mapDrawingToDrawing: MapDrawingToDrawingConverter,
+    private mapLabelToLabel: MapLabelToLabelConverter,
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
     private settingsService: SettingsService,
-    private toolsService: ToolsService
+    private toolsService: ToolsService,
+    private selectionManager: SelectionManager,
+    private selectionTool: SelectionTool
   ) {}
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
-    
+
     this.progressService.activate();
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const server_id = parseInt(paramMap.get('server_id'), 10);
 
-      from(this.serverService.get(server_id)).pipe(
-        mergeMap((server: Server) => {
-          this.server = server;
-          return this.projectService.get(server, paramMap.get('project_id')).pipe(map((project) => {
-            return project;
-          }));
-        }),
-        mergeMap((project: Project) => {
-          this.project = project;
+      from(this.serverService.get(server_id))
+        .pipe(
+          mergeMap((server: Server) => {
+            this.server = server;
+            return this.projectService.get(server, paramMap.get('project_id')).pipe(
+              map(project => {
+                return project;
+              })
+            );
+          }),
+          mergeMap((project: Project) => {
+            this.project = project;
 
-          if (this.project.status === 'opened') {
-            return new Observable<Project>((observer) => {
-              observer.next(this.project);
-            });
-          } else {
-            return this.projectService.open(
-              this.server, this.project.project_id);
+            if (this.project.status === 'opened') {
+              return new Observable<Project>(observer => {
+                observer.next(this.project);
+              });
+            } else {
+              return this.projectService.open(this.server, this.project.project_id);
+            }
+          })
+        )
+        .subscribe(
+          (project: Project) => {
+            this.onProjectLoad(project);
+          },
+          error => {
+            this.progressService.setError(error);
+          },
+          () => {
+            this.progressService.deactivate();
           }
-        })
-      )
-      .subscribe((project: Project) => {
-        this.onProjectLoad(project);
-      }, (error) => {
-        this.progressService.setError(error);
-      }, () => {
-          this.progressService.deactivate();
-      });
+        );
     });
 
     this.subscriptions.push(routeSub);
@@ -180,41 +201,62 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpWS(project: Project) {
-    this.ws = webSocket(
-      this.projectService.notificationsPath(this.server, project.project_id));
+    this.ws = webSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
-    this.subscriptions.push(
-      this.projectWebServiceHandler.connect(this.ws)
-    );
+    this.subscriptions.push(this.projectWebServiceHandler.connect(this.ws));
   }
 
   setUpMapCallbacks() {
-    const onContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
+    if (!this.readonly) {
+      this.toolsService.selectionToolActivation(true);
+    }
+
+    const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.nodeContextMenu.open(
-        node,
-        eventNode.event.clientY,
-        eventNode.event.clientX
-      );
+      this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
     });
 
+    const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
+      const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
+      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
+    });
+
+    const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
+      const selectedItems = this.selectionManager.getSelected();
+      if (selectedItems.length === 0 || !(event instanceof MouseEvent)) return;
+
+      let drawings: Drawing[] = [];
+      let nodes: Node[] = [];
+      let labels: Label[] = [];
+
+      selectedItems.forEach((elem) => {
+        if (elem instanceof MapDrawing) {
+          drawings.push(this.mapDrawingToDrawing.convert(elem));
+        } else if (elem instanceof MapNode) {
+          nodes.push(this.mapNodeToNode.convert(elem));
+        } else if (elem instanceof MapLabel) {
+          labels.push(this.mapLabelToLabel.convert(elem));
+        }
+      });
+
+      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, event.clientY, event.clientX);
+    });
+
+    this.subscriptions.push(onNodeContextMenu);
+    this.subscriptions.push(onDrawingContextMenu);
     this.subscriptions.push(onContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 
   onNodeCreation(template: Template) {
-    this.nodeService
-      .createFromTemplate(this.server, this.project, template, 0, 0, 'local')
-      .subscribe(() => {
-          this.projectService
-            .nodes(this.server, this.project.project_id)
-            .subscribe((nodes: Node[]) => {
-              this.nodesDataSource.set(nodes);
-            });
-        });
+    this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
+      this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
+        this.nodesDataSource.set(nodes);
+      });
+    });
   }
 
-  public onDrawingSaved(){
+  public onDrawingSaved() {
     this.resetDrawToolChoice();
   }
 
@@ -253,25 +295,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public addDrawing(selectedObject: string) {
     switch (selectedObject) {
-      case "rectangle":
+      case 'rectangle':
         this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
         this.drawTools.isLineChosen = false;
         break;
-      case "ellipse":
+      case 'ellipse':
         this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = false;
         break;
-      case "line":
+      case 'line':
         this.drawTools.isTextChosen = false;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
         break;
-      case "text":
+      case 'text':
         this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
         this.drawTools.isEllipseChosen = false;
         this.drawTools.isRectangleChosen = false;
@@ -280,7 +322,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.selectedDrawing = this.selectedDrawing === selectedObject ? "" : selectedObject;
+    this.selectedDrawing = this.selectedDrawing === selectedObject ? '' : selectedObject;
   }
 
   public resetDrawToolChoice() {
@@ -288,20 +330,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
     this.drawTools.isTextChosen = false;
-    this.selectedDrawing = "";
+    this.selectedDrawing = '';
     this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
   }
 
-  public hideMenu(){
+  public hideMenu() {
     this.resetDrawToolChoice();
     this.drawTools.visibility = false;
   }
 
   public showMenu() {
-    setTimeout(() => {
-      this.drawTools.visibility = true;
-    },
-    200);
+    this.drawTools.visibility = true;
   }
 
   public ngOnDestroy() {
@@ -314,5 +353,4 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
-
 }

@@ -8,9 +8,8 @@ describe('RectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RectComponent ]
-    })
-    .compileComponents();
+      declarations: [RectComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -2,19 +2,35 @@
   <div class="default-header">
     <div class="row">
       <h1 class="col">Projects</h1>
-      <button *ngIf="settings.experimental_features" class="col" mat-raised-button color="primary" (click)="addBlankProject()" class="add-button">Add blank project</button>
-      <button *ngIf="settings.experimental_features" class="col" mat-raised-button color="primary" (click)="importProject()" class="import-button">Import project</button>
+      <button
+        *ngIf="settings.experimental_features"
+        class="col"
+        mat-raised-button
+        color="primary"
+        (click)="addBlankProject()"
+        class="add-button"
+      >
+        Add blank project
+      </button>
+      <button
+        *ngIf="settings.experimental_features"
+        class="col"
+        mat-raised-button
+        color="primary"
+        (click)="importProject()"
+        class="import-button"
+      >
+        Import project
+      </button>
     </div>
   </div>
   <div class="default-content">
-
     <div class="example-container mat-elevation-z8">
       <mat-table #table [dataSource]="dataSource" matSort>
-
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a [routerLink]="['/server', server.id, 'project', row.project_id]" class="table-link">{{row.name}}</a>
+            <a [routerLink]="['/server', server.id, 'project', row.project_id]" class="table-link">{{ row.name }}</a>
           </mat-cell>
         </ng-container>
 
@@ -28,13 +44,13 @@
               <mat-icon aria-label="Close project">pause</mat-icon>
             </button>
             <!--<button mat-icon-button matTooltip="Delete project" (click)="delete(row)" *ngIf="settings.experimental_features">-->
-              <!--<mat-icon aria-label="Delete project">delete</mat-icon>-->
+            <!--<mat-icon aria-label="Delete project">delete</mat-icon>-->
             <!--</button>-->
           </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
     </div>
   </div>

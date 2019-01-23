@@ -1,8 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-import { DataSource } from "./datasource";
-import { Link } from "../../models/link";
-
+import { DataSource } from './datasource';
+import { Link } from '../../models/link';
 
 @Injectable()
 export class LinksDataSource extends DataSource<Link> {

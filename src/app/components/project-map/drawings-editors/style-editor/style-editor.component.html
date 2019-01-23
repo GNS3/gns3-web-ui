@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>Style editor</h1>
+
+<div class="modal-form-container">
+  <mat-form-field>
+    <input matInput placeholder="Fill color" type="color" [(ngModel)]="element.fill">
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="Fill color" type="color" [(ngModel)]="element.stroke">
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="Border width" type="text" [(ngModel)]="element.stroke_width">
+  </mat-form-field>
+    
+  <mat-form-field *ngIf="element.stroke_dasharray">
+      <input matInput placeholder="Border style" type="text" [(ngModel)]="element.stroke_dasharray">
+  </mat-form-field>
+
+  <mat-form-field>
+      <input matInput placeholder="Rotation" type="text" [(ngModel)]="rotation">
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

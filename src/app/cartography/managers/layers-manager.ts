@@ -1,11 +1,10 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-import { Layer } from "../models/layer";
-import { Dictionary } from "../models/types";
-import { MapNode } from "../models/map/map-node";
-import { MapDrawing } from "../models/map/map-drawing";
-import { MapLink } from "../models/map/map-link";
-
+import { Layer } from '../models/layer';
+import { Dictionary } from '../models/types';
+import { MapNode } from '../models/map/map-node';
+import { MapDrawing } from '../models/map/map-drawing';
+import { MapLink } from '../models/map/map-link';
 
 @Injectable()
 export class LayersManager {
@@ -16,27 +15,27 @@ export class LayersManager {
   }
 
   public getLayersList(): Layer[] {
-    return Object.keys(this.layers).sort((a: string, b: string) => {
-      return Number(a) - Number(b);
-    }).map((key: string) => {
-      return this.layers[key];
-    });
+    return Object.keys(this.layers)
+      .sort((a: string, b: string) => {
+        return Number(a) - Number(b);
+      })
+      .map((key: string) => {
+        return this.layers[key];
+      });
   }
 
   public setNodes(nodes: MapNode[]) {
-    nodes
-      .forEach((node: MapNode) => {
-        const layer = this.getLayerForKey(node.z.toString());
-        layer.nodes.push(node);
-      });
+    nodes.forEach((node: MapNode) => {
+      const layer = this.getLayerForKey(node.z.toString());
+      layer.nodes.push(node);
+    });
   }
 
   public setDrawings(drawings: MapDrawing[]) {
-    drawings
-      .forEach((drawing: MapDrawing) => {
-        const layer = this.getLayerForKey(drawing.z.toString());
-        layer.drawings.push(drawing);
-      });
+    drawings.forEach((drawing: MapDrawing) => {
+      const layer = this.getLayerForKey(drawing.z.toString());
+      layer.drawings.push(drawing);
+    });
   }
 
   public setLinks(links: MapLink[]) {
@@ -60,5 +59,4 @@ export class LayersManager {
     }
     return this.layers[key];
   }
-
 }

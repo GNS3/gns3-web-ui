@@ -9,8 +9,7 @@ export class IndexedDbService {
   private db: AngularIndexedDB;
 
   constructor() {
-    this.db = new AngularIndexedDB(
-      IndexedDbService.DATABASE, IndexedDbService.VERSION);
+    this.db = new AngularIndexedDB(IndexedDbService.DATABASE, IndexedDbService.VERSION);
   }
 
   public get() {

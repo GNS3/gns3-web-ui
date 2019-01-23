@@ -10,32 +10,28 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 export class RectComponent implements OnInit {
   @Input('app-rect') rect: RectElement;
 
-  constructor(
-    private qtDasharrayFixer: QtDasharrayFixer
-    ) { }
+  constructor(private qtDasharrayFixer: QtDasharrayFixer) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   get fill_opacity() {
-    if(isFinite(this.rect.fill_opacity)) {
+    if (isFinite(this.rect.fill_opacity)) {
       return this.rect.fill_opacity;
     }
     return null;
   }
 
   get stroke_width() {
-    if(isFinite(this.rect.stroke_width)) {
+    if (isFinite(this.rect.stroke_width)) {
       return this.rect.stroke_width;
-    }
-    return null
-  }
-
-  get stroke_dasharray() {
-    if(this.rect.stroke_dasharray) {
-      return this.qtDasharrayFixer.fix(this.rect.stroke_dasharray);
     }
     return null;
   }
 
+  get stroke_dasharray() {
+    if (this.rect.stroke_dasharray) {
+      return this.qtDasharrayFixer.fix(this.rect.stroke_dasharray);
+    }
+    return null;
+  }
 }

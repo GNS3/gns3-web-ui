@@ -1,15 +1,13 @@
-import { TestSVGCanvas } from "../../testing";
-import { EllipseElement } from "../../models/drawings/ellipse-element";
-import { QtDasharrayFixer } from "../../helpers/qt-dasharray-fixer";
-import { MapDrawing } from "../../models/map/map-drawing";
-import { EllipseDrawingWidget } from "./ellipse-drawing";
-
+import { TestSVGCanvas } from '../../testing';
+import { EllipseElement } from '../../models/drawings/ellipse-element';
+import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { EllipseDrawingWidget } from './ellipse-drawing';
 
 describe('EllipseDrawingWidget', () => {
   let svg: TestSVGCanvas;
   let widget: EllipseDrawingWidget;
   let drawing: MapDrawing;
-
 
   beforeEach(() => {
     svg = new TestSVGCanvas();
@@ -23,11 +21,11 @@ describe('EllipseDrawingWidget', () => {
 
   it('should draw ellipse drawing', () => {
     const ellipse = new EllipseElement();
-    ellipse.fill = "#FFFFFFF";
+    ellipse.fill = '#FFFFFFF';
     ellipse.fill_opacity = 2.0;
-    ellipse.stroke = "#000000";
+    ellipse.stroke = '#000000';
     ellipse.stroke_width = 2.0;
-    ellipse.stroke_dasharray = "5,25,25";
+    ellipse.stroke_dasharray = '5,25,25';
     ellipse.cx = 10;
     ellipse.cy = 20;
     ellipse.rx = 30;
@@ -35,7 +33,10 @@ describe('EllipseDrawingWidget', () => {
     drawing.element = ellipse;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
+    const drawings_enter = drawings
+      .enter()
+      .append<SVGGElement>('g')
+      .classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

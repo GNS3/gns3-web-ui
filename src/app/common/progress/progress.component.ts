@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ProgressService } from "./progress.service";
-import { Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { ProgressService } from './progress.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-progress',
@@ -13,13 +13,10 @@ export class ProgressComponent implements OnInit, OnDestroy {
   error: Error;
   routerSubscription: Subscription;
 
-  constructor(
-    private progressService: ProgressService,
-    private router: Router,
-  ) { }
+  constructor(private progressService: ProgressService, private router: Router) {}
 
   ngOnInit() {
-    this.progressService.state.subscribe((state) => {
+    this.progressService.state.subscribe(state => {
       this.visible = state.visible;
 
       // only set error state once; ignore next "correct" states

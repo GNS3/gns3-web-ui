@@ -11,9 +11,11 @@ import { InstalledSoftwareComponent } from './components/installed-software/inst
 
 
 const routes: Routes = [
-  { path: '',  component: DefaultLayoutComponent,
+  {
+    path: '',
+    component: DefaultLayoutComponent,
     children: [
-      { path: '', redirectTo: 'servers', pathMatch: 'full'},
+      { path: '', redirectTo: 'servers', pathMatch: 'full' },
       { path: 'servers', component: ServersComponent },
       { path: 'local', component: LocalServerComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
@@ -21,12 +23,11 @@ const routes: Routes = [
       { path: 'installed-software', component: InstalledSoftwareComponent },
     ]
   },
-  { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent },
+  { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }
 ];
 
-
 @NgModule({
-  imports: [ RouterModule.forRoot(routes) ],
-  exports: [ RouterModule ]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {}

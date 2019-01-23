@@ -1,6 +1,5 @@
-import { Node } from "../cartography/models/node";
-import { LinkNode } from "./link-node";
-
+import { Node } from '../cartography/models/node';
+import { LinkNode } from './link-node';
 
 export class Link {
   capture_file_name: string;
@@ -10,7 +9,6 @@ export class Link {
   link_type: string;
   nodes: LinkNode[];
   project_id: string;
-
 
   distance: number; // this is not from server
   length: number; // this is not from server

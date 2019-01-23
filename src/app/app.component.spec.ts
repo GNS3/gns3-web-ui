@@ -2,12 +2,11 @@ import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
-import { MatIconModule } from "@angular/material";
-import { SettingsService } from "./services/settings.service";
-import { PersistenceService } from "angular-persistence";
-import { ElectronService, NgxElectronModule } from "ngx-electron";
+import { MatIconModule } from '@angular/material';
+import { SettingsService } from './services/settings.service';
+import { PersistenceService } from 'angular-persistence';
+import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import createSpyObj = jasmine.createSpyObj;
-
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -17,18 +16,9 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-        declarations: [
-          AppComponent
-        ],
-        imports: [
-          RouterTestingModule,
-          MatIconModule,
-          NgxElectronModule
-        ],
-        providers: [
-          SettingsService,
-          PersistenceService,
-        ]
+      declarations: [AppComponent],
+      imports: [RouterTestingModule, MatIconModule, NgxElectronModule],
+      providers: [SettingsService, PersistenceService]
     }).compileComponents();
 
     electronService = TestBed.get(ElectronService);

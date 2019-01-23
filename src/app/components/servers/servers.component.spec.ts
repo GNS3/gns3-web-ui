@@ -8,9 +8,8 @@ describe('ServersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServersComponent ]
-    })
-    .compileComponents();
+      declarations: [ServersComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -18,5 +17,4 @@ describe('ServersComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
 });

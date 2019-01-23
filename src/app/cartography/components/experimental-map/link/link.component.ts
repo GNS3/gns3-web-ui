@@ -1,7 +1,13 @@
 import {
-  Component, OnInit, Input, ViewChild, 
-  ElementRef, EventEmitter, ChangeDetectorRef, 
-  OnDestroy } from '@angular/core';
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ElementRef,
+  EventEmitter,
+  ChangeDetectorRef,
+  OnDestroy
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LinkStrategy } from './strategies/link-strategy';
 import { EthernetLinkStrategy } from './strategies/ethernet-link-strategy';
@@ -10,11 +16,10 @@ import { MultiLinkCalculatorHelper } from '../../../helpers/multi-link-calculato
 import { Node } from '../../../models/node';
 import { MapLink } from '../../../models/map/map-link';
 
-
 @Component({
   selector: '[app-link]',
   templateUrl: './link.component.html',
-  styleUrls: ['./link.component.scss'],
+  styleUrls: ['./link.component.scss']
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;
@@ -28,10 +33,7 @@ export class LinkComponent implements OnInit, OnDestroy {
 
   private nodeChangedSubscription: Subscription;
 
-  constructor(
-    private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
-    private ref: ChangeDetectorRef
-    ) {}
+  constructor(private multiLinkCalculatorHelper: MultiLinkCalculatorHelper, private ref: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.ref.detectChanges();
@@ -54,12 +56,15 @@ export class LinkComponent implements OnInit, OnDestroy {
   }
 
   get transform() {
-    const translation = this.multiLinkCalculatorHelper.linkTranslation(this.link.distance, this.link.source, this.link.target);
+    const translation = this.multiLinkCalculatorHelper.linkTranslation(
+      this.link.distance,
+      this.link.source,
+      this.link.target
+    );
     return `translate (${translation.dx}, ${translation.dy})`;
   }
 
   get d() {
     return this.strategy.d(this.link);
   }
-
 }

@@ -3,21 +3,20 @@ import { MatSnackBar } from '@angular/material';
 
 import { ToasterService } from './toaster.service';
 
-
 export class MockedToasterService {
   public errors: string[];
   public successes: string[];
   snackBarConfigForSuccess = {
     duration: 2000,
     panelClass: ['snackabar-success'],
-    MatSnackBarHorizontalPosition : 'center',
-    MatSnackBarVerticalPosition : 'bottom' 
+    MatSnackBarHorizontalPosition: 'center',
+    MatSnackBarVerticalPosition: 'bottom'
   };
   snackBarConfigForError = {
     duration: 2000,
     panelClass: ['snackabar-error'],
-    MatSnackBarHorizontalPosition : 'center',
-    MatSnackBarVerticalPosition : 'bottom' 
+    MatSnackBarHorizontalPosition: 'center',
+    MatSnackBarVerticalPosition: 'bottom'
   };
 
   constructor() {
@@ -34,7 +33,6 @@ export class MockedToasterService {
   }
 }
 
-
 class MockedSnackBar {
   public open(message: string, ignored: any, options: any) {}
 }
@@ -42,7 +40,7 @@ class MockedSnackBar {
 describe('ToasterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ToasterService, {provide: MatSnackBar, useClass: MockedSnackBar}]
+      providers: [ToasterService, { provide: MatSnackBar, useClass: MockedSnackBar }]
     });
   });
 
@@ -50,15 +48,21 @@ describe('ToasterService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should open when success', inject([ToasterService, MatSnackBar], (service: ToasterService, snackBar: MatSnackBar) => {
-    const spy = spyOn(snackBar, 'open');
-    service.success("message");
-    expect(snackBar.open).toHaveBeenCalledWith("message", 'Close', service.snackBarConfigForSuccess);
-  }));
+  it('should open when success', inject(
+    [ToasterService, MatSnackBar],
+    (service: ToasterService, snackBar: MatSnackBar) => {
+      const spy = spyOn(snackBar, 'open');
+      service.success('message');
+      expect(snackBar.open).toHaveBeenCalledWith('message', 'Close', service.snackBarConfigForSuccess);
+    }
+  ));
 
-  it('should open when error', inject([ToasterService, MatSnackBar], (service: ToasterService, snackBar: MatSnackBar) => {
-    const spy = spyOn(snackBar, 'open');
-    service.error("message");
-    expect(snackBar.open).toHaveBeenCalledWith("message", 'Close', service.snackBarConfigForError);
-  }));
+  it('should open when error', inject(
+    [ToasterService, MatSnackBar],
+    (service: ToasterService, snackBar: MatSnackBar) => {
+      const spy = spyOn(snackBar, 'open');
+      service.error('message');
+      expect(snackBar.open).toHaveBeenCalledWith('message', 'Close', service.snackBarConfigForError);
+    }
+  ));
 });
