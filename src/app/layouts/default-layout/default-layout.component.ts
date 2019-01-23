@@ -12,7 +12,7 @@ export class DefaultLayoutComponent implements OnInit {
 
   constructor(
     private electronService: ElectronService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
