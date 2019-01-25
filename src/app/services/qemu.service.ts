@@ -26,6 +26,10 @@ export class QemuService {
         return this.httpServer.get<QemuImage[]>(server, '/compute/qemu/images') as Observable<QemuImage[]>;
     }
 
+    addTemplate(server: Server, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+        return this.httpServer.post<QemuTemplate>(server, `/templates`, qemuTemplate) as Observable<QemuTemplate>;
+    }
+
     saveTemplate(server: Server, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
         return this.httpServer.put<QemuTemplate>(server, `/templates/${qemuTemplate.template_id}`, qemuTemplate) as Observable<QemuTemplate>;
     }

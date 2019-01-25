@@ -71,10 +71,10 @@ export class AddQemuVmTemplateComponent implements OnInit {
             qemuTemplate.adapters = 1;
             qemuTemplate.boot_priority = "c";
             qemuTemplate.category = "guest";
-            
             qemuTemplate.name = this.templateName;
-
-            //this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
+            this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template: QemuTemplate) => {
+                this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
+            });
         } else {
             this.toasterService.error(`Fill all required fields`);
         }

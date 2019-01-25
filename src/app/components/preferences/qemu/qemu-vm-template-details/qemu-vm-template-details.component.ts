@@ -61,6 +61,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     binaries: QemuBinary[] = [];
     activateCpuThrottling: boolean = true;
 
+    isConfiguratorOpened: boolean = true;
+
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
@@ -97,6 +99,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     uploadBiosFile(event){
         this.qemuTemplate.bios_image = event.target.files[0].name;
+    }
+
+    configureCustomAdapters(){
+        this.isConfiguratorOpened = !this.isConfiguratorOpened;
     }
 
     onSave(){

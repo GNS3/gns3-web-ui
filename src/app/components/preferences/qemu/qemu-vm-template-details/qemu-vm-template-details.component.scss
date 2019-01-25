@@ -19,3 +19,21 @@
     padding-right: 2%;
     width: 80%;
 }
+
+.configButton {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.shadowed {
+    opacity: 0.4;
+    margin-right: 80%;
+    transition: 0.15s;
+}
+
+.configurator {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    min-width: 300px;
+}

@@ -1,4 +1,4 @@
-<div class="content">
+<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened }">
     <div class="default-header">
         <div class="row">
             <h1 class="col">QEMU VM configuration</h1>
@@ -195,6 +195,7 @@
                     </mat-option>
                 </mat-select>
                 </mat-form-field>
+                <button mat-raised-button color="primary" class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
                 <mat-checkbox [(ngModel)]="qemuTemplate.legacy_networking">
                     Use the legacy networking mode
                 </mat-checkbox>
@@ -314,5 +315,15 @@
             </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar"><button mat-raised-button color="primary" (click)="onSave()">Save</button></div>
+    </div>
+</div>
+<div class="content" class="configurator" *ngIf="isConfiguratorOpened">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Custom adapters configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="qemuTemplate">
+
     </div>
 </div>
