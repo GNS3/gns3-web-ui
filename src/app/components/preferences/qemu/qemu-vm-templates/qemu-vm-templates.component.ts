@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Server } from '../../../../models/server';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { TemplateService } from '../../../../services/template.service';
 import { ServerService } from '../../../../services/server.service';
 import { switchMap } from 'rxjs/operators';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';

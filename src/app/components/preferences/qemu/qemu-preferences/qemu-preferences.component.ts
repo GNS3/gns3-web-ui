@@ -33,10 +33,10 @@ export class QemuPreferencesComponent implements OnInit {
           })
         )
         .subscribe((server: Server) => {
-          this.server = server;
-          this.serverSettingsService.getSettingsForQemu(this.server).subscribe((settings: QemuSettings) => {
-            this.settings = settings;
-          });
+            this.server = server;
+            this.serverSettingsService.getSettingsForQemu(this.server).subscribe((settings: QemuSettings) => {
+                this.settings = settings;
+            });
         });
     }
 
@@ -46,9 +46,9 @@ export class QemuPreferencesComponent implements OnInit {
         }
 
         this.serverSettingsService.updateSettingsForQemu(this.server, this.settings)
-            .subscribe((qemuSettings: QemuSettings) => {
-                this.toasterService.success(`Changes applied`);
-            });
+        .subscribe((qemuSettings: QemuSettings) => {
+            this.toasterService.success(`Changes applied`);
+        });
     }
 
     restoreDefaults(){
