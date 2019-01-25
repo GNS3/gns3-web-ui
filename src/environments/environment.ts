@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   electron: false,
-  githubio: false
+  githubio: false,
+  solarputty_download_url: ''
 };
 
 /*

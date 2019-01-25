@@ -32,7 +32,9 @@
     "prettier:base": "prettier",
     "prettier:check": "yarn prettier:base -- --list-different \"src/**/*.{ts,js,html,scss}\"",
     "prettier:write": "yarn prettier:base -- --write \"src/**/*.{ts,js,html,scss}\"",
-    "generate-licenses-file": "yarn license-checker --production --csv --out licenses.csv"
+    "generate-licenses-file": "yarn license-checker --production --csv --out licenses.csv",
+    "prebuild": "node set-variables-in-env.js --set src/environments/environment.prod.ts",
+    "postbuild": "node set-variables-in-env.js --unset src/environments/environment.prod.ts"
   },
   "private": true,
   "dependencies": {
@@ -94,6 +96,7 @@
     "popper.js": "^1.14.6",
     "prettier": "^1.15.2",
     "protractor": "~5.4.2",
+    "replace": "^1.0.1",
     "ts-mockito": "^2.3.1",
     "ts-node": "~7.0.1",
     "tslint": "~5.12.0",
