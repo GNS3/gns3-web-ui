@@ -1,3 +1,5 @@
+import { CustomAdapter } from '../qemu/qemu-custom-adapter';
+
 export class QemuTemplate {
     adapter_type: string;
     adapters: number;
@@ -11,7 +13,7 @@ export class QemuTemplate {
     console_type: string;
     cpu_throttling: number;
     cpus: number;
-    custom_adapters?: (null)[] | null;
+    custom_adapters: CustomAdapter[];
     default_name_format: string;
     first_port_name: string;
     hda_disk_image: string;

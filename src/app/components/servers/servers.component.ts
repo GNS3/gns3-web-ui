@@ -8,6 +8,8 @@ import { map } from 'rxjs/operators';
 import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
+import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
+
 
 @Component({
   selector: 'app-server-list',
@@ -50,30 +52,6 @@ export class ServersComponent implements OnInit {
     this.serverService.delete(server).then(() => {
       this.serverDatabase.remove(server);
     });
-  }
-}
-
-@Component({
-  selector: 'app-add-server-dialog',
-  templateUrl: 'add-server-dialog.html'
-})
-export class AddServerDialogComponent implements OnInit {
-  server: Server = new Server();
-
-  authorizations = [{ key: 'none', name: 'No authorization' }, { key: 'basic', name: 'Basic authorization' }];
-
-  constructor(public dialogRef: MatDialogRef<AddServerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
-
-  ngOnInit() {
-    this.server.authorization = 'none';
-  }
-
-  onAddClick(): void {
-    this.dialogRef.close(this.server);
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
   }
 }
 

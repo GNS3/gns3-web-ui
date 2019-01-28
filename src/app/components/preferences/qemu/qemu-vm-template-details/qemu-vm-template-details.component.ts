@@ -6,6 +6,7 @@ import { Server } from '../../../../models/server';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { ToasterService } from '../../../../services/toaster.service';
+import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 
 
 @Component({
@@ -60,8 +61,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
                 "very low"];
     binaries: QemuBinary[] = [];
     activateCpuThrottling: boolean = true;
-
     isConfiguratorOpened: boolean = true;
+    adapters: CustomAdapter[] = [];
+    displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
 
     constructor(
         private route: ActivatedRoute,
@@ -81,6 +83,18 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
                 this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
                     this.binaries = qemuBinaries;
                 });
+
+                for(let i=0; i<this.qemuTemplate.adapters; i++){
+                    let adapter = this.qemuTemplate.custom_adapters.find(elem => elem.adapter_number === i);
+                    if (adapter) {
+                        this.adapters.push(adapter);
+                    } else {
+                        this.adapters.push({
+                            adapter_number: i,
+                            adapter_type: this.qemuTemplate.adapter_type
+                        });
+                    }
+                }
             });
         });
     }
@@ -103,6 +117,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     configureCustomAdapters(){
         this.isConfiguratorOpened = !this.isConfiguratorOpened;
+        this.qemuTemplate.custom_adapters = this.adapters;
     }
 
     onSave(){

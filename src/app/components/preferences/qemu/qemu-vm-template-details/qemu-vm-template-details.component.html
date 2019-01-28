@@ -1,4 +1,4 @@
-<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened }">
+<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened }" [ngClass]="{ nonshadowed: !isConfiguratorOpened }">
     <div class="default-header">
         <div class="row">
             <h1 class="col">QEMU VM configuration</h1>
@@ -324,6 +324,35 @@
         </div>
     </div>
     <div class="default-content" *ngIf="qemuTemplate">
+        <div class="example-container mat-elevation-z8">
+            <table class="table" mat-table [dataSource]="adapters">
+                <ng-container matColumnDef="adapter_number">
+                    <th mat-header-cell *matHeaderCellDef> Adapter number </th>
+                    <td mat-cell *matCellDef="let element"> Adapter {{element.adapter_number}} </td>
+                </ng-container>
 
+                <ng-container matColumnDef="port_name">
+                    <th mat-header-cell *matHeaderCellDef> Port name </th>
+                    <td mat-cell *matCellDef="let element"> Ethernet {{element.adapter_number}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="adapter_type">
+                    <th mat-header-cell *matHeaderCellDef> Adapter type </th>
+                    <td mat-cell *matCellDef="let element; let i = index;">
+                        <mat-select placeholder="Type" [(ngModel)]="adapters[i].adapter_type">
+                            <mat-option *ngFor="let type of networkTypes" [value]="type[0]">
+                                {{type[1]}} ({{type[0]}})
+                            </mat-option>
+                        </mat-select>
+                    </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+        <div class="row">
+            <button mat-raised-button color="primary" class="configHideButton" (click)="configureCustomAdapters()">Apply</button><br/>
+        </div>
     </div>
 </div>

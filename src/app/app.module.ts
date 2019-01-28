@@ -35,7 +35,8 @@ import { ProgressDialogComponent } from './common/progress-dialog/progress-dialo
 import { AppComponent } from './app.component';
 
 import { ProjectMapComponent } from './components/project-map/project-map.component';
-import { ServersComponent, AddServerDialogComponent } from './components/servers/servers.component';
+import { ServersComponent } from './components/servers/servers.component';
+import { AddServerDialogComponent } from './components/servers/add-server-dialog/add-server-dialog.component';
 import { ContextMenuComponent } from './components/project-map/context-menu/context-menu.component';
 import { StartNodeActionComponent } from './components/project-map/context-menu/actions/start-node-action/start-node-action.component';
 import { StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
@@ -95,6 +96,7 @@ import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-
 import { AddQemuVmTemplateComponent } from './components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
 import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { QemuService } from './services/qemu.service';
+import { GeneralPreferencesComponent } from './components/preferences/general/general-preferences.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -151,7 +153,8 @@ if (environment.production) {
     QemuPreferencesComponent,
     QemuVmTemplatesComponent,
     AddQemuVmTemplateComponent,
-    QemuVmTemplateDetailsComponent
+    QemuVmTemplateDetailsComponent,
+    GeneralPreferencesComponent
   ],
   imports: [
     BrowserModule,
