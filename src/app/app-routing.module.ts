@@ -13,6 +13,8 @@ import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-
 import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { AddQemuVmTemplateComponent } from './components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
 import { GeneralPreferencesComponent } from './components/preferences/general/general-preferences.component';
+import { VpcsPreferencesComponent } from './components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component';
+import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 
 const routes: Routes = [
   {
@@ -25,12 +27,15 @@ const routes: Routes = [
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
+      { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       // temporary disabled
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
-      { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },
       { path: 'server/:server_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent }
+      { path: 'server/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent },
+      // temporary disabled
+      //{ path: 'server/:server_id/preferences/vpcs', component: VpcsPreferencesComponent }
+      { path: 'server/:server_id/preferences/vpcs/templates', component: VpcsTemplatesComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

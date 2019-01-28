@@ -97,6 +97,8 @@ import { AddQemuVmTemplateComponent } from './components/preferences/qemu/add-qe
 import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { QemuService } from './services/qemu.service';
 import { GeneralPreferencesComponent } from './components/preferences/general/general-preferences.component';
+import { VpcsPreferencesComponent } from './components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component';
+import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -154,7 +156,9 @@ if (environment.production) {
     QemuVmTemplatesComponent,
     AddQemuVmTemplateComponent,
     QemuVmTemplateDetailsComponent,
-    GeneralPreferencesComponent
+    GeneralPreferencesComponent,
+    VpcsPreferencesComponent,
+    VpcsTemplatesComponent
   ],
   imports: [
     BrowserModule,
