@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  electron: true
+  electron: true,
+  solarputty_download_url: ""
 };

@@ -92,6 +92,9 @@ import { InstallSoftwareComponent } from './components/installed-software/instal
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
 import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
+import { InstalledSoftwareService } from './services/installed-software.service';
+import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
+import { PlatformService } from './services/platform.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -191,7 +194,10 @@ if (environment.production) {
     ServerErrorHandler,
     ServerDatabase,
     ProjectNameValidator,
-    ToolsService
+    ToolsService,
+    InstalledSoftwareService,
+    ExternalSoftwareDefinitionService,
+    PlatformService
   ],
   entryComponents: [
     AddServerDialogComponent,
