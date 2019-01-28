@@ -39,8 +39,8 @@ before_install:
     # eval "$(pyenv virtualenv-init -)"
     # pyenv virtualenv 3.6.3 general
     # pyenv global general
-    python3 -V
-    pip3 -V
+    python -V
+    pip -V
 
 
 before_script:
