@@ -23,6 +23,9 @@ apt:
     - google-chrome-beta
     - g++-4.8
 
+services:
+  - xvfb
+
 before_install:
   - export CHROME_BIN=chromium-browser
   # - export DISPLAY=:99.0
