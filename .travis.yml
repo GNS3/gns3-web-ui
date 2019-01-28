@@ -41,6 +41,7 @@ before_install:
     # pyenv virtualenv 3.6.3 general
     # pyenv global general
     python3 -V
+    wget -qO- https://bootstrap.pypa.io/get-pip.py | python3
     python3 -m pip -V
 
 
