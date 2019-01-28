@@ -22,6 +22,7 @@ apt:
     - google-chrome-stable
     - google-chrome-beta
     - g++-4.8
+    - python3-pip
 
 before_install:
   # - export CHROME_BIN=chromium-browser
