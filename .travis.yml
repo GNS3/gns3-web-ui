@@ -11,6 +11,8 @@ cache:
   directories:
     - node_modules
 
+dist: xenial
+
 addons:
 apt:
   sources:
@@ -31,12 +33,12 @@ before_install:
 # Ubuntu trusty supports max python3.4, cx_freeze-5.1.1 requires min 3.5
 # Remove when goes to xenial
   - |
-    curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
-    export PATH="~/.pyenv/bin:$PATH"
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
-    pyenv virtualenv 3.6.3 general
-    pyenv global general
+    # curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+    # export PATH="~/.pyenv/bin:$PATH"
+    # eval "$(pyenv init -)"
+    # eval "$(pyenv virtualenv-init -)"
+    # pyenv virtualenv 3.6.3 general
+    # pyenv global general
     python3 -V
     pip3 -V
 
