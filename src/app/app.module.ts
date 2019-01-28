@@ -75,6 +75,8 @@ import { ProjectNameValidator } from './components/projects/models/projectNameVa
 import { MatSidenavModule } from '@angular/material';
 import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
+
+import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 import { DrawingResizedComponent } from './components/drawings-listeners/drawing-resized/drawing-resized.component';
 import { TextEditedComponent } from './components/drawings-listeners/text-edited/text-edited.component';
 import { NodeDraggedComponent } from './components/drawings-listeners/node-dragged/node-dragged.component';
@@ -85,9 +87,14 @@ import { InterfaceLabelDraggedComponent } from './components/drawings-listeners/
 import { ToolsService } from './services/tools.service';
 import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
 import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
+import { InstallSoftwareComponent } from './components/installed-software/install-software/install-software.component';
+
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
 import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
+import { InstalledSoftwareService } from './services/installed-software.service';
+import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
+import { PlatformService } from './services/platform.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -129,6 +136,7 @@ if (environment.production) {
     ServerDiscoveryComponent,
     NodeSelectInterfaceComponent,
     DrawLinkToolComponent,
+    InstalledSoftwareComponent,
     DrawingAddedComponent,
     DrawingResizedComponent,
     TextAddedComponent,
@@ -138,6 +146,7 @@ if (environment.production) {
     DrawingDraggedComponent,
     LinkCreatedComponent,
     InterfaceLabelDraggedComponent,
+    InstallSoftwareComponent,
     StyleEditorDialogComponent,
     TextEditorDialogComponent
   ],
@@ -185,7 +194,10 @@ if (environment.production) {
     ServerErrorHandler,
     ServerDatabase,
     ProjectNameValidator,
-    ToolsService
+    ToolsService,
+    InstalledSoftwareService,
+    ExternalSoftwareDefinitionService,
+    PlatformService
   ],
   entryComponents: [
     AddServerDialogComponent,

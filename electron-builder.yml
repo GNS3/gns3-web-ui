@@ -13,6 +13,7 @@ files:
   - main.js
   - renderer.js
   - sentry.js
+  - installed-software.js
   - package.json
 
 mac:

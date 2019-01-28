@@ -3,7 +3,7 @@
   <div class="default-content">
     <div class="example-container mat-elevation-z8">
       <mat-accordion>
-        <mat-expansion-panel>
+        <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-title> Local settings </mat-panel-title>
             <mat-panel-description> Customize your local settings </mat-panel-description>
@@ -32,4 +32,5 @@
 
     <div class="buttons-bar"><button mat-raised-button color="primary" (click)="save()">Save settings</button></div>
   </div>
+
 </div>
