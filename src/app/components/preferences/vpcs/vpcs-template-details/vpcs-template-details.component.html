@@ -1,0 +1,41 @@
+<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened }" [ngClass]="{ nonshadowed: !isConfiguratorOpened }">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">VPCS device configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="vpcsTemplate">
+        <mat-form-field class="row">
+            <input matInput type="text" [(ngModel)]="vpcsTemplate.name" placeholder="Template name">
+        </mat-form-field>
+        <mat-form-field class="row">
+            <input matInput type="text" [(ngModel)]="vpcsTemplate.default_name_format" placeholder="Default name format">
+        </mat-form-field>
+        <mat-form-field class="row">
+            <input matInput type="text" [(ngModel)]="vpcsTemplate.base_script_file" placeholder="Base script file">
+        </mat-form-field>
+        <mat-form-field class="row">
+            <input matInput type="text" [(ngModel)]="vpcsTemplate.symbol" placeholder="Symbol">
+        </mat-form-field>
+        <mat-form-field class="row">
+            <mat-select placeholder="Category" [(ngModel)]="vpcsTemplate.category">
+                <mat-option *ngFor="let category of categories" [value]="category[1]">
+                    {{category[0]}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="select">
+            <mat-select placeholder="Console type" [(ngModel)]="vpcsTemplate.console_type">
+                <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                    {{type}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-checkbox [(ngModel)]="vpcsTemplate.console_auto_start">
+            Auto start console
+        </mat-checkbox>
+        <div class="buttons-bar">
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
+        </div>
+    </div>
+</div>

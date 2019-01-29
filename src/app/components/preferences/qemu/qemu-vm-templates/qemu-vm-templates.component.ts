@@ -34,7 +34,7 @@ export class QemuVmTemplatesComponent implements OnInit {
             this.server = server;
             this.qemuService.getTemplates(server).subscribe((qemuTemplates: QemuTemplate[]) => {
                 qemuTemplates.forEach((template) => {
-                    if ((template.template_type = 'qemu') && !template.builtin) {
+                    if ((template.template_type === 'qemu') && !template.builtin) {
                         this.qemuTemplates.push(template);
                     }
                 });

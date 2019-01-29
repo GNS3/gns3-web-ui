@@ -11,4 +11,16 @@ export class VpcsService {
     getTemplates(server: Server): Observable<VpcsTemplate[]> {
         return this.httpServer.get<VpcsTemplate[]>(server, '/templates') as Observable<VpcsTemplate[]>;
     }
+
+    getTemplate(server: Server, template_id: string): Observable<VpcsTemplate> {
+        return this.httpServer.get<VpcsTemplate>(server, `/templates/${template_id}`) as Observable<VpcsTemplate>;
+    }
+
+    addTemplate(server: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
+        return this.httpServer.post<VpcsTemplate>(server, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
+    }
+
+    saveTemplate(server: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
+        return this.httpServer.put<VpcsTemplate>(server, `/templates/${vpcsTemplate.template_id}`, vpcsTemplate) as Observable<VpcsTemplate>;
+    }
 }

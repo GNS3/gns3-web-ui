@@ -61,7 +61,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
                 "very low"];
     binaries: QemuBinary[] = [];
     activateCpuThrottling: boolean = true;
-    isConfiguratorOpened: boolean = true;
+    isConfiguratorOpened: boolean = false;
     adapters: CustomAdapter[] = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
 
@@ -126,7 +126,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         }
 
         this.qemuService.saveTemplate(this.server, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
-            this.toasterService.success("Changes saved")
+            this.toasterService.success("Changes saved");
         });
     }
 }

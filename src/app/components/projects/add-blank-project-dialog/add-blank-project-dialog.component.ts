@@ -10,6 +10,7 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
 
+
 @Component({
   selector: 'app-add-blank-project-dialog',
   templateUrl: './add-blank-project-dialog.component.html',

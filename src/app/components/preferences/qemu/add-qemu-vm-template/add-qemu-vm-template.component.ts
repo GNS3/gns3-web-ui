@@ -55,15 +55,15 @@ export class AddQemuVmTemplateComponent implements OnInit {
         });
     }
 
-    setDiskImage(value: string){
+    setDiskImage(value: string) {
         this.newImageSelected = value === "newImage";
     }
 
-    uploadImageFile(event){
+    uploadImageFile(event) {
         this.chosenImage = event.target.files[0].name;
     }
 
-    addTemplate(){
+    addTemplate() {
         if (!(this.templateName && this.selectedBinary && this.ramMemory && this.selectedConsoleType &&
             (this.selectedImage || this.chosenImage))) {
             let qemuTemplate = new QemuTemplate();

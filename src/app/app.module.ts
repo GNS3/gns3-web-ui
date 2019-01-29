@@ -99,6 +99,9 @@ import { QemuService } from './services/qemu.service';
 import { GeneralPreferencesComponent } from './components/preferences/general/general-preferences.component';
 import { VpcsPreferencesComponent } from './components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component';
 import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
+import { VpcsService } from './services/vpcs.service';
+import { AddVpcsTemplateComponent } from './components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
+import { VpcsTemplateDetailsComponent } from './components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -158,7 +161,9 @@ if (environment.production) {
     QemuVmTemplateDetailsComponent,
     GeneralPreferencesComponent,
     VpcsPreferencesComponent,
-    VpcsTemplatesComponent
+    VpcsTemplatesComponent,
+    AddVpcsTemplateComponent,
+    VpcsTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -206,7 +211,8 @@ if (environment.production) {
     ProjectNameValidator,
     ToolsService,
     ServerSettingsService,
-    QemuService
+    QemuService,
+    VpcsService
   ],
   entryComponents: [
     AddServerDialogComponent,
