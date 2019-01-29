@@ -249,6 +249,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onNodeCreation(template: Template) {
+    if(!template) {
+      return;
+    }
+    
     this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
         this.nodesDataSource.set(nodes);
