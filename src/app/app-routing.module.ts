@@ -29,7 +29,8 @@ const routes: Routes = [
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
-      { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
+      // temporary disabled
+      // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       // temporary disabled
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },

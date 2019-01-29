@@ -1,10 +1,11 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
 import { VpcsService } from '../../../../services/vpcs.service';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
 
 @Component({
@@ -15,6 +16,7 @@ import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 export class VpcsTemplateDetailsComponent implements OnInit {
     server: Server;
     vpcsTemplate: VpcsTemplate;
+    inputForm: FormGroup;
 
     consoleTypes: string[] = ['telnet', 'none'];
     categories = [["Default", "guest"],
@@ -27,8 +29,16 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private serverService: ServerService,
         private vpcsService: VpcsService,
-        private toasterService: ToasterService
-    ) {}
+        private toasterService: ToasterService,
+        private formBuilder: FormBuilder
+    ) {
+        this.inputForm = this.formBuilder.group({
+            templateName: new FormControl('', Validators.required),
+            defaultName: new FormControl('', Validators.required),
+            scriptFile: new FormControl('', Validators.required),
+            symbol: new FormControl('', Validators.required)
+        });
+    }
 
     ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get("server_id");
@@ -43,8 +53,12 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     }
 
     onSave() {
-        this.vpcsService.saveTemplate(this.server, this.vpcsTemplate).subscribe((vpcsTemaple: VpcsTemplate) => {
-            this.toasterService.success("Changes saved");
-        });
+        if( this.inputForm.invalid) {
+            this.toasterService.error(`Fill all required fields`);
+        } else {
+            this.vpcsService.saveTemplate(this.server, this.vpcsTemplate).subscribe((vpcsTemaple: VpcsTemplate) => {
+                this.toasterService.success("Changes saved");
+            });
+        }
     }
 }
