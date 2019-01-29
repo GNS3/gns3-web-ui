@@ -35,20 +35,28 @@
                     placeholder="Symbol">
             </mat-form-field>
             <mat-form-field class="row">
-                <mat-select placeholder="Category" [ngModelOptions]="{standalone: true}" [(ngModel)]="vpcsTemplate.category">
+                <mat-select 
+                    placeholder="Category" 
+                    [ngModelOptions]="{standalone: true}" 
+                    [(ngModel)]="vpcsTemplate.category">
                     <mat-option *ngFor="let category of categories" [value]="category[1]">
                         {{category[0]}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="select">
-                <mat-select placeholder="Console type" [ngModelOptions]="{standalone: true}" [(ngModel)]="vpcsTemplate.console_type">
+                <mat-select 
+                    placeholder="Console type" 
+                    [ngModelOptions]="{standalone: true}" 
+                    [(ngModel)]="vpcsTemplate.console_type">
                     <mat-option *ngFor="let type of consoleTypes" [value]="type">
                         {{type}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="vpcsTemplate.console_auto_start">
+            <mat-checkbox 
+                [ngModelOptions]="{standalone: true}" 
+                [(ngModel)]="vpcsTemplate.console_auto_start">
                 Auto start console
             </mat-checkbox>
         </form>

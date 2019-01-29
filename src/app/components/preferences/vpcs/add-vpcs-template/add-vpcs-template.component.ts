@@ -7,6 +7,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
 
 
 @Component({
@@ -23,7 +24,8 @@ export class AddVpcsTemplateComponent implements OnInit {
         private serverService: ServerService,
         private vpcsService: VpcsService,
         private router: Router,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        private templateMocksService: TemplateMocksService
     ) {}
 
     ngOnInit() {
@@ -41,19 +43,15 @@ export class AddVpcsTemplateComponent implements OnInit {
 
     addTemplate() {
         if (this.templateName) {
-            let vpcsTemplate: VpcsTemplate = {
-                base_script_file: 'vpcs_base_config.txt',
-                builtin: false,
-                category: 'guest',
-                compute_id: 'local',
-                console_auto_start: false,
-                console_type: 'telnet',
-                default_name_format: 'PC{0}',
-                name: this.templateName,
-                symbol: ':/symbols/vpcs_guest.svg',
-                template_id: uuid(),
-                template_type: 'vpcs'
-            };
+            let vpcsTemplate: VpcsTemplate;
+
+            this.templateMocksService.getVpcsTemplate().subscribe((template: VpcsTemplate) => {
+                vpcsTemplate = template;
+            });
+
+            vpcsTemplate.template_id = uuid(),
+            vpcsTemplate.name = this.templateName,
+
             this.vpcsService.addTemplate(this.server, vpcsTemplate).subscribe((vpcsTemplate) => {
                 this.router.navigate(['/server', this.server.id, 'preferences', 'vpcs', 'templates']);
             });

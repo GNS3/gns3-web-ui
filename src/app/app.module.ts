@@ -102,6 +102,7 @@ import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templ
 import { VpcsService } from './services/vpcs.service';
 import { AddVpcsTemplateComponent } from './components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
 import { VpcsTemplateDetailsComponent } from './components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
+import { TemplateMocksService } from './services/template-mocks.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -212,7 +213,8 @@ if (environment.production) {
     ToolsService,
     ServerSettingsService,
     QemuService,
-    VpcsService
+    VpcsService,
+    TemplateMocksService
   ],
   entryComponents: [
     AddServerDialogComponent,
