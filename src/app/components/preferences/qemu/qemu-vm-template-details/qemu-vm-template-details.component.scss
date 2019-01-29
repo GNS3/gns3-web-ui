@@ -32,21 +32,13 @@
 }
 
 .shadowed {
-    opacity: 0.4;
-    margin-right: 80%;
+    display: none;
     transition: 0.25s;
 }
 
 .nonshadowed {
     opacity: 0;
     transition: 0.25s;
-}
-
-.configurator {
-    position: absolute;
-    top: 60px;
-    left: 40%;
-    min-width: 40%;
 }
 
 th {

@@ -79,7 +79,7 @@
         <app-template [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-template>
       </mat-toolbar-row>
 
-      <mat-toolbar-row>
+      <mat-toolbar-row *ngIf="!readonly">
         <button mat-icon-button routerLink="/server/{{server.id}}/preferences">
           <mat-icon>settings_applications</mat-icon>
         </button>

@@ -195,7 +195,7 @@
                     </mat-option>
                 </mat-select>
                 </mat-form-field>
-                <button mat-raised-button color="primary" class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
+                <button mat-raised-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
                 <mat-checkbox [(ngModel)]="qemuTemplate.legacy_networking">
                     Use the legacy networking mode
                 </mat-checkbox>
@@ -324,7 +324,7 @@
         </div>
     </div>
     <div class="default-content" *ngIf="qemuTemplate">
-        <div class="example-container mat-elevation-z8">
+        <div class="container mat-elevation-z8">
             <table class="table" mat-table [dataSource]="adapters">
                 <ng-container matColumnDef="adapter_number">
                     <th mat-header-cell *matHeaderCellDef> Adapter number </th>
