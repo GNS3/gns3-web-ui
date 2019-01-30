@@ -1,0 +1,17 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">VirtualBox VM templates</h1>
+            <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/virtualbox/addtemplate" mat-raised-button color="primary">Add Virtual Box VM template</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-nav-list *ngIf="server">
+                <mat-list-item *ngFor='let template of virtualBoxTemplates' routerLink="{{template.template_id}}">
+                    {{template.name}}
+                </mat-list-item>
+            </mat-nav-list>
+        </div>
+    </div>
+</div>

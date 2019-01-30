@@ -103,6 +103,11 @@ import { VpcsService } from './services/vpcs.service';
 import { AddVpcsTemplateComponent } from './components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
 import { VpcsTemplateDetailsComponent } from './components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
 import { TemplateMocksService } from './services/template-mocks.service';
+import { VirtualBoxPreferencesComponent } from './components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component';
+import { VirtualBoxTemplatesComponent } from './components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
+import { VirtualBoxService } from './services/virtual-box.service';
+import { VirtualBoxTemplateDetailsComponent } from './components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
+import { AddVirtualBoxTemplateComponent } from './components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -164,7 +169,11 @@ if (environment.production) {
     VpcsPreferencesComponent,
     VpcsTemplatesComponent,
     AddVpcsTemplateComponent,
-    VpcsTemplateDetailsComponent
+    VpcsTemplateDetailsComponent,
+    VirtualBoxPreferencesComponent,
+    VirtualBoxTemplatesComponent,
+    VirtualBoxTemplateDetailsComponent,
+    AddVirtualBoxTemplateComponent
   ],
   imports: [
     BrowserModule,
@@ -214,7 +223,8 @@ if (environment.production) {
     ServerSettingsService,
     QemuService,
     VpcsService,
-    TemplateMocksService
+    TemplateMocksService,
+    VirtualBoxService
   ],
   entryComponents: [
     AddServerDialogComponent,

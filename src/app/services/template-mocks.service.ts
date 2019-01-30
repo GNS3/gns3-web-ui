@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { QemuTemplate } from '../models/templates/qemu-template';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
 import { Observable, of } from 'rxjs';
+import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -67,6 +68,36 @@ export class TemplateMocksService {
             symbol: ':/symbols/vpcs_guest.svg',
             template_id: '',
             template_type: 'vpcs'
+        }
+
+        return of(template);
+    }
+
+    getVirtualBoxTemplate() : Observable<VirtualBoxTemplate> {
+        let template: VirtualBoxTemplate = {
+            adapter_type: 'Intel PRO/1000 MT Desktop (82540EM)',
+            adapters: 1,
+            builtin: false,
+            category: 'guest',
+            compute_id: 'local',
+            console_auto_start: false,
+            console_type: 'none',
+            custom_adapters: [],
+            default_name_format: '{name}-{0}',
+            first_port_name: '',
+            headless: false,
+            linked_clone: false,
+            name: '',
+            on_close: 'power_off',
+            port_name_format: 'Ethernet{0}',
+            port_segment_size: 0,
+            ram: 0,
+            symbol: ':/symbols/vbox_guest.svg',
+            template_id: '',
+            template_type: 'virtualbox',
+            usage: '',
+            use_any_adapter: false,
+            vmname: ''
         }
 
         return of(template);

@@ -1,3 +1,5 @@
+import { CustomAdapter } from '../qemu/qemu-custom-adapter';
+
 export interface VirtualBoxTemplate {
     adapter_type: string;
     adapters: number;
@@ -6,7 +8,7 @@ export interface VirtualBoxTemplate {
     compute_id: string;
     console_auto_start: boolean;
     console_type: string;
-    custom_adapters?: (null)[] | null;
+    custom_adapters?: CustomAdapter[];
     default_name_format: string;
     first_port_name: string;
     headless: boolean;

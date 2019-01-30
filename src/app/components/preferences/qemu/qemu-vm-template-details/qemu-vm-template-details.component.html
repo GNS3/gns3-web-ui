@@ -312,6 +312,9 @@
                         Usage
                     </mat-panel-title>
                 </mat-expansion-panel-header>
+                <mat-form-field class="row">
+                    <textarea matInput type="text" [(ngModel)]="qemuTemplate.usage"></textarea>
+                </mat-form-field>
             </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar"><button mat-raised-button color="primary" (click)="onSave()">Save</button></div>

@@ -1,0 +1,41 @@
+.row {
+    width: 100%;
+    margin-left: 0px;
+}
+
+.select {
+    width: 100%;
+}
+
+.configButton {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.configHideButton {
+    margin-left: 80%;
+    width: 20%;
+    margin-bottom: 10px;
+}
+
+.shadowed {
+    display: none;
+    transition: 0.25s;
+}
+
+.nonshadowed {
+    opacity: 0;
+    transition: 0.25s;
+}
+
+th {
+    border: 0px!important;
+}
+
+th.mat-header-cell {
+    padding-bottom: 15px;
+}
+
+td.mat-cell {
+    padding-top: 15px;
+}

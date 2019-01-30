@@ -17,6 +17,10 @@ import { VpcsPreferencesComponent } from './components/preferences/vpcs/vpcs-pre
 import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 import { AddVpcsTemplateComponent } from './components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
 import { VpcsTemplateDetailsComponent } from './components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
+import { VirtualBoxPreferencesComponent } from './components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component';
+import { VirtualBoxTemplatesComponent } from './components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
+import { VirtualBoxTemplateDetailsComponent } from './components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
+import { AddVirtualBoxTemplateComponent } from './components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
 
 const routes: Routes = [
   {
@@ -40,7 +44,12 @@ const routes: Routes = [
       // { path: 'server/:server_id/preferences/vpcs', component: VpcsPreferencesComponent },
       { path: 'server/:server_id/preferences/vpcs/templates', component: VpcsTemplatesComponent },
       { path: 'server/:server_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent},
-      { path: 'server/:server_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent }
+      { path: 'server/:server_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent },
+      // temporary disabled
+      // { path: 'server/:server_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent }
+      { path: 'server/:server_id/preferences/virtualbox/templates', component: VirtualBoxTemplatesComponent },
+      { path: 'server/:server_id/preferences/virtualbox/templates/:template_id', component: VirtualBoxTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/virtualbox/addtemplate', component: AddVirtualBoxTemplateComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

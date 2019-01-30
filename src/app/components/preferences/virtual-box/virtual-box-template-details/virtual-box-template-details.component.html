@@ -1,0 +1,140 @@
+<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened }" [ngClass]="{ nonshadowed: !isConfiguratorOpened }">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">VirtualBox VM configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="virtualBoxTemplate">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        General settings
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-form-field class="row">
+                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.name" placeholder="Template name">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.default_name_format" placeholder="Default name format">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.symbol" placeholder="Symbol">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <mat-select placeholder="Category" [(ngModel)]="virtualBoxTemplate.category">
+                        <mat-option *ngFor="let category of categories" [value]="category[1]">
+                            {{category[0]}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="select">
+                    <mat-select placeholder="Console type" [(ngModel)]="virtualBoxTemplate.console_type">
+                        <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-checkbox [(ngModel)]="virtualBoxTemplate.console_auto_start">
+                    Auto start console
+                </mat-checkbox>
+                <mat-form-field class="row">
+                    <input matInput type="number" [(ngModel)]="virtualBoxTemplate.ram" placeholder="RAM">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <mat-select placeholder="On close" [(ngModel)]="virtualBoxTemplate.on_close">
+                        <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
+                            {{option[0]}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-checkbox [(ngModel)]="virtualBoxTemplate.headless">
+                    Start VM in headless mode
+                </mat-checkbox><br/>
+                <mat-checkbox [(ngModel)]="virtualBoxTemplate.linked_clone">
+                    Use as a linked base VM (experimental)
+                </mat-checkbox>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Network
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-form-field class="row">
+                    <input matInput type="number" [(ngModel)]="virtualBoxTemplate.adapters" placeholder="Adapters">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.first_port_name" placeholder="First port name">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.port_name_format" placeholder="Name format">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input matInput type="number" [(ngModel)]="virtualBoxTemplate.port_segment_size" placeholder="Segment size">
+                </mat-form-field>
+                <mat-form-field class="row">
+                <mat-select placeholder="Type" [(ngModel)]="virtualBoxTemplate.adapter_type">
+                    <mat-option *ngFor="let type of networkTypes" [value]="type">
+                        {{type}}
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+                <button mat-raised-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
+                <mat-checkbox [(ngModel)]="virtualBoxTemplate.use_any_adapter">
+                    Allow GNS3 to use any configured VirtualBox adapter
+                </mat-checkbox>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Usage
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-form-field class="row">
+                    <textarea matInput type="text" [(ngModel)]="virtualBoxTemplate.usage"></textarea>
+                </mat-form-field>
+            </mat-expansion-panel>
+        </mat-accordion>
+        <div class="buttons-bar"><button mat-raised-button color="primary" (click)="onSave()">Save</button></div>
+    </div>
+</div>
+<div class="content" class="configurator" *ngIf="isConfiguratorOpened">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Custom adapters configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="virtualBoxTemplate">
+        <div class="container mat-elevation-z8">
+            <table class="table" mat-table [dataSource]="adapters">
+                <ng-container matColumnDef="adapter_number">
+                    <th mat-header-cell *matHeaderCellDef> Adapter number </th>
+                    <td mat-cell *matCellDef="let element"> Adapter {{element.adapter_number}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="port_name">
+                    <th mat-header-cell *matHeaderCellDef> Port name </th>
+                    <td mat-cell *matCellDef="let element"> Ethernet {{element.adapter_number}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="adapter_type">
+                    <th mat-header-cell *matHeaderCellDef> Adapter type </th>
+                    <td mat-cell *matCellDef="let element; let i = index;">
+                        <mat-select placeholder="Type" [(ngModel)]="adapters[i].adapter_type">
+                            <mat-option *ngFor="let type of networkTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+        <div class="row">
+            <button mat-raised-button color="primary" class="configHideButton" (click)="configureCustomAdapters()">Apply</button><br/>
+        </div>
+    </div>
+</div>
