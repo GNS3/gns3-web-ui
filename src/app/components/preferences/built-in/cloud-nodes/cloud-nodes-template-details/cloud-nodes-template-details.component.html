@@ -1,0 +1,14 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Cloud configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="ethernetHubTemplate">
+        <form [formGroup]="inputForm">
+        </form>
+        <div class="buttons-bar">
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
+        </div>
+    </div>
+</div>

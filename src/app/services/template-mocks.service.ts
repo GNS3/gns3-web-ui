@@ -4,6 +4,8 @@ import { VpcsTemplate } from '../models/templates/vpcs-template';
 import { Observable, of } from 'rxjs';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
 import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
+import { CloudTemplate } from '../models/templates/cloud-template';
+import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -104,6 +106,23 @@ export class TemplateMocksService {
         return of(template);
     }
 
+    getCloudNodeTemplate() : Observable<CloudTemplate> {
+        let template = {
+            builtin: false,
+            category: 'guest',
+            compute_id: 'local',
+            default_name_format: 'Cloud{0}',
+            name: '',
+            ports_mapping: [],
+            remote_console_type: 'none',
+            symbol: ':/symbols/cloud.svg',
+            template_id: '',
+            template_type: 'cloud'
+        } as CloudTemplate;
+
+        return of(template);
+    }
+
     getEthernetHubTemplate() : Observable<EthernetHubTemplate> {
         let template: EthernetHubTemplate = {
             builtin: false,
@@ -115,6 +134,23 @@ export class TemplateMocksService {
             symbol: ':/symbols/hub.svg',
             template_id: '',
             template_type: 'ethernet_hub'
+        }
+
+        return of(template);
+    }
+
+    getEthernetSwitchTemplate() : Observable<EthernetSwitchTemplate> {
+        let template: EthernetSwitchTemplate = {
+            builtin: false,
+            category: 'switch',
+            compute_id: 'local',
+            console_type: 'telnet',
+            default_name_format: 'Switch{0}',
+            name: '',
+            ports_mapping: [],
+            symbol: ':/symbols/ethernet_switch.svg',
+            template_id: '',
+            template_type: 'ethernet_switch'
         }
 
         return of(template);

@@ -1,0 +1,55 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Ethernet switch configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="ethernetSwitchTemplate">
+        <form [formGroup]="inputForm">
+            <mat-form-field class="row">
+                <input 
+                    matInput type="text" 
+                    [(ngModel)]="ethernetSwitchTemplate.name" 
+                    formControlName="templateName"
+                    placeholder="Template name">
+            </mat-form-field>
+            <mat-form-field class="row">
+                <input 
+                    matInput type="text" 
+                    [(ngModel)]="ethernetSwitchTemplate.default_name_format" 
+                    formControlName="defaultName"
+                    placeholder="Default name format">
+            </mat-form-field>
+            <mat-form-field class="row">
+                <input 
+                    matInput type="text" 
+                    [(ngModel)]="ethernetSwitchTemplate.symbol" 
+                    formControlName="symbol"
+                    placeholder="Symbol">
+            </mat-form-field>
+            <mat-form-field class="row">
+                <mat-select 
+                    placeholder="Category" 
+                    [ngModelOptions]="{standalone: true}" 
+                    [(ngModel)]="ethernetSwitchTemplate.category">
+                    <mat-option *ngFor="let category of categories" [value]="category[1]">
+                        {{category[0]}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="select">
+                <mat-select 
+                placeholder="Console type" 
+                [ngModelOptions]="{standalone: true}" 
+                [(ngModel)]="ethernetSwitchTemplate.console_type">
+                    <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                        {{type}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </form>
+        <div class="buttons-bar">
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
+        </div>
+    </div>
+</div>

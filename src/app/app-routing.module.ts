@@ -25,6 +25,12 @@ import { BuiltInPreferencesComponent } from './components/preferences/built-in/b
 import { EthernetHubsTemplatesComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-templates/ethernet-hubs-templates.component';
 import { EthernetHubsAddTemplateComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
 import { EthernetHubsTemplateDetailsComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
+import { CloudNodesTemplatesComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-templates/cloud-nodes-templates.component';
+import { CloudNodesAddTemplateComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
+import { CloudNodesTemplateDetailsComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-template-details/cloud-nodes-template-details.component';
+import { EthernetSwitchesTemplatesComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
+import { EthernetSwitchesAddTemplateComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
+import { EthernetSwitchesTemplateDetailsComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
 
 const routes: Routes = [
   {
@@ -37,25 +43,31 @@ const routes: Routes = [
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
-      // temporary disabled
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent},
+
       { path: 'server/:server_id/preferences/builtin/ethernet-hubs', component: EthernetHubsTemplatesComponent },
       { path: 'server/:server_id/preferences/builtin/ethernet-hubs/addtemplate', component: EthernetHubsAddTemplateComponent },
       { path: 'server/:server_id/preferences/builtin/ethernet-hubs/:template_id', component: EthernetHubsTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/builtin/ethernet-switches', component: EthernetHubsTemplatesComponent },
-      { path: 'server/:server_id/preferences/builtin/cloud-nodes', component: EthernetHubsTemplatesComponent },
-      // temporary disabled
+
+      { path: 'server/:server_id/preferences/builtin/ethernet-switches', component: EthernetSwitchesTemplatesComponent },
+      { path: 'server/:server_id/preferences/builtin/ethernet-switches/addtemplate', component: EthernetSwitchesAddTemplateComponent },
+      { path: 'server/:server_id/preferences/builtin/ethernet-switches/:template_id', component: EthernetSwitchesTemplateDetailsComponent },
+
+      { path: 'server/:server_id/preferences/builtin/cloud-nodes', component: CloudNodesTemplatesComponent },
+      { path: 'server/:server_id/preferences/builtin/cloud-nodes/addtemplate', component: CloudNodesAddTemplateComponent },
+      { path: 'server/:server_id/preferences/builtin/cloud-nodes/:template_id', component: CloudNodesTemplateDetailsComponent },
+
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },
       { path: 'server/:server_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent },
-      // temporary disabled
+
       // { path: 'server/:server_id/preferences/vpcs', component: VpcsPreferencesComponent },
       { path: 'server/:server_id/preferences/vpcs/templates', component: VpcsTemplatesComponent },
       { path: 'server/:server_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent},
       { path: 'server/:server_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent },
-      // temporary disabled
+
       // { path: 'server/:server_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent }
       { path: 'server/:server_id/preferences/virtualbox/templates', component: VirtualBoxTemplatesComponent },
       { path: 'server/:server_id/preferences/virtualbox/templates/:template_id', component: VirtualBoxTemplateDetailsComponent },

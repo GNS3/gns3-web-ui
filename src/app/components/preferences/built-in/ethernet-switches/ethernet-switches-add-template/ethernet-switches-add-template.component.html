@@ -1,0 +1,18 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New Ethernet switch template</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <mat-form-field class="row">
+            <input matInput type="text" [(ngModel)]="templateName" placeholder="Template name">
+        </mat-form-field>
+        <mat-form-field class="row">
+            <input matInput type="text" [(ngModel)]="numberOfPorts" placeholder="Number of ports">
+        </mat-form-field>
+        <div class="buttons-bar">
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+        </div>
+    </div>
+</div>

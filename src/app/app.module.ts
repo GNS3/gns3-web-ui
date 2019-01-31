@@ -113,6 +113,12 @@ import { EthernetHubsTemplatesComponent } from './components/preferences/built-i
 import { BuiltInTemplatesService } from './services/built-in-templates.service';
 import { EthernetHubsAddTemplateComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
 import { EthernetHubsTemplateDetailsComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
+import { CloudNodesTemplatesComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-templates/cloud-nodes-templates.component';
+import { CloudNodesAddTemplateComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
+import { CloudNodesTemplateDetailsComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-template-details/cloud-nodes-template-details.component';
+import { EthernetSwitchesTemplatesComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
+import { EthernetSwitchesAddTemplateComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
+import { EthernetSwitchesTemplateDetailsComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -182,7 +188,13 @@ if (environment.production) {
     BuiltInPreferencesComponent,
     EthernetHubsTemplatesComponent,
     EthernetHubsAddTemplateComponent,
-    EthernetHubsTemplateDetailsComponent
+    EthernetHubsTemplateDetailsComponent,
+    CloudNodesTemplatesComponent,
+    CloudNodesAddTemplateComponent,
+    CloudNodesTemplateDetailsComponent,
+    EthernetSwitchesTemplatesComponent,
+    EthernetSwitchesAddTemplateComponent,
+    EthernetSwitchesTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
