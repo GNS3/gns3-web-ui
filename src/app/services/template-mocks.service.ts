@@ -3,6 +3,7 @@ import { QemuTemplate } from '../models/templates/qemu-template';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
 import { Observable, of } from 'rxjs';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
+import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -98,6 +99,22 @@ export class TemplateMocksService {
             usage: '',
             use_any_adapter: false,
             vmname: ''
+        }
+
+        return of(template);
+    }
+
+    getEthernetHubTemplate() : Observable<EthernetHubTemplate> {
+        let template: EthernetHubTemplate = {
+            builtin: false,
+            category: 'switch',
+            compute_id: 'local',
+            default_name_format: 'Hub{0}',
+            name: '',
+            ports_mapping: [],
+            symbol: ':/symbols/hub.svg',
+            template_id: '',
+            template_type: 'ethernet_hub'
         }
 
         return of(template);

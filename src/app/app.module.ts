@@ -108,6 +108,11 @@ import { VirtualBoxTemplatesComponent } from './components/preferences/virtual-b
 import { VirtualBoxService } from './services/virtual-box.service';
 import { VirtualBoxTemplateDetailsComponent } from './components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
 import { AddVirtualBoxTemplateComponent } from './components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
+import { BuiltInPreferencesComponent } from './components/preferences/built-in/built-in-preferences.component';
+import { EthernetHubsTemplatesComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-templates/ethernet-hubs-templates.component';
+import { BuiltInTemplatesService } from './services/built-in-templates.service';
+import { EthernetHubsAddTemplateComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
+import { EthernetHubsTemplateDetailsComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -173,7 +178,11 @@ if (environment.production) {
     VirtualBoxPreferencesComponent,
     VirtualBoxTemplatesComponent,
     VirtualBoxTemplateDetailsComponent,
-    AddVirtualBoxTemplateComponent
+    AddVirtualBoxTemplateComponent,
+    BuiltInPreferencesComponent,
+    EthernetHubsTemplatesComponent,
+    EthernetHubsAddTemplateComponent,
+    EthernetHubsTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -224,7 +233,8 @@ if (environment.production) {
     QemuService,
     VpcsService,
     TemplateMocksService,
-    VirtualBoxService
+    VirtualBoxService,
+    BuiltInTemplatesService
   ],
   entryComponents: [
     AddServerDialogComponent,

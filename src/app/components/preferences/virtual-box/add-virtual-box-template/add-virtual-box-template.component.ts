@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router, Router, Router, Router, Router, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { switchMap } from 'rxjs/operators';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';

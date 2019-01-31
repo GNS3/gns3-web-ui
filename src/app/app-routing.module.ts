@@ -21,6 +21,10 @@ import { VirtualBoxPreferencesComponent } from './components/preferences/virtual
 import { VirtualBoxTemplatesComponent } from './components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
 import { VirtualBoxTemplateDetailsComponent } from './components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
 import { AddVirtualBoxTemplateComponent } from './components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
+import { BuiltInPreferencesComponent } from './components/preferences/built-in/built-in-preferences.component';
+import { EthernetHubsTemplatesComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-templates/ethernet-hubs-templates.component';
+import { EthernetHubsAddTemplateComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
+import { EthernetHubsTemplateDetailsComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
 
 const routes: Routes = [
   {
@@ -35,6 +39,12 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       // temporary disabled
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
+      { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent},
+      { path: 'server/:server_id/preferences/builtin/ethernet-hubs', component: EthernetHubsTemplatesComponent },
+      { path: 'server/:server_id/preferences/builtin/ethernet-hubs/addtemplate', component: EthernetHubsAddTemplateComponent },
+      { path: 'server/:server_id/preferences/builtin/ethernet-hubs/:template_id', component: EthernetHubsTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/builtin/ethernet-switches', component: EthernetHubsTemplatesComponent },
+      { path: 'server/:server_id/preferences/builtin/cloud-nodes', component: EthernetHubsTemplatesComponent },
       // temporary disabled
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },

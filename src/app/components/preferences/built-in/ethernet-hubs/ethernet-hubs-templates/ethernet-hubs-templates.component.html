@@ -1,0 +1,17 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Ethernet hubs templates</h1>
+            <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/builtin/ethernet-hubs/addtemplate" mat-raised-button color="primary">Add Ethernet hub template</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-nav-list *ngIf="server">
+                <mat-list-item *ngFor='let template of ethernetHubsTemplates' routerLink="{{template.template_id}}">
+                    {{template.name}}
+                </mat-list-item>
+            </mat-nav-list>
+        </div>
+    </div>
+</div>
