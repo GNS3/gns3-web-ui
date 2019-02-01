@@ -33,8 +33,8 @@
     "prettier:check": "yarn prettier:base -- --list-different \"src/**/*.{ts,js,html,scss}\"",
     "prettier:write": "yarn prettier:base -- --write \"src/**/*.{ts,js,html,scss}\"",
     "generate-licenses-file": "yarn license-checker --production --csv --out licenses.csv",
-    "prebuild": "node set-variables-in-env.js --set src/environments/environment.prod.ts",
-    "postbuild": "node set-variables-in-env.js --unset src/environments/environment.prod.ts"
+    "prebuildforelectron": "node set-variables-in-env.js --set src/environments/environment.electron.prod.ts",
+    "postbuildforelectron": "node set-variables-in-env.js --unset src/environments/environment.electron.prod.ts"
   },
   "private": true,
   "dependencies": {
