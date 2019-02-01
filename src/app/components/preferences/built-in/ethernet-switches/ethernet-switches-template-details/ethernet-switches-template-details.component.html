@@ -5,49 +5,122 @@
         </div>
     </div>
     <div class="default-content" *ngIf="ethernetSwitchTemplate">
-        <form [formGroup]="inputForm">
-            <mat-form-field class="row">
-                <input 
-                    matInput type="text" 
-                    [(ngModel)]="ethernetSwitchTemplate.name" 
-                    formControlName="templateName"
-                    placeholder="Template name">
-            </mat-form-field>
-            <mat-form-field class="row">
-                <input 
-                    matInput type="text" 
-                    [(ngModel)]="ethernetSwitchTemplate.default_name_format" 
-                    formControlName="defaultName"
-                    placeholder="Default name format">
-            </mat-form-field>
-            <mat-form-field class="row">
-                <input 
-                    matInput type="text" 
-                    [(ngModel)]="ethernetSwitchTemplate.symbol" 
-                    formControlName="symbol"
-                    placeholder="Symbol">
-            </mat-form-field>
-            <mat-form-field class="row">
-                <mat-select 
-                    placeholder="Category" 
-                    [ngModelOptions]="{standalone: true}" 
-                    [(ngModel)]="ethernetSwitchTemplate.category">
-                    <mat-option *ngFor="let category of categories" [value]="category[1]">
-                        {{category[0]}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class="select">
-                <mat-select 
-                placeholder="Console type" 
-                [ngModelOptions]="{standalone: true}" 
-                [(ngModel)]="ethernetSwitchTemplate.console_type">
-                    <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                        {{type}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </form>
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        General settings
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <form [formGroup]="inputForm">
+                    <mat-form-field class="row">
+                        <input 
+                            matInput type="text" 
+                            [(ngModel)]="ethernetSwitchTemplate.name" 
+                            formControlName="templateName"
+                            placeholder="Template name">
+                    </mat-form-field>
+                    <mat-form-field class="row">
+                        <input 
+                            matInput type="text" 
+                            [(ngModel)]="ethernetSwitchTemplate.default_name_format" 
+                            formControlName="defaultName"
+                            placeholder="Default name format">
+                    </mat-form-field>
+                    <mat-form-field class="row">
+                        <input 
+                            matInput type="text" 
+                            [(ngModel)]="ethernetSwitchTemplate.symbol" 
+                            formControlName="symbol"
+                            placeholder="Symbol">
+                    </mat-form-field>
+                    <mat-form-field class="row">
+                        <mat-select 
+                            placeholder="Category" 
+                            [ngModelOptions]="{standalone: true}" 
+                            [(ngModel)]="ethernetSwitchTemplate.category">
+                            <mat-option *ngFor="let category of categories" [value]="category[1]">
+                                {{category[0]}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="select">
+                        <mat-select 
+                            placeholder="Console type" 
+                            [ngModelOptions]="{standalone: true}" 
+                            [(ngModel)]="ethernetSwitchTemplate.console_type">
+                                <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                    {{type}}
+                                </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </form>
+            </mat-expansion-panel>
+            <mat-expansion-panel *ngIf="newPort">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Port settings
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table class="table" mat-table [dataSource]="dataSource">
+                    <ng-container matColumnDef="port_number">
+                        <th mat-header-cell *matHeaderCellDef> Port number </th>
+                        <td mat-cell *matCellDef="let element"> {{element.port_number}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="vlan">
+                        <th mat-header-cell *matHeaderCellDef> VLAN </th>
+                        <td mat-cell *matCellDef="let element"> {{element.vlan}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="type">
+                        <th mat-header-cell *matHeaderCellDef> Type </th>
+                        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="ethertype">
+                        <th mat-header-cell *matHeaderCellDef> EtherType </th>
+                        <td mat-cell *matCellDef="let element"> {{element.ethertype}} </td>
+                    </ng-container>
+                    
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table><br/>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="number" 
+                        [(ngModel)]="newPort.port_number" 
+                        placeholder="Port">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="number" 
+                        [(ngModel)]="newPort.vlan" 
+                        placeholder="VLAN">
+                </mat-form-field>
+                <mat-form-field class="select">
+                    <mat-select 
+                        placeholder="Type" 
+                        [ngModelOptions]="{standalone: true}" 
+                        [(ngModel)]="newPort.type">
+                        <mat-option *ngFor="let type of portTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="select">
+                    <mat-select 
+                        placeholder="EtherType" 
+                        [ngModelOptions]="{standalone: true}" 
+                        [(ngModel)]="newPort.ethertype">
+                            <mat-option *ngFor="let type of etherTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button mat-raised-button class="row" (click)="onAdd()">Add</button>
+            </mat-expansion-panel>
+        </mat-accordion>
         <div class="buttons-bar">
             <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
         </div>

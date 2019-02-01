@@ -6,3 +6,15 @@
 .select {
     width: 100%;
 }
+
+th {
+    border: 0px!important;
+}
+
+th.mat-header-cell {
+    padding-bottom: 15px;
+}
+
+td.mat-cell {
+    padding-top: 15px;
+}
