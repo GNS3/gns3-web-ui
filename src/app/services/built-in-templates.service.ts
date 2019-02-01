@@ -16,12 +16,12 @@ export class BuiltInTemplatesService {
         return this.httpServer.get<any>(server, `/templates/${template_id}`) as Observable<any>;
     }
 
-    addTemplate(server: Server, ethernetHubTemplate: any): Observable<any> {
-        return this.httpServer.post<any>(server, `/templates`, ethernetHubTemplate) as Observable<any>;
+    addTemplate(server: Server, builtInTemplate: any): Observable<any> {
+        return this.httpServer.post<any>(server, `/templates`, builtInTemplate) as Observable<any>;
     }
 
-    saveTemplate(server: Server, ethernetHubTemplate: any): Observable<any> {
-        return this.httpServer.put<any>(server, `/templates/${ethernetHubTemplate.template_id}`, ethernetHubTemplate) as Observable<any>;
+    saveTemplate(server: Server, builtInTemplate: any): Observable<any> {
+        return this.httpServer.put<any>(server, `/templates/${builtInTemplate.template_id}`, builtInTemplate) as Observable<any>;
 
     }
 }
