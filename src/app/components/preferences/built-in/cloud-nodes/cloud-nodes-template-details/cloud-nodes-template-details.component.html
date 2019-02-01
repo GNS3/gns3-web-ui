@@ -4,9 +4,164 @@
             <h1 class="col">Cloud configuration</h1>
         </div>
     </div>
-    <div class="default-content" *ngIf="ethernetHubTemplate">
-        <form [formGroup]="inputForm">
-        </form>
+    <div class="default-content" *ngIf="cloudNodeTemplate">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        General
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="cloudNodeTemplate.name" 
+                        placeholder="Template name">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="cloudNodeTemplate.default_name_format" 
+                        placeholder="Default name format">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="cloudNodeTemplate.symbol" 
+                        placeholder="Symbol">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <mat-select 
+                        placeholder="Category" 
+                        [(ngModel)]="cloudNodeTemplate.category">
+                        <mat-option *ngFor="let category of categories" [value]="category[1]">
+                            {{category[0]}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="select">
+                    <mat-select 
+                        placeholder="Console type" 
+                        [(ngModel)]="cloudNodeTemplate.console_type">
+                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="cloudNodeTemplate.remote_console_host" 
+                        placeholder="Console host">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="cloudNodeTemplate.remote_console_port" 
+                        placeholder="Console port">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="cloudNodeTemplate.remote_console_http_path" 
+                        placeholder="Console HTTP path">
+                </mat-form-field>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Ethernet interfaces
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row" *ngFor="let port of ports_mapping_ethernet">
+                    <div class="row">{{port.name}}</div><br/><br/>
+                </div>
+                <mat-form-field class="select">
+                    <mat-select 
+                        placeholder="Ethernet interface" 
+                        [ngModelOptions]="{standalone: true}" 
+                        [(ngModel)]="ethernetInterface">
+                            <mat-option *ngFor="let type of " [value]="type">
+                                {{type}}
+                            </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button mat-raised-button class="row" (click)="onAddEthernetInterface()">Add</button> 
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        TAP interfaces
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row" *ngFor="let port of ports_mapping_tap">
+                    <div class="row">{{port.name}}</div><br/><br/>
+                </div>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="tapInterface" 
+                        placeholder="TAP interface">
+                </mat-form-field>
+                <button mat-raised-button class="row" (click)="onAddTapInterface()">Add</button> 
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        UDP tunnels
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table class="table" mat-table [dataSource]="dataSourceUdp">
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Name </th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="rport">
+                        <th mat-header-cell *matHeaderCellDef> Local port </th>
+                        <td mat-cell *matCellDef="let element"> {{element.rport}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="rhost">
+                        <th mat-header-cell *matHeaderCellDef> Type </th>
+                        <td mat-cell *matCellDef="let element"> {{element.rhost}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="lport">
+                        <th mat-header-cell *matHeaderCellDef> Remote port </th>
+                        <td mat-cell *matCellDef="let element"> {{element.lport}} </td>
+                    </ng-container>
+                    
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table><br/>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="newPort.name" 
+                        placeholder="Name">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="number" 
+                        [(ngModel)]="newPort.lport" 
+                        placeholder="Local port">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="newPort.rhost" 
+                        placeholder="Remote host">
+                </mat-form-field>
+                <mat-form-field class="row">
+                    <input 
+                        matInput type="number" 
+                        [(ngModel)]="newPort.rport" 
+                        placeholder="Remote port">
+                </mat-form-field>
+                <button mat-raised-button class="row" (click)="onAddUdpInterface()">Add</button>
+            </mat-expansion-panel>
+        </mat-accordion>
         <div class="buttons-bar">
             <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
         </div>

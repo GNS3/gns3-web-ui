@@ -38,7 +38,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
         private builtInTemplatesService: BuiltInTemplatesService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder
-    ) {
+    ){
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
             defaultName: new FormControl('', Validators.required),
