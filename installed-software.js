@@ -6,7 +6,7 @@ var fetch = require('node-fetch')
 var stream = require('stream');
 var path = require('path');
 const { spawn } = require('child_process');
-const { ipcMain } = require('electron')
+const { ipcMain } = require('electron');
 
 var pipeline = util.promisify(stream.pipeline);
 
