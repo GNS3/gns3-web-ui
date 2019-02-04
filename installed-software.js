@@ -40,8 +40,24 @@ async function downloadFile(resource, softwarePath) {
   );
 }
 
+async function getSoftwareInstallationPath(software) {
+  if (software.installer) {
+    return path.join(app.getPath('temp'), software.binary);
+  }
+  else {
+    const externalPath = path.join(app.getAppPath(), 'external');
+    const exists = fs.existsSync(externalPath);
+    if (!exists) {
+      fs.mkdirSync(externalPath);
+    }
+    return path.join(externalPath, software.binary);
+  }
+}
+
+
 ipcMain.on('installed-software-install', async function (event, software) {
-  const softwarePath = path.join(app.getPath('temp'), software.binary);
+  const softwarePath = await getSoftwareInstallationPath(software);
+
   const responseChannel = `installed-software-installed-${software.name}`;
 
   if (software.type == 'web') {
