@@ -16,6 +16,10 @@ a.table-link {
   color: white!important;
 }
 
+.mat-dialog-actions {
+  margin-bottom: -12px!important;
+}
+
 @-moz-document url-prefix() {
   .temporaryElement{
       line-height: 1.4em;

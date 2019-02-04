@@ -33,6 +33,7 @@ import { EthernetSwitchesAddTemplateComponent } from './components/preferences/b
 import { EthernetSwitchesTemplateDetailsComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
 import { DynamipsPreferencesComponent } from './components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component';
 import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
+import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 
 const routes: Routes = [
   {
@@ -44,6 +45,7 @@ const routes: Routes = [
       { path: 'local', component: LocalServerComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent},

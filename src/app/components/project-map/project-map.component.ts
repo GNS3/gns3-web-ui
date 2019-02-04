@@ -207,6 +207,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpMapCallbacks() {
+    if (!this.readonly) {
+      this.toolsService.selectionToolActivation(true);
+    }
+
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
       this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
@@ -219,7 +223,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
       const selectedItems = this.selectionManager.getSelected();
-      if (selectedItems.length === 0) return;
+      if (selectedItems.length === 0 || !(event instanceof MouseEvent)) return;
 
       let drawings: Drawing[] = [];
       let nodes: Node[] = [];
@@ -245,6 +249,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onNodeCreation(template: Template) {
+    if(!template) {
+      return;
+    }
+    
     this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
         this.nodesDataSource.set(nodes);
