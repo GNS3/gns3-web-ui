@@ -33,8 +33,8 @@
     "prettier:check": "yarn prettier:base -- --list-different \"src/**/*.{ts,js,html,scss}\"",
     "prettier:write": "yarn prettier:base -- --write \"src/**/*.{ts,js,html,scss}\"",
     "generate-licenses-file": "yarn license-checker --production --csv --out licenses.csv",
-    "prebuild": "node set-variables-in-env.js --set src/environments/environment.prod.ts",
-    "postbuild": "node set-variables-in-env.js --unset src/environments/environment.prod.ts"
+    "prebuildforelectron": "node set-variables-in-env.js --set src/environments/environment.electron.prod.ts",
+    "postbuildforelectron": "node set-variables-in-env.js --unset src/environments/environment.electron.prod.ts"
   },
   "private": true,
   "dependencies": {
@@ -67,7 +67,8 @@
     "rxjs-compat": "^6.3.3",
     "typeface-roboto": "^0.0.54",
     "yargs": "^12.0.5",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.8.26",
+    "node-fetch": "^2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.11.4",
@@ -91,7 +92,6 @@
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
     "license-checker": "^24.1.0",
-    "node-fetch": "^2.3.0",
     "node-sass": "^4.11.0",
     "popper.js": "^1.14.6",
     "prettier": "^1.15.2",
