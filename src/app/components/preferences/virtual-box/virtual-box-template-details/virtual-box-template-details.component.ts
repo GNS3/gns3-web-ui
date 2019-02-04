@@ -18,6 +18,8 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     server: Server;
     virtualBoxTemplate: VirtualBoxTemplate;
 
+    isSymbolSelectionOpened: boolean = false;
+
     consoleTypes: string[] = ['telnet', 'none'];
     onCloseOptions = [["Power off the VM", "power_off"], 
                     ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
@@ -78,5 +80,13 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.virtualBoxService.saveTemplate(this.server, this.virtualBoxTemplate).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
             this.toasterService.success("Changes saved");
         });
+    }
+
+    chooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    symbolChanged(chosenSymbol: string) {
+        this.virtualBoxTemplate.symbol = chosenSymbol;
     }
 }

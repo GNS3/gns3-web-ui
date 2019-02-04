@@ -18,6 +18,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     server: Server;
     qemuTemplate: QemuTemplate;
 
+    isSymbolSelectionOpened: boolean = false;
+
     consoleTypes: string[] = ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
     diskInterfaces: string[] = ['ide', 'sata', 'scsi', 'sd', 'mtd', 'floppy', 'pflash', 'virtio', 'none'];
     networkTypes = [["e1000", "Intel Gigabit Ethernet"],
@@ -128,5 +130,13 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.qemuService.saveTemplate(this.server, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
             this.toasterService.success("Changes saved");
         });
+    }
+
+    chooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    symbolChanged(chosenSymbol: string) {
+        this.qemuTemplate.symbol = chosenSymbol;
     }
 }

@@ -31,6 +31,8 @@ import { CloudNodesTemplateDetailsComponent } from './components/preferences/bui
 import { EthernetSwitchesTemplatesComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
 import { EthernetSwitchesAddTemplateComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
 import { EthernetSwitchesTemplateDetailsComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
+import { DynamipsPreferencesComponent } from './components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component';
+import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
 
 const routes: Routes = [
   {
@@ -57,6 +59,11 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/builtin/cloud-nodes', component: CloudNodesTemplatesComponent },
       { path: 'server/:server_id/preferences/builtin/cloud-nodes/addtemplate', component: CloudNodesAddTemplateComponent },
       { path: 'server/:server_id/preferences/builtin/cloud-nodes/:template_id', component: CloudNodesTemplateDetailsComponent },
+
+      //{ path: 'server/:server_id/preferences/dynamips', component: DynamipsPreferencesComponent },
+      { path: 'server/:server_id/preferences/dynamips/templates', component: IosTemplatesComponent },
+      { path: 'server/:server_id/preferences/dynamips/templates/addtemplate', component: IosTemplatesComponent },
+      { path: 'server/:server_id/preferences/dynamips/templates/:template_id', component: IosTemplatesComponent },
 
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },

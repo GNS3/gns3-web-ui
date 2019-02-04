@@ -7,6 +7,20 @@
     width: 100%;
 }
 
+.shadowed {
+    display: none;
+    transition: 0.25s;
+}
+
+.top-button {
+    height: 36px;
+    margin-top: 22px
+}
+
+.symbolSelectionButton {
+    width: 100%;
+}
+
 th {
     border: 0px!important;
 }

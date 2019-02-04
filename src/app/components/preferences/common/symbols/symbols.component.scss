@@ -1,0 +1,38 @@
+.buttonWrapper {
+    width: 85px;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    outline: none;
+}
+
+.button {
+    background: border-box;
+    border-width: 0px;
+    outline: none;
+}
+
+.buttonSelected {
+    border-width: 3px;
+    border-color: #0097a7;
+}
+
+.image {
+    width: 75px;
+    height: 75px;   
+}
+
+.imageSelected {
+    width: 105px;
+    height: 105px;   
+}
+
+.wrapper {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(5, 1fr);
+    grid-row-gap: 3em;
+    grid-column-gap: 1em;
+}

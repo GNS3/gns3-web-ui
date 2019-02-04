@@ -18,7 +18,8 @@ import {
   MatSelectModule,
   MatTooltipModule,
   MatStepperModule,
-  MatRadioModule
+  MatRadioModule,
+  MatGridListModule
 } from '@angular/material';
 
 export const MATERIAL_IMPORTS = [
@@ -41,5 +42,6 @@ export const MATERIAL_IMPORTS = [
   MatSelectModule,
   MatTooltipModule,
   MatStepperModule,
-  MatRadioModule
+  MatRadioModule,
+  MatGridListModule
 ];

@@ -22,6 +22,8 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     dataSource: PortsMappingEntity[] = [];
     newPort: PortsMappingEntity;
 
+    isSymbolSelectionOpened: boolean = false;
+
     categories = [["Default", "guest"],
                     ["Routers", "router"],
                     ["Switches", "switch"],
@@ -83,5 +85,13 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
                 this.toasterService.success("Changes saved");
             });
         }
+    }
+
+    chooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    symbolChanged(chosenSymbol: string) {
+        this.ethernetSwitchTemplate.symbol = chosenSymbol;
     }
 }

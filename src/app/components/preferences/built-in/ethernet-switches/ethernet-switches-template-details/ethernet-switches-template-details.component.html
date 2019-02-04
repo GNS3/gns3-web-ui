@@ -1,4 +1,4 @@
-<div class="content">
+<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened}">
     <div class="default-header">
         <div class="row">
             <h1 class="col">Ethernet switch configuration</h1>
@@ -34,6 +34,7 @@
                             formControlName="symbol"
                             placeholder="Symbol">
                     </mat-form-field>
+                    <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
                     <mat-form-field class="row">
                         <mat-select 
                             placeholder="Category" 
@@ -124,5 +125,16 @@
         <div class="buttons-bar">
             <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
         </div>
+    </div>
+</div>
+<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Symbol selection</h1>
+            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <app-symbols [server]="server" [symbol]="ethernetSwitchTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
     </div>
 </div>

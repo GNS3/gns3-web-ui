@@ -6,6 +6,7 @@ import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
 import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
+import { IosTemplate } from '../models/templates/ios-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -151,6 +152,46 @@ export class TemplateMocksService {
             symbol: ':/symbols/ethernet_switch.svg',
             template_id: '',
             template_type: 'ethernet_switch'
+        }
+
+        return of(template);
+    }
+
+    getIosTemplate() : Observable<IosTemplate> {
+        let template: IosTemplate = {
+            auto_delete_disks: true,
+            builtin: false,
+            category: 'router',
+            chassis: '1720',
+            compute_id: 'local',
+            console_auto_start: false,
+            console_type: 'telnet',
+            default_name_format: 'R{0}',
+            disk0: 0,
+            disk1: 0,
+            exec_area: 64,
+            idlemax: 500,
+            idlepc: '',
+            idlesleep: 30,
+            image: '',
+            iomem: 0,
+            mac_addr: '',
+            mmap: true,
+            name: '',
+            nvram: 128,
+            platform: '',
+            private_config: '',
+            ram: 128,
+            slot0: '',
+            sparsemem: true,
+            startup_config: '',
+            symbol: ':/symbols/router.svg',
+            system_id: 'FTX0945W0MY',
+            template_id: '',
+            template_type: 'dynamips',
+            usage: '',
+            wic0: '',
+            wic1: ''
         }
 
         return of(template);

@@ -1,0 +1,17 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">IOS routers templates</h1>
+            <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/dynamips/addtemplate" mat-raised-button color="primary">Add IOS router template</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-nav-list *ngIf="server">
+                <mat-list-item *ngFor='let template of iosTemplates' routerLink="{{template.template_id}}">
+                    {{template.name}}
+                </mat-list-item>
+            </mat-nav-list>
+        </div>
+    </div>
+</div>

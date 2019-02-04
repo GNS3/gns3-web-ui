@@ -1,4 +1,4 @@
-<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened }" [ngClass]="{ nonshadowed: !isConfiguratorOpened }">
+<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened || isSymbolSelectionOpened}">
     <div class="default-header">
         <div class="row">
             <h1 class="col">QEMU VM configuration</h1>
@@ -21,6 +21,7 @@
                 <mat-form-field class="row">
                     <input matInput type="text" [(ngModel)]="qemuTemplate.symbol" placeholder="Symbol">
                 </mat-form-field>
+                <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
                 <mat-form-field class="row">
                     <mat-select placeholder="Category" [(ngModel)]="qemuTemplate.category">
                         <mat-option *ngFor="let category of categories" [value]="category[1]">
@@ -357,5 +358,16 @@
         <div class="row">
             <button mat-raised-button color="primary" class="configHideButton" (click)="configureCustomAdapters()">Apply</button><br/>
         </div>
+    </div>
+</div>
+<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Symbol selection</h1>
+            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <app-symbols [server]="server" [symbol]="qemuTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
     </div>
 </div>

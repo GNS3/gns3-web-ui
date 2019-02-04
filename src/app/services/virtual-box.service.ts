@@ -3,7 +3,7 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { Observable } from 'rxjs';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
-import { VirtualBoxVm } from '../models/virtualbox/virtualboxVm';
+import { VirtualBoxVm } from '../models/virtualBox/virtual-box-vm';
 
 @Injectable()
 export class VirtualBoxService {

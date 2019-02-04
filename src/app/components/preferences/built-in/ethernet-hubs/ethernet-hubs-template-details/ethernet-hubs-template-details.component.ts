@@ -19,6 +19,8 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     numberOfPorts: number;
     inputForm: FormGroup;
 
+    isSymbolSelectionOpened: boolean = false;
+
     categories = [["Default", "guest"],
                     ["Routers", "router"],
                     ["Switches", "switch"],
@@ -68,5 +70,13 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
                 this.toasterService.success("Changes saved");
             });
         }
+    }
+
+    chooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    symbolChanged(chosenSymbol: string) {
+        this.ethernetHubTemplate.symbol = chosenSymbol;
     }
 }

@@ -4,7 +4,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { switchMap } from 'rxjs/operators';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
-import { VirtualBoxVm } from '../../../../models/virtualbox/virtualboxVm';
+import { VirtualBoxVm } from '../../../../models/virtualBox/virtual-box-vm';
 import { ToasterService } from '../../../../services/toaster.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';

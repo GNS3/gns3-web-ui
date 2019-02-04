@@ -18,6 +18,8 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     vpcsTemplate: VpcsTemplate;
     inputForm: FormGroup;
 
+    isSymbolSelectionOpened: boolean = false;
+
     consoleTypes: string[] = ['telnet', 'none'];
     categories = [["Default", "guest"],
                     ["Routers", "routers"],
@@ -60,5 +62,13 @@ export class VpcsTemplateDetailsComponent implements OnInit {
                 this.toasterService.success("Changes saved");
             });
         }
+    }
+
+    chooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    symbolChanged(chosenSymbol: string) {
+        this.vpcsTemplate.symbol = chosenSymbol;
     }
 }

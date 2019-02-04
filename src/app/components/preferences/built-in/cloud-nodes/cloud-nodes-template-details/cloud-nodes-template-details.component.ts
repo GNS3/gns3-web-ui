@@ -17,6 +17,8 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     server: Server;
     cloudNodeTemplate: CloudTemplate;
 
+    isSymbolSelectionOpened: boolean = false;
+
     categories = [["Default", "guest"],
                     ["Routers", "router"],
                     ["Switches", "switch"],
@@ -107,5 +109,13 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
         this.builtInTemplatesService.saveTemplate(this.server, this.cloudNodeTemplate).subscribe((cloudNodeTemplate: CloudTemplate) => {
             this.toasterService.success("Changes saved");
         });
+    }
+
+    chooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    symbolChanged(chosenSymbol: string) {
+        this.cloudNodeTemplate.symbol = chosenSymbol;
     }
 }

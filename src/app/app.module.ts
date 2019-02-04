@@ -119,6 +119,10 @@ import { CloudNodesTemplateDetailsComponent } from './components/preferences/bui
 import { EthernetSwitchesTemplatesComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
 import { EthernetSwitchesAddTemplateComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
 import { EthernetSwitchesTemplateDetailsComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
+import { DynamipsPreferencesComponent } from './components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component';
+import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
+import { IosService } from './services/ios.service';
+import { SymbolsComponent } from './components/preferences/common/symbols/symbols.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -194,7 +198,10 @@ if (environment.production) {
     CloudNodesTemplateDetailsComponent,
     EthernetSwitchesTemplatesComponent,
     EthernetSwitchesAddTemplateComponent,
-    EthernetSwitchesTemplateDetailsComponent
+    EthernetSwitchesTemplateDetailsComponent,
+    DynamipsPreferencesComponent,
+    IosTemplatesComponent,
+    SymbolsComponent
   ],
   imports: [
     BrowserModule,
@@ -246,7 +253,8 @@ if (environment.production) {
     VpcsService,
     TemplateMocksService,
     VirtualBoxService,
-    BuiltInTemplatesService
+    BuiltInTemplatesService,
+    IosService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -257,7 +265,8 @@ if (environment.production) {
     ImportProjectDialogComponent,
     ConfirmationDialogComponent,
     StyleEditorDialogComponent,
-    TextEditorDialogComponent
+    TextEditorDialogComponent,
+    SymbolsComponent
   ],
   bootstrap: [AppComponent]
 })
