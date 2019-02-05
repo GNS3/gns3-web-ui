@@ -34,6 +34,8 @@ import { EthernetSwitchesTemplateDetailsComponent } from './components/preferenc
 import { DynamipsPreferencesComponent } from './components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component';
 import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
+import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
+import { AddIosTemplateComponent } from './components/preferences/dynamips/add-ios-template/add-ios-template.component';
 
 const routes: Routes = [
   {
@@ -64,8 +66,8 @@ const routes: Routes = [
 
       //{ path: 'server/:server_id/preferences/dynamips', component: DynamipsPreferencesComponent },
       { path: 'server/:server_id/preferences/dynamips/templates', component: IosTemplatesComponent },
-      { path: 'server/:server_id/preferences/dynamips/templates/addtemplate', component: IosTemplatesComponent },
-      { path: 'server/:server_id/preferences/dynamips/templates/:template_id', component: IosTemplatesComponent },
+      { path: 'server/:server_id/preferences/dynamips/templates/addtemplate', component: AddIosTemplateComponent },
+      { path: 'server/:server_id/preferences/dynamips/templates/:template_id', component: IosTemplateDetailsComponent },
 
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },

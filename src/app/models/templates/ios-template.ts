@@ -1,4 +1,4 @@
-export interface IosTemplate {
+export class IosTemplate {
     auto_delete_disks: boolean;
     builtin: boolean;
     category: string;
@@ -22,7 +22,14 @@ export interface IosTemplate {
     platform: string;
     private_config: string;
     ram: number;
-    slot0: string;
+    slot0?: string;
+    slot1?: string;
+    slot2?: string;
+    slot3?: string;
+    slot4?: string;
+    slot5?: string;
+    slot6?: string;
+    slot7?: string;
     sparsemem: boolean;
     startup_config: string;
     symbol: string;
@@ -30,6 +37,7 @@ export interface IosTemplate {
     template_id: string;
     template_type: string;
     usage: string;
-    wic0: string;
-    wic1: string;
+    wic0?: string;
+    wic1?: string;
+    wic2?: string;
 }

@@ -162,7 +162,7 @@ export class TemplateMocksService {
             auto_delete_disks: true,
             builtin: false,
             category: 'router',
-            chassis: '1720',
+            chassis: '',
             compute_id: 'local',
             console_auto_start: false,
             console_type: 'telnet',
@@ -182,16 +182,13 @@ export class TemplateMocksService {
             platform: '',
             private_config: '',
             ram: 128,
-            slot0: '',
             sparsemem: true,
             startup_config: '',
             symbol: ':/symbols/router.svg',
             system_id: 'FTX0945W0MY',
             template_id: '',
             template_type: 'dynamips',
-            usage: '',
-            wic0: '',
-            wic1: ''
+            usage: ''
         }
 
         return of(template);

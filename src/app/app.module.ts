@@ -130,6 +130,8 @@ import { SymbolsComponent } from './components/preferences/common/symbols/symbol
 import { InstalledSoftwareService } from './services/installed-software.service';
 import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
 import { PlatformService } from './services/platform.service';
+import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
+import { AddIosTemplateComponent } from './components/preferences/dynamips/add-ios-template/add-ios-template.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -210,6 +212,8 @@ if (environment.production) {
     EthernetSwitchesTemplateDetailsComponent,
     DynamipsPreferencesComponent,
     IosTemplatesComponent,
+    IosTemplateDetailsComponent,
+    AddIosTemplateComponent,
     SymbolsComponent
   ],
   imports: [
