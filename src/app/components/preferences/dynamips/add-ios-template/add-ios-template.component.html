@@ -1,4 +1,4 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
+<div class="content">
     <div class="default-header">
         <div class="row">
             <h1 class="col">New IOS router</h1>
@@ -99,7 +99,7 @@
                 </mat-step>
                 <mat-step label="WIC modules">
                     <div *ngIf="iosTemplate.platform && networkModules[iosTemplate.platform]">
-                        <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
+                        <div *ngFor="let index of [0,1,2,3]">
                             <mat-select 
                                 placeholder="WIC {{index}}" 
                                 [(ngModel)]="networkModulesForTemplate[index]"

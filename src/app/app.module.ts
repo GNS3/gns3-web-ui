@@ -132,6 +132,7 @@ import { ExternalSoftwareDefinitionService } from './services/external-software-
 import { PlatformService } from './services/platform.service';
 import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
 import { AddIosTemplateComponent } from './components/preferences/dynamips/add-ios-template/add-ios-template.component';
+import { IosConfigurationService } from './services/ios-configuration.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -270,7 +271,8 @@ if (environment.production) {
     IosService,
     InstalledSoftwareService,
     ExternalSoftwareDefinitionService,
-    PlatformService
+    PlatformService,
+    IosConfigurationService
   ],
   entryComponents: [
     AddServerDialogComponent,

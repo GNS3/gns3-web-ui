@@ -82,6 +82,64 @@
                         Slots
                     </mat-panel-title>
                 </mat-expansion-panel-header>
+                <h6>Adapters</h6>
+                <div *ngIf="iosTemplate.chassis && chassis[iosTemplate.platform]">
+                    <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
+                        <mat-select 
+                            placeholder="Slot {{index}}" 
+                            [(ngModel)]="networkAdaptersForTemplate[index]"
+                            [ngModelOptions]="{standalone: true}"
+                            *ngIf="networkAdapters[iosTemplate.chassis][index]">
+                            <mat-option *ngFor="let option of networkAdapters[iosTemplate.chassis][index]" [value]="option">
+                                {{option}}
+                            </mat-option>
+                        </mat-select> 
+                    </div>
+                </div>
+                <div *ngIf="iosTemplate.platform && !chassis[iosTemplate.platform]">
+                    <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
+                        <mat-select 
+                            placeholder="Slot {{index}}" 
+                            [(ngModel)]="networkAdaptersForTemplate[index]"
+                            [ngModelOptions]="{standalone: true}"
+                            *ngIf="networkAdaptersForPlatform[iosTemplate.platform][index]">
+                            <mat-option *ngFor="let option of networkAdaptersForPlatform[iosTemplate.platform][index]" [value]="option">
+                                {{option}}
+                            </mat-option>
+                        </mat-select> 
+                    </div>
+                </div><br/><br/>
+                <h6>WICs</h6>
+                <div *ngIf="iosTemplate.wic0 || iosTemplate.wic0===''">
+                    <mat-select 
+                        placeholder="WIC 0" 
+                        [(ngModel)]="iosTemplate.wic0"
+                        [ngModelOptions]="{standalone: true}">
+                        <mat-option *ngFor="let option of networkModules[iosTemplate.platform][0]" [value]="option">
+                            {{option}}
+                        </mat-option>
+                    </mat-select> 
+                </div>
+                <div *ngIf="iosTemplate.wic1  || iosTemplate.wic1===''">
+                    <mat-select 
+                        placeholder="WIC 1" 
+                        [(ngModel)]="iosTemplate.wic1"
+                        [ngModelOptions]="{standalone: true}">
+                        <mat-option *ngFor="let option of networkModules[iosTemplate.platform][1]" [value]="option">
+                            {{option}}
+                        </mat-option>
+                    </mat-select> 
+                </div>
+                <div *ngIf="iosTemplate.wic2  || iosTemplate.wic2===''">
+                    <mat-select 
+                        placeholder="WIC 2" 
+                        [(ngModel)]="iosTemplate.wic2"
+                        [ngModelOptions]="{standalone: true}">
+                        <mat-option *ngFor="let option of networkModules[iosTemplate.platform][2]" [value]="option">
+                            {{option}}
+                        </mat-option>
+                    </mat-select> 
+                </div>
             </mat-expansion-panel>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
