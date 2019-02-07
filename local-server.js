@@ -9,23 +9,31 @@ function getServerArguments(server, overrides) {
 }
 
 async function stopAll() {
-    Object.keys(runningServers).forEach(async (serverName) => {
-        await stop(serverName);
-    });
+    for(var serverName in runningServers) {
+        let result, error = await stop(serverName);
+    }
+    console.log(`Stopped all servers`);
 }
 
 async function stop(serverName) {
     const runningServer = runningServers[serverName];
     const pid = runningServer.process.pid;
     console.log(`Stopping '${serverName}' with PID='${pid}'`);
-    kill(pid, (error) => {
-        if(error) {
-            console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
-        }
-        else {
-            console.log(`Stopped '${serverName}' with PID='${pid}'`);
-        }
+
+    const stopped = new Promise((resolve, reject) => {
+        kill(pid, (error) => {
+            if(error) {
+                console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
+                reject(error);
+            }
+            else {
+                console.log(`Stopped '${serverName}' with PID='${pid}'`);
+                resolve(`Stopped '${serverName}' with PID='${pid}'`);
+            }
+        });
     });
+
+    return stopped;
 }
 
 async function run(server, options) {
