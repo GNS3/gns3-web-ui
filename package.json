@@ -61,14 +61,14 @@
     "material-design-icons": "^3.0.1",
     "ng2-file-upload": "^1.3.0",
     "ngx-electron": "^2.0.0",
+    "node-fetch": "^2.3.0",
     "notosans-fontface": "^1.1.0",
     "raven-js": "^3.27.0",
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.3.3",
     "typeface-roboto": "^0.0.54",
     "yargs": "^12.0.5",
-    "zone.js": "^0.8.26",
-    "node-fetch": "^2.3.0"
+    "zone.js": "^0.8.26"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.11.4",
@@ -97,6 +97,7 @@
     "prettier": "^1.15.2",
     "protractor": "~5.4.2",
     "replace": "^1.0.1",
+    "tree-kill": "^1.2.1",
     "ts-mockito": "^2.3.1",
     "ts-node": "~7.0.1",
     "tslint": "~5.12.0",
