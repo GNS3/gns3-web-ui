@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { Server } from '../../../../models/server';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { QemuService } from '../../../../services/qemu.service';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../models/qemu/qemu-image';
@@ -32,7 +31,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
     firstStepForm: FormGroup;
     secondStepForm: FormGroup;
-    thirdStepForm: FormGroup;
     fourthStepForm: FormGroup;
     
     constructor(
@@ -53,8 +51,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.secondStepForm = this.formBuilder.group({
             ramMemory: new FormControl('', Validators.required)
         });
-        
-        this.thirdStepForm = this.formBuilder.group({});
 
         this.fourthStepForm = this.formBuilder.group({
             fileName: new FormControl('', Validators.required)
@@ -62,14 +58,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.route.paramMap
-        .pipe(
-          switchMap((params: ParamMap) => {
-            const server_id = params.get('server_id');
-            return this.serverService.get(parseInt(server_id, 10));
-          })
-        )
-        .subscribe((server: Server) => {
+        const server_id = this.route.snapshot.paramMap.get("server_id");
+        this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
             this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
@@ -95,8 +85,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     }
 
     addTemplate() {
-        if (!this.firstStepForm.invalid && !this.secondStepForm.invalid && !this.thirdStepForm.invalid 
-            && (this.selectedImage || this.chosenImage)) {
+        if (!this.firstStepForm.invalid && !this.secondStepForm.invalid && (this.selectedImage || this.chosenImage)) {
             this.qemuTemplate.ram = this.ramMemory;
             this.qemuTemplate.qemu_path = this.selectedBinary.path;
             if (this.newImageSelected) {

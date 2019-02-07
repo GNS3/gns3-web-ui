@@ -79,6 +79,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         const template_id = this.route.snapshot.paramMap.get("template_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
+            
             this.qemuService.getTemplate(this.server, template_id).subscribe((qemuTemplate: QemuTemplate) => {
                 this.qemuTemplate = qemuTemplate;
 

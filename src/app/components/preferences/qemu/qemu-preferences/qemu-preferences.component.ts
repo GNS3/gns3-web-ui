@@ -25,15 +25,10 @@ export class QemuPreferencesComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.route.paramMap
-        .pipe(
-          switchMap((params: ParamMap) => {
-            const server_id = params.get('server_id');
-            return this.serverService.get(parseInt(server_id, 10));
-          })
-        )
-        .subscribe((server: Server) => {
+        const server_id = this.route.snapshot.paramMap.get("server_id");
+        this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
+
             this.serverSettingsService.getSettingsForQemu(this.server).subscribe((settings: QemuSettings) => {
                 this.settings = settings;
             });

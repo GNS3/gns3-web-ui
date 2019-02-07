@@ -1,10 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Server } from '../../../../models/server';
 import { switchMap } from 'rxjs/operators';
 import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -18,20 +16,12 @@ export class VirtualBoxPreferencesComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
-        private serverService: ServerService,
-        private serverSettingsService: ServerSettingsService,
-        private toasterService: ToasterService
+        private serverService: ServerService
     ) {}
 
     ngOnInit() {
-        this.route.paramMap
-        .pipe(
-          switchMap((params: ParamMap) => {
-            const server_id = params.get('server_id');
-            return this.serverService.get(parseInt(server_id, 10));
-          })
-        )
-        .subscribe((server: Server) => {
+        const server_id = this.route.snapshot.paramMap.get("server_id");
+        this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
         });
     }

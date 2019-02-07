@@ -14,7 +14,8 @@
                                 matInput type="text" 
                                 [(ngModel)]="qemuTemplate.name" 
                                 formControlName="templateName"
-                                placeholder="Please choose a descriptive name for your new QEMU virtual machine"/>
+                                placeholder="Please choose a descriptive name for your new QEMU virtual machine"
+                                ngDefaultContro/>
                         </mat-form-field><br/>
                         <mat-checkbox>
                             This is a legacy ASA VM
@@ -38,23 +39,22 @@
                             matInput type="number" 
                             placeholder="RAM" 
                             [(ngModel)]="ramMemory"
-                            formControlName="ramMemory"/>
+                            formControlName="ramMemory"
+                            ngDefaultContro/>
                         </mat-form-field>
                     </form>
                 </mat-step>
                 <mat-step label="Console type">
-                    <form [formGroup]="thirdStepForm">
-                        <mat-form-field class="form-field">
-                            <mat-select 
-                                placeholder="Console type" 
-                                [(ngModel)]="qemuTemplate.console_type"
-                                [ngModelOptions]="{standalone: true}" >
-                                <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                                    {{type}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </form>
+                    <mat-form-field class="form-field">
+                        <mat-select 
+                            placeholder="Console type" 
+                            [(ngModel)]="qemuTemplate.console_type"
+                            [ngModelOptions]="{standalone: true}" >
+                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </mat-step>
                 <mat-step label="Disk image">
                     <form [formGroup]="fourthStepForm">
@@ -77,7 +77,8 @@
                                 accept=".qcow2"
                                 #file
                                 class="nonvisible"
-                                (change)="uploadImageFile($event)"/>
+                                (change)="uploadImageFile($event)"
+                                ngDefaultContro/>
                             <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
                             <mat-form-field class="file-name-form-field">
                                 <input

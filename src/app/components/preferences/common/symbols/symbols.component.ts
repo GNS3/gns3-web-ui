@@ -19,7 +19,6 @@ export class SymbolsComponent implements OnInit {
     isSelected: string = '';
 
     constructor(
-        private route: ActivatedRoute,
         private symbolService: SymbolService
     ) {}
 
