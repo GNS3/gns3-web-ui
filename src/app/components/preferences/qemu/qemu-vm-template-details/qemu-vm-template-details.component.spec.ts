@@ -46,7 +46,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule,  MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute

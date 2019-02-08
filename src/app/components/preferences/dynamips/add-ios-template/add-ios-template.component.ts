@@ -86,7 +86,7 @@ export class AddIosTemplateComponent implements OnInit {
     }
 
     addTemplate() {
-        if (!this.iosImageForm.invalid) {
+        if (!this.iosImageForm.invalid && !this.iosNameForm.invalid && !this.iosMemoryForm.invalid) {
             this.iosTemplate.template_id = uuid();
 
             if (this.isEtherSwitchRouter) {

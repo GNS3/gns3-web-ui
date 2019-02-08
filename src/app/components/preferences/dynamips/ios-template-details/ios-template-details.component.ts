@@ -58,8 +58,6 @@ export class IosTemplateDetailsComponent implements OnInit {
                 this.chassis = this.iosConfigurationService.getChassis();
                 this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
                 this.fillAdaptersData();
-
-                console.log(this.iosTemplate.slot3);
             });
         });
     }

@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { Server } from '../../../../models/server';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { VpcsService } from '../../../../services/vpcs.service';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 
