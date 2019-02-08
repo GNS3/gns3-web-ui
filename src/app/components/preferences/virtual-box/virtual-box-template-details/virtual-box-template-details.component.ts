@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
 
 
 @Component({
@@ -20,21 +21,10 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
     isSymbolSelectionOpened: boolean = false;
 
-    consoleTypes: string[] = ['telnet', 'none'];
-    onCloseOptions = [["Power off the VM", "power_off"], 
-                    ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
-                    ["Save the VM state", "save_vm_state"]];
-    categories = [["Default", "guest"],
-                    ["Routers", "routers"],
-                    ["Switches", "switches"],
-                    ["End devices", "end_devices"],
-                    ["Security devices", "security_devices"]];
-    networkTypes = ["PCnet-PCI II (Am79C970A)",
-                    "PCNet-FAST III (Am79C973)",
-                    "Intel PRO/1000 MT Desktop (82540EM)",
-                    "Intel PRO/1000 T Server (82543GC)",
-                    "Intel PRO/1000 MT Server (82545EM)",
-                    "Paravirtualized Network (virtio-net)"];
+    consoleTypes: string[] = [];
+    onCloseOptions = [];
+    categories = [];
+    networkTypes = [];
     adapters: CustomAdapter[] = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
     isConfiguratorOpened: boolean = false;
@@ -44,7 +34,8 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         private serverService: ServerService,
         private virtualBoxService: VirtualBoxService,
         private toasterService: ToasterService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private virtualBoxConfigurationService: VirtualBoxConfigurationService
     ) {}
 
     ngOnInit() {
@@ -53,6 +44,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            this.getConfiguration();
             this.virtualBoxService.getTemplate(this.server, template_id).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
                 this.virtualBoxTemplate = virtualBoxTemplate;
 
@@ -69,6 +61,13 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
                 }
             });
         });
+    }
+
+    getConfiguration(){
+        this.consoleTypes = this.virtualBoxConfigurationService.getConsoleTypes();
+        this.onCloseOptions = this.virtualBoxConfigurationService.getOnCloseoptions();
+        this.categories = this.virtualBoxConfigurationService.getCategories();
+        this.networkTypes = this.virtualBoxConfigurationService.getNetworkTypes();
     }
 
     configureCustomAdapters(){

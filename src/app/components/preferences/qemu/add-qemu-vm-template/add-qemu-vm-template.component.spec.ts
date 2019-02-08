@@ -17,6 +17,7 @@ import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 import { QemuService } from '../../../../services/qemu.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 
 export class MockedQemuService {
     public addTemplate(server: Server, qemuTemplate: QemuTemplate) {
@@ -56,7 +57,8 @@ describe('AddQemuVmTemplateComponent', () => {
               { provide: ServerService, useValue: mockedServerService },
               { provide: QemuService, useValue: mockedQemuService },
               { provide: ToasterService, useValue: mockedToasterService},
-              { provide: TemplateMocksService, useClass: TemplateMocksService }
+              { provide: TemplateMocksService, useClass: TemplateMocksService },
+              { provide: QemuConfigurationService, useClass: QemuConfigurationService }
           ],
           declarations: [
               AddQemuVmTemplateComponent

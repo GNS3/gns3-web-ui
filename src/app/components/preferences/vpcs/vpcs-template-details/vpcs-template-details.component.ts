@@ -6,6 +6,7 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { VpcsService } from '../../../../services/vpcs.service';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
 
 
 @Component({
@@ -20,19 +21,16 @@ export class VpcsTemplateDetailsComponent implements OnInit {
 
     isSymbolSelectionOpened: boolean = false;
 
-    consoleTypes: string[] = ['telnet', 'none'];
-    categories = [["Default", "guest"],
-                    ["Routers", "routers"],
-                    ["Switches", "switches"],
-                    ["End devices", "end_devices"],
-                    ["Security devices", "security_devices"]];
+    consoleTypes: string[] = [];
+    categories = [];
 
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
         private vpcsService: VpcsService,
         private toasterService: ToasterService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private vpcsConfigurationService: VpcsConfigurationService
     ) {
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
@@ -48,10 +46,16 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            this.getConfiguration();
             this.vpcsService.getTemplate(this.server, template_id).subscribe((vpcsTemplate: VpcsTemplate) => {
                 this.vpcsTemplate = vpcsTemplate;
             });
         });
+    }
+
+    getConfiguration() {
+        this.consoleTypes = this.vpcsConfigurationService.getConsoleTypes();
+        this.categories = this.vpcsConfigurationService.getCategories();
     }
 
     onSave() {

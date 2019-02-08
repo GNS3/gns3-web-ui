@@ -16,6 +16,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuVmTemplateDetailsComponent } from './qemu-vm-template-details.component';
 import { QemuService } from '../../../../services/qemu.service';
+import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 
 export class MockedQemuService {
     public getTemplate(server: Server, template_id: string) {
@@ -53,7 +54,8 @@ describe('QemuVmTemplateDetailsComponent', () => {
               },
               { provide: ServerService, useValue: mockedServerService },
               { provide: QemuService, useValue: mockedQemuService },
-              { provide: ToasterService, useValue: mockedToasterService}
+              { provide: ToasterService, useValue: mockedToasterService},
+              { provide: QemuConfigurationService, useClass: QemuConfigurationService }
           ],
           declarations: [
               QemuVmTemplateDetailsComponent

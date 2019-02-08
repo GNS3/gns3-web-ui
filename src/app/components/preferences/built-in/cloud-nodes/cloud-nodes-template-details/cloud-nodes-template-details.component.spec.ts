@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServerService } from '../../../../../services/server.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 export class MockedBuiltInTemplatesService {
     public getTemplate(server: Server, template_id: string) {
@@ -45,7 +46,8 @@ describe('CloudNodesTemplateDetailsComponent', () => {
               },
               { provide: ServerService, useValue: mockedServerService },
               { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-              { provide: ToasterService, useValue: mockedToasterService}
+              { provide: ToasterService, useValue: mockedToasterService },
+              { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService }
           ],
           declarations: [
                 CloudNodesTemplateDetailsComponent

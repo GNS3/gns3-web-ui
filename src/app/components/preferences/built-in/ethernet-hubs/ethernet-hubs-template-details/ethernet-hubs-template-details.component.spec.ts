@@ -16,6 +16,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { EthernetHubsTemplateDetailsComponent } from './ethernet-hubs-template-details.component';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 export class MockedBuiltInTemplatesService {
     public getTemplate(server: Server, template_id: string) {
@@ -45,7 +46,8 @@ describe('EthernetHubsTemplateDetailsComponent', () => {
               },
               { provide: ServerService, useValue: mockedServerService },
               { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-              { provide: ToasterService, useValue: mockedToasterService}
+              { provide: ToasterService, useValue: mockedToasterService},
+              { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService }
           ],
           declarations: [
                 EthernetHubsTemplateDetailsComponent

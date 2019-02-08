@@ -10,6 +10,7 @@ import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     qemuBinaries: QemuBinary[] = [];
     selectedBinary: QemuBinary;
     ramMemory: number;
-    consoleTypes: string[] = ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
+    consoleTypes: string[] = [];
     newImageSelected: boolean = false;;
     qemuImages: QemuImage[] = [];
     selectedImage: QemuImage;
@@ -40,7 +41,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
         private toasterService: ToasterService,
         private router: Router,
         private formBuilder: FormBuilder,
-        private templateMocksService: TemplateMocksService
+        private templateMocksService: TemplateMocksService,
+        private configurationService: QemuConfigurationService
     ) {
         this.qemuTemplate = new QemuTemplate();
 
@@ -73,6 +75,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
             this.qemuService.getImages(server).subscribe((qemuImages: QemuImage[]) => {
                 this.qemuImages = qemuImages;
             });
+
+            this.consoleTypes = this.configurationService.getConsoleTypes();
         });
     }
 

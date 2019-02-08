@@ -133,6 +133,10 @@ import { PlatformService } from './services/platform.service';
 import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
 import { AddIosTemplateComponent } from './components/preferences/dynamips/add-ios-template/add-ios-template.component';
 import { IosConfigurationService } from './services/ios-configuration.service';
+import { QemuConfigurationService } from './services/qemu-configuration.service';
+import { VirtualBoxConfigurationService } from './services/virtual-box-configuration.service';
+import { VpcsConfigurationService } from './services/vpcs-configuration.service';
+import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -272,7 +276,11 @@ if (environment.production) {
     InstalledSoftwareService,
     ExternalSoftwareDefinitionService,
     PlatformService,
-    IosConfigurationService
+    IosConfigurationService,
+    QemuConfigurationService,
+    VirtualBoxConfigurationService,
+    VpcsConfigurationService,,
+    BuiltInTemplatesConfigurationService
   ],
   entryComponents: [
     AddServerDialogComponent,

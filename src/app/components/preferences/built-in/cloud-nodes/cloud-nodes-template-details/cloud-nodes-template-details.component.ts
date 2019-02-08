@@ -6,6 +6,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 
 @Component({
@@ -19,12 +20,8 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
 
     isSymbolSelectionOpened: boolean = false;
 
-    categories = [["Default", "guest"],
-                    ["Routers", "router"],
-                    ["Switches", "switch"],
-                    ["End devices", "end_device"],
-                    ["Security devices", "security_device"]];
-    consoleTypes: string[] = ['telnet', 'none'];
+    categories = [];
+    consoleTypes: string[] = [];
 
     tapInterface: string = '';
     ethernetInterface: string = '';
@@ -40,7 +37,8 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private serverService: ServerService,
         private builtInTemplatesService: BuiltInTemplatesService,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
     ) {
         this.newPort = {
             name: '',
@@ -54,6 +52,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            this.getConfiguration();
             this.builtInTemplatesService.getTemplate(this.server, template_id).subscribe((cloudNodeTemplate: CloudTemplate) => {
                 this.cloudNodeTemplate = cloudNodeTemplate;
 
@@ -69,6 +68,11 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
                 this.dataSourceUdp = this.ports_mapping_udp;
             });
         });
+    }
+
+    getConfiguration() {
+        this.categories = this.builtInTemplatesConfigurationService.getCategoriesForCloudNodes();
+        this.consoleTypes = this.builtInTemplatesConfigurationService.getConsoleTypesForCloudNodes();
     }
 
     onAddEthernetInterface() {

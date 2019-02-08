@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 
 @Component({
@@ -24,14 +25,10 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
 
     isSymbolSelectionOpened: boolean = false;
 
-    categories = [["Default", "guest"],
-                    ["Routers", "router"],
-                    ["Switches", "switch"],
-                    ["End devices", "end_device"],
-                    ["Security devices", "security_device"]];
-    consoleTypes: string[] = ['telnet', 'none'];
-    portTypes: string[] = ['access', 'dot1q', 'qinq'];
-    etherTypes: string[] = ['0x8100', '0x88A8', '0x9100', '0x9200'];
+    categories = [];
+    consoleTypes: string[] = [];
+    portTypes: string[] = [];
+    etherTypes: string[] = [];
     displayedColumns: string[] = ['port_number', 'vlan', 'type', 'ethertype'];
 
     constructor(
@@ -39,7 +36,8 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
         private serverService: ServerService,
         private builtInTemplatesService: BuiltInTemplatesService,
         private toasterService: ToasterService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
     ){
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
@@ -59,12 +57,20 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            this.getConfiguration();
             this.builtInTemplatesService.getTemplate(this.server, template_id).subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
                 this.ethernetSwitchTemplate = ethernetSwitchTemplate;
                 this.ethernetPorts = this.ethernetSwitchTemplate.ports_mapping;
                 this.dataSource =  this.ethernetSwitchTemplate.ports_mapping;
             });
         });
+    }
+
+    getConfiguration() {
+        this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetSwitches();
+        this.consoleTypes = this.builtInTemplatesConfigurationService.getConsoleTypesForEthernetSwitches();
+        this.portTypes = this.builtInTemplatesConfigurationService.getPortTypesForEthernetSwitches();
+        this.etherTypes = this.builtInTemplatesConfigurationService.getEtherTypesForEthernetSwitches();
     }
 
     onAdd() {

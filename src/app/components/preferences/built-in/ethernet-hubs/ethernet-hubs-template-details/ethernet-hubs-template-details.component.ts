@@ -6,6 +6,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 
 @Component({
@@ -21,18 +22,15 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
 
     isSymbolSelectionOpened: boolean = false;
 
-    categories = [["Default", "guest"],
-                    ["Routers", "router"],
-                    ["Switches", "switch"],
-                    ["End devices", "end_device"],
-                    ["Security devices", "security_device"]];
+    categories = [];
 
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
         private builtInTemplatesService: BuiltInTemplatesService,
         private toasterService: ToasterService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
     ) {
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
@@ -47,6 +45,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
             this.builtInTemplatesService.getTemplate(this.server, template_id).subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
                 this.ethernetHubTemplate = ethernetHubTemplate;
                 this.numberOfPorts =  this.ethernetHubTemplate.ports_mapping.length;

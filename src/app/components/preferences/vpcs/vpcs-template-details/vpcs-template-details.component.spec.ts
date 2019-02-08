@@ -16,6 +16,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
 
 export class MockedVpcsService {
     public getTemplate(server: Server, template_id: string) {
@@ -45,7 +46,8 @@ describe('VpcsTemplateDetailsComponent', () => {
               },
               { provide: ServerService, useValue: mockedServerService },
               { provide: VpcsService, useValue: mockedVpcsService },
-              { provide: ToasterService, useValue: mockedToasterService}
+              { provide: ToasterService, useValue: mockedToasterService},
+              { provide: VpcsConfigurationService, useClass: VpcsConfigurationService }
           ],
           declarations: [
               VpcsTemplateDetailsComponent

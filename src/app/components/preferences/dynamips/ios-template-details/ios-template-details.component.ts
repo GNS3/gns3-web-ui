@@ -46,20 +46,24 @@ export class IosTemplateDetailsComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            this.getConfiguration();
             this.iosService.getTemplate(this.server, template_id).subscribe((iosTemplate: IosTemplate) => {
                 this.iosTemplate = iosTemplate;
 
-                this.networkModules = this.iosConfigurationService.getNetworkModules();
-                this.networkAdaptersForPlatform = this.iosConfigurationService.getNetworkAdaptersForPlatform();
-                this.networkAdapters = this.iosConfigurationService.getNetworkAdapters();
-                this.platforms = this.iosConfigurationService.getAvailablePlatforms();
-                this.platformsWithEtherSwitchRouterOption = this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption();
-                this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
-                this.chassis = this.iosConfigurationService.getChassis();
-                this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
                 this.fillAdaptersData();
             });
         });
+    }
+
+    getConfiguration() {
+        this.networkModules = this.iosConfigurationService.getNetworkModules();
+        this.networkAdaptersForPlatform = this.iosConfigurationService.getNetworkAdaptersForPlatform();
+        this.networkAdapters = this.iosConfigurationService.getNetworkAdapters();
+        this.platforms = this.iosConfigurationService.getAvailablePlatforms();
+        this.platformsWithEtherSwitchRouterOption = this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption();
+        this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
+        this.chassis = this.iosConfigurationService.getChassis();
+        this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
     }
 
     fillAdaptersData() {

@@ -16,6 +16,7 @@ import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-temp
 import { VirtualBoxTemplateDetailsComponent } from './virtual-box-template-details.component';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
 
 export class MockedVirtualBoxService {
     public getTemplate(server: Server, template_id: string) {
@@ -45,7 +46,8 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
               },
               { provide: ServerService, useValue: mockedServerService },
               { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
-              { provide: ToasterService, useValue: mockedToasterService}
+              { provide: ToasterService, useValue: mockedToasterService },
+              { provide: VirtualBoxConfigurationService, useClass: VirtualBoxConfigurationService }
           ],
           declarations: [
               VirtualBoxTemplateDetailsComponent
