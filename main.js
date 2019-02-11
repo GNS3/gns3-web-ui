@@ -1,18 +1,13 @@
 const electron = require('electron');
-const fs = require('fs');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const url = require('url');
 const yargs = require('yargs');
 
-const { ipcMain } = require('electron')
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let serverProc = null;
-let isWin = /^win/.test(process.platform);
 let isDev = false;
 
 const argv = yargs
@@ -26,49 +21,6 @@ const argv = yargs
 
 if (argv.e == 'dev') {
   isDev = true;
-}
-
-
-const createServerProc = () => {
-  const directory = path.join(__dirname, 'dist');
-
-  if (!fs.existsSync(directory)) {
-    return;
-  }
-
-  fs.readdir(path.join(__dirname, 'dist'), (err, files) => {
-    var serverPath = null;
-
-    files.forEach((filename) => {
-      if(filename.startsWith('exe.')) {
-        if (isWin) {
-          serverPath = path.join(__dirname, 'dist', filename, 'gns3server.exe');
-        }
-        else {
-          serverPath = path.join(__dirname, 'dist', filename, 'gns3server');
-        }
-      }
-    });
-
-    if (serverPath == null) {
-      console.error('gns3server cannot be found');
-    }
-
-    if (serverPath != null) {
-      serverProc = require('child_process').execFile(serverPath, []);
-
-      if (serverProc != null) {
-        console.log('gns3server started from path: ' + serverPath);
-      }
-    }
-  });
-}
-
-const exitServerProc = () => {
-  if(serverProc) {
-    serverProc.kill();
-    serverProc = null;
-  }
 }
 
 

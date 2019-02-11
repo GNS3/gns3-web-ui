@@ -1,7 +1,49 @@
 const { spawn } = require('child_process');
 const kill = require('tree-kill');
+const path = require('path');
+const fs = require('fs');
+const { ipcMain } = require('electron')
+
+const isWin = /^win/.test(process.platform);
 
 let runningServers = {};
+
+
+exports.getLocalServerPath = async () => {
+  const distDirectory = path.join(__dirname, 'dist');
+  if (!fs.existsSync(distDirectory)) {
+    return;
+  }
+
+  const files = fs.readdirSync(distDirectory);
+  
+  let serverPath = null;
+
+  files.forEach((directory) => {
+    if(directory.startsWith('exe.')) {
+      if (isWin) {
+        serverPath = path.join(__dirname, 'dist', directory, 'gns3server.exe');
+      }
+      else {
+        serverPath = path.join(__dirname, 'dist', directory, 'gns3server');
+      }
+    }
+  });
+
+  if(serverPath !== null && fs.existsSync(serverPath)) {
+    return serverPath;
+  }
+
+  return;
+}
+
+exports.startLocalServer = async (server) => {
+  return await run(server);
+}
+
+exports.stopLocalServer = async (server) => {
+  return await stop(server);
+}
 
 function getServerArguments(server, overrides) {
     let serverArguments = [];
@@ -41,6 +83,10 @@ async function stop(serverName) {
 }
 
 async function run(server, options) {
+    if(!options) {
+      options = {};
+    }
+
     const logStdout = options.logStdout || false;
 
     console.log(`Running '${server.path}'`);

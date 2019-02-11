@@ -29,4 +29,12 @@ export class ServerDatabase {
       this.dataChange.next(this.data.slice());
     }
   }
+
+  public update(server: Server) {
+    const index = this.data.indexOf(server);
+    if (index >= 0) {
+      this.data[index] = server;
+      this.dataChange.next(this.data.slice());
+    }
+  }
 }

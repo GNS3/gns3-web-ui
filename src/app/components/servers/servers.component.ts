@@ -22,7 +22,8 @@ export class ServersComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private serverService: ServerService,
-    private serverDatabase: ServerDatabase
+    private serverDatabase: ServerDatabase,
+    private electronService: ElectronService,
   ) {}
 
   ngOnInit() {
@@ -47,10 +48,31 @@ export class ServersComponent implements OnInit {
     });
   }
 
+  getServerStatus(server: Server) {
+    if(server.location === 'local') {
+      if(server.status === undefined) {
+        return 'stopped';
+      }
+      return server.status;
+    }
+  }
+
   deleteServer(server: Server) {
     this.serverService.delete(server).then(() => {
       this.serverDatabase.remove(server);
     });
+  }
+
+  async startServer(server: Server) {
+    await this.electronService.remote.require('./local-server.js').startLocalServer(server);
+    server.status = 'running';
+    this.serverDatabase.update(server);
+  }
+
+  async stopServer(server: Server) {
+    await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
+    server.status = 'stopped';
+    this.serverDatabase.update(server);
   }
 }
 
@@ -86,13 +108,22 @@ export class AddServerDialogComponent implements OnInit {
     return 'remote';
   }
 
+  getDefaultLocalServerPath() {
+    return this.electronService.remote.require('./local-server.js').getLocalServerPath();
+  }
+
   ngOnInit() {
     this.locations = this.getLocations();
     this.server.authorization = 'none';
     this.server.location = this.getDefaultLocation();
+    this.server.path = this.getDefaultLocalServerPath();
   }
 
   onAddClick(): void {
+    // clear path if not local server
+    if(this.server.location !== 'local') {
+      this.server.path = null;
+    }
     this.dialogRef.close(this.server);
   }
 
