@@ -143,6 +143,8 @@ import { VmwareService } from './services/vmware.service';
 import { VmwareConfigurationService } from './services/vmware-configuration.service';
 import { VmwareTemplateDetailsComponent } from './components/preferences/vmware/vmware-template-details/vmware-template-details.component';
 import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-vmware-template/add-vmware-template.component';
+import { DeleteConfirmationDialogComponent } from './components/preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { DeleteTemplateComponent } from './components/preferences/common/delete-template-component/delete-template.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -229,7 +231,9 @@ if (environment.production) {
     VmwarePreferencesComponent,
     VmwareTemplatesComponent,
     VmwareTemplateDetailsComponent,
-    AddVmwareTemplateComponent
+    AddVmwareTemplateComponent,
+    DeleteConfirmationDialogComponent,
+    DeleteTemplateComponent
   ],
   imports: [
     BrowserModule,
@@ -304,7 +308,8 @@ if (environment.production) {
     ConfirmationDialogComponent,
     StyleEditorDialogComponent,
     TextEditorDialogComponent,
-    SymbolsComponent
+    SymbolsComponent,
+    DeleteConfirmationDialogComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -1,10 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../../models/server';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ServerService } from '../../../../../services/server.service';
 import { switchMap } from 'rxjs/operators';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 
 @Component({
@@ -15,6 +16,7 @@ import { BuiltInTemplatesService } from '../../../../../services/built-in-templa
 export class EthernetHubsTemplatesComponent implements OnInit {
     server: Server;
     ethernetHubsTemplates: EthernetHubTemplate[];
+    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,
@@ -26,10 +28,22 @@ export class EthernetHubsTemplatesComponent implements OnInit {
         const server_id = this.route.snapshot.paramMap.get("server_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
-
-            this.builtInTemplatesService.getTemplates(this.server).subscribe((ethernetHubsTemplates: EthernetHubTemplate[]) => {
-                this.ethernetHubsTemplates = ethernetHubsTemplates.filter((elem) => elem.template_type === "ethernet_hub" && !elem.builtin);
-            });
+            this.getTemplates();
         });
+    }
+
+    getTemplates() {
+        this.ethernetHubsTemplates = [];
+        this.builtInTemplatesService.getTemplates(this.server).subscribe((ethernetHubsTemplates: EthernetHubTemplate[]) => {
+            this.ethernetHubsTemplates = ethernetHubsTemplates.filter((elem) => elem.template_type === "ethernet_hub" && !elem.builtin);
+        });
+    }
+    
+    deleteTemplate(template: EthernetHubTemplate) {
+        this.deleteComponent.deleteItem(template.name, template.template_id);
+    }
+
+    onDeleteEvent(deletedTemplateId: string) {
+        this.getTemplates();
     }
 }
