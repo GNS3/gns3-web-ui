@@ -149,7 +149,7 @@ describe('ServerService', () => {
 
     const expectedServer = new Server();
     expectedServer.name = 'local';
-    expectedServer.ip = 'hostname';
+    expectedServer.host = 'hostname';
     expectedServer.port = 9999;
     expectedServer.is_local = true;
 
@@ -162,7 +162,7 @@ describe('ServerService', () => {
   it('should update local server when found', done => {
     const server = new Server();
     server.name = 'local';
-    server.ip = 'hostname';
+    server.host = 'hostname';
     server.port = 9999;
     server.is_local = true;
 
@@ -170,7 +170,7 @@ describe('ServerService', () => {
     spyOn(service, 'update').and.returnValue(Promise.resolve(new Server()));
 
     service.getLocalServer('hostname-2', 11111).then(() => {
-      server.ip = 'hostname-2';
+      server.host = 'hostname-2';
       server.port = 11111;
 
       expect(service.update).toHaveBeenCalledWith(server);

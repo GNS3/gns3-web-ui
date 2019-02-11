@@ -55,12 +55,12 @@ describe('ServerDiscoveryComponent', () => {
       const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(Observable.of(version));
 
       component.isServerAvailable('127.0.0.1', 3080).subscribe(s => {
-        expect(s.ip).toEqual('127.0.0.1');
+        expect(s.host).toEqual('127.0.0.1');
         expect(s.port).toEqual(3080);
       });
 
       const server = new Server();
-      server.ip = '127.0.0.1';
+      server.host = '127.0.0.1';
       server.port = 3080;
 
       expect(getVersionSpy).toHaveBeenCalledWith(server);
@@ -68,7 +68,7 @@ describe('ServerDiscoveryComponent', () => {
 
     it('should throw error once server is not available', () => {
       const server = new Server();
-      server.ip = '127.0.0.1';
+      server.host = '127.0.0.1';
       server.port = 3080;
 
       const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(
@@ -96,13 +96,13 @@ describe('ServerDiscoveryComponent', () => {
 
       spyOn(component, 'isServerAvailable').and.callFake((ip, port) => {
         const server = new Server();
-        server.ip = ip;
+        server.host = ip;
         server.port = port;
         return Observable.of(server);
       });
 
       component.discovery().subscribe(discovered => {
-        expect(discovered[0].ip).toEqual('127.0.0.1');
+        expect(discovered[0].host).toEqual('127.0.0.1');
         expect(discovered[0].port).toEqual(3080);
 
         expect(discovered.length).toEqual(1);
@@ -117,7 +117,7 @@ describe('ServerDiscoveryComponent', () => {
 
     beforeEach(function() {
       server = new Server();
-      (server.ip = '199.111.111.1'), (server.port = 3333);
+      (server.host = '199.111.111.1'), (server.port = 3333);
 
       spyOn(component, 'discovery').and.callFake(() => {
         return Observable.of([server]);
@@ -128,7 +128,7 @@ describe('ServerDiscoveryComponent', () => {
       expect(component.discoveredServer).toBeUndefined();
       component.discoverFirstAvailableServer();
       tick();
-      expect(component.discoveredServer.ip).toEqual('199.111.111.1');
+      expect(component.discoveredServer.host).toEqual('199.111.111.1');
       expect(component.discoveredServer.port).toEqual(3333);
     }));
 
@@ -146,7 +146,7 @@ describe('ServerDiscoveryComponent', () => {
     let server: Server;
     beforeEach(() => {
       server = new Server();
-      (server.ip = '199.111.111.1'), (server.port = 3333);
+      (server.host = '199.111.111.1'), (server.port = 3333);
       component.discoveredServer = server;
     });
 
@@ -155,7 +155,7 @@ describe('ServerDiscoveryComponent', () => {
         component.accept(server);
         tick();
         expect(component.discoveredServer).toBeNull();
-        expect(mockedServerService.servers[0].ip).toEqual('199.111.111.1');
+        expect(mockedServerService.servers[0].host).toEqual('199.111.111.1');
         expect(mockedServerService.servers[0].name).toEqual('199.111.111.1');
         expect(mockedServerService.servers[0].location).toEqual('remote');
       }));

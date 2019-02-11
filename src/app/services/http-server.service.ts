@@ -164,8 +164,8 @@ export class HttpServer {
   }
 
   private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
-    if (server.ip && server.port) {
-      url = `http://${server.ip}:${server.port}/v2${url}`;
+    if (server.host && server.port) {
+      url = `http://${server.host}:${server.port}/v2${url}`;
     } else {
       url = `/v2${url}`;
     }

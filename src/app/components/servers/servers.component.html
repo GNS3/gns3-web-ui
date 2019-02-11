@@ -17,9 +17,14 @@
           >
         </ng-container>
 
+        <ng-container matColumnDef="location">
+          <mat-header-cell *matHeaderCellDef> Location </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.location }} </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="ip">
-          <mat-header-cell *matHeaderCellDef> IP </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.ip }} </mat-cell>
+          <mat-header-cell *matHeaderCellDef> Host </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.host }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="port">

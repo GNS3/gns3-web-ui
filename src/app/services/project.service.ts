@@ -50,7 +50,7 @@ export class ProjectService {
   }
 
   notificationsPath(server: Server, project_id: string): string {
-    return `ws://${server.ip}:${server.port}/v2/projects/${project_id}/notifications/ws`;
+    return `ws://${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
   }
 
   isReadOnly(project: Project) {

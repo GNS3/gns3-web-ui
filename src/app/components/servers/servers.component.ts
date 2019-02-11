@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
+import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-server-list',
@@ -16,7 +17,7 @@ import { ServerDatabase } from '../../services/server.database';
 })
 export class ServersComponent implements OnInit {
   dataSource: ServerDataSource;
-  displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
+  displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
 
   constructor(
     private dialog: MatDialog,
@@ -61,11 +62,34 @@ export class AddServerDialogComponent implements OnInit {
   server: Server = new Server();
 
   authorizations = [{ key: 'none', name: 'No authorization' }, { key: 'basic', name: 'Basic authorization' }];
+  locations = [];
 
-  constructor(public dialogRef: MatDialogRef<AddServerDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(
+    public dialogRef: MatDialogRef<AddServerDialogComponent>,
+    private electronService: ElectronService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
+
+  getLocations() {
+    let locations = [];
+    if(this.electronService.isElectronApp) {
+      locations.push({ key: 'local', name: 'Local' });
+    }
+    locations.push({ key: 'remote', name: 'Remote' });
+    return locations
+  }
+
+  getDefaultLocation() {
+    if(this.electronService.isElectronApp) {
+      return 'local';
+    }
+    return 'remote';
+  }
 
   ngOnInit() {
+    this.locations = this.getLocations();
     this.server.authorization = 'none';
+    this.server.location = this.getDefaultLocation();
   }
 
   onAddClick(): void {
