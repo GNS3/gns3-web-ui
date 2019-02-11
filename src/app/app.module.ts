@@ -279,7 +279,7 @@ if (environment.production) {
     IosConfigurationService,
     QemuConfigurationService,
     VirtualBoxConfigurationService,
-    VpcsConfigurationService,,
+    VpcsConfigurationService,
     BuiltInTemplatesConfigurationService
   ],
   entryComponents: [
