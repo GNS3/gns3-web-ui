@@ -36,6 +36,10 @@ import { IosTemplatesComponent } from './components/preferences/dynamips/ios-tem
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
 import { AddIosTemplateComponent } from './components/preferences/dynamips/add-ios-template/add-ios-template.component';
+import { VmwarePreferencesComponent } from './components/preferences/vmware/vmware-preferences/vmware-preferences.component';
+import { VmwareTemplatesComponent } from './components/preferences/vmware/vmware-templates/vmware-templates.component';
+import { VmwareTemplateDetailsComponent } from './components/preferences/vmware/vmware-template-details/vmware-template-details.component';
+import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-vmware-template/add-vmware-template.component';
 
 const routes: Routes = [
   {
@@ -79,10 +83,15 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent},
       { path: 'server/:server_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent },
 
-      // { path: 'server/:server_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent }
+      // { path: 'server/:server_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent },
       { path: 'server/:server_id/preferences/virtualbox/templates', component: VirtualBoxTemplatesComponent },
       { path: 'server/:server_id/preferences/virtualbox/templates/:template_id', component: VirtualBoxTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/virtualbox/addtemplate', component: AddVirtualBoxTemplateComponent }
+      { path: 'server/:server_id/preferences/virtualbox/addtemplate', component: AddVirtualBoxTemplateComponent },
+
+      // { path: 'server/:server_id/preferences/vmware', component: VmwarePreferencesComponent },
+      { path: 'server/:server_id/preferences/vmware/templates', component: VmwareTemplatesComponent },
+      { path: 'server/:server_id/preferences/vmware/templates/:template_id', component: VmwareTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

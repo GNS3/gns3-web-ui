@@ -6,13 +6,13 @@ import { ServerService } from '../../../../services/server.service';
 
 
 @Component({
-    selector: 'app-vpcs-preferences',
-    templateUrl: './vpcs-preferences.component.html',
-    styleUrls: ['./vpcs-preferences.component.scss']
+    selector: 'app-vmware-preferences',
+    templateUrl: './vmware-preferences.component.html',
+    styleUrls: ['./vmware-preferences.component.scss']
 })
-export class VpcsPreferencesComponent implements OnInit {
+export class VmwarePreferencesComponent implements OnInit {
     server: Server;
-    vpcsExecutable: string;
+    vmrunPath: string;
 
     constructor(
         private route: ActivatedRoute,
@@ -28,6 +28,6 @@ export class VpcsPreferencesComponent implements OnInit {
     }
 
     restoreDefaults(){
-        this.vpcsExecutable = '';
+        this.vmrunPath = '';
     }
 }

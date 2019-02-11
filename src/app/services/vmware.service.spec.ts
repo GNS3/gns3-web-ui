@@ -5,10 +5,10 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { getTestServer } from './testing';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
-import { VirtualBoxService } from './virtual-box.service';
+import { VmwareService } from './vmware.service';
+import { VmwareTemplate } from '../models/templates/vmware-template';
 
-describe('VirtualBoxService', () => {
+describe('VmwareService', () => {
     let httpClient: HttpClient;
     let httpTestingController: HttpTestingController;
     let httpServer: HttpServer;
@@ -17,7 +17,7 @@ describe('VirtualBoxService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
         imports: [HttpClientTestingModule, AppTestingModule],
-        providers: [HttpServer, VirtualBoxService]
+        providers: [HttpServer, VmwareService]
         });
 
         httpClient = TestBed.get(HttpClient);
@@ -30,13 +30,13 @@ describe('VirtualBoxService', () => {
         httpTestingController.verify();
     });
 
-    it('should be created', inject([VirtualBoxService], (service: VirtualBoxService) => {
+    it('should be created', inject([VmwareService], (service: VmwareService) => {
         expect(service).toBeTruthy();
     }));
 
-    it('should update virtual box template', inject([VirtualBoxService], (service: VirtualBoxService) => {
-        const template: VirtualBoxTemplate = {
-            adapter_type: 'Intel PRO/1000 MT Desktop (82540EM)',
+    it('should update vmware template', inject([VmwareService], (service: VmwareService) => {
+        const template: VmwareTemplate = {
+            adapter_type: 'e1000',
             adapters: 1,
             builtin: false,
             category: 'guest',
@@ -49,17 +49,16 @@ describe('VirtualBoxService', () => {
             headless: false,
             linked_clone: false,
             name: '',
-            on_close: 'power_off',
+            on_close: 'power-off',
             port_name_format: 'Ethernet{0}',
             port_segment_size: 0,
-            ram: 0,
-            symbol: ':/symbols/vbox_guest.svg',
+            symbol: ':/symbols/vmware_guest.svg',
             template_id: '1',
-            template_type: 'virtualbox',
+            template_type: 'vmware',
             usage: '',
             use_any_adapter: false,
-            vmname: ''
-        }
+            vmx_path: ''
+        };
 
         service.saveTemplate(server, template).subscribe();
 
@@ -68,9 +67,9 @@ describe('VirtualBoxService', () => {
         expect(req.request.body).toEqual(template);
     }));
 
-    it('should add virtual box template', inject([VirtualBoxService], (service: VirtualBoxService) => {
-        const template: VirtualBoxTemplate = {
-            adapter_type: 'Intel PRO/1000 MT Desktop (82540EM)',
+    it('should add vmware template', inject([VmwareService], (service: VmwareService) => {
+        const template: VmwareTemplate = {
+            adapter_type: 'e1000',
             adapters: 1,
             builtin: false,
             category: 'guest',
@@ -83,17 +82,16 @@ describe('VirtualBoxService', () => {
             headless: false,
             linked_clone: false,
             name: '',
-            on_close: 'power_off',
+            on_close: 'power-off',
             port_name_format: 'Ethernet{0}',
             port_segment_size: 0,
-            ram: 0,
-            symbol: ':/symbols/vbox_guest.svg',
-            template_id: '',
-            template_type: 'virtualbox',
+            symbol: ':/symbols/vmware_guest.svg',
+            template_id: '1',
+            template_type: 'vmware',
             usage: '',
             use_any_adapter: false,
-            vmname: ''
-        }
+            vmx_path: ''
+        };
 
         service.addTemplate(server, template).subscribe();
 
@@ -102,10 +100,10 @@ describe('VirtualBoxService', () => {
         expect(req.request.body).toEqual(template);
     }));
 
-    it('should get available virtual machines', inject([VirtualBoxService], (service: VirtualBoxService) => {
+    it('should get available virtual machines', inject([VmwareService], (service: VmwareService) => {
         service.getVirtualMachines(server).subscribe();
 
-        const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/compute/virtualbox/vms');
+        const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/compute/vmware/vms');
         expect(req.request.method).toEqual('GET');
     }));
 });

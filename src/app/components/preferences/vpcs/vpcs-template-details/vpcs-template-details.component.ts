@@ -62,7 +62,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         if (this.inputForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {
-            this.vpcsService.saveTemplate(this.server, this.vpcsTemplate).subscribe((vpcsTemaple: VpcsTemplate) => {
+            this.vpcsService.saveTemplate(this.server, this.vpcsTemplate).subscribe((vpcsTemplate: VpcsTemplate) => {
                 this.toasterService.success("Changes saved");
             });
         }

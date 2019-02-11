@@ -7,6 +7,7 @@ import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
 import { IosTemplate } from '../models/templates/ios-template';
+import { VmwareTemplate } from '../models/templates/vmware-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -190,6 +191,35 @@ export class TemplateMocksService {
             template_type: 'dynamips',
             usage: ''
         }
+
+        return of(template);
+    }
+
+    getVmwareTemplate() : Observable<VmwareTemplate> {
+        let template: VmwareTemplate = {
+            adapter_type: 'e1000',
+            adapters: 1,
+            builtin: false,
+            category: 'guest',
+            compute_id: 'local',
+            console_auto_start: false,
+            console_type: 'none',
+            custom_adapters: [],
+            default_name_format: '{name}-{0}',
+            first_port_name: '',
+            headless: false,
+            linked_clone: false,
+            name: '',
+            on_close: 'power-off',
+            port_name_format: 'Ethernet{0}',
+            port_segment_size: 0,
+            symbol: ':/symbols/vmware_guest.svg',
+            template_id: '',
+            template_type: 'vmware',
+            usage: '',
+            use_any_adapter: false,
+            vmx_path: ''
+        };
 
         return of(template);
     }

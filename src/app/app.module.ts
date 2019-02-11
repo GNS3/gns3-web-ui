@@ -137,6 +137,12 @@ import { QemuConfigurationService } from './services/qemu-configuration.service'
 import { VirtualBoxConfigurationService } from './services/virtual-box-configuration.service';
 import { VpcsConfigurationService } from './services/vpcs-configuration.service';
 import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
+import { VmwarePreferencesComponent } from './components/preferences/vmware/vmware-preferences/vmware-preferences.component';
+import { VmwareTemplatesComponent } from './components/preferences/vmware/vmware-templates/vmware-templates.component';
+import { VmwareService } from './services/vmware.service';
+import { VmwareConfigurationService } from './services/vmware-configuration.service';
+import { VmwareTemplateDetailsComponent } from './components/preferences/vmware/vmware-template-details/vmware-template-details.component';
+import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-vmware-template/add-vmware-template.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -219,7 +225,11 @@ if (environment.production) {
     IosTemplatesComponent,
     IosTemplateDetailsComponent,
     AddIosTemplateComponent,
-    SymbolsComponent
+    SymbolsComponent,
+    VmwarePreferencesComponent,
+    VmwareTemplatesComponent,
+    VmwareTemplateDetailsComponent,
+    AddVmwareTemplateComponent
   ],
   imports: [
     BrowserModule,
@@ -280,7 +290,9 @@ if (environment.production) {
     QemuConfigurationService,
     VirtualBoxConfigurationService,
     VpcsConfigurationService,
-    BuiltInTemplatesConfigurationService
+    BuiltInTemplatesConfigurationService,
+    VmwareService,
+    VmwareConfigurationService
   ],
   entryComponents: [
     AddServerDialogComponent,
