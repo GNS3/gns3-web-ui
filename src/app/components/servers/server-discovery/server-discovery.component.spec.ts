@@ -157,6 +157,7 @@ describe('ServerDiscoveryComponent', () => {
         expect(component.discoveredServer).toBeNull();
         expect(mockedServerService.servers[0].ip).toEqual('199.111.111.1');
         expect(mockedServerService.servers[0].name).toEqual('199.111.111.1');
+        expect(mockedServerService.servers[0].location).toEqual('remote');
       }));
     });
 

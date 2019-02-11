@@ -86,6 +86,8 @@ export class ServerDiscoveryComponent implements OnInit {
       server.name = server.ip;
     }
 
+    server.location = 'remote';
+
     this.serverService.create(server).then((created: Server) => {
       this.serverDatabase.addServer(created);
       this.discoveredServer = null;
