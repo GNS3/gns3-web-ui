@@ -8,6 +8,10 @@ function getServerArguments(server, overrides) {
     return serverArguments;
 }
 
+function getChannelForServer(server) {
+    return `local-server-run-${server.name}`;
+}
+
 async function stopAll() {
     for(var serverName in runningServers) {
         let result, error = await stop(serverName);
@@ -63,6 +67,14 @@ async function main() {
         logStdout: true
     });
 }
+
+ipcMain.on('local-server-run', async function (event, server) {
+    const responseChannel = getChannelForServer();
+    await run(server);
+    event.sender.send(responseChannel, {
+        success: true
+    });
+});
 
 if (require.main === module) {
     process.on('SIGINT', function() {
