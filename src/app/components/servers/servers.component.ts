@@ -30,7 +30,15 @@ export class ServersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    const runningServersNames = this.serverManagement.getRunningServers();
+
     this.serverService.findAll().then((servers: Server[]) => {
+      servers.forEach((server) => {
+        const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
+        if(serverIndex >= 0) {
+          server.status = 'running';
+        }
+      });
       this.serverDatabase.addServers(servers);
     });
 

@@ -36,6 +36,10 @@ export class ServerManagementService implements OnDestroy {
     await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
   }
 
+  getRunningServers() {
+    return this.electronService.remote.require('./local-server.js').getRunningServers();
+  }
+
   ngOnDestroy() {
     if(this.electronService.isElectronApp) {
       this.electronService.ipcRenderer.removeAllListeners(this.statusChannel);

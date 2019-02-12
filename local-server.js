@@ -47,6 +47,10 @@ exports.stopLocalServer = async (server) => {
   return await stop(server.name);
 }
 
+exports.getRunningServers = () => {
+  return Object.keys(runningServers);
+}
+
 function getServerArguments(server, overrides) {
     let serverArguments = [];
     return serverArguments;
@@ -81,18 +85,26 @@ async function stop(serverName) {
   const stopped = new Promise((resolve, reject) => {
     if(pid === undefined) {
       resolve(`Server '${serverName} is already stopped`);
+      delete runningServers[serverName];
       return;
     }
 
     kill(pid, (error) => {
-        if(error) {
-            console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
-            reject(error);
-        }
-        else {
-            console.log(`Stopped '${serverName}' with PID='${pid}'`);
-            resolve(`Stopped '${serverName}' with PID='${pid}'`);
-        }
+      if(error) {
+        console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
+        reject(error);
+      }
+      else {
+        delete runningServers[serverName];
+        console.log(`Stopped '${serverName}' with PID='${pid}'`);
+        resolve(`Stopped '${serverName}' with PID='${pid}'`);
+
+        notifyStatus({
+          serverName: serverName,
+          status: 'stopped',
+          message: `Server '${serverName}' stopped'`
+        });
+      }
     });
   });
 
@@ -134,11 +146,13 @@ async function run(server, options) {
   });
 
   serverProcess.on('exit', (code, signal) => {
-    notifyStatus({
-      serverName: server.name,
-      status: 'errored',
-      message: `Server '${server.name}' has exited with status='${code}'`
-    });
+    if(code > 0) {
+      notifyStatus({
+        serverName: server.name,
+        status: 'errored',
+        message: `Server '${server.name}' has exited with status='${code}'`
+      });
+    }
   });
 
   serverProcess.on('error', (err) => {
