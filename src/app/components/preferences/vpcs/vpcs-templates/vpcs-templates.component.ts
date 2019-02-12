@@ -24,7 +24,6 @@ export class VpcsTemplatesComponent implements OnInit {
         private route: ActivatedRoute,
         private serverService: ServerService,
         private vpcsService: VpcsService,
-        private dialog: MatDialog,
         private toasterService: ToasterService
     ) {}
 

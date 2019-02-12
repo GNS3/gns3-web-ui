@@ -145,6 +145,11 @@ import { VmwareTemplateDetailsComponent } from './components/preferences/vmware/
 import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-vmware-template/add-vmware-template.component';
 import { DeleteConfirmationDialogComponent } from './components/preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DeleteTemplateComponent } from './components/preferences/common/delete-template-component/delete-template.component';
+import { DockerService } from './services/docker.service';
+import { DockerTemplatesComponent } from './components/preferences/docker/docker-templates/docker-templates.component';
+import { DockerConfigurationService } from './services/docker-configuration.service';
+import { AddDockerTemplateComponent } from './components/preferences/docker/add-docker-template/add-docker-template.component';
+import { DockerTemplateDetailsComponent } from './components/preferences/docker/docker-template-details/docker-template-details.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -233,7 +238,10 @@ if (environment.production) {
     VmwareTemplateDetailsComponent,
     AddVmwareTemplateComponent,
     DeleteConfirmationDialogComponent,
-    DeleteTemplateComponent
+    DeleteTemplateComponent,
+    DockerTemplatesComponent,
+    AddDockerTemplateComponent,
+    DockerTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -296,7 +304,9 @@ if (environment.production) {
     VpcsConfigurationService,
     BuiltInTemplatesConfigurationService,
     VmwareService,
-    VmwareConfigurationService
+    VmwareConfigurationService,
+    DockerService,
+    DockerConfigurationService
   ],
   entryComponents: [
     AddServerDialogComponent,

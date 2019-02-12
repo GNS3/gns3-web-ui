@@ -40,6 +40,9 @@ import { VmwarePreferencesComponent } from './components/preferences/vmware/vmwa
 import { VmwareTemplatesComponent } from './components/preferences/vmware/vmware-templates/vmware-templates.component';
 import { VmwareTemplateDetailsComponent } from './components/preferences/vmware/vmware-template-details/vmware-template-details.component';
 import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-vmware-template/add-vmware-template.component';
+import { DockerTemplatesComponent } from './components/preferences/docker/docker-templates/docker-templates.component';
+import { AddDockerTemplateComponent } from './components/preferences/docker/add-docker-template/add-docker-template.component';
+import { DockerTemplateDetailsComponent } from './components/preferences/docker/docker-template-details/docker-template-details.component';
 
 const routes: Routes = [
   {
@@ -91,7 +94,11 @@ const routes: Routes = [
       // { path: 'server/:server_id/preferences/vmware', component: VmwarePreferencesComponent },
       { path: 'server/:server_id/preferences/vmware/templates', component: VmwareTemplatesComponent },
       { path: 'server/:server_id/preferences/vmware/templates/:template_id', component: VmwareTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent }
+      { path: 'server/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent },
+
+      { path: 'server/:server_id/preferences/docker/templates', component: DockerTemplatesComponent },
+      { path: 'server/:server_id/preferences/docker/templates/:template_id', component: DockerTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

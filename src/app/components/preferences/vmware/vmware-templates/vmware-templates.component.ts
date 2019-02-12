@@ -24,7 +24,6 @@ export class VmwareTemplatesComponent implements OnInit {
         private route: ActivatedRoute,
         private serverService: ServerService,
         private vmwareService: VmwareService,
-        private dialog: MatDialog,
         private toasterService: ToasterService
     ) {}
 

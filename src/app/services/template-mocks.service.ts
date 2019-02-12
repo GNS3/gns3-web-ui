@@ -8,6 +8,9 @@ import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
 import { IosTemplate } from '../models/templates/ios-template';
 import { VmwareTemplate } from '../models/templates/vmware-template';
+import { DockerTemplate } from '../models/templates/docker-template';
+import { CustomAdapter } from '../models/qemu/qemu-custom-adapter';
+import { IouTemplate } from '../models/templates/iou-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -219,6 +222,60 @@ export class TemplateMocksService {
             usage: '',
             use_any_adapter: false,
             vmx_path: ''
+        };
+
+        return of(template);
+    }
+
+    getDockerTemplate() : Observable<DockerTemplate> {
+        let template: DockerTemplate = {
+            adapters: 1,
+            builtin: false,
+            category: 'guest',
+            compute_id: 'vm',
+            console_auto_start: false,
+            console_http_path: '/',
+            console_http_port: 80,
+            console_resolution: '1024x768',
+            console_type: 'telnet',
+            custom_adapters: [],
+            default_name_format: '{name}-{0}',
+            environment: '',
+            extra_hosts: '',
+            image: '',
+            name: '',
+            start_command: '',
+            symbol: ':/symbols/docker_guest.svg',
+            template_id: '',
+            template_type: 'docker',
+            usage: ''
+        };
+
+        return of(template);
+    }
+
+    getIouTemplate() : Observable<IouTemplate> {
+        let template: IouTemplate = {
+            builtin: false,
+            category: 'switch',
+            compute_id: 'vm',
+            console_auto_start: false,
+            console_type: 'telnet',
+            default_name_format: 'IOU{0}',
+            ethernet_adapters: 1,
+            l1_keepalives: false,
+            name: '',
+            nvram: 128,
+            path: '',
+            private_config: '',
+            ram: 256,
+            serial_adapters: 0,
+            startup_config: 'iou_l2_base_startup-config.txt',
+            symbol: ':/symbols/multilayer_switch.svg',
+            template_id: '',
+            template_type: 'iou',
+            usage: '',
+            use_default_iou_values: true
         };
 
         return of(template);
