@@ -30,8 +30,16 @@ export class ServerDatabase {
     }
   }
 
+  public find(serverName: string) {
+    return this.data.find((server) => server.name === serverName);
+  }
+
+  public findIndex(serverName: string) {
+    return this.data.findIndex((server) => server.name === serverName);
+  }
+
   public update(server: Server) {
-    const index = this.data.indexOf(server);
+    const index = this.findIndex(server.name);
     if (index >= 0) {
       this.data[index] = server;
       this.dataChange.next(this.data.slice());

@@ -38,11 +38,13 @@ exports.getLocalServerPath = async () => {
 }
 
 exports.startLocalServer = async (server) => {
-  return await run(server);
+  return await run(server, {
+    logStdout: true
+  });
 }
 
 exports.stopLocalServer = async (server) => {
-  return await stop(server);
+  return await stop(server.name);
 }
 
 function getServerArguments(server, overrides) {
@@ -54,55 +56,98 @@ function getChannelForServer(server) {
     return `local-server-run-${server.name}`;
 }
 
+function notifyStatus(status) {
+  ipcMain.emit('local-server-status-events', status);
+}
+
 async function stopAll() {
-    for(var serverName in runningServers) {
-        let result, error = await stop(serverName);
-    }
-    console.log(`Stopped all servers`);
+  for(var serverName in runningServers) {
+      let result, error = await stop(serverName);
+  }
+  console.log(`Stopped all servers`);
 }
 
 async function stop(serverName) {
-    const runningServer = runningServers[serverName];
-    const pid = runningServer.process.pid;
-    console.log(`Stopping '${serverName}' with PID='${pid}'`);
+  let pid = undefined;
 
-    const stopped = new Promise((resolve, reject) => {
-        kill(pid, (error) => {
-            if(error) {
-                console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
-                reject(error);
-            }
-            else {
-                console.log(`Stopped '${serverName}' with PID='${pid}'`);
-                resolve(`Stopped '${serverName}' with PID='${pid}'`);
-            }
-        });
+  const runningServer = runningServers[serverName];
+
+  if(runningServer !== undefined && runningServer.process) {
+    pid = runningServer.process.pid;
+  }
+
+  console.log(`Stopping '${serverName}' with PID='${pid}'`);
+  
+  const stopped = new Promise((resolve, reject) => {
+    if(pid === undefined) {
+      resolve(`Server '${serverName} is already stopped`);
+      return;
+    }
+
+    kill(pid, (error) => {
+        if(error) {
+            console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
+            reject(error);
+        }
+        else {
+            console.log(`Stopped '${serverName}' with PID='${pid}'`);
+            resolve(`Stopped '${serverName}' with PID='${pid}'`);
+        }
     });
+  });
 
-    return stopped;
+  return stopped;
 }
 
 async function run(server, options) {
-    if(!options) {
-      options = {};
+  if(!options) {
+    options = {};
+  }
+
+  const logStdout = options.logStdout || false;
+  const logSterr = options.logSterr || false;
+
+  console.log(`Running '${server.path}'`);
+
+  let serverProcess = spawn(server.path, getServerArguments(server));
+
+  notifyStatus({
+    serverName: server.name,
+    status: 'started',
+    message: `Server '${server.name}' started'`
+  });
+  
+  runningServers[server.name] = {
+    process: serverProcess
+  };
+
+  serverProcess.stdout.on('data', function(data) {
+    if(logStdout) {
+      console.log(data.toString());
     }
+  });
 
-    const logStdout = options.logStdout || false;
+  serverProcess.stderr.on('data', function(data) {
+    if(logSterr) {
+      console.log(data.toString());
+    }
+  });
 
-    console.log(`Running '${server.path}'`);
- 
-    let serverProcess = spawn(server.path, getServerArguments(server));
-
-    runningServers[server.name] = {
-        process: serverProcess
-    };
-
-    serverProcess.stdout.on('data', function(data) {
-        if(logStdout) {
-            console.log(data.toString());
-        }
+  serverProcess.on('exit', (code, signal) => {
+    notifyStatus({
+      serverName: server.name,
+      status: 'errored',
+      message: `Server '${server.name}' has exited with status='${code}'`
     });
+  });
+
+  serverProcess.on('error', (err) => {
+
+  });
+
+
 }
+
 
 async function main() {
     await run({

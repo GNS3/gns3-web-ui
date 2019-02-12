@@ -95,6 +95,7 @@ import { TextEditorDialogComponent } from './components/project-map/drawings-edi
 import { InstalledSoftwareService } from './services/installed-software.service';
 import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
 import { PlatformService } from './services/platform.service';
+import { ServerManagementService } from './services/server-management.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -197,7 +198,8 @@ if (environment.production) {
     ToolsService,
     InstalledSoftwareService,
     ExternalSoftwareDefinitionService,
-    PlatformService
+    PlatformService,
+    ServerManagementService
   ],
   entryComponents: [
     AddServerDialogComponent,

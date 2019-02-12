@@ -6,6 +6,10 @@ import { MatIconModule, MatMenuModule, MatToolbarModule, MatProgressSpinnerModul
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
+import { ServerManagementService, ServerStateEvent } from '../../services/server-management.service';
+import { ToasterService } from '../../services/toaster.service';
+import { MockedToasterService } from '../../services/toaster.service.spec';
+import { Subject } from 'rxjs';
 
 
 class ElectronServiceMock {
@@ -16,9 +20,13 @@ describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
+  let serverManagementService;
 
   beforeEach(async(() => {
     electronServiceMock = new ElectronServiceMock();
+    serverManagementService = {
+      serverStatusChanged: new Subject<ServerStateEvent>()
+    };
 
     TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
@@ -27,6 +35,14 @@ describe('DefaultLayoutComponent', () => {
         {
           provide: ElectronService,
           useValue: electronServiceMock
+        },
+        {
+          provide: ServerManagementService,
+          useValue: serverManagementService
+        },
+        {
+          provide: ToasterService,
+          useClass: MockedToasterService
         },
         ProgressService
       ]
@@ -53,5 +69,24 @@ describe('DefaultLayoutComponent', () => {
     electronServiceMock.isElectronApp = false;
     component.ngOnInit();
     expect(component.isInstalledSoftwareAvailable).toBeFalsy();
+  });
+
+  it('should show error when server management service throw event', () => {
+    const toaster: MockedToasterService = TestBed.get(ToasterService);
+    serverManagementService.serverStatusChanged.next({
+      status: 'errored',
+      message: 'Message'
+    });
+    expect(toaster.errors).toEqual(['Message']);
+  });
+
+  it('should not show error when server management service throw event', () => {
+    component.ngOnDestroy();
+    const toaster: MockedToasterService = TestBed.get(ToasterService);
+    serverManagementService.serverStatusChanged.next({
+      status: 'errored',
+      message: 'Message'
+    });
+    expect(toaster.errors).toEqual([]);
   });
 });

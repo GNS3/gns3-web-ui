@@ -1,29 +1,32 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { Observable, merge } from 'rxjs';
+import { Observable, merge, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
 import { ElectronService } from 'ngx-electron';
+import { ServerManagementService } from '../../services/server-management.service';
 
 @Component({
   selector: 'app-server-list',
   templateUrl: './servers.component.html',
   styleUrls: ['./servers.component.css']
 })
-export class ServersComponent implements OnInit {
+export class ServersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
+  serverStatusSubscription: Subscription;
 
   constructor(
     private dialog: MatDialog,
     private serverService: ServerService,
     private serverDatabase: ServerDatabase,
-    private electronService: ElectronService,
+    private serverManagement: ServerManagementService,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -32,6 +35,28 @@ export class ServersComponent implements OnInit {
     });
 
     this.dataSource = new ServerDataSource(this.serverDatabase);
+
+    this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
+      const server = this.serverDatabase.find(serverStatus.serverName);
+      if(!server) {
+        return;
+      }
+      if(serverStatus.status === 'stopped') {
+        server.status = 'stopped';
+      }
+      if(serverStatus.status === 'errored') {
+        server.status = 'stopped';
+      }
+      if(serverStatus.status === 'started') {
+        server.status = 'running';
+      }
+      this.serverDatabase.update(server);
+      this.changeDetector.detectChanges();
+    });
+  }
+
+  ngOnDestroy() {
+    this.serverStatusSubscription.unsubscribe();
   }
 
   createModal() {
@@ -64,15 +89,11 @@ export class ServersComponent implements OnInit {
   }
 
   async startServer(server: Server) {
-    await this.electronService.remote.require('./local-server.js').startLocalServer(server);
-    server.status = 'running';
-    this.serverDatabase.update(server);
+    await this.serverManagement.start(server);
   }
 
   async stopServer(server: Server) {
-    await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
-    server.status = 'stopped';
-    this.serverDatabase.update(server);
+    await this.serverManagement.stop(server);
   }
 }
 

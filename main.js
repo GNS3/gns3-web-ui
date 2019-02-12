@@ -65,6 +65,11 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   });
+
+  // forward event to renderer
+  electron.ipcMain.on('local-server-status-events', (event) => {
+    mainWindow.webContents.send('local-server-status-events', event);
+  });
 }
 
 // This method will be called when Electron has finished
