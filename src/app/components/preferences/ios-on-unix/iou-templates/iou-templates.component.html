@@ -1,0 +1,25 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">IOU devices templates</h1>
+            <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/iou/addtemplate" mat-raised-button color="primary">Add IOU device template</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-nav-list *ngIf="server">
+                <mat-list-item *ngFor='let template of iouTemplates'>
+                    <span class="name" routerLink="{{template.template_id}}">{{template.name}}</span>
+                    <button class="delete-button" mat-icon-button (click)="deleteTemplate(template)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-list-item>
+            </mat-nav-list>
+        </div>
+    </div>
+</div>
+<app-delete-template
+    #deleteComponent
+    [server]="server"
+    (deleteEvent)="onDeleteEvent()">
+</app-delete-template>

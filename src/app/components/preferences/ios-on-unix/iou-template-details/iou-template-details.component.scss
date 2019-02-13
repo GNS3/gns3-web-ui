@@ -1,0 +1,72 @@
+.row {
+    width: 100%;
+    margin-left: 0px;
+}
+
+.select {
+    width: 100%;
+}
+
+.nonvisible {
+    display: none;
+}
+
+.file-button {
+    width: 18%;
+}
+
+.file-name-form-field {
+    padding-right: 2%;
+    width: 80%;
+}
+
+.configButton {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.configHideButton {
+    margin-left: 80%;
+    width: 20%;
+    margin-bottom: 10px;
+}
+
+.shadowed {
+    display: none;
+    transition: 0.25s;
+}
+
+.top-button {
+    height: 36px;
+    margin-top: 22px
+}
+
+.symbolSelectionButton {
+    width: 100%;
+}
+
+.nonshadowed {
+    opacity: 0;
+    transition: 0.25s;
+}
+
+th {
+    border: 0px!important;
+}
+
+th.mat-header-cell {
+    padding-bottom: 15px;
+}
+
+td.mat-cell {
+    padding-top: 15px;
+}
+
+.file-button {
+    width: 18%;
+}
+
+.file-name-form-field {
+    padding-left: 2%;
+    width: 80%;
+}

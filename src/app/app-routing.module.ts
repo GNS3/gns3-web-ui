@@ -43,6 +43,9 @@ import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-
 import { DockerTemplatesComponent } from './components/preferences/docker/docker-templates/docker-templates.component';
 import { AddDockerTemplateComponent } from './components/preferences/docker/add-docker-template/add-docker-template.component';
 import { DockerTemplateDetailsComponent } from './components/preferences/docker/docker-template-details/docker-template-details.component';
+import { IouTemplatesComponent } from './components/preferences/ios-on-unix/iou-templates/iou-templates.component';
+import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
+import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
 
 const routes: Routes = [
   {
@@ -98,7 +101,11 @@ const routes: Routes = [
 
       { path: 'server/:server_id/preferences/docker/templates', component: DockerTemplatesComponent },
       { path: 'server/:server_id/preferences/docker/templates/:template_id', component: DockerTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent }
+      { path: 'server/:server_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent },
+
+      { path: 'server/:server_id/preferences/iou/templates', component: IouTemplatesComponent },
+      { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent }
     ]
   },
   { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }

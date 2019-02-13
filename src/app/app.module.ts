@@ -150,6 +150,11 @@ import { DockerTemplatesComponent } from './components/preferences/docker/docker
 import { DockerConfigurationService } from './services/docker-configuration.service';
 import { AddDockerTemplateComponent } from './components/preferences/docker/add-docker-template/add-docker-template.component';
 import { DockerTemplateDetailsComponent } from './components/preferences/docker/docker-template-details/docker-template-details.component';
+import { IouTemplatesComponent } from './components/preferences/ios-on-unix/iou-templates/iou-templates.component';
+import { IouService } from './services/iou.service';
+import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
+import { IouConfigurationService } from './services/iou-configuration.service';
+import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -241,7 +246,10 @@ if (environment.production) {
     DeleteTemplateComponent,
     DockerTemplatesComponent,
     AddDockerTemplateComponent,
-    DockerTemplateDetailsComponent
+    DockerTemplateDetailsComponent,
+    IouTemplatesComponent,
+    AddIouTemplateComponent,
+    IouTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -306,7 +314,9 @@ if (environment.production) {
     VmwareService,
     VmwareConfigurationService,
     DockerService,
-    DockerConfigurationService
+    DockerConfigurationService,
+    IouService,
+    IouConfigurationService
   ],
   entryComponents: [
     AddServerDialogComponent,

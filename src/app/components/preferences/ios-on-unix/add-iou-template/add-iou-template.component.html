@@ -1,0 +1,73 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New IOU device template</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-vertical-stepper [linear]="true">
+                <mat-step label="Server type">
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this IOU device on a remote computer</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="2" (click)="setServerType('gns3 vm')" checked>Run this IOU device on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </mat-step>
+                <mat-step label="Name">
+                    <form [formGroup]="templateNameForm">
+                        <mat-form-field class="form-field">
+                            <input matInput placeholder="Name" type="text" [(ngModel)]="iouTemplate.name" formControlName="templateName"/>
+                        </mat-form-field>
+                    </form>
+                </mat-step>
+                <mat-step label="Image">
+                    <form [formGroup]="imageForm">
+                        <mat-radio-group class="radio-group">
+                            <mat-radio-button class="radio-button" value="1" (click)="setDiskImage('existingImage')" checked>Existing image</mat-radio-button>
+                            <mat-radio-button class="radio-button" value="2" (click)="setDiskImage('newImage')">New image</mat-radio-button>
+                        </mat-radio-group>
+                        <mat-form-field class="form-field">
+                            <mat-select 
+                                placeholder="Type" 
+                                [(ngModel)]="selectedType"
+                                [ngModelOptions]="{standalone: true}">
+                                <mat-option *ngFor="let type of types" [value]="type">
+                                    {{type}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="form-field" *ngIf="!newImageSelected">
+                            <mat-select 
+                                placeholder="IOU image" 
+                                [(ngModel)]="iouTemplate.path"
+                                [ngModelOptions]="{standalone: true}">
+                                <mat-option *ngFor="let image of iouImages" [value]="image">
+                                    {{image}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <div *ngIf="newImageSelected">
+                            <input
+                                type="file"
+                                accept=".bin"
+                                #file
+                                class="nonvisible"
+                                (change)="uploadImageFile($event)"
+                                ngDefaultControl/>
+                            <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+                            <mat-form-field class="file-name-form-field">
+                                <input
+                                    matInput
+                                    type="text"
+                                    [(ngModel)]="iouTemplate.path"
+                                    formControlName="imageName"
+                                    placeholder="IOU image"/>
+                            </mat-form-field>
+                        </div>
+                    </form>
+                    <div class="buttons-bar"><button mat-raised-button color="primary" (click)="addTemplate()">Add template</button></div>
+                </mat-step>
+            </mat-vertical-stepper>
+        </div>
+    </div>
+</div>
