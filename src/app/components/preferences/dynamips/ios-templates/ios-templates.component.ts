@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { switchMap } from 'rxjs/operators';
 import { IosService } from '../../../../services/ios.service';
@@ -22,7 +22,8 @@ export class IosTemplatesComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
-        private iosService: IosService
+        private iosService: IosService,
+        private router: Router
     ) {}
 
     ngOnInit() {
@@ -46,5 +47,9 @@ export class IosTemplatesComponent implements OnInit {
 
     onDeleteEvent() {
         this.getTemplates();
+    }
+
+    copyTemplate(template: IosTemplate) {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates', template.template_id, 'copy']);
     }
 }

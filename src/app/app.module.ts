@@ -155,6 +155,10 @@ import { IouService } from './services/iou.service';
 import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
 import { IouConfigurationService } from './services/iou-configuration.service';
 import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
+import { CopyQemuVmTemplateComponent } from './components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
+import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
+import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
+import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -249,7 +253,11 @@ if (environment.production) {
     DockerTemplateDetailsComponent,
     IouTemplatesComponent,
     AddIouTemplateComponent,
-    IouTemplateDetailsComponent
+    IouTemplateDetailsComponent,
+    CopyQemuVmTemplateComponent,
+    CopyIosTemplateComponent,
+    CopyIouTemplateComponent,
+    CopyDockerTemplateComponent
   ],
   imports: [
     BrowserModule,

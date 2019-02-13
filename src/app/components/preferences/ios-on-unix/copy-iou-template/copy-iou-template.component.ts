@@ -4,24 +4,24 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosService } from '../../../../services/ios.service';
+import { IouTemplate } from '../../../../models/templates/iou-template';
+import { IouService } from '../../../../services/iou.service';
 
 
 @Component({
-    selector: 'app-copy-ios-template',
-    templateUrl: './copy-ios-template.component.html',
-    styleUrls: ['./copy-ios-template.component.scss']
+    selector: 'app-copy-iou-template',
+    templateUrl: './copy-iou-template.component.html',
+    styleUrls: ['./copy-iou-template.component.scss']
 })
-export class CopyIosTemplateComponent implements OnInit {
+export class CopyIouTemplateComponent implements OnInit {
     server: Server;
     templateName: string = '';
-    iosTemplate: IosTemplate;
+    iouTemplate: IouTemplate;
     
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
-        private iosService: IosService,
+        private qemuService: IouService,
         private toasterService: ToasterService,
         private router: Router
     ) {}
@@ -32,9 +32,9 @@ export class CopyIosTemplateComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
-            this.iosService.getTemplate(this.server, template_id).subscribe((iosTemplate: IosTemplate) => {
-                this.iosTemplate = iosTemplate;
-                this.templateName = `Copy of ${this.iosTemplate.name}`;
+            this.qemuService.getTemplate(this.server, template_id).subscribe((iouTemplate: IouTemplate) => {
+                this.iouTemplate = iouTemplate;
+                this.templateName = `Copy of ${this.iouTemplate.name}`;
             })
 
         });
@@ -42,11 +42,11 @@ export class CopyIosTemplateComponent implements OnInit {
 
     addTemplate() {
         if (this.templateName) {
-            this.iosTemplate.template_id = uuid();
-            this.iosTemplate.name = this.templateName;
+            this.iouTemplate.template_id = uuid();
+            this.iouTemplate.name = this.templateName;
 
-            this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
+            this.qemuService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
+                this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
             });
         } else {
             this.toasterService.error(`Fill all required fields`);

@@ -10,9 +10,17 @@
             <mat-nav-list *ngIf="server">
                 <mat-list-item *ngFor='let template of dockerTemplates'>
                     <span class="name" routerLink="{{template.template_id}}">{{template.name}}</span>
-                    <button class="delete-button" mat-icon-button (click)="deleteTemplate(template)">
-                        <mat-icon>delete</mat-icon>
+                    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
                     </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="deleteTemplate(template)">
+                            <mat-icon>delete</mat-icon><span>Delete</span>
+                        </button>
+                        <button mat-menu-item (click)="copyTemplate(template)">
+                            <mat-icon>content_copy</mat-icon><span>Copy</span>
+                        </button>
+                    </mat-menu>
                 </mat-list-item>
             </mat-nav-list>
         </div>

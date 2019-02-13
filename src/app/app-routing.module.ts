@@ -46,6 +46,10 @@ import { DockerTemplateDetailsComponent } from './components/preferences/docker/
 import { IouTemplatesComponent } from './components/preferences/ios-on-unix/iou-templates/iou-templates.component';
 import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
 import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
+import { CopyQemuVmTemplateComponent } from './components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
+import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
+import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
+import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 
 const routes: Routes = [
   {
@@ -78,9 +82,11 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/dynamips/templates', component: IosTemplatesComponent },
       { path: 'server/:server_id/preferences/dynamips/templates/addtemplate', component: AddIosTemplateComponent },
       { path: 'server/:server_id/preferences/dynamips/templates/:template_id', component: IosTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/dynamips/templates/:template_id/copy', component: CopyIosTemplateComponent },
 
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },
+      { path: 'server/:server_id/preferences/qemu/templates/:template_id/copy', component: CopyQemuVmTemplateComponent },
       { path: 'server/:server_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent },
 
@@ -101,10 +107,12 @@ const routes: Routes = [
 
       { path: 'server/:server_id/preferences/docker/templates', component: DockerTemplatesComponent },
       { path: 'server/:server_id/preferences/docker/templates/:template_id', component: DockerTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/docker/templates/:template_id/copy', component: CopyDockerTemplateComponent },
       { path: 'server/:server_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent },
 
       { path: 'server/:server_id/preferences/iou/templates', component: IouTemplatesComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent },
+      { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent },
       { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent }
     ]
   },

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { switchMap } from 'rxjs/operators';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
@@ -21,7 +21,8 @@ export class DockerTemplatesComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
-        private dockerService: DockerService 
+        private dockerService: DockerService,
+        private router: Router 
     ) {}
 
     ngOnInit() {
@@ -49,5 +50,9 @@ export class DockerTemplatesComponent implements OnInit {
 
     onDeleteEvent() {
         this.getTemplates();
+    }
+
+    copyTemplate(template: DockerTemplate) {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates', template.template_id, 'copy']);
     }
 }

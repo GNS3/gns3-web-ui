@@ -4,24 +4,24 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosService } from '../../../../services/ios.service';
+import { DockerTemplate } from '../../../../models/templates/docker-template';
+import { DockerService } from '../../../../services/docker.service';
 
 
 @Component({
-    selector: 'app-copy-ios-template',
-    templateUrl: './copy-ios-template.component.html',
-    styleUrls: ['./copy-ios-template.component.scss']
+    selector: 'app-copy-docker-template',
+    templateUrl: './copy-docker-template.component.html',
+    styleUrls: ['./copy-docker-template.component.scss']
 })
-export class CopyIosTemplateComponent implements OnInit {
+export class CopyDockerTemplateComponent implements OnInit {
     server: Server;
     templateName: string = '';
-    iosTemplate: IosTemplate;
+    dockerTemplate: DockerTemplate;
     
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
-        private iosService: IosService,
+        private dockerService: DockerService,
         private toasterService: ToasterService,
         private router: Router
     ) {}
@@ -32,9 +32,9 @@ export class CopyIosTemplateComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
-            this.iosService.getTemplate(this.server, template_id).subscribe((iosTemplate: IosTemplate) => {
-                this.iosTemplate = iosTemplate;
-                this.templateName = `Copy of ${this.iosTemplate.name}`;
+            this.dockerService.getTemplate(this.server, template_id).subscribe((dockerTemplate: DockerTemplate) => {
+                this.dockerTemplate = dockerTemplate;
+                this.templateName = `Copy of ${this.dockerTemplate.name}`;
             })
 
         });
@@ -42,11 +42,11 @@ export class CopyIosTemplateComponent implements OnInit {
 
     addTemplate() {
         if (this.templateName) {
-            this.iosTemplate.template_id = uuid();
-            this.iosTemplate.name = this.templateName;
+            this.dockerTemplate.template_id = uuid();
+            this.dockerTemplate.name = this.templateName;
 
-            this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
+            this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
+                this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates']);
             });
         } else {
             this.toasterService.error(`Fill all required fields`);
