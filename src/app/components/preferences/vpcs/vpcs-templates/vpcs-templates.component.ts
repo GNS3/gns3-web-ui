@@ -23,8 +23,7 @@ export class VpcsTemplatesComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
-        private vpcsService: VpcsService,
-        private toasterService: ToasterService
+        private vpcsService: VpcsService
     ) {}
 
     ngOnInit() {
@@ -50,7 +49,7 @@ export class VpcsTemplatesComponent implements OnInit {
         this.deleteComponent.deleteItem(template.name, template.template_id);
     }
 
-    onDeleteEvent(deletedTemplateId: string) {
+    onDeleteEvent() {
         this.getTemplates();
     }
 }

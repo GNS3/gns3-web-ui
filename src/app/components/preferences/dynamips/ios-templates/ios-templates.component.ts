@@ -44,7 +44,7 @@ export class IosTemplatesComponent implements OnInit {
         this.deleteComponent.deleteItem(template.name, template.template_id);
     }
 
-    onDeleteEvent(deletedTemplateId: string) {
+    onDeleteEvent() {
         this.getTemplates();
     }
 }

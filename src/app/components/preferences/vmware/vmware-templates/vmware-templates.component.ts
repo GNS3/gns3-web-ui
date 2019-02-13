@@ -23,8 +23,7 @@ export class VmwareTemplatesComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
-        private vmwareService: VmwareService,
-        private toasterService: ToasterService
+        private vmwareService: VmwareService
     ) {}
 
     ngOnInit() {
@@ -50,7 +49,7 @@ export class VmwareTemplatesComponent implements OnInit {
         this.deleteComponent.deleteItem(template.name, template.template_id);
     }
 
-    onDeleteEvent(deletedTemplateId: string) {
+    onDeleteEvent() {
         this.getTemplates();
     }
 }
