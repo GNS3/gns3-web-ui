@@ -26,9 +26,9 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     tapInterface: string = '';
     ethernetInterface: string = '';
     ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
-    ports_mapping_ethernet: PortsMappingEntity[] = [];
-    ports_mapping_tap: PortsMappingEntity[] = [];
-    ports_mapping_udp: PortsMappingEntity[] = [];
+    portsMappingEthernet: PortsMappingEntity[] = [];
+    portsMappingTap: PortsMappingEntity[] = [];
+    portsMappingUdp: PortsMappingEntity[] = [];
     newPort: PortsMappingEntity;
     displayedColumns: string[] = ['name', 'lport', 'rhost', 'rport'];
     dataSourceUdp: PortsMappingEntity[] = [];
@@ -56,16 +56,16 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
             this.builtInTemplatesService.getTemplate(this.server, template_id).subscribe((cloudNodeTemplate: CloudTemplate) => {
                 this.cloudNodeTemplate = cloudNodeTemplate;
 
-                this.ports_mapping_ethernet = this.cloudNodeTemplate.ports_mapping
+                this.portsMappingEthernet = this.cloudNodeTemplate.ports_mapping
                     .filter((elem) => elem.type === 'ethernet');
 
-                this.ports_mapping_tap = this.cloudNodeTemplate.ports_mapping
+                this.portsMappingTap = this.cloudNodeTemplate.ports_mapping
                     .filter((elem) => elem.type === 'tap');
                 
-                this.ports_mapping_udp = this.cloudNodeTemplate.ports_mapping
+                this.portsMappingUdp = this.cloudNodeTemplate.ports_mapping
                     .filter((elem) => elem.type === 'udp');
                 
-                this.dataSourceUdp = this.ports_mapping_udp;
+                this.dataSourceUdp = this.portsMappingUdp;
             });
         });
     }
@@ -77,7 +77,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
 
     onAddEthernetInterface() {
         if (this.ethernetInterface) {
-            this.ports_mapping_ethernet.push({
+            this.portsMappingEthernet.push({
                 interface: this.ethernetInterface,
                 name: this.ethernetInterface,
                 port_number: 0,
@@ -88,7 +88,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
 
     onAddTapInterface() {
         if (this.tapInterface) {
-            this.ports_mapping_tap.push({
+            this.portsMappingTap.push({
                 interface: this.tapInterface,
                 name: this.tapInterface,
                 port_number: 0,
@@ -98,8 +98,8 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     }
 
     onAddUdpInterface() {
-        this.ports_mapping_udp.push(this.newPort);
-        this.dataSourceUdp = [...this.ports_mapping_udp];
+        this.portsMappingUdp.push(this.newPort);
+        this.dataSourceUdp = [...this.portsMappingUdp];
         
         this.newPort = {
             name: '',
@@ -108,7 +108,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     }
 
     onSave() {
-        this.cloudNodeTemplate.ports_mapping = [...this.ports_mapping_ethernet, ...this.ports_mapping_tap];
+        this.cloudNodeTemplate.ports_mapping = [...this.portsMappingEthernet, ...this.portsMappingTap];
 
         this.builtInTemplatesService.saveTemplate(this.server, this.cloudNodeTemplate).subscribe((cloudNodeTemplate: CloudTemplate) => {
             this.toasterService.success("Changes saved");

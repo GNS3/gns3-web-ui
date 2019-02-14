@@ -74,7 +74,7 @@
                         Ethernet interfaces
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row" *ngFor="let port of ports_mapping_ethernet">
+                <div class="row" *ngFor="let port of portsMappingEthernet">
                     <div class="row">{{port.name}}</div><br/><br/>
                 </div>
                 <mat-form-field class="select">
@@ -95,7 +95,7 @@
                         TAP interfaces
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row" *ngFor="let port of ports_mapping_tap">
+                <div class="row" *ngFor="let port of portsMappingTap">
                     <div class="row">{{port.name}}</div><br/><br/>
                 </div>
                 <mat-form-field class="row">
