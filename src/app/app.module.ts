@@ -159,6 +159,8 @@ import { CopyQemuVmTemplateComponent } from './components/preferences/qemu/copy-
 import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
 import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
+import { EmptyTemplatesListComponent } from './components/preferences/common/empty-templates-list/empty-templates-list.component';
+import { SymbolsMenuComponent } from './components/preferences/common/symbols-menu/symbols-menu.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -257,7 +259,9 @@ if (environment.production) {
     CopyQemuVmTemplateComponent,
     CopyIosTemplateComponent,
     CopyIouTemplateComponent,
-    CopyDockerTemplateComponent
+    CopyDockerTemplateComponent,
+    EmptyTemplatesListComponent,
+    SymbolsMenuComponent
   ],
   imports: [
     BrowserModule,

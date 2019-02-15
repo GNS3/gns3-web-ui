@@ -12,7 +12,7 @@ import { VpcsConfigurationService } from '../../../../services/vpcs-configuratio
 @Component({
     selector: 'app-vpcs-template-details',
     templateUrl: './vpcs-template-details.component.html',
-    styleUrls: ['./vpcs-template-details.component.scss']
+    styleUrls: ['./vpcs-template-details.component.scss','../../preferences.component.scss']
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
     server: Server;
@@ -20,6 +20,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     inputForm: FormGroup;
 
     isSymbolSelectionOpened: boolean = false;
+    copyOfSymbol: string;
 
     consoleTypes: string[] = [];
     categories = [];
@@ -69,7 +70,13 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     }
 
     chooseSymbol() {
+        this.copyOfSymbol = this.vpcsTemplate.symbol;
         this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    }
+
+    cancelChooseSymbol() {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+        this.vpcsTemplate.symbol = this.copyOfSymbol;
     }
 
     symbolChanged(chosenSymbol: string) {

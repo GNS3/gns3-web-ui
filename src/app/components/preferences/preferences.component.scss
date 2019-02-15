@@ -1,0 +1,57 @@
+.top-button {
+    height: 36px;
+    margin-top: 22px
+}
+
+.choose-symbol-button {
+    height: 36px;
+    margin-top: 22px;
+}
+
+.cancel-button {
+    height: 36px;
+    margin-top: 22px;
+    margin-right: 10px;
+}
+
+.form-field {
+    width: 100%;
+}
+
+.select {
+    width: 100%;
+}
+
+.shadowed {
+    display: none;
+    transition: 0.25s;
+}
+
+.symbolSelectionButton {
+    width: 100%;
+}
+
+.list-item {
+    display: flex;
+}
+
+.template-name {
+    width: 90%;
+}
+
+.delete-button {
+    width: 10%;
+    outline: none;
+}
+
+th {
+    border: 0px!important;
+}
+
+th.mat-header-cell {
+    padding-bottom: 15px;
+}
+
+td.mat-cell {
+    padding-top: 15px;
+}

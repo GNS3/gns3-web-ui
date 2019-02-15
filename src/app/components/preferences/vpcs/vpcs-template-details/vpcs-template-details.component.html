@@ -71,7 +71,8 @@
     <div class="default-header">
         <div class="row">
             <h1 class="col">Symbol selection</h1>
-            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
+            <button class="top-button" class="cancel-button" (click)="cancelChooseSymbol()" mat-raised-button color="primary">Cancel</button>
+            <button class="top-button" class="choose-symbol-button" (click)="chooseSymbol()" mat-raised-button color="primary">Choose symbol</button>
         </div>
     </div>
     <div class="default-content">

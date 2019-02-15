@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { SymbolService } from '../../../../services/symbol.service';
 import { Server } from '../../../../models/server';
-import { ActivatedRoute } from '@angular/router';
 import { Symbol } from '../../../../models/symbol';
 
 

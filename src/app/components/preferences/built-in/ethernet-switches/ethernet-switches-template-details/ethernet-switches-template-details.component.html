@@ -13,29 +13,29 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <form [formGroup]="inputForm">
-                    <mat-form-field class="row">
+                    <mat-form-field class="form-field">
                         <input 
                             matInput type="text" 
                             [(ngModel)]="ethernetSwitchTemplate.name" 
                             formControlName="templateName"
                             placeholder="Template name">
                     </mat-form-field>
-                    <mat-form-field class="row">
+                    <mat-form-field class="form-field">
                         <input 
                             matInput type="text" 
                             [(ngModel)]="ethernetSwitchTemplate.default_name_format" 
                             formControlName="defaultName"
                             placeholder="Default name format">
                     </mat-form-field>
-                    <mat-form-field class="row">
+                    <mat-form-field class="form-field">
                         <input 
                             matInput type="text" 
                             [(ngModel)]="ethernetSwitchTemplate.symbol" 
                             formControlName="symbol"
                             placeholder="Symbol">
                     </mat-form-field>
-                    <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                    <mat-form-field class="row">
+                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                    <mat-form-field class="form-field">
                         <mat-select 
                             placeholder="Category" 
                             [ngModelOptions]="{standalone: true}" 
@@ -87,13 +87,13 @@
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table><br/>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="number" 
                         [(ngModel)]="newPort.port_number" 
                         placeholder="Port">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="number" 
                         [(ngModel)]="newPort.vlan" 
@@ -119,22 +119,13 @@
                             </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-raised-button class="row" (click)="onAdd()">Add</button>
+                <button mat-button class="form-field" (click)="onAdd()">Add</button>
             </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar">
+            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
             <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
         </div>
     </div>
 </div>
-<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Symbol selection</h1>
-            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
-        </div>
-    </div>
-    <div class="default-content">
-        <app-symbols [server]="server" [symbol]="ethernetSwitchTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-    </div>
-</div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && ethernetSwitchTemplate" [server]="server" [symbol]="ethernetSwitchTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

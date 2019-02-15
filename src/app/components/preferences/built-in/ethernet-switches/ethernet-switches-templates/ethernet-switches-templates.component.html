@@ -2,18 +2,20 @@
     <div class="default-header">
         <div class="row">
             <h1 class="col">Ethernet switches templates</h1>
+            <button *ngIf="server" class="top-button" class="cancel-button" routerLink="/server/{{server.id}}/preferences/builtin" mat-button>Back</button>
             <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/builtin/ethernet-switches/addtemplate" mat-raised-button color="primary">Add Ethernet switch template</button>
         </div>
     </div>
-    <div class="default-content">
+    <app-empty-templates-list *ngIf="!ethernetSwitchesTemplates.length"></app-empty-templates-list>
+    <div class="default-content" *ngIf="ethernetSwitchesTemplates.length">
         <div class="container mat-elevation-z8">
             <mat-nav-list *ngIf="server">
-                <mat-list-item *ngFor='let template of ethernetSwitchesTemplates'>
-                    <span class="name" routerLink="{{template.template_id}}">{{template.name}}</span>
+                <div class="list-item" *ngFor='let template of ethernetSwitchesTemplates'>
+                    <mat-list-item class="template-name" routerLink="{{template.template_id}}">{{template.name}}</mat-list-item>
                     <button class="delete-button" mat-icon-button (click)="deleteTemplate(template)">
                         <mat-icon>delete</mat-icon>
                     </button>
-                </mat-list-item>
+                </div>
             </mat-nav-list>
         </div>
     </div>

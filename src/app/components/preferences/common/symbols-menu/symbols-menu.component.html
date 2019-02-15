@@ -1,0 +1,12 @@
+<div class="content" class="configurator">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Symbol selection</h1>
+            <button class="top-button" class="cancel-button" (click)="cancelChooseSymbol()" mat-button>Cancel</button>
+            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Choose symbol</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <app-symbols [server]="server" [symbol]="symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
+    </div>
+</div>

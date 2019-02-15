@@ -5,7 +5,8 @@
             <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/vpcs/addtemplate" mat-raised-button color="primary">Add VPCS template</button>
         </div>
     </div>
-    <div class="default-content">
+    <app-empty-templates-list *ngIf="!vpcsTemplates.length"></app-empty-templates-list>
+    <div class="default-content" *ngIf="vpcsTemplates.length">
         <div class="container mat-elevation-z8">
             <mat-nav-list *ngIf="server">
                 <mat-list-item *ngFor='let template of vpcsTemplates'>

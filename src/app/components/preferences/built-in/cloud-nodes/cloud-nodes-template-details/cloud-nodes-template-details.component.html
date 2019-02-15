@@ -12,26 +12,26 @@
                         General
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="cloudNodeTemplate.name" 
                         placeholder="Template name">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="cloudNodeTemplate.default_name_format" 
                         placeholder="Default name format">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="cloudNodeTemplate.symbol" 
                         placeholder="Symbol">
                 </mat-form-field>
-                <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                <mat-form-field class="row">
+                <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                <mat-form-field class="form-field">
                     <mat-select 
                         placeholder="Category" 
                         [(ngModel)]="cloudNodeTemplate.category">
@@ -49,19 +49,19 @@
                             </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="cloudNodeTemplate.remote_console_host" 
                         placeholder="Console host">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="cloudNodeTemplate.remote_console_port" 
                         placeholder="Console port">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="cloudNodeTemplate.remote_console_http_path" 
@@ -74,8 +74,8 @@
                         Ethernet interfaces
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row" *ngFor="let port of portsMappingEthernet">
-                    <div class="row">{{port.name}}</div><br/><br/>
+                <div class="form-field" *ngFor="let port of portsMappingEthernet">
+                    <div class="form-field">{{port.name}}</div><br/><br/>
                 </div>
                 <mat-form-field class="select">
                     <mat-select 
@@ -87,7 +87,7 @@
                             </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-raised-button class="row" (click)="onAddEthernetInterface()">Add</button> 
+                <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button> 
             </mat-expansion-panel>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
@@ -95,16 +95,16 @@
                         TAP interfaces
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="row" *ngFor="let port of portsMappingTap">
-                    <div class="row">{{port.name}}</div><br/><br/>
+                <div class="form-field" *ngFor="let port of portsMappingTap">
+                    <div class="form-field">{{port.name}}</div><br/><br/>
                 </div>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="tapInterface" 
                         placeholder="TAP interface">
                 </mat-form-field>
-                <button mat-raised-button class="row" (click)="onAddTapInterface()">Add</button> 
+                <button mat-button class="form-field" (click)="onAddTapInterface()">Add</button> 
             </mat-expansion-panel>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
@@ -112,7 +112,7 @@
                         UDP tunnels
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <table class="table" mat-table [dataSource]="dataSourceUdp">
+                <table *ngIf="dataSourceUdp.length" class="table" mat-table [dataSource]="dataSourceUdp">
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef> Name </th>
                         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
@@ -135,47 +135,39 @@
                     
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table><br/>
-                <mat-form-field class="row">
+                </table>
+                <br *ngIf="dataSourceUdp.length"/>
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="newPort.name" 
                         placeholder="Name">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="number" 
                         [(ngModel)]="newPort.lport" 
                         placeholder="Local port">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="text" 
                         [(ngModel)]="newPort.rhost" 
                         placeholder="Remote host">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input 
                         matInput type="number" 
                         [(ngModel)]="newPort.rport" 
                         placeholder="Remote port">
                 </mat-form-field>
-                <button mat-raised-button class="row" (click)="onAddUdpInterface()">Add</button>
+                <button mat-button class="form-field" (click)="onAddUdpInterface()">Add</button>
             </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar">
+            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
             <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
         </div>
     </div>
 </div>
-<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Symbol selection</h1>
-            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
-        </div>
-    </div>
-    <div class="default-content">
-        <app-symbols [server]="server" [symbol]="cloudNodeTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-    </div>
-</div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && cloudNodeTemplate" [server]="server" [symbol]="cloudNodeTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

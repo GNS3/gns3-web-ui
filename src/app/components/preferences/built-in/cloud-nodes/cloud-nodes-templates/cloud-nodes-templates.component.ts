@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
@@ -11,11 +10,11 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
 @Component({
     selector: 'app-cloud-nodes-templates',
     templateUrl: './cloud-nodes-templates.component.html',
-    styleUrls: ['./cloud-nodes-templates.component.scss']
+    styleUrls: ['./cloud-nodes-templates.component.scss', '../../../preferences.component.scss']
 })
 export class CloudNodesTemplatesComponent implements OnInit {
     server: Server;
-    cloudNodesTemplates: CloudTemplate[];
+    cloudNodesTemplates: CloudTemplate[] = [];
     @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(

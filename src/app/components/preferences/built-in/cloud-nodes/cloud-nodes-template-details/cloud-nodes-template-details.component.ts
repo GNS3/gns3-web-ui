@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../../services/server.service';
 import { Server } from '../../../../../models/server';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -12,7 +12,7 @@ import { BuiltInTemplatesConfigurationService } from '../../../../../services/bu
 @Component({
     selector: 'app-cloud-nodes-template-details',
     templateUrl: './cloud-nodes-template-details.component.html',
-    styleUrls: ['./cloud-nodes-template-details.component.scss']
+    styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss']
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
     server: Server;
@@ -38,7 +38,8 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
         private serverService: ServerService,
         private builtInTemplatesService: BuiltInTemplatesService,
         private toasterService: ToasterService,
-        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
+        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
+        private router: Router
     ) {
         this.newPort = {
             name: '',
@@ -68,6 +69,10 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
                 this.dataSourceUdp = this.portsMappingUdp;
             });
         });
+    }
+
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
     }
 
     getConfiguration() {
@@ -120,6 +125,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.cloudNodeTemplate.symbol = chosenSymbol;
     }
 }

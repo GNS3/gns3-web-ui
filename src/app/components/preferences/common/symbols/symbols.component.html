@@ -1,31 +1,9 @@
-<!-- <mat-selection-list *ngIf="symbols">
-    <mat-radio-group class="option">
-        <mat-radio-button *ngFor="let symbol of symbols" value="symbol.symbol_id" class="radio-button" (click)="set(symbol.symbol_id)">
-            <img src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
-        </mat-radio-button>
-    </mat-radio-group>
-</mat-selection-list> -->
-
-<!-- <div class="grid-container" *ngIf="symbols">
-    <div class="button" *ngFor="let symbol of symbols">
-        <button (click)="set(symbol.symbol_id)">
-            <img src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
-        </button>
+<mat-card>
+    <div class="wrapper">
+        <div class="buttonWrapper" *ngFor="let symbol of symbols">
+            <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
+                <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
+            </button>
+        </div>
     </div>
-</div> -->
-
-<!-- <mat-grid-list cols="5" rowHeight="1:1">
-    <div class="button" *ngFor="let symbol of symbols">
-        <button (click)="set(symbol.symbol_id)">
-            <img src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
-        </button>
-    </div>
-</mat-grid-list> -->
-
-<div class="wrapper">
-    <div class="buttonWrapper" *ngFor="let symbol of symbols">
-        <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
-            <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
-        </button>
-    </div>
-</div>
+</mat-card>

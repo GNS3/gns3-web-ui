@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../../services/server.service';
 import { Server } from '../../../../../models/server';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -12,14 +12,13 @@ import { BuiltInTemplatesConfigurationService } from '../../../../../services/bu
 @Component({
     selector: 'app-ethernet-hubs-template-details',
     templateUrl: './ethernet-hubs-template-details.component.html',
-    styleUrls: ['./ethernet-hubs-template-details.component.scss']
+    styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss']
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
     server: Server;
     ethernetHubTemplate: EthernetHubTemplate;
     numberOfPorts: number;
     inputForm: FormGroup;
-
     isSymbolSelectionOpened: boolean = false;
 
     categories = [];
@@ -30,7 +29,8 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
         private builtInTemplatesService: BuiltInTemplatesService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
+        private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
+        private router: Router
     ) {
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
@@ -51,6 +51,10 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
                 this.numberOfPorts =  this.ethernetHubTemplate.ports_mapping.length;
             });
         });
+    }
+
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
     }
 
     onSave() {
@@ -76,6 +80,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.ethernetHubTemplate.symbol = chosenSymbol;
     }
 }

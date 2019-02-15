@@ -17,22 +17,22 @@
 .buttonSelected {
     border-width: 3px;
     border-color: #0097a7;
+    width: 77px;
 }
 
 .image {
-    width: 75px;
-    height: 75px;   
+    width: 65px;
+    height: 65px;   
 }
 
 .imageSelected {
-    width: 105px;
-    height: 105px;   
+    margin-left: -3px;
 }
 
 .wrapper {
     display: grid;
     grid-template-rows: auto;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     grid-row-gap: 3em;
     grid-column-gap: 1em;
 }

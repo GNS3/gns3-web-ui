@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
@@ -11,11 +10,11 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
 @Component({
     selector: 'app-ethernet-switches-templates',
     templateUrl: './ethernet-switches-templates.component.html',
-    styleUrls: ['./ethernet-switches-templates.component.scss']
+    styleUrls: ['./ethernet-switches-templates.component.scss', '../../../preferences.component.scss']
 })
 export class EthernetSwitchesTemplatesComponent implements OnInit {
     server: Server;
-    ethernetSwitchesTemplates: EthernetSwitchTemplate[];
+    ethernetSwitchesTemplates: EthernetSwitchTemplate[] = [];
     @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(

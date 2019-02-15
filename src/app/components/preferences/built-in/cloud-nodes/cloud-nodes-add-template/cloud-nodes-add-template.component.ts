@@ -7,16 +7,18 @@ import { v4 as uuid } from 'uuid';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 
 @Component({
     selector: 'app-cloud-nodes-add-template',
     templateUrl: './cloud-nodes-add-template.component.html',
-    styleUrls: ['./cloud-nodes-add-template.component.scss']
+    styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss']
 })
 export class CloudNodesAddTemplateComponent implements OnInit {
     server: Server;
     templateName: string = '';
+    formGroup: FormGroup;
     
     constructor(
         private route: ActivatedRoute,
@@ -24,8 +26,13 @@ export class CloudNodesAddTemplateComponent implements OnInit {
         private builtInTemplatesService: BuiltInTemplatesService,
         private router: Router,
         private toasterService: ToasterService,
-        private templateMocksService: TemplateMocksService
-    ) {}
+        private templateMocksService: TemplateMocksService,
+        private formBuilder: FormBuilder
+    ) {
+        this.formGroup = this.formBuilder.group({
+            templateName: new FormControl('', Validators.required)
+        });
+    }
 
     ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get("server_id");
@@ -34,8 +41,12 @@ export class CloudNodesAddTemplateComponent implements OnInit {
         });
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
+    }
+
     addTemplate() {
-        if (this.templateName) {
+        if (!this.formGroup.invalid) {
             let cloudTemplate: CloudTemplate;
 
             this.templateMocksService.getCloudNodeTemplate().subscribe((template: CloudTemplate) => {
@@ -46,7 +57,7 @@ export class CloudNodesAddTemplateComponent implements OnInit {
             cloudTemplate.name = this.templateName;
 
             this.builtInTemplatesService.addTemplate(this.server, cloudTemplate).subscribe((cloudNodeTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
+                this.goBack();
             });
         } else {
             this.toasterService.error(`Fill all required fields`);

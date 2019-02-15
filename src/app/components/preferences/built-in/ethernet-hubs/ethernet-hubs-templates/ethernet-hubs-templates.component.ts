@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
@@ -11,11 +10,11 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
 @Component({
     selector: 'app-ethernet-hubs-templates',
     templateUrl: './ethernet-hubs-templates.component.html',
-    styleUrls: ['./ethernet-hubs-templates.component.scss']
+    styleUrls: ['./ethernet-hubs-templates.component.scss', '../../../preferences.component.scss']
 })
 export class EthernetHubsTemplatesComponent implements OnInit {
     server: Server;
-    ethernetHubsTemplates: EthernetHubTemplate[];
+    ethernetHubsTemplates: EthernetHubTemplate[] = [];
     @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(
