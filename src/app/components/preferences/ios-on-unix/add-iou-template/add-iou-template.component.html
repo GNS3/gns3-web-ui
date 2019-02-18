@@ -9,7 +9,7 @@
             <mat-vertical-stepper [linear]="true">
                 <mat-step label="Server type">
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this IOU device on a remote computer</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this IOU device on a remote computer</mat-radio-button><br/>
                         <mat-radio-button class="radio-button" value="2" (click)="setServerType('gns3 vm')" checked>Run this IOU device on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </mat-step>
@@ -65,9 +65,12 @@
                             </mat-form-field>
                         </div>
                     </form>
-                    <div class="buttons-bar"><button mat-raised-button color="primary" (click)="addTemplate()">Add template</button></div>
                 </mat-step>
             </mat-vertical-stepper>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
         </div>
     </div>
 </div>

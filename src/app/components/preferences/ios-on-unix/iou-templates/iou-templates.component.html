@@ -2,6 +2,7 @@
     <div class="default-header">
         <div class="row">
             <h1 class="col">IOU devices templates</h1>
+            <button *ngIf="server" class="top-button" class="cancel-button" routerLink="/server/{{server.id}}/preferences" mat-button>Back</button>
             <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/iou/addtemplate" mat-raised-button color="primary">Add IOU device template</button>
         </div>
     </div>
@@ -9,8 +10,8 @@
     <div class="default-content" *ngIf="iouTemplates.length">
         <div class="container mat-elevation-z8">
             <mat-nav-list *ngIf="server">
-                <mat-list-item *ngFor='let template of iouTemplates'>
-                    <span class="name" routerLink="{{template.template_id}}">{{template.name}}</span>
+                <div class="list-item" *ngFor='let template of iouTemplates'>
+                    <mat-list-item class="template-name" routerLink="{{template.template_id}}">{{template.name}}</mat-list-item>
                     <button mat-icon-button class="menu-button" [matMenuTriggerFor]="menu">
                         <mat-icon>more_vert</mat-icon>
                     </button>
@@ -22,7 +23,7 @@
                             <mat-icon>content_copy</mat-icon><span>Copy</span>
                         </button>
                     </mat-menu>
-                </mat-list-item>
+                </div>
             </mat-nav-list>
         </div>
     </div>

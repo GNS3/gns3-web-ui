@@ -13,7 +13,7 @@ import { IouService } from '../../../../services/iou.service';
 @Component({
     selector: 'app-add-iou-template',
     templateUrl: './add-iou-template.component.html',
-    styleUrls: ['./add-iou-template.component.scss']
+    styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss']
 })
 export class AddIouTemplateComponent implements OnInit {
     server: Server;
@@ -75,12 +75,16 @@ export class AddIouTemplateComponent implements OnInit {
         this.iouTemplate.path = event.target.files[0].name;
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
+    }
+
     addTemplate() {
-        if (!this.templateNameForm.invalid && !this.imageForm.invalid) {
+        if (!this.templateNameForm.invalid && ((this.newImageSelected && !this.imageForm.invalid) || (!this.newImageSelected && this.iouTemplate.path))) {
             this.iouTemplate.template_id = uuid();
 
             this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
+                this.goBack();
             });
         } else {
             this.toasterService.error(`Fill all required fields`);

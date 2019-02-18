@@ -1,17 +1,16 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
-
+ 
 
 @Component({
     selector: 'app-iou-templates',
     templateUrl: './iou-templates.component.html',
-    styleUrls: ['./iou-templates.component.scss']
+    styleUrls: ['./iou-templates.component.scss', '../../preferences.component.scss']
 })
 export class IouTemplatesComponent implements OnInit {
     server: Server;

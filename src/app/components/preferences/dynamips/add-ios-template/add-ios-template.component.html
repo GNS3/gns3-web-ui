@@ -27,27 +27,29 @@
                                 formControlName="templateName"
                                 placeholder="Name"/>
                         </mat-form-field>
+                        <mat-form-field class="form-field">
+                            <mat-select 
+                                placeholder="Platform" 
+                                (selectionChange)="onPlatformChosen($event)"
+                                formControlName="platform"
+                                [(ngModel)]="iosTemplate.platform">
+                                <mat-option *ngFor="let platform of platforms" [value]="platform">
+                                    {{platform}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="form-field" *ngIf="chassis[iosTemplate.platform]">
+                            <mat-select 
+                                placeholder="Chassis" 
+                                (selectionChange)="onChassisChosen($event)"
+                                formControlName="chassis"
+                                [(ngModel)]="iosTemplate.chassis">
+                                <mat-option *ngFor="let chassis of chassis[iosTemplate.platform]" [value]="chassis">
+                                    {{chassis}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
                     </form>
-                    <mat-form-field class="form-field">
-                        <mat-select 
-                            placeholder="Platform" 
-                            (selectionChange)="onPlatformChosen($event)"
-                            [(ngModel)]="iosTemplate.platform">
-                            <mat-option *ngFor="let platform of platforms" [value]="platform">
-                                {{platform}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="form-field" *ngIf="chassis[iosTemplate.platform]">
-                        <mat-select 
-                            placeholder="Chassis" 
-                            (selectionChange)="onChassisChosen($event)"
-                            [(ngModel)]="iosTemplate.chassis">
-                            <mat-option *ngFor="let chassis of chassis[iosTemplate.platform]" [value]="chassis">
-                                {{chassis}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
                     <mat-checkbox 
                         *ngIf="platformsWithEtherSwitchRouterOption[iosTemplate.platform]" 
                         [(ngModel)]="isEtherSwitchRouter">
@@ -119,9 +121,12 @@
                             [(ngModel)]="iosTemplate.idlepc" 
                             placeholder="Idle-PC"/>
                     </mat-form-field>
-                    <div class="buttons-bar"><button mat-raised-button color="primary" (click)="addTemplate()">Add template</button></div>
                 </mat-step>
             </mat-vertical-stepper>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
         </div>
     </div>
 </div>

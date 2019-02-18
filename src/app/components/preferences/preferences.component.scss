@@ -27,6 +27,10 @@
     transition: 0.25s;
 }
 
+.nonvisible {
+    display: none;
+}
+
 .symbolSelectionButton {
     width: 100%;
 }
@@ -44,6 +48,10 @@
     outline: none;
 }
 
+.menu-button {
+    width: 10%;
+}
+
 th {
     border: 0px!important;
 }
@@ -54,4 +62,22 @@ th.mat-header-cell {
 
 td.mat-cell {
     padding-top: 15px;
+}
+
+.radio-button {
+    width: 50%;
+    padding-top: 20px;
+}
+
+.radio-group {
+    margin-bottom: 20px;
+}
+
+.file-button {
+    width: 18%;
+}
+
+.file-name-form-field {
+    padding-left: 2%;
+    width: 80%;
 }

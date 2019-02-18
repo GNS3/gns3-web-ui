@@ -12,34 +12,36 @@
                         General settings
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.name" placeholder="Template name">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.default_name_format" placeholder="Default name format">
-                </mat-form-field>
-                <mat-label>Platform - {{iosTemplate.platform}}</mat-label><br/><br/>
-                <mat-label>Chassis - {{iosTemplate.chassis}}</mat-label><br/><br/>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.symbol" placeholder="Symbol">
-                </mat-form-field>
-                <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                <mat-form-field class="row">
-                    <mat-select placeholder="Category" [(ngModel)]="iosTemplate.category">
-                        <mat-option *ngFor="let category of categories" [value]="category[1]">
-                            {{category[0]}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.image" placeholder="IOS image path">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.startup_config" placeholder="Initial startup-config">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.private_config" placeholder="Initial private-config">
-                </mat-form-field>
+                <form [formGroup]="generalSettingsForm">
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" formControlName="templateName" [(ngModel)]="iosTemplate.name" placeholder="Template name">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" formControlName="defaultName" [(ngModel)]="iosTemplate.default_name_format" placeholder="Default name format">
+                    </mat-form-field>
+                    <mat-label>Platform - {{iosTemplate.platform}}</mat-label><br/><br/>
+                    <mat-label>Chassis - {{iosTemplate.chassis}}</mat-label><br/><br/>
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" formControlName="symbol" [(ngModel)]="iosTemplate.symbol" placeholder="Symbol">
+                    </mat-form-field>
+                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                    <mat-form-field class="form-field">
+                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="Category" [(ngModel)]="iosTemplate.category">
+                            <mat-option *ngFor="let category of categories" [value]="category[1]">
+                                {{category[0]}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" formControlName="path" [(ngModel)]="iosTemplate.image" placeholder="IOS image path">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" formControlName="initialConfig" [(ngModel)]="iosTemplate.startup_config" placeholder="Initial startup-config">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input [ngModelOptions]="{standalone: true}" matInput type="text" [(ngModel)]="iosTemplate.private_config" placeholder="Initial private-config">
+                    </mat-form-field>
+                </form>
                 <mat-form-field class="select">
                     <mat-select placeholder="Console type" [(ngModel)]="iosTemplate.console_type">
                         <mat-option *ngFor="let type of consoleTypes" [value]="type">
@@ -57,21 +59,23 @@
                         Memories and disks
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.ram" placeholder="RAM size">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.nvram" placeholder="NVRAM size">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.iomem" placeholder="I/O memory">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.disk0" placeholder="PCMCIA disk0">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.disk1" placeholder="PCMCIA disk1">
-                </mat-form-field>
+                <form [formGroup]="memoryForm">
+                    <mat-form-field class="form-field">
+                        <input matInput type="number" formControlName="ram" [(ngModel)]="iosTemplate.ram" placeholder="RAM size">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="number" formControlName="nvram" [(ngModel)]="iosTemplate.nvram" placeholder="NVRAM size">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="number" formControlName="iomemory" [(ngModel)]="iosTemplate.iomem" placeholder="I/O memory">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="number" formControlName="disk0" [(ngModel)]="iosTemplate.disk0" placeholder="PCMCIA disk0">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="number" formControlName="disk1" [(ngModel)]="iosTemplate.disk1" placeholder="PCMCIA disk1">
+                    </mat-form-field>
+                </form>
                 <mat-checkbox [(ngModel)]="iosTemplate.auto_delete_disks">
                     Automatically delete NVRAM and disk files
                 </mat-checkbox>
@@ -147,24 +151,26 @@
                         Advanced
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.system_id" placeholder="System ID">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.mac_addr" placeholder="Base MAC">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="iosTemplate.idlepc" placeholder="Idle-PC">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.idlemax" placeholder="Idlemax">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.idlesleep" placeholder="Idlesleep">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="iosTemplate.exec_area" placeholder="Exec area">
-                </mat-form-field>
+                <form [formGroup]="advancedForm">
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="systemId" type="text" [(ngModel)]="iosTemplate.system_id" placeholder="System ID">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input [ngModelOptions]="{standalone: true}" matInput type="text" [(ngModel)]="iosTemplate.mac_addr" placeholder="Base MAC">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input [ngModelOptions]="{standalone: true}" matInput type="text" [(ngModel)]="iosTemplate.idlepc" placeholder="Idle-PC">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="idlemax" type="number" [(ngModel)]="iosTemplate.idlemax" placeholder="Idlemax">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="idlesleep" type="number" [(ngModel)]="iosTemplate.idlesleep" placeholder="Idlesleep">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="execarea" type="number" [(ngModel)]="iosTemplate.exec_area" placeholder="Exec area">
+                    </mat-form-field>
+                </form>
                 <mat-checkbox [(ngModel)]="iosTemplate.mmap">
                     Enable mmap support
                 </mat-checkbox><br/><br/>
@@ -178,22 +184,15 @@
                         Usage
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <textarea matInput type="text" [(ngModel)]="iosTemplate.usage"></textarea>
                 </mat-form-field>
             </mat-expansion-panel>
         </mat-accordion>
-        <div class="buttons-bar"><button mat-raised-button color="primary" (click)="onSave()">Save</button></div>
-    </div>
-</div>
-<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Symbol selection</h1>
-            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
+        <div class="buttons-bar">
+            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
         </div>
     </div>
-    <div class="default-content">
-        <app-symbols [server]="server" [symbol]="iosTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-    </div>
 </div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && iosTemplate" [server]="server" [symbol]="iosTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

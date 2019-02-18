@@ -41,6 +41,10 @@ export class IosConfigurationService {
         "C7200-IO-GE-E"
     ];
 
+    getConsoleTypes() {
+        return ['telnet', 'none'];
+    }
+
     getDefaultRamSettings() {
         return {   
             "c1700": 160,

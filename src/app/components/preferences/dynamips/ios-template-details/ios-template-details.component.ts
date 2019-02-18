@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -12,7 +12,7 @@ import { IosConfigurationService } from '../../../../services/ios-configuration.
 @Component({
     selector: 'app-ios-template-details',
     templateUrl: './ios-template-details.component.html',
-    styleUrls: ['./ios-template-details.component.scss']
+    styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss']
 })
 export class IosTemplateDetailsComponent implements OnInit {
     server: Server;
@@ -22,6 +22,7 @@ export class IosTemplateDetailsComponent implements OnInit {
 
     networkAdaptersForTemplate: string[] = [];
     platforms: string[] = [];
+    consoleTypes: string[] = [];
     platformsWithEtherSwitchRouterOption = {};
     platformsWithChassis = {};
     chassis = {};
@@ -31,14 +32,42 @@ export class IosTemplateDetailsComponent implements OnInit {
     networkAdaptersForPlatform = {};
     networkModules = {};
 
+    generalSettingsForm: FormGroup;
+    memoryForm: FormGroup;
+    advancedForm: FormGroup;
+
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
         private iosService: IosService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private iosConfigurationService: IosConfigurationService
-    ) {}
+        private iosConfigurationService: IosConfigurationService,
+        private router: Router
+    ) {
+        this.generalSettingsForm = this.formBuilder.group({
+            templateName: new FormControl('', Validators.required),
+            defaultName: new FormControl('', Validators.required),
+            symbol: new FormControl('', Validators.required),
+            path: new FormControl('', Validators.required),
+            initialConfig: new FormControl('', Validators.required) 
+        });
+
+        this.memoryForm = this.formBuilder.group({
+            ram: new FormControl('', Validators.required),
+            nvram: new FormControl('', Validators.required),
+            iomemory: new FormControl('', Validators.required),
+            disk0: new FormControl('', Validators.required),
+            disk1: new FormControl('', Validators.required),
+        });
+
+        this.advancedForm = this.formBuilder.group({
+            systemId: new FormControl('', Validators.required),
+            idlemax: new FormControl('', Validators.required),
+            idlesleep: new FormControl('', Validators.required),
+            execarea: new FormControl('', Validators.required),
+        });
+    }
 
     ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get("server_id");
@@ -64,6 +93,7 @@ export class IosTemplateDetailsComponent implements OnInit {
         this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
         this.chassis = this.iosConfigurationService.getChassis();
         this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
+        this.consoleTypes = this.iosConfigurationService.getConsoleTypes();
     }
 
     fillAdaptersData() {
@@ -89,11 +119,19 @@ export class IosTemplateDetailsComponent implements OnInit {
     }
 
     onSave() {
-        this.completeAdaptersData();
+        if (this.generalSettingsForm.invalid || this.memoryForm.invalid || this.advancedForm.invalid) {
+            this.toasterService.error(`Fill all required fields`);
+        } else {
+            this.completeAdaptersData();
         
-        this.iosService.saveTemplate(this.server, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
-            this.toasterService.success("Changes saved");
-        });
+            this.iosService.saveTemplate(this.server, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
+                this.toasterService.success("Changes saved");
+            });
+        }
+    }
+
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
     }
 
     chooseSymbol() {
@@ -101,6 +139,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.iosTemplate.symbol = chosenSymbol;
     }
 }

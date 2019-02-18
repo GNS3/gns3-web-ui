@@ -14,7 +14,7 @@ import { IosConfigurationService } from '../../../../services/ios-configuration.
 @Component({
     selector: 'app-add-ios-template',
     templateUrl: './add-ios-template.component.html',
-    styleUrls: ['./add-ios-template.component.scss']
+    styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss']
 })
 export class AddIosTemplateComponent implements OnInit {
     server: Server;
@@ -57,7 +57,9 @@ export class AddIosTemplateComponent implements OnInit {
         });
 
         this.iosNameForm = this.formBuilder.group({
-            templateName: new FormControl(null, [Validators.required])
+            templateName: new FormControl(null, [Validators.required]),
+            platform: new FormControl(null, [Validators.required]),
+            chassis: new FormControl(null, [Validators.required])
         });
 
         this.iosMemoryForm = this.formBuilder.group({
@@ -98,7 +100,7 @@ export class AddIosTemplateComponent implements OnInit {
             if (this.networkModulesForTemplate.length>0) this.completeModulesData();
 
             this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
+                this.goBack();
             });
         } else {
             this.toasterService.error(`Fill all required fields`);
@@ -140,6 +142,10 @@ export class AddIosTemplateComponent implements OnInit {
         if (this.networkModulesForTemplate[0]) this.iosTemplate.wic0 = this.networkModulesForTemplate[0];
         if (this.networkModulesForTemplate[1]) this.iosTemplate.wic1 = this.networkModulesForTemplate[1];
         if (this.networkModulesForTemplate[2]) this.iosTemplate.wic2 = this.networkModulesForTemplate[2];
+    }
+
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
     }
 
     onPlatformChosen() {

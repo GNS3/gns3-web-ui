@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { IosService } from '../../../../services/ios.service';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
@@ -12,7 +11,7 @@ import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 @Component({
     selector: 'app-ios-templates',
     templateUrl: './ios-templates.component.html',
-    styleUrls: ['./ios-templates.component.scss']
+    styleUrls: ['./ios-templates.component.scss', '../../preferences.component.scss']
 })
 export class IosTemplatesComponent implements OnInit {
     server: Server;

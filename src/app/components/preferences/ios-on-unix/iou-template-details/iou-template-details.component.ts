@@ -1,18 +1,18 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 
 @Component({
     selector: 'app-iou-template-details',
     templateUrl: './iou-template-details.component.html',
-    styleUrls: ['./iou-template-details.component.scss']
+    styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss']
 })
 export class IouTemplateDetailsComponent implements OnInit {
     server: Server;
@@ -25,13 +25,31 @@ export class IouTemplateDetailsComponent implements OnInit {
     consoleResolutions: string[] = [];
     categories = [];
 
+    generalSettingsForm: FormGroup;
+    networkForm: FormGroup;
+
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
         private iouService: IouService,
         private toasterService: ToasterService,
-        private configurationService: IouConfigurationService
-    ){}
+        private configurationService: IouConfigurationService,
+        private router: Router,
+        private formBuilder: FormBuilder
+    ){
+        this.generalSettingsForm = this.formBuilder.group({
+            templateName: new FormControl('', Validators.required),
+            defaultName: new FormControl('', Validators.required),
+            symbol: new FormControl('', Validators.required),
+            path: new FormControl('', Validators.required),
+            initialConfig: new FormControl('', Validators.required) 
+        });
+
+        this.networkForm = this.formBuilder.group({
+            ethernetAdapters: new FormControl('', Validators.required),
+            serialAdapters: new FormControl('', Validators.required)
+        });
+    }
 
     ngOnInit(){
         const server_id = this.route.snapshot.paramMap.get("server_id");
@@ -51,10 +69,18 @@ export class IouTemplateDetailsComponent implements OnInit {
         this.categories = this.configurationService.getCategories();
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
+    }
+
     onSave(){
-        this.iouService.saveTemplate(this.server, this.iouTemplate).subscribe((savedTemplate: IouTemplate) => {
-            this.toasterService.success("Changes saved");
-        });
+        if (this.generalSettingsForm.invalid || this.networkForm.invalid) {
+            this.toasterService.error(`Fill all required fields`);
+        } else {
+            this.iouService.saveTemplate(this.server, this.iouTemplate).subscribe(() => {
+                this.toasterService.success("Changes saved");
+            });
+        }
     }
 
     uploadImageFile(event) {
@@ -66,6 +92,7 @@ export class IouTemplateDetailsComponent implements OnInit {
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.iouTemplate.symbol = chosenSymbol;
     }
 }
