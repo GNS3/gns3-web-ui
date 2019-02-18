@@ -16,6 +16,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { EthernetHubsAddTemplateComponent } from './ethernet-hubs-add-template.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 export class MockedBuiltInTemplatesService {
     public addTemplate(server: Server, ethernetHubTemplate: EthernetHubTemplate) {
@@ -34,7 +35,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
@@ -66,6 +67,8 @@ describe('EthernetHubsAddTemplateComponent', () => {
         component.templateName = "sample name";
         component.numberOfPorts = 2;
         component.server = {id: 1} as Server;
+        component.formGroup.controls['templateName'].setValue('template name');
+        component.formGroup.controls['numberOfPorts'].setValue('1');
 
         component.addTemplate();
 

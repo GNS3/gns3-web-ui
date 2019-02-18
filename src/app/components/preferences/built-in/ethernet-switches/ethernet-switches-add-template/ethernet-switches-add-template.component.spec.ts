@@ -16,6 +16,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { EthernetSwitchesAddTemplateComponent } from './ethernet-switches-add-template.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 export class MockedBuiltInTemplatesService {
     public addTemplate(server: Server, ethernetHubTemplate: EthernetSwitchTemplate) {
@@ -34,7 +35,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
@@ -66,6 +67,8 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
         component.templateName = "sample name";
         component.numberOfPorts = 2;
         component.server = {id: 1} as Server;
+        component.formGroup.controls['templateName'].setValue('template name');
+        component.formGroup.controls['numberOfPorts'].setValue('1');
 
         component.addTemplate();
 
@@ -75,8 +78,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
     it('should not call add template when template name is empty', () => {
         spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
         spyOn(mockedToasterService, 'error');
-        component.templateName = "";
-        component.numberOfPorts = 2;
+        component.formGroup.controls['numberOfPorts'].setValue('1');
         component.server = {id: 1} as Server;
 
         component.addTemplate();
@@ -88,7 +90,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
     it('should not call add template when number of ports is missing', () => {
         spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
         spyOn(mockedToasterService, 'error');
-        component.templateName = "sample name";
+        component.formGroup.controls['templateName'].setValue('template name');
         component.server = {id: 1} as Server;
 
         component.addTemplate();

@@ -16,6 +16,7 @@ import { ServerService } from '../../../../../services/server.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 export class MockedBuiltInTemplatesService {
     public addTemplate(server: Server, cloudTemplate: CloudTemplate) {
@@ -34,7 +35,7 @@ describe('CloudNodesAddTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
@@ -65,6 +66,7 @@ describe('CloudNodesAddTemplateComponent', () => {
         spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
         component.templateName = "sample name";
         component.server = {id: 1} as Server;
+        component.formGroup.controls['templateName'].setValue('template name');
 
         component.addTemplate();
 

@@ -68,6 +68,20 @@ describe('IosTemplateDetailsComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedIosService, 'saveTemplate').and.returnValue(of({} as IosTemplate));
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['path'].setValue('path');
+        component.generalSettingsForm.controls['initialConfig'].setValue('txt');
+        component.memoryForm.controls['ram'].setValue('0');
+        component.memoryForm.controls['nvram'].setValue('0');
+        component.memoryForm.controls['iomemory'].setValue('0');
+        component.memoryForm.controls['disk0'].setValue('0');
+        component.memoryForm.controls['disk1'].setValue('0');
+        component.advancedForm.controls['systemId'].setValue('0');
+        component.advancedForm.controls['idlemax'].setValue('0');
+        component.advancedForm.controls['idlesleep'].setValue('0');
+        component.advancedForm.controls['execarea'].setValue('0');
 
         component.onSave();
 

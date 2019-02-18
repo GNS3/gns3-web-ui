@@ -48,7 +48,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
     }
 
     addTemplate() {
-        if (this.templateName && this.numberOfPorts) {
+        if (!this.formGroup.invalid) {
             let ethernetSwitchTemplate: EthernetSwitchTemplate;
 
             this.templateMocksService.getEthernetSwitchTemplate().subscribe((template: EthernetSwitchTemplate) => {

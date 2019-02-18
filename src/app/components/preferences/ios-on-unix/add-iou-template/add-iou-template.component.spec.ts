@@ -66,6 +66,7 @@ describe('AddIouTemplateComponent', () => {
         spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
         component.templateNameForm.controls['templateName'].setValue('sample name');
         component.imageForm.controls['imageName'].setValue('sample name');
+        component.newImageSelected = true;
         component.server = {id: 1} as Server;
 
         component.addTemplate();
@@ -76,6 +77,7 @@ describe('AddIouTemplateComponent', () => {
     it('should not call add template when template name is empty', () => {
         spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
         component.imageForm.controls['imageName'].setValue('sample name');
+        component.newImageSelected = true;
         component.server = {id: 1} as Server;
 
         component.addTemplate();
@@ -86,6 +88,7 @@ describe('AddIouTemplateComponent', () => {
     it('should not call add template when image is not entered', () => {
         spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
         component.templateNameForm.controls['templateName'].setValue('sample name');
+        component.newImageSelected = true;
         component.server = {id: 1} as Server;
 
         component.addTemplate();

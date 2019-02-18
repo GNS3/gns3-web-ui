@@ -68,6 +68,8 @@ describe('AddIosTemplateComponent', () => {
         spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
         component.iosImageForm.controls['imageName'].setValue('image name');
         component.iosNameForm.controls['templateName'].setValue('template name');
+        component.iosNameForm.controls['platform'].setValue('platform');
+        component.iosNameForm.controls['chassis'].setValue('chassis');
         component.iosMemoryForm.controls['memory'].setValue(0);
         component.server = {id: 1} as Server;
 
@@ -80,6 +82,8 @@ describe('AddIosTemplateComponent', () => {
         spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
         component.iosImageForm.controls['imageName'].setValue('image name');
         component.iosNameForm.controls['templateName'].setValue('');
+        component.iosNameForm.controls['platform'].setValue('platform');
+        component.iosNameForm.controls['chassis'].setValue('chassis');
         component.iosMemoryForm.controls['memory'].setValue(0);
         component.server = {id: 1} as Server;
 
@@ -91,6 +95,8 @@ describe('AddIosTemplateComponent', () => {
     it('should not call add template when image name is not defined', () => {
         spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
         component.iosNameForm.controls['templateName'].setValue('template name');
+        component.iosNameForm.controls['platform'].setValue('platform');
+        component.iosNameForm.controls['chassis'].setValue('chassis');
         component.iosMemoryForm.controls['memory'].setValue(0);
         component.server = {id: 1} as Server;
 
@@ -103,6 +109,8 @@ describe('AddIosTemplateComponent', () => {
         spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
         component.iosImageForm.controls['imageName'].setValue('image name');
         component.iosNameForm.controls['templateName'].setValue('template name');
+        component.iosNameForm.controls['platform'].setValue('platform');
+        component.iosNameForm.controls['chassis'].setValue('chassis');
         component.server = {id: 1} as Server;
 
         component.addTemplate();
