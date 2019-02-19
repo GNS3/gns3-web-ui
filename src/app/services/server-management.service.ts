@@ -29,15 +29,22 @@ export class ServerManagementService implements OnDestroy {
   }
 
   async start(server: Server) {
-    await this.electronService.remote.require('./local-server.js').startLocalServer(server);
+    return await this.electronService.remote.require('./local-server.js').startLocalServer(server);
   }
 
   async stop(server: Server) {
-    await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
+    return await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
+  }
+
+  async stopAll() {
+    return await this.electronService.remote.require('./local-server.js').stopAllLocalServers();
   }
 
   getRunningServers() {
-    return this.electronService.remote.require('./local-server.js').getRunningServers();
+    if(this.electronService.isElectronApp) {
+      return this.electronService.remote.require('./local-server.js').getRunningServers();
+    }
+    return [];
   }
 
   ngOnDestroy() {

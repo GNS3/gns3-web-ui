@@ -16,7 +16,7 @@ class ElectronServiceMock {
   public isElectronApp: boolean;
 }
 
-describe('DefaultLayoutComponent', () => {
+fdescribe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
@@ -89,4 +89,25 @@ describe('DefaultLayoutComponent', () => {
     });
     expect(toaster.errors).toEqual([]);
   });
+
+  describe('auto stopping servers', () => {
+    let event;
+    beforeEach(() => {
+      event = new Event('onbeforeunload');
+    });
+
+    it('should close window with no action when not in electron', async () => {
+      component.shouldStopServersOnClosing = false;
+      const isClosed = await component.onBeforeUnload(event);
+      expect(isClosed).toBeUndefined();
+    });
+
+    it('should stop all servers and close window', () => {
+      component.shouldStopServersOnClosing = true;
+      const isClosed = component.onBeforeUnload(event);
+      expect(isClosed).toBeTruthy();
+    });
+  });
+
+
 });

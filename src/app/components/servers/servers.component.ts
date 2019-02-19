@@ -138,7 +138,10 @@ export class AddServerDialogComponent implements OnInit {
   }
 
   getDefaultLocalServerPath() {
-    return this.electronService.remote.require('./local-server.js').getLocalServerPath();
+    if(this.electronService.isElectronApp) {
+      return this.electronService.remote.require('./local-server.js').getLocalServerPath();
+    }
+    return;
   }
 
   ngOnInit() {

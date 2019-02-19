@@ -8,7 +8,6 @@ const isWin = /^win/.test(process.platform);
 
 let runningServers = {};
 
-
 exports.getLocalServerPath = async () => {
   const distDirectory = path.join(__dirname, 'dist');
   if (!fs.existsSync(distDirectory)) {
@@ -51,13 +50,17 @@ exports.getRunningServers = () => {
   return Object.keys(runningServers);
 }
 
+exports.stopAllLocalServers = async () => {
+  return await stopAll();
+}
+
 function getServerArguments(server, overrides) {
-    let serverArguments = [];
-    return serverArguments;
+  let serverArguments = [];
+  return serverArguments;
 }
 
 function getChannelForServer(server) {
-    return `local-server-run-${server.name}`;
+  return `local-server-run-${server.name}`;
 }
 
 function notifyStatus(status) {
@@ -66,7 +69,7 @@ function notifyStatus(status) {
 
 async function stopAll() {
   for(var serverName in runningServers) {
-      let result, error = await stop(serverName);
+    let result, error = await stop(serverName);
   }
   console.log(`Stopped all servers`);
 }
@@ -159,38 +162,41 @@ async function run(server, options) {
 
   });
 
-
 }
 
-
 async function main() {
-    await run({
-        name: 'my-local',
-        path: 'c:\\Program Files\\GNS3\\gns3server.EXE',
-        port: 3080
-    }, {
-        logStdout: true
-    });
+  await run({
+    name: 'my-local',
+    path: 'c:\\Program Files\\GNS3\\gns3server.EXE',
+    port: 3080
+  }, {
+    logStdout: true
+  });
 }
 
 ipcMain.on('local-server-run', async function (event, server) {
-    const responseChannel = getChannelForServer();
-    await run(server);
-    event.sender.send(responseChannel, {
-        success: true
-    });
+  const responseChannel = getChannelForServer();
+  await run(server);
+  event.sender.send(responseChannel, {
+    success: true
+  });
+});
+
+
+ipcMain.on('before-quit', async function (event) {
+  console.log(event);
 });
 
 if (require.main === module) {
-    process.on('SIGINT', function() {
-        console.log("Caught interrupt signal");
-        stopAll();
-    });
+  process.on('SIGINT', function() {
+    console.log("Caught interrupt signal");
+    stopAll();
+  });
 
-    process.on('unhandledRejection', (reason, promise) => {
-        console.log(`UnhandledRejection occured 'reason'`);
-        process.exit(1);
-    });
+  process.on('unhandledRejection', (reason, promise) => {
+    console.log(`UnhandledRejection occured 'reason'`);
+    process.exit(1);
+  });
 
-    main();
+  main();
 }
