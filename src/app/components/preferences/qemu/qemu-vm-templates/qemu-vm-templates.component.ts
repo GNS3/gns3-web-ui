@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuService } from '../../../../services/qemu.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
@@ -11,7 +10,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
 @Component({
     selector: 'app-qemu-virtual-machines-templates',
     templateUrl: './qemu-vm-templates.component.html',
-    styleUrls: ['./qemu-vm-templates.component.scss']
+    styleUrls: ['./qemu-vm-templates.component.scss', '../../preferences.component.scss']
 })
 export class QemuVmTemplatesComponent implements OnInit {
     server: Server;
@@ -34,13 +33,8 @@ export class QemuVmTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.qemuTemplates = [];
         this.qemuService.getTemplates(this.server).subscribe((qemuTemplates: QemuTemplate[]) => {
-            qemuTemplates.forEach((template) => {
-                if ((template.template_type === 'qemu') && !template.builtin) {
-                    this.qemuTemplates.push(template);
-                }
-            });
+            this.qemuTemplates = qemuTemplates.filter((elem) => elem.template_type === 'dynamips');
         });
     }
 

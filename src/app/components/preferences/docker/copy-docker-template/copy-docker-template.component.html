@@ -6,14 +6,19 @@
     </div>
     <div class="default-content">
         <div class="container mat-elevation-z8">
-            <mat-form-field class="form-field">
-                <input 
-                    matInput type="text" 
-                    [(ngModel)]="templateName" 
-                    placeholder="Name"
-                    ngDefaultControl/>
-            </mat-form-field><br/>
-            <div class="buttons-bar"><button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button></div>
+            <form [formGroup]="templateNameForm">
+                <mat-form-field class="form-field">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="templateName" 
+                        placeholder="Name"
+                        formControlName="templateName"/>
+                </mat-form-field>
+            </form>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button>
         </div>
     </div>
 </div>

@@ -2,6 +2,7 @@
     <div class="default-header">
         <div class="row">
             <h1 class="col">VPCS node templates</h1>
+            <button *ngIf="server" class="top-button" class="cancel-button" routerLink="/server/{{server.id}}/preferences" mat-button>Back</button>
             <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/vpcs/addtemplate" mat-raised-button color="primary">Add VPCS template</button>
         </div>
     </div>
@@ -9,12 +10,12 @@
     <div class="default-content" *ngIf="vpcsTemplates.length">
         <div class="container mat-elevation-z8">
             <mat-nav-list *ngIf="server">
-                <mat-list-item *ngFor='let template of vpcsTemplates'>
-                    <span class="name" routerLink="{{template.template_id}}">{{template.name}}</span>
+                <div class="list-item" *ngFor='let template of vpcsTemplates'>
+                    <mat-list-item class="template-name" routerLink="{{template.template_id}}">{{template.name}}</mat-list-item>
                     <button class="delete-button" mat-icon-button (click)="deleteTemplate(template)">
                         <mat-icon>delete</mat-icon>
                     </button>
-                </mat-list-item>
+                </div>
             </mat-nav-list>
         </div>
     </div>

@@ -79,9 +79,10 @@ describe('AddQemuVmTemplateComponent', () => {
 
     it('should call add template', () => {
         spyOn(mockedQemuService, 'addTemplate').and.returnValue(of({} as QemuTemplate));
-        component.firstStepForm.controls['templateName'].setValue('template name');
-        component.secondStepForm.controls['ramMemory'].setValue(0);
-        component.fourthStepForm.controls['fileName'].setValue('file name');
+        component.nameForm.controls['templateName'].setValue('template name');
+        component.memoryForm.controls['binary'].setValue('binary');
+        component.memoryForm.controls['ramMemory'].setValue(0);
+        component.diskForm.controls['fileName'].setValue('file name');
         component.chosenImage = 'path';
         component.selectedBinary = {
             path: 'path',
@@ -97,9 +98,10 @@ describe('AddQemuVmTemplateComponent', () => {
 
     it('should not call add template when template name is empty', () => {
         spyOn(mockedQemuService, 'addTemplate').and.returnValue(of({} as QemuTemplate));
-        component.firstStepForm.controls['templateName'].setValue('');
-        component.secondStepForm.controls['ramMemory'].setValue(0);
-        component.fourthStepForm.controls['fileName'].setValue('file name');
+        component.nameForm.controls['templateName'].setValue('');
+        component.memoryForm.controls['binary'].setValue('binary');
+        component.memoryForm.controls['ramMemory'].setValue(0);
+        component.diskForm.controls['fileName'].setValue('file name');
         component.chosenImage = 'path';
         component.selectedBinary = {
             path: 'path',
@@ -115,8 +117,9 @@ describe('AddQemuVmTemplateComponent', () => {
 
     it('should not call add template when ram is not set', () => {
         spyOn(mockedQemuService, 'addTemplate').and.returnValue(of({} as QemuTemplate));
-        component.firstStepForm.controls['templateName'].setValue('template name');
-        component.fourthStepForm.controls['fileName'].setValue('file name');
+        component.nameForm.controls['templateName'].setValue('template name');
+        component.memoryForm.controls['binary'].setValue('binary');
+        component.diskForm.controls['fileName'].setValue('file name');
         component.chosenImage = 'path';
         component.selectedBinary = {
             path: 'path',

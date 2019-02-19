@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
@@ -11,7 +10,7 @@ import { DockerService } from '../../../../services/docker.service';
 @Component({
     selector: 'app-docker-templates',
     templateUrl: './docker-templates.component.html',
-    styleUrls: ['./docker-templates.component.scss']
+    styleUrls: ['./docker-templates.component.scss', '../../preferences.component.scss']
 })
 export class DockerTemplatesComponent implements OnInit {
     server: Server;

@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ import { DockerImage } from '../../../../models/docker/docker-image';
 @Component({
     selector: 'app-add-docker-template',
     templateUrl: './add-docker-template.component.html',
-    styleUrls: ['./add-docker-template.component.scss']
+    styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss']
 })
 export class AddDockerTemplateComponent implements OnInit {
     server: Server;
@@ -80,12 +80,16 @@ export class AddDockerTemplateComponent implements OnInit {
         this.newImageSelected = value === "newImage";
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates']);
+    }
+
     addTemplate() {
         if (!this.virtualMachineForm.invalid && !this.containerNameForm.invalid && !this.networkAdaptersForm.invalid) {
             this.dockerTemplate.template_id = uuid();
 
             this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates']);
+                this.goBack();
             });
         } else {
             this.toasterService.error(`Fill all required fields`);

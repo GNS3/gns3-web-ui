@@ -161,6 +161,7 @@ import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/c
 import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
 import { EmptyTemplatesListComponent } from './components/preferences/common/empty-templates-list/empty-templates-list.component';
 import { SymbolsMenuComponent } from './components/preferences/common/symbols-menu/symbols-menu.component';
+import { SearchFilter } from './filters/searchFilter.pipe';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -261,7 +262,8 @@ if (environment.production) {
     CopyIouTemplateComponent,
     CopyDockerTemplateComponent,
     EmptyTemplatesListComponent,
-    SymbolsMenuComponent
+    SymbolsMenuComponent,
+    SearchFilter
   ],
   imports: [
     BrowserModule,

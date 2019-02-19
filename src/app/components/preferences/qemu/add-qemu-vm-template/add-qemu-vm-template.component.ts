@@ -16,7 +16,7 @@ import { QemuConfigurationService } from '../../../../services/qemu-configuratio
 @Component({
     selector: 'app-add-qemu-virtual-machine-template',
     templateUrl: './add-qemu-vm-template.component.html',
-    styleUrls: ['./add-qemu-vm-template.component.scss']
+    styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss']
 })
 export class AddQemuVmTemplateComponent implements OnInit {
     server: Server;
@@ -30,9 +30,9 @@ export class AddQemuVmTemplateComponent implements OnInit {
     chosenImage: string = '';
     qemuTemplate: QemuTemplate;
 
-    firstStepForm: FormGroup;
-    secondStepForm: FormGroup;
-    fourthStepForm: FormGroup;
+    nameForm: FormGroup;
+    memoryForm: FormGroup;
+    diskForm: FormGroup;
     
     constructor(
         private route: ActivatedRoute,
@@ -46,15 +46,16 @@ export class AddQemuVmTemplateComponent implements OnInit {
     ) {
         this.qemuTemplate = new QemuTemplate();
 
-        this.firstStepForm = this.formBuilder.group({
+        this.nameForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required)
         });
 
-        this.secondStepForm = this.formBuilder.group({
+        this.memoryForm = this.formBuilder.group({
+            binary: new FormControl('', Validators.required),
             ramMemory: new FormControl('', Validators.required)
         });
 
-        this.fourthStepForm = this.formBuilder.group({
+        this.diskForm = this.formBuilder.group({
             fileName: new FormControl('', Validators.required)
         });
     }
@@ -88,8 +89,12 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.chosenImage = event.target.files[0].name;
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
+    }
+
     addTemplate() {
-        if (!this.firstStepForm.invalid && !this.secondStepForm.invalid && (this.selectedImage || this.chosenImage)) {
+        if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
             this.qemuTemplate.ram = this.ramMemory;
             this.qemuTemplate.qemu_path = this.selectedBinary.path;
             if (this.newImageSelected) {
@@ -100,7 +105,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
             this.qemuTemplate.template_id = uuid();
 
             this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
-                this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
+                this.goBack();
             });
         } else {
             this.toasterService.error(`Fill all required fields`);

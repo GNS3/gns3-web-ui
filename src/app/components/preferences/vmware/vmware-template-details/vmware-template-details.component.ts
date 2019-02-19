@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -13,12 +13,12 @@ import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 @Component({
     selector: 'app-vmware-template-details',
     templateUrl: './vmware-template-details.component.html',
-    styleUrls: ['./vmware-template-details.component.scss']
+    styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss']
 })
 export class VmwareTemplateDetailsComponent implements OnInit {
     server: Server;
     vmwareTemplate: VmwareTemplate;
-    inputForm: FormGroup;
+    generalSettingsForm: FormGroup;
 
     adapters: CustomAdapter[] = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
@@ -36,9 +36,10 @@ export class VmwareTemplateDetailsComponent implements OnInit {
         private vmwareService: VmwareService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private vmwareConfigurationService: VmwareConfigurationService
+        private vmwareConfigurationService: VmwareConfigurationService,
+        private router: Router
     ) {
-        this.inputForm = this.formBuilder.group({
+        this.generalSettingsForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
             defaultName: new FormControl('', Validators.required),
             symbol: new FormControl('', Validators.required)
@@ -65,14 +66,22 @@ export class VmwareTemplateDetailsComponent implements OnInit {
         this.networkTypes = this.vmwareConfigurationService.getNetworkTypes();
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'vmware', 'templates']);
+    }
+
     onSave() {
-        if (this.inputForm.invalid) {
+        if (this.generalSettingsForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {
             this.vmwareService.saveTemplate(this.server, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
                 this.toasterService.success("Changes saved");
             });
         }
+    }
+
+    cancelConfigureCustomAdapters(){
+        this.isConfiguratorOpened = !this.isConfiguratorOpened;
     }
 
     configureCustomAdapters() {

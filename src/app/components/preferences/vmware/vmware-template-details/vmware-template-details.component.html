@@ -12,30 +12,30 @@
                         General settings
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="row">
+                <form [formGroup]="generalSettingsForm">
+                    <mat-form-field class="form-field">
                         <input 
                             matInput type="text" 
                             [(ngModel)]="vmwareTemplate.name" 
                             formControlName="templateName"
                             placeholder="Template name">
                     </mat-form-field>
-                    <mat-form-field class="row">
+                    <mat-form-field class="form-field">
                         <input 
                             matInput type="text" 
                             [(ngModel)]="vmwareTemplate.default_name_format" 
                             formControlName="defaultName"
                             placeholder="Default name format">
                     </mat-form-field>
-                    <mat-form-field class="row">
+                    <mat-form-field class="form-field">
                         <input 
                             matInput type="text" 
                             [(ngModel)]="vmwareTemplate.symbol" 
                             formControlName="symbol"
                             placeholder="Symbol">
                     </mat-form-field>
-                    <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                    <mat-form-field class="row">
+                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                    <mat-form-field class="form-field">
                         <mat-select 
                             placeholder="Category" 
                             [ngModelOptions]="{standalone: true}" 
@@ -60,7 +60,7 @@
                         [(ngModel)]="vmwareTemplate.console_auto_start">
                         Auto start console
                     </mat-checkbox>
-                    <mat-form-field class="row">
+                    <mat-form-field class="form-field">
                         <mat-select 
                             placeholder="On close" 
                             [ngModelOptions]="{standalone: true}" 
@@ -88,26 +88,26 @@
                         Network
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input matInput type="number" [(ngModel)]="vmwareTemplate.adapters" placeholder="Adapters">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input matInput type="text" [(ngModel)]="vmwareTemplate.first_port_name" placeholder="First port name">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input matInput type="text" [(ngModel)]="vmwareTemplate.port_name_format" placeholder="Name format">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <input matInput type="number" [(ngModel)]="vmwareTemplate.port_segment_size" placeholder="Segment size">
                 </mat-form-field>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <mat-select placeholder="Type" [(ngModel)]="vmwareTemplate.adapter_type">
                         <mat-option *ngFor="let type of networkTypes" [value]="type">
                             {{type}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-raised-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
+                <button mat-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
                 <mat-checkbox [(ngModel)]="vmwareTemplate.use_any_adapter">
                     Allow GNS3 to override non custom VMware adapter
                 </mat-checkbox>
@@ -118,13 +118,14 @@
                         Usage
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <textarea matInput type="text" [(ngModel)]="vmwareTemplate.usage"></textarea>
                 </mat-form-field>
             </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar">
-            <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
+            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
         </div>
     </div>
 </div>
@@ -162,19 +163,10 @@
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
         </div>
-        <div class="row">
-            <button mat-raised-button color="primary" class="configHideButton" (click)="saveCustomAdapters()">Apply</button><br/>
+        <div class="buttons-bar">
+            <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br/>
         </div>
     </div>
 </div>
-<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Symbol selection</h1>
-            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
-        </div>
-    </div>
-    <div class="default-content">
-        <app-symbols [server]="server" [symbol]="vmwareTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-    </div>
-</div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && vmwareTemplate" [server]="server" [symbol]="vmwareTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

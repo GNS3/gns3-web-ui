@@ -68,6 +68,10 @@ describe('DockerTemplateDetailsComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedDockerService, 'saveTemplate').and.returnValue(of({} as DockerTemplate));
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['adapter'].setValue(1);
+        component.generalSettingsForm.controls['symbol'].setValue('symbol path');
 
         component.onSave();
 

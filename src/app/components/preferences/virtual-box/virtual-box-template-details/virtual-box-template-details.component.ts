@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -13,7 +13,7 @@ import { VirtualBoxConfigurationService } from '../../../../services/virtual-box
 @Component({
     selector: 'app-virtual-box-template-details',
     templateUrl: './virtual-box-template-details.component.html',
-    styleUrls: ['./virtual-box-template-details.component.scss']
+    styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss']
 })
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
     server: Server;
@@ -29,14 +29,31 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
     isConfiguratorOpened: boolean = false;
 
+    generalSettingsForm: FormGroup;
+    networkForm: FormGroup
+
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
         private virtualBoxService: VirtualBoxService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private virtualBoxConfigurationService: VirtualBoxConfigurationService
-    ) {}
+        private virtualBoxConfigurationService: VirtualBoxConfigurationService,
+        private router: Router
+    ) {
+        this.generalSettingsForm = this.formBuilder.group({
+            templateName: new FormControl('', Validators.required),
+            defaultName: new FormControl('', Validators.required),
+            symbol: new FormControl('', Validators.required),
+            ram: new FormControl('', Validators.required)
+        });
+
+        this.networkForm = this.formBuilder.group({
+            adapters: new FormControl('', Validators.required),
+            nameFormat: new FormControl('', Validators.required),
+            size: new FormControl('', Validators.required)
+        });
+    }
 
     ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get("server_id");
@@ -75,6 +92,14 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.virtualBoxTemplate.custom_adapters = this.adapters;
     }
 
+    cancelConfigureCustomAdapters(){
+        this.isConfiguratorOpened = !this.isConfiguratorOpened;
+    }
+
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'virtualbox', 'templates']);
+    }
+
     onSave() {
         this.virtualBoxService.saveTemplate(this.server, this.virtualBoxTemplate).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
             this.toasterService.success("Changes saved");
@@ -86,6 +111,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.virtualBoxTemplate.symbol = chosenSymbol;
     }
 }

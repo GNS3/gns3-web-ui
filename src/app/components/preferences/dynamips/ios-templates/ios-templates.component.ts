@@ -34,7 +34,6 @@ export class IosTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.iosTemplates = [];
         this.iosService.getTemplates(this.server).subscribe((templates: IosTemplate[]) => {
             this.iosTemplates = templates.filter((elem) => elem.template_type === 'dynamips');
         });

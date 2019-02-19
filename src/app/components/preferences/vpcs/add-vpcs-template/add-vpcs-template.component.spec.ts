@@ -16,6 +16,7 @@ import { TemplateMocksService } from '../../../../services/template-mocks.servic
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 export class MockedVpcsService {
     public addTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
@@ -34,7 +35,7 @@ describe('AddVpcsTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
@@ -64,6 +65,7 @@ describe('AddVpcsTemplateComponent', () => {
     it('should call add template', () => {
         spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
         component.templateName = "sample name";
+        component.templateNameForm.controls['templateName'].setValue('template name');
         component.server = {id: 1} as Server;
 
         component.addTemplate();

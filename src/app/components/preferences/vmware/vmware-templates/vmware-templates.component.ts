@@ -1,19 +1,16 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
 import { VmwareService } from '../../../../services/vmware.service';
-import { MatDialog } from '@angular/material';
-import { DeleteConfirmationDialogComponent } from '../../common/delete-confirmation-dialog/delete-confirmation-dialog.component';
-import { ToasterService } from '../../../../services/toaster.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 
 @Component({
     selector: 'app-vmware-templates',
     templateUrl: './vmware-templates.component.html',
-    styleUrls: ['./vmware-templates.component.scss']
+    styleUrls: ['./vmware-templates.component.scss', '../../preferences.component.scss']
 })
 export class VmwareTemplatesComponent implements OnInit {
     server: Server;

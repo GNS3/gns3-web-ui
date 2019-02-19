@@ -76,6 +76,9 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedQemuService, 'saveTemplate').and.returnValue(of({} as QemuTemplate));
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
 
         component.onSave();
 

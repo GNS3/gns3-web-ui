@@ -68,9 +68,9 @@ describe('VmwareTemplateDetailsComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedVmwareService, 'saveTemplate').and.returnValue(of({} as VmwareTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
 
         component.onSave();
 
@@ -79,9 +79,9 @@ describe('VmwareTemplateDetailsComponent', () => {
 
     it('should not call save template when template name is empty', () => {
         spyOn(mockedVmwareService, 'saveTemplate').and.returnValue(of({} as VmwareTemplate));
-        component.inputForm.controls['templateName'].setValue('');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['templateName'].setValue('');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
 
         component.onSave();
 
@@ -90,9 +90,9 @@ describe('VmwareTemplateDetailsComponent', () => {
 
     it('should not call save template when default name is empty', () => {
         spyOn(mockedVmwareService, 'saveTemplate').and.returnValue(of({} as VmwareTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('');
-        component.inputForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
 
         component.onSave();
 
@@ -101,9 +101,9 @@ describe('VmwareTemplateDetailsComponent', () => {
 
     it('should not call save template when symbol path is empty', () => {
         spyOn(mockedVmwareService, 'saveTemplate').and.returnValue(of({} as VmwareTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['symbol'].setValue('');
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('');
 
         component.onSave();
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -12,16 +12,13 @@ import { VpcsConfigurationService } from '../../../../services/vpcs-configuratio
 @Component({
     selector: 'app-vpcs-template-details',
     templateUrl: './vpcs-template-details.component.html',
-    styleUrls: ['./vpcs-template-details.component.scss','../../preferences.component.scss']
+    styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss']
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
     server: Server;
     vpcsTemplate: VpcsTemplate;
     inputForm: FormGroup;
-
     isSymbolSelectionOpened: boolean = false;
-    copyOfSymbol: string;
-
     consoleTypes: string[] = [];
     categories = [];
 
@@ -31,7 +28,8 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         private vpcsService: VpcsService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private vpcsConfigurationService: VpcsConfigurationService
+        private vpcsConfigurationService: VpcsConfigurationService,
+        private router: Router
     ) {
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
@@ -59,6 +57,10 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         this.categories = this.vpcsConfigurationService.getCategories();
     }
 
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'vpcs', 'templates']);
+    }
+
     onSave() {
         if (this.inputForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
@@ -70,16 +72,11 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     }
 
     chooseSymbol() {
-        this.copyOfSymbol = this.vpcsTemplate.symbol;
         this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    }
-
-    cancelChooseSymbol() {
-        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-        this.vpcsTemplate.symbol = this.copyOfSymbol;
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.vpcsTemplate.symbol = chosenSymbol;
     }
 }

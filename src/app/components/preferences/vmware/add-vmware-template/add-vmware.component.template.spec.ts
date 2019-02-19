@@ -17,6 +17,7 @@ import { VmwareTemplate } from '../../../../models/templates/vmware-template';
 import { AddVmwareTemplateComponent } from './add-vmware-template.component';
 import { VmwareService } from '../../../../services/vmware.service';
 import { VmwareVm } from '../../../../models/vmware/vmware-vm';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 export class MockedVmwareService {
     public addTemplate(server: Server, vmwareTemplate: VmwareTemplate) {
@@ -39,7 +40,7 @@ describe('AddVmwareTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
@@ -76,6 +77,7 @@ describe('AddVmwareTemplateComponent', () => {
         component.vmwareTemplate = {} as VmwareTemplate;
         component.selectedVM = template;
         component.server = {id: 1} as Server;
+        component.templateNameForm.controls['templateName'].setValue('template name');
 
         component.addTemplate();
 

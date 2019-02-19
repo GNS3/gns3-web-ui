@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { QemuService } from '../../../../services/qemu.service';
 import { Server } from '../../../../models/server';
@@ -8,12 +8,13 @@ import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { ToasterService } from '../../../../services/toaster.service';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 
 
 @Component({
     selector: 'app-qemu-virtual-machine-template-details',
     templateUrl: './qemu-vm-template-details.component.html',
-    styleUrls: ['./qemu-vm-template-details.component.scss']
+    styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss']
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
     server: Server;
@@ -34,13 +35,23 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     adapters: CustomAdapter[] = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
 
+    generalSettingsForm: FormGroup;
+
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
         private qemuService: QemuService,
         private toasterService: ToasterService,
-        private configurationService: QemuConfigurationService
-    ){}
+        private configurationService: QemuConfigurationService,
+        private formBuilder: FormBuilder,
+        private router: Router
+    ){
+        this.generalSettingsForm = this.formBuilder.group({
+            templateName: new FormControl('', Validators.required),
+            defaultName: new FormControl('', Validators.required),
+            symbol: new FormControl('', Validators.required)
+        });
+    }
 
     ngOnInit(){
         const server_id = this.route.snapshot.paramMap.get("server_id");
@@ -97,19 +108,31 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.qemuTemplate.bios_image = event.target.files[0].name;
     }
 
+    cancelConfigureCustomAdapters(){
+        this.isConfiguratorOpened = !this.isConfiguratorOpened;
+    }
+
     configureCustomAdapters(){
         this.isConfiguratorOpened = !this.isConfiguratorOpened;
         this.qemuTemplate.custom_adapters = this.adapters;
     }
 
-    onSave(){
-        if (!this.activateCpuThrottling){
-            this.qemuTemplate.cpu_throttling = 0;
-        }
+    goBack() {
+        this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
+    }
 
-        this.qemuService.saveTemplate(this.server, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
-            this.toasterService.success("Changes saved");
-        });
+    onSave(){
+        if (this.generalSettingsForm.invalid) {
+            this.toasterService.error(`Fill all required fields`);
+        } else {
+            if (!this.activateCpuThrottling){
+                this.qemuTemplate.cpu_throttling = 0;
+            }
+    
+            this.qemuService.saveTemplate(this.server, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
+                this.toasterService.success("Changes saved");
+            });
+        }
     }
 
     chooseSymbol() {
@@ -117,6 +140,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     }
 
     symbolChanged(chosenSymbol: string) {
+        this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
         this.qemuTemplate.symbol = chosenSymbol;
     }
 }

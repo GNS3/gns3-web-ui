@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
-import { switchMap } from 'rxjs/operators';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
@@ -12,7 +11,7 @@ import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 @Component({
     selector: 'app-virtual-box-templates',
     templateUrl: './virtual-box-templates.component.html',
-    styleUrls: ['./virtual-box-templates.component.scss']
+    styleUrls: ['./virtual-box-templates.component.scss', '../../preferences.component.scss']
 })
 export class VirtualBoxTemplatesComponent implements OnInit {
     server: Server;
@@ -34,13 +33,8 @@ export class VirtualBoxTemplatesComponent implements OnInit {
     }
 
     getTemplates(){
-        this.virtualBoxTemplates = [];
         this.virtualBoxService.getTemplates(this.server).subscribe((virtualBoxTemplates: VirtualBoxTemplate[]) => {
-            virtualBoxTemplates.forEach((template) => {
-                if ((template.template_type === 'virtualbox') && !template.builtin) {
-                    this.virtualBoxTemplates.push(template);
-                }
-            });
+            this.virtualBoxTemplates = virtualBoxTemplates.filter((elem) => elem.template_type === 'virtualbox');
         });
     }
 

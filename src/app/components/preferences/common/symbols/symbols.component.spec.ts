@@ -8,6 +8,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SymbolsComponent } from './symbols.component';
 import { SymbolService } from '../../../../services/symbol.service';
 import { HttpClientModule } from '@angular/common/http';
+import { SearchFilter } from '../../../../filters/searchFilter.pipe';
 
 export class MockedSymbolService {
     public list() {
@@ -29,7 +30,8 @@ describe('Symbols component', () => {
               }
           ],
           declarations: [
-              SymbolsComponent
+              SymbolsComponent,
+              SearchFilter
           ],
           schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();

@@ -16,6 +16,7 @@ import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-temp
 import { AddVirtualBoxTemplateComponent } from './add-virtual-box-template.component';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 export class MockedVirtualBoxService {
     public addTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate) {
@@ -38,7 +39,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
@@ -95,6 +96,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
         component.virtualBoxTemplate = {} as VirtualBoxTemplate;
         component.selectedVM = template;
         component.server = {id: 1} as Server;
+        component.vmForm.controls['vm'].setValue('virtual machine');
 
         component.addTemplate();
 

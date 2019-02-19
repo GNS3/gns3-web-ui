@@ -12,43 +12,45 @@
                         General settings
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.name" placeholder="Template name">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.default_name_format" placeholder="Default name format">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.symbol" placeholder="Symbol">
-                </mat-form-field>
-                <button mat-raised-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                <mat-form-field class="row">
-                    <mat-select placeholder="Category" [(ngModel)]="virtualBoxTemplate.category">
-                        <mat-option *ngFor="let category of categories" [value]="category[1]">
-                            {{category[0]}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="select">
-                    <mat-select placeholder="Console type" [(ngModel)]="virtualBoxTemplate.console_type">
-                        <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-checkbox [(ngModel)]="virtualBoxTemplate.console_auto_start">
-                    Auto start console
-                </mat-checkbox>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="virtualBoxTemplate.ram" placeholder="RAM">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <mat-select placeholder="On close" [(ngModel)]="virtualBoxTemplate.on_close">
-                        <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
-                            {{option[0]}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <form [formGroup]="generalSettingsForm">
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="templateName" type="text" [(ngModel)]="virtualBoxTemplate.name" placeholder="Template name">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="defaultName" type="text" [(ngModel)]="virtualBoxTemplate.default_name_format" placeholder="Default name format">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="symbol" type="text" [(ngModel)]="virtualBoxTemplate.symbol" placeholder="Symbol">
+                    </mat-form-field>
+                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                    <mat-form-field class="form-field">
+                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="Category" [(ngModel)]="virtualBoxTemplate.category">
+                            <mat-option *ngFor="let category of categories" [value]="category[1]">
+                                {{category[0]}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="select">
+                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="Console type" [(ngModel)]="virtualBoxTemplate.console_type">
+                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="virtualBoxTemplate.console_auto_start">
+                        Auto start console
+                    </mat-checkbox>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="ram" type="number" [(ngModel)]="virtualBoxTemplate.ram" placeholder="RAM">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="On close" [(ngModel)]="virtualBoxTemplate.on_close">
+                            <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
+                                {{option[0]}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </form>
                 <mat-checkbox [(ngModel)]="virtualBoxTemplate.headless">
                     Start VM in headless mode
                 </mat-checkbox><br/>
@@ -62,26 +64,28 @@
                         Network
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="virtualBoxTemplate.adapters" placeholder="Adapters">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.first_port_name" placeholder="First port name">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="text" [(ngModel)]="virtualBoxTemplate.port_name_format" placeholder="Name format">
-                </mat-form-field>
-                <mat-form-field class="row">
-                    <input matInput type="number" [(ngModel)]="virtualBoxTemplate.port_segment_size" placeholder="Segment size">
-                </mat-form-field>
-                <mat-form-field class="row">
-                <mat-select placeholder="Type" [(ngModel)]="virtualBoxTemplate.adapter_type">
-                    <mat-option *ngFor="let type of networkTypes" [value]="type">
-                        {{type}}
-                    </mat-option>
-                </mat-select>
-                </mat-form-field>
-                <button mat-raised-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
+                <form [formGroup]="networkForm">
+                    <mat-form-field class="form-field">
+                        <input formControlName="adapters" matInput type="number" [(ngModel)]="virtualBoxTemplate.adapters" placeholder="Adapters">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input [ngModelOptions]="{standalone: true}" matInput type="text" [(ngModel)]="virtualBoxTemplate.first_port_name" placeholder="First port name">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input formControlName="nameFormat" matInput type="text" [(ngModel)]="virtualBoxTemplate.port_name_format" placeholder="Name format">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input formControlName="size" matInput type="number" [(ngModel)]="virtualBoxTemplate.port_segment_size" placeholder="Segment size">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="Type" [(ngModel)]="virtualBoxTemplate.adapter_type">
+                            <mat-option *ngFor="let type of networkTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </form>
+                <button mat-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
                 <mat-checkbox [(ngModel)]="virtualBoxTemplate.use_any_adapter">
                     Allow GNS3 to use any configured VirtualBox adapter
                 </mat-checkbox>
@@ -92,12 +96,15 @@
                         Usage
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-form-field class="row">
+                <mat-form-field class="form-field">
                     <textarea matInput type="text" [(ngModel)]="virtualBoxTemplate.usage"></textarea>
                 </mat-form-field>
             </mat-expansion-panel>
         </mat-accordion>
-        <div class="buttons-bar"><button mat-raised-button color="primary" (click)="onSave()">Save</button></div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+        </div>
     </div>
 </div>
 <div class="content" class="configurator" *ngIf="isConfiguratorOpened">
@@ -134,19 +141,10 @@
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
         </div>
-        <div class="row">
-            <button mat-raised-button color="primary" class="configHideButton" (click)="configureCustomAdapters()">Apply</button><br/>
+        <div class="buttons-bar">
+            <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br/>
         </div>
     </div>
 </div>
-<div class="content" class="configurator" *ngIf="isSymbolSelectionOpened">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Symbol selection</h1>
-            <button class="top-button" (click)="chooseSymbol()" mat-raised-button color="primary">Save</button>
-        </div>
-    </div>
-    <div class="default-content">
-        <app-symbols [server]="server" [symbol]="virtualBoxTemplate.symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-    </div>
-</div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && virtualBoxTemplate" [server]="server" [symbol]="virtualBoxTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

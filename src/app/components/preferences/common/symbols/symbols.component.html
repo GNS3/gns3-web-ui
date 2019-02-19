@@ -1,6 +1,7 @@
 <mat-card>
+    <input matInput type="text" [(ngModel)]="searchText" placeholder="Search by filename"><br/><br/>
     <div class="wrapper">
-        <div class="buttonWrapper" *ngFor="let symbol of symbols">
+        <div class="buttonWrapper" *ngFor="let symbol of symbols | filenamefilter: searchText">
             <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
                 <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
             </button>

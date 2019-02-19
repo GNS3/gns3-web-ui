@@ -16,6 +16,7 @@ export class SymbolsComponent implements OnInit {
     
     symbols: Symbol[] = [];
     isSelected: string = '';
+    searchText: string = '';
 
     constructor(
         private symbolService: SymbolService
