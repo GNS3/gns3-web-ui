@@ -17,9 +17,14 @@
           >
         </ng-container>
 
+        <ng-container matColumnDef="location">
+          <mat-header-cell *matHeaderCellDef> Location </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.location }} </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="ip">
-          <mat-header-cell *matHeaderCellDef> IP </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.ip }} </mat-cell>
+          <mat-header-cell *matHeaderCellDef> Host </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.host }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="port">
@@ -30,6 +35,14 @@
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
           <mat-cell *matCellDef="let row" style="text-align: right">
+            <button mat-icon-button (click)="startServer(row)" *ngIf="row.location === 'local' && getServerStatus(row) === 'stopped'">
+              <mat-icon aria-label="Start server">play_arrow</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="stopServer(row)" *ngIf="row.location === 'local' && getServerStatus(row) === 'running'">
+              <mat-icon aria-label="Stop server">stop</mat-icon>
+            </button>
+            
             <button mat-icon-button (click)="deleteServer(row)">
               <mat-icon aria-label="Remove server">delete</mat-icon>
             </button>
