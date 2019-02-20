@@ -215,7 +215,7 @@ if (require.main === module) {
   });
 
   process.on('unhandledRejection', (reason, promise) => {
-    console.log(`UnhandledRejection occured 'reason'`);
+    console.log(`UnhandledRejection occured '${reason}'`);
     process.exit(1);
   });
 
