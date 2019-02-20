@@ -80,7 +80,7 @@ describe('ImportProjectDialogComponent', () => {
     }).compileComponents();
 
     server = new Server();
-    server.ip = 'localhost';
+    server.host = 'localhost';
     server.port = 80;
   }));
 

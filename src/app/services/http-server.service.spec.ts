@@ -218,7 +218,7 @@ describe('HttpServer', () => {
   });
 
   it('should make local call when ip and port is not defined', () => {
-    server.ip = null;
+    server.host = null;
     server.port = null;
 
     service

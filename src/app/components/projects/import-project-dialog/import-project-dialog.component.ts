@@ -138,6 +138,6 @@ export class ImportProjectDialogComponent implements OnInit {
 
   prepareUploadPath(): string {
     const projectName = this.projectNameForm.controls['projectName'].value;
-    return `http://${this.server.ip}:${this.server.port}/v2/projects/${uuid()}/import?name=${projectName}`;
+    return `http://${this.server.host}:${this.server.port}/v2/projects/${uuid()}/import?name=${projectName}`;
   }
 }

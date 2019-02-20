@@ -30,21 +30,24 @@ export class ExternalSoftwareDefinitionService {
         binary: 'Wireshark.exe',
         sudo: true,
         installation_arguments: [],
-        installed: false
+        installed: false,
+        installer: true
       }
     ];
 
     const solarPutty = {
       name: 'SolarPuTTY',
       locations: [
-        'SolarPuTTY.exe'
+        'SolarPuTTY.exe',
+        'external\\SolarPuTTY.exe'
       ],
       type: 'web',
       resource: '',
       binary: 'SolarPuTTY.exe',
       sudo: false,
       installation_arguments: ['--only-ask'],
-      installed: false
+      installed: false,
+      installer: false
     };
 
     if(environment.solarputty_download_url) {

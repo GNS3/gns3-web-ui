@@ -2,6 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material';
 
 import { ToasterService } from './toaster.service';
+import { NgZone } from '@angular/core';
 
 export class MockedToasterService {
   public errors: string[];
@@ -40,7 +41,9 @@ class MockedSnackBar {
 describe('ToasterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ToasterService, { provide: MatSnackBar, useClass: MockedSnackBar }]
+      providers: [
+        ToasterService,
+        { provide: MatSnackBar, useClass: MockedSnackBar }]
     });
   });
 

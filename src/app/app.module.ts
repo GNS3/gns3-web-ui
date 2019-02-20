@@ -163,6 +163,7 @@ import { EmptyTemplatesListComponent } from './components/preferences/common/emp
 import { SymbolsMenuComponent } from './components/preferences/common/symbols-menu/symbols-menu.component';
 import { SearchFilter } from './filters/searchFilter.pipe';
 import { RecentlyOpenedProjectService } from './services/recentlyOpenedProject.service';
+import { ServerManagementService } from './services/server-management.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -332,7 +333,8 @@ if (environment.production) {
     DockerConfigurationService,
     IouService,
     IouConfigurationService,
-    RecentlyOpenedProjectService
+    RecentlyOpenedProjectService,
+    ServerManagementService
   ],
   entryComponents: [
     AddServerDialogComponent,

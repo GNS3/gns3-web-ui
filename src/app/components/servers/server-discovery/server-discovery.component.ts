@@ -18,7 +18,7 @@ import { ServerDatabase } from '../../../services/server.database';
 export class ServerDiscoveryComponent implements OnInit {
   private defaultServers = [
     {
-      ip: '127.0.0.1',
+      host: '127.0.0.1',
       port: 3080
     }
   ];
@@ -42,7 +42,7 @@ export class ServerDiscoveryComponent implements OnInit {
     ).subscribe(([local, discovered]) => {
       local.forEach(added => {
         discovered = discovered.filter(server => {
-          return !(server.ip == added.ip && server.port == added.port);
+          return !(server.host == added.host && server.port == added.port);
         });
       });
       if (discovered.length > 0) {
@@ -56,7 +56,7 @@ export class ServerDiscoveryComponent implements OnInit {
 
     this.defaultServers.forEach(testServer => {
       queries.push(
-        this.isServerAvailable(testServer.ip, testServer.port).catch(err => {
+        this.isServerAvailable(testServer.host, testServer.port).catch(err => {
           return Observable.of(null);
         })
       );
@@ -72,7 +72,7 @@ export class ServerDiscoveryComponent implements OnInit {
 
   isServerAvailable(ip: string, port: number): Observable<Server> {
     const server = new Server();
-    server.ip = ip;
+    server.host = ip;
     server.port = port;
     return this.versionService.get(server).flatMap((version: Version) => Observable.of(server));
   }
@@ -83,8 +83,10 @@ export class ServerDiscoveryComponent implements OnInit {
 
   accept(server: Server) {
     if (server.name == null) {
-      server.name = server.ip;
+      server.name = server.host;
     }
+
+    server.location = 'remote';
 
     this.serverService.create(server).then((created: Server) => {
       this.serverDatabase.addServer(created);

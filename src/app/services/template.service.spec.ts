@@ -29,7 +29,7 @@ describe('TemplateService', () => {
 
   it('should ask for the list from server', () => {
     const server = new Server();
-    server.ip = '127.0.0.1';
+    server.host = '127.0.0.1';
     server.port = 3080;
     server.authorization = 'none';
 

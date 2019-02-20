@@ -55,12 +55,12 @@ export class ServerService {
     return this.onReady(() => this.indexedDbService.get().delete(this.tablename, server.id));
   }
 
-  public getLocalServer(ip: string, port: number) {
+  public getLocalServer(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
       this.findAll().then((servers: Server[]) => {
         const local = servers.find(server => server.is_local);
         if (local) {
-          local.ip = ip;
+          local.host = host;
           local.port = port;
           this.update(local).then(updated => {
             resolve(updated);
@@ -68,7 +68,7 @@ export class ServerService {
         } else {
           const server = new Server();
           server.name = 'local';
-          server.ip = ip;
+          server.host = host;
           server.port = port;
           server.is_local = true;
           this.create(server).then(created => {

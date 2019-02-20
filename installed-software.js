@@ -6,7 +6,7 @@ var fetch = require('node-fetch')
 var stream = require('stream');
 var path = require('path');
 const { spawn } = require('child_process');
-const { ipcMain } = require('electron')
+const { ipcMain } = require('electron');
 
 var pipeline = util.promisify(stream.pipeline);
 
@@ -40,8 +40,24 @@ async function downloadFile(resource, softwarePath) {
   );
 }
 
+async function getSoftwareInstallationPath(software) {
+  if (software.installer) {
+    return path.join(app.getPath('temp'), software.binary);
+  }
+  else {
+    const externalPath = path.join(app.getAppPath(), 'external');
+    const exists = fs.existsSync(externalPath);
+    if (!exists) {
+      fs.mkdirSync(externalPath);
+    }
+    return path.join(externalPath, software.binary);
+  }
+}
+
+
 ipcMain.on('installed-software-install', async function (event, software) {
-  const softwarePath = path.join(app.getPath('temp'), software.binary);
+  const softwarePath = await getSoftwareInstallationPath(software);
+
   const responseChannel = `installed-software-installed-${software.name}`;
 
   if (software.type == 'web') {
