@@ -34,7 +34,7 @@ export class QemuVmTemplatesComponent implements OnInit {
 
     getTemplates() {
         this.qemuService.getTemplates(this.server).subscribe((qemuTemplates: QemuTemplate[]) => {
-            this.qemuTemplates = qemuTemplates.filter((elem) => elem.template_type === 'dynamips');
+            this.qemuTemplates = qemuTemplates.filter((elem) => elem.template_type === 'qemu' && !elem.builtin);
         });
     }
 

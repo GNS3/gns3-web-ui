@@ -8,11 +8,11 @@
     </div>
     <app-empty-templates-list *ngIf="!dockerTemplates.length"></app-empty-templates-list>
     <div class="default-content" *ngIf="dockerTemplates.length">
-        <div class="container mat-elevation-z8">
+        <div class="listcontainer mat-elevation-z8">
             <mat-nav-list *ngIf="server">
                 <div class="list-item" *ngFor='let template of dockerTemplates'>
                     <mat-list-item class="template-name" routerLink="{{template.template_id}}">{{template.name}}</mat-list-item>
-                    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="menu">
+                    <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
                         <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">

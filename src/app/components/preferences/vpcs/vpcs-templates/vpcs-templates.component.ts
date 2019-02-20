@@ -33,7 +33,7 @@ export class VpcsTemplatesComponent implements OnInit {
 
     getTemplates() {
         this.vpcsService.getTemplates(this.server).subscribe((vpcsTemplates: VpcsTemplate[]) => {
-            this.vpcsTemplates = vpcsTemplates.filter((elem) => elem.template_type === 'vpcs');
+            this.vpcsTemplates = vpcsTemplates.filter((elem) => elem.template_type === 'vpcs' && !elem.builtin);
         });
     }
 

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 
 
 @Component({
@@ -7,5 +7,12 @@ import { Component } from "@angular/core";
     styleUrls: ['./empty-templates-list.component.scss']
 })
 export class EmptyTemplatesListComponent {
+    @Input() textMessage: string;
     emptyTemplatesListMessage: string = 'Empty templates list';
+
+    constructor(){
+        if (this.textMessage) {
+            this.emptyTemplatesListMessage = this.textMessage;
+        }
+    }
 }

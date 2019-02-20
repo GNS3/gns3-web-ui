@@ -32,7 +32,6 @@ export class EthernetHubsTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.ethernetHubsTemplates = [];
         this.builtInTemplatesService.getTemplates(this.server).subscribe((ethernetHubsTemplates: EthernetHubTemplate[]) => {
             this.ethernetHubsTemplates = ethernetHubsTemplates.filter((elem) => elem.template_type === "ethernet_hub" && !elem.builtin);
         });

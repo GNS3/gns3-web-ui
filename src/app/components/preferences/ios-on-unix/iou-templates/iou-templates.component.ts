@@ -33,13 +33,8 @@ export class IouTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.iouTemplates = [];
         this.iouService.getTemplates(this.server).subscribe((iouTemplates: IouTemplate[]) => {
-            iouTemplates.forEach((template) => {
-                if ((template.template_type === 'iou') && !template.builtin) {
-                    this.iouTemplates.push(template);
-                }
-            });
+            this.iouTemplates = iouTemplates.filter((elem) => elem.template_type === 'iou' && !elem.builtin);
         });
     }
 

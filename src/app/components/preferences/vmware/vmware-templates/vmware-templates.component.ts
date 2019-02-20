@@ -32,13 +32,8 @@ export class VmwareTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.vmwareTemplates = [];
-        this.vmwareService.getTemplates(this.server).subscribe((vpcsTemplates: VmwareTemplate[]) => {
-            vpcsTemplates.forEach((template) => {
-                if ((template.template_type === 'vmware') && !template.builtin) {
-                    this.vmwareTemplates.push(template);
-                }
-            });
+        this.vmwareService.getTemplates(this.server).subscribe((vmwareTemplates: VmwareTemplate[]) => {
+            this.vmwareTemplates = vmwareTemplates.filter((elem) => elem.template_type === 'vmware' && !elem.builtin);
         });
     }
 

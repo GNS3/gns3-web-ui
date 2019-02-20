@@ -4,6 +4,8 @@
 
     <button mat-button routerLink="/servers">Servers</button>
 
+    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId" mat-button routerLink="/server/{{recentlyOpenedServerId}}/project/{{recentlyOpenedProjectId}}">Back to project</button>
+
     <span class="fill-space"></span>
 
     <button mat-button [matMenuTriggerFor]="menu" >

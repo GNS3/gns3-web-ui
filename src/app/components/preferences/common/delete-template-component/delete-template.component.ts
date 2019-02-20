@@ -23,7 +23,7 @@ export class DeleteTemplateComponent {
     deleteItem(templateName, templateId) {
         const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
             width: '300px',
-            height: '150px',
+            height: '250px',
             data: {
                 templateName: templateName
             }

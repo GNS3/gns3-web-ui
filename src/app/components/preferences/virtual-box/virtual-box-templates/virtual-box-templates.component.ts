@@ -34,7 +34,7 @@ export class VirtualBoxTemplatesComponent implements OnInit {
 
     getTemplates(){
         this.virtualBoxService.getTemplates(this.server).subscribe((virtualBoxTemplates: VirtualBoxTemplate[]) => {
-            this.virtualBoxTemplates = virtualBoxTemplates.filter((elem) => elem.template_type === 'virtualbox');
+            this.virtualBoxTemplates = virtualBoxTemplates.filter((elem) => elem.template_type === 'virtualbox' && !elem.builtin);
         });
     }
 

@@ -8,13 +8,18 @@
     </div>
     <app-empty-templates-list *ngIf="!ethernetHubsTemplates.length"></app-empty-templates-list>
     <div class="default-content" *ngIf="ethernetHubsTemplates.length">
-        <div class="container mat-elevation-z8">
+        <div class="listcontainer mat-elevation-z8">
             <mat-nav-list *ngIf="server">
                 <div class="list-item" *ngFor='let template of ethernetHubsTemplates'>
                     <mat-list-item class="template-name" routerLink="{{template.template_id}}">{{template.name}}</mat-list-item>
-                    <button class="delete-button" mat-icon-button (click)="deleteTemplate(template)">
-                        <mat-icon>delete</mat-icon>
+                    <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
                     </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="deleteTemplate(template)">
+                            <mat-icon>delete</mat-icon><span>Delete</span>
+                        </button>
+                    </mat-menu>
                 </div>
             </mat-nav-list>
         </div>

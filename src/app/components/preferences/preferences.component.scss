@@ -1,3 +1,8 @@
+.listcontainer {
+    padding-left: 0px!important;
+    padding-right: 0px!important;
+}
+
 .top-button {
     height: 36px;
     margin-top: 22px
@@ -50,7 +55,7 @@
 }
 
 .template-name {
-    width: 90%;
+    width: 95%;
 }
 
 .delete-button {
@@ -59,7 +64,8 @@
 }
 
 .menu-button {
-    width: 10%;
+    width: 5%;
+    outline: none!important;
 }
 
 th {

@@ -32,7 +32,6 @@ export class EthernetSwitchesTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.ethernetSwitchesTemplates = [];
         this.builtInTemplatesService.getTemplates(this.server).subscribe((ethernetSwitchesTemplates: EthernetSwitchTemplate[]) => {
             this.ethernetSwitchesTemplates = ethernetSwitchesTemplates.filter((elem) => elem.template_type === "ethernet_switch" && !elem.builtin);
         });

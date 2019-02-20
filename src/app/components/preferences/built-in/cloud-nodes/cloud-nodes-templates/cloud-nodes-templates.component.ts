@@ -32,7 +32,6 @@ export class CloudNodesTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.cloudNodesTemplates = [];
         this.builtInTemplatesService.getTemplates(this.server).subscribe((cloudNodesTemplates: CloudTemplate[]) => {
             this.cloudNodesTemplates = cloudNodesTemplates.filter((elem) => elem.template_type === "cloud" && !elem.builtin);
         });

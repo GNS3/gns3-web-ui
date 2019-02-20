@@ -33,13 +33,8 @@ export class DockerTemplatesComponent implements OnInit {
     }
 
     getTemplates() {
-        this.dockerTemplates = [];
         this.dockerService.getTemplates(this.server).subscribe((dockerTemplates: DockerTemplate[]) => {
-            dockerTemplates.forEach((template) => {
-                if ((template.template_type === 'docker') && !template.builtin) {
-                    this.dockerTemplates.push(template);
-                }
-            });
+            this.dockerTemplates = dockerTemplates.filter((elem) => elem.template_type === 'docker' && !elem.builtin);
         });
     }
 

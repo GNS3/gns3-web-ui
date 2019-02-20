@@ -1,5 +1,6 @@
 import { ElectronService } from 'ngx-electron';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 
 @Component({
   selector: 'app-default-layout',
@@ -10,12 +11,18 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 export class DefaultLayoutComponent implements OnInit {
   public isInstalledSoftwareAvailable = false;
 
+  recentlyOpenedServerId : string;
+  recentlyOpenedProjectId : string;
+
   constructor(
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
 
   ngOnInit() {
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
-  }
 
+    this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
+    this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
+  }
 }
