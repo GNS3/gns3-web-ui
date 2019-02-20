@@ -67,6 +67,19 @@ function notifyStatus(status) {
   ipcMain.emit('local-server-status-events', status);
 }
 
+function filterOutput(line) {
+  const index = line.search('CRITICAL');
+  if(index > -1) {
+    return {
+      isCritical: true,
+      errorMessage: line.substr(index)
+    };
+  }
+  return {
+    isCritical: false
+  }
+}
+
 async function stopAll() {
   for(var serverName in runningServers) {
     let result, error = await stop(serverName);
@@ -137,6 +150,16 @@ async function run(server, options) {
   };
 
   serverProcess.stdout.on('data', function(data) {
+    const line = data.toString();
+    const { isCritical, errorMessage } = filterOutput(line);
+    if(isCritical) {
+      notifyStatus({
+        serverName: server.name,
+        status: 'stderr',
+        message: `Server reported error: '${errorMessage}`
+      });
+    }
+
     if(logStdout) {
       console.log(data.toString());
     }
@@ -149,17 +172,19 @@ async function run(server, options) {
   });
 
   serverProcess.on('exit', (code, signal) => {
-    if(code > 0) {
-      notifyStatus({
-        serverName: server.name,
-        status: 'errored',
-        message: `Server '${server.name}' has exited with status='${code}'`
-      });
-    }
+    notifyStatus({
+      serverName: server.name,
+      status: 'errored',
+      message: `Server '${server.name}' has exited with status='${code}'`
+    });
   });
 
   serverProcess.on('error', (err) => {
-
+    notifyStatus({
+      serverName: server.name,
+      status: 'errored',
+      message: `Server errored: '${errorMessage}`
+    });
   });
 
 }
@@ -182,10 +207,6 @@ ipcMain.on('local-server-run', async function (event, server) {
   });
 });
 
-
-ipcMain.on('before-quit', async function (event) {
-  console.log(event);
-});
 
 if (require.main === module) {
   process.on('SIGINT', function() {

@@ -32,6 +32,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       if(serverStatus.status === 'errored') {
         this.toasterService.error(serverStatus.message);
       }
+      if(serverStatus.status === 'stderr') {
+        this.toasterService.error(serverStatus.message);
+      }
     });
 
     // stop servers only when in Electron

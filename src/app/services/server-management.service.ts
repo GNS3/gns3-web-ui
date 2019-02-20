@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 
 export interface ServerStateEvent {
   serverName: string;
-  status: "started" | "errored" | "stopped";
+  status: "started" | "errored" | "stopped" | "stderr";
   message: string;
 }
 
