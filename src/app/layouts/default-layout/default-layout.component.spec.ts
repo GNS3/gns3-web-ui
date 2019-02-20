@@ -10,13 +10,14 @@ import { ServerManagementService, ServerStateEvent } from '../../services/server
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { Subject } from 'rxjs';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 
 
 class ElectronServiceMock {
   public isElectronApp: boolean;
 }
 
-fdescribe('DefaultLayoutComponent', () => {
+describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
@@ -43,6 +44,10 @@ fdescribe('DefaultLayoutComponent', () => {
         {
           provide: ToasterService,
           useClass: MockedToasterService
+        },
+        {
+          provide: RecentlyOpenedProjectService,
+          useClass: RecentlyOpenedProjectService
         },
         ProgressService
       ]

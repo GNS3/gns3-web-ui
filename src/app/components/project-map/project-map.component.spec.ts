@@ -36,6 +36,7 @@ import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/m
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 import { SelectionManager } from '../../cartography/managers/selection-manager';
 import { SelectionTool } from '../../cartography/tools/selection-tool';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -149,7 +150,11 @@ describe('ProjectMapComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         { provide: ToolsService },
         { provide: SelectionManager },
-        { provide: SelectionTool }
+        { provide: SelectionTool },
+        {
+          provide: RecentlyOpenedProjectService,
+          useClass: RecentlyOpenedProjectService
+        },
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
