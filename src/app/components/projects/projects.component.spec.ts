@@ -25,6 +25,7 @@ describe('ProjectsComponent', () => {
   let serverService: ServerService;
   let server: Server;
   let progressService: ProgressService;
+  let mockedProjectService: MockedProjectService = new MockedProjectService();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -39,7 +40,7 @@ describe('ProjectsComponent', () => {
       ],
       providers: [
         { provide: ServerService, useClass: MockedServerService },
-        { provide: ProjectService, useClass: MockedProjectService },
+        { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService, useClass: MockedSettingsService },
         ProgressService
       ],
@@ -72,6 +73,16 @@ describe('ProjectsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should remove item after delete action', () => {
+    spyOn(mockedProjectService, 'delete').and.returnValue(of());
+    let project = new Project();
+    project.project_id = '1';
+
+    component.delete(project);
+
+    expect(mockedProjectService.delete).toHaveBeenCalled();
   });
 
   describe('ProjectComponent open', () => {

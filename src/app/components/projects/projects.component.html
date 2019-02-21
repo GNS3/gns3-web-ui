@@ -43,9 +43,9 @@
             <button mat-icon-button matTooltip="Close project" (click)="close(row)" *ngIf="row.status == 'opened'">
               <mat-icon aria-label="Close project">pause</mat-icon>
             </button>
-            <!--<button mat-icon-button matTooltip="Delete project" (click)="delete(row)" *ngIf="settings.experimental_features">-->
-            <!--<mat-icon aria-label="Delete project">delete</mat-icon>-->
-            <!--</button>-->
+            <button mat-icon-button matTooltip="Delete project" (click)="delete(row)" *ngIf="row.status == 'closed'">
+              <mat-icon aria-label="Open project">delete</mat-icon>
+            </button>
           </mat-cell>
         </ng-container>
 
