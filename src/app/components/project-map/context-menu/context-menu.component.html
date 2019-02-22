@@ -26,5 +26,11 @@
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-down-action>
+    <app-delete-action
+      *ngIf="!projectService.isReadOnly(project)"
+      [server]="server"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-delete-action>
   </mat-menu>
 </div>

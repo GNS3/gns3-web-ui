@@ -53,6 +53,10 @@ export class MockedNodeService {
   updatePosition(): Observable<Node> {
     return of(this.node);
   }
+
+  delete(server: Server, node: Node) {
+    return of();
+  }
 }
 
 export class MockedDrawingService {
