@@ -70,7 +70,7 @@ describe('ContextMenuComponent', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;
     var spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
-    component.openMenuForListOfElements([], [], [], 0, 0);
+    component.openMenuForListOfElements([], [], [], [], 0, 0);
 
     expect(spy.calls.any()).toBeTruthy();
   });

@@ -37,6 +37,8 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { SelectionManager } from '../../cartography/managers/selection-manager';
 import { SelectionTool } from '../../cartography/tools/selection-tool';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { Link } from '../../models/link';
 
 export class MockedProgressService {
   public activate() {}
@@ -90,6 +92,10 @@ export class MockedDrawingService {
 
 export class MockedLinkService {
   constructor() {}
+
+  deleteLink(_server: Server, link: Link){
+    return of({})
+  }
 
   createLink() {
     return of({});
@@ -148,6 +154,7 @@ describe('ProjectMapComponent', () => {
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },
         { provide: MapLabelToLabelConverter },
+        { provide: MapLinkToLinkConverter },
         { provide: NodesDataSource },
         { provide: LinksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
