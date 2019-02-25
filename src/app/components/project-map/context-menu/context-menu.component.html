@@ -15,13 +15,13 @@
       [drawing]="drawings[0]"
     ></app-edit-text-action>
     <app-move-layer-up-action
-      *ngIf="!projectService.isReadOnly(project)"
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-up-action>
     <app-move-layer-down-action
-      *ngIf="!projectService.isReadOnly(project)"
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
@@ -31,6 +31,7 @@
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
+      [links]="links"
     ></app-delete-action>
   </mat-menu>
 </div>

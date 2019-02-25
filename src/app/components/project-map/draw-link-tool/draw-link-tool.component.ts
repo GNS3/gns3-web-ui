@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NodeSelectInterfaceComponent } from '../../../components/project-map/node-select-interface/node-select-interface.component';
 import { DrawingLineWidget } from '../../../cartography/widgets/drawing-line';
@@ -7,6 +7,8 @@ import { LinksEventSource } from '../../../cartography/events/links-event-source
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
 import { MapLinkCreated } from '../../../cartography/events/links';
+import { Link } from '../../../models/link';
+import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 
 @Component({
   selector: 'app-draw-link-tool',
@@ -14,6 +16,7 @@ import { MapLinkCreated } from '../../../cartography/events/links';
   styleUrls: ['./draw-link-tool.component.scss']
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
+  @Input() links: Link[];
   @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
   private nodeClicked$: Subscription;
@@ -21,12 +24,14 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   constructor(
     private drawingLineTool: DrawingLineWidget,
     private nodesEventSource: NodesEventSource,
-    private linksEventSource: LinksEventSource
+    private linksEventSource: LinksEventSource,
+    private mapNodeToNode: MapNodeToNodeConverter
   ) {}
 
   ngOnInit() {
     this.nodeClicked$ = this.nodesEventSource.clicked.subscribe(clickedEvent => {
-      this.nodeSelectInterfaceMenu.open(clickedEvent.datum, clickedEvent.y, clickedEvent.x);
+      let node = this.mapNodeToNode.convert(clickedEvent.datum);
+      this.nodeSelectInterfaceMenu.open(node, clickedEvent.y, clickedEvent.x);
     });
   }
 

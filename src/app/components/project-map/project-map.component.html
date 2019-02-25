@@ -141,7 +141,7 @@
 
 <app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server"> </app-project-map-shortcuts>
 
-<app-draw-link-tool *ngIf="tools.draw_link"></app-draw-link-tool>
+<app-draw-link-tool [links]="links" *ngIf="tools.draw_link"></app-draw-link-tool>
 
 <app-drawing-added
   [server]="server"
