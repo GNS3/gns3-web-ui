@@ -1,0 +1,23 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Built-in preferences</h1>
+            <button class="top-button" class="cancel-button" routerLink="/server/{{serverId}}/preferences" mat-button>Back</button>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="listcontainer mat-elevation-z8">
+            <mat-nav-list>
+                <mat-list-item routerLink="/server/{{serverId}}/preferences/builtin/ethernet-hubs">
+                    Ethernet hubs
+                </mat-list-item>
+                <mat-list-item routerLink="/server/{{serverId}}/preferences/builtin/ethernet-switches">
+                    Ethernet switches
+                </mat-list-item>
+                <mat-list-item routerLink="/server/{{serverId}}/preferences/builtin/cloud-nodes">
+                    Cloud nodes
+                </mat-list-item>
+            </mat-nav-list>
+        </div>
+    </div>
+</div>

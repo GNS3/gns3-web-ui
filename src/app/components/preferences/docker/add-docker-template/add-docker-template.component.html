@@ -1,0 +1,98 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New Docker container template</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-vertical-stepper [linear]="true">
+                <mat-step label="Server type">
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this Docker container on a remote computer</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="2" (click)="setServerType('gns3 vm')" checked>Run this Docker container on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </mat-step>
+                <mat-step label="Docker Virtual Machine">
+                    <form [formGroup]="virtualMachineForm">
+                        <mat-radio-group class="radio-group">
+                            <mat-radio-button class="radio-button" value="1" (click)="setDiskImage('existingImage')" checked>Existing image</mat-radio-button>
+                            <mat-radio-button class="radio-button" value="2" (click)="setDiskImage('newImage')">New image</mat-radio-button>
+                        </mat-radio-group>
+                        <mat-select 
+                            *ngIf="!newImageSelected" 
+                            placeholder="Image list" 
+                            [ngModelOptions]="{standalone: true}" 
+                            [(ngModel)]="selectedImage">
+                            <mat-option *ngFor="let image of dockerImages" [value]="image">
+                                {{image.filename}}
+                            </mat-option>
+                        </mat-select>
+                        <div *ngIf="newImageSelected">
+                            <mat-form-field class="form-field">
+                                <input
+                                    matInput
+                                    type="text"
+                                    [(ngModel)]="dockerTemplate.image"
+                                    formControlName="filename"
+                                    placeholder="Image name"/>
+                            </mat-form-field>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step label="Container name">
+                    <form [formGroup]="containerNameForm">
+                        <mat-form-field class="form-field">
+                            <input
+                                matInput
+                                type="text"
+                                [(ngModel)]="dockerTemplate.name"
+                                formControlName="templateName"
+                                placeholder="Container name"/>
+                        </mat-form-field>
+                    </form>
+                </mat-step>
+                <mat-step label="Network adapters">
+                    <form [formGroup]="networkAdaptersForm">
+                        <mat-form-field class="form-field">
+                            <input
+                                matInput
+                                type="number"
+                                [(ngModel)]="dockerTemplate.adapters"
+                                formControlName="adapters"
+                                placeholder="Adapters"/>
+                        </mat-form-field>
+                    </form>
+                </mat-step>
+                <mat-step label="Start command">
+                    <mat-form-field class="form-field">
+                        <input
+                            matInput
+                            type="text"
+                            [(ngModel)]="dockerTemplate.start_command"
+                            placeholder="Start command"/>
+                    </mat-form-field>
+                </mat-step>
+                <mat-step label="Console type">
+                    <mat-select 
+                        placeholder="Console type" 
+                        [ngModelOptions]="{standalone: true}" 
+                        [(ngModel)]="dockerTemplate.console_type">
+                        <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-step>
+                <mat-step label="Environment">
+                    <mat-form-field class="form-field">
+                        <textarea matInput type="text" [(ngModel)]="dockerTemplate.environment"></textarea>
+                    </mat-form-field>
+                </mat-step>
+            </mat-vertical-stepper>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+        </div>
+    </div>
+</div>

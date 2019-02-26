@@ -1,7 +1,7 @@
 <div class="content">
   <div class="default-header"><h1>Settings</h1></div>
   <div class="default-content">
-    <div class="example-container mat-elevation-z8">
+    <div class="container mat-elevation-z8">
       <mat-accordion>
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
@@ -10,19 +10,19 @@
           </mat-expansion-panel-header>
 
           <div>
-            <mat-checkbox class="example-margin" [(ngModel)]="settings.crash_reports"
+            <mat-checkbox [(ngModel)]="settings.crash_reports"
               >Send anonymous crash reports</mat-checkbox
             >
           </div>
 
           <div>
-            <mat-checkbox class="example-margin" [(ngModel)]="settings.experimental_features"
+            <mat-checkbox [(ngModel)]="settings.experimental_features"
               >Enable experimental features (WARNING: IT CAN BREAK YOU LABS!)</mat-checkbox
             >
           </div>
 
           <div>
-            <mat-checkbox class="example-margin" [(ngModel)]="settings.angular_map"
+            <mat-checkbox [(ngModel)]="settings.angular_map"
               >Enable experimental Angular Map (WARNING: IT CAN BREAK YOU LABS!)</mat-checkbox
             >
           </div>

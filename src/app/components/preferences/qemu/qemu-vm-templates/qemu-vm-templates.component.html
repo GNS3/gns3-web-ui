@@ -1,0 +1,35 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">QEMU VM templates</h1>
+            <button *ngIf="server" class="top-button" class="cancel-button" routerLink="/server/{{server.id}}/preferences" mat-button>Back</button>
+            <button *ngIf="server" class="top-button" routerLink="/server/{{server.id}}/preferences/qemu/addtemplate" mat-raised-button color="primary">Add QEMU VM template</button>
+        </div>
+    </div>
+    <app-empty-templates-list *ngIf="!qemuTemplates.length"></app-empty-templates-list>
+    <div class="default-content" *ngIf="qemuTemplates.length">
+        <div class="listcontainer mat-elevation-z8">
+            <mat-nav-list *ngIf="server">
+                <div class="list-item" *ngFor='let template of qemuTemplates'>
+                    <mat-list-item class="template-name" routerLink="{{template.template_id}}">{{template.name}}</mat-list-item>
+                    <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="deleteTemplate(template)">
+                            <mat-icon>delete</mat-icon><span>Delete</span>
+                        </button>
+                        <button mat-menu-item (click)="copyTemplate(template)">
+                            <mat-icon>content_copy</mat-icon><span>Copy</span>
+                        </button>
+                    </mat-menu>
+                </div>
+            </mat-nav-list>
+        </div>
+    </div>
+</div>
+<app-delete-template
+    #deleteComponent
+    [server]="server"
+    (deleteEvent)="onDeleteEvent()">
+</app-delete-template>

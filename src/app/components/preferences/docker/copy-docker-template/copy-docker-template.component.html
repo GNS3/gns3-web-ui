@@ -1,0 +1,24 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Copy Docker container template</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <form [formGroup]="templateNameForm">
+                <mat-form-field class="form-field">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="templateName" 
+                        placeholder="Name"
+                        formControlName="templateName"/>
+                </mat-form-field>
+            </form>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button>
+        </div>
+    </div>
+</div>

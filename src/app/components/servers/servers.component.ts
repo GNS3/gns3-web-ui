@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
-import { ElectronService } from 'ngx-electron';
+import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
 import { ServerManagementService } from '../../services/server-management.service';
 
 @Component({
@@ -102,65 +102,6 @@ export class ServersComponent implements OnInit, OnDestroy {
 
   async stopServer(server: Server) {
     await this.serverManagement.stop(server);
-  }
-}
-
-@Component({
-  selector: 'app-add-server-dialog',
-  templateUrl: 'add-server-dialog.html'
-})
-export class AddServerDialogComponent implements OnInit {
-  server: Server = new Server();
-
-  authorizations = [{ key: 'none', name: 'No authorization' }, { key: 'basic', name: 'Basic authorization' }];
-  locations = [];
-
-  constructor(
-    public dialogRef: MatDialogRef<AddServerDialogComponent>,
-    private electronService: ElectronService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
-
-  getLocations() {
-    let locations = [];
-    if(this.electronService.isElectronApp) {
-      locations.push({ key: 'local', name: 'Local' });
-    }
-    locations.push({ key: 'remote', name: 'Remote' });
-    return locations
-  }
-
-  getDefaultLocation() {
-    if(this.electronService.isElectronApp) {
-      return 'local';
-    }
-    return 'remote';
-  }
-
-  getDefaultLocalServerPath() {
-    if(this.electronService.isElectronApp) {
-      return this.electronService.remote.require('./local-server.js').getLocalServerPath();
-    }
-    return;
-  }
-
-  ngOnInit() {
-    this.locations = this.getLocations();
-    this.server.authorization = 'none';
-    this.server.location = this.getDefaultLocation();
-    this.server.path = this.getDefaultLocalServerPath();
-  }
-
-  onAddClick(): void {
-    // clear path if not local server
-    if(this.server.location !== 'local') {
-      this.server.path = null;
-    }
-    this.dialogRef.close(this.server);
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
   }
 }
 

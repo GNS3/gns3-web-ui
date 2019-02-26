@@ -1,0 +1,15 @@
+<div class="dialogcontainer">
+    <h1 mat-dialog-title>Delete template</h1>
+    <div mat-dialog-content>Are you sure you want to delete template {{templateName}}?</div>
+
+    <div class="spacer"></div>
+
+    <div mat-dialog-actions>
+      <button mat-button class="cancelButton" (click)="onNoClick()" color="accent">
+        No
+      </button>
+      <button mat-button class="confirmButton" (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">
+        Yes
+      </button>
+    </div>
+</div>

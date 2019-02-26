@@ -39,6 +39,7 @@ import { MapLabel } from '../../cartography/models/map/map-label';
 import { Label } from '../../cartography/models/label';
 import { MapNode } from '../../cartography/models/map/map-node';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 
 
 @Component({
@@ -101,7 +102,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
-    private selectionTool: SelectionTool
+    private selectionTool: SelectionTool,
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
 
   ngOnInit() {
@@ -123,6 +125,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
+            
+            this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
+            this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
             if (this.project.status === 'opened') {
               return new Observable<Project>(observer => {

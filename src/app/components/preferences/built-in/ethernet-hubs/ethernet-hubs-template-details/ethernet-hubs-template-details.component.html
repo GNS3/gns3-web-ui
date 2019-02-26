@@ -1,0 +1,57 @@
+<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened}">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Ethernet hub settings</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="ethernetHubTemplate">
+        <mat-card>
+            <form [formGroup]="inputForm">
+                <mat-form-field class="form-field">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="ethernetHubTemplate.name" 
+                        formControlName="templateName"
+                        placeholder="Template name">
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="ethernetHubTemplate.default_name_format" 
+                        formControlName="defaultName"
+                        placeholder="Default name format">
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                    <input 
+                        matInput type="text" 
+                        [(ngModel)]="ethernetHubTemplate.symbol" 
+                        formControlName="symbol"
+                        placeholder="Symbol">
+                </mat-form-field>
+                <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                <mat-form-field class="form-field">
+                    <mat-select 
+                        placeholder="Category" 
+                        [ngModelOptions]="{standalone: true}" 
+                        [(ngModel)]="ethernetHubTemplate.category">
+                        <mat-option *ngFor="let category of categories" [value]="category[1]">
+                            {{category[0]}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                    <input 
+                        matInput type="number" 
+                        [(ngModel)]="numberOfPorts" 
+                        [ngModelOptions]="{standalone: true}"
+                        placeholder="Number of ports">
+                </mat-form-field>
+            </form>
+        </mat-card>
+        <div class="buttons-bar">
+            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
+        </div>
+    </div>
+</div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && ethernetHubTemplate" [server]="server" [symbol]="ethernetHubTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

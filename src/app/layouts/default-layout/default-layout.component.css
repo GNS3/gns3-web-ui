@@ -63,7 +63,7 @@ header {
   flex: 1 1 auto;
 }
 
-.example-container > * {
+.container > * {
   width: 100%;
 }
 

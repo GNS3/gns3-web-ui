@@ -1,0 +1,132 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New IOS router</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="iosTemplate">
+        <div class="container mat-elevation-z8">
+            <mat-vertical-stepper [linear]="true">
+                <mat-step label="IOS image">
+                    <form [formGroup]="iosImageForm">
+                        <mat-form-field class="form-field">
+                            <input 
+                                matInput type="text" 
+                                [(ngModel)]="iosTemplate.image" 
+                                formControlName="imageName"
+                                placeholder="IOS image"/>
+                        </mat-form-field>
+                    </form>
+                </mat-step>
+                <mat-step label="Name and platform">
+                    <form [formGroup]="iosNameForm">
+                        <mat-form-field class="form-field">
+                            <input 
+                                matInput type="text" 
+                                [(ngModel)]="iosTemplate.name" 
+                                formControlName="templateName"
+                                placeholder="Name"/>
+                        </mat-form-field>
+                        <mat-form-field class="form-field">
+                            <mat-select 
+                                placeholder="Platform" 
+                                (selectionChange)="onPlatformChosen($event)"
+                                formControlName="platform"
+                                [(ngModel)]="iosTemplate.platform">
+                                <mat-option *ngFor="let platform of platforms" [value]="platform">
+                                    {{platform}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="form-field" *ngIf="chassis[iosTemplate.platform]">
+                            <mat-select 
+                                placeholder="Chassis" 
+                                (selectionChange)="onChassisChosen($event)"
+                                formControlName="chassis"
+                                [(ngModel)]="iosTemplate.chassis">
+                                <mat-option *ngFor="let chassis of chassis[iosTemplate.platform]" [value]="chassis">
+                                    {{chassis}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </form>
+                    <mat-checkbox 
+                        *ngIf="platformsWithEtherSwitchRouterOption[iosTemplate.platform]" 
+                        [(ngModel)]="isEtherSwitchRouter">
+                        This is an EtherSwitch router
+                    </mat-checkbox>
+                </mat-step>
+                <mat-step label="Memory">
+                    <form [formGroup]="iosMemoryForm">
+                        <mat-form-field class="form-field">
+                            <input 
+                                matInput type="number" 
+                                [(ngModel)]="iosTemplate.ram" 
+                                formControlName="memory"
+                                value="defaultRam[iosTemplate.platform]"
+                                placeholder="Default RAM"/>
+                        </mat-form-field>
+                        <mat-label>
+                            <a href="{{ciscoUrl}}">Check for minimum and maximum RAM requirement</a>
+                        </mat-label>
+                    </form>
+                </mat-step>
+                <mat-step label="Network adapters">
+                    <div *ngIf="iosTemplate.chassis && chassis[iosTemplate.platform]">
+                        <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
+                            <mat-select 
+                                placeholder="Slot {{index}}" 
+                                [(ngModel)]="networkAdaptersForTemplate[index]"
+                                [ngModelOptions]="{standalone: true}"
+                                *ngIf="networkAdapters[iosTemplate.chassis][index]">
+                                <mat-option *ngFor="let option of networkAdapters[iosTemplate.chassis][index]" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-select> 
+                        </div>
+                    </div>
+                    <div *ngIf="iosTemplate.platform && !chassis[iosTemplate.platform]">
+                        <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
+                            <mat-select 
+                                placeholder="Slot {{index}}" 
+                                [(ngModel)]="networkAdaptersForTemplate[index]"
+                                [ngModelOptions]="{standalone: true}"
+                                *ngIf="networkAdaptersForPlatform[iosTemplate.platform][index]">
+                                <mat-option *ngFor="let option of networkAdaptersForPlatform[iosTemplate.platform][index]" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-select> 
+                        </div>
+                    </div>
+                </mat-step>
+                <mat-step label="WIC modules">
+                    <div *ngIf="iosTemplate.platform && networkModules[iosTemplate.platform]">
+                        <div *ngFor="let index of [0,1,2,3]">
+                            <mat-select 
+                                placeholder="WIC {{index}}" 
+                                [(ngModel)]="networkModulesForTemplate[index]"
+                                [ngModelOptions]="{standalone: true}"
+                                *ngIf="networkModules[iosTemplate.platform][index]">
+                                <mat-option *ngFor="let option of networkModules[iosTemplate.platform][index]" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-select> 
+                        </div>
+                    </div>
+                </mat-step>
+                <mat-step label="Idle-PC">
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="text" 
+                            [(ngModel)]="iosTemplate.idlepc" 
+                            placeholder="Idle-PC"/>
+                    </mat-form-field>
+                </mat-step>
+            </mat-vertical-stepper>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+        </div>
+    </div>
+</div>

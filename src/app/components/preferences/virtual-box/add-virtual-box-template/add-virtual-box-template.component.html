@@ -1,0 +1,30 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New VirtualBox VM template</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="virtualBoxTemplate">
+        <mat-card class="matCard">
+            <form [formGroup]="vmForm">
+                <mat-form-field class="form-field">
+                    <mat-select 
+                        placeholder="VM list" 
+                        [(ngModel)]="selectedVM"
+                        formControlName="vm" >
+                        <mat-option *ngFor="let vm of virtualMachines" [value]="vm">
+                            {{vm.vmname}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </form>
+            <mat-checkbox [(ngModel)]="virtualBoxTemplate.linked_clone">
+                Use as a linked base VM (experimental)
+            </mat-checkbox>
+        </mat-card>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+        </div>
+    </div>
+</div>

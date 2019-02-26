@@ -1,0 +1,101 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">New QEMU VM template</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <div class="container mat-elevation-z8">
+            <mat-vertical-stepper [linear]="true">
+                <mat-step label="QEMU VM Name">
+                    <form [formGroup]="nameForm">
+                        <mat-form-field class="form-field">
+                            <input 
+                                matInput type="text" 
+                                [(ngModel)]="qemuTemplate.name" 
+                                formControlName="templateName"
+                                placeholder="Please choose a descriptive name for your new QEMU virtual machine"
+                                ngDefaultContro/>
+                        </mat-form-field><br/>
+                        <mat-checkbox>
+                            This is a legacy ASA VM
+                        </mat-checkbox>
+                    </form>
+                </mat-step>
+                <mat-step label="QEMU binary and memory">
+                    <form [formGroup]="memoryForm">
+                        <mat-form-field class="form-field">
+                            <mat-select 
+                                placeholder="Qemu binary" 
+                                [(ngModel)]="selectedBinary"
+                                formControlName="binary" >
+                                <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
+                                    {{binary.path}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field><br/>
+                        <mat-form-field class="form-field">
+                            <input 
+                            matInput type="number" 
+                            placeholder="RAM" 
+                            [(ngModel)]="ramMemory"
+                            formControlName="ramMemory"
+                            ngDefaultContro/>
+                        </mat-form-field>
+                    </form>
+                </mat-step>
+                <mat-step label="Console type">
+                    <mat-form-field class="form-field">
+                        <mat-select 
+                            placeholder="Console type" 
+                            [(ngModel)]="qemuTemplate.console_type"
+                            [ngModelOptions]="{standalone: true}" >
+                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-step>
+                <mat-step label="Disk image">
+                    <form [formGroup]="diskForm">
+                        <mat-radio-group class="radio-group">
+                            <mat-radio-button class="radio-button" value="1" (click)="setDiskImage('existingImage')" checked>Existing image</mat-radio-button>
+                            <mat-radio-button class="radio-button" value="2" (click)="setDiskImage('newImage')">New image</mat-radio-button>
+                        </mat-radio-group><br/><br/>
+                        <mat-select 
+                            *ngIf="!newImageSelected" 
+                            placeholder="Disk image (hda)" 
+                            [ngModelOptions]="{standalone: true}" 
+                            [(ngModel)]="selectedImage">
+                            <mat-option *ngFor="let image of qemuImages" [value]="image">
+                                {{image.filename}}
+                            </mat-option>
+                        </mat-select>
+                        <div *ngIf="newImageSelected">
+                            <input
+                                type="file"
+                                accept=".qcow2"
+                                #file
+                                class="nonvisible"
+                                (change)="uploadImageFile($event)"
+                                ngDefaultContro/>
+                            <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+                            <mat-form-field class="file-name-form-field">
+                                <input
+                                    matInput
+                                    type="text"
+                                    [(ngModel)]="chosenImage"
+                                    formControlName="fileName"
+                                    placeholder="Please enter name"/>
+                            </mat-form-field>
+                        </div>
+                    </form>
+                </mat-step>
+            </mat-vertical-stepper>
+        </div>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+        </div>
+    </div>
+</div>

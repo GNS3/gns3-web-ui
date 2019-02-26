@@ -1,0 +1,111 @@
+<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened}">
+    <div class="default-header">
+        <div class="form-field">
+            <h1 class="col">IOU device configuration</h1>
+        </div>
+    </div>
+    <div class="default-content" *ngIf="iouTemplate">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        General settings
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <form [formGroup]="generalSettingsForm">
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="templateName" type="text" [(ngModel)]="iouTemplate.name" placeholder="Template name">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="defaultName" type="text" [(ngModel)]="iouTemplate.default_name_format" placeholder="Default name format">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                            <input matInput formControlName="symbol" type="text" [(ngModel)]="iouTemplate.symbol" placeholder="Symbol">
+                        </mat-form-field>
+                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
+                    <mat-form-field class="form-field">
+                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="Category" [(ngModel)]="iouTemplate.category">
+                            <mat-option *ngFor="let category of categories" [value]="category[1]">
+                                {{category[0]}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <input
+                        type="file"
+                        accept=".bin"
+                        #file
+                        class="nonvisible"
+                        (change)="uploadImageFile($event)"
+                        ngDefaultControl/>
+                    <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+                    <mat-form-field class="file-name-form-field">
+                        <input
+                            matInput
+                            formControlName="path"
+                            type="text"
+                            [(ngModel)]="iouTemplate.path"
+                            placeholder="IOU image path"/>
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="initialConfig" type="text" [(ngModel)]="iouTemplate.startup_config" placeholder="Startup config">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="iouTemplate.private_config" placeholder="Private config">
+                    </mat-form-field>
+                </form>
+                <mat-form-field class="select">
+                    <mat-select placeholder="Console type" [(ngModel)]="iouTemplate.console_type">
+                        <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-checkbox [(ngModel)]="iouTemplate.console_auto_start">
+                    Auto start console
+                </mat-checkbox><br/>
+                <mat-checkbox [(ngModel)]="iouTemplate.l1_keepalives">
+                    Enable layer 1 keepalive messages (non-functional)
+                </mat-checkbox><br/>
+                <mat-checkbox [(ngModel)]="defaultSettings">
+                    Use default IOU values for memories
+                </mat-checkbox>
+                <mat-form-field class="form-field" *ngIf="!defaultSettings">
+                    <input matInput type="number" [(ngModel)]="iouTemplate.ram" placeholder="RAM size">
+                </mat-form-field>
+                <mat-form-field class="form-field" *ngIf="!defaultSettings">
+                    <input matInput type="number" [(ngModel)]="iouTemplate.nvram" placeholder="NVRAM size">
+                </mat-form-field>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Network
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <form [formGroup]="networkForm">
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="ethernetAdapters" type="number" [(ngModel)]="iouTemplate.ethernet_adapters" placeholder="Ethernet adapters">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input matInput formControlName="serialAdapters" type="number" [(ngModel)]="iouTemplate.serial_adapters" placeholder="Serial adapters">
+                    </mat-form-field>
+                </form>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Usage
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-form-field class="form-field">
+                    <textarea matInput type="text" [(ngModel)]="iouTemplate.usage"></textarea>
+                </mat-form-field>
+            </mat-expansion-panel>
+        </mat-accordion>
+        <div class="buttons-bar">
+            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+        </div>
+    </div>
+</div>
+<app-symbols-menu *ngIf="isSymbolSelectionOpened && iouTemplate" [server]="server" [symbol]="iouTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>

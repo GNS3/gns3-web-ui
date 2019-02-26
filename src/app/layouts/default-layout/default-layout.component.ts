@@ -1,4 +1,5 @@
 import { ElectronService } from 'ngx-electron';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { Component, OnInit, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
 import { ServerManagementService } from '../../services/server-management.service';
 import { Subscription } from 'rxjs';
@@ -17,14 +18,21 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
+  recentlyOpenedServerId : string;
+  recentlyOpenedProjectId : string;
+
   constructor(
     private electronService: ElectronService,
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private serverManagement: ServerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService
   ) {}
 
   ngOnInit() {
+    this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
+    this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
+    
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
     // attach to notification stream when any of running local servers experienced issues
@@ -59,5 +67,4 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
   }
-
 }
