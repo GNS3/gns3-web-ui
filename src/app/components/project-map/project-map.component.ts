@@ -40,6 +40,8 @@ import { Label } from '../../cartography/models/label';
 import { MapNode } from '../../cartography/models/map/map-node';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { MapLink } from '../../cartography/models/map/map-link';
+import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 
 
 @Component({
@@ -96,6 +98,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapNodeToNode: MapNodeToNodeConverter,
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     private mapLabelToLabel: MapLabelToLabelConverter,
+    private mapLinkToLink: MapLinkToLinkConverter,
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
@@ -218,12 +221,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
+      this.contextMenu.openMenuForNode(node, eventNode.event.pageY, eventNode.event.pageX);
     });
 
     const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
       const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
-      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
+      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.pageY, eventDrawing.event.pageX);
     });
 
     const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
@@ -233,6 +236,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       let drawings: Drawing[] = [];
       let nodes: Node[] = [];
       let labels: Label[] = [];
+      let links: Link[] = [];
 
       selectedItems.forEach((elem) => {
         if (elem instanceof MapDrawing) {
@@ -241,10 +245,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           nodes.push(this.mapNodeToNode.convert(elem));
         } else if (elem instanceof MapLabel) {
           labels.push(this.mapLabelToLabel.convert(elem));
+        } else if (elem instanceof MapLink) {
+          links.push(this.mapLinkToLink.convert(elem))
         }
       });
 
-      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, event.clientY, event.clientX);
+      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
     });
 
     this.subscriptions.push(onNodeContextMenu);

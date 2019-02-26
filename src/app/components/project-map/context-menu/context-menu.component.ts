@@ -8,6 +8,7 @@ import { ProjectService } from '../../../services/project.service';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Label } from '../../../cartography/models/label';
+import { Link } from '../../../models/link';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class ContextMenuComponent implements OnInit {
   drawings: Drawing[] = [];
   nodes: Node[] = [];
   labels: Label[] = [];
+  links: Link[] = [];
 
   hasTextCapabilities: boolean = false;
 
@@ -74,12 +76,13 @@ export class ContextMenuComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
-  public openMenuForListOfElements(drawings: Drawing[], nodes: Node[], labels: Label[], top: number, left: number) {
+  public openMenuForListOfElements(drawings: Drawing[], nodes: Node[], labels: Label[], links: Link[], top: number, left: number) {
     this.resetCapabilities();
 
     this.drawings = drawings;
     this.nodes = nodes;
     this.labels = labels;
+    this.links = links;
     this.setPosition(top, left);
 
     this.contextMenu.openMenu();

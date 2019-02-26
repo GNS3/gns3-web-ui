@@ -12,6 +12,11 @@ import { LinkNode } from '../models/link-node';
 export class LinkService {
   constructor(private httpServer: HttpServer) {}
 
+  deleteLink(server: Server, link: Link) {
+    //return this.httpServer.delete(server, `/compute/projects/${link.project_id}/vpcs/nodes/${link.nodes[0].node_id}/adapters/0/ports/0/nio`)
+    return this.httpServer.delete(server, `/projects/${link.project_id}/links/${link.link_id}`)
+  }
+
   createLink(server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
     return this.httpServer.post(server, `/projects/${source_node.project_id}/links`, {
       nodes: [

@@ -111,15 +111,15 @@ export class DrawingsWidget implements Widget {
             }
           }
         } else {
-          dy = y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
-          y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+          dy = y - (evt.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y);
+          y = evt.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y;
 
           if (datum.element.height + dy < 0) {
             isReflectedVertical = false;
             y = topEdge;
             datum.element.height = Math.abs(datum.element.height + evt.dy);
           } else {
-            datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+            datum.y = evt.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y;
             datum.element.height += dy;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cy =
@@ -143,7 +143,7 @@ export class DrawingsWidget implements Widget {
 
     let top = drag()
       .on('start', (datum: MapDrawing) => {
-        y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        y = event.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y;
         bottomEdge = y + datum.element.height;
         document.body.style.cursor = 'ns-resize';
       })
@@ -151,15 +151,15 @@ export class DrawingsWidget implements Widget {
         const evt = event;
 
         if (!isReflectedVertical) {
-          dy = y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
-          y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+          dy = y - (evt.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y);
+          y = evt.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y;
 
           if (datum.element.height + dy < 0) {
             y = bottomEdge;
             isReflectedVertical = true;
             datum.element.height = Math.abs(datum.element.height + evt.dy);
           } else {
-            datum.y = evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+            datum.y = evt.sourceEvent.pageY - this.context.getZeroZeroTransformationPoint().y;
             datum.element.height += dy;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cy =
@@ -207,7 +207,7 @@ export class DrawingsWidget implements Widget {
     let isReflectedHorizontal: boolean = false;
     let right = drag()
       .on('start', (datum: MapDrawing) => {
-        x = event.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
+        x = event.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x;
         leftEdge = x + datum.element.width;
         document.body.style.cursor = 'ew-resize';
       })
@@ -215,15 +215,15 @@ export class DrawingsWidget implements Widget {
         const evt = event;
 
         if (!isReflectedHorizontal) {
-          dx = x - (evt.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x);
-          x = evt.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
+          dx = x - (evt.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x);
+          x = evt.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x;
 
           if (datum.element.width + dx < 0) {
             x = leftEdge;
             isReflectedHorizontal = true;
             datum.element.width = Math.abs(datum.element.width + evt.dx);
           } else {
-            datum.x = evt.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
+            datum.x = evt.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x;
             datum.element.width += dx;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cx =
@@ -290,15 +290,15 @@ export class DrawingsWidget implements Widget {
             datum.element.width = datum.element.width + evt.dx < 0 ? 1 : (datum.element.width += evt.dx);
           }
         } else {
-          dx = x - (evt.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x);
-          x = evt.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
+          dx = x - (evt.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x);
+          x = evt.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x;
 
           if (datum.element.width + dx < 0) {
             x = rightEdge;
             isReflectedHorizontal = false;
             datum.element.width = Math.abs(datum.element.width + evt.dx);
           } else {
-            datum.x = evt.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
+            datum.x = evt.sourceEvent.pageX - this.context.getZeroZeroTransformationPoint().x;
             datum.element.width += dx;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cx =

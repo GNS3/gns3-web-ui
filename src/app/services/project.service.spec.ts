@@ -8,9 +8,9 @@ import { getTestServer } from './testing';
 import { ProjectService } from './project.service';
 import { SettingsService } from './settings.service';
 import { MockedSettingsService } from './settings.service.spec';
-import { Observable, of } from 'rxjs';
 import { Project } from '../models/project';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { of } from 'rxjs';
 
 /**
  * Mocks ProjectsService so it's not based on settings
@@ -36,6 +36,10 @@ export class MockedProjectService {
 
   links(server: Server, project_id: string) {
     return of([]);
+  }
+
+  delete(server: Server, project_id: string) {
+    return of(project_id);
   }
 }
 

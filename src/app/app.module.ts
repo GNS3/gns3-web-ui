@@ -164,6 +164,7 @@ import { SymbolsMenuComponent } from './components/preferences/common/symbols-me
 import { SearchFilter } from './filters/searchFilter.pipe';
 import { RecentlyOpenedProjectService } from './services/recentlyOpenedProject.service';
 import { ServerManagementService } from './services/server-management.service';
+import { DeleteActionComponent } from './components/project-map/context-menu/actions/delete-action/delete-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -198,6 +199,7 @@ if (environment.production) {
     MoveLayerUpActionComponent,
     EditStyleActionComponent,
     EditTextActionComponent,
+    DeleteActionComponent,
     ProjectMapShortcutsComponent,
     SettingsComponent,
     PreferencesComponent,
