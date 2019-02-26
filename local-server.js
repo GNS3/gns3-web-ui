@@ -56,6 +56,14 @@ exports.stopAllLocalServers = async () => {
 
 function getServerArguments(server, overrides) {
   let serverArguments = [];
+  if(server.host) {
+    serverArguments.push('--host');
+    serverArguments.push(server.host);
+  }
+  if(server.port) {
+    serverArguments.push('--port');
+    serverArguments.push(server.port);
+  }
   return serverArguments;
 }
 

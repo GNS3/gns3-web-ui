@@ -17,8 +17,8 @@ export class AddServerDialogComponent implements OnInit {
     'name': new FormControl('', [ Validators.required ]),
     'location': new FormControl(''),
     'path': new FormControl(''),
-    'host': new FormControl(''),
-    'port': new FormControl(''),
+    'host': new FormControl('', [ Validators.required ]),
+    'port': new FormControl('', [ Validators.required, Validators.min(1) ]),
     'authorization': new FormControl('none'),
     'login': new FormControl(''),
     'password': new FormControl('')
@@ -46,6 +46,14 @@ export class AddServerDialogComponent implements OnInit {
     return 'remote';
   }
 
+  getDefaultHost() {
+    return '127.0.0.1';
+  }
+
+  getDefaultPort() {
+    return 3080;
+  }
+
   async getDefaultLocalServerPath() {
     if(this.electronService.isElectronApp) {
       return await this.electronService.remote.require('./local-server.js').getLocalServerPath();
@@ -60,32 +68,23 @@ export class AddServerDialogComponent implements OnInit {
 
     this.serverForm.get('location').valueChanges.subscribe((location: string) => {
       const pathControl = this.serverForm.get('path');
-      const portControl = this.serverForm.get('port');
-      const hostControl = this.serverForm.get('host');
 
       if(location === 'local') {
         pathControl.setValue(defaultLocalServerPath);
         pathControl.setValidators([Validators.required]);
-
-        portControl.clearValidators();
-        hostControl.clearValidators();
       }
       else {
         pathControl.setValue('');
         pathControl.clearValidators();
-
-        portControl.setValidators([Validators.required, Validators.min(0)]);
-        hostControl.setValidators([Validators.required]);
       }
 
-      [pathControl, portControl, hostControl].forEach((control) => {
+      [pathControl].forEach((control) => {
         control.updateValueAndValidity({
           onlySelf: true
         });
       })
     });
     
-
     this.serverForm.get('authorization').valueChanges.subscribe((authorization: string) => {
       const loginControl = this.serverForm.get('login');
       const passwordControl = this.serverForm.get('password');
@@ -107,6 +106,8 @@ export class AddServerDialogComponent implements OnInit {
     });
 
     this.serverForm.get('location').setValue(this.getDefaultLocation());
+    this.serverForm.get('host').setValue(this.getDefaultHost());
+    this.serverForm.get('port').setValue(this.getDefaultPort());
     this.serverForm.get('authorization').setValue('none');
   }
 
