@@ -3,9 +3,9 @@ version: 1.0.{build}
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
 
-cache:
-  - node_modules -> appveyor.yml,package.json,yarn.lock
-  - '%LOCALAPPDATA%\Yarn -> appveyor.yml,package.json,yarn.lock'
+# cache:
+#   - node_modules -> appveyor.yml,package.json,yarn.lock
+#   - '%LOCALAPPDATA%\Yarn -> appveyor.yml,package.json,yarn.lock'
 
 platform:
   - x64
