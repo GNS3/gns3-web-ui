@@ -86,7 +86,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer<JsonOptions>(server, url, options);
     return this.http
       .get<T>(intercepted.url, intercepted.options as JsonOptions)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   getText(server: Server, url: string, options?: TextOptions): Observable<string> {
@@ -102,7 +102,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer(server, url, options);
     return this.http
       .post<T>(intercepted.url, body, intercepted.options)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   put<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
@@ -110,7 +110,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer(server, url, options);
     return this.http
       .put<T>(intercepted.url, body, intercepted.options)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   delete<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
@@ -118,7 +118,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer(server, url, options);
     return this.http
       .delete<T>(intercepted.url, intercepted.options)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   patch<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
@@ -126,7 +126,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer(server, url, options);
     return this.http
       .patch<T>(intercepted.url, body, intercepted.options)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   head<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
@@ -134,7 +134,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer(server, url, options);
     return this.http
       .head<T>(intercepted.url, intercepted.options)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   options<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
@@ -142,7 +142,7 @@ export class HttpServer {
     const intercepted = this.getOptionsForServer(server, url, options);
     return this.http
       .options<T>(intercepted.url, intercepted.options)
-      .pipe(catchError<T, any>(this.errorHandler.handleError));
+      .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
   private getJsonOptions(options: JsonOptions): JsonOptions {
