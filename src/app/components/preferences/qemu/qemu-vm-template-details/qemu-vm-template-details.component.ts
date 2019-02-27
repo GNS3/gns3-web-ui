@@ -62,24 +62,13 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
             this.getConfiguration();
             this.qemuService.getTemplate(this.server, template_id).subscribe((qemuTemplate: QemuTemplate) => {
                 this.qemuTemplate = qemuTemplate;
+                this.qemuTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
                     this.adapters.push(adapter);
                 });
 
                 this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
                     this.binaries = qemuBinaries;
                 });
-
-                for(let i=0; i<this.qemuTemplate.adapters; i++){
-                    let adapter = this.qemuTemplate.custom_adapters.find(elem => elem.adapter_number === i);
-                    if (adapter) {
-                        this.adapters.push(adapter);
-                    } else {
-                        this.adapters.push({
-                            adapter_number: i,
-                            adapter_type: this.qemuTemplate.adapter_type
-                        });
-                    }
-                }
             });
         });
     }
