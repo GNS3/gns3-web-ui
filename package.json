@@ -68,6 +68,7 @@
     "rxjs-compat": "^6.4.0",
     "typeface-roboto": "^0.0.54",
     "yargs": "^13.2.1",
+    "tree-kill": "^1.2.1",
     "zone.js": "^0.8.29"
   },
   "devDependencies": {
@@ -81,7 +82,7 @@
     "@types/node": "~11.9.5",
     "codelyzer": "~4.5.0",
     "electron": "4.0.6",
-    "electron-builder": "^20.38.2",
+    "electron-builder": "20.38.2",
     "jasmine-core": "~3.3.0",
     "jasmine-spec-reporter": "~4.2.1",
     "jquery": "^3.3.1",
@@ -97,7 +98,6 @@
     "prettier": "^1.16.4",
     "protractor": "~5.4.2",
     "replace": "^1.0.1",
-    "tree-kill": "^1.2.1",
     "ts-mockito": "^2.3.1",
     "ts-node": "~8.0.2",
     "tslint": "~5.13.0",

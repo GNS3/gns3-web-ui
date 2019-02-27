@@ -191,7 +191,7 @@ async function run(server, options) {
     notifyStatus({
       serverName: server.name,
       status: 'errored',
-      message: `Server errored: '${errorMessage}`
+      message: `Server errored: '${err}`
     });
   });
 
