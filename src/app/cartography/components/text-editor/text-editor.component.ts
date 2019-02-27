@@ -54,8 +54,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         this.drawingsEventSource.textAdded.emit(
           new TextAddedDataEvent(
             this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ''),
-            event.pageX,
-            event.pageY
+            event.pageX - this.context.transformation.x,
+            event.pageY - this.context.transformation.y
           )
         );
         this.deactivateTextAdding();
@@ -92,8 +92,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
         this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute('drawing_id');
         var transformData = textElements[index].parentElement.getAttribute('transform').split(/\(|\)/);
-        var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x;
-        var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y;
+        var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
+        var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
         this.temporaryTextElement.nativeElement.innerText = elem.text;
