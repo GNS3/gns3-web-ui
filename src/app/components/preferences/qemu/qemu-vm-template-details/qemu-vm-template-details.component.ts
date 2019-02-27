@@ -62,6 +62,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
             this.getConfiguration();
             this.qemuService.getTemplate(this.server, template_id).subscribe((qemuTemplate: QemuTemplate) => {
                 this.qemuTemplate = qemuTemplate;
+                    this.adapters.push(adapter);
+                });
 
                 this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
                     this.binaries = qemuBinaries;
@@ -114,7 +116,23 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     configureCustomAdapters(){
         this.isConfiguratorOpened = !this.isConfiguratorOpened;
-        this.qemuTemplate.custom_adapters = this.adapters;
+        this.saveCustomAdapters();
+    }
+
+    saveCustomAdapters() {
+        let copyOfAdapters = this.adapters;
+        this.adapters = [];
+
+        for(let i=0; i<this.qemuTemplate.adapters; i++){
+            if (copyOfAdapters[i]) {
+                this.adapters.push(copyOfAdapters[i]);
+            } else {
+                this.adapters.push({
+                    adapter_number: i,
+                    adapter_type: 'e1000'
+                });
+            }
+        }
     }
 
     goBack() {
@@ -128,6 +146,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
             if (!this.activateCpuThrottling){
                 this.qemuTemplate.cpu_throttling = 0;
             }
+            this.saveCustomAdapters();
+            this.qemuTemplate.custom_adapters = this.adapters;
     
             this.qemuService.saveTemplate(this.server, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
                 this.toasterService.success("Changes saved");

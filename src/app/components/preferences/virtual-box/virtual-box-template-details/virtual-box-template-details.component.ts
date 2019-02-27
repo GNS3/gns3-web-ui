@@ -65,17 +65,9 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
             this.virtualBoxService.getTemplate(this.server, template_id).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
                 this.virtualBoxTemplate = virtualBoxTemplate;
 
-                for(let i=0; i<this.virtualBoxTemplate.adapters; i++){
-                    let adapter = this.virtualBoxTemplate.custom_adapters.find(elem => elem.adapter_number === i);
-                    if (adapter) {
-                        this.adapters.push(adapter);
-                    } else {
-                        this.adapters.push({
-                            adapter_number: i,
-                            adapter_type: this.virtualBoxTemplate.adapter_type
-                        });
-                    }
-                }
+                this.virtualBoxTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
+                    this.adapters.push(adapter);
+                });
             });
         });
     }
@@ -89,7 +81,23 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
     configureCustomAdapters(){
         this.isConfiguratorOpened = !this.isConfiguratorOpened;
-        this.virtualBoxTemplate.custom_adapters = this.adapters;
+        this.saveCustomAdapters();
+    }
+
+    saveCustomAdapters() {
+        let copyOfAdapters = this.adapters;
+        this.adapters = [];
+
+        for(let i=0; i<this.virtualBoxTemplate.adapters; i++){
+            if (copyOfAdapters[i]) {
+                this.adapters.push(copyOfAdapters[i]);
+            } else {
+                this.adapters.push({
+                    adapter_number: i,
+                    adapter_type: 'e1000'
+                });
+            }
+        }
     }
 
     cancelConfigureCustomAdapters(){
@@ -101,6 +109,9 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     }
 
     onSave() {
+        this.saveCustomAdapters();
+        this.virtualBoxTemplate.custom_adapters = this.adapters;
+
         this.virtualBoxService.saveTemplate(this.server, this.virtualBoxTemplate).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
             this.toasterService.success("Changes saved");
         });

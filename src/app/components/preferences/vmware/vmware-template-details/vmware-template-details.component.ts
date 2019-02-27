@@ -55,6 +55,10 @@ export class VmwareTemplateDetailsComponent implements OnInit {
             this.getConfiguration();
             this.vmwareService.getTemplate(this.server, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
                 this.vmwareTemplate = vmwareTemplate;
+
+                this.vmwareTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
+                    this.adapters.push(adapter);
+                });
             });
         });
     }
@@ -74,6 +78,9 @@ export class VmwareTemplateDetailsComponent implements OnInit {
         if (this.generalSettingsForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {
+            this.saveCustomAdapters();
+            this.vmwareTemplate.custom_adapters = this.adapters;
+
             this.vmwareService.saveTemplate(this.server, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
                 this.toasterService.success("Changes saved");
             });
@@ -84,27 +91,25 @@ export class VmwareTemplateDetailsComponent implements OnInit {
         this.isConfiguratorOpened = !this.isConfiguratorOpened;
     }
 
-    configureCustomAdapters() {
+    configureCustomAdapters(){
         this.isConfiguratorOpened = !this.isConfiguratorOpened;
+        this.saveCustomAdapters();
+    }
+
+    saveCustomAdapters() {
+        let copyOfAdapters = this.adapters;
         this.adapters = [];
 
-        let adapters: CustomAdapter[] = [];
-        for (let i=0; i<this.vmwareTemplate.adapters; i++){
-            if (this.vmwareTemplate.custom_adapters[i]) {
-                adapters.push(this.vmwareTemplate.custom_adapters[i]);
+        for(let i=0; i<this.vmwareTemplate.adapters; i++){
+            if (copyOfAdapters[i]) {
+                this.adapters.push(copyOfAdapters[i]);
             } else {
-                adapters.push({
+                this.adapters.push({
                     adapter_number: i,
                     adapter_type: 'e1000'
                 });
             }
         }
-        this.adapters = adapters;
-    }
-
-    saveCustomAdapters() {
-        this.isConfiguratorOpened = !this.isConfiguratorOpened;
-        this.vmwareTemplate.custom_adapters = this.adapters;
     }
 
     chooseSymbol() {
