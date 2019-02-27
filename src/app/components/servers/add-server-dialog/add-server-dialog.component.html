@@ -1,34 +1,47 @@
 <h1 mat-dialog-title>Add server</h1>
+<form [formGroup]="serverForm">
 <div mat-dialog-content>
-  <mat-form-field> <input matInput tabindex="1" [(ngModel)]="server.name" placeholder="Name" /> </mat-form-field>
+    <mat-form-field>
+      <input matInput tabindex="1" formControlName="name" placeholder="Name" />
+      <mat-error *ngIf="serverForm.get('name').hasError('required')">You must enter a value</mat-error>
+    </mat-form-field>
 
-  <mat-form-field>
-    <mat-select placeholder="Location" [(value)]="server.location">
-      <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
-    </mat-select>
-  </mat-form-field>
+   <mat-form-field>
+      <mat-select placeholder="Location" formControlName="location" >
+        <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <mat-form-field *ngIf="server.location === 'local'">
-    <input matInput tabindex="1" [(ngModel)]="server.path" placeholder="Local server path" />
-  </mat-form-field>
+    <mat-form-field *ngIf="serverForm.get('location').value === 'local'">
+      <input matInput tabindex="1" formControlName="path" placeholder="Local server path" />
+    </mat-form-field>
 
-  <mat-form-field> <input matInput tabindex="1" [(ngModel)]="server.host" placeholder="Host" /> </mat-form-field>
-  <mat-form-field> <input matInput tabindex="1" [(ngModel)]="server.port" placeholder="Port" /> </mat-form-field>
+    <mat-form-field>
+      <input matInput tabindex="1" formControlName="host" placeholder="Host" />
+    </mat-form-field>
 
-  <mat-form-field>
-    <mat-select placeholder="Authorization" [(value)]="server.authorization">
-      <mat-option *ngFor="let auth of authorizations" [value]="auth.key"> {{ auth.name }} </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <mat-form-field>
+      <input matInput tabindex="1" formControlName="port" placeholder="Port" />
+    </mat-form-field>
 
-  <mat-form-field *ngIf="server.authorization === 'basic'">
-    <input matInput tabindex="1" [(ngModel)]="server.login" placeholder="Login" />
-  </mat-form-field>
-  <mat-form-field *ngIf="server.authorization === 'basic'">
-    <input matInput tabindex="1" [(ngModel)]="server.password" placeholder="Password" />
-  </mat-form-field>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">No Thanks</button>
-  <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add</button>
-</div>
+    <mat-form-field *ngIf="serverForm.get('location').value === 'remote'">
+      <mat-select placeholder="Authorization" formControlName="authorization" >
+        <mat-option *ngFor="let auth of authorizations" [value]="auth.key"> {{ auth.name }} </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
+      <input matInput tabindex="1" formControlName="login" placeholder="Login" />
+    </mat-form-field>
+
+    <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
+      <input matInput tabindex="1" formControlName="password" placeholder="Password" />
+    </mat-form-field>
+
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">No Thanks</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add</button>
+  </div>
+</form>
+  
