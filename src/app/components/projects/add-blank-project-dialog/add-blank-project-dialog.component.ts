@@ -71,6 +71,12 @@ export class AddBlankProjectDialogComponent implements OnInit {
       });
   }
 
+  onKeyDown(event) {
+    if (event.key === "Enter") {
+      this.onAddClick();
+    }
+  }
+
   openConfirmationDialog(existingProject: Project) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',

@@ -3,6 +3,7 @@
   <mat-form-field class="file-name-form-field">
     <input
       matInput
+      (keydown)="onKeyDown($event)"
       type="text"
       formControlName="projectName"
       [ngClass]="{ 'is-invalid': form.projectName?.errors }"
