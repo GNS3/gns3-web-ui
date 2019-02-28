@@ -68,9 +68,58 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['ram'].setValue('256');
+        component.networkForm.controls['adapters'].setValue('1');
+        component.networkForm.controls['nameFormat'].setValue('{}');
+        component.networkForm.controls['size'].setValue('256');
+        component.virtualBoxTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VirtualBoxTemplate;
 
         component.onSave();
 
         expect(mockedVirtualBoxService.saveTemplate).toHaveBeenCalled();
+    });
+
+    it('should not call save template when general settings are not filled', () => {
+        spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
+        component.generalSettingsForm.controls['templateName'].setValue('');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['ram'].setValue('256');
+        component.networkForm.controls['adapters'].setValue('1');
+        component.networkForm.controls['nameFormat'].setValue('{}');
+        component.networkForm.controls['size'].setValue('256');
+        component.virtualBoxTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VirtualBoxTemplate;
+
+        component.onSave();
+
+        expect(mockedVirtualBoxService.saveTemplate).not.toHaveBeenCalled();
+    });
+
+    it('should not call save template when network settings are not filled', () => {
+        spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
+        component.generalSettingsForm.controls['templateName'].setValue('template name');
+        component.generalSettingsForm.controls['defaultName'].setValue('default name');
+        component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.generalSettingsForm.controls['ram'].setValue('256');
+        component.networkForm.controls['adapters'].setValue('');
+        component.networkForm.controls['nameFormat'].setValue('{}');
+        component.networkForm.controls['size'].setValue('256');
+        component.virtualBoxTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VirtualBoxTemplate;
+
+        component.onSave();
+
+        expect(mockedVirtualBoxService.saveTemplate).not.toHaveBeenCalled();
     });
 });
