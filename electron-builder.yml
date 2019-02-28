@@ -17,6 +17,9 @@ files:
   - local-server.js
   - package.json
 
+extraFiles:
+  - dist/exe.gns3server/**
+
 mac:
   category: public.app-category.developer-tools
 #  publish: github
