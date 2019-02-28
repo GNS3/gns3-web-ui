@@ -141,4 +141,13 @@ describe('AddBlankProjectDialogComponent', () => {
     expect(toaster.success).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalled();
   });
+
+  it('should call adding on enter', () => {
+    component.projectNameForm.controls['projectName'].setValue('validName');
+    spyOn(component, 'onAddClick');
+
+    component.onKeyDown({key: 'Enter'});
+
+    expect(component.onAddClick).toHaveBeenCalled();
+  });
 });
