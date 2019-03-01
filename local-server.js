@@ -3,34 +3,23 @@ const kill = require('tree-kill');
 const path = require('path');
 const fs = require('fs');
 const { ipcMain } = require('electron')
+const { app } = require('electron')
 
 const isWin = /^win/.test(process.platform);
 
 let runningServers = {};
 
 exports.getLocalServerPath = async () => {
-  const distDirectory = path.join(__dirname, 'dist');
-  if (!fs.existsSync(distDirectory)) {
-    return;
-  }
+  const lookupDirectories = [
+    __dirname, 
+    path.dirname(app.getPath('exe'))
+  ];
 
-  const files = fs.readdirSync(distDirectory);
-  
-  let serverPath = null;
-
-  files.forEach((directory) => {
-    if(directory.startsWith('exe.')) {
-      if (isWin) {
-        serverPath = path.join(__dirname, 'dist', directory, 'gns3server.exe');
-      }
-      else {
-        serverPath = path.join(__dirname, 'dist', directory, 'gns3server');
-      }
+  for(var directory of lookupDirectories) {
+    const serverPath = await findLocalServerPath(directory);
+    if(serverPath !== undefined) {
+      return serverPath;
     }
-  });
-
-  if(serverPath !== null && fs.existsSync(serverPath)) {
-    return serverPath;
   }
 
   return;
@@ -52,6 +41,35 @@ exports.getRunningServers = () => {
 
 exports.stopAllLocalServers = async () => {
   return await stopAll();
+}
+
+async function findLocalServerPath(baseDirectory) {
+  const distDirectory = path.join(baseDirectory, 'dist');
+
+  if (!fs.existsSync(distDirectory)) {
+    return;
+  }
+
+  const files = fs.readdirSync(distDirectory);
+  
+  let serverPath = null;
+
+  files.forEach((directory) => {
+    if(directory.startsWith('exe.')) {
+      if (isWin) {
+        serverPath = path.join(baseDirectory, 'dist', directory, 'gns3server.exe');
+      }
+      else {
+        serverPath = path.join(baseDirectory, 'dist', directory, 'gns3server');
+      }
+    }
+  });
+
+  if(serverPath !== null && fs.existsSync(serverPath)) {
+    return serverPath;
+  }
+
+  return;
 }
 
 function getServerArguments(server, overrides) {
