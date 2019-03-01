@@ -50,6 +50,7 @@ import { CopyQemuVmTemplateComponent } from './components/preferences/qemu/copy-
 import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
 import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
 import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
+import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
 
 const routes: Routes = [
   {
@@ -62,6 +63,7 @@ const routes: Routes = [
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
+      { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent},
@@ -116,7 +118,9 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent }
     ]
   },
-  { path: 'server/:server_id/project/:project_id', component: ProjectMapComponent }
+  { 
+    path: 'server/:server_id/project/:project_id', component: ProjectMapComponent,
+  }
 ];
 
 @NgModule({

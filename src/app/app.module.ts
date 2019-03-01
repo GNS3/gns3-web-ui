@@ -68,7 +68,6 @@ import { RavenState } from './common/error-handlers/raven-state-communicator';
 import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
 import { ServerDatabase } from './services/server.database';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
-import { SnapshotsComponent } from './components/snapshots/snapshots.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { MATERIAL_IMPORTS } from './material.imports';
 import { DrawingService } from './services/drawing.service';
@@ -165,6 +164,8 @@ import { SearchFilter } from './filters/searchFilter.pipe';
 import { RecentlyOpenedProjectService } from './services/recentlyOpenedProject.service';
 import { ServerManagementService } from './services/server-management.service';
 import { DeleteActionComponent } from './components/project-map/context-menu/actions/delete-action/delete-action.component';
+import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
+import { DateFilter } from './filters/dateFilter.pipe';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -183,7 +184,6 @@ if (environment.production) {
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     SnapshotMenuItemComponent,
-    SnapshotsComponent,
     ProjectsComponent,
     AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
@@ -267,7 +267,9 @@ if (environment.production) {
     CopyDockerTemplateComponent,
     EmptyTemplatesListComponent,
     SymbolsMenuComponent,
-    SearchFilter
+    SearchFilter,
+    DateFilter,
+    ListOfSnapshotsComponent
   ],
   imports: [
     BrowserModule,

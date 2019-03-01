@@ -30,7 +30,11 @@ export class SnapshotMenuItemComponent implements OnInit {
 
   public createSnapshotModal() {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
-      width: '250px'
+      width: '450px',
+      data: {
+        server: this.server,
+        project: this.project
+      }
     });
 
     dialogRef.afterClosed().subscribe(snapshot => {
