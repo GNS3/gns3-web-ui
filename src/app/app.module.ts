@@ -167,6 +167,7 @@ import { DeleteActionComponent } from './components/project-map/context-menu/act
 import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
 import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
+import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -271,7 +272,8 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
-    ListOfSnapshotsComponent
+    ListOfSnapshotsComponent,
+    CustomAdaptersComponent
   ],
   imports: [
     BrowserModule,
