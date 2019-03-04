@@ -20,6 +20,7 @@ export class ListOfSnapshotsComponent implements OnInit {
     projectId: string;
     snapshots: Snapshot[];
     displayedColumns = ['name', 'creationDate', 'actions'];
+    searchText: string;
 
     constructor(
         private snapshotService: SnapshotService,

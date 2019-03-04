@@ -166,6 +166,7 @@ import { ServerManagementService } from './services/server-management.service';
 import { DeleteActionComponent } from './components/project-map/context-menu/actions/delete-action/delete-action.component';
 import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
 import { DateFilter } from './filters/dateFilter.pipe';
+import { NameFilter } from './filters/nameFilter.pipe';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -269,6 +270,7 @@ if (environment.production) {
     SymbolsMenuComponent,
     SearchFilter,
     DateFilter,
+    NameFilter,
     ListOfSnapshotsComponent
   ],
   imports: [

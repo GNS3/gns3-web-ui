@@ -5,8 +5,16 @@
         </div>
     </div>
     <div class="default-content">
-        <div class="listcontainer mat-elevation-z8">
-            <mat-table #table matSort (matSortChange)= "sortData($event)" [dataSource]="snapshots">
+        <mat-card>
+            <mat-form-field class="filter-field">
+                <input matInput [(ngModel)]="searchText" placeholder="Filter">
+            </mat-form-field>
+
+            <mat-table 
+                class="mat-table" 
+                #table matSort 
+                (matSortChange)= "sortData($event)" 
+                [dataSource]="snapshots | namefilter: searchText">
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
                     <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
@@ -33,6 +41,6 @@
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
             </mat-table>
-        </div>
+        </mat-card>
     </div>
 </div>
