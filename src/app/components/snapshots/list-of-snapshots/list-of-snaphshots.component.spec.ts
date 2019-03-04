@@ -52,7 +52,7 @@ export class MockedSnapshotService {
     }
 }
 
-fdescribe('ListOfSnapshotsComponent', () => {
+describe('ListOfSnapshotsComponent', () => {
     let component: ListOfSnapshotsComponent;
     let fixture: ComponentFixture<ListOfSnapshotsComponent>;
     let activatedRoute = new MockedActivatedRoute().get();
