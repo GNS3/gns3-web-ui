@@ -83,7 +83,8 @@ export class AddBlankProjectDialogComponent implements OnInit {
       height: '150px',
       data: {
         existingProject: existingProject
-      }
+      },
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {

@@ -8,7 +8,8 @@ export class ProgressDialogService {
 
   public open() {
     const ref = this.dialog.open(ProgressDialogComponent, {
-      width: '250px'
+      width: '250px',
+      autoFocus: false
     });
     return ref;
   }

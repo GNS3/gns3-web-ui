@@ -109,7 +109,8 @@ export class ProjectsComponent implements OnInit {
 
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      width: '400px'
+      width: '400px',
+      autoFocus: false
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -117,7 +118,8 @@ export class ProjectsComponent implements OnInit {
 
   importProject() {
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      width: '400px'
+      width: '400px',
+      autoFocus: false
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
