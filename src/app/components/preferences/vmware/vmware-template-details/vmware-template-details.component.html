@@ -107,7 +107,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-button class="configButton" (click)="configureCustomAdapters()">Configure custom adapters</button><br/>
+                <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">Configure custom adapters</button><br/>
                 <mat-checkbox [(ngModel)]="vmwareTemplate.use_any_adapter">
                     Allow GNS3 to override non custom VMware adapter
                 </mat-checkbox>
@@ -129,44 +129,17 @@
         </div>
     </div>
 </div>
-<div class="content" class="configurator" *ngIf="isConfiguratorOpened">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Custom adapters configuration</h1>
-        </div>
-    </div>
-    <div class="default-content" *ngIf="vmwareTemplate">
-        <div class="container mat-elevation-z8">
-            <table class="table" mat-table [dataSource]="adapters">
-                <ng-container matColumnDef="adapter_number">
-                    <th mat-header-cell *matHeaderCellDef> Adapter number </th>
-                    <td mat-cell *matCellDef="let element"> Adapter {{element.adapter_number}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="port_name">
-                    <th mat-header-cell *matHeaderCellDef> Port name </th>
-                    <td mat-cell *matCellDef="let element"> Ethernet {{element.adapter_number}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="adapter_type">
-                    <th mat-header-cell *matHeaderCellDef> Adapter type </th>
-                    <td mat-cell *matCellDef="let element; let i = index;">
-                        <mat-select placeholder="Type" [(ngModel)]="adapters[i].adapter_type">
-                            <mat-option *ngFor="let type of networkTypes" [value]="type">
-                                {{type}}
-                            </mat-option>
-                        </mat-select>
-                    </td>
-                </ng-container>
-                
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-        </div>
-        <div class="buttons-bar">
-            <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
-            <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br/>
-        </div>
-    </div>
-</div>
-<app-symbols-menu *ngIf="isSymbolSelectionOpened && vmwareTemplate" [server]="server" [symbol]="vmwareTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>
+<app-custom-adapters 
+    [hidden]="!(isConfiguratorOpened && vmwareTemplate)" 
+    #customAdaptersConfigurator
+    [networkTypes]="networkTypes" 
+    [displayedColumns]="displayedColumns"
+    (closeConfiguratorEmitter)="setCustomAdaptersConfiguratorState($event)"
+    (saveConfigurationEmitter)="saveCustomAdapters($event)"
+></app-custom-adapters>
+<app-symbols-menu 
+    *ngIf="isSymbolSelectionOpened && vmwareTemplate" 
+    [server]="server" 
+    [symbol]="vmwareTemplate.symbol" 
+    (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>

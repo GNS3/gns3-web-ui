@@ -71,6 +71,10 @@ describe('VmwareTemplateDetailsComponent', () => {
         component.generalSettingsForm.controls['templateName'].setValue('template name');
         component.generalSettingsForm.controls['defaultName'].setValue('default name');
         component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.vmwareTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VmwareTemplate;
 
         component.onSave();
 
@@ -82,6 +86,10 @@ describe('VmwareTemplateDetailsComponent', () => {
         component.generalSettingsForm.controls['templateName'].setValue('');
         component.generalSettingsForm.controls['defaultName'].setValue('default name');
         component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.vmwareTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VmwareTemplate;
 
         component.onSave();
 
@@ -93,6 +101,10 @@ describe('VmwareTemplateDetailsComponent', () => {
         component.generalSettingsForm.controls['templateName'].setValue('template name');
         component.generalSettingsForm.controls['defaultName'].setValue('');
         component.generalSettingsForm.controls['symbol'].setValue('symbol');
+        component.vmwareTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VmwareTemplate;
 
         component.onSave();
 
@@ -104,6 +116,10 @@ describe('VmwareTemplateDetailsComponent', () => {
         component.generalSettingsForm.controls['templateName'].setValue('template name');
         component.generalSettingsForm.controls['defaultName'].setValue('default name');
         component.generalSettingsForm.controls['symbol'].setValue('');
+        component.vmwareTemplate = {
+            adapters: 0,
+            custom_adapters: []
+        } as VmwareTemplate;
 
         component.onSave();
 

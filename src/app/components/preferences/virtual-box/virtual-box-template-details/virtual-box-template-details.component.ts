@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
@@ -8,6 +8,7 @@ import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
+import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 
 @Component({
@@ -18,19 +19,18 @@ import { VirtualBoxConfigurationService } from '../../../../services/virtual-box
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
     server: Server;
     virtualBoxTemplate: VirtualBoxTemplate;
-
     isSymbolSelectionOpened: boolean = false;
-
     consoleTypes: string[] = [];
     onCloseOptions = [];
     categories = [];
     networkTypes = [];
-    adapters: CustomAdapter[] = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
     isConfiguratorOpened: boolean = false;
-
     generalSettingsForm: FormGroup;
     networkForm: FormGroup
+
+    @ViewChild("customAdaptersConfigurator") 
+        customAdaptersConfigurator: CustomAdaptersComponent;
 
     constructor(
         private route: ActivatedRoute,
@@ -64,18 +64,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
             this.getConfiguration();
             this.virtualBoxService.getTemplate(this.server, template_id).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
                 this.virtualBoxTemplate = virtualBoxTemplate;
-
-                for(let i=0; i<this.virtualBoxTemplate.adapters; i++){
-                    let adapter = this.virtualBoxTemplate.custom_adapters.find(elem => elem.adapter_number === i);
-                    if (adapter) {
-                        this.adapters.push(adapter);
-                    } else {
-                        this.adapters.push({
-                            adapter_number: i,
-                            adapter_type: this.virtualBoxTemplate.adapter_type
-                        });
-                    }
-                }
+                this.fillCustomAdapters();
             });
         });
     }
@@ -87,13 +76,41 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.networkTypes = this.virtualBoxConfigurationService.getNetworkTypes();
     }
 
-    configureCustomAdapters(){
-        this.isConfiguratorOpened = !this.isConfiguratorOpened;
-        this.virtualBoxTemplate.custom_adapters = this.adapters;
+    setCustomAdaptersConfiguratorState(state: boolean) {
+        this.isConfiguratorOpened = state;
+
+        if (state) {
+            this.fillCustomAdapters();
+            this.customAdaptersConfigurator.numberOfAdapters = this.virtualBoxTemplate.adapters;
+            this.customAdaptersConfigurator.adapters = [];
+            this.virtualBoxTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
+                this.customAdaptersConfigurator.adapters.push({
+                    adapter_number: adapter.adapter_number,
+                    adapter_type: adapter.adapter_type
+                });
+            });
+        }
     }
 
-    cancelConfigureCustomAdapters(){
-        this.isConfiguratorOpened = !this.isConfiguratorOpened;
+    saveCustomAdapters(adapters: CustomAdapter[]){
+        this.setCustomAdaptersConfiguratorState(false);
+        this.virtualBoxTemplate.custom_adapters = adapters;
+    }
+
+    fillCustomAdapters() {
+        let copyOfAdapters = this.virtualBoxTemplate.custom_adapters ? this.virtualBoxTemplate.custom_adapters : [];
+        this.virtualBoxTemplate.custom_adapters = [];
+
+        for(let i=0; i<this.virtualBoxTemplate.adapters; i++){
+            if (copyOfAdapters[i]) {
+                this.virtualBoxTemplate.custom_adapters.push(copyOfAdapters[i]);
+            } else {
+                this.virtualBoxTemplate.custom_adapters.push({
+                    adapter_number: i,
+                    adapter_type: 'e1000'
+                });
+            }
+        }
     }
 
     goBack() {
@@ -101,9 +118,15 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     }
 
     onSave() {
-        this.virtualBoxService.saveTemplate(this.server, this.virtualBoxTemplate).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
-            this.toasterService.success("Changes saved");
-        });
+        if (this.generalSettingsForm.invalid || this.networkForm.invalid) {
+            this.toasterService.error(`Fill all required fields`);
+        } else {
+            this.fillCustomAdapters();
+
+            this.virtualBoxService.saveTemplate(this.server, this.virtualBoxTemplate).subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
+                this.toasterService.success("Changes saved");
+            });
+        }
     }
 
     chooseSymbol() {

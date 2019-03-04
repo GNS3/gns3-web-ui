@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChildren, ViewChild, QueryList } from "@angular/core";
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServerService } from '../../../../services/server.service';
 import { QemuService } from '../../../../services/qemu.service';
@@ -9,6 +9,7 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 
 @Component({
@@ -19,9 +20,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 export class QemuVmTemplateDetailsComponent implements OnInit {
     server: Server;
     qemuTemplate: QemuTemplate;
-
     isSymbolSelectionOpened: boolean = false;
-
     consoleTypes: string[] = [];
     diskInterfaces: string[] = [];
     networkTypes = [];
@@ -32,10 +31,11 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     binaries: QemuBinary[] = [];
     activateCpuThrottling: boolean = true;
     isConfiguratorOpened: boolean = false;
-    adapters: CustomAdapter[] = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
-
     generalSettingsForm: FormGroup;
+
+    @ViewChild("customAdaptersConfigurator") 
+        customAdaptersConfigurator: CustomAdaptersComponent;
 
     constructor(
         private route: ActivatedRoute,
@@ -62,22 +62,11 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
             this.getConfiguration();
             this.qemuService.getTemplate(this.server, template_id).subscribe((qemuTemplate: QemuTemplate) => {
                 this.qemuTemplate = qemuTemplate;
+                this.fillCustomAdapters();
 
                 this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
                     this.binaries = qemuBinaries;
                 });
-
-                for(let i=0; i<this.qemuTemplate.adapters; i++){
-                    let adapter = this.qemuTemplate.custom_adapters.find(elem => elem.adapter_number === i);
-                    if (adapter) {
-                        this.adapters.push(adapter);
-                    } else {
-                        this.adapters.push({
-                            adapter_number: i,
-                            adapter_type: this.qemuTemplate.adapter_type
-                        });
-                    }
-                }
             });
         });
     }
@@ -108,13 +97,41 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.qemuTemplate.bios_image = event.target.files[0].name;
     }
 
-    cancelConfigureCustomAdapters(){
-        this.isConfiguratorOpened = !this.isConfiguratorOpened;
+    setCustomAdaptersConfiguratorState(state: boolean) {
+        this.isConfiguratorOpened = state;
+
+        if (state) {
+            this.fillCustomAdapters();
+            this.customAdaptersConfigurator.numberOfAdapters = this.qemuTemplate.adapters;
+            this.customAdaptersConfigurator.adapters = [];
+            this.qemuTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
+                this.customAdaptersConfigurator.adapters.push({
+                    adapter_number: adapter.adapter_number,
+                    adapter_type: adapter.adapter_type
+                });
+            });
+        }
     }
 
-    configureCustomAdapters(){
-        this.isConfiguratorOpened = !this.isConfiguratorOpened;
-        this.qemuTemplate.custom_adapters = this.adapters;
+    saveCustomAdapters(adapters: CustomAdapter[]){
+        this.setCustomAdaptersConfiguratorState(false);
+        this.qemuTemplate.custom_adapters = adapters;
+    }
+
+    fillCustomAdapters() {
+        let copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
+        this.qemuTemplate.custom_adapters = [];
+
+        for(let i=0; i<this.qemuTemplate.adapters; i++){
+            if (copyOfAdapters[i]) {
+                this.qemuTemplate.custom_adapters.push(copyOfAdapters[i]);
+            } else {
+                this.qemuTemplate.custom_adapters.push({
+                    adapter_number: i,
+                    adapter_type: 'e1000'
+                });
+            }
+        }
     }
 
     goBack() {
@@ -128,6 +145,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
             if (!this.activateCpuThrottling){
                 this.qemuTemplate.cpu_throttling = 0;
             }
+            this.fillCustomAdapters();
     
             this.qemuService.saveTemplate(this.server, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
                 this.toasterService.success("Changes saved");
