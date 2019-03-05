@@ -169,6 +169,7 @@ import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
 import { ConsoleDeviceActionComponent } from './components/project-map/context-menu/actions/console-device-action/console-device-action.component';
+import { ConsoleComponent } from './components/settings/console/console.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -275,7 +276,8 @@ if (environment.production) {
     NameFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
-    ConsoleDeviceActionComponent
+    ConsoleDeviceActionComponent,
+    ConsoleComponent
   ],
   imports: [
     BrowserModule,
