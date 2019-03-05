@@ -194,6 +194,22 @@ async function configure(configPath, server) {
   fs.writeFileSync(configPath, ini.stringify(config, { section: 'Server' }));
 }
 
+async function setPATHEnv() {
+  const vpcsLookup = [
+    path.join(__dirname, 'dist', 'vpcs'),
+    path.join(path.dirname(app.getPath('exe')), 'dist', 'vpcs')
+  ];
+  
+  // prevent adding duplicates
+  let extra = [
+    ...vpcsLookup
+  ].filter((dir) => {
+    return process.env.PATH.indexOf(dir) < 0;
+  });
+  extra.push(process.env.PATH);
+  process.env.PATH = extra.join(";");
+}
+
 async function run(server, options) {
   if(!options) {
     options = {};
@@ -202,10 +218,13 @@ async function run(server, options) {
   const logStdout = options.logStdout || false;
   const logSterr = options.logSterr || false;
 
-  console.log(`Configuring`)
+  console.log(`Configuring`);
 
   const configPath = await getIniFile(server);
   await configure(configPath, server);
+
+  console.log(`Setting up PATH`);
+  await setPATHEnv();
 
   console.log(`Running '${server.path}'`);
 
@@ -271,14 +290,15 @@ async function main() {
   });
 }
 
-ipcMain.on('local-server-run', async function (event, server) {
-  const responseChannel = getChannelForServer();
-  await run(server);
-  event.sender.send(responseChannel, {
-    success: true
+if(ipcMain) {
+  ipcMain.on('local-server-run', async function (event, server) {
+    const responseChannel = getChannelForServer();
+    await run(server);
+    event.sender.send(responseChannel, {
+      success: true
+    });
   });
-});
-
+}
 
 if (require.main === module) {
   process.on('SIGINT', function() {
