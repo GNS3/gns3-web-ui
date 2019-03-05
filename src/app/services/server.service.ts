@@ -48,7 +48,7 @@ export class ServerService {
   }
 
   public findAll() {
-    return this.onReady(() => this.indexedDbService.get().getAll(this.tablename));
+    return this.onReady(() => this.indexedDbService.get().getAll(this.tablename)) as Promise<Server[]>;
   }
 
   public delete(server: Server) {

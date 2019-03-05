@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Server } from '../../../models/server';
 import { ElectronService } from 'ngx-electron';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { ServerService } from '../../../services/server.service';
 
 
 @Component({
@@ -27,23 +28,33 @@ export class AddServerDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<AddServerDialogComponent>,
     private electronService: ElectronService,
+    private serverService: ServerService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 
-  getLocations() {
+  async getLocations() {
+    const localServers = await this.numberOfLocalServers();
+
     let locations = [];
-    if(this.electronService.isElectronApp) {
+    if(this.electronService.isElectronApp && localServers === 0) {
       locations.push({ key: 'local', name: 'Local' });
     }
     locations.push({ key: 'remote', name: 'Remote' });
     return locations
   }
 
-  getDefaultLocation() {
-    if(this.electronService.isElectronApp) {
+  
+  async getDefaultLocation() {
+    const localServers = await this.numberOfLocalServers();
+    if(this.electronService.isElectronApp && localServers === 0) {
       return 'local';
     }
     return 'remote';
+  }
+
+  async numberOfLocalServers() {
+    const servers = await this.serverService.findAll();
+    return servers.filter((server) => server.location === 'local').length;
   }
 
   getDefaultHost() {
@@ -62,7 +73,7 @@ export class AddServerDialogComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.locations = this.getLocations();
+    this.locations = await this.getLocations();
 
     const defaultLocalServerPath = await this.getDefaultLocalServerPath();
 
@@ -105,7 +116,8 @@ export class AddServerDialogComponent implements OnInit {
       })
     });
 
-    this.serverForm.get('location').setValue(this.getDefaultLocation());
+    const defaultLocation = await this.getDefaultLocation();
+    this.serverForm.get('location').setValue(defaultLocation);
     this.serverForm.get('host').setValue(this.getDefaultHost());
     this.serverForm.get('port').setValue(this.getDefaultPort());
     this.serverForm.get('authorization').setValue('none');
