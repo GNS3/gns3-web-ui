@@ -19,6 +19,7 @@ files:
 
 extraFiles:
   - dist/exe.gns3server/**
+  - dist/ubridge/**
 
 mac:
   category: public.app-category.developer-tools
