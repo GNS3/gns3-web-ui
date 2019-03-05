@@ -38,7 +38,29 @@ WORKING_DIR = os.path.join(FILE_DIR, 'tmp')
 SOURCE_ZIP = os.path.join(WORKING_DIR, 'gns3-server.source.zip')
 SOURCE_DESTINATION = os.path.join(WORKING_DIR, 'source')
 BINARIES_EXTENSION = platform.system() == "Windows" and ".exe" or ""
-UBRIDGE_VERSION = 'LATEST' # or for eg. 0.9.14
+DEPENDENCIES = {
+    'ubridge': {
+        'releases': 'https://api.github.com/repos/GNS3/ubridge/releases',
+        'version': 'LATEST',
+        'files': {
+            'windows': [
+                'cygwin1.dll',
+                'ubridge.exe'
+            ]
+        }
+    },
+    'vpcs': {
+        'releases': 'https://api.github.com/repos/GNS3/vpcs/releases',
+        'version': '0.6.1',
+        'files': {
+            'windows': [
+                'cygwin1.dll',
+                'vpcs.exe'
+            ]
+        }
+    }
+}
+
 
 def download(url, output):
     print("Downloading {} to {}".format(url, output))
@@ -83,31 +105,30 @@ def prepare():
 def download_dependencies_command(arguments):
     output_directory = os.path.join(os.getcwd(), arguments.b)
 
-    # download ubridge
-    url = 'https://api.github.com/repos/GNS3/ubridge/releases'
-    response = requests.get(url)
-    response.raise_for_status()
-    releases = response.json()
+    for name, definition in DEPENDENCIES.items():
+        response = requests.get(definition['releases'])
+        response.raise_for_status()
+        releases = response.json()
 
-    if UBRIDGE_VERSION == 'LATEST':
-        release = releases[0]
-    else:
-        release = list(filter(lambda x: x['tag_name'] == "v{}".format(UBRIDGE_VERSION), releases))[0]
+        if definition['version'] == 'LATEST':
+            release = releases[0]
+        else:
+            release = list(filter(lambda x: x['tag_name'] == "v{}".format(definition['version']), releases))[0]
 
-    # on Windows download cygwin1.dll and ubridge.exe
-    if platform.system() == "Windows":
-        ubridge_dir = os.path.join(output_directory, 'ubridge')
-        os.makedirs(ubridge_dir, exist_ok=True)
+        dependency_dir = os.path.join(output_directory, name)
+        os.makedirs(dependency_dir, exist_ok=True)
 
-        cygwin_file = os.path.join(ubridge_dir, 'cygwin1.dll')
-        cygwin_url = list(filter(lambda x: x['name'] == 'cygwin1.dll', release['assets']))[0]['browser_download_url']
-        download(cygwin_url, cygwin_file)
-        print('Downloaded cygwin1.dll to {}'.format(cygwin_file))
+        files = []
+        if platform.system() == "Windows":
+            files = definition['files']['windows']
+        
+        for filename in files:
+            dependency_file = os.path.join(dependency_dir, filename)
+            dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
+            download(dependency_url, dependency_file)
+            print('Downloaded {} to {}'.format(filename, dependency_file))
 
-        ubridge_file = os.path.join(ubridge_dir, 'ubridge.exe')
-        ubridge_url = list(filter(lambda x: x['name'] == 'ubridge.exe', release['assets']))[0]['browser_download_url']
-        download(ubridge_url, ubridge_file)
-        print('Downloaded ubridge.exe to {}'.format(ubridge_file))
+
 
 def download_command(arguments):
     shutil.rmtree(SOURCE_DESTINATION, ignore_errors=True)
