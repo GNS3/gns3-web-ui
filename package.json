@@ -58,6 +58,7 @@
     "css-tree": "^1.0.0-alpha.29",
     "d3-ng2-service": "^2.1.0",
     "hammerjs": "^2.0.8",
+    "ini": "^1.3.5",
     "material-design-icons": "^3.0.1",
     "ng2-file-upload": "^1.3.0",
     "ngx-electron": "^2.1.1",
@@ -66,9 +67,9 @@
     "raven-js": "^3.27.0",
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",
+    "tree-kill": "^1.2.1",
     "typeface-roboto": "^0.0.54",
     "yargs": "^13.2.1",
-    "tree-kill": "^1.2.1",
     "zone.js": "^0.8.29"
   },
   "devDependencies": {
