@@ -69,7 +69,8 @@ export class ServersComponent implements OnInit, OnDestroy {
 
   createModal() {
     const dialogRef = this.dialog.open(AddServerDialogComponent, {
-      width: '350px'
+      width: '350px',
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(server => {

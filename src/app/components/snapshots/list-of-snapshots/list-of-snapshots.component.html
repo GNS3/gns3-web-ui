@@ -1,0 +1,46 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Snapshots</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <mat-card>
+            <mat-form-field class="filter-field">
+                <input matInput [(ngModel)]="searchText" placeholder="Filter">
+            </mat-form-field>
+
+            <mat-table 
+                class="mat-table" 
+                #table matSort 
+                (matSortChange)= "sortData($event)" 
+                [dataSource]="snapshots | namefilter: searchText">
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="creationDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.created_at | datefilter}} </mat-cell>
+                </ng-container>
+        
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+                    <mat-cell *matCellDef="let row" style="text-align: right">
+                        <button mat-icon-button matTooltip="Restore snapshot" (click)="restoreSnapshot(row)">
+                            <mat-icon aria-label="Restore snapshot">restore</mat-icon>
+                        </button>
+                        
+                        <button mat-icon-button matTooltip="Delete snapshot" (click)="deleteSnapshot(row)">
+                            <mat-icon aria-label="Delete snapshot">delete</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+        
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            </mat-table>
+        </mat-card>
+    </div>
+</div>

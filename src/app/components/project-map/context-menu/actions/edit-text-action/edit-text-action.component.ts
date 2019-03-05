@@ -20,7 +20,8 @@ export class EditTextActionComponent implements OnInit {
 
   editText() {
     const dialogRef = this.dialog.open(TextEditorDialogComponent, {
-      width: '300px'
+      width: '300px',
+      autoFocus: false
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

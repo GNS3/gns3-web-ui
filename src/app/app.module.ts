@@ -68,7 +68,6 @@ import { RavenState } from './common/error-handlers/raven-state-communicator';
 import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
 import { ServerDatabase } from './services/server.database';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
-import { SnapshotsComponent } from './components/snapshots/snapshots.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { MATERIAL_IMPORTS } from './material.imports';
 import { DrawingService } from './services/drawing.service';
@@ -165,6 +164,9 @@ import { SearchFilter } from './filters/searchFilter.pipe';
 import { RecentlyOpenedProjectService } from './services/recentlyOpenedProject.service';
 import { ServerManagementService } from './services/server-management.service';
 import { DeleteActionComponent } from './components/project-map/context-menu/actions/delete-action/delete-action.component';
+import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
+import { DateFilter } from './filters/dateFilter.pipe';
+import { NameFilter } from './filters/nameFilter.pipe';
 import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
 
 if (environment.production) {
@@ -184,7 +186,6 @@ if (environment.production) {
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
     SnapshotMenuItemComponent,
-    SnapshotsComponent,
     ProjectsComponent,
     AddBlankProjectDialogComponent,
     ImportProjectDialogComponent,
@@ -269,6 +270,9 @@ if (environment.production) {
     EmptyTemplatesListComponent,
     SymbolsMenuComponent,
     SearchFilter,
+    DateFilter,
+    NameFilter,
+    ListOfSnapshotsComponent,
     CustomAdaptersComponent
   ],
   imports: [

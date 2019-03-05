@@ -1,5 +1,5 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -47,7 +47,7 @@ describe('AddQemuVmTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatSelectModule, MatAutocompleteModule, MatIconModule, MatFormFieldModule, MatInputModule,
+          imports: [MatStepperModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatAutocompleteModule, MatIconModule, MatFormFieldModule, MatInputModule,
             MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {

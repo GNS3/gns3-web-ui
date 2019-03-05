@@ -24,7 +24,8 @@ export class TemplateComponent implements OnInit {
       height: '560px',
       data: {
         server: this.server
-      }
+      },
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe((template: Template) => {

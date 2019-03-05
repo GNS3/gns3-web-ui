@@ -20,7 +20,8 @@ export class EditStyleActionComponent implements OnInit {
 
   editStyle() {
     const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
-      width: '300px'
+      width: '300px',
+      autoFocus: false
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

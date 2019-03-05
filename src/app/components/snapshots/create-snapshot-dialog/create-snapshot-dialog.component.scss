@@ -1,0 +1,21 @@
+.title-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.name-input {
+    width: 100%;
+}
+
+.top-button {
+    outline: none;
+    box-shadow: none !important;
+    background: transparent !important; 
+}
+
+button:focus {
+    outline: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}

@@ -1,5 +1,5 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule } from '@angular/material';
+import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -36,7 +36,7 @@ describe('AddDockerTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [ FormsModule, MatTableModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [MatStepperModule, FormsModule, MatTableModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatSelectModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute
