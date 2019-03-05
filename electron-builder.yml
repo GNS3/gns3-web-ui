@@ -15,6 +15,7 @@ files:
   - sentry.js
   - installed-software.js
   - local-server.js
+  - console-executor.js
   - package.json
 
 extraFiles:
