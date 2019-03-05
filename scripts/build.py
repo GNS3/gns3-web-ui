@@ -80,6 +80,31 @@ def prepare():
     os.makedirs(WORKING_DIR, exist_ok=True)
 
 
+def download_dependencies_command(arguments):
+    output_directory = os.path.join(os.getcwd(), arguments.b)
+
+    # download ubridge
+    url = 'https://api.github.com/repos/GNS3/ubridge/releases'
+    response = requests.get(url)
+    response.raise_for_status()
+    releases = response.json()
+    last_release = releases[0]
+    
+    # on Windows download cygwin1.dll and ubridge.exe
+    if platform.system() == "Windows":
+        ubridge_dir = os.path.join(output_directory, 'ubridge')
+        os.makedirs(ubridge_dir, exist_ok=True)
+
+        cygwin_file = os.path.join(ubridge_dir, 'cygwin1.dll')
+        cygwin_url = list(filter(lambda x: x['name'] == 'cygwin1.dll', last_release['assets']))[0]['url']
+        download(cygwin_url, cygwin_file)
+        print('Downloaded cygwin1.dll to {}'.format(cygwin_file))
+
+        ubridge_file = os.path.join(ubridge_dir, 'ubridge.exe')
+        ubridge_url = list(filter(lambda x: x['name'] == 'ubridge.exe', last_release['assets']))[0]['url']
+        download(ubridge_url, ubridge_file)
+        print('Downloaded ubridge.exe to {}'.format(ubridge_file))
+
 def download_command(arguments):
     shutil.rmtree(SOURCE_DESTINATION, ignore_errors=True)
     os.makedirs(SOURCE_DESTINATION)
@@ -243,6 +268,9 @@ if __name__ == '__main__':
     parser_validate = subparsers.add_parser('validate', help='Validate build')
     parser_validate.add_argument('-b', help='Output directory')
 
+    parser_validate = subparsers.add_parser('download_dependencies', help='Download dependencies')
+    parser_validate.add_argument('-b', help='Output directory')
+
     args = parser.parse_args()
 
     if args.command == 'build_exe':
@@ -251,6 +279,9 @@ if __name__ == '__main__':
     elif args.command == 'download':
         prepare()
         download_command(args)
+    elif args.command == 'download_dependencies':
+        prepare()
+        download_dependencies_command(args)
     elif args.command == 'validate':
         prepare()
         validate_command(args)
