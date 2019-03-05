@@ -38,7 +38,7 @@ WORKING_DIR = os.path.join(FILE_DIR, 'tmp')
 SOURCE_ZIP = os.path.join(WORKING_DIR, 'gns3-server.source.zip')
 SOURCE_DESTINATION = os.path.join(WORKING_DIR, 'source')
 BINARIES_EXTENSION = platform.system() == "Windows" and ".exe" or ""
-
+UBRIDGE_VERSION = 'LATEST' # or for eg. 0.9.14
 
 def download(url, output):
     print("Downloading {} to {}".format(url, output))
@@ -88,20 +88,24 @@ def download_dependencies_command(arguments):
     response = requests.get(url)
     response.raise_for_status()
     releases = response.json()
-    last_release = releases[0]
-    
+
+    if UBRIDGE_VERSION == 'LATEST':
+        release = releases[0]
+    else:
+        release = list(filter(lambda x: x['tag_name'] == "v{}".format(UBRIDGE_VERSION), releases))[0]
+
     # on Windows download cygwin1.dll and ubridge.exe
     if platform.system() == "Windows":
         ubridge_dir = os.path.join(output_directory, 'ubridge')
         os.makedirs(ubridge_dir, exist_ok=True)
 
         cygwin_file = os.path.join(ubridge_dir, 'cygwin1.dll')
-        cygwin_url = list(filter(lambda x: x['name'] == 'cygwin1.dll', last_release['assets']))[0]['url']
+        cygwin_url = list(filter(lambda x: x['name'] == 'cygwin1.dll', release['assets']))[0]['browser_download_url']
         download(cygwin_url, cygwin_file)
         print('Downloaded cygwin1.dll to {}'.format(cygwin_file))
 
         ubridge_file = os.path.join(ubridge_dir, 'ubridge.exe')
-        ubridge_url = list(filter(lambda x: x['name'] == 'ubridge.exe', last_release['assets']))[0]['url']
+        ubridge_url = list(filter(lambda x: x['name'] == 'ubridge.exe', release['assets']))[0]['browser_download_url']
         download(ubridge_url, ubridge_file)
         print('Downloaded ubridge.exe to {}'.format(ubridge_file))
 

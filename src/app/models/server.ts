@@ -9,6 +9,7 @@ export class Server {
   host: string;
   port: number;
   path: string;
+  ubridge_path: string;
   authorization: ServerAuthorization;
   login: string;
   password: string;

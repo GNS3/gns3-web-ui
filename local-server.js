@@ -11,19 +11,13 @@ const isWin = /^win/.test(process.platform);
 let runningServers = {};
 
 exports.getLocalServerPath = async () => {
-  const lookupDirectories = [
-    __dirname, 
-    path.dirname(app.getPath('exe'))
-  ];
+  let binary = isWin ? 'gns3server.exe': 'gns3server';
+  return findBinary('exe.', binary);
+}
 
-  for(var directory of lookupDirectories) {
-    const serverPath = await findLocalServerPath(directory);
-    if(serverPath !== undefined) {
-      return serverPath;
-    }
-  }
-
-  return;
+exports.getUbridgePath = async () => {
+  let binary = isWin ? 'ubridge.exe': 'ubridge';
+  return findBinary('ubridge', binary);
 }
 
 exports.startLocalServer = async (server) => {
@@ -44,7 +38,21 @@ exports.stopAllLocalServers = async () => {
   return await stopAll();
 }
 
-async function findLocalServerPath(baseDirectory) {
+async function findBinary(binaryDirectory, filename) {
+  const lookupDirectories = [
+    __dirname, 
+    path.dirname(app.getPath('exe'))
+  ];
+
+  for(var directory of lookupDirectories) {
+    const serverPath = await findBinaryInDirectory(directory, binaryDirectory, filename);
+    if(serverPath !== undefined) {
+      return serverPath;
+    }
+  }
+}
+
+async function findBinaryInDirectory(baseDirectory, binaryDirectory, filename) {
   const distDirectory = path.join(baseDirectory, 'dist');
 
   if (!fs.existsSync(distDirectory)) {
@@ -53,25 +61,21 @@ async function findLocalServerPath(baseDirectory) {
 
   const files = fs.readdirSync(distDirectory);
   
-  let serverPath = null;
+  let binaryPath = null;
 
   files.forEach((directory) => {
-    if(directory.startsWith('exe.')) {
-      if (isWin) {
-        serverPath = path.join(baseDirectory, 'dist', directory, 'gns3server.exe');
-      }
-      else {
-        serverPath = path.join(baseDirectory, 'dist', directory, 'gns3server');
-      }
+    if(directory.startsWith(binaryDirectory)) {
+      binaryPath = path.join(baseDirectory, 'dist', directory, filename);
     }
   });
 
-  if(serverPath !== null && fs.existsSync(serverPath)) {
-    return serverPath;
+  if(binaryPath !== null && fs.existsSync(binaryPath)) {
+    return binaryPath;
   }
 
   return;
 }
+
 
 function getServerArguments(server, overrides, configPath) {
   let serverArguments = [];
@@ -182,6 +186,9 @@ async function configure(configPath, server) {
   }
   if(server.port) {
     config.port = server.port;
+  }
+  if(server.ubridge_path) {
+    config.ubridge_path = server.ubridge_path;
   }
 
   fs.writeFileSync(configPath, ini.stringify(config, { section: 'Server' }));

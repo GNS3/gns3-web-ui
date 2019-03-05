@@ -18,6 +18,7 @@ export class AddServerDialogComponent implements OnInit {
     'name': new FormControl('', [ Validators.required ]),
     'location': new FormControl(''),
     'path': new FormControl(''),
+    'ubridge_path': new FormControl(''),
     'host': new FormControl('', [ Validators.required ]),
     'port': new FormControl('', [ Validators.required, Validators.min(1) ]),
     'authorization': new FormControl('none'),
@@ -72,24 +73,39 @@ export class AddServerDialogComponent implements OnInit {
     return;
   }
 
+  async getDefaultUbridgePath() {
+    if(this.electronService.isElectronApp) {
+      return await this.electronService.remote.require('./local-server.js').getUbridgePath();
+    }
+    return;
+  }
+
   async ngOnInit() {
     this.locations = await this.getLocations();
 
     const defaultLocalServerPath = await this.getDefaultLocalServerPath();
+    const defaultUbridgePath = await this.getDefaultUbridgePath();
 
     this.serverForm.get('location').valueChanges.subscribe((location: string) => {
       const pathControl = this.serverForm.get('path');
+      const ubridgePathControl = this.serverForm.get('ubridge_path');
 
       if(location === 'local') {
         pathControl.setValue(defaultLocalServerPath);
         pathControl.setValidators([Validators.required]);
+
+        ubridgePathControl.setValue(defaultUbridgePath);
+        ubridgePathControl.setValidators([Validators.required]);
       }
       else {
         pathControl.setValue('');
         pathControl.clearValidators();
+
+        ubridgePathControl.setValue('');
+        ubridgePathControl.clearValidators();
       }
 
-      [pathControl].forEach((control) => {
+      [pathControl, ubridgePathControl].forEach((control) => {
         control.updateValueAndValidity({
           onlySelf: true
         });
