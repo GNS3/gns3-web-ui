@@ -38,9 +38,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     // attach to notification stream when any of running local servers experienced issues
     this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
       if(serverStatus.status === 'errored') {
+        console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
       if(serverStatus.status === 'stderr') {
+        console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
     });

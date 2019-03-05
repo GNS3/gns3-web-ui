@@ -2,6 +2,7 @@ const { spawn } = require('child_process');
 const kill = require('tree-kill');
 const path = require('path');
 const fs = require('fs');
+const ini = require('ini');
 const { ipcMain } = require('electron')
 const { app } = require('electron')
 
@@ -10,19 +11,13 @@ const isWin = /^win/.test(process.platform);
 let runningServers = {};
 
 exports.getLocalServerPath = async () => {
-  const lookupDirectories = [
-    __dirname, 
-    path.dirname(app.getPath('exe'))
-  ];
+  let binary = isWin ? 'gns3server.exe': 'gns3server';
+  return findBinary('exe.', binary);
+}
 
-  for(var directory of lookupDirectories) {
-    const serverPath = await findLocalServerPath(directory);
-    if(serverPath !== undefined) {
-      return serverPath;
-    }
-  }
-
-  return;
+exports.getUbridgePath = async () => {
+  let binary = isWin ? 'ubridge.exe': 'ubridge';
+  return findBinary('ubridge', binary);
 }
 
 exports.startLocalServer = async (server) => {
@@ -43,7 +38,21 @@ exports.stopAllLocalServers = async () => {
   return await stopAll();
 }
 
-async function findLocalServerPath(baseDirectory) {
+async function findBinary(binaryDirectory, filename) {
+  const lookupDirectories = [
+    __dirname, 
+    path.dirname(app.getPath('exe'))
+  ];
+
+  for(var directory of lookupDirectories) {
+    const serverPath = await findBinaryInDirectory(directory, binaryDirectory, filename);
+    if(serverPath !== undefined) {
+      return serverPath;
+    }
+  }
+}
+
+async function findBinaryInDirectory(baseDirectory, binaryDirectory, filename) {
   const distDirectory = path.join(baseDirectory, 'dist');
 
   if (!fs.existsSync(distDirectory)) {
@@ -52,27 +61,23 @@ async function findLocalServerPath(baseDirectory) {
 
   const files = fs.readdirSync(distDirectory);
   
-  let serverPath = null;
+  let binaryPath = null;
 
   files.forEach((directory) => {
-    if(directory.startsWith('exe.')) {
-      if (isWin) {
-        serverPath = path.join(baseDirectory, 'dist', directory, 'gns3server.exe');
-      }
-      else {
-        serverPath = path.join(baseDirectory, 'dist', directory, 'gns3server');
-      }
+    if(directory.startsWith(binaryDirectory)) {
+      binaryPath = path.join(baseDirectory, 'dist', directory, filename);
     }
   });
 
-  if(serverPath !== null && fs.existsSync(serverPath)) {
-    return serverPath;
+  if(binaryPath !== null && fs.existsSync(binaryPath)) {
+    return binaryPath;
   }
 
   return;
 }
 
-function getServerArguments(server, overrides) {
+
+function getServerArguments(server, overrides, configPath) {
   let serverArguments = [];
   if(server.host) {
     serverArguments.push('--host');
@@ -82,6 +87,14 @@ function getServerArguments(server, overrides) {
     serverArguments.push('--port');
     serverArguments.push(server.port);
   }
+
+  serverArguments.push('--local');
+
+  if(configPath) {
+    serverArguments.push('--config');
+    serverArguments.push(configPath);
+  }
+
   return serverArguments;
 }
 
@@ -153,6 +166,56 @@ async function stop(serverName) {
   return stopped;
 }
 
+async function getIniFile(server) {
+  return path.join(app.getPath('userData'), `gns3_server_${server.id}.ini`);
+}
+
+async function configure(configPath, server) {
+  if(!fs.existsSync(configPath)) {
+    fs.closeSync(fs.openSync(configPath, 'w'));
+    console.log(`Configuration file '${configPath}' has been created.`);
+  }
+
+  var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
+
+  if(server.path) {
+    config.path = server.path;
+  }
+  if(server.host) {
+    config.host = server.host;
+  }
+  if(server.port) {
+    config.port = server.port;
+  }
+  if(server.ubridge_path) {
+    config.ubridge_path = server.ubridge_path;
+  }
+
+  fs.writeFileSync(configPath, ini.stringify(config, { section: 'Server' }));
+}
+
+async function setPATHEnv() {
+  const vpcsLookup = [
+    path.join(__dirname, 'dist', 'vpcs'),
+    path.join(path.dirname(app.getPath('exe')), 'dist', 'vpcs')
+  ];
+
+  const dynamipsLookup = [
+    path.join(__dirname, 'dist', 'dynamips'),
+    path.join(path.dirname(app.getPath('exe')), 'dist', 'dynamips')
+  ];
+
+  // prevent adding duplicates
+  let extra = [
+    ...vpcsLookup,
+    ...dynamipsLookup
+  ].filter((dir) => {
+    return process.env.PATH.indexOf(dir) < 0;
+  });
+  extra.push(process.env.PATH);
+  process.env.PATH = extra.join(";");
+}
+
 async function run(server, options) {
   if(!options) {
     options = {};
@@ -161,9 +224,17 @@ async function run(server, options) {
   const logStdout = options.logStdout || false;
   const logSterr = options.logSterr || false;
 
+  console.log(`Configuring`);
+
+  const configPath = await getIniFile(server);
+  await configure(configPath, server);
+
+  console.log(`Setting up PATH`);
+  await setPATHEnv();
+
   console.log(`Running '${server.path}'`);
 
-  let serverProcess = spawn(server.path, getServerArguments(server));
+  let serverProcess = spawn(server.path, getServerArguments(server, {}, configPath));
 
   notifyStatus({
     serverName: server.name,
@@ -225,14 +296,15 @@ async function main() {
   });
 }
 
-ipcMain.on('local-server-run', async function (event, server) {
-  const responseChannel = getChannelForServer();
-  await run(server);
-  event.sender.send(responseChannel, {
-    success: true
+if(ipcMain) {
+  ipcMain.on('local-server-run', async function (event, server) {
+    const responseChannel = getChannelForServer();
+    await run(server);
+    event.sender.send(responseChannel, {
+      success: true
+    });
   });
-});
-
+}
 
 if (require.main === module) {
   process.on('SIGINT', function() {

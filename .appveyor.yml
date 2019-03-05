@@ -23,6 +23,7 @@ build_script:
   - "%PYTHON%\\python.exe scripts\\build.py download"
   - "%PYTHON%\\python.exe scripts\\build.py build_exe -b dist/exe.gns3server -s"
   - "%PYTHON%\\python.exe scripts\\build.py validate -b dist"
+  - "%PYTHON%\\python.exe scripts\\build.py download_dependencies -b dist"
   - yarn electron-builder --win --x64
 
 test: off

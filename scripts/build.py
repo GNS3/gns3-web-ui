@@ -38,6 +38,39 @@ WORKING_DIR = os.path.join(FILE_DIR, 'tmp')
 SOURCE_ZIP = os.path.join(WORKING_DIR, 'gns3-server.source.zip')
 SOURCE_DESTINATION = os.path.join(WORKING_DIR, 'source')
 BINARIES_EXTENSION = platform.system() == "Windows" and ".exe" or ""
+DEPENDENCIES = {
+    'ubridge': {
+        'releases': 'https://api.github.com/repos/GNS3/ubridge/releases',
+        'version': 'LATEST',
+        'files': {
+            'windows': [
+                'cygwin1.dll',
+                'ubridge.exe'
+            ]
+        }
+    },
+    'vpcs': {
+        'releases': 'https://api.github.com/repos/GNS3/vpcs/releases',
+        'version': '0.6.1',
+        'files': {
+            'windows': [
+                'cygwin1.dll',
+                'vpcs.exe'
+            ]
+        }
+    },
+    'dynamips': {
+        'releases': 'https://api.github.com/repos/GNS3/dynamips/releases',
+        'version': '0.2.17',
+        'files': {
+            'windows': [
+                'cygwin1.dll',
+                'dynamips.exe',
+                'nvram_export.exe'
+            ]
+        }
+    }
+}
 
 
 def download(url, output):
@@ -78,6 +111,34 @@ def getsource_directory():
 
 def prepare():
     os.makedirs(WORKING_DIR, exist_ok=True)
+
+
+def download_dependencies_command(arguments):
+    output_directory = os.path.join(os.getcwd(), arguments.b)
+
+    for name, definition in DEPENDENCIES.items():
+        response = requests.get(definition['releases'])
+        response.raise_for_status()
+        releases = response.json()
+
+        if definition['version'] == 'LATEST':
+            release = releases[0]
+        else:
+            release = list(filter(lambda x: x['tag_name'] == "v{}".format(definition['version']), releases))[0]
+
+        dependency_dir = os.path.join(output_directory, name)
+        os.makedirs(dependency_dir, exist_ok=True)
+
+        files = []
+        if platform.system() == "Windows":
+            files = definition['files']['windows']
+        
+        for filename in files:
+            dependency_file = os.path.join(dependency_dir, filename)
+            dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
+            download(dependency_url, dependency_file)
+            print('Downloaded {} to {}'.format(filename, dependency_file))
+
 
 
 def download_command(arguments):
@@ -243,6 +304,9 @@ if __name__ == '__main__':
     parser_validate = subparsers.add_parser('validate', help='Validate build')
     parser_validate.add_argument('-b', help='Output directory')
 
+    parser_validate = subparsers.add_parser('download_dependencies', help='Download dependencies')
+    parser_validate.add_argument('-b', help='Output directory')
+
     args = parser.parse_args()
 
     if args.command == 'build_exe':
@@ -251,6 +315,9 @@ if __name__ == '__main__':
     elif args.command == 'download':
         prepare()
         download_command(args)
+    elif args.command == 'download_dependencies':
+        prepare()
+        download_dependencies_command(args)
     elif args.command == 'validate':
         prepare()
         validate_command(args)
