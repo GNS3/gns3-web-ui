@@ -58,6 +58,17 @@ DEPENDENCIES = {
                 'vpcs.exe'
             ]
         }
+    },
+    'dynamips': {
+        'releases': 'https://api.github.com/repos/GNS3/dynamips/releases',
+        'version': '0.2.17',
+        'files': {
+            'windows': [
+                'cygwin1.dll',
+                'dynamips.exe',
+                'nvram_export.exe'
+            ]
+        }
     }
 }
 

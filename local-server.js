@@ -199,10 +199,16 @@ async function setPATHEnv() {
     path.join(__dirname, 'dist', 'vpcs'),
     path.join(path.dirname(app.getPath('exe')), 'dist', 'vpcs')
   ];
-  
+
+  const dynamipsLookup = [
+    path.join(__dirname, 'dist', 'dynamips'),
+    path.join(path.dirname(app.getPath('exe')), 'dist', 'dynamips')
+  ];
+
   // prevent adding duplicates
   let extra = [
-    ...vpcsLookup
+    ...vpcsLookup,
+    ...dynamipsLookup
   ].filter((dir) => {
     return process.env.PATH.indexOf(dir) < 0;
   });
