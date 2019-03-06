@@ -32,6 +32,7 @@
                             <mat-form-field class="form-field">
                                 <input
                                     matInput
+                                    class="filename"
                                     type="text"
                                     [(ngModel)]="dockerTemplate.image"
                                     formControlName="filename"
@@ -45,6 +46,7 @@
                         <mat-form-field class="form-field">
                             <input
                                 matInput
+                                class="templatename"
                                 type="text"
                                 [(ngModel)]="dockerTemplate.name"
                                 formControlName="templateName"
@@ -57,6 +59,7 @@
                         <mat-form-field class="form-field">
                             <input
                                 matInput
+                                class="networkadapter"
                                 type="number"
                                 [(ngModel)]="dockerTemplate.adapters"
                                 formControlName="adapters"
@@ -92,7 +95,7 @@
         </div>
         <div class="buttons-bar">
             <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-            <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+            <button mat-raised-button class="add-button" color="primary" (click)="addTemplate()">Add template</button>
         </div>
     </div>
 </div>
