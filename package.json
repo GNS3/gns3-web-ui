@@ -1,6 +1,6 @@
 {
   "name": "gns3-web-ui",
-  "version": "0.0.1-beta.0",
+  "version": "2019.1.0-alpha.0",
   "author": {
     "name": "GNS3 Technology Inc.",
     "email": "developers@gns3.com"
@@ -11,6 +11,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/GNS3/gns3-web-ui.git"
+  },
+  "build": {
+    "generateUpdatesFilesForAllChannels": true
   },
   "scripts": {
     "ng": "ng",
