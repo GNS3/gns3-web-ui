@@ -30,6 +30,11 @@ describe('NodeDraggedComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NodeDraggedComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -37,7 +42,6 @@ describe('NodeDraggedComponent', () => {
   });
 
   it('should call node service when node dragged', () => {
-    fixture.detectChanges();
     const mapNode: MapNode = {
       id: 'sampleId',
       commandLine: 'sampleCommandLine',

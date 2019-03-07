@@ -230,5 +230,6 @@ describe('HttpServer', () => {
       .subscribe();
 
     const req = httpTestingController.expectOne('/v2/test');
+    expect(req.request.url).toBe('/v2/test');
   });
 });

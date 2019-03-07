@@ -32,6 +32,11 @@ describe('InterfaceLabelDraggedComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InterfaceLabelDraggedComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -39,7 +44,6 @@ describe('InterfaceLabelDraggedComponent', () => {
   });
 
   it('should call link service when interface label dragged', () => {
-    fixture.detectChanges();
     const mapLinkNode: MapLinkNode = {
       id: 'sampleId',
       nodeId: 'sampleNodeId',
