@@ -57,6 +57,12 @@ export class MovingTool {
       });
     };
 
+    // disable zooming on wheel
+    this.zoom.filter(() => {
+      const e: D3ZoomEvent<SVGSVGElement, any> = event;
+      return e.type === 'mousedown';
+    });
+
     this.zoom.on('zoom', onZoom);
     selection.call(this.zoom);
   }
