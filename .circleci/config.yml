@@ -49,7 +49,7 @@ jobs:
             pip3 install -r scripts/requirements.txt
             python3 scripts/build.py download
             python3 scripts/build.py build_exe -b dist/exe.gns3server -s
-            python3 scripts/build.py validate -b dist
+            python3 scripts/build.py validate -b dist --publish always
 
       - run:
           name: Dist project

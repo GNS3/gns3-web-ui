@@ -68,4 +68,4 @@ after_script:
     python3 scripts/build.py download
     python3 scripts/build.py build_exe -b dist/exe.gns3server -s
     python3 scripts/build.py validate -b dist
-  - yarn electron-builder --linux --x64
+  - yarn electron-builder --linux --x64 --publish always
