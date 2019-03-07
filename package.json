@@ -12,9 +12,6 @@
     "type": "git",
     "url": "https://github.com/GNS3/gns3-web-ui.git"
   },
-  "build": {
-    "generateUpdatesFilesForAllChannels": true
-  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
