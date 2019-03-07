@@ -87,7 +87,7 @@
     </mat-toolbar>
   </div>
 
-  <div id="show-menu-wrapper" [ngClass]="{ shadowed: !drawTools.visibility }">
+  <div id="show-menu-wrapper" [ngClass]="{ shadowed: !drawTools.visibility }" *ngIf="!readonly">
     <button class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon>keyboard_arrow_right</mat-icon></button>
   </div>
 
