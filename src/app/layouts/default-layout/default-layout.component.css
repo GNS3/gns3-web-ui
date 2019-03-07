@@ -67,6 +67,10 @@ header {
   width: 100%;
 }
 
+.container {
+  padding: 0%;
+}
+
 .mat-dialog-content > * {
   width: 100%;
 }
