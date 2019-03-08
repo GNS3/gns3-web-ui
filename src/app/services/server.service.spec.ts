@@ -151,6 +151,7 @@ describe('ServerService', () => {
     expectedServer.name = 'local';
     expectedServer.host = 'hostname';
     expectedServer.port = 9999;
+    expectedServer.location = 'local';
     expectedServer.is_local = true;
 
     service.getLocalServer('hostname', 9999).then(() => {

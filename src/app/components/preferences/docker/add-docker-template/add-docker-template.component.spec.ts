@@ -27,7 +27,7 @@ export class MockedDockerService {
     }
 }
 
-xdescribe('AddDockerTemplateComponent', () => {
+describe('AddDockerTemplateComponent', () => {
     let component: AddDockerTemplateComponent;
     let fixture: ComponentFixture<AddDockerTemplateComponent>;
 
