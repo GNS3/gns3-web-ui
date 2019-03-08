@@ -25,7 +25,7 @@ export class MockedIosService {
     }
 }
 
-//Tests temporary disabled due to unstability
+//Tests disabled due to instability
 xdescribe('AddIosTemplateComponent', () => {
     let component: AddIosTemplateComponent;
     let fixture: ComponentFixture<AddIosTemplateComponent>;

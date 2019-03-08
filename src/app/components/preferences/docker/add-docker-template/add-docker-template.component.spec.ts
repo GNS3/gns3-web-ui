@@ -27,7 +27,7 @@ export class MockedDockerService {
     }
 }
 
-//Tests temporary disabled due to unstability
+//Tests disabled due to instability
 xdescribe('AddDockerTemplateComponent', () => {
     let component: AddDockerTemplateComponent;
     let fixture: ComponentFixture<AddDockerTemplateComponent>;

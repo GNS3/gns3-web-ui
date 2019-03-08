@@ -33,7 +33,7 @@ export class MockedQemuService {
     }
 }
 
-//Tests temporary disabled due to unstability
+//Tests disabled due to instability
 xdescribe('AddQemuVmTemplateComponent', () => {
     let component: AddQemuVmTemplateComponent;
     let fixture: ComponentFixture<AddQemuVmTemplateComponent>;

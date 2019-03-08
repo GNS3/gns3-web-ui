@@ -25,7 +25,7 @@ export class MockedIouService {
     }
 }
 
-//Tests temporary disabled due to unstability
+//Tests disabled due to instability
 xdescribe('AddIouTemplateComponent', () => {
     let component: AddIouTemplateComponent;
     let fixture: ComponentFixture<AddIouTemplateComponent>;
