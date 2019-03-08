@@ -49,12 +49,12 @@ jobs:
             pip3 install -r scripts/requirements.txt
             python3 scripts/build.py download
             python3 scripts/build.py build_exe -b dist/exe.gns3server -s
-            python3 scripts/build.py validate -b dist --publish always
+            python3 scripts/build.py validate -b dist
 
       - run:
           name: Dist project
           command: |
-            yarn electron-builder --mac --x64
+            yarn electron-builder --mac --x64 --publish always
 
       - run:
           name: Gather artifacts
