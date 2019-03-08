@@ -29,7 +29,7 @@ export class MockedVmwareService {
     }
 }
 
-xdescribe('AddVmwareTemplateComponent', () => {
+describe('AddVmwareTemplateComponent', () => {
     let component: AddVmwareTemplateComponent;
     let fixture: ComponentFixture<AddVmwareTemplateComponent>;
 
