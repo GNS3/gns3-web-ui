@@ -33,6 +33,11 @@ describe('DrawingResizedComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingResizedComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -40,7 +45,6 @@ describe('DrawingResizedComponent', () => {
   });
 
   it('should call drawing service when drawing is resized', () => {
-    fixture.detectChanges();
     const mapDrawingElement: DrawingElement = {
       width: 100,
       height: 100

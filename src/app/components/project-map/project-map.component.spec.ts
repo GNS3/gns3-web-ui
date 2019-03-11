@@ -109,6 +109,8 @@ export class MockedLinkService {
 export class MockedDrawingsDataSource {
   add() {}
 
+  clear() {}
+
   get() {
     return of({});
   }
@@ -121,6 +123,8 @@ export class MockedDrawingsDataSource {
 export class MockedNodesDataSource {
   add() {}
 
+  clear() {}
+
   get() {
     return of({});
   }
@@ -130,11 +134,17 @@ export class MockedNodesDataSource {
   }
 }
 
+export class MockedLinksDataSource {
+  clear() {}
+}
+
 describe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
   let drawingService = new MockedDrawingService();
   let drawingsDataSource = new MockedDrawingsDataSource();
+  let nodesDataSource = new MockedNodesDataSource();
+  let linksDataSource = new MockedLinksDataSource();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -155,8 +165,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapDrawingToDrawingConverter },
         { provide: MapLabelToLabelConverter },
         { provide: MapLinkToLinkConverter },
-        { provide: NodesDataSource },
-        { provide: LinksDataSource },
+        { provide: NodesDataSource, useValue: nodesDataSource },
+        { provide: LinksDataSource, useValue: linksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
         { provide: SettingsService, useClass: MockedSettingsService },
         { provide: ToolsService },
@@ -175,6 +185,10 @@ describe('ProjectMapComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {

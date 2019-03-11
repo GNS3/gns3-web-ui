@@ -47,9 +47,14 @@ describe('LinkCreatedComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LinkCreatedComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
 
     project.project_id = 'sampleId';
     component.project = project;
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -57,7 +62,6 @@ describe('LinkCreatedComponent', () => {
   });
 
   it('should call link service when link created', () => {
-    fixture.detectChanges();
     const mapNode: MapNode = {
       id: 'sampleId',
       commandLine: 'sampleCommandLine',

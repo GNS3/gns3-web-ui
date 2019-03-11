@@ -39,6 +39,11 @@ describe('NodeLabelDraggedComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NodeLabelDraggedComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -46,7 +51,6 @@ describe('NodeLabelDraggedComponent', () => {
   });
 
   it('should call node service when node label dragged', () => {
-    fixture.detectChanges();
     const mapLabel: MapLabel = {
       id: 'sample id',
       rotation: 0,

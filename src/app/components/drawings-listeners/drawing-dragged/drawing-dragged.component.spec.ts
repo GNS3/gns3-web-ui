@@ -30,6 +30,11 @@ describe('DrawingDraggedComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingDraggedComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {
@@ -37,7 +42,6 @@ describe('DrawingDraggedComponent', () => {
   });
 
   it('should call drawing service when drawing is dragged', () => {
-    fixture.detectChanges();
     const mapDrawingElement: DrawingElement = {
       width: 100,
       height: 100

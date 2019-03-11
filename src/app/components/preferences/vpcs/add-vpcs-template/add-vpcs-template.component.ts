@@ -47,6 +47,8 @@ export class AddVpcsTemplateComponent implements OnInit {
 
     addTemplate() {
         if (!this.templateNameForm.invalid) {
+            this.templateName = this.templateNameForm.get('templateName').value;
+            
             let vpcsTemplate: VpcsTemplate;
 
             this.templateMocksService.getVpcsTemplate().subscribe((template: VpcsTemplate) => {

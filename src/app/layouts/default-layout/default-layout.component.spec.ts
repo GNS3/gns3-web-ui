@@ -17,17 +17,20 @@ class ElectronServiceMock {
   public isElectronApp: boolean;
 }
 
+class MockedServerManagementService {
+  public serverStatusChanged;
+  public stopAll() {}
+}
+
 describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
-  let serverManagementService;
+  let serverManagementService = new MockedServerManagementService();
 
   beforeEach(async(() => {
     electronServiceMock = new ElectronServiceMock();
-    serverManagementService = {
-      serverStatusChanged: new Subject<ServerStateEvent>()
-    };
+    serverManagementService.serverStatusChanged = new Subject<ServerStateEvent>();
 
     TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
