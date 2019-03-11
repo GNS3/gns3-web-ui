@@ -39,6 +39,7 @@ import { SelectionTool } from '../../cartography/tools/selection-tool';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
+import { Project } from '../..//models/project';
 
 export class MockedProgressService {
   public activate() {}
@@ -57,6 +58,22 @@ export class MockedNodeService {
   }
 
   delete(server: Server, node: Node) {
+    return of();
+  }
+
+  startAll(server: Server, project: Project) {
+    return of();
+  }
+
+  stopAll(server: Server, project: Project) {
+    return of();
+  }
+
+  suspendAll(server: Server, project: Project) {
+    return of();
+  }
+
+  reloadAll(server: Server, project: Project) {
     return of();
   }
 }
