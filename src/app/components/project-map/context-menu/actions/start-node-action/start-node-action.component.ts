@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { Node } from '../../../../../cartography/models/node';
@@ -7,7 +7,7 @@ import { Node } from '../../../../../cartography/models/node';
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html'
 })
-export class StartNodeActionComponent implements OnInit {
+export class StartNodeActionComponent implements OnInit, OnChanges {
   @Input() server: Server;
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
@@ -15,11 +15,17 @@ export class StartNodeActionComponent implements OnInit {
   constructor(private nodeService: NodeService) {}
 
   ngOnInit() {
-    this.nodes.forEach((node) => {
-      if (node.status === 'stopped') {
-        this.isNodeWithStoppedStatus = true;
-      }
-    });
+  }
+
+  ngOnChanges(changes) {
+    if(changes.nodes) {
+      this.isNodeWithStoppedStatus = false;
+      this.nodes.forEach((node) => {
+        if (node.status === 'stopped') {
+          this.isNodeWithStoppedStatus = true;
+        }
+      });
+    }
   }
 
   startNodes() {
