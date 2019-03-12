@@ -9,6 +9,8 @@ import { MapPort } from '../../../cartography/models/map/map-port';
 import { MapLinkCreated } from '../../../cartography/events/links';
 import { Link } from '../../../models/link';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
+import { PortToMapPortConverter } from '../../../cartography/converters/map/port-to-map-port-converter';
+import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node-to-map-node-converter';
 
 @Component({
   selector: 'app-draw-link-tool',
@@ -25,7 +27,9 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
     private drawingLineTool: DrawingLineWidget,
     private nodesEventSource: NodesEventSource,
     private linksEventSource: LinksEventSource,
-    private mapNodeToNode: MapNodeToNodeConverter
+    private mapNodeToNode: MapNodeToNodeConverter,
+    private nodeToMapNode: NodeToMapNodeConverter,
+    private portToMapPort: PortToMapPortConverter
   ) {}
 
   ngOnInit() {
@@ -43,8 +47,8 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   }
 
   public onChooseInterface(event) {
-    const node: MapNode = event.node;
-    const port: MapPort = event.port;
+    const node: MapNode = this.nodeToMapNode.convert(event.node);
+    const port: MapPort = this.portToMapPort.convert(event.port);
     if (this.drawingLineTool.isDrawing()) {
       const data = this.drawingLineTool.stop();
       this.linksEventSource.created.emit(new MapLinkCreated(data['node'], data['port'], node, port));
