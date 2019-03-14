@@ -17,8 +17,24 @@ export class NodeService {
     return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/start`, {});
   }
 
+  startAll(server: Server, project: Project) {
+    return this.httpServer.post(server, `/projects/${project.project_id}/nodes/start`, {});
+  }
+
   stop(server: Server, node: Node) {
     return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/stop`, {});
+  }
+
+  stopAll(server: Server, project: Project) {
+    return this.httpServer.post(server, `/projects/${project.project_id}/nodes/stop`, {});
+  }
+
+  suspendAll(server: Server, project: Project) {
+    return this.httpServer.post(server, `/projects/${project.project_id}/nodes/suspend`, {});
+  }
+
+  reloadAll(server: Server, project: Project) {
+    return this.httpServer.post(server, `/projects/${project.project_id}/nodes/reload`, {});
   }
 
   createFromTemplate(server: Server, project: Project, template: Template, x: number, y: number, compute_id: string) {
