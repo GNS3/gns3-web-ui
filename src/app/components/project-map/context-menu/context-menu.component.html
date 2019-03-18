@@ -26,6 +26,17 @@
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-down-action>
+    <app-start-capture-action
+      *ngIf="!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1"
+      [server]="server"
+      [link]="links[0]"
+    ></app-start-capture-action>
+    <app-packet-filters-action
+      *ngIf="!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1"
+      [server]="server"
+      [project]="project"
+      [link]="links[0]"
+    ></app-packet-filters-action>
     <app-delete-action
       *ngIf="!projectService.isReadOnly(project)"
       [server]="server"

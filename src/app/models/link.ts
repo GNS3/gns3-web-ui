@@ -1,10 +1,12 @@
 import { Node } from '../cartography/models/node';
 import { LinkNode } from './link-node';
+import { Filter } from './filter';
 
 export class Link {
   capture_file_name: string;
   capture_file_path: string;
   capturing: boolean;
+  filters?: Filter;
   link_id: string;
   link_type: string;
   nodes: LinkNode[];
