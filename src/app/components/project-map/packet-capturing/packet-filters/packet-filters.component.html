@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Packet filters</h1>
 
-<div class="modal-form-container">
+<div class="modal-form-container" class="content">
     <mat-tab-group *ngIf="this.filters">
         <mat-tab label="Frequency drop">
             <mat-form-field class="input-field">
@@ -32,11 +32,13 @@
         </mat-tab>
     </mat-tab-group>
 </div>
-
-<div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onResetClick()" color="accent">Reset</button>
-    <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
-    <div class="divider"></div>
-    <button mat-button (click)="onHelpClick()" color="accent">Help</button>
+<div class="bottom-bar">
+    <div class="spacer"></div>
+    <div mat-dialog-actions layout="row" class="dialog-actions">
+        <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+        <button mat-button (click)="onResetClick()" color="accent">Reset</button>
+        <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+        <div class="divider"></div>
+        <button mat-button (click)="onHelpClick()" color="accent">Help</button>
+    </div>
 </div>

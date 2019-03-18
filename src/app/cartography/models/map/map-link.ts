@@ -12,6 +12,7 @@ export class MapLink implements Indexed {
   linkType: string;
   nodes: MapLinkNode[];
   projectId: string;
+  suspend: boolean;
 
   distance: number; // this is not from server
   length: number; // this is not from server

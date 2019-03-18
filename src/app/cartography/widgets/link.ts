@@ -32,12 +32,12 @@ export class LinkWidget implements Widget {
       return `translate (${translation.dx}, ${translation.dy})`;
     });
 
-    link_body.select('.svg-icon').remove();
+    link_body.select('.capture-icon').remove();
 
     link_body
-      .filter(l => { return l.filters.frequency_drop })
+      .filter(l => { return l.capturing })
       .append<SVGGElement>('g')
-      .attr('class', 'svg-icon')
+      .attr('class', 'capture-icon')
       .attr('transform', link => { 
         return `translate (${(link.source.x + link.target.x)/2}, ${(link.source.y + link.target.y)/2})`
       })

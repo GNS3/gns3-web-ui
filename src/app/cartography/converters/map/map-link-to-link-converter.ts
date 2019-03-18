@@ -19,6 +19,7 @@ export class MapLinkToLinkConverter implements Converter<MapLink, Link> {
     link.link_type = mapLink.linkType;
     link.nodes = mapLink.nodes.map(mapLinkNode => this.mapLinkNodeToMapLinkNode.convert(mapLinkNode));
     link.project_id = mapLink.projectId;
+    link.suspend = mapLink.suspend;
     return link;
   }
 }

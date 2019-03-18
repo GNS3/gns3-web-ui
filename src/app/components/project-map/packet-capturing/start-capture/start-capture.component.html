@@ -1,21 +1,23 @@
 <h1 mat-dialog-title>Packet capture</h1>
 
 <div class="modal-form-container">
-    <mat-form-field class="input-field">
-        <mat-select 
-            placeholder="Link type" 
-            [(ngModel)]="linkType">
-            <mat-option *ngFor="let type of linkTypes" [value]="type[1]">
-                {{type[0]}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field class="input-field">
-        <input 
-            placeholder="File name"
-            matInput type="text" 
-            [(ngModel)]="filename" >
-    </mat-form-field>
+    <form [formGroup]="inputForm">
+        <mat-form-field class="input-field">
+            <mat-select 
+                placeholder="Link type"
+                formControlName="linkType">
+                <mat-option *ngFor="let type of linkTypes" [value]="type[1]">
+                    {{type[0]}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="input-field">
+            <input 
+                placeholder="File name"
+                formControlName="fileName" 
+                matInput type="text">
+        </mat-form-field>
+    </form>
 </div>
 
 <div mat-dialog-actions>

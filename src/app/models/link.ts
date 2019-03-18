@@ -11,6 +11,7 @@ export class Link {
   link_type: string;
   nodes: LinkNode[];
   project_id: string;
+  suspend: boolean;
 
   distance: number; // this is not from server
   length: number; // this is not from server

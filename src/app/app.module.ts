@@ -169,10 +169,14 @@ import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
 import { NodesMenuComponent } from './components/project-map/nodes-menu/nodes-menu.component';
+import { PacketFiltersActionComponent } from './components/project-map/context-menu/actions/packet-filters-action/packet-filters-action.component';
 import { PacketFiltersDialogComponent } from './components/project-map/packet-capturing/packet-filters/packet-filters.component';
 import { HelpDialogComponent } from './components/project-map/help-dialog/help-dialog.component';
 import { StartCaptureActionComponent } from './components/project-map/context-menu/actions/start-capture/start-capture-action.component';
 import { StartCaptureDialogComponent } from './components/project-map/packet-capturing/start-capture/start-capture.component';
+import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
+import { ResumeLinkActionComponent } from './components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
+import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -209,6 +213,9 @@ if (environment.production) {
     DeleteActionComponent,
     PacketFiltersActionComponent,
     StartCaptureActionComponent,
+    StopCaptureActionComponent,
+    ResumeLinkActionComponent,
+    SuspendLinkActionComponent,
     ProjectMapShortcutsComponent,
     SettingsComponent,
     PreferencesComponent,
