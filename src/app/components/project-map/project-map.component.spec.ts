@@ -41,6 +41,7 @@ import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-lin
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
 import { CapturingSettings } from '../../models/capturingSettings';
+import { LinkWidget } from '../../cartography/widgets/link';
 
 export class MockedProgressService {
   public activate() {}
@@ -160,7 +161,7 @@ export class MockedNodesDataSource {
   clear() {}
 
   get() {
-    return of({});
+    return {status: 'started'};
   }
 
   update() {
@@ -194,6 +195,7 @@ describe('ProjectMapComponent', () => {
         { provide: ProjectWebServiceHandler },
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
+        { provide: LinkWidget },
         { provide: DrawingsWidget },
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },

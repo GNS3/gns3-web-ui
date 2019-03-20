@@ -7,6 +7,8 @@ import { LinkService } from '../../../../services/link.service';
 import { CapturingSettings } from '../../../../models/capturingSettings';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToasterService } from '../../../../services/toaster.service';
+import { LinkNode } from '../../../../models/link-node';
+import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 
 @Component({
     selector: 'app-start-capture',
@@ -23,7 +25,8 @@ export class StartCaptureDialogComponent implements OnInit {
         private dialogRef: MatDialogRef<PacketFiltersDialogComponent>,
         private linkService: LinkService,
         private formBuilder: FormBuilder, 
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        private nodesDataSource: NodesDataSource
     ) {
         this.inputForm = this.formBuilder.group({
             linkType: new FormControl('', Validators.required),
@@ -47,7 +50,15 @@ export class StartCaptureDialogComponent implements OnInit {
     }
 
     onYesClick() {
-        if (this.inputForm.invalid) {
+        let isAnyRunningDevice = false;
+        this.link.nodes.forEach((linkNode: LinkNode) => {
+            let node = this.nodesDataSource.get(linkNode.node_id);
+            if (node.status === 'started') isAnyRunningDevice = true;
+        });
+
+        if (!isAnyRunningDevice) {
+            this.toasterService.error(`Cannot capture because there is no running device on this link`);
+        } else if (this.inputForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {
             let captureSettings: CapturingSettings = {

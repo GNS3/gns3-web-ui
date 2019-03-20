@@ -8,9 +8,10 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { LinkService } from '../../../../services/link.service';
-import { MockedLinkService } from '../../project-map.component.spec';
+import { MockedLinkService, MockedNodesDataSource } from '../../project-map.component.spec';
 import { Link } from '../../../../models/link';
 import { of } from 'rxjs';
+import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 
 describe('StartCaptureDialogComponent', () => {
     let component: StartCaptureDialogComponent;
@@ -18,6 +19,7 @@ describe('StartCaptureDialogComponent', () => {
 
     let mockedToasterService = new MockedToasterService;
     let mockedLinkService = new MockedLinkService;
+    let mockedNodesDataSource = new MockedNodesDataSource;
     let dialogRef = {
         close: jasmine.createSpy('close')
     };
@@ -29,7 +31,8 @@ describe('StartCaptureDialogComponent', () => {
             { provide: MatDialogRef, useValue: dialogRef },
             { provide: MAT_DIALOG_DATA, useValue: [] },
             { provide: ToasterService, useValue: mockedToasterService },
-            { provide: LinkService, useValue: mockedLinkService }
+            { provide: LinkService, useValue: mockedLinkService },
+            { provide: NodesDataSource, useValue: mockedNodesDataSource }
           ],
           declarations: [
             StartCaptureDialogComponent
@@ -41,7 +44,7 @@ describe('StartCaptureDialogComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(StartCaptureDialogComponent);
         component = fixture.componentInstance;
-        component.link = {link_type: 'ethernet'} as Link;
+        component.link = {link_type: 'ethernet', nodes: [{node_id: '1'}]} as Link;
         fixture.detectChanges();
     });
 
@@ -68,7 +71,7 @@ describe('StartCaptureDialogComponent', () => {
         expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
     });
 
-    it('should call link service when filename is empty', () => {
+    it('should not call link service when filename is empty', () => {
         component.inputForm.controls['linkType'].setValue('Ethernet');
         component.inputForm.controls['fileName'].setValue('');
         spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
