@@ -5,7 +5,8 @@
         <mat-form-field class="input-field">
             <mat-select 
                 placeholder="Link type"
-                formControlName="linkType">
+                formControlName="linkType"
+                ngDefaultControl>
                 <mat-option *ngFor="let type of linkTypes" [value]="type[1]">
                     {{type[0]}}
                 </mat-option>
