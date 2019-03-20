@@ -81,11 +81,12 @@ g.node:hover {
   overflow: hidden;
 }
 
-mat-divider.style-fix {
+mat-divider.divider {
   height: 40px;
   margin-left: 1px;
   margin-right: 7px;
   width: 10px;
+  color: gray;
 }
 
 @-moz-document url-prefix() {
