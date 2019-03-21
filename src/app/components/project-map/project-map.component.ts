@@ -373,6 +373,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
   }
 
+  resetZoom() {
+    if (this.scale !== 1){
+      this.scale = 1;
+      this.mapScaleService.resetToDefault();
+    }
+  }
+
   public ngOnDestroy() {
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
