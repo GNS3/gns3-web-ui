@@ -42,6 +42,7 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MapScaleService } from '../../services/mapScale.service';
 
 
 @Component({
@@ -59,6 +60,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public selectedDrawing: string;
   private ws: Subject<any>;
+  public scale: number = 1;
 
   tools = {
     selection: true,
@@ -106,7 +108,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private mapScaleService: MapScaleService
   ) {}
 
   ngOnInit() {
@@ -356,6 +359,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public showMenu() {
     this.drawTools.visibility = true;
+  }
+
+  zoomIn() {
+    this.scale = this.scale + 0.1;
+    this.mapScaleService.setScale(this.scale);
+  }
+
+  zoomOut() {
+    if ((this.scale - 0.1) > 0) {
+      this.scale = this.scale - 0.1;
+      this.mapScaleService.setScale(this.scale);
+    }
   }
 
   public ngOnDestroy() {

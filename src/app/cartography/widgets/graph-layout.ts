@@ -8,6 +8,7 @@ import { MovingTool } from '../tools/moving-tool';
 import { LayersWidget } from './layers';
 import { LayersManager } from '../managers/layers-manager';
 import { Injectable } from '@angular/core';
+import { MapScaleService } from '../../services/mapScale.service';
 
 @Injectable()
 export class GraphLayout implements Widget {
@@ -17,7 +18,8 @@ export class GraphLayout implements Widget {
     private selectionTool: SelectionTool,
     private movingTool: MovingTool,
     private layersWidget: LayersWidget,
-    private layersManager: LayersManager
+    private layersManager: LayersManager,
+    private mapScaleService: MapScaleService
   ) {}
 
   public getNodesWidget() {
@@ -53,7 +55,7 @@ export class GraphLayout implements Widget {
       const xTrans = ctx.getZeroZeroTransformationPoint().x + ctx.transformation.x;
       const yTrans = ctx.getZeroZeroTransformationPoint().y + ctx.transformation.y;
       const kTrans = ctx.transformation.k;
-      return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+      return `translate(${xTrans}, ${yTrans}) scale(${this.mapScaleService.getScale()})`;
     });
 
     this.layersWidget.draw(canvas, this.layersManager.getLayersList());

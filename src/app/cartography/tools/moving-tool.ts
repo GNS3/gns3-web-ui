@@ -5,6 +5,7 @@ import { event } from 'd3-selection';
 
 import { SVGSelection } from '../models/types';
 import { Context } from '../models/context';
+import { MapScaleService } from '../../services/mapScale.service';
 
 @Injectable()
 export class MovingTool {
@@ -13,7 +14,10 @@ export class MovingTool {
   private needsDeactivate = false;
   private needsActivate = false;
 
-  constructor(private context: Context) {
+  constructor(
+    private context: Context,
+    private mapScaleService: MapScaleService
+  ) {
     this.zoom = zoom<SVGSVGElement, any>().scaleExtent([1 / 2, 8]);
   }
 
@@ -53,7 +57,7 @@ export class MovingTool {
         const xTrans = self.context.getZeroZeroTransformationPoint().x + self.context.transformation.x;
         const yTrans = self.context.getZeroZeroTransformationPoint().y + self.context.transformation.y;
         const kTrans = self.context.transformation.k;
-        return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+        return `translate(${xTrans}, ${yTrans}) scale(${self.mapScaleService.getScale()})`;
       });
     };
 

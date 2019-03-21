@@ -31,6 +31,7 @@ import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
+import { MapScaleService } from '../../../services/mapScale.service';
 
 @Component({
   selector: 'app-d3-map',
@@ -54,6 +55,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private svg: Selection<SVGSVGElement, any, null, undefined>;
 
   private onChangesDetected: Subscription;
+  private onScaleChange: Subscription;
   private subscriptions: Subscription[] = [];
 
   private drawLinkTool: boolean;
@@ -73,7 +75,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout,
-    private toolsService: ToolsService
+    private toolsService: ToolsService,
+    private mapScaleService: MapScaleService
   ) {
     this.parentNativeElement = element.nativeElement;
   }
@@ -118,6 +121,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.redraw();
       }
     });
+
+    this.subscriptions.push(
+      this.mapScaleService.scaleChangeEmitter.subscribe(() => this.redraw())
+    );
 
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {

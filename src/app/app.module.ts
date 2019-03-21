@@ -169,6 +169,7 @@ import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
 import { NodesMenuComponent } from './components/project-map/nodes-menu/nodes-menu.component';
+import { MapScaleService } from './services/mapScale.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -344,7 +345,8 @@ if (environment.production) {
     IouService,
     IouConfigurationService,
     RecentlyOpenedProjectService,
-    ServerManagementService
+    ServerManagementService,
+    MapScaleService
   ],
   entryComponents: [
     AddServerDialogComponent,
