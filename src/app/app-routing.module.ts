@@ -120,6 +120,10 @@ const routes: Routes = [
   },
   { 
     path: 'server/:server_id/project/:project_id', component: ProjectMapComponent,
+  },
+  {
+    path: '**',
+    redirectTo: 'servers'
   }
 ];
 
