@@ -20,6 +20,7 @@ export class StartCaptureDialogComponent implements OnInit {
     link: Link;
     linkTypes = [];
     inputForm: FormGroup;
+    startProgram: boolean;
 
     constructor(
         private dialogRef: MatDialogRef<PacketFiltersDialogComponent>,
@@ -47,6 +48,12 @@ export class StartCaptureDialogComponent implements OnInit {
                 ["ATM", "DLT_ATM_RFC1483"]
             ];
         }
+
+        const sourceNode = this.nodesDataSource.get(this.link.nodes[0].node_id);
+        const targetNode = this.nodesDataSource.get(this.link.nodes[1].node_id);
+        const sourcePort = sourceNode.ports[this.link.nodes[0].port_number];
+        const targetPort = targetNode.ports[this.link.nodes[1].port_number];
+        this.inputForm.controls['fileName'].setValue(`${sourceNode.name}_${sourcePort.name}_to_${targetNode.name}_${targetPort.name}`);
     }
 
     onYesClick() {
