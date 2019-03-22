@@ -70,7 +70,7 @@ export class ServerService {
           server.name = 'local';
           server.host = host;
           server.port = port;
-          server.location = 'local';
+          server.location = 'remote';
           server.is_local = true;
           this.create(server).then(created => {
             resolve(created);
