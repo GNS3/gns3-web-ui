@@ -6,7 +6,8 @@ import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
 import { Server } from '../../models/server';
 
-describe('LocalServerComponent', () => {
+
+fdescribe('LocalServerComponent', () => {
   let component: LocalServerComponent;
   let fixture: ComponentFixture<LocalServerComponent>;
   let router: any;
@@ -24,7 +25,8 @@ describe('LocalServerComponent', () => {
     spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
 
     TestBed.configureTestingModule({
-      providers: [{ provide: Router, useValue: router }, { provide: ServerService, useValue: serverService }],
+      providers: [{ provide: Router, useValue: router },
+        { provide: ServerService, useValue: serverService }],
       declarations: [LocalServerComponent]
     }).compileComponents();
 
