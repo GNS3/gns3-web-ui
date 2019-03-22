@@ -18,7 +18,7 @@ export class MovingTool {
     private context: Context,
     private mapScaleService: MapScaleService
   ) {
-    this.zoom = zoom<SVGSVGElement, any>().scaleExtent([1 / 2, 8]);
+    this.zoom = zoom<SVGSVGElement, any>().scaleExtent([0, 100]).clickDistance(5);
   }
 
   public setEnabled(enabled) {
@@ -46,28 +46,40 @@ export class MovingTool {
   private activate(selection: SVGSelection) {
     const self = this;
 
-    const onZoom = function(this: SVGSVGElement) {
+    this.zoom.on('zoom',  function() {
       const canvas = selection.select<SVGGElement>('g.canvas');
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
-      canvas.attr('transform', () => {
-        self.context.transformation.x = e.transform.x;
-        self.context.transformation.y = e.transform.y;
-        self.context.transformation.k = e.transform.k;
 
-        const xTrans = self.context.getZeroZeroTransformationPoint().x + self.context.transformation.x;
-        const yTrans = self.context.getZeroZeroTransformationPoint().y + self.context.transformation.y;
-        const kTrans = self.context.transformation.k;
-        return `translate(${xTrans}, ${yTrans}) scale(${self.mapScaleService.getScale()})`;
-      });
-    };
+      if (event.sourceEvent.type === "mousemove") {
+        canvas.attr('transform', () => {
+  
+          self.context.transformation.x = e.transform.x;
+          self.context.transformation.y = e.transform.y;
+          self.context.transformation.k = e.transform.k;
+  
+          const xTrans = self.context.getZeroZeroTransformationPoint().x + self.context.transformation.x;
+          const yTrans = self.context.getZeroZeroTransformationPoint().y + self.context.transformation.y;
+          const kTrans = self.context.transformation.k;
+          self.mapScaleService.setScale(self.mapScaleService.getScale());
+  
+          return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+        });
+      } else if (event.sourceEvent.type === "wheel") {
+        canvas.attr('transform', () => {
 
-    // disable zooming on wheel
-    this.zoom.filter(() => {
-      const e: D3ZoomEvent<SVGSVGElement, any> = event;
-      return e.type === 'mousedown';
+          let deltaMode = e.sourceEvent.deltaMode ? 120 : 1;
+          let wheelSteps = (Math.log(e.transform.k) / Math.log(2)) / Math.abs(e.sourceEvent.deltaY * deltaMode / 500);
+          let kTrans = 1 + (wheelSteps*0.1);
+
+          self.mapScaleService.setScale(kTrans);
+  
+          return `translate(${self.context.getZeroZeroTransformationPoint().x + self.context.transformation.x}, 
+            ${self.context.getZeroZeroTransformationPoint().y + self.context.transformation.y}) 
+            scale(${self.mapScaleService.getScale()})`;
+        });
+      }
     });
 
-    this.zoom.on('zoom', onZoom);
     selection.call(this.zoom);
   }
 

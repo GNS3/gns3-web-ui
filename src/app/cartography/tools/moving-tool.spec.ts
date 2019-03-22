@@ -3,17 +3,20 @@ import { SVGSelection } from '../models/types';
 import { MovingTool } from './moving-tool';
 import { TestSVGCanvas } from '../testing';
 import { Size } from '../models/size';
+import { MapScaleService } from '../../services/mapScale.service';
 
 describe('MovingTool', () => {
   let tool: MovingTool;
   let svg: TestSVGCanvas;
   let context: Context;
   let node: SVGSelection;
+  let mapScaleService: MapScaleService;
 
   beforeEach(() => {
     context = new Context();
+    mapScaleService = new MapScaleService();
 
-    tool = new MovingTool(context);
+    tool = new MovingTool(context, mapScaleService);
     svg = new TestSVGCanvas();
 
     node = svg.canvas

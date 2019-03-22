@@ -183,6 +183,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChangeDetectorRef.detectChanges();
       })
     );
+
+    this.subscriptions.push(
+      this.mapScaleService.scaleChangeEmitter.subscribe((newValue: number) => {
+        this.scale = newValue;
+      })
+    );
   }
 
   onProjectLoad(project: Project) {

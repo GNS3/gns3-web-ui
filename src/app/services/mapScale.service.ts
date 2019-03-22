@@ -15,11 +15,11 @@ export class MapScaleService {
 
     setScale(newScale: number) {
         this.currentScale = newScale;
-        this.scaleChangeEmitter.emit();
+        this.scaleChangeEmitter.emit(this.currentScale);
     }
 
     resetToDefault() {
         this.currentScale = 1;
-        this.scaleChangeEmitter.emit();
+        this.scaleChangeEmitter.emit(this.currentScale);
     }
 }

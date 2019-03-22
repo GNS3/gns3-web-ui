@@ -40,6 +40,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
+import { MapScaleService } from '../../services/mapScale.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -193,6 +194,7 @@ describe('ProjectMapComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
+        { provide: MapScaleService }
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
