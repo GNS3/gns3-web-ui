@@ -59,6 +59,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public selectedDrawing: string;
   private ws: Subject<any>;
+  private image;
 
   tools = {
     selection: true,
@@ -356,6 +357,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public showMenu() {
     this.drawTools.visibility = true;
+  }
+
+  public uploadImageFile(event) {
+    this.readImageFile(event.target);
+  }
+
+  private readImageFile(fileInput) {
+    var file: File = fileInput.files[0];
+    var fileReader: FileReader = new FileReader();
+
+    fileReader.onloadend = (e) => {
+      this.image = fileReader.result;
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"1086\" width=\"2106\">\n<image height=\"1086\" width=\"2106\" xlink:href=\"${this.image}\"/>\n</svg>`;
+      this.drawingService.add(this.server, this.project.project_id, 0, 0, svg).subscribe(() => {});
+    }
+
+    fileReader.readAsDataURL(file);
   }
 
   public ngOnDestroy() {
