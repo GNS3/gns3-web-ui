@@ -52,17 +52,13 @@ export class MovingTool {
 
       if (event.sourceEvent.type === "mousemove") {
         canvas.attr('transform', () => {
-  
           self.context.transformation.x = e.transform.x;
           self.context.transformation.y = e.transform.y;
-          self.context.transformation.k = e.transform.k;
-  
+
           const xTrans = self.context.getZeroZeroTransformationPoint().x + self.context.transformation.x;
           const yTrans = self.context.getZeroZeroTransformationPoint().y + self.context.transformation.y;
-          const kTrans = self.context.transformation.k;
-          self.mapScaleService.setScale(self.mapScaleService.getScale());
   
-          return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+          return `translate(${xTrans}, ${yTrans}) scale(${self.mapScaleService.getScale()})`;
         });
       } else if (event.sourceEvent.type === "wheel") {
         canvas.attr('transform', () => {

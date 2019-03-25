@@ -37,18 +37,40 @@ g.node:hover {
 
 #zoom-buttons {
   position: fixed;
-  background: white;
+  background: #263238;
   bottom: 20px;
   right: 20px;
   display: grid;
 
-  button {
+  .zoom-button {
     outline: none;
-  }
+    height: 40px;
+    width: 40px;
+    background: #263238;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
 
-  mat-icon {
-    color: #263238;
+    mat-icon {
+      margin-top: 8px;
+    }
   }
+  
+  .zoom-button-white {
+    outline: none;
+    height: 40px;
+    width: 40px;
+    color: #263238;
+    border: none;
+    background: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+
+    mat-icon {
+      margin-top: 8px;
+    }
+  } 
 }
 
 .shadowed {

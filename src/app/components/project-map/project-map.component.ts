@@ -368,19 +368,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   zoomIn() {
-    this.scale = this.scale + 0.1;
+    this.scale = this.mapScaleService.getScale() + 0.1;
     this.mapScaleService.setScale(this.scale);
   }
 
   zoomOut() {
-    if ((this.scale - 0.1) > 0) {
+    if ((this.mapScaleService.getScale() - 0.1) > 0) {
       this.scale = this.scale - 0.1;
       this.mapScaleService.setScale(this.scale);
     }
   }
 
   resetZoom() {
-    if (this.scale !== 1){
+    if (this.mapScaleService.getScale() !== 1){
       this.scale = 1;
       this.mapScaleService.resetToDefault();
     }
