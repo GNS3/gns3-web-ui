@@ -31,6 +31,7 @@ export class ContextMenuComponent implements OnInit {
   links: Link[] = [];
 
   hasTextCapabilities: boolean = false;
+  isLocalServer: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -40,6 +41,7 @@ export class ContextMenuComponent implements OnInit {
 
   ngOnInit() {
     this.setPosition(0, 0);
+    this.isLocalServer = this.server.location === 'local';
   }
 
   public setPosition(top: number, left: number) {
