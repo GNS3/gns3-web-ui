@@ -58,7 +58,7 @@ export class ServerService {
   public getLocalServer(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
       this.findAll().then((servers: Server[]) => {
-        const local = servers.find(server => server.is_local);
+        const local = servers.find(server => server.location === 'bundled');
         if (local) {
           local.host = host;
           local.port = port;
@@ -70,8 +70,7 @@ export class ServerService {
           server.name = 'local';
           server.host = host;
           server.port = port;
-          server.location = 'remote';
-          server.is_local = true;
+          server.location = 'bundled';
           this.create(server).then(created => {
             resolve(created);
           }, reject);

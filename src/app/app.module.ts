@@ -58,7 +58,7 @@ import { ProjectMapShortcutsComponent } from './components/project-map/project-m
 import { SettingsComponent } from './components/settings/settings.component';
 import { SettingsService } from './services/settings.service';
 
-import { LocalServerComponent } from './components/local-server/local-server.component';
+import { BundledServerFinderComponent } from './components/local-server/bundled-server-finder.component';
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from './common/progress/progress.service';
 import { version } from './version';
@@ -219,7 +219,7 @@ if (environment.production) {
     ProjectMapShortcutsComponent,
     SettingsComponent,
     PreferencesComponent,
-    LocalServerComponent,
+    BundledServerFinderComponent,
     ProgressComponent,
     ServerDiscoveryComponent,
     NodeSelectInterfaceComponent,

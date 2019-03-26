@@ -1,17 +1,21 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { LocalServerComponent } from './local-server.component';
+import { BundledServerFinderComponent } from './bundled-server-finder.component';
 import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
 import { Server } from '../../models/server';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ProgressService } from '../../common/progress/progress.service';
+import { MockedProgressService } from '../project-map/project-map.component.spec';
 
 
-describe('LocalServerComponent', () => {
-  let component: LocalServerComponent;
-  let fixture: ComponentFixture<LocalServerComponent>;
+describe('BundledServerFinderComponent', () => {
+  let component: BundledServerFinderComponent;
+  let fixture: ComponentFixture<BundledServerFinderComponent>;
   let router: any;
   let serverService: any;
+  let progressService: MockedProgressService = new MockedProgressService();
 
   beforeEach(async(() => {
     router = {
@@ -25,12 +29,16 @@ describe('LocalServerComponent', () => {
     spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
 
     TestBed.configureTestingModule({
-      providers: [{ provide: Router, useValue: router },
-        { provide: ServerService, useValue: serverService }],
-      declarations: [LocalServerComponent]
+      providers: [
+        { provide: Router, useValue: router },
+        { provide: ServerService, useValue: serverService },
+        { provide: ProgressService, useValue: progressService }
+      ],
+      declarations: [BundledServerFinderComponent],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LocalServerComponent);
+    fixture = TestBed.createComponent(BundledServerFinderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

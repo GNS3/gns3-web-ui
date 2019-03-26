@@ -45,6 +45,8 @@ import { LinkWidget } from '../../cartography/widgets/link';
 
 export class MockedProgressService {
   public activate() {}
+
+  public deactivate() {}
 }
 
 export class MockedNodeService {
