@@ -59,7 +59,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public selectedDrawing: string;
   private ws: Subject<any>;
-  private image;
 
   tools = {
     selection: true,
@@ -364,16 +363,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   private readImageFile(fileInput) {
-    var file: File = fileInput.files[0];
-    var fileReader: FileReader = new FileReader();
+    let file: File = fileInput.files[0];
+    let fileReader: FileReader = new FileReader();
+    let imageToUpload = new Image();
 
-    fileReader.onloadend = (e) => {
-      this.image = fileReader.result;
-      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"1086\" width=\"2106\">\n<image height=\"1086\" width=\"2106\" xlink:href=\"${this.image}\"/>\n</svg>`;
-      this.drawingService.add(this.server, this.project.project_id, 0, 0, svg).subscribe(() => {});
+    fileReader.onloadend = () => {
+      let image = fileReader.result;
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
+                xlink:href=\"${image}\"/>\n</svg>`;
+      this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width/2), -(imageToUpload.height/2), svg).subscribe(() => {});
     }
-
-    fileReader.readAsDataURL(file);
+        
+    imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
+    imageToUpload.src = window.URL.createObjectURL(file);
   }
 
   public ngOnDestroy() {
