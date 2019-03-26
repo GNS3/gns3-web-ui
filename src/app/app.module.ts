@@ -58,7 +58,7 @@ import { ProjectMapShortcutsComponent } from './components/project-map/project-m
 import { SettingsComponent } from './components/settings/settings.component';
 import { SettingsService } from './services/settings.service';
 
-import { BundledServerFinderComponent } from './components/local-server/bundled-server-finder.component';
+import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from './common/progress/progress.service';
 import { version } from './version';
