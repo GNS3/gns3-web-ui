@@ -211,6 +211,7 @@ def build_command(arguments):
         ("gns3server/appliances", "appliances"),
         ("gns3server/templates", "templates"),
         ("gns3server/symbols", "symbols"),
+        ("gns3server/static/web-ui", "static/web-ui")
     ]
 
     include_files = [(os.path.join(source_directory, x), y) for x, y in include_files]

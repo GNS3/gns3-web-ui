@@ -3,6 +3,11 @@ import { Snapshot } from '../../../models/snapshot';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Server } from '../../../models/server';
 import { Project } from '../../../models/project';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ToasterService } from '../../../services/toaster.service';
+import { SnapshotService } from '../../../services/snapshot.service';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { Node } from '../../../cartography/models/node';
 
 
 @Component({
@@ -14,17 +19,53 @@ export class CreateSnapshotDialogComponent {
   server: Server;
   project: Project;
   snapshot: Snapshot = new Snapshot();
+  inputForm: FormGroup;
+  snapshots: string[] = [];
+  isInRunningState: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
+    private formBuilder: FormBuilder,
+    private toasterService: ToasterService,
+    private snapshotService: SnapshotService,
+    private nodesDataSource: NodesDataSource,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.server = data['server'];
     this.project = data['project'];
+
+    this.inputForm = this.formBuilder.group({
+      snapshotName: new FormControl('', Validators.required)
+    });
+
+    this.snapshotService.list(this.server, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
+      snapshots.forEach((snapshot: Snapshot) => {
+        this.snapshots.push(snapshot.name);
+      });
+    });
+
+    this.nodesDataSource.getItems().forEach((node: Node) => {
+      if (node.status !== 'stopped' && !this.isAlwaysRunningNode(node.node_type)) {
+        this.isInRunningState = true;
+      }
+    });
+  }
+
+  isAlwaysRunningNode(nodeType: string) {
+    return !["qemu", "docker", "dynamips", "vpcs", "vmware", "virtualbox", "iou", "traceng"].includes(nodeType);
   }
 
   onAddClick(): void {
-    this.dialogRef.close(this.snapshot);
+    if (this.inputForm.invalid) {
+      this.toasterService.error(`Fill all required fields`);
+    } else if (this.snapshots.includes(this.inputForm.get('snapshotName').value)) {
+      this.toasterService.error(`Snapshot with this name already exists`);
+    } else if (this.isInRunningState) {
+      this.toasterService.error(`Project must be stopped in order to export it`);
+    } else {
+      this.snapshot.name = this.inputForm.get('snapshotName').value;
+      this.dialogRef.close(this.snapshot);
+    }
   }
 
   onNoClick(): void {
