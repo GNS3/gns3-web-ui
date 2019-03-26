@@ -7,7 +7,7 @@ import { MockedServerService } from '../../services/server.service.spec';
 import { Server } from '../../models/server';
 
 
-fdescribe('LocalServerComponent', () => {
+describe('LocalServerComponent', () => {
   let component: LocalServerComponent;
   let fixture: ComponentFixture<LocalServerComponent>;
   let router: any;
