@@ -43,6 +43,8 @@ import { Project } from '../../models/project';
 
 export class MockedProgressService {
   public activate() {}
+
+  public deactivate() {}
 }
 
 export class MockedNodeService {
