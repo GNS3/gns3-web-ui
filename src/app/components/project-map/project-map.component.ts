@@ -42,6 +42,7 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 
 
 @Component({
@@ -106,7 +107,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private movingEventSource: MovingEventSource
   ) {}
 
   ngOnInit() {
@@ -292,7 +294,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
-    this.toolsService.movingToolActivation(this.tools.moving);
+    this.movingEventSource.movingModeState.emit(this.tools.moving);
+    //this.toolsService.movingToolActivation(this.tools.moving);
+    
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
       this.toolsService.selectionToolActivation(this.tools.selection);

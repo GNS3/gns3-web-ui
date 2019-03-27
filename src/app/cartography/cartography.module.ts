@@ -55,6 +55,8 @@ import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-el
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
 import { TextEditorComponent } from './components/text-editor/text-editor.component';
 import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
+import { MovingModeComponent } from './components/moving-mode/moving-mode.component';
+import { MovingEventSource } from './events/moving-event-source';
 
 @NgModule({
   imports: [CommonModule, MatMenuModule, MatIconModule],
@@ -67,7 +69,8 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,
-    DraggableSelectionComponent
+    DraggableSelectionComponent,
+    MovingModeComponent
   ],
   providers: [
     CssFixer,
@@ -87,6 +90,7 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     DrawingsEventSource,
     NodesEventSource,
     LinksEventSource,
+    MovingEventSource,
     MapDrawingToSvgConverter,
     DrawingToMapDrawingConverter,
     LabelToMapLabelConverter,
