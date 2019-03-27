@@ -46,31 +46,26 @@ after_success:
 
 after_script:
   # greenkeeper-lockfile support
-  # - greenkeeper-lockfile-upload
-
+  - greenkeeper-lockfile-upload
 # publish on gns3.github.io
-  # - yarn buildforgithub --base-href /${TRAVIS_BRANCH}/
-  # - export GIT_LAST_LOG="$(git log -1 --pretty=%B)"
-  # - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
-  # - mkdir -p github-pages/${TRAVIS_BRANCH}
-  # - rsync -r --delete dist/ github-pages/${TRAVIS_BRANCH}
-  # - cd github-pages/${TRAVIS_BRANCH}
-  # - git config user.email "developers@gns3.net"
-  # - git config user.name "GNS3 Build"
-  # - git add -A
-  # - git commit -m "Deploy - $GIT_LAST_LOG"
-  # - git push origin master
-  # - cd $TRAVIS_BUILD_DIR
-
+  - yarn buildforgithub --base-href /${TRAVIS_BRANCH}/
+  - export GIT_LAST_LOG="$(git log -1 --pretty=%B)"
+  - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
+  - mkdir -p github-pages/${TRAVIS_BRANCH}
+  - rsync -r --delete dist/ github-pages/${TRAVIS_BRANCH}
+  - cd github-pages/${TRAVIS_BRANCH}
+  - git config user.email "developers@gns3.net"
+  - git config user.name "GNS3 Build"
+  - git add -A
+  - git commit -m "Deploy - $GIT_LAST_LOG"
+  - git push origin master
+  - cd $TRAVIS_BUILD_DIR
 
 # publish
-  # - yarn buildforelectron
-  # - |
-  #   python3 -m pip install -r scripts/requirements.txt
-  #   python3 scripts/build.py download
-  #   python3 scripts/build.py build_exe -b dist/exe.gns3server -s
-  #   python3 scripts/build.py validate -b dist
-  # - yarn electron-builder --linux --x64 --publish always
-
-# build production zip for gns3server
-  - yarn ng build --configuration=production --base-href /static/web-ui/
+  - yarn buildforelectron
+  - |
+    python3 -m pip install -r scripts/requirements.txt
+    python3 scripts/build.py download
+    python3 scripts/build.py build_exe -b dist/exe.gns3server -s
+    python3 scripts/build.py validate -b dist
+  - yarn electron-builder --linux --x64 --publish always
