@@ -69,3 +69,11 @@ after_script:
     python3 scripts/build.py build_exe -b dist/exe.gns3server -s
     python3 scripts/build.py validate -b dist
   - yarn electron-builder --linux --x64 --publish always
+
+# build sourcemaps and upload to Sentry
+  # fix node issue with memory
+  - export NODE_OPTIONS=--max_old_space_size=4096
+  - export RELEASE_VERSION=$(node -e "const fs = require('fs'); let p = fs.readFileSync('package.json'); console.log(JSON.parse(p).version);")
+  - yarn ng build --configuration=production --base-href /static/web-ui/
+  - yarn sentry-cli releases new $RELEASE_VERSION
+  - yarn sentry-cli releases files $RELEASE_VERSION upload-sourcemaps dist/
