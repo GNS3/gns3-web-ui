@@ -5,6 +5,8 @@ import { ServerManagementService } from '../../services/server-management.servic
 import { Subscription } from 'rxjs';
 import { ToasterService } from '../../services/toaster.service';
 import { ProgressService } from '../../common/progress/progress.service';
+import { version } from './../../version';
+
 
 @Component({
   selector: 'app-default-layout',
@@ -14,7 +16,8 @@ import { ProgressService } from '../../common/progress/progress.service';
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
-  
+  public uiVersion = version;
+
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
