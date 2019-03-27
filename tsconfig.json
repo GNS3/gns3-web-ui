@@ -4,6 +4,8 @@
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
+    "inlineSources": true,
+    "sourceRoot": "/",
     "declaration": false,
     "module": "es2015",
     "moduleResolution": "node",
