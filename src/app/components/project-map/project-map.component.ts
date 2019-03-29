@@ -295,7 +295,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
     this.movingEventSource.movingModeState.emit(this.tools.moving);
-    //this.toolsService.movingToolActivation(this.tools.moving);
     
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
