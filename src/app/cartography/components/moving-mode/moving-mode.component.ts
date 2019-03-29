@@ -38,9 +38,8 @@ export class MovingModeComponent implements OnInit, OnDestroy {
         this.mousemoveListener = (event: MouseEvent) => {
             const view = select(this.svg);
             const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
-            const canvasEnter = canvas.enter().append<SVGGElement>('g').attr('class', 'canvas');
             
-            canvas.merge(canvasEnter).attr('transform', () => {
+            canvas.attr('transform', () => {
                 this.context.transformation.x = this.context.transformation.x + event.movementX;
                 this.context.transformation.y = this.context.transformation.y + event.movementY;
 
@@ -62,7 +61,7 @@ export class MovingModeComponent implements OnInit, OnDestroy {
         this.svg.addEventListener('mousedown', this.mousedownListener as EventListenerOrEventListenerObject);
     }
 
-    addZoomListener() {
+    addZoomListener() { 
         this.scrollListener = (event: WheelEvent) => {
             event.stopPropagation();
             event.preventDefault();
@@ -72,9 +71,8 @@ export class MovingModeComponent implements OnInit, OnDestroy {
 
             const view = select(this.svg);
             const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
-            const canvasEnter = canvas.enter().append<SVGGElement>('g').attr('class', 'canvas');
             
-            canvas.merge(canvasEnter).attr('transform', () => {
+            canvas.attr('transform', () => {
                 this.context.transformation.k = this.context.transformation.k - zoom/10;
 
                 const xTrans = this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
