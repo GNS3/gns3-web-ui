@@ -182,6 +182,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChangeDetectorRef.detectChanges();
       })
     );
+
+    this.addKeyboardListeners();
+  }
+
+  addKeyboardListeners() {
+    Mousetrap.bind('ctrl++', (event: Event) => {
+      event.preventDefault();
+    });
+
+    Mousetrap.bind('ctrl+-', (event: Event) => {
+      event.preventDefault();
+    });;
   }
 
   onProjectLoad(project: Project) {
