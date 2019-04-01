@@ -121,7 +121,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
-        //this.movingToolWidget.setEnabled(value);
         this.mapChangeDetectorRef.detectChanges();
       })
     );
