@@ -40,9 +40,13 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
+import { CapturingSettings } from '../../models/capturingSettings';
+import { LinkWidget } from '../../cartography/widgets/link';
 
 export class MockedProgressService {
   public activate() {}
+
+  public deactivate() {}
 }
 
 export class MockedNodeService {
@@ -110,8 +114,16 @@ export class MockedDrawingService {
 export class MockedLinkService {
   constructor() {}
 
+  getLink(server: Server, projectId: string, linkId: string) {
+    return of({});
+  }
+
   deleteLink(_server: Server, link: Link){
-    return of({})
+    return of({});
+  }
+
+  updateLink(server: Server, link: Link) {
+    return of({});
   }
 
   createLink() {
@@ -119,6 +131,14 @@ export class MockedLinkService {
   }
 
   updateNodes() {
+    return of({});
+  }
+
+  startCaptureOnLink(server: Server, link: Link, settings: CapturingSettings) {
+    return of({});
+  }
+
+  getAvailableFilters(server: Server, link: Link) { 
     return of({});
   }
 }
@@ -143,7 +163,7 @@ export class MockedNodesDataSource {
   clear() {}
 
   get() {
-    return of({});
+    return {status: 'started'};
   }
 
   update() {
@@ -177,6 +197,7 @@ describe('ProjectMapComponent', () => {
         { provide: ProjectWebServiceHandler },
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
+        { provide: LinkWidget },
         { provide: DrawingsWidget },
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },

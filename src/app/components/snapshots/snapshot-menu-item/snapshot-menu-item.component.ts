@@ -48,11 +48,6 @@ export class SnapshotMenuItemComponent implements OnInit {
           (created_snapshot: Snapshot) => {
             this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
             progress.close();
-          },
-          response => {
-            const error = response.json();
-            this.toaster.error(`Cannot create snapshot: ${error.message}`);
-            progress.close();
           }
         );
 
