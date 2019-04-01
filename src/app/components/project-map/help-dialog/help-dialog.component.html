@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>{{title}}</h1>
+
+<div class="modal-form-container">
+    <div class="message" *ngFor="let message of messages; let i = index">
+        <h6>
+            {{message.name}}
+        </h6>
+        <span class="description">
+            {{message.description}}
+        </span>
+    </div>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button (click)="onCloseClick()" color="accent">Close</button>
+</div>
