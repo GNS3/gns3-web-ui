@@ -103,6 +103,21 @@
     >
       <mat-icon>create</mat-icon>
     </button>
+    <input
+      type="file"
+      accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
+      class="non-visible"
+      #file
+      (change)="uploadImageFile($event)"
+    />
+    <button
+      matTooltip="Insert a picture"
+      mat-icon-button
+      class="menu-button"
+      (click)="file.click()"
+    >
+      <mat-icon>image</mat-icon>
+    </button>
     <button
       matTooltip="Draw a rectangle"
       mat-icon-button
