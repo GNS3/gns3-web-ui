@@ -1,0 +1,44 @@
+<h1 mat-dialog-title>Packet filters</h1>
+
+<div class="modal-form-container" class="content">
+    <mat-tab-group *ngIf="this.filters">
+        <mat-tab label="Frequency drop">
+            <mat-form-field class="input-field">
+                <input matInput placeholder="Frequency" type="number" [(ngModel)]="filters.frequency_drop[0]">
+            </mat-form-field>
+        </mat-tab>
+        <mat-tab label="Packet loss">
+            <mat-form-field class="input-field">
+                <input matInput placeholder="Chance" type="number" [(ngModel)]="filters.packet_loss[0]">
+            </mat-form-field>
+        </mat-tab>
+        <mat-tab label="Delay">
+            <mat-form-field class="input-field">
+                <input matInput placeholder="Latency" type="number" [(ngModel)]="filters.delay[0]">
+            </mat-form-field>
+            <mat-form-field class="input-field">
+                <input matInput placeholder="Jitter" type="number" [(ngModel)]="filters.delay[1]">
+            </mat-form-field>
+        </mat-tab>
+        <mat-tab label="Corrupt">
+            <mat-form-field class="input-field">
+                <input matInput placeholder="Latency" type="number" [(ngModel)]="filters.corrupt[0]">
+            </mat-form-field>
+        </mat-tab>
+        <mat-tab label="Berkeley Packet Filter (BPF)">
+            <mat-form-field class="input-field">
+                <textarea matInput type="text" [(ngModel)]="filters.bpf[0]"></textarea>
+            </mat-form-field>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+<div class="bottom-bar">
+    <div class="spacer"></div>
+    <div mat-dialog-actions layout="row" class="dialog-actions">
+        <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+        <button mat-button (click)="onResetClick()" color="accent">Reset</button>
+        <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+        <div class="divider"></div>
+        <button mat-button (click)="onHelpClick()" color="accent">Help</button>
+    </div>
+</div>

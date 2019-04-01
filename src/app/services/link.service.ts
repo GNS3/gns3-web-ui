@@ -7,15 +7,12 @@ import { HttpServer } from './http-server.service';
 import { Port } from '../models/port';
 import { Link } from '../models/link';
 import { LinkNode } from '../models/link-node';
+import { FilterDescription } from '../models/filter-description';
+import { CapturingSettings } from '../models/capturingSettings';
 
 @Injectable()
 export class LinkService {
   constructor(private httpServer: HttpServer) {}
-
-  deleteLink(server: Server, link: Link) {
-    //return this.httpServer.delete(server, `/compute/projects/${link.project_id}/vpcs/nodes/${link.nodes[0].node_id}/adapters/0/ports/0/nio`)
-    return this.httpServer.delete(server, `/projects/${link.project_id}/links/${link.link_id}`)
-  }
 
   createLink(server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
     return this.httpServer.post(server, `/projects/${source_node.project_id}/links`, {
@@ -32,6 +29,22 @@ export class LinkService {
         }
       ]
     });
+  }
+
+  getLink(server: Server, projectId: string, linkId: string) {
+    return this.httpServer.get<Link>(server, `/projects/${projectId}/links/${linkId}`);
+  }
+
+  deleteLink(server: Server, link: Link) {
+    return this.httpServer.delete(server, `/projects/${link.project_id}/links/${link.link_id}`)
+  }
+
+  updateLink(server: Server, link: Link) {
+    return this.httpServer.put<Link>(server, `/projects/${link.project_id}/links/${link.link_id}`, link);
+  }
+
+  getAvailableFilters(server: Server, link: Link) {
+    return this.httpServer.get<FilterDescription[]>(server, `/projects/${link.project_id}/links/${link.link_id}/available_filters`);
   }
 
   updateNodes(server: Server, link: Link, nodes: LinkNode[]) {
@@ -51,5 +64,17 @@ export class LinkService {
     });
 
     return this.httpServer.put(server, `/projects/${link.project_id}/links/${link.link_id}`, { nodes: requestNodes });
+  }
+
+  startCaptureOnLink(server: Server, link: Link, settings: CapturingSettings) {
+    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/start_capture`, settings);
+  }
+
+  stopCaptureOnLink(server: Server, link: Link) {
+    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/stop_capture`, {});
+  }
+
+  streamPcap(server: Server, link: Link) {
+    return this.httpServer.get(server, `/projects/${link.project_id}/links/${link.link_id}/pcap`)
   }
 }

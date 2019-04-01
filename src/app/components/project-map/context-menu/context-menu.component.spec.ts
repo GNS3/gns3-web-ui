@@ -8,6 +8,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material';
 import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
+import { Server } from '../../../models/server';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -28,6 +29,7 @@ describe('ContextMenuComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ContextMenuComponent);
     component = fixture.componentInstance;
+    component.server = {location: 'local'} as Server;
     fixture.detectChanges();
   });
 
