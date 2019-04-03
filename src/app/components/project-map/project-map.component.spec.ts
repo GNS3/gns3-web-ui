@@ -43,6 +43,7 @@ import { Project } from '../../models/project';
 import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -216,6 +217,7 @@ describe('ProjectMapComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
+        { provide: MapScaleService }
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]

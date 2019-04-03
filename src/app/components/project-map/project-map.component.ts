@@ -44,6 +44,7 @@ import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 
 
 @Component({
@@ -110,7 +111,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private movingEventSource: MovingEventSource
+    private movingEventSource: MovingEventSource,
+    private mapScaleService: MapScaleService
   ) {}
 
   ngOnInit() {
@@ -379,6 +381,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public showMenu() {
     this.drawTools.visibility = true;
+  }
+
+  zoomIn() {
+    this.mapScaleService.setScale(this.mapScaleService.getScale() + 0.1);
+  }
+
+  zoomOut() {
+    let currentScale = this.mapScaleService.getScale();
+
+    if ((currentScale - 0.1) > 0) {
+      this.mapScaleService.setScale(currentScale - 0.1);
+    }
+  }
+
+  resetZoom() {
+    this.mapScaleService.resetToDefault();
   }
 
   public ngOnDestroy() {

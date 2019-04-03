@@ -89,6 +89,44 @@ mat-divider.divider {
   color: gray;
 }
 
+#zoom-buttons {
+  position: fixed;
+  background: #263238;
+  bottom: 20px;
+  right: 20px;
+  display: grid;
+
+  .zoom-button {
+    outline: none;
+    height: 40px;
+    width: 40px;
+    background: #263238;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+
+    mat-icon {
+      margin-top: 8px;
+    }
+  }
+
+  .zoom-button-white {
+    outline: none;
+    height: 40px;
+    width: 40px;
+    color: #263238;
+    border: none;
+    background: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+
+    mat-icon {
+      margin-top: 8px;
+    }
+  } 
+}
+
 @-moz-document url-prefix() {
   /** fixes gray background of drawing menu on Firefox **/
   .mat-drawer-content {

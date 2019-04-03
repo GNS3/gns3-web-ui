@@ -177,6 +177,7 @@ import { StartCaptureDialogComponent } from './components/project-map/packet-cap
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { ResumeLinkActionComponent } from './components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
+import { MapScaleService } from './services/mapScale.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -360,7 +361,8 @@ if (environment.production) {
     IouService,
     IouConfigurationService,
     RecentlyOpenedProjectService,
-    ServerManagementService
+    ServerManagementService,
+    MapScaleService
   ],
   entryComponents: [
     AddServerDialogComponent,
