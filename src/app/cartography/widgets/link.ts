@@ -11,7 +11,6 @@ import { MapLink } from '../models/map/map-link';
 import { SelectionManager } from '../managers/selection-manager';
 import { event } from 'd3-selection';
 import { LinkContextMenu } from '../events/event-source';
-import { MapScaleService } from '../../services/mapScale.service';
 
 @Injectable()
 export class LinkWidget implements Widget {
@@ -21,8 +20,7 @@ export class LinkWidget implements Widget {
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
     private interfaceLabelWidget: InterfaceLabelWidget,
     private interfaceStatusWidget: InterfaceStatusWidget,
-    private selectionManager: SelectionManager,
-    private mapScaleService: MapScaleService
+    private selectionManager: SelectionManager
   ) {}
 
   public draw(view: SVGSelection) {
@@ -31,8 +29,7 @@ export class LinkWidget implements Widget {
     const link_body_enter = link_body
       .enter()
       .append<SVGGElement>('g')
-      .attr('class', 'link_body')
-      .attr('transform', `scale(${this.mapScaleService.getScale()})`);;
+      .attr('class', 'link_body');
 
     const link_body_merge = link_body.merge(link_body_enter).attr('transform', link => {
       const translation = this.multiLinkCalculatorHelper.linkTranslation(link.distance, link.source, link.target);

@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
 import { select } from 'd3-selection';
+import { MapScaleService } from '../../services/mapScale.service';
 
 @Directive({
     selector: '[zoomingCanvas]',
@@ -14,7 +15,8 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
     constructor(
         private element: ElementRef,
         private movingEventSource: MovingEventSource,
-        private context: Context
+        private context: Context,
+        private mapsScaleService: MapScaleService
     ) {}
 
     ngOnInit() {
@@ -45,6 +47,7 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
                 const xTrans = this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
                 const yTrans = this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
                 const kTrans = this.context.transformation.k;
+                this.mapsScaleService.setScale(kTrans);
 
                 return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
             });

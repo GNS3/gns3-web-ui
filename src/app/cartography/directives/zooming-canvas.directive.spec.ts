@@ -4,6 +4,7 @@ import { Context } from '../models/context';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Component } from '@angular/core';
 import { ZoomingCanvasDirective } from './zooming-canvas.directive';
+import { MapScaleService } from '../../services/mapScale.service';
 
 @Component({
     template: `<svg #svg class="map" preserveAspectRatio="none" zoomingCanvas><g class="canvas" transform="translate(0, 0) scale(1)"></g></svg>`
@@ -22,7 +23,8 @@ describe('ZoomingCanvasDirective', () => {
         imports: [NoopAnimationsModule],
         providers: [
             { provide: MovingEventSource, useValue: movingEventSource },
-            { provide: Context, useClass: Context }
+            { provide: Context, useClass: Context },
+            { provide: MapScaleService, useClass: MapScaleService }
         ],
         declarations: [DummyComponent, ZoomingCanvasDirective]
         }).compileComponents();
