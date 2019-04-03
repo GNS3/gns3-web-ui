@@ -398,6 +398,27 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   resetZoom() {
     this.mapScaleService.resetToDefault();
   }
+  
+  public uploadImageFile(event) {
+    this.readImageFile(event.target);
+  }
+
+  private readImageFile(fileInput) {
+    let file: File = fileInput.files[0];
+    let fileReader: FileReader = new FileReader();
+    let imageToUpload = new Image();
+
+    fileReader.onloadend = () => {
+      let image = fileReader.result;
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
+                xlink:href=\"${image}\"/>\n</svg>`;
+      this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width/2), -(imageToUpload.height/2), svg).subscribe(() => {});
+    }
+        
+    imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
+    imageToUpload.src = window.URL.createObjectURL(file);
+  }
 
   public ngOnDestroy() {
     this.drawingsDataSource.clear();

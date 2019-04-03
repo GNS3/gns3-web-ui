@@ -39,6 +39,10 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+.non-visible {
+  display: none;
+}
+
 #menu-wrapper {
   position: fixed;
   background: transparent;
@@ -76,7 +80,7 @@ g.node:hover {
 }
 
 .extended {
-  width: 570px !important;
+  width: 640px !important;
   height: 100%;
   overflow: hidden;
 }
