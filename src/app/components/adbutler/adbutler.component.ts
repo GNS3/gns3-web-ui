@@ -1,11 +1,12 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-adbutler',
   templateUrl: './adbutler.component.html',
-  styleUrls: ['./adbutler.component.scss']
+  styleUrls: ['./adbutler.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
-export class AdbutlerComponent implements OnInit, AfterViewInit {
+export class AdbutlerComponent implements OnInit, AfterViewInit, OnDestroy {
   id: number;
   setId: number;
   rnd: number;
@@ -56,6 +57,12 @@ export class AdbutlerComponent implements OnInit, AfterViewInit {
     scriptElement.async = true;
     scriptElement.charset = 'utf-8';
     this.code.nativeElement.appendChild(scriptElement);
+  }
+
+  ngOnDestroy() {
+    // start from 0 when switching pages
+    (window as any).sparkCounter355353 = 0;
+    delete (window as any).loadedTextAds355353[this.sparkCounter];
   }
 
 }
