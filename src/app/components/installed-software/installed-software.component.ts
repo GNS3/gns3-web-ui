@@ -47,7 +47,11 @@ export class InstalledSoftwareDataSource extends DataSource<any> {
   disconnect() {}
 
   refresh() {
-    this.installed.next(this.installedSoftwareService.list());
+    let installedSoftware = this.installedSoftwareService.list();
+    installedSoftware.push({
+      type: 'adbutler'
+    });
+    this.installed.next(installedSoftware);
   }
 
 }
