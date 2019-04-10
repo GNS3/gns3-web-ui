@@ -134,10 +134,10 @@ describe('ServerService', () => {
   });
 
   it('should call findAll', done => {
-    spyOn(db, 'getAll').and.returnValue(Promise.resolve(true));
+    spyOn(db, 'getAll').and.returnValue(Promise.resolve([]));
 
     service.findAll().then(result => {
-      expect(result).toEqual(true);
+      expect(result).toEqual([]);
       expect(db.getAll).toHaveBeenCalledWith('servers');
       done();
     });
@@ -151,7 +151,7 @@ describe('ServerService', () => {
     expectedServer.name = 'local';
     expectedServer.host = 'hostname';
     expectedServer.port = 9999;
-    expectedServer.is_local = true;
+    expectedServer.location = 'bundled';
 
     service.getLocalServer('hostname', 9999).then(() => {
       expect(service.create).toHaveBeenCalledWith(expectedServer);
@@ -164,7 +164,7 @@ describe('ServerService', () => {
     server.name = 'local';
     server.host = 'hostname';
     server.port = 9999;
-    server.is_local = true;
+    server.location = 'bundled';
 
     spyOn(db, 'getAll').and.returnValue(Promise.resolve([server]));
     spyOn(service, 'update').and.returnValue(Promise.resolve(new Server()));

@@ -39,9 +39,14 @@ import { SelectionTool } from '../../cartography/tools/selection-tool';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
+import { Project } from '../../models/project';
+import { CapturingSettings } from '../../models/capturingSettings';
+import { LinkWidget } from '../../cartography/widgets/link';
 
 export class MockedProgressService {
   public activate() {}
+
+  public deactivate() {}
 }
 
 export class MockedNodeService {
@@ -57,6 +62,22 @@ export class MockedNodeService {
   }
 
   delete(server: Server, node: Node) {
+    return of();
+  }
+
+  startAll(server: Server, project: Project) {
+    return of();
+  }
+
+  stopAll(server: Server, project: Project) {
+    return of();
+  }
+
+  suspendAll(server: Server, project: Project) {
+    return of();
+  }
+
+  reloadAll(server: Server, project: Project) {
     return of();
   }
 }
@@ -93,8 +114,16 @@ export class MockedDrawingService {
 export class MockedLinkService {
   constructor() {}
 
+  getLink(server: Server, projectId: string, linkId: string) {
+    return of({});
+  }
+
   deleteLink(_server: Server, link: Link){
-    return of({})
+    return of({});
+  }
+
+  updateLink(server: Server, link: Link) {
+    return of({});
   }
 
   createLink() {
@@ -104,10 +133,20 @@ export class MockedLinkService {
   updateNodes() {
     return of({});
   }
+
+  startCaptureOnLink(server: Server, link: Link, settings: CapturingSettings) {
+    return of({});
+  }
+
+  getAvailableFilters(server: Server, link: Link) { 
+    return of({});
+  }
 }
 
 export class MockedDrawingsDataSource {
   add() {}
+
+  clear() {}
 
   get() {
     return of({});
@@ -121,8 +160,10 @@ export class MockedDrawingsDataSource {
 export class MockedNodesDataSource {
   add() {}
 
+  clear() {}
+
   get() {
-    return of({});
+    return {status: 'started'};
   }
 
   update() {
@@ -130,11 +171,17 @@ export class MockedNodesDataSource {
   }
 }
 
+export class MockedLinksDataSource {
+  clear() {}
+}
+
 describe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
   let drawingService = new MockedDrawingService();
   let drawingsDataSource = new MockedDrawingsDataSource();
+  let nodesDataSource = new MockedNodesDataSource();
+  let linksDataSource = new MockedLinksDataSource();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -150,13 +197,14 @@ describe('ProjectMapComponent', () => {
         { provide: ProjectWebServiceHandler },
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
+        { provide: LinkWidget },
         { provide: DrawingsWidget },
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },
         { provide: MapLabelToLabelConverter },
         { provide: MapLinkToLinkConverter },
-        { provide: NodesDataSource },
-        { provide: LinksDataSource },
+        { provide: NodesDataSource, useValue: nodesDataSource },
+        { provide: LinksDataSource, useValue: linksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
         { provide: SettingsService, useClass: MockedSettingsService },
         { provide: ToolsService },
@@ -175,6 +223,10 @@ describe('ProjectMapComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should create', () => {

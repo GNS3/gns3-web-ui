@@ -1,6 +1,6 @@
 {
   "name": "gns3-web-ui",
-  "version": "0.0.1-beta.0",
+  "version": "2019.1.0-alpha.4dev",
   "author": {
     "name": "GNS3 Technology Inc.",
     "email": "developers@gns3.com"
@@ -77,6 +77,7 @@
     "@angular/cli": "^7.3.3",
     "@angular/compiler-cli": "^7.2.7",
     "@angular/language-service": "^7.2.7",
+    "@sentry/cli": "^1.40.0",
     "@sentry/electron": "^0.16.0",
     "@types/jasmine": "~3.3.9",
     "@types/jasminewd2": "~2.0.6",

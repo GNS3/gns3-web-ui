@@ -1,5 +1,5 @@
 export type ServerAuthorization = 'basic' | 'none';
-export type ServerLocation = 'local' | 'remote';
+export type ServerLocation = 'local' | 'remote' | 'bundled';
 export type ServerStatus = 'stopped' | 'starting' | 'running';
 
 export class Server {
@@ -13,6 +13,5 @@ export class Server {
   authorization: ServerAuthorization;
   login: string;
   password: string;
-  is_local: boolean;
   status: ServerStatus;
 }

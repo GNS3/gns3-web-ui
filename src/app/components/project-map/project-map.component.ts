@@ -30,7 +30,7 @@ import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-nod
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { ToolsService } from '../../services/tools.service';
-import { DrawingContextMenu } from '../../cartography/events/event-source';
+import { DrawingContextMenu, LinkContextMenu } from '../../cartography/events/event-source';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { SelectionManager } from '../../cartography/managers/selection-manager';
 import { SelectionTool } from '../../cartography/tools/selection-tool';
@@ -42,6 +42,7 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { LinkWidget } from '../../cartography/widgets/link';
 
 
 @Component({
@@ -95,6 +96,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
     private drawingsWidget: DrawingsWidget,
+    private linkWidget: LinkWidget,
     private mapNodeToNode: MapNodeToNodeConverter,
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     private mapLabelToLabel: MapLabelToLabelConverter,
@@ -219,6 +221,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.toolsService.selectionToolActivation(true);
     }
 
+    const onLinkContextMenu = this.linkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
+      const link = this.mapLinkToLink.convert(eventLink.link);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+    });
+
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
       this.contextMenu.openMenuForNode(node, eventNode.event.pageY, eventNode.event.pageX);
@@ -253,6 +260,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
     });
 
+    this.subscriptions.push(onLinkContextMenu);
     this.subscriptions.push(onNodeContextMenu);
     this.subscriptions.push(onDrawingContextMenu);
     this.subscriptions.push(onContextMenu);

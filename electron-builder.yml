@@ -4,6 +4,7 @@ productName: "GNS3 Web UI"
 artifactName: "${productName}-${os}-${arch}-${version}.${ext}"
 asar: true
 compression: normal
+generateUpdatesFilesForAllChannels: true
 
 directories:
   output: build

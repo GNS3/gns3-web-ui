@@ -35,20 +35,28 @@ describe('AddVpcsTemplateComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: VpcsService, useValue: mockedVpcsService },
-              { provide: ToasterService, useValue: mockedToasterService},
-              { provide: TemplateMocksService, useClass: TemplateMocksService }
-          ],
-          declarations: [
-              AddVpcsTemplateComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
+            imports: [
+                FormsModule, 
+                ReactiveFormsModule, 
+                MatIconModule, 
+                MatToolbarModule, 
+                MatMenuModule, 
+                MatCheckboxModule, 
+                CommonModule, 
+                NoopAnimationsModule, 
+                RouterTestingModule.withRoutes([{path: 'server/1/preferences/vpcs/templates', component: AddVpcsTemplateComponent}])
+                ],
+            providers: [
+                { provide: ActivatedRoute,  useValue: activatedRoute },
+                { provide: ServerService, useValue: mockedServerService },
+                { provide: VpcsService, useValue: mockedVpcsService },
+                { provide: ToasterService, useValue: mockedToasterService },
+                { provide: TemplateMocksService, useClass: TemplateMocksService }
+            ],
+            declarations: [
+                AddVpcsTemplateComponent
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
     }));
 

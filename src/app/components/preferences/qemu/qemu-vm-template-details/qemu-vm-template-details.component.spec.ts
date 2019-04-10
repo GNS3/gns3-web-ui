@@ -11,7 +11,7 @@ import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, AbstractControlDirective, FormControl } from '@angular/forms';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuVmTemplateDetailsComponent } from './qemu-vm-template-details.component';
@@ -49,13 +49,12 @@ describe('QemuVmTemplateDetailsComponent', () => {
         TestBed.configureTestingModule({
           imports: [FormsModule, ReactiveFormsModule, MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
+              { provide: ActivatedRoute,  useValue: activatedRoute },
               { provide: ServerService, useValue: mockedServerService },
               { provide: QemuService, useValue: mockedQemuService },
               { provide: ToasterService, useValue: mockedToasterService},
-              { provide: QemuConfigurationService, useClass: QemuConfigurationService }
+              { provide: QemuConfigurationService, useClass: QemuConfigurationService },
+              { provide: AbstractControlDirective, useExisting: FormControl, useMulti: true }
           ],
           declarations: [
               QemuVmTemplateDetailsComponent

@@ -6,7 +6,7 @@ import { ServersComponent } from './components/servers/servers.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { LocalServerComponent } from './components/local-server/local-server.component';
+import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
 import { PreferencesComponent } from './components/preferences/preferences.component';
 import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
@@ -60,7 +60,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'servers', pathMatch: 'full' },
       { path: 'servers', component: ServersComponent },
-      { path: 'local', component: LocalServerComponent },
+      { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
@@ -122,6 +122,10 @@ const routes: Routes = [
   },
   { 
     path: 'server/:server_id/project/:project_id', component: ProjectMapComponent,
+  },
+  {
+    path: '**',
+    redirectTo: 'servers'
   }
 ];
 

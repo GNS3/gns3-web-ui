@@ -33,7 +33,7 @@
   <div class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar">
       <mat-toolbar-row>
-        <button mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
+        <button matTooltip="Open menu" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
       </mat-toolbar-row>
 
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
@@ -48,7 +48,7 @@
       </mat-menu>
 
       <mat-toolbar-row>
-        <button mat-icon-button [matMenuTriggerFor]="viewMenu"><mat-icon>view_module</mat-icon></button>
+        <button matTooltip="Show/hide interface labels" mat-icon-button [matMenuTriggerFor]="viewMenu"><mat-icon>view_module</mat-icon></button>
       </mat-toolbar-row>
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
@@ -60,13 +60,13 @@
       </mat-menu>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button mat-icon-button [color]="tools.draw_link ? 'primary' : 'basic'" (click)="toggleDrawLineMode()">
+        <button matTooltip="Add a link" mat-icon-button [color]="tools.draw_link ? 'primary' : 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
       </mat-toolbar-row>
 
       <mat-toolbar-row>
-        <button mat-icon-button [color]="tools.moving ? 'primary' : 'basic'" (click)="toggleMovingMode()">
+        <button matTooltip="Enable/disable moving mode" mat-icon-button [color]="tools.moving ? 'primary' : 'basic'" (click)="toggleMovingMode()">
           <mat-icon>zoom_out_map</mat-icon>
         </button>
       </mat-toolbar-row>
@@ -80,18 +80,20 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button mat-icon-button routerLink="/server/{{server.id}}/preferences">
+        <button  matTooltip="Go to preferences" mat-icon-button routerLink="/server/{{server.id}}/preferences">
           <mat-icon>settings_applications</mat-icon>
         </button>
       </mat-toolbar-row>
     </mat-toolbar>
   </div>
 
-  <div id="show-menu-wrapper" [ngClass]="{ shadowed: !drawTools.visibility }">
+  <div id="show-menu-wrapper" [ngClass]="{ shadowed: !drawTools.visibility }" *ngIf="!readonly">
     <button class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon>keyboard_arrow_right</mat-icon></button>
   </div>
 
   <div id="menu-wrapper" [ngClass]="{ extended: drawTools.visibility }">
+    <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
+    <mat-divider class="divider" [vertical]="true"></mat-divider>
     <button
       matTooltip="Add a note"
       mat-icon-button
@@ -119,7 +121,7 @@
     >
       <mat-icon>panorama_fish_eye</mat-icon>
     </button>
-    <button matTooltip="Draw line" mat-icon-button class="menu-button" (click)="addDrawing('line')">
+    <button matTooltip="Draw a line" mat-icon-button class="menu-button" (click)="addDrawing('line')">
       <svg height="40" width="40">
         <line
           [ngClass]="{ selected: drawTools.isLineChosen }"

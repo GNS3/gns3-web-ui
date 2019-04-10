@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Dist project
           command: |
-            yarn electron-builder --mac --x64
+            yarn electron-builder --mac --x64 --publish always
 
       - run:
           name: Gather artifacts
