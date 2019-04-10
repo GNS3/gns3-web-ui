@@ -168,6 +168,9 @@ import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapsho
 import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
+
+import { ConsoleDeviceActionComponent } from './components/project-map/context-menu/actions/console-device-action/console-device-action.component';
+import { ConsoleComponent } from './components/settings/console/console.component';
 import { NodesMenuComponent } from './components/project-map/nodes-menu/nodes-menu.component';
 import { PacketFiltersActionComponent } from './components/project-map/context-menu/actions/packet-filters-action/packet-filters-action.component';
 import { PacketFiltersDialogComponent } from './components/project-map/packet-capturing/packet-filters/packet-filters.component';
@@ -291,6 +294,8 @@ if (environment.production) {
     NameFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
+    ConsoleDeviceActionComponent,
+    ConsoleComponent,
     NodesMenuComponent
   ],
   imports: [

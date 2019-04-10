@@ -51,6 +51,7 @@ import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy
 import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
 import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
+import { ConsoleComponent } from './components/settings/console/console.component';
 
 const routes: Routes = [
   {
@@ -62,6 +63,7 @@ const routes: Routes = [
       { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
