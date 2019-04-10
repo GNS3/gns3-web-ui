@@ -40,6 +40,7 @@ SOURCE_DESTINATION = os.path.join(WORKING_DIR, 'source')
 BINARIES_EXTENSION = platform.system() == "Windows" and ".exe" or ""
 DEPENDENCIES = {
     'ubridge': {
+        'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/ubridge/releases',
         'version': 'LATEST',
         'files': {
@@ -50,6 +51,7 @@ DEPENDENCIES = {
         }
     },
     'vpcs': {
+        'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/vpcs/releases',
         'version': '0.6.1',
         'files': {
@@ -60,6 +62,7 @@ DEPENDENCIES = {
         }
     },
     'dynamips': {
+        'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/dynamips/releases',
         'version': '0.2.17',
         'files': {
@@ -67,6 +70,16 @@ DEPENDENCIES = {
                 'cygwin1.dll',
                 'dynamips.exe',
                 'nvram_export.exe'
+            ]
+        }
+    },
+    'putty': {
+        'type': 'http',
+        'url': 'https://the.earth.li/~sgtatham/putty/{version}/w64/putty.exe',
+        'version': '0.71',
+        'files': {
+            'windows': [
+                'putty.exe',
             ]
         }
     }
@@ -113,31 +126,54 @@ def prepare():
     os.makedirs(WORKING_DIR, exist_ok=True)
 
 
+def download_from_github(name, definition, output_directory):
+    response = requests.get(definition['releases'])
+    response.raise_for_status()
+    releases = response.json()
+
+    if definition['version'] == 'LATEST':
+        release = releases[0]
+    else:
+        release = list(filter(lambda x: x['tag_name'] == "v{}".format(definition['version']), releases))[0]
+
+    dependency_dir = os.path.join(output_directory, name)
+    os.makedirs(dependency_dir, exist_ok=True)
+
+    files = []
+    if platform.system() == "Windows":
+        files = definition['files']['windows']
+    
+    for filename in files:
+        dependency_file = os.path.join(dependency_dir, filename)
+        dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
+        download(dependency_url, dependency_file)
+        print('Downloaded {} to {}'.format(filename, dependency_file))
+
+
+def download_from_http(name, definition, output_directory):
+    url = definition['url'].format(version=definition['version'])
+
+    dependency_dir = os.path.join(output_directory, name)
+    os.makedirs(dependency_dir, exist_ok=True)
+
+    files = []
+    if platform.system() == "Windows":
+        files = definition['files']['windows']
+    
+    for filename in files:
+        dependency_file = os.path.join(dependency_dir, filename)
+        download(url, dependency_file)
+        print('Downloaded {} to {}'.format(filename, dependency_file))
+
+
 def download_dependencies_command(arguments):
     output_directory = os.path.join(os.getcwd(), arguments.b)
 
     for name, definition in DEPENDENCIES.items():
-        response = requests.get(definition['releases'])
-        response.raise_for_status()
-        releases = response.json()
-
-        if definition['version'] == 'LATEST':
-            release = releases[0]
-        else:
-            release = list(filter(lambda x: x['tag_name'] == "v{}".format(definition['version']), releases))[0]
-
-        dependency_dir = os.path.join(output_directory, name)
-        os.makedirs(dependency_dir, exist_ok=True)
-
-        files = []
-        if platform.system() == "Windows":
-            files = definition['files']['windows']
-        
-        for filename in files:
-            dependency_file = os.path.join(dependency_dir, filename)
-            dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
-            download(dependency_url, dependency_file)
-            print('Downloaded {} to {}'.format(filename, dependency_file))
+        if definition['type'] == 'github':
+            download_from_github(name, definition, output_directory)
+        if definition['type'] == 'http':
+            download_from_http(name, definition, output_directory)
 
 
 
