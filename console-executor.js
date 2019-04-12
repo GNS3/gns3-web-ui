@@ -1,8 +1,32 @@
 const { spawn } = require('child_process');
+const { app } = require('electron');
+const path = require('path');
+
+async function setPATHEnv() {
+  const puttyLookup = [
+    path.join(__dirname, 'dist', 'putty'),
+    path.join(path.dirname(app.getPath('exe')), 'dist', 'putty')
+  ];
+
+  // prevent adding duplicates
+  let extra = [
+    ...puttyLookup,
+  ].filter((dir) => {
+    return process.env.PATH.indexOf(dir) < 0;
+  });
+  extra.push(process.env.PATH);
+  process.env.PATH = extra.join(";");
+}
 
 exports.openConsole = async (consoleRequest) => {
-  const genericConsoleCommand = 'xfce4-terminal --tab -T "%d" -e "telnet %h %p"';
+  // const genericConsoleCommand = 'xfce4-terminal --tab -T "%d" -e "telnet %h %p"';
+  const genericConsoleCommand = 'putty.exe -telnet %h %p -loghost "%d"';
+
   const command = prepareCommand(genericConsoleCommand, consoleRequest);
+  
+  console.log(`Setting up PATH`);
+  await setPATHEnv();
+  
   console.log(`Starting console with command: '${command}'`);
 
   let consoleProcess = spawn(command, [], {
@@ -10,7 +34,15 @@ exports.openConsole = async (consoleRequest) => {
   });
 
   consoleProcess.stdout.on('data', (data) => {
-    console.log(`Console is producing: ${data.toString()}`);
+    console.log(`Console stdout is producing: ${data.toString()}`);
+  });
+
+  consoleProcess.stderr.on('data', (data) => {
+    console.log(`Console stderr is producing: ${data.toString()}`);
+  });
+
+  consoleProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
   });
 }
 
