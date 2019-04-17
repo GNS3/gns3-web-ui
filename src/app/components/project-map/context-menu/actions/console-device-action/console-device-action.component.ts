@@ -4,6 +4,8 @@ import { Server } from '../../../../../models/server';
 import { ElectronService } from 'ngx-electron';
 import { Project } from '../../../../../models/project';
 import { ServerService } from '../../../../../services/server.service';
+import { SettingsService } from '../../../../../services/settings.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
   selector: 'app-console-device-action',
@@ -16,15 +18,36 @@ export class ConsoleDeviceActionComponent implements OnInit {
 
   constructor(
     private electronService: ElectronService,
-    private serverService: ServerService
+    private serverService: ServerService,
+    private settingsService: SettingsService,
+    private toasterService: ToasterService
   ) { }
 
   ngOnInit() {
   }
 
   async console() {
+    const consoleCommand = this.settingsService.get<string>('console_command');
+
+    if(consoleCommand === undefined) {
+      this.toasterService.error('Console command is not defined. Please change it in the Settings.');
+      return;
+    }
+
+    const startedNodes = this.nodes.filter(node => node.status === 'started');
+
+    if(startedNodes.length === 0) {
+      this.toasterService.error('Device needs to be started in order to console to it.');
+      return;
+    }
+
     for(var node of this.nodes) {
+      if(node.status !== 'started') {
+        continue;
+      }
+
       const consoleRequest = {
+        command: consoleCommand,
         type: node.console_type,
         host: node.console_host,
         port: node.console,

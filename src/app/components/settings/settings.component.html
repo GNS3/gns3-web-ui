@@ -28,15 +28,15 @@
           </div> -->
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title> Console settings </mat-panel-title>
             <mat-panel-description> Customize console settings </mat-panel-description>
           </mat-expansion-panel-header>
 
           <div>
-            <mat-form-field class="example-full-width">
-              <input matInput placeholder="console">
+            <mat-form-field class="full-width-field">
+              <input matInput placeholder="console" [value]="consoleCommand" readonly="true">
               <a mat-icon-button matSuffix routerLink="/settings/console"><mat-icon>mode_edit</mat-icon></a>
             </mat-form-field>
           </div>
