@@ -1,9 +1,5 @@
-import { TestBed } from '@angular/core/testing';
-
 import { ConsoleService } from './console.service';
 import { MockedSettingsService } from '../settings.service.spec';
-import { SettingsService } from '../settings.service';
-import { DefaultConsoleService } from './default-console.service';
 
 describe('ConsoleService', () => {
   let service: ConsoleService;
