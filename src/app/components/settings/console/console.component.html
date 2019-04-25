@@ -1,0 +1,28 @@
+<div class="content">
+  <div class="default-header">
+      <div class="row">
+          <h1 class="col">Console settings</h1>
+      </div>
+  </div>
+  <div class="default-content">
+      <mat-card>
+          <form [formGroup]="consoleForm">
+            <mat-form-field class="form-field full-width-field">
+              <textarea matInput formControlName="command" placeholder="Command"></textarea>
+            </mat-form-field>
+            <div class="help">The following variables are replaced by GNS3:<br />
+              %h: console IP or hostname<br />
+              %p: console port<br />
+              %s: path of the serial connection<br />
+              %d: title of the console<br />
+              %i: Project UUID<br />
+              %c: server URL (http://user:password@server:port)
+            </div>
+          </form>
+      </mat-card>
+      <div class="buttons-bar">
+          <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+          <button mat-raised-button color="primary" (click)="save()">Save</button><br/>
+      </div>
+  </div>
+</div>
