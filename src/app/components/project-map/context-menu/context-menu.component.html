@@ -5,7 +5,6 @@
     <app-stop-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-stop-node-action>
     <app-console-device-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
-      [project]="project"
       [server]="server"
       [nodes]="nodes"
     ></app-console-device-action>

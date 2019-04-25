@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { ElectronService } from 'ngx-electron';
-import { Project } from '../../../../../models/project';
 import { ServerService } from '../../../../../services/server.service';
 import { SettingsService } from '../../../../../services/settings.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -13,7 +12,6 @@ import { ToasterService } from '../../../../../services/toaster.service';
 })
 export class ConsoleDeviceActionComponent implements OnInit {
   @Input() server: Server;
-  @Input() project: Project;
   @Input() nodes: Node[];
 
   constructor(
@@ -52,7 +50,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
         host: node.console_host,
         port: node.console,
         name: node.name,
-        project_id: this.project.project_id,
+        project_id: node.project_id,
         node_id: node.node_id,
         server_url: this.serverService.getServerUrl(this.server)
       };

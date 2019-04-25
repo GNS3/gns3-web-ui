@@ -9,17 +9,23 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Server } from '../../../models/server';
+import { ElectronService } from 'ngx-electron';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
   let fixture: ComponentFixture<ContextMenuComponent>;
 
   beforeEach(async(() => {
+    const electronMock = {
+      isElectronApp: true
+    };
+
     TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
       providers: [
         { provide: ChangeDetectorRef }, 
-        { provide: ProjectService, useClass: MockedProjectService }
+        { provide: ProjectService, useClass: MockedProjectService },
+        { provide: ElectronService, useValue: electronMock}
       ],
       declarations: [ContextMenuComponent],
       schemas: [NO_ERRORS_SCHEMA]
@@ -35,6 +41,10 @@ describe('ContextMenuComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should define property if running in electron ', () => {
+    expect(component.isElectronApp).toBeTruthy();
   });
 
   it('should reset capabilities while opening menu for node', () => {
