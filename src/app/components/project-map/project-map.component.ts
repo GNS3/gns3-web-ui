@@ -43,6 +43,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 
 
 @Component({
@@ -108,7 +109,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
   ) {}
 
   ngOnInit() {
@@ -274,6 +276,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     
     this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
+
+        nodes.filter((node) => node.label.style === null).forEach((node) => {
+          const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
+        });
+
         this.nodesDataSource.set(nodes);
       });
     });
