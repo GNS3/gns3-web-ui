@@ -73,7 +73,7 @@ after_script:
 # build sourcemaps and upload to Sentry
   # fix node issue with memory
   - |
-    if [ -n "$TRAVIS_TAG" ]; 
+    if [ -n "$TRAVIS_TAG" ]; then
       export NODE_OPTIONS=--max_old_space_size=4096
       export RELEASE_VERSION=$(node -e "const fs = require('fs'); let p = fs.readFileSync('package.json'); console.log(JSON.parse(p).version);")
       yarn ng build --configuration=production --base-href /static/web-ui/
