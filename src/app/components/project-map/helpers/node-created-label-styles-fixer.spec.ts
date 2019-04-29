@@ -1,24 +1,23 @@
 import { NodeCreatedLabelStylesFixer } from "./node-created-label-styles-fixer";
-import { MapNode } from '../../../cartography/models/map/map-node';
 import { Node } from '../../../cartography/models/node';
 import { Label } from '../../../cartography/models/label';
 
 describe('NodeCreatedLabelStylesFixer', () => {
   let fixer: NodeCreatedLabelStylesFixer;
-  let nodeToMapNodeConverter;
+  let calculator;
 
   beforeEach(() => {
-    nodeToMapNodeConverter = {
-      convert: (node) => {
-        const n = new MapNode();
-        n.width = node.width;
-        n.height = node.height;
-        return n;
+    calculator = {
+      calculate: (text, styles) => {
+        return {
+          width: 50,
+          height: 10
+        };
       }
     };
 
     fixer = new NodeCreatedLabelStylesFixer(
-      nodeToMapNodeConverter
+      calculator
     );
   });
 
@@ -32,5 +31,7 @@ describe('NodeCreatedLabelStylesFixer', () => {
     const fixed = fixer.fix(node);
 
     expect(fixed.label.style).toEqual('font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;');
+    expect(fixed.label.x).toEqual(25);
+    expect(fixed.label.y).toEqual(-18);
   });
 });

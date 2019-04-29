@@ -279,6 +279,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         nodes.filter((node) => node.label.style === null).forEach((node) => {
           const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
+          this.nodeService.updateLabel(this.server, node, fixedNode.label).subscribe();
         });
 
         this.nodesDataSource.set(nodes);
