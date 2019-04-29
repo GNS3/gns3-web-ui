@@ -208,10 +208,12 @@ def download_command(arguments):
 
     if arguments.l:
       version = get_latest_version()
+      download_url = "https://api.github.com/repos/GNS3/gns3-server/zipball/v{version}"
     else:
       version = DEFAULT_GNS3_SERVER_DEV_BRANCH
+      download_url = "https://github.com/GNS3/gns3-server/archive/{version}.zip"
 
-    download("https://github.com/GNS3/gns3-server/archive/{version}.zip".format(version=version), SOURCE_ZIP)
+    download(download_url.format(version=version), SOURCE_ZIP)
 
     files = unzip(SOURCE_ZIP, SOURCE_DESTINATION)
     source_directory = os.path.join(SOURCE_DESTINATION, files[0].filename)
