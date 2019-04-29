@@ -31,6 +31,7 @@ from multiprocessing.queues import Empty
 
 from cx_Freeze import setup, Executable
 
+DEFAULT_GNS3_SERVER_DEV_BRANCH = '2.2'
 
 FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 WORKING_DIR = os.path.join(FILE_DIR, 'tmp')
@@ -176,12 +177,41 @@ def download_dependencies_command(arguments):
             download_from_http(name, definition, output_directory)
 
 
+def get_latest_version():
+    response = requests.get('https://api.github.com/repos/GNS3/gns3-server/releases')
+    response.raise_for_status()
+    releases = response.json()
+    latest = list(filter(lambda r: r['tag_name'].startswith('v'.format(DEFAULT_GNS3_SERVER_DEV_BRANCH)), releases))[0]
+    return latest['tag_name'].replace('v', '')
+
+
+def is_tagged():
+    if 'TRAVIS_TAG' in os.environ.keys():
+      return True
+    if 'CIRCLE_TAG' in os.environ.keys():
+      return True
+    if os.environ['APPVEYOR_REPO_TAG'] in (1, "True", "true"):
+      return True
+    
+
+def auto_ci_detection(arguments):
+    if is_tagged():
+      arguments.l = True
+
 
 def download_command(arguments):
+    if arguments.a:
+      auto_ci_detection(arguments)
+
     shutil.rmtree(SOURCE_DESTINATION, ignore_errors=True)
     os.makedirs(SOURCE_DESTINATION)
 
-    download("https://github.com/GNS3/gns3-server/archive/2.2.zip", SOURCE_ZIP)
+    if arguments.l:
+      version = get_latest_version()
+    else:
+      version = DEFAULT_GNS3_SERVER_DEV_BRANCH
+
+    download("https://github.com/GNS3/gns3-server/archive/{version}.zip".format(version=version), SOURCE_ZIP)
 
     files = unzip(SOURCE_ZIP, SOURCE_DESTINATION)
     source_directory = os.path.join(SOURCE_DESTINATION, files[0].filename)
@@ -333,6 +363,9 @@ if __name__ == '__main__':
 
     parser_download = subparsers.add_parser(
         'download', help='Downloads source code of gns3server')
+    parser_download.add_argument('-l', action='store_true', help="Use the latest released version (incl. alpha), if not specified then dev version will be taken.")
+    parser_download.add_argument('-a', action='store_true', help="Automatically choose version based on CI/CD pipeline")
+
 
     parser_build = subparsers.add_parser('build_exe', help='Build gns3server')
     parser_build.add_argument('-b', help='Output directory')
