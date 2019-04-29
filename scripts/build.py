@@ -190,7 +190,7 @@ def is_tagged():
       return True
     if 'CIRCLE_TAG' in os.environ.keys():
       return True
-    if os.environ['APPVEYOR_REPO_TAG'] in (1, "True", "true"):
+    if os.environ.get('APPVEYOR_REPO_TAG', False) in (1, "True", "true"):
       return True
     
 
