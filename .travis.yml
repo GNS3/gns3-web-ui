@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-   - node
+   - '10' # use node for latest
 
 # Issue with Travis: https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
 sudo: required
