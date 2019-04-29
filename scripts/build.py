@@ -54,7 +54,7 @@ DEPENDENCIES = {
     'vpcs': {
         'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/vpcs/releases',
-        'version': '0.6.1',
+        'version': '0.6.2',
         'files': {
             'windows': [
                 'cygwin1.dll',
