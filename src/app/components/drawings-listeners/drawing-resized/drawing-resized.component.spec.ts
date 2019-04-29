@@ -60,7 +60,7 @@ describe('DrawingResizedComponent', () => {
       element: mapDrawingElement
     };
     const drawingResizedDataEvent = new ResizedDataEvent<MapDrawing>(mapDrawing, 0, 0, 100, 100);
-    spyOn(mockedDrawingService, 'updateSizeAndPosition').and.returnValue(Observable.of({}));
+    spyOn(mockedDrawingService, 'updateSizeAndPosition').and.returnValue(Observable.of());
 
     mockedDrawingsEventSource.resized.emit(drawingResizedDataEvent);
 

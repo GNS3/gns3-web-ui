@@ -59,7 +59,7 @@ describe('TextAddedComponent', () => {
   it('should call drawing service when text added', () => {
     component.project = { project_id: 'sampleId' } as Project;
     const textAddedDataEvent = new TextAddedDataEvent('savedText', 0, 0);
-    spyOn(mockedDrawingService, 'add').and.returnValue(Observable.of({}));
+    spyOn(mockedDrawingService, 'add').and.returnValue(Observable.of());
 
     mockedDrawingsEventSource.textAdded.emit(textAddedDataEvent);
 
