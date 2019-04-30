@@ -180,6 +180,7 @@ import { StartCaptureDialogComponent } from './components/project-map/packet-cap
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { ResumeLinkActionComponent } from './components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
+import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
@@ -297,6 +298,8 @@ if (environment.production) {
     NameFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
+    NodesMenuComponent,
+    AdbutlerComponent,
     ConsoleDeviceActionComponent,
     ConsoleComponent,
     NodesMenuComponent
