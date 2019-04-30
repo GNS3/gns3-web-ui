@@ -18,6 +18,7 @@
 import os
 import re
 import sys
+import json
 import shutil
 import psutil
 import zipfile
@@ -194,14 +195,28 @@ def is_tagged():
       return True
     
 
-def auto_ci_detection(arguments):
+def is_web_ui_non_dev():
+    package_file = os.path.join(FILE_DIR, '..', 'package.json')
+    with open(package_file) as fp:
+      package_content = fp.read()
+    package = json.loads(package_content)
+    version = package['version']
+    return not version.endswith('dev')
+
+
+def auto_version(arguments):
+    # if we are on tagged repo it means we should use released gns3server
     if is_tagged():
+      arguments.l = True
+
+    # if we are building non-dev version it should be same as above
+    if is_web_ui_non_dev():
       arguments.l = True
 
 
 def download_command(arguments):
     if arguments.a:
-      auto_ci_detection(arguments)
+      auto_version(arguments)
 
     shutil.rmtree(SOURCE_DESTINATION, ignore_errors=True)
     os.makedirs(SOURCE_DESTINATION)
@@ -212,6 +227,8 @@ def download_command(arguments):
     else:
       version = DEFAULT_GNS3_SERVER_DEV_BRANCH
       download_url = "https://github.com/GNS3/gns3-server/archive/{version}.zip"
+
+    print("Using {version} with download_url: {download_url}".format(version=version, download_url=download_url))
 
     download(download_url.format(version=version), SOURCE_ZIP)
 
