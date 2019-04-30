@@ -63,7 +63,7 @@ describe('NodeLabelDraggedComponent', () => {
       nodeId: 'node id'
     };
     const nodeDraggedDataEvent = new DraggedDataEvent<MapLabel>(mapLabel, 0, 0);
-    spyOn(mockedNodeService, 'updateLabel').and.returnValue(Observable.of({}));
+    spyOn(mockedNodeService, 'updateLabel').and.returnValue(Observable.of());
 
     mockedNodesEventSource.labelDragged.emit(nodeDraggedDataEvent);
 

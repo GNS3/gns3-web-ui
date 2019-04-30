@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-   - node
+   - '10' # use node for latest
 
 # Issue with Travis: https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
 sudo: required
@@ -65,7 +65,7 @@ after_script:
   - yarn buildforelectron
   - |
     python3 -m pip install -r scripts/requirements.txt
-    python3 scripts/build.py download
+    python3 scripts/build.py download -a
     python3 scripts/build.py build_exe -b dist/exe.gns3server -s
     python3 scripts/build.py validate -b dist
   - yarn electron-builder --linux --x64 --publish always
@@ -73,7 +73,7 @@ after_script:
 # build sourcemaps and upload to Sentry
   # fix node issue with memory
   - |
-    if [ -n "$TRAVIS_TAG" ]; 
+    if [ -n "$TRAVIS_TAG" ]; then
       export NODE_OPTIONS=--max_old_space_size=4096
       export RELEASE_VERSION=$(node -e "const fs = require('fs'); let p = fs.readFileSync('package.json'); console.log(JSON.parse(p).version);")
       yarn ng build --configuration=production --base-href /static/web-ui/

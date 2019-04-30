@@ -3,6 +3,11 @@
   <mat-menu #contextMenu="matMenu" class="context-menu-items">
     <app-start-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-start-node-action>
     <app-stop-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-stop-node-action>
+    <app-console-device-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
+      [server]="server"
+      [nodes]="nodes"
+    ></app-console-device-action>
     <app-edit-style-action *ngIf="drawings.length===1 && !hasTextCapabilities"
       [server]="server"
       [project]="project"

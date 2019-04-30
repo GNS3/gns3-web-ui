@@ -42,6 +42,7 @@ import { Link } from '../../models/link';
 import { Project } from '../../models/project';
 import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 
 export class MockedProgressService {
   public activate() {}
@@ -182,8 +183,13 @@ describe('ProjectMapComponent', () => {
   let drawingsDataSource = new MockedDrawingsDataSource();
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
+  let nodeCreatedLabelStylesFixer;
 
   beforeEach(async(() => {
+    nodeCreatedLabelStylesFixer = {
+      fix: (node) => node
+    };
+
     TestBed.configureTestingModule({
       imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
@@ -214,6 +220,7 @@ describe('ProjectMapComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]

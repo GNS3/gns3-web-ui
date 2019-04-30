@@ -55,6 +55,10 @@ export class ServerService {
     return this.onReady(() => this.indexedDbService.get().delete(this.tablename, server.id));
   }
 
+  public getServerUrl(server: Server) {
+    return `http://${server.host}:${server.port}/`;
+  }
+
   public getLocalServer(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
       this.findAll().then((servers: Server[]) => {

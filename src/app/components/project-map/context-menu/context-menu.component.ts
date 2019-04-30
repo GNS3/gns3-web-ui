@@ -9,6 +9,7 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Label } from '../../../cartography/models/label';
 import { Link } from '../../../models/link';
+import { ElectronService } from 'ngx-electron';
 
 
 @Component({
@@ -30,17 +31,21 @@ export class ContextMenuComponent implements OnInit {
   labels: Label[] = [];
   links: Link[] = [];
 
-  hasTextCapabilities: boolean = false;
+  hasTextCapabilities = false;
+  isElectronApp = false;
   isBundledServer: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
     private changeDetector: ChangeDetectorRef,
+    private electronService: ElectronService,
     public projectService: ProjectService
   ) {}
 
   ngOnInit() {
     this.setPosition(0, 0);
+
+    this.isElectronApp = this.electronService.isElectronApp;
     this.isBundledServer = this.server.location === 'bundled';
   }
 

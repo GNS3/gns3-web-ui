@@ -4,10 +4,20 @@ import { PersistenceService, StorageType } from 'angular-persistence';
 import { Settings, SettingsService } from './settings.service';
 
 export class MockedSettingsService {
+  settings = {};
+
   isExperimentalEnabled() {
     return true;
   }
   getAll() {}
+
+  get(key: string) {
+    return this.settings[key];
+  }
+
+  set(key: string, value: any) {
+    this.settings[key] = value;
+  }
 }
 
 describe('SettingsService', () => {
@@ -50,7 +60,8 @@ describe('SettingsService', () => {
     expect(service.getAll()).toEqual({
       crash_reports: true,
       experimental_features: false,
-      angular_map: false
+      angular_map: false,
+      console_command: undefined
     });
   }));
 
@@ -63,7 +74,8 @@ describe('SettingsService', () => {
     expect(service.getAll()).toEqual({
       crash_reports: false,
       experimental_features: false,
-      angular_map: false
+      angular_map: false,
+      console_command: undefined
     });
   }));
 

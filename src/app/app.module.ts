@@ -168,6 +168,9 @@ import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapsho
 import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { CustomAdaptersComponent } from './components/preferences/common/custom-adapters/custom-adapters.component';
+
+import { ConsoleDeviceActionComponent } from './components/project-map/context-menu/actions/console-device-action/console-device-action.component';
+import { ConsoleComponent } from './components/settings/console/console.component';
 import { NodesMenuComponent } from './components/project-map/nodes-menu/nodes-menu.component';
 import { PacketFiltersActionComponent } from './components/project-map/context-menu/actions/packet-filters-action/packet-filters-action.component';
 import { PacketFiltersDialogComponent } from './components/project-map/packet-capturing/packet-filters/packet-filters.component';
@@ -178,6 +181,9 @@ import { SuspendLinkActionComponent } from './components/project-map/context-men
 import { ResumeLinkActionComponent } from './components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
 import { AdbutlerComponent } from './components/adbutler/adbutler.component';
+import { ConsoleService } from './services/settings/console.service';
+import { DefaultConsoleService } from './services/settings/default-console.service';
+import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -293,7 +299,10 @@ if (environment.production) {
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
     NodesMenuComponent,
-    AdbutlerComponent
+    AdbutlerComponent,
+    ConsoleDeviceActionComponent,
+    ConsoleComponent,
+    NodesMenuComponent
   ],
   imports: [
     BrowserModule,
@@ -362,7 +371,10 @@ if (environment.production) {
     IouService,
     IouConfigurationService,
     RecentlyOpenedProjectService,
-    ServerManagementService
+    ServerManagementService,
+    ConsoleService,
+    DefaultConsoleService,
+    NodeCreatedLabelStylesFixer
   ],
   entryComponents: [
     AddServerDialogComponent,

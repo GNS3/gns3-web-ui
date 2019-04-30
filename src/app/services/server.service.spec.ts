@@ -35,6 +35,10 @@ export class MockedServerService {
       resolve(this.servers);
     });
   }
+
+  public getServerUrl(server: Server) {
+    return `${server.host}:${server.port}`;
+  }
 }
 
 describe('ServerService', () => {

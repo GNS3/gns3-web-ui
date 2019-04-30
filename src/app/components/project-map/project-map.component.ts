@@ -43,6 +43,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 
 
 @Component({
@@ -108,7 +109,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
   ) {}
 
   ngOnInit() {
@@ -274,6 +276,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     
     this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
+
+        nodes.filter((node) => node.label.style === null).forEach((node) => {
+          const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
+          this.nodeService.updateLabel(this.server, node, fixedNode.label).subscribe();
+        });
+
         this.nodesDataSource.set(nodes);
       });
     });
@@ -364,6 +372,27 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public showMenu() {
     this.drawTools.visibility = true;
+  }
+
+  public uploadImageFile(event) {
+    this.readImageFile(event.target);
+  }
+
+  private readImageFile(fileInput) {
+    let file: File = fileInput.files[0];
+    let fileReader: FileReader = new FileReader();
+    let imageToUpload = new Image();
+
+    fileReader.onloadend = () => {
+      let image = fileReader.result;
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
+                xlink:href=\"${image}\"/>\n</svg>`;
+      this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width/2), -(imageToUpload.height/2), svg).subscribe(() => {});
+    }
+        
+    imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
+    imageToUpload.src = window.URL.createObjectURL(file);
   }
 
   public ngOnDestroy() {
