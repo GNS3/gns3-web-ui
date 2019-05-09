@@ -44,7 +44,7 @@ DEPENDENCIES = {
     'ubridge': {
         'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/ubridge/releases',
-        'version': 'LATEST',
+        'version': '0.9.15', # possible to use LATEST as value
         'files': {
             'windows': [
                 'cygwin1.dll',
