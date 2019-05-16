@@ -1,0 +1,30 @@
+.notification-box {
+    posiTion: fixed;
+    bottom: 10px;
+    right: 5px;
+    width: 608px;
+    height: 88px;
+}
+
+.close-button {
+    position: fixed;
+    bottom: 65px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.mat-icon:hover {
+    color: #0097a7;
+}
+
+.edgeline {
+    height: 84px;
+    width: 4px;
+    background-color: #0097a7;
+}
+
+.bottomline {
+    width: 608px;
+    height: 4px;
+    background-color: #0097a7;
+}

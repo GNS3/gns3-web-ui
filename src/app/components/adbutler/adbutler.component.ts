@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ViewEncapsulation, OnDestroy, Input } from '@angular/core';
 
 @Component({
   selector: 'app-adbutler',
@@ -15,6 +15,7 @@ export class AdbutlerComponent implements OnInit, AfterViewInit, OnDestroy {
   divId: string;
 
   @ViewChild('code') code: ElementRef;
+  @Input() theme: string;
 
   constructor() { }
 
