@@ -10,7 +10,7 @@ export class NotificationSettingsService {
     let configuration: NotificationSettings = {
         delayTime: 1000,
         viewTime: 1000,
-        breakTime: 10,
+        breakTime: 1000,
         isEndless: true,
         numberOfViews: 1,
     };
