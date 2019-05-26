@@ -101,7 +101,7 @@
     "protractor": "~5.4.2",
     "replace": "^1.1.0",
     "ts-mockito": "^2.3.1",
-    "ts-node": "~8.1.0",
+    "ts-node": "~8.2.0",
     "tslint": "~5.16.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "<3.3.0"
