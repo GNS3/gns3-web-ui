@@ -8,7 +8,7 @@ export class NotificationSettingsService {
 
   getConfiguration(): NotificationSettings {
     let configuration: NotificationSettings = {
-        delayTime: 1000,
+        delayTime: 0,
         viewTime: 1000,
         breakTime: 1000,
         isEndless: true,
