@@ -45,7 +45,7 @@
     "@angular/core": "^7.2.14",
     "@angular/forms": "^7.2.14",
     "@angular/http": "^7.2.14",
-    "@angular/material": "^7.3.7",
+    "@angular/material": "^8.0.0",
     "@angular/platform-browser": "^7.2.14",
     "@angular/platform-browser-dynamic": "^7.2.14",
     "@angular/router": "^7.2.14",
