@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.13.8",
-    "@angular/cli": "^7.3.8",
+    "@angular/cli": "^8.0.0",
     "@angular/compiler-cli": "^7.2.14",
     "@angular/language-service": "^7.2.14",
     "@sentry/cli": "^1.41.2",
