@@ -17,7 +17,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     viewsCounter = 0;
     ticks: number = 1000;
     progress: number = 0;
-    isVisible = true;
+    isVisible = false;
     interval = 10;
 
     constructor(
@@ -26,7 +26,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.notificationSettings = this.notifactionSettingsService.getConfiguration();
-        //this.startTimer();
+        this.startTimer();
     }
 
     startTimer() {
