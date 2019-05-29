@@ -1,13 +1,10 @@
 <div class="notification-box" *ngIf="isVisible">
     <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
-    <div style="display: flex; height: 80px;">
-        <div class="edgeline"></div>
+    <div style="display: flex; height: 82px;">
         <div class="content">
             <app-adbutler theme="dark"></app-adbutler>
             <mat-icon (click)="closeNotification()" class="close-button">close</mat-icon>
             <!-- <button class="check-button" mat-button>CHECK IT OUT</button> -->
         </div>
-        <div class="edgeline"></div>
     </div>
-    <div class="bottomline"></div>
 </div>

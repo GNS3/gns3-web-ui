@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { timer, interval, Observable, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { NotificationSettingsService } from '../../services/notification-settings.service';
@@ -9,7 +9,7 @@ import { NotificationSettings } from '../../models/notification-settings-models/
     templateUrl: './notification-box.component.html',
     styleUrls: ['./notification-box.component.scss']
 })
-export class NotificationBoxComponent implements OnInit {
+export class NotificationBoxComponent implements OnInit, OnDestroy {
     notificationSettings: NotificationSettings;
     timer: Observable<number>;
     timerSubscription: Subscription;
@@ -17,7 +17,7 @@ export class NotificationBoxComponent implements OnInit {
     viewsCounter = 0;
     ticks: number = 1000;
     progress: number = 0;
-    isVisible = false;
+    isVisible = true;
     interval = 10;
 
     constructor(
@@ -26,7 +26,7 @@ export class NotificationBoxComponent implements OnInit {
 
     ngOnInit() {
         this.notificationSettings = this.notifactionSettingsService.getConfiguration();
-        this.startTimer();
+        //this.startTimer();
     }
 
     startTimer() {
@@ -62,5 +62,9 @@ export class NotificationBoxComponent implements OnInit {
 
     closeNotification() {
         this.isVisible = false;
+    }
+
+    ngOnDestroy() {
+        this.timerSubscription.unsubscribe();
     }
 }
