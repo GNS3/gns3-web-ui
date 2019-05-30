@@ -8,6 +8,9 @@ import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map
 import { DrawingService } from '../../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
 import { TextElement } from '../../../../cartography/models/drawings/text-element';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ToasterService } from '../../../../services/toaster.service';
+import { RotationValidator } from '../../../../validators/RotationValidator';
 
 @Component({
   selector: 'app-text-editor',
@@ -21,7 +24,7 @@ export class TextEditorDialogComponent implements OnInit {
   project: Project;
   drawing: Drawing;
   element: TextElement;
-  rotation: string;
+  formGroup: FormGroup;
 
   constructor(
     private dialogRef: MatDialogRef<TextEditorDialogComponent>,
@@ -29,12 +32,18 @@ export class TextEditorDialogComponent implements OnInit {
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private drawingService: DrawingService,
     private drawingsDataSource: DrawingsDataSource,
-    private renderer: Renderer2
-  ) {}
+    private renderer: Renderer2,
+    private formBuilder: FormBuilder,
+    private toasterService: ToasterService,
+    private rotationValidator: RotationValidator
+  ) {
+    this.formGroup = this.formBuilder.group({
+      rotation: new FormControl('', [Validators.required, rotationValidator.get])
+    });
+  }
 
   ngOnInit() {
-    this.rotation = this.drawing.rotation.toString();
-
+    this.formGroup.controls['rotation'].setValue(this.drawing.rotation);
     this.element = this.drawing.element as TextElement;
     this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
     this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
@@ -47,18 +56,22 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
-    this.drawing.rotation = +this.rotation;
-    this.drawing.element = this.element;
-
-    let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
-    mapDrawing.element = this.drawing.element;
-
-    this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
-
-    this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
-      this.drawingsDataSource.update(serverDrawing);
-      this.dialogRef.close();
-    });
+    if (this.formGroup.valid) {
+      this.drawing.rotation = this.formGroup.get('rotation').value;
+      this.drawing.element = this.element;
+  
+      let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
+      mapDrawing.element = this.drawing.element;
+  
+      this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
+  
+      this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
+        this.drawingsDataSource.update(serverDrawing);
+        this.dialogRef.close();
+      });
+    } else {
+      this.toasterService.error(`Entered data is incorrect`);
+    }
   }
 
   changeTextColor(changedColor) {

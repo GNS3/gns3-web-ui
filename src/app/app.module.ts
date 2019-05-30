@@ -184,6 +184,8 @@ import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
+import { NonNegativeValidator } from './validators/NonNegativeValidator';
+import { RotationValidator } from './validators/RotationValidator';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -374,7 +376,9 @@ if (environment.production) {
     ServerManagementService,
     ConsoleService,
     DefaultConsoleService,
-    NodeCreatedLabelStylesFixer
+    NodeCreatedLabelStylesFixer,
+    NonNegativeValidator,
+    RotationValidator
   ],
   entryComponents: [
     AddServerDialogComponent,
