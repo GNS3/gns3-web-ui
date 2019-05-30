@@ -20,12 +20,26 @@ export class LinkService {
         {
           node_id: source_node.node_id,
           port_number: source_port.port_number,
-          adapter_number: source_port.adapter_number
+          adapter_number: source_port.adapter_number,
+          label: {
+            rotation: 0,
+            style: "font-size: 10; font-style: Verdana",
+            text: "0/0",
+            x: -20,
+            y: -20
+          }
         },
         {
           node_id: target_node.node_id,
           port_number: target_port.port_number,
-          adapter_number: target_port.adapter_number
+          adapter_number: target_port.adapter_number,
+          label: {
+            rotation: 0,
+            style: "font-size: 10; font-style: Verdana",
+            text: "0/0",
+            x: -20,
+            y: -20
+          }
         }
       ]
     });
