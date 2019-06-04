@@ -13,8 +13,8 @@
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a *ngIf="getServerStatus(row) === 'running'" [routerLink]="['/server', row.id, 'projects']" class="table-link">{{ row.name }}</a>
-            <span *ngIf="getServerStatus(row) != 'running'">{{ row.name }}</span>
+            <a *ngIf="getServerStatus(row) === 'running' || row.location === 'remote'" [routerLink]="['/server', row.id, 'projects']" class="table-link">{{ row.name }}</a>
+            <span *ngIf="getServerStatus(row) != 'running' && row.location !== 'remote'">{{ row.name }}</span>
           </mat-cell>
         </ng-container>
 

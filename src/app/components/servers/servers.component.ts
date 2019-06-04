@@ -103,7 +103,6 @@ export class ServersComponent implements OnInit, OnDestroy {
   }
 
   async stopServer(server: Server) {
-    server.status = "stopped";
     await this.serverManagement.stop(server);
   }
 }
