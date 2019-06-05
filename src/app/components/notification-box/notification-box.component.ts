@@ -1,8 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { timer, interval, Observable, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { NotificationSettingsService } from '../../services/notification-settings.service';
-import { NotificationSettings } from '../../models/notification-settings-models/notification-settings';
+import { timer, Observable, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-notification-box',
@@ -10,36 +7,38 @@ import { NotificationSettings } from '../../models/notification-settings-models/
     styleUrls: ['./notification-box.component.scss']
 })
 export class NotificationBoxComponent implements OnInit, OnDestroy {
-    notificationSettings: NotificationSettings;
     timer: Observable<number>;
+    viewTimer: Observable<number>;
     timerSubscription: Subscription;
-    intervalSubscription: Subscription;
+    viewTimerSubscription: Subscription;
     viewsCounter = 0;
     ticks: number = 1000;
     progress: number = 0;
     isVisible = false;
     interval = 10;
 
-    constructor(
-        private notifactionSettingsService: NotificationSettingsService
-    ){}
+    delayTime: number = 0;
+    breakTime: number = 1000;
+    isEndless: boolean = true;
+    numberOfViews: number = 1;
+
+    constructor(){}
 
     ngOnInit() {
-        this.notificationSettings = this.notifactionSettingsService.getConfiguration();
         this.startTimer();
     }
 
     startTimer() {
-        this.timer = timer(this.notificationSettings.delayTime, 1000);
+        this.timer = timer(this.delayTime, 1000);
 
         this.timerSubscription = this.timer.subscribe(() => {
             this.ticks++;
-            if (this.ticks > this.notificationSettings.breakTime && navigator.onLine) {
+            if (this.ticks > this.breakTime && !this.isVisible && navigator.onLine) {
                 this.ticks = 0;
                 this.showNotification();
                 this.viewsCounter++;
-                if (!this.notificationSettings.isEndless){
-                    if (this.viewsCounter === this.notificationSettings.numberOfViews) {
+                if (!this.isEndless){
+                    if (this.viewsCounter === this.numberOfViews) {
                         this.timerSubscription.unsubscribe();
                     }
                 }
@@ -48,14 +47,15 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     }
 
     showNotification() {
+        this.viewTimer = timer(0, 100);
         this.isVisible = true;
         this.progress = 0;
 
-        this.intervalSubscription = interval(this.interval).pipe(take(this.notificationSettings.viewTime)).subscribe(() => {
-            this.progress += (1/this.interval);
-            if (this.progress > ((this.notificationSettings.viewTime/this.interval)-(1/this.interval))) {
+        this.viewTimerSubscription = this.viewTimer.subscribe(() => {
+            this.progress += 1;
+            if (this.progress > 100) {
                 this.isVisible = false;
-                this.intervalSubscription.unsubscribe();
+                this.viewTimerSubscription.unsubscribe();
             }
         });
     }
@@ -66,5 +66,6 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.timerSubscription.unsubscribe();
+        this.viewTimerSubscription.unsubscribe();
     }
 }
