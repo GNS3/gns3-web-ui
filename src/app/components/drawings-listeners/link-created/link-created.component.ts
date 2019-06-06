@@ -35,12 +35,45 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
   }
 
   onLinkCreated(linkCreated: MapLinkCreated) {
+    const xLength = Math.abs(linkCreated.sourceNode.x - linkCreated.targetNode.x);
+    const yLength = Math.abs(linkCreated.sourceNode.y - linkCreated.targetNode.y);
+    const zLength = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
+    const x = (45 / zLength) * xLength;
+    const y = (45 / zLength) * yLength;
+
+    let xLabelSourceNode = 0;
+    let yLabelSourceNode = 0;
+    let xLabelTargetNode = 0;
+    let yLabelTargetNode = 0;
+
+    if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y < linkCreated.targetNode.y)) {//tested right side
+      xLabelSourceNode = Math.round(x) + 24 + 10;
+      yLabelSourceNode = Math.round(y) + 24 + 10;
+      xLabelTargetNode = Math.round(x) - 24 - 10;
+      yLabelTargetNode = Math.round(y) - 24 - 10;
+    } else if ((linkCreated.sourceNode.x > linkCreated.targetNode.x) && (linkCreated.sourceNode.y < linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.round(x) - 24 - 10;
+      yLabelSourceNode = Math.round(y) + 24 + 10;
+      xLabelTargetNode = Math.round(x) + 24 + 10;
+      yLabelTargetNode = Math.round(y) - 24 - 10;
+    } else if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {//tested right side
+      xLabelSourceNode = Math.round(x) + 24 + 10;
+      yLabelSourceNode = Math.round(y) - 24 - 10;
+      xLabelTargetNode = Math.round(x) - 24 - 10;
+      yLabelTargetNode = Math.round(y) + 24 + 10;
+    } else if ((linkCreated.sourceNode.x > linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.round(x) - 24 - 10;
+      yLabelSourceNode = Math.round(y) - 24 - 10;
+      xLabelTargetNode = Math.round(x) + 24 + 10;
+      yLabelTargetNode = Math.round(y) + 24 + 10;
+    }
+
     const sourceNode = this.mapNodeToNode.convert(linkCreated.sourceNode);
     const sourcePort = this.mapPortToPort.convert(linkCreated.sourcePort);
     const targetNode = this.mapNodeToNode.convert(linkCreated.targetNode);
     const targetPort = this.mapPortToPort.convert(linkCreated.targetPort);
 
-    this.linkService.createLink(this.server, sourceNode, sourcePort, targetNode, targetPort).subscribe(() => {
+    this.linkService.createLink(this.server, sourceNode, sourcePort, targetNode, targetPort, xLabelSourceNode, yLabelSourceNode, xLabelTargetNode, yLabelTargetNode).subscribe(() => {
       this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
         this.linksDataSource.set(links);
       });

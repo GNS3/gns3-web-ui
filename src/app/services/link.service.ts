@@ -14,7 +14,8 @@ import { CapturingSettings } from '../models/capturingSettings';
 export class LinkService {
   constructor(private httpServer: HttpServer) {}
 
-  createLink(server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port) {
+  createLink(server: Server, source_node: Node, source_port: Port, target_node: Node, target_port: Port,
+    xLabelSourceNode: number, yLabelSourceNode: number, xLabelTargetNode: number, yLabelTargetNode: number) {
     return this.httpServer.post(server, `/projects/${source_node.project_id}/links`, {
       nodes: [
         {
@@ -25,8 +26,8 @@ export class LinkService {
             rotation: 0,
             style: "font-size: 10; font-style: Verdana",
             text: "0/0",
-            x: -20,
-            y: -20
+            x: xLabelSourceNode,
+            y: yLabelSourceNode
           }
         },
         {
@@ -37,8 +38,8 @@ export class LinkService {
             rotation: 0,
             style: "font-size: 10; font-style: Verdana",
             text: "0/0",
-            x: -20,
-            y: -20
+            x: xLabelTargetNode,
+            y: yLabelTargetNode
           }
         }
       ]
