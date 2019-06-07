@@ -25,7 +25,7 @@ export class LinkService {
           label: {
             rotation: 0,
             style: "font-size: 10; font-style: Verdana",
-            text: "0/0",
+            text: source_port.short_name,
             x: xLabelSourceNode,
             y: yLabelSourceNode
           }
@@ -37,7 +37,7 @@ export class LinkService {
           label: {
             rotation: 0,
             style: "font-size: 10; font-style: Verdana",
-            text: "0/0",
+            text: target_port.short_name,
             x: xLabelTargetNode,
             y: yLabelTargetNode
           }
