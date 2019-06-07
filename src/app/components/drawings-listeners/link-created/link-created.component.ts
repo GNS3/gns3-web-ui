@@ -46,26 +46,26 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
     let xLabelTargetNode = 0;
     let yLabelTargetNode = 0;
 
-    if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y < linkCreated.targetNode.y)) {//tested right side
-      xLabelSourceNode = Math.round(x) + 24 + 10;
-      yLabelSourceNode = Math.round(y) + 24 + 10;
-      xLabelTargetNode = Math.round(x) - 24 - 10;
-      yLabelTargetNode = Math.round(y) - 24 - 10;
+    if ((linkCreated.sourceNode.x <= linkCreated.targetNode.x) && (linkCreated.sourceNode.y <= linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 5;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) + Math.round(y) + 5;
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 15;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) - 15;
     } else if ((linkCreated.sourceNode.x > linkCreated.targetNode.x) && (linkCreated.sourceNode.y < linkCreated.targetNode.y)) {
-      xLabelSourceNode = Math.round(x) - 24 - 10;
-      yLabelSourceNode = Math.round(y) + 24 + 10;
-      xLabelTargetNode = Math.round(x) + 24 + 10;
-      yLabelTargetNode = Math.round(y) - 24 - 10;
-    } else if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {//tested right side
-      xLabelSourceNode = Math.round(x) + 24 + 10;
-      yLabelSourceNode = Math.round(y) - 24 - 10;
-      xLabelTargetNode = Math.round(x) - 24 - 10;
-      yLabelTargetNode = Math.round(y) + 24 + 10;
-    } else if ((linkCreated.sourceNode.x > linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {
-      xLabelSourceNode = Math.round(x) - 24 - 10;
-      yLabelSourceNode = Math.round(y) - 24 - 10;
-      xLabelTargetNode = Math.round(x) + 24 + 10;
-      yLabelTargetNode = Math.round(y) + 24 + 10;
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 15;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) + Math.round(y) + 15;
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) + Math.round(x) + 5;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) - 5;
+    } else if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 15;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 15;
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 5;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) + Math.round(y) + 5;
+    } else if ((linkCreated.sourceNode.x >= linkCreated.targetNode.x) && (linkCreated.sourceNode.y >= linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 15;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 15;
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) + Math.round(x) + 5;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) + Math.round(y) + 5;
     }
 
     const sourceNode = this.mapNodeToNode.convert(linkCreated.sourceNode);
