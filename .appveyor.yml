@@ -20,7 +20,7 @@ install:
 build_script:
   - yarn buildforelectron
   - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
-  - "%PYTHON%\\python.exe scripts\\build.py download"
+  - "%PYTHON%\\python.exe scripts\\build.py download -a"
   - "%PYTHON%\\python.exe scripts\\build.py build_exe -b dist/exe.gns3server -s"
   - "%PYTHON%\\python.exe scripts\\build.py validate -b dist"
   - "%PYTHON%\\python.exe scripts\\build.py download_dependencies -b dist"

@@ -55,7 +55,7 @@ describe('TextEditedComponent', () => {
       text_decoration: 'sample decoration'
     };
     const textEditedDataEvent = new TextEditedDataEvent('id', 'edited text', textElement);
-    spyOn(mockedDrawingService, 'updateText').and.returnValue(Observable.of({}));
+    spyOn(mockedDrawingService, 'updateText').and.returnValue(Observable.of());
 
     mockedDrawingsEventSource.textEdited.emit(textEditedDataEvent);
 

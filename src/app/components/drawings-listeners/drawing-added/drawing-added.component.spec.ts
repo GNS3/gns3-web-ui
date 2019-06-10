@@ -58,7 +58,7 @@ describe('DrawingAddedComponent', () => {
     component.project = { project_id: 'sampleId' } as Project;
     component.selectedDrawing = 'rectangle';
     const pointToAddSelectedDataEvent = new AddedDataEvent(0, 0);
-    spyOn(mockedDrawingService, 'add').and.returnValue(Observable.of({}));
+    spyOn(mockedDrawingService, 'add').and.returnValue(Observable.of());
 
     mockedDrawingsEventSource.pointToAddSelected.emit(pointToAddSelectedDataEvent);
 

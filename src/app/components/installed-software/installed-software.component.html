@@ -8,13 +8,21 @@
   
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-            <mat-cell *matCellDef="let row;">{{ row.name }}</mat-cell>
+            <mat-cell *matCellDef="let row;">
+              <ng-container *ngIf="row.type !== 'adbutler'">
+                {{ row.name }}
+              </ng-container>
+
+              <ng-container *ngIf="row.type === 'adbutler'">
+                  <app-adbutler></app-adbutler>
+              </ng-container>
+            </mat-cell>
           </ng-container>
   
           <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row;" style="text-align: right">
-              <app-install-software [software]="row" (installedChanged)="onInstalled($event)"></app-install-software>
+              <app-install-software [software]="row" (installedChanged)="onInstalled($event)" *ngIf="row.type !== 'adbutler'"></app-install-software>
             </mat-cell>
           </ng-container>
   

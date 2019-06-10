@@ -57,7 +57,7 @@ describe('DrawingDraggedComponent', () => {
       element: mapDrawingElement
     };
     const drawingDraggedDataEvent = new DraggedDataEvent<MapDrawing>(mapDrawing, 0, 0);
-    spyOn(mockedDrawingService, 'updatePosition').and.returnValue(Observable.of({}));
+    spyOn(mockedDrawingService, 'updatePosition').and.returnValue(Observable.of());
 
     mockedDrawingsEventSource.dragged.emit(drawingDraggedDataEvent);
 

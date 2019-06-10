@@ -44,6 +44,7 @@ import { MovingEventSource } from '../../cartography/events/moving-event-source'
 import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
+import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 
 export class MockedProgressService {
   public activate() {}
@@ -184,8 +185,13 @@ describe('ProjectMapComponent', () => {
   let drawingsDataSource = new MockedDrawingsDataSource();
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
+  let nodeCreatedLabelStylesFixer;
 
   beforeEach(async(() => {
+    nodeCreatedLabelStylesFixer = {
+      fix: (node) => node
+    };
+
     TestBed.configureTestingModule({
       imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
@@ -217,7 +223,8 @@ describe('ProjectMapComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
-        { provide: MapScaleService }
+        { provide: MapScaleService },
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]

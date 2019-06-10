@@ -26,6 +26,10 @@ a.table-link {
   }
 }
 
+.full-width-field {
+  width: 100%;
+}
+
 app-root {
   width: 100%;
 }

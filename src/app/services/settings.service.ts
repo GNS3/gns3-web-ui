@@ -6,6 +6,7 @@ export interface Settings {
   crash_reports: boolean;
   experimental_features: boolean;
   angular_map: boolean;
+  console_command: string;
 }
 
 @Injectable()
@@ -13,7 +14,8 @@ export class SettingsService {
   static DEFAULTS: Settings = {
     crash_reports: true,
     experimental_features: false,
-    angular_map: false
+    angular_map: false,
+    console_command: undefined
   };
 
   private settingsSubject: BehaviorSubject<Settings>;

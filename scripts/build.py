@@ -18,6 +18,7 @@
 import os
 import re
 import sys
+import json
 import shutil
 import psutil
 import zipfile
@@ -31,6 +32,7 @@ from multiprocessing.queues import Empty
 
 from cx_Freeze import setup, Executable
 
+DEFAULT_GNS3_SERVER_DEV_BRANCH = '2.2'
 
 FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 WORKING_DIR = os.path.join(FILE_DIR, 'tmp')
@@ -40,8 +42,9 @@ SOURCE_DESTINATION = os.path.join(WORKING_DIR, 'source')
 BINARIES_EXTENSION = platform.system() == "Windows" and ".exe" or ""
 DEPENDENCIES = {
     'ubridge': {
+        'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/ubridge/releases',
-        'version': 'LATEST',
+        'version': '0.9.16', # possible to use LATEST as value
         'files': {
             'windows': [
                 'cygwin1.dll',
@@ -50,8 +53,9 @@ DEPENDENCIES = {
         }
     },
     'vpcs': {
+        'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/vpcs/releases',
-        'version': '0.6.1',
+        'version': '0.6.2',
         'files': {
             'windows': [
                 'cygwin1.dll',
@@ -60,6 +64,7 @@ DEPENDENCIES = {
         }
     },
     'dynamips': {
+        'type': 'github',
         'releases': 'https://api.github.com/repos/GNS3/dynamips/releases',
         'version': '0.2.17',
         'files': {
@@ -67,6 +72,16 @@ DEPENDENCIES = {
                 'cygwin1.dll',
                 'dynamips.exe',
                 'nvram_export.exe'
+            ]
+        }
+    },
+    'putty': {
+        'type': 'http',
+        'url': 'https://the.earth.li/~sgtatham/putty/{version}/w64/putty.exe',
+        'version': '0.71',
+        'files': {
+            'windows': [
+                'putty.exe',
             ]
         }
     }
@@ -113,39 +128,109 @@ def prepare():
     os.makedirs(WORKING_DIR, exist_ok=True)
 
 
+def download_from_github(name, definition, output_directory):
+    response = requests.get(definition['releases'])
+    response.raise_for_status()
+    releases = response.json()
+
+    if definition['version'] == 'LATEST':
+        release = releases[0]
+    else:
+        release = list(filter(lambda x: x['tag_name'] == "v{}".format(definition['version']), releases))[0]
+
+    dependency_dir = os.path.join(output_directory, name)
+    os.makedirs(dependency_dir, exist_ok=True)
+
+    files = []
+    if platform.system() == "Windows":
+        files = definition['files']['windows']
+    
+    for filename in files:
+        dependency_file = os.path.join(dependency_dir, filename)
+        dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
+        download(dependency_url, dependency_file)
+        print('Downloaded {} to {}'.format(filename, dependency_file))
+
+
+def download_from_http(name, definition, output_directory):
+    url = definition['url'].format(version=definition['version'])
+
+    dependency_dir = os.path.join(output_directory, name)
+    os.makedirs(dependency_dir, exist_ok=True)
+
+    files = []
+    if platform.system() == "Windows":
+        files = definition['files']['windows']
+    
+    for filename in files:
+        dependency_file = os.path.join(dependency_dir, filename)
+        download(url, dependency_file)
+        print('Downloaded {} to {}'.format(filename, dependency_file))
+
+
 def download_dependencies_command(arguments):
     output_directory = os.path.join(os.getcwd(), arguments.b)
 
     for name, definition in DEPENDENCIES.items():
-        response = requests.get(definition['releases'])
-        response.raise_for_status()
-        releases = response.json()
+        if definition['type'] == 'github':
+            download_from_github(name, definition, output_directory)
+        if definition['type'] == 'http':
+            download_from_http(name, definition, output_directory)
 
-        if definition['version'] == 'LATEST':
-            release = releases[0]
-        else:
-            release = list(filter(lambda x: x['tag_name'] == "v{}".format(definition['version']), releases))[0]
 
-        dependency_dir = os.path.join(output_directory, name)
-        os.makedirs(dependency_dir, exist_ok=True)
+def get_latest_version():
+    response = requests.get('https://api.github.com/repos/GNS3/gns3-server/releases')
+    response.raise_for_status()
+    releases = response.json()
+    latest = list(filter(lambda r: r['tag_name'].startswith('v'.format(DEFAULT_GNS3_SERVER_DEV_BRANCH)), releases))[0]
+    return latest['tag_name'].replace('v', '')
 
-        files = []
-        if platform.system() == "Windows":
-            files = definition['files']['windows']
-        
-        for filename in files:
-            dependency_file = os.path.join(dependency_dir, filename)
-            dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
-            download(dependency_url, dependency_file)
-            print('Downloaded {} to {}'.format(filename, dependency_file))
 
+def is_tagged():
+    if 'TRAVIS_TAG' in os.environ.keys():
+      return True
+    if 'CIRCLE_TAG' in os.environ.keys():
+      return True
+    if os.environ.get('APPVEYOR_REPO_TAG', False) in (1, "True", "true"):
+      return True
+    
+
+def is_web_ui_non_dev():
+    package_file = os.path.join(FILE_DIR, '..', 'package.json')
+    with open(package_file) as fp:
+      package_content = fp.read()
+    package = json.loads(package_content)
+    version = package['version']
+    return not version.endswith('dev')
+
+
+def auto_version(arguments):
+    # if we are on tagged repo it means we should use released gns3server
+    if is_tagged():
+      arguments.l = True
+
+    # if we are building non-dev version it should be same as above
+    if is_web_ui_non_dev():
+      arguments.l = True
 
 
 def download_command(arguments):
+    if arguments.a:
+      auto_version(arguments)
+
     shutil.rmtree(SOURCE_DESTINATION, ignore_errors=True)
     os.makedirs(SOURCE_DESTINATION)
 
-    download("https://github.com/GNS3/gns3-server/archive/2.2.zip", SOURCE_ZIP)
+    if arguments.l:
+      version = get_latest_version()
+      download_url = "https://api.github.com/repos/GNS3/gns3-server/zipball/v{version}"
+    else:
+      version = DEFAULT_GNS3_SERVER_DEV_BRANCH
+      download_url = "https://github.com/GNS3/gns3-server/archive/{version}.zip"
+
+    print("Using {version} with download_url: {download_url}".format(version=version, download_url=download_url))
+
+    download(download_url.format(version=version), SOURCE_ZIP)
 
     files = unzip(SOURCE_ZIP, SOURCE_DESTINATION)
     source_directory = os.path.join(SOURCE_DESTINATION, files[0].filename)
@@ -297,6 +382,9 @@ if __name__ == '__main__':
 
     parser_download = subparsers.add_parser(
         'download', help='Downloads source code of gns3server')
+    parser_download.add_argument('-l', action='store_true', help="Use the latest released version (incl. alpha), if not specified then dev version will be taken.")
+    parser_download.add_argument('-a', action='store_true', help="Automatically choose version based on CI/CD pipeline")
+
 
     parser_build = subparsers.add_parser('build_exe', help='Build gns3server')
     parser_build.add_argument('-b', help='Output directory')
