@@ -1,4 +1,4 @@
-import { HostListener, ElementRef, Renderer, Directive, Input, OnInit, OnDestroy } from '@angular/core'
+import { ElementRef, Directive, OnInit, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
@@ -9,8 +9,8 @@ import { MapScaleService } from '../../services/mapScale.service';
     selector: '[zoomingCanvas]',
 })
 export class ZoomingCanvasDirective implements OnInit, OnDestroy {
+    private wheelListener: Function;
     private movingModeState: Subscription;
-    private activated: boolean = false;
     
     constructor(
         private element: ElementRef,
@@ -21,7 +21,7 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
-            this.activated = event;
+            event ? this.addListener() : this.removeListener();
         });
     }
 
@@ -29,9 +29,8 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
         this.movingModeState.unsubscribe();
     }
 
-    @HostListener('window:wheel', ['$event'])
-    onWheel(event: WheelEvent) {
-        if (this.activated) {
+    addListener() {
+        this.wheelListener = (event: WheelEvent) => {
             event.stopPropagation();
             event.preventDefault();
 
@@ -51,6 +50,12 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
 
                 return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
             });
-        }
+        };
+
+        this.element.nativeElement.addEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject, {passive: false});
+    }
+
+    removeListener() {
+        this.element.nativeElement.removeEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject);
     }
 }

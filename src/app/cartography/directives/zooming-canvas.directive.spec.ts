@@ -46,7 +46,7 @@ describe('ZoomingCanvasDirective', () => {
         let deltaMode: number = 0;
         let zoom: number = -1000;
 
-        window.dispatchEvent(new WheelEvent('wheel', { 
+        canvas.dispatchEvent(new WheelEvent('wheel', { 
             bubbles: true, 
             relatedTarget: canvas, 
             deltaMode: deltaMode, 
@@ -63,7 +63,7 @@ describe('ZoomingCanvasDirective', () => {
         let deltaMode: number = 0;
         let zoom: number = 100;
 
-        window.dispatchEvent(new WheelEvent('wheel', { 
+        canvas.dispatchEvent(new WheelEvent('wheel', { 
             bubbles: true, 
             relatedTarget: canvas, 
             deltaMode: deltaMode, 
@@ -80,7 +80,7 @@ describe('ZoomingCanvasDirective', () => {
         let deltaMode: number = 0;
         let zoom: number = -1000;
 
-        window.dispatchEvent(new WheelEvent('wheel', { 
+        canvas.dispatchEvent(new WheelEvent('wheel', { 
             bubbles: true, 
             relatedTarget: canvas, 
             deltaMode: deltaMode, 
@@ -91,7 +91,7 @@ describe('ZoomingCanvasDirective', () => {
         expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(2)`);
         
         movingEventSource.movingModeState.emit(false);
-        window.dispatchEvent(new WheelEvent('wheel', { 
+        canvas.dispatchEvent(new WheelEvent('wheel', { 
             bubbles: true, 
             relatedTarget: canvas, 
             deltaMode: deltaMode, 
@@ -107,7 +107,7 @@ describe('ZoomingCanvasDirective', () => {
         let deltaMode: number = 0;
         let zoom: number = -1000;
 
-        window.dispatchEvent(new WheelEvent('wheel', { 
+        canvas.dispatchEvent(new WheelEvent('wheel', { 
             bubbles: true, 
             relatedTarget: canvas, 
             deltaMode: deltaMode, 
@@ -131,7 +131,7 @@ describe('ZoomingCanvasDirective', () => {
         });
         spyOn(event, 'preventDefault');
 
-        window.dispatchEvent(event);
+        canvas.dispatchEvent(event);
         tick();
     
         expect(event.preventDefault).toHaveBeenCalled();
