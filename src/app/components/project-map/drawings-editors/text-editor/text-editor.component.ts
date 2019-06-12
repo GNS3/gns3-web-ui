@@ -16,6 +16,9 @@ import { Link } from '../../../../models/link';
 import { LinkNode } from '../../../../models/link-node';
 import { LinkService } from '../../../../services/link.service';
 import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ToasterService } from '../../../../services/toaster.service';
+import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
   selector: 'app-text-editor',
@@ -35,6 +38,7 @@ export class TextEditorDialogComponent implements OnInit {
   element: TextElement;
   rotation: string;
   isTextEditable: boolean;
+  formGroup: FormGroup;
 
   constructor(
     private dialogRef: MatDialogRef<TextEditorDialogComponent>,
@@ -46,10 +50,17 @@ export class TextEditorDialogComponent implements OnInit {
     private nodeService: NodeService,
     private nodesDataSource: NodesDataSource,
     private linkService: LinkService,
-    private linksDataSource: LinksDataSource
+    private linksDataSource: LinksDataSource,
+    private formBuilder: FormBuilder,
+    private toasterService: ToasterService,
+    private rotationValidator: RotationValidator
   ) {}
 
   ngOnInit() {
+    this.formGroup = this.formBuilder.group({
+      rotation: new FormControl('', [Validators.required, this.rotationValidator.get])
+    });
+
     if (this.drawing) {
       this.isTextEditable = true;
       this.rotation = this.drawing.rotation.toString();
@@ -65,6 +76,7 @@ export class TextEditorDialogComponent implements OnInit {
       this.element = this.getTextElementFromLabel();
     }
 
+    this.formGroup.controls['rotation'].setValue(this.rotation);
     this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
     this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
     this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${this.element.font_size}pt`);
@@ -72,13 +84,23 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   getTextElementFromLabel(): TextElement{
+    var styleProperties: StyleProperty[] = [];
     var textElement = new TextElement();
-    textElement.text = this.label.text;
-    textElement.font_family = this.label.style.split(";")[0].split(" ")[1];
-    textElement.font_size = +this.label.style.split(";")[1].split(" ")[1];
-    textElement.font_weight = this.label.style.split(";")[2].split(" ")[1];
-    textElement.fill = this.label.style.split(";")[3].split(" ")[1];
-    textElement.fill_opacity = +this.label.style.split(";")[4].split(" ")[1];
+
+    for (var property of this.label.style.split(";")){
+      styleProperties.push({
+        property: property.split(": ")[0],
+        value: property.split(": ")[1]
+      });
+    }
+
+    textElement.text = this.label.text ? this.label.text : '';
+    textElement.font_family = styleProperties.find(p => p.property === 'font-family') ? styleProperties.find(p => p.property === 'font-family').value : 'TypeWriter';
+    textElement.font_size = styleProperties.find(p => p.property === 'font-size') ? +styleProperties.find(p => p.property === 'font-family').value : 10.0;
+    textElement.font_weight = styleProperties.find(p => p.property === 'font-weight') ? styleProperties.find(p => p.property === 'font-weight').value : 'normal';
+    textElement.fill = styleProperties.find(p => p.property === 'fill') ? styleProperties.find(p => p.property === 'fill').value : '#000000';
+    textElement.fill_opacity = styleProperties.find(p => p.property === 'fill-opacity') ? +styleProperties.find(p => p.property === 'fill-opacity').value : 1.0;
+
     return textElement;
   }
 
@@ -91,40 +113,51 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
-    if (this.drawing) {
-      this.drawing.rotation = +this.rotation;
-      this.drawing.element = this.element;
+    if (this.formGroup.valid) {
+      this.rotation = this.formGroup.get('rotation').value;
 
-      let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
-      mapDrawing.element = this.drawing.element;
-
-      this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
-
-      this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
-        this.dialogRef.close();
-      });
-    } else if (this.label && this.node) {
-      this.node.label.style = this.getStyleFromTextElement();
-      this.node.label.rotation = +this.rotation;
-
-      this.nodeService.updateLabel(this.server, this.node, this.node.label).subscribe((node: Node) => {
-        this.nodesDataSource.update(node);
-        this.dialogRef.close();
-      });
-    } else if (this.linkNode && this.link) {
-      this.label.style = this.getStyleFromTextElement();
-      this.label.rotation = +this.rotation;
-      this.label.text = this.element.text;
-
-      this.linkService.updateLink(this.server, this.link).subscribe((link: Link) => {
-        this.linksDataSource.update(link);
-        this.dialogRef.close();
-      });
+      if (this.drawing) {
+        this.drawing.rotation = +this.rotation;
+        this.drawing.element = this.element;
+  
+        let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
+        mapDrawing.element = this.drawing.element;
+  
+        this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
+  
+        this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
+          this.drawingsDataSource.update(serverDrawing);
+          this.dialogRef.close();
+        });
+      } else if (this.label && this.node) {
+        this.node.label.style = this.getStyleFromTextElement();
+        this.node.label.rotation = +this.rotation;
+  
+        this.nodeService.updateLabel(this.server, this.node, this.node.label).subscribe((node: Node) => {
+          this.nodesDataSource.update(node);
+          this.dialogRef.close();
+        });
+      } else if (this.linkNode && this.link) {
+        this.label.style = this.getStyleFromTextElement();
+        this.label.rotation = +this.rotation;
+        this.label.text = this.element.text;
+  
+        this.linkService.updateLink(this.server, this.link).subscribe((link: Link) => {
+          this.linksDataSource.update(link);
+          this.dialogRef.close();
+        });
+      }
+    } else {
+      this.toasterService.error(`Entered data is incorrect`);
     }
   }
 
   changeTextColor(changedColor) {
     this.renderer.setStyle(this.textArea.nativeElement, 'color', changedColor);
   }
+}
+
+export interface StyleProperty {
+  property: string;
+  value: string;
 }

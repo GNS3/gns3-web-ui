@@ -1,25 +1,27 @@
 <h1 mat-dialog-title>Style editor</h1>
 
 <div class="modal-form-container">
-  <mat-form-field>
-    <input matInput placeholder="Fill color" type="color" [(ngModel)]="element.fill">
-  </mat-form-field>
+  <form [formGroup]="formGroup">
+    <mat-form-field class="form-field">
+      <input matInput [ngModelOptions]="{standalone: true}" placeholder="Fill color" type="color" [(ngModel)]="element.fill">
+    </mat-form-field>
 
-  <mat-form-field>
-    <input matInput placeholder="Fill color" type="color" [(ngModel)]="element.stroke">
-  </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput [ngModelOptions]="{standalone: true}" placeholder="Fill color" type="color" [(ngModel)]="element.stroke">
+    </mat-form-field>
 
-  <mat-form-field>
-    <input matInput placeholder="Border width" type="text" [(ngModel)]="element.stroke_width">
-  </mat-form-field>
-    
-  <mat-form-field *ngIf="element.stroke_dasharray">
-      <input matInput placeholder="Border style" type="text" [(ngModel)]="element.stroke_dasharray">
-  </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput formControlName="borderWidth" placeholder="Border width" type="number">
+    </mat-form-field>
+      
+    <mat-form-field class="form-field" *ngIf="element.stroke_dasharray">
+        <input matInput [ngModelOptions]="{standalone: true}" placeholder="Border style" type="text" [(ngModel)]="element.stroke_dasharray">
+    </mat-form-field>
 
-  <mat-form-field>
-      <input matInput placeholder="Rotation" type="text" [(ngModel)]="rotation">
-  </mat-form-field>
+    <mat-form-field class="form-field">
+        <input matInput formControlName="rotation" placeholder="Rotation" type="number">
+    </mat-form-field>
+  </form>
 </div>
 
 <div mat-dialog-actions>
