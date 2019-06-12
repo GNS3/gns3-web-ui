@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 
 export interface ServerStateEvent {
   serverName: string;
-  status: "started" | "errored" | "stopped" | "stderr";
+  status: "starting" | "started" | "errored" | "stopped" | "stderr";
   message: string;
 }
 
@@ -29,6 +29,12 @@ export class ServerManagementService implements OnDestroy {
   }
 
   async start(server: Server) {
+    var startingEvent : ServerStateEvent = {
+      serverName: server.name,
+      status: "starting",
+      message: ''
+    };
+    this.serverStatusChanged.next(startingEvent);
     return await this.electronService.remote.require('./local-server.js').startLocalServer(server);
   }
 

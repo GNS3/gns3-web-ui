@@ -49,6 +49,9 @@ export class ServersComponent implements OnInit, OnDestroy {
       if(!server) {
         return;
       }
+      if(serverStatus.status === 'starting') {
+        server.status = 'starting';
+      }
       if(serverStatus.status === 'stopped') {
         server.status = 'stopped';
       }
@@ -98,7 +101,6 @@ export class ServersComponent implements OnInit, OnDestroy {
   }
 
   async startServer(server: Server) {
-    server.status = "starting";
     await this.serverManagement.start(server);
   }
 
