@@ -96,7 +96,7 @@ export class TextEditorDialogComponent implements OnInit {
 
     textElement.text = this.label.text ? this.label.text : '';
     textElement.font_family = styleProperties.find(p => p.property === 'font-family') ? styleProperties.find(p => p.property === 'font-family').value : 'TypeWriter';
-    textElement.font_size = styleProperties.find(p => p.property === 'font-size') ? +styleProperties.find(p => p.property === 'font-family').value : 10.0;
+    textElement.font_size = styleProperties.find(p => p.property === 'font-size') ? +styleProperties.find(p => p.property === 'font-size').value : 10.0;
     textElement.font_weight = styleProperties.find(p => p.property === 'font-weight') ? styleProperties.find(p => p.property === 'font-weight').value : 'normal';
     textElement.fill = styleProperties.find(p => p.property === 'fill') ? styleProperties.find(p => p.property === 'fill').value : '#000000';
     textElement.fill_opacity = styleProperties.find(p => p.property === 'fill-opacity') ? +styleProperties.find(p => p.property === 'fill-opacity').value : 1.0;
