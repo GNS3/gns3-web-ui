@@ -10,7 +10,7 @@ import { DrawingsDataSource } from '../../../../cartography/datasources/drawings
 import { TextElement } from '../../../../cartography/models/drawings/text-element';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToasterService } from '../../../../services/toaster.service';
-import { RotationValidator } from '../../../../validators/RotationValidator';
+import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
   selector: 'app-text-editor',

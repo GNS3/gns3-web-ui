@@ -12,8 +12,8 @@ import { LineElement } from '../../../../cartography/models/drawings/line-elemen
 import { RectElement } from '../../../../cartography/models/drawings/rect-element';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ToasterService } from '../../../../services/toaster.service';
-import { NonNegativeValidator } from '../../../../validators/NonNegativeValidator';
-import { RotationValidator } from '../../../../validators/RotationValidator';
+import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
+import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
   selector: 'app-style-editor',
@@ -58,6 +58,7 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.stroke_width = this.drawing.element.stroke_width;
     }
 
+    if (this.element.stroke_width === undefined) this.element.stroke_width = 0;
     this.formGroup.controls['borderWidth'].setValue(this.element.stroke_width);
     this.formGroup.controls['rotation'].setValue(this.drawing.rotation);
   }
