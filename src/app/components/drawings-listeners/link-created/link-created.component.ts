@@ -49,21 +49,21 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
     if ((linkCreated.sourceNode.x <= linkCreated.targetNode.x) && (linkCreated.sourceNode.y <= linkCreated.targetNode.y)) {
       xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 5;
       yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) + Math.round(y) + 5;
-      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 15;
-      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) - 15;
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 25;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) - 25;
     } else if ((linkCreated.sourceNode.x > linkCreated.targetNode.x) && (linkCreated.sourceNode.y < linkCreated.targetNode.y)) {
       xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 15;
       yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) + Math.round(y) + 15;
       xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) + Math.round(x) + 5;
       yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) - 5;
     } else if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {
-      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 15;
-      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 15;
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 25;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 25;
       xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 5;
       yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) + Math.round(y) + 5;
     } else if ((linkCreated.sourceNode.x >= linkCreated.targetNode.x) && (linkCreated.sourceNode.y >= linkCreated.targetNode.y)) {
-      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 15;
-      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 15;
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 25;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 25;
       xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) + Math.round(x) + 5;
       yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) + Math.round(y) + 5;
     }
