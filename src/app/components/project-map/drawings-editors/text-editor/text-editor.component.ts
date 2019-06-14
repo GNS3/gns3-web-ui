@@ -8,14 +8,9 @@ import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map
 import { DrawingService } from '../../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
 import { TextElement } from '../../../../cartography/models/drawings/text-element';
-import { Label } from '../../../../cartography/models/label';
-import { NodeService } from '../../../../services/node.service';
-import { Node } from '../../../../cartography/models/node';
-import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
-import { Link } from '../../../../models/link';
-import { LinkNode } from '../../../../models/link-node';
-import { LinkService } from '../../../../services/link.service';
-import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ToasterService } from '../../../../services/toaster.service';
+import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
   selector: 'app-text-editor',
@@ -33,8 +28,7 @@ export class TextEditorDialogComponent implements OnInit {
   link: Link;
   linkNode: LinkNode;
   element: TextElement;
-  rotation: string;
-  isTextEditable: boolean;
+  formGroup: FormGroup;
 
   constructor(
     private dialogRef: MatDialogRef<TextEditorDialogComponent>,
@@ -43,28 +37,18 @@ export class TextEditorDialogComponent implements OnInit {
     private drawingService: DrawingService,
     private drawingsDataSource: DrawingsDataSource,
     private renderer: Renderer2,
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource
-  ) {}
+    private formBuilder: FormBuilder,
+    private toasterService: ToasterService,
+    private rotationValidator: RotationValidator
+  ) {
+    this.formGroup = this.formBuilder.group({
+      rotation: new FormControl('', [Validators.required, rotationValidator.get])
+    });
+  }
 
   ngOnInit() {
-    if (this.drawing) {
-      this.isTextEditable = true;
-      this.rotation = this.drawing.rotation.toString();
-      this.element = this.drawing.element as TextElement;
-    } else if (this.label && this.node) {
-      this.isTextEditable = false;
-      this.rotation = this.label.rotation.toString();
-      this.element = this.getTextElementFromLabel();
-    } else if (this.linkNode && this.link) {
-      this.isTextEditable = true;
-      this.label = this.link.nodes.find(n => n.node_id === this.linkNode.node_id).label;
-      this.rotation = this.label.rotation.toString();
-      this.element = this.getTextElementFromLabel();
-    }
-
+    this.formGroup.controls['rotation'].setValue(this.drawing.rotation);
+    this.element = this.drawing.element as TextElement;
     this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
     this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
     this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${this.element.font_size}pt`);
@@ -91,36 +75,21 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
-    if (this.drawing) {
-      this.drawing.rotation = +this.rotation;
+    if (this.formGroup.valid) {
+      this.drawing.rotation = this.formGroup.get('rotation').value;
       this.drawing.element = this.element;
-
+  
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
       mapDrawing.element = this.drawing.element;
-
+  
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
-
+  
       this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
         this.dialogRef.close();
       });
-    } else if (this.label && this.node) {
-      this.node.label.style = this.getStyleFromTextElement();
-      this.node.label.rotation = +this.rotation;
-
-      this.nodeService.updateLabel(this.server, this.node, this.node.label).subscribe((node: Node) => {
-        this.nodesDataSource.update(node);
-        this.dialogRef.close();
-      });
-    } else if (this.linkNode && this.link) {
-      this.label.style = this.getStyleFromTextElement();
-      this.label.rotation = +this.rotation;
-      this.label.text = this.element.text;
-
-      this.linkService.updateLink(this.server, this.link).subscribe((link: Link) => {
-        this.linksDataSource.update(link);
-        this.dialogRef.close();
-      });
+    } else {
+      this.toasterService.error(`Entered data is incorrect`);
     }
   }
 
