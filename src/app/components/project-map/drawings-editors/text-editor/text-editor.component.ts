@@ -8,7 +8,6 @@ import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map
 import { DrawingService } from '../../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
 import { TextElement } from '../../../../cartography/models/drawings/text-element';
-import { Label } from '../../../../cartography/models/label';
 
 @Component({
   selector: 'app-text-editor',
@@ -21,7 +20,6 @@ export class TextEditorDialogComponent implements OnInit {
   server: Server;
   project: Project;
   drawing: Drawing;
-  label: Label;
   element: TextElement;
   rotation: string;
 
@@ -35,20 +33,13 @@ export class TextEditorDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log(this.label);
-    if (this.drawing) {
-      this.rotation = this.drawing.rotation.toString();
-      this.element = this.drawing.element as TextElement;
-      this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
-      this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
-      this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${this.element.font_size}pt`);
-      this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', this.element.font_weight);
-    } else if (this.label) {
-      this.rotation = this.label.rotation.toString();
-      this.element = new TextElement();
-      this.element.text = this.label.text;
-      this.element.fill = "#ffffff";
-    }
+    this.rotation = this.drawing.rotation.toString();
+
+    this.element = this.drawing.element as TextElement;
+    this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
+    this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
+    this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${this.element.font_size}pt`);
+    this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', this.element.font_weight);
   }
 
   onNoClick() {
@@ -56,22 +47,18 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   onYesClick() {
-    if (this.drawing) {
-      this.drawing.rotation = +this.rotation;
-      this.drawing.element = this.element;
+    this.drawing.rotation = +this.rotation;
+    this.drawing.element = this.element;
 
-      let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
-      mapDrawing.element = this.drawing.element;
+    let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
+    mapDrawing.element = this.drawing.element;
 
-      this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
+    this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-      this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
-        this.dialogRef.close();
-      });
-    } else if(this.label) {
-
-    }
+    this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
+      this.drawingsDataSource.update(serverDrawing);
+      this.dialogRef.close();
+    });
   }
 
   changeTextColor(changedColor) {

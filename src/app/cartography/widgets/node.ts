@@ -38,6 +38,10 @@ export class NodeWidget implements Widget {
     const node_body_merge = node_body
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
+      .on('contextmenu', function(n: MapNode, i: number) {
+        event.preventDefault();
+        self.onContextMenu.emit(new NodeContextMenu(event, n));
+      })
       .on('click', (node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.clientX, event.clientY));
       });
@@ -45,10 +49,6 @@ export class NodeWidget implements Widget {
     // update image of node
     node_body_merge
       .select<SVGImageElement>('image')
-      .on('contextmenu', function(n: MapNode, i: number) {
-        event.preventDefault();
-        self.onContextMenu.emit(new NodeContextMenu(event, n));
-      })
       .attr('xnode:href', (n: MapNode) => n.symbolUrl)
       .attr('width', (n: MapNode) => n.width)
       .attr('height', (n: MapNode) => n.height)

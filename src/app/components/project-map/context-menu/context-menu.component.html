@@ -14,11 +14,10 @@
       [drawing]="drawings[0]"
     ></app-edit-style-action>
     <app-edit-text-action
-      *ngIf="drawings.length===1 && hasTextCapabilities || labels.length===1"
+      *ngIf="drawings.length===1 && hasTextCapabilities"
       [server]="server"
       [project]="project"
       [drawing]="drawings[0]"
-      [label]="labels[0]"
     ></app-edit-text-action>
     <app-move-layer-up-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
@@ -61,7 +60,7 @@
       [link]="links[0]"
     ></app-suspend-link-action>
     <app-delete-action
-      *ngIf="!projectService.isReadOnly(project) && (drawings.length>0 || nodes.length>0 || links.length>0)"
+      *ngIf="!projectService.isReadOnly(project)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"

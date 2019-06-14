@@ -1,8 +1,6 @@
 import { TextElement } from '../models/drawings/text-element';
 import { MapDrawing } from '../models/map/map-drawing';
 import { MapLink } from '../models/map/map-link';
-import { MapLinkNode } from '../models/map/map-link-node';
-import { MapLabel } from '../models/map/map-label';
 
 export class DataEventSource<T> {
   constructor(public datum: T, public dx: number, public dy: number) {}
@@ -35,13 +33,5 @@ export class DrawingContextMenu {
 }
 
 export class LinkContextMenu {
-  constructor(public event: any, public link: MapLink) {}
-}
-
-export class InterfaceLabelContextMenu {
-  constructor(public event: any, public interfaceLabel: MapLinkNode) {}
-}
-
-export class LabelContextMenu {
-  constructor(public event: any, public label: MapLabel) {}
+  constructor(public event:any, public link: MapLink) {}
 }

@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { SVGSelection } from '../models/types';
 import { CssFixer } from '../helpers/css-fixer';
@@ -10,11 +10,9 @@ import { MapLinkNode } from '../models/map/map-link-node';
 import { MapNode } from '../models/map/map-node';
 import { Draggable } from '../events/draggable';
 import { MapSettingsManager } from '../managers/map-settings-manager';
-import { InterfaceLabelContextMenu } from '../events/event-source';
 
 @Injectable()
 export class InterfaceLabelWidget {
-  public onContextMenu = new EventEmitter<InterfaceLabelContextMenu>();
   public draggable = new Draggable<SVGGElement, MapLinkNode>();
 
   static SURROUNDING_TEXT_BORDER = 5;
@@ -32,8 +30,6 @@ export class InterfaceLabelWidget {
   }
 
   draw(selection: SVGSelection) {
-    const self = this;
-
     const link_node_position = selection
       .selectAll<SVGGElement, MapLinkNode>('g.link_node_position')
       .data((link: MapLink) => [[link.source, link.nodes[0]], [link.target, link.nodes[1]]]);
@@ -72,12 +68,7 @@ export class InterfaceLabelWidget {
       .attr('class', 'interface_label noselect')
       .attr('interface_label_id', (i: MapLinkNode) => `${i.id}`);
 
-    const merge = labels
-      .merge(enter)
-      .on('contextmenu', (n: MapLinkNode, i: number) => {
-        event.preventDefault();
-        self.onContextMenu.emit(new InterfaceLabelContextMenu(event, n));
-      });
+    const merge = labels.merge(enter);
 
     // update label
     merge
