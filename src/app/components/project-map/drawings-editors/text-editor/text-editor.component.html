@@ -1,15 +1,15 @@
 <h1 mat-dialog-title>Text editor</h1>
 
 <div class="modal-form-container">
-  <mat-form-field>
+  <!-- <mat-form-field>
     <input matInput placeholder="Fill color" type="color" (ngModelChange)="changeTextColor($event)" [(ngModel)]="element.fill">
-  </mat-form-field>
+  </mat-form-field> -->
 
   <mat-form-field>
     <input matInput placeholder="Rotation" type="text" [(ngModel)]="rotation">
   </mat-form-field>
 
-  <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text" [readonly]="!isTextEditable"></textarea> 
+  <!-- <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text"> </textarea>  -->
 </div>
 
 <div mat-dialog-actions>

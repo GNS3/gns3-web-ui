@@ -46,7 +46,6 @@ import { LinkWidget } from '../../cartography/widgets/link';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { LabelWidget } from '../../cartography/widgets/label';
-import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 
 
 @Component({
@@ -107,7 +106,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     private mapLabelToLabel: MapLabelToLabelConverter,
     private mapLinkToLink: MapLinkToLinkConverter,
-    private mapLinkNodeToLinkNode: MapLinkNodeToLinkNodeConverter,
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
@@ -246,14 +244,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
-      const node = this.nodes.find(n => n.node_id === eventLabel.label.nodeId);
-      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.pageY, eventLabel.event.pageX);
+      this.contextMenu.openMenuForLabel(label, eventLabel.event.pageY, eventLabel.event.pageX);
     });
 
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe((eventInterfaceLabel: InterfaceLabelContextMenu) => {
-      const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
-      const link = this.links.find(l => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
-      this.contextMenu.openMenuForInterfaceLabel(linkNode, link, eventInterfaceLabel.event.pageY, eventInterfaceLabel.event.pageX);
+      console.log("!!!!!!!!!! interface label");
+      console.log(eventInterfaceLabel);
+      //const interfaceLabel = this.mapLinkToLink.convert(eventInterfaceLabel.interfaceLabel);
     });
 
     const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
