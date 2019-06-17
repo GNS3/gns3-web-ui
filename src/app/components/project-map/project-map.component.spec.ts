@@ -81,6 +81,10 @@ export class MockedNodeService {
   reloadAll(server: Server, project: Project) {
     return of();
   }
+
+  duplicate(server: Server, node: Node) {
+    return of(node);
+  }
 }
 
 export class MockedDrawingService {
@@ -89,6 +93,10 @@ export class MockedDrawingService {
 
   add(_server: Server, _project_id: string, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
+  }
+
+  duplicate(server: Server, project_id: string, drawing: Drawing) {
+    return of(drawing);
   }
 
   updatePosition(_server: Server, _drawing: Drawing, _x: number, _y: number) {

@@ -135,4 +135,27 @@ describe('DrawingService', () => {
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
     expect(req.request.method).toEqual('DELETE');
   }));
+
+  it('should duplicate drawing', inject([DrawingService], (service: DrawingService) => {
+    const drawing = new Drawing();
+    drawing.project_id = "project_id_1";
+    drawing.drawing_id = "drawing_id_1";
+    drawing.x = 100;
+    drawing.y = 90;
+    drawing.z = 1;
+    drawing.rotation = 0;
+    drawing.svg = "<svg height=\"100\" width=\"200\"><rect fill=\"#ffffff\" fill-opacity=\"1.0\" height=\"100\" stroke=\"#000000\" stroke-width=\"2\" width=\"200\" /></svg>";
+
+    service.duplicate(server, drawing.project_id, drawing).subscribe();
+
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/v2/projects/${drawing.project_id}/drawings`);
+    expect(req.request.method).toEqual('POST');
+    expect(req.request.body).toEqual({
+      svg: drawing.svg,
+      rotation: 0,
+      x: 110,
+      y: 100,
+      z: 1
+    });
+  }));
 });
