@@ -44,6 +44,7 @@ import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { MovingTool } from '../../cartography/tools/moving-tool';
 
 
 @Component({
@@ -78,6 +79,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     isTextChosen: false,
     visibility: false
   };
+  protected isLocked: boolean = false;
 
   private inReadOnlyMode = false;
 
@@ -109,6 +111,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
+    private movingTool: MovingTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
   ) {}
@@ -393,6 +396,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
+  }
+
+  public changeLockValue() {
+    this.isLocked = !this.isLocked;
+    this.movingTool.setEnabled(this.isLocked);
   }
 
   public ngOnDestroy() {

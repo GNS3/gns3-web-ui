@@ -148,6 +148,16 @@
         />
       </svg>
     </button>
+    <mat-divider class="divider" [vertical]="true"></mat-divider>
+    <button
+      matTooltip="Lock or unlock all items"
+      mat-icon-button
+      class="menu-button"
+      [color]="isLocked ? 'primary' : 'basic'"
+      (click)="changeLockValue()"
+    >
+      <mat-icon>lock</mat-icon>
+    </button>
     <button class="arrow-button" mat-icon-button (click)="hideMenu()"><mat-icon>keyboard_arrow_left</mat-icon></button>
   </div>
 
