@@ -14,9 +14,14 @@ export class HelpComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.httpClient.get('3rdpartylicenses.txt', {responseType: 'text'})
+        this.httpClient.get('/3rdpartylicenses.txt', {responseType: 'text'})
             .subscribe(data => {
                 this.thirdpartylicenses = data.replace(new RegExp('\n', 'g'), "<br />")
+            },
+            error => {
+                if (error.status === 404) {
+                    this.thirdpartylicenses = 'File not found';
+                } 
             });
     }
 }
