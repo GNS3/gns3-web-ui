@@ -185,6 +185,7 @@ describe('ProjectMapComponent', () => {
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
   let nodeCreatedLabelStylesFixer;
+  let mapSettingService = new MapSettingService();
 
   beforeEach(async(() => {
     nodeCreatedLabelStylesFixer = {
@@ -222,7 +223,7 @@ describe('ProjectMapComponent', () => {
           useClass: RecentlyOpenedProjectService
         },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
-        { provide: MapSettingService }
+        { provide: MapSettingService, useValue: mapSettingService }
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
@@ -260,5 +261,13 @@ describe('ProjectMapComponent', () => {
     component.onDrawingSaved();
 
     expect(component.resetDrawToolChoice).toHaveBeenCalled();
+  });
+
+  it('should call map settings service when lock value was changed', () => {
+    spyOn(mapSettingService, 'changeMapLockValue');
+
+    component.changeLockValue();
+
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
   });
 });
