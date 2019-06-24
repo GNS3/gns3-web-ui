@@ -186,6 +186,7 @@ import { DefaultConsoleService } from './services/settings/default-console.servi
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
+import { HelpComponent } from './components/help/help.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -304,7 +305,8 @@ if (environment.production) {
     AdbutlerComponent,
     ConsoleDeviceActionComponent,
     ConsoleComponent,
-    NodesMenuComponent
+    NodesMenuComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,

@@ -52,6 +52,7 @@ import { CopyDockerTemplateComponent } from './components/preferences/docker/cop
 import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
 import { ConsoleComponent } from './components/settings/console/console.component';
+import { HelpComponent } from './components/help/help.component';
 
 const routes: Routes = [
   {
@@ -62,6 +63,7 @@ const routes: Routes = [
       { path: 'servers', component: ServersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'server/:server_id/projects', component: ProjectsComponent },
+      { path: 'help', component: HelpComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
