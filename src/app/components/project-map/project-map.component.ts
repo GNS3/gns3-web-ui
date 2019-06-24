@@ -44,7 +44,7 @@ import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
-import { MovingTool } from '../../cartography/tools/moving-tool';
+import { MapSettingService } from '../../services/mapsettings.service';
 
 
 @Component({
@@ -111,9 +111,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private toolsService: ToolsService,
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
-    private movingTool: MovingTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
+    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
+    private mapSettingsService: MapSettingService
   ) {}
 
   ngOnInit() {
@@ -400,7 +400,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public changeLockValue() {
     this.isLocked = !this.isLocked;
-    this.movingTool.setEnabled(this.isLocked);
+    this.mapSettingsService.changeMapLockValue(this.isLocked);
   }
 
   public ngOnDestroy() {
