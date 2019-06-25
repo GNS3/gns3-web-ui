@@ -270,4 +270,14 @@ describe('ProjectMapComponent', () => {
 
     expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
   });
+
+  it('should call map settings service with proper value', () => {
+    spyOn(mapSettingService, 'changeMapLockValue');
+
+    component.changeLockValue();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);
+
+    component.changeLockValue();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);
+  });
 });
