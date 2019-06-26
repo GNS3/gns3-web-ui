@@ -187,6 +187,7 @@ import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/no
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { MapSettingService } from './services/mapsettings.service';
+import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -305,7 +306,8 @@ if (environment.production) {
     AdbutlerComponent,
     ConsoleDeviceActionComponent,
     ConsoleComponent,
-    NodesMenuComponent
+    NodesMenuComponent,
+    ProjectMapMenuComponent
   ],
   imports: [
     BrowserModule,

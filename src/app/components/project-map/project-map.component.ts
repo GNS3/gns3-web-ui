@@ -44,7 +44,7 @@ import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
-import { MapSettingService } from '../../services/mapsettings.service';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
 
 @Component({
@@ -60,8 +60,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
-  public selectedDrawing: string;
   private ws: Subject<any>;
+  public isProjectMapMenuVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -71,20 +71,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected settings: Settings;
-
-  protected drawTools = {
-    isRectangleChosen: false,
-    isEllipseChosen: false,
-    isLineChosen: false,
-    isTextChosen: false,
-    visibility: false
-  };
-  protected isLocked: boolean = false;
-
   private inReadOnlyMode = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private subscriptions: Subscription[] = [];
 
@@ -112,8 +103,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
-    private mapSettingsService: MapSettingService
+    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
   ) {}
 
   ngOnInit() {
@@ -291,7 +281,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onDrawingSaved() {
-    this.resetDrawToolChoice();
+    this.projectMapMenuComponent.resetDrawToolChoice();
   }
 
   public set readonly(value) {
@@ -327,80 +317,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.project.show_interface_labels = enabled;
   }
 
-  public addDrawing(selectedObject: string) {
-    switch (selectedObject) {
-      case 'rectangle':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'ellipse':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'line':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
-        break;
-      case 'text':
-        this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-        break;
-    }
-
-    this.selectedDrawing = this.selectedDrawing === selectedObject ? '' : selectedObject;
-  }
-
-  public resetDrawToolChoice() {
-    this.drawTools.isRectangleChosen = false;
-    this.drawTools.isEllipseChosen = false;
-    this.drawTools.isLineChosen = false;
-    this.drawTools.isTextChosen = false;
-    this.selectedDrawing = '';
-    this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-  }
-
   public hideMenu() {
-    this.resetDrawToolChoice();
-    this.drawTools.visibility = false;
+    this.projectMapMenuComponent.resetDrawToolChoice()
+    this.isProjectMapMenuVisible = false;
   }
 
   public showMenu() {
-    this.drawTools.visibility = true;
-  }
-
-  public uploadImageFile(event) {
-    this.readImageFile(event.target);
-  }
-
-  private readImageFile(fileInput) {
-    let file: File = fileInput.files[0];
-    let fileReader: FileReader = new FileReader();
-    let imageToUpload = new Image();
-
-    fileReader.onloadend = () => {
-      let image = fileReader.result;
-      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
-                xlink:href=\"${image}\"/>\n</svg>`;
-      this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width/2), -(imageToUpload.height/2), svg).subscribe(() => {});
-    }
-        
-    imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
-    imageToUpload.src = window.URL.createObjectURL(file);
-  }
-
-  public changeLockValue() {
-    this.isLocked = !this.isLocked;
-    this.mapSettingsService.changeMapLockValue(this.isLocked);
+    this.isProjectMapMenuVisible = true;
   }
 
   public ngOnDestroy() {
