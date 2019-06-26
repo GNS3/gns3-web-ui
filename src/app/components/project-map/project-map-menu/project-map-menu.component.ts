@@ -16,13 +16,13 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     @Input() server: Server;
 
     public selectedDrawing: string;
-    protected drawTools = {
+    public drawTools = {
         isRectangleChosen: false,
         isEllipseChosen: false,
         isLineChosen: false,
         isTextChosen: false
     };
-    protected isLocked: boolean = false;
+    public isLocked: boolean = false;
 
     constructor(
         private toolsService: ToolsService,
