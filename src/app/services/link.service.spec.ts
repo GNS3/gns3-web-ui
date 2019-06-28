@@ -52,7 +52,7 @@ describe('LinkService', () => {
     targetPort.port_number = 3;
     targetPort.adapter_number = 4;
 
-    service.createLink(server, sourceNode, sourcePort, targetNode, targetPort).subscribe();
+    service.createLink(server, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/links');
     expect(req.request.method).toEqual('POST');
@@ -61,12 +61,26 @@ describe('LinkService', () => {
         {
           node_id: 'sourceid',
           port_number: 1,
-          adapter_number: 2
+          adapter_number: 2,
+          label: {
+            rotation: 0,
+            style: "font-size: 10; font-style: Verdana",
+            text: sourcePort.short_name,
+            x: 0,
+            y: 0
+          }
         },
         {
           node_id: 'targetid',
           port_number: 3,
-          adapter_number: 4
+          adapter_number: 4,
+          label: {
+            rotation: 0,
+            style: "font-size: 10; font-style: Verdana",
+            text: sourcePort.short_name,
+            x: 10,
+            y: 10
+          }
         }
       ]
     });

@@ -164,6 +164,12 @@
   <app-context-menu [project]="project" [server]="server"></app-context-menu>
 </div>
 
+<div id="zoom-buttons">
+  <button class="zoom-button" (click)="zoomIn()">+</button>
+  <button class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
+  <button class="zoom-button" (click)="zoomOut()">-</button>
+</div>
+
 <app-progress></app-progress>
 
 <app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server"> </app-project-map-shortcuts>

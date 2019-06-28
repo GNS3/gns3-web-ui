@@ -25,8 +25,8 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
 
   activate() {
     let listener = (event: MouseEvent) => {
-      let x = event.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
-      let y = event.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
+      let x = (event.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x))/this.context.transformation.k;
+      let y = (event.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y))/this.context.transformation.k;
 
       this.drawingsEventSource.pointToAddSelected.emit(new AddedDataEvent(x, y));
       this.deactivate();
