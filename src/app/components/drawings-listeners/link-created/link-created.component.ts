@@ -35,12 +35,48 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
   }
 
   onLinkCreated(linkCreated: MapLinkCreated) {
+    const xLength = Math.abs(linkCreated.sourceNode.x - linkCreated.targetNode.x);
+    const yLength = Math.abs(linkCreated.sourceNode.y - linkCreated.targetNode.y);
+    const zLength = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
+    //from law of sines
+    const sinY = yLength/zLength;
+
+    const x = (45 / zLength) * xLength;
+    const y = (45 / zLength) * yLength;
+
+    let xLabelSourceNode = 0;
+    let yLabelSourceNode = 0;
+    let xLabelTargetNode = 0;
+    let yLabelTargetNode = 0;
+
+    if ((linkCreated.sourceNode.x <= linkCreated.targetNode.x) && (linkCreated.sourceNode.y <= linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 5;
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) + Math.round(y) + 5;
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 5 - Math.round(20 * sinY);
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) + 5 - Math.round(20 * sinY);
+    } else if ((linkCreated.sourceNode.x > linkCreated.targetNode.x) && (linkCreated.sourceNode.y < linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 5 - Math.round(20 * sinY);
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) + Math.round(y) + 5 - Math.round(20 * sinY);
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) + Math.round(x) + 5;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) - Math.round(y) - 5;
+    } else if ((linkCreated.sourceNode.x < linkCreated.targetNode.x) && (linkCreated.sourceNode.y > linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) + Math.round(x) + 5 - Math.round(20 * sinY);
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) - 5 - Math.round(20 * sinY);
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) - Math.round(x) - 5;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) + Math.round(y) + 5;
+    } else if ((linkCreated.sourceNode.x >= linkCreated.targetNode.x) && (linkCreated.sourceNode.y >= linkCreated.targetNode.y)) {
+      xLabelSourceNode = Math.floor(linkCreated.sourceNode.width/2) - Math.round(x) - 5 - Math.round(20 * sinY);
+      yLabelSourceNode = Math.floor(linkCreated.sourceNode.height/2) - Math.round(y) + 5 - Math.round(20 * sinY);
+      xLabelTargetNode = Math.floor(linkCreated.targetNode.width/2) + Math.round(x) + 5;
+      yLabelTargetNode = Math.floor(linkCreated.targetNode.height/2) + Math.round(y) + 5;
+    }
+
     const sourceNode = this.mapNodeToNode.convert(linkCreated.sourceNode);
     const sourcePort = this.mapPortToPort.convert(linkCreated.sourcePort);
     const targetNode = this.mapNodeToNode.convert(linkCreated.targetNode);
     const targetPort = this.mapPortToPort.convert(linkCreated.targetPort);
 
-    this.linkService.createLink(this.server, sourceNode, sourcePort, targetNode, targetPort).subscribe(() => {
+    this.linkService.createLink(this.server, sourceNode, sourcePort, targetNode, targetPort, xLabelSourceNode, yLabelSourceNode, xLabelTargetNode, yLabelTargetNode).subscribe(() => {
       this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
         this.linksDataSource.set(links);
       });
