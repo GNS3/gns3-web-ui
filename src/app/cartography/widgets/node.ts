@@ -43,7 +43,7 @@ export class NodeWidget implements Widget {
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
       .on('click', (node: MapNode) => {
-        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.clientX, event.clientY));
+        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
 
     // update image of node

@@ -40,8 +40,10 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 
 export class MockedProgressService {
@@ -224,10 +226,12 @@ describe('ProjectMapComponent', () => {
         { provide: ToolsService },
         { provide: SelectionManager },
         { provide: SelectionTool },
+        { provide: MovingEventSource },
         {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
+        { provide: MapScaleService },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
       ],
       declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],

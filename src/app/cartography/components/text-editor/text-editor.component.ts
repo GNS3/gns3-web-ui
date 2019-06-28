@@ -6,6 +6,7 @@ import { select } from 'd3-selection';
 import { TextElement } from '../../models/drawings/text-element';
 import { Context } from '../../models/context';
 import { Subscription } from 'rxjs';
+import { MapScaleService } from '../../../services/mapScale.service';
 
 @Component({
   selector: 'app-text-editor',
@@ -32,7 +33,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     private drawingsEventSource: DrawingsEventSource,
     private toolsService: ToolsService,
     private context: Context,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private mapScaleService: MapScaleService
   ) {}
 
   ngOnInit() {
@@ -48,14 +50,15 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       this.leftPosition = event.pageX.toString() + 'px';
       this.topPosition = event.pageY.toString() + 'px';
       this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
+      this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'transform', `scale(${this.mapScaleService.getScale()})`);
       this.temporaryTextElement.nativeElement.focus();
 
       let textListener = () => {
         this.drawingsEventSource.textAdded.emit(
           new TextAddedDataEvent(
             this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ''),
-            event.pageX - this.context.transformation.x,
-            event.pageY - this.context.transformation.y
+            event.pageX,
+            event.pageY
           )
         );
         this.deactivateTextAdding();
@@ -84,16 +87,16 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       .selectAll<SVGTextElement, TextElement>('text.text_element')
       .on('dblclick', (elem, index, textElements) => {
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'transform', `scale(${this.mapScaleService.getScale()})`);
         this.editedElement = elem;
 
         select(textElements[index]).attr('visibility', 'hidden');
-
         select(textElements[index]).classed('editingMode', true);
 
         this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute('drawing_id');
         var transformData = textElements[index].parentElement.getAttribute('transform').split(/\(|\)/);
-        var x = Number(transformData[1].split(/,/)[0]) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
-        var y = Number(transformData[1].split(/,/)[1]) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
+        var x = (Number(transformData[1].split(/,/)[0]) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
+        var y = (Number(transformData[1].split(/,/)[1]) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
         this.temporaryTextElement.nativeElement.innerText = elem.text;

@@ -42,7 +42,9 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 
 
@@ -110,6 +112,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private movingEventSource: MovingEventSource,
+    private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
   ) {}
 
@@ -184,6 +188,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChangeDetectorRef.detectChanges();
       })
     );
+
+    this.addKeyboardListeners();
+  }
+
+  addKeyboardListeners() {
+    Mousetrap.bind('ctrl++', (event: Event) => {
+      event.preventDefault();
+    });
+
+    Mousetrap.bind('ctrl+-', (event: Event) => {
+      event.preventDefault();
+    });;
   }
 
   onProjectLoad(project: Project) {
@@ -308,7 +324,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
-    this.toolsService.movingToolActivation(this.tools.moving);
+    this.movingEventSource.movingModeState.emit(this.tools.moving);
+    
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
       this.toolsService.selectionToolActivation(this.tools.selection);
@@ -374,6 +391,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.drawTools.visibility = true;
   }
 
+  zoomIn() {
+    this.mapScaleService.setScale(this.mapScaleService.getScale() + 0.1);
+  }
+
+  zoomOut() {
+    let currentScale = this.mapScaleService.getScale();
+
+    if ((currentScale - 0.1) > 0) {
+      this.mapScaleService.setScale(currentScale - 0.1);
+    }
+  }
+
+  resetZoom() {
+    this.mapScaleService.resetToDefault();
+  }
+  
   public uploadImageFile(event) {
     this.readImageFile(event.target);
   }
