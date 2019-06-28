@@ -100,7 +100,9 @@ export class SelectionTool {
   }
 
   private moveSelection(start, move) {
-    this.path.attr('d', this.rect(start[0], start[1], move[0] - start[0], move[1] - start[1]));
+    let x = start[0]/this.context.transformation.k;
+    let y = start[1]/this.context.transformation.k;
+    this.path.attr('d', this.rect(x, y, move[0]/this.context.transformation.k - x, move[1]/this.context.transformation.k - y));
     this.selectedEvent(start, move);
   }
 

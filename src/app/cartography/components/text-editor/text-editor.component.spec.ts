@@ -5,6 +5,7 @@ import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { ToolsService } from '../../../services/tools.service';
 import { Context } from '../../models/context';
 import { Renderer2 } from '@angular/core';
+import { MapScaleService } from '../../../services/mapScale.service';
 
 describe('TemporaryTextElementComponent', () => {
   let component: TextEditorComponent;
@@ -17,7 +18,8 @@ describe('TemporaryTextElementComponent', () => {
         { provide: DrawingsEventSource, useClass: DrawingsEventSource },
         { provide: ToolsService, useClass: ToolsService },
         { provide: Context, useClass: Context },
-        { provide: Renderer2, useClass: Renderer2 }
+        { provide: Renderer2, useClass: Renderer2 },
+        { provide: MapScaleService, useClass: MapScaleService }
       ],
       declarations: [TextEditorComponent]
     }).compileComponents();
