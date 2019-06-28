@@ -180,6 +180,7 @@ import { StartCaptureDialogComponent } from './components/project-map/packet-cap
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { ResumeLinkActionComponent } from './components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
+import { MapScaleService } from './services/mapScale.service';
 import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
@@ -376,6 +377,7 @@ if (environment.production) {
     IouConfigurationService,
     RecentlyOpenedProjectService,
     ServerManagementService,
+    MapScaleService,
     ConsoleService,
     DefaultConsoleService,
     NodeCreatedLabelStylesFixer,

@@ -45,8 +45,8 @@ export class TextAddedComponent implements OnInit, OnDestroy {
       .add(
         this.server,
         this.project.project_id,
-        evt.x - this.context.getZeroZeroTransformationPoint().x,
-        evt.y - this.context.getZeroZeroTransformationPoint().y,
+        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x))/this.context.transformation.k,
+        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y))/this.context.transformation.k,
         svgText
       )
       .subscribe((serverDrawing: Drawing) => {
