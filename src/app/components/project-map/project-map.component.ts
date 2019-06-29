@@ -46,6 +46,7 @@ import { MovingEventSource } from '../../cartography/events/moving-event-source'
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { MapSettingService } from '../../services/mapsettings.service';
 
 
 @Component({
@@ -80,6 +81,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     isTextChosen: false,
     visibility: false
   };
+  protected isLocked: boolean = false;
 
   private inReadOnlyMode = false;
 
@@ -112,6 +114,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private mapSettingsService: MapSettingService,
     private movingEventSource: MovingEventSource,
     private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
@@ -426,6 +429,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
+  }
+
+  public changeLockValue() {
+    this.isLocked = !this.isLocked;
+    this.mapSettingsService.changeMapLockValue(this.isLocked);
   }
 
   public ngOnDestroy() {

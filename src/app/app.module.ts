@@ -187,6 +187,7 @@ import { DefaultConsoleService } from './services/settings/default-console.servi
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
+import { MapSettingService } from './services/mapsettings.service';
 import { HelpComponent } from './components/help/help.component';
 
 if (environment.production) {
@@ -382,7 +383,8 @@ if (environment.production) {
     DefaultConsoleService,
     NodeCreatedLabelStylesFixer,
     NonNegativeValidator,
-    RotationValidator
+    RotationValidator,
+    MapSettingService
   ],
   entryComponents: [
     AddServerDialogComponent,

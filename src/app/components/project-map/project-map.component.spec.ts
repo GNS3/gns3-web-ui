@@ -45,6 +45,7 @@ import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { MapSettingService } from '../../services/mapsettings.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -186,6 +187,7 @@ describe('ProjectMapComponent', () => {
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
   let nodeCreatedLabelStylesFixer;
+  let mapSettingService = new MapSettingService();
 
   beforeEach(async(() => {
     nodeCreatedLabelStylesFixer = {
@@ -223,6 +225,8 @@ describe('ProjectMapComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: MapSettingService, useValue: mapSettingService },
         { provide: MapScaleService },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
       ],
@@ -262,5 +266,23 @@ describe('ProjectMapComponent', () => {
     component.onDrawingSaved();
 
     expect(component.resetDrawToolChoice).toHaveBeenCalled();
+  });
+
+  it('should call map settings service when lock value was changed', () => {
+    spyOn(mapSettingService, 'changeMapLockValue');
+
+    component.changeLockValue();
+
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
+  });
+
+  it('should call map settings service with proper value', () => {
+    spyOn(mapSettingService, 'changeMapLockValue');
+
+    component.changeLockValue();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);
+
+    component.changeLockValue();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);
   });
 });
