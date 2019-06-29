@@ -188,6 +188,7 @@ import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/no
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { MapSettingService } from './services/mapsettings.service';
+import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
 
 if (environment.production) {
@@ -308,6 +309,7 @@ if (environment.production) {
     ConsoleDeviceActionComponent,
     ConsoleComponent,
     NodesMenuComponent,
+    ProjectMapMenuComponent,
     HelpComponent
   ],
   imports: [

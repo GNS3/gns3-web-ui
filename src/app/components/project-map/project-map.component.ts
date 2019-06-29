@@ -46,7 +46,7 @@ import { MovingEventSource } from '../../cartography/events/moving-event-source'
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
-import { MapSettingService } from '../../services/mapsettings.service';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
 
 @Component({
@@ -62,8 +62,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
-  public selectedDrawing: string;
   private ws: Subject<any>;
+  public isProjectMapMenuVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -73,20 +73,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected settings: Settings;
-
-  protected drawTools = {
-    isRectangleChosen: false,
-    isEllipseChosen: false,
-    isLineChosen: false,
-    isTextChosen: false,
-    visibility: false
-  };
-  protected isLocked: boolean = false;
-
   private inReadOnlyMode = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private subscriptions: Subscription[] = [];
 
@@ -114,7 +105,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private mapSettingsService: MapSettingService,
     private movingEventSource: MovingEventSource,
     private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
@@ -307,7 +297,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onDrawingSaved() {
-    this.resetDrawToolChoice();
+    this.projectMapMenuComponent.resetDrawToolChoice();
   }
 
   public set readonly(value) {
@@ -344,54 +334,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.project.show_interface_labels = enabled;
   }
 
-  public addDrawing(selectedObject: string) {
-    switch (selectedObject) {
-      case 'rectangle':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'ellipse':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'line':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
-        break;
-      case 'text':
-        this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-        break;
-    }
-
-    this.selectedDrawing = this.selectedDrawing === selectedObject ? '' : selectedObject;
-  }
-
-  public resetDrawToolChoice() {
-    this.drawTools.isRectangleChosen = false;
-    this.drawTools.isEllipseChosen = false;
-    this.drawTools.isLineChosen = false;
-    this.drawTools.isTextChosen = false;
-    this.selectedDrawing = '';
-    this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-  }
-
   public hideMenu() {
-    this.resetDrawToolChoice();
-    this.drawTools.visibility = false;
+    this.projectMapMenuComponent.resetDrawToolChoice()
+    this.isProjectMapMenuVisible = false;
   }
 
   public showMenu() {
-    this.drawTools.visibility = true;
+    this.isProjectMapMenuVisible = true;
   }
 
   zoomIn() {
@@ -429,11 +378,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
-  }
-
-  public changeLockValue() {
-    this.isLocked = !this.isLocked;
-    this.mapSettingsService.changeMapLockValue(this.isLocked);
   }
 
   public ngOnDestroy() {
