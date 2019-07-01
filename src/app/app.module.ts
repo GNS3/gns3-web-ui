@@ -180,12 +180,16 @@ import { StartCaptureDialogComponent } from './components/project-map/packet-cap
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { ResumeLinkActionComponent } from './components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
+import { MapScaleService } from './services/mapScale.service';
 import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
+import { MapSettingService } from './services/mapsettings.service';
+import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
+import { HelpComponent } from './components/help/help.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -304,7 +308,9 @@ if (environment.production) {
     AdbutlerComponent,
     ConsoleDeviceActionComponent,
     ConsoleComponent,
-    NodesMenuComponent
+    NodesMenuComponent,
+    ProjectMapMenuComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,
@@ -374,11 +380,13 @@ if (environment.production) {
     IouConfigurationService,
     RecentlyOpenedProjectService,
     ServerManagementService,
+    MapScaleService,
     ConsoleService,
     DefaultConsoleService,
     NodeCreatedLabelStylesFixer,
     NonNegativeValidator,
-    RotationValidator
+    RotationValidator,
+    MapSettingService
   ],
   entryComponents: [
     AddServerDialogComponent,

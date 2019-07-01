@@ -40,12 +40,16 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { LabelWidget } from '../../cartography/widgets/label';
 import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
+import { MapSettingService } from '../../services/mapsettings.service';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
 export class MockedProgressService {
   public activate() {}
@@ -222,13 +226,16 @@ describe('ProjectMapComponent', () => {
         { provide: ToolsService },
         { provide: SelectionManager },
         { provide: SelectionTool },
+        { provide: MovingEventSource },
         {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: MapScaleService },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
       ],
-      declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
+      declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
@@ -236,6 +243,9 @@ describe('ProjectMapComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
+    component.projectMapMenuComponent = { 
+      resetDrawToolChoice(){}
+    } as ProjectMapMenuComponent;
   });
 
   afterEach(() => {
@@ -251,18 +261,10 @@ describe('ProjectMapComponent', () => {
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
       return [dummyElement];
     });
-    spyOn(component, 'resetDrawToolChoice');
+    spyOn(component.projectMapMenuComponent, 'resetDrawToolChoice').and.returnValue();
 
     component.hideMenu();
 
-    expect(component.resetDrawToolChoice).toHaveBeenCalled();
-  });
-
-  it('should reset choice on draw menu after saving drawing', () => {
-    spyOn(component, 'resetDrawToolChoice');
-
-    component.onDrawingSaved();
-
-    expect(component.resetDrawToolChoice).toHaveBeenCalled();
+    expect(component.projectMapMenuComponent.resetDrawToolChoice).toHaveBeenCalled();
   });
 });

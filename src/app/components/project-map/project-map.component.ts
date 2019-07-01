@@ -42,11 +42,14 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { LabelWidget } from '../../cartography/widgets/label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
 
 @Component({
@@ -62,8 +65,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
-  public selectedDrawing: string;
   private ws: Subject<any>;
+  public isProjectMapMenuVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -73,19 +76,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected settings: Settings;
-
-  protected drawTools = {
-    isRectangleChosen: false,
-    isEllipseChosen: false,
-    isLineChosen: false,
-    isTextChosen: false,
-    visibility: false
-  };
-
   private inReadOnlyMode = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private subscriptions: Subscription[] = [];
 
@@ -116,6 +111,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
+    private movingEventSource: MovingEventSource,
+    private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
   ) {}
 
@@ -190,6 +187,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChangeDetectorRef.detectChanges();
       })
     );
+
+    this.addKeyboardListeners();
+  }
+
+  addKeyboardListeners() {
+    Mousetrap.bind('ctrl++', (event: Event) => {
+      event.preventDefault();
+    });
+
+    Mousetrap.bind('ctrl+-', (event: Event) => {
+      event.preventDefault();
+    });;
   }
 
   onProjectLoad(project: Project) {
@@ -308,7 +317,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onDrawingSaved() {
-    this.resetDrawToolChoice();
+    this.projectMapMenuComponent.resetDrawToolChoice();
   }
 
   public set readonly(value) {
@@ -328,7 +337,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
-    this.toolsService.movingToolActivation(this.tools.moving);
+    this.movingEventSource.movingModeState.emit(this.tools.moving);
+    
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
       this.toolsService.selectionToolActivation(this.tools.selection);
@@ -344,56 +354,31 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.project.show_interface_labels = enabled;
   }
 
-  public addDrawing(selectedObject: string) {
-    switch (selectedObject) {
-      case 'rectangle':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'ellipse':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'line':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
-        break;
-      case 'text':
-        this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-        break;
-    }
-
-    this.selectedDrawing = this.selectedDrawing === selectedObject ? '' : selectedObject;
-  }
-
-  public resetDrawToolChoice() {
-    this.drawTools.isRectangleChosen = false;
-    this.drawTools.isEllipseChosen = false;
-    this.drawTools.isLineChosen = false;
-    this.drawTools.isTextChosen = false;
-    this.selectedDrawing = '';
-    this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-  }
-
   public hideMenu() {
-    this.resetDrawToolChoice();
-    this.drawTools.visibility = false;
+    this.projectMapMenuComponent.resetDrawToolChoice()
+    this.isProjectMapMenuVisible = false;
   }
 
   public showMenu() {
-    this.drawTools.visibility = true;
+    this.isProjectMapMenuVisible = true;
   }
 
+  zoomIn() {
+    this.mapScaleService.setScale(this.mapScaleService.getScale() + 0.1);
+  }
+
+  zoomOut() {
+    let currentScale = this.mapScaleService.getScale();
+
+    if ((currentScale - 0.1) > 0) {
+      this.mapScaleService.setScale(currentScale - 0.1);
+    }
+  }
+
+  resetZoom() {
+    this.mapScaleService.resetToDefault();
+  }
+  
   public uploadImageFile(event) {
     this.readImageFile(event.target);
   }

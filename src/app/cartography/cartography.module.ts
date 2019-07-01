@@ -55,6 +55,9 @@ import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-el
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
 import { TextEditorComponent } from './components/text-editor/text-editor.component';
 import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
+import { MovingEventSource } from './events/moving-event-source';
+import { MovingCanvasDirective } from './directives/moving-canvas.directive';
+import { ZoomingCanvasDirective } from './directives/zooming-canvas.directive';
 
 @NgModule({
   imports: [CommonModule, MatMenuModule, MatIconModule],
@@ -67,7 +70,9 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,
-    DraggableSelectionComponent
+    DraggableSelectionComponent,
+    MovingCanvasDirective,
+    ZoomingCanvasDirective
   ],
   providers: [
     CssFixer,
@@ -87,6 +92,7 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
     DrawingsEventSource,
     NodesEventSource,
     LinksEventSource,
+    MovingEventSource,
     MapDrawingToSvgConverter,
     DrawingToMapDrawingConverter,
     LabelToMapLabelConverter,

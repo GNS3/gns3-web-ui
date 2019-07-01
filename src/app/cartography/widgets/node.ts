@@ -39,7 +39,7 @@ export class NodeWidget implements Widget {
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
       .on('click', (node: MapNode) => {
-        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.clientX, event.clientY));
+        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
 
     // update image of node
