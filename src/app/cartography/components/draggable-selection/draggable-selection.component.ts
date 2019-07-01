@@ -17,6 +17,7 @@ import { LabelWidget } from '../../widgets/label';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { MapLinkNode } from '../../models/map/map-link-node';
 import { LinksEventSource } from '../../events/links-event-source';
+import { MapSettingService } from '../../../services/mapsettings.service';
 
 @Component({
   selector: 'app-draggable-selection',
@@ -27,6 +28,8 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
   private start: Subscription;
   private drag: Subscription;
   private end: Subscription;
+  private mapSettingsSubscription: Subscription;
+  private isMapLocked: boolean = false;
 
   @Input('svg') svg: SVGSVGElement;
 
@@ -40,11 +43,16 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
     private nodesEventSource: NodesEventSource,
     private drawingsEventSource: DrawingsEventSource,
     private graphDataManager: GraphDataManager,
-    private linksEventSource: LinksEventSource
+    private linksEventSource: LinksEventSource,
+    private mapSettingsService: MapSettingService
   ) {}
 
   ngOnInit() {
     const svg = select(this.svg);
+
+    this.mapSettingsService.isMapLocked.subscribe((value) => {
+      this.isMapLocked = value;
+    });
 
     this.start = merge(
       this.nodesWidget.draggable.start,
@@ -84,75 +92,77 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
       this.labelWidget.draggable.drag,
       this.interfaceWidget.draggable.drag
     ).subscribe((evt: DraggableDrag<any>) => {
-      const selected = this.selectionManager.getSelected();
-      const selectedNodes = selected.filter(item => item instanceof MapNode);
-      // update nodes
-      selectedNodes.forEach((node: MapNode) => {
-        node.x += evt.dx;
-        node.y += evt.dy;
+      if (!this.isMapLocked) {
+        const selected = this.selectionManager.getSelected();
+        const selectedNodes = selected.filter(item => item instanceof MapNode);
+        // update nodes
+        selectedNodes.forEach((node: MapNode) => {
+          node.x += evt.dx;
+          node.y += evt.dy;
 
-        this.nodesWidget.redrawNode(svg, node);
+          this.nodesWidget.redrawNode(svg, node);
 
-        const links = this.graphDataManager
-          .getLinks()
-          .filter(
-            link =>
-              (link.target !== undefined && link.target.id === node.id) ||
-              (link.source !== undefined && link.source.id === node.id)
-          );
-
-        links.forEach(link => {
-          this.linksWidget.redrawLink(svg, link);
-        });
-      });
-
-      // update drawings
-      selected
-        .filter(item => item instanceof MapDrawing)
-        .forEach((drawing: MapDrawing) => {
-          drawing.x += evt.dx;
-          drawing.y += evt.dy;
-          this.drawingsWidget.redrawDrawing(svg, drawing);
-        });
-
-      // update labels
-      selected
-        .filter(item => item instanceof MapLabel)
-        .forEach((label: MapLabel) => {
-          const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
-          if (isParentNodeSelected) {
-            return;
-          }
-
-          const node = this.graphDataManager.getNodes().filter(node => node.id === label.nodeId)[0];
-          node.label.x += evt.dx;
-          node.label.y += evt.dy;
-          this.labelWidget.redrawLabel(svg, label);
-        });
-
-      // update interface labels
-      selected
-        .filter(item => item instanceof MapLinkNode)
-        .forEach((interfaceLabel: MapLinkNode) => {
-          const isParentNodeSelected = selectedNodes.filter(node => node.id === interfaceLabel.nodeId).length > 0;
-          if (isParentNodeSelected) {
-            return;
-          }
-
-          const link = this.graphDataManager
+          const links = this.graphDataManager
             .getLinks()
-            .filter(link => link.nodes[0].id === interfaceLabel.id || link.nodes[1].id === interfaceLabel.id)[0];
-          if (link.nodes[0].id === interfaceLabel.id) {
-            link.nodes[0].label.x += evt.dx;
-            link.nodes[0].label.y += evt.dy;
-          }
-          if (link.nodes[1].id === interfaceLabel.id) {
-            link.nodes[1].label.x += evt.dx;
-            link.nodes[1].label.y += evt.dy;
-          }
+            .filter(
+              link =>
+                (link.target !== undefined && link.target.id === node.id) ||
+                (link.source !== undefined && link.source.id === node.id)
+            );
 
-          this.linksWidget.redrawLink(svg, link);
+          links.forEach(link => {
+            this.linksWidget.redrawLink(svg, link);
+          });
         });
+
+        // update drawings
+        selected
+          .filter(item => item instanceof MapDrawing)
+          .forEach((drawing: MapDrawing) => {
+            drawing.x += evt.dx;
+            drawing.y += evt.dy;
+            this.drawingsWidget.redrawDrawing(svg, drawing);
+          });
+
+        // update labels
+        selected
+          .filter(item => item instanceof MapLabel)
+          .forEach((label: MapLabel) => {
+            const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
+            if (isParentNodeSelected) {
+              return;
+            }
+
+            const node = this.graphDataManager.getNodes().filter(node => node.id === label.nodeId)[0];
+            node.label.x += evt.dx;
+            node.label.y += evt.dy;
+            this.labelWidget.redrawLabel(svg, label);
+          });
+
+        // update interface labels
+        selected
+          .filter(item => item instanceof MapLinkNode)
+          .forEach((interfaceLabel: MapLinkNode) => {
+            const isParentNodeSelected = selectedNodes.filter(node => node.id === interfaceLabel.nodeId).length > 0;
+            if (isParentNodeSelected) {
+              return;
+            }
+
+            const link = this.graphDataManager
+              .getLinks()
+              .filter(link => link.nodes[0].id === interfaceLabel.id || link.nodes[1].id === interfaceLabel.id)[0];
+            if (link.nodes[0].id === interfaceLabel.id) {
+              link.nodes[0].label.x += evt.dx;
+              link.nodes[0].label.y += evt.dy;
+            }
+            if (link.nodes[1].id === interfaceLabel.id) {
+              link.nodes[1].label.x += evt.dx;
+              link.nodes[1].label.y += evt.dy;
+            }
+
+            this.linksWidget.redrawLink(svg, link);
+          });
+      }
     });
 
     this.end = merge(
@@ -161,39 +171,41 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
       this.labelWidget.draggable.end,
       this.interfaceWidget.draggable.end
     ).subscribe((evt: DraggableEnd<any>) => {
-      const selected = this.selectionManager.getSelected();
-      const selectedNodes = selected.filter(item => item instanceof MapNode);
+      if (!this.isMapLocked) {
+        const selected = this.selectionManager.getSelected();
+        const selectedNodes = selected.filter(item => item instanceof MapNode);
 
-      selectedNodes.forEach((item: MapNode) => {
-        this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(item, evt.dx, evt.dy));
-      });
-
-      selected
-        .filter(item => item instanceof MapDrawing)
-        .forEach((item: MapDrawing) => {
-          this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing>(item, evt.dx, evt.dy));
+        selectedNodes.forEach((item: MapNode) => {
+          this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(item, evt.dx, evt.dy));
         });
 
-      selected
-        .filter(item => item instanceof MapLabel)
-        .forEach((label: MapLabel) => {
-          const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
-          if (isParentNodeSelected) {
-            return;
-          }
+        selected
+          .filter(item => item instanceof MapDrawing)
+          .forEach((item: MapDrawing) => {
+            this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing>(item, evt.dx, evt.dy));
+          });
 
-          this.nodesEventSource.labelDragged.emit(new DraggedDataEvent<MapLabel>(label, evt.dx, evt.dy));
-        });
+        selected
+          .filter(item => item instanceof MapLabel)
+          .forEach((label: MapLabel) => {
+            const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
+            if (isParentNodeSelected) {
+              return;
+            }
 
-      selected
-        .filter(item => item instanceof MapLinkNode)
-        .forEach((label: MapLinkNode) => {
-          const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
-          if (isParentNodeSelected) {
-            return;
-          }
-          this.linksEventSource.interfaceDragged.emit(new DraggedDataEvent<MapLinkNode>(label, evt.dx, evt.dy));
-        });
+            this.nodesEventSource.labelDragged.emit(new DraggedDataEvent<MapLabel>(label, evt.dx, evt.dy));
+          });
+
+        selected
+          .filter(item => item instanceof MapLinkNode)
+          .forEach((label: MapLinkNode) => {
+            const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
+            if (isParentNodeSelected) {
+              return;
+            }
+            this.linksEventSource.interfaceDragged.emit(new DraggedDataEvent<MapLinkNode>(label, evt.dx, evt.dy));
+          });
+        }
     });
   }
 
@@ -201,5 +213,6 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
     this.start.unsubscribe();
     this.drag.unsubscribe();
     this.end.unsubscribe();
+    this.mapSettingsSubscription.unsubscribe();
   }
 }
