@@ -50,7 +50,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const svg = select(this.svg);
 
-    this.mapSettingsService.isMapLocked.subscribe((value) => {
+    this.mapSettingsSubscription = this.mapSettingsService.isMapLocked.subscribe((value) => {
       this.isMapLocked = value;
     });
 
