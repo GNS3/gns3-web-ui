@@ -267,7 +267,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
       const selectedItems = this.selectionManager.getSelected();
-      if (selectedItems.length === 0 || !(event instanceof MouseEvent)) return;
+      if (selectedItems.length < 2 || !(event instanceof MouseEvent)) return;
 
       let drawings: Drawing[] = [];
       let nodes: Node[] = [];

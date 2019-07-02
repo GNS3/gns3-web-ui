@@ -61,11 +61,7 @@ export class TextEditorDialogComponent implements OnInit {
       rotation: new FormControl('', [Validators.required, this.rotationValidator.get])
     });
 
-    if (this.drawing) {
-      this.isTextEditable = true;
-      this.rotation = this.drawing.rotation.toString();
-      this.element = this.drawing.element as TextElement;
-    } else if (this.label && this.node) {
+    if (this.label && this.node) {
       this.isTextEditable = false;
       this.rotation = this.label.rotation.toString();
       this.element = this.getTextElementFromLabel();
@@ -74,7 +70,11 @@ export class TextEditorDialogComponent implements OnInit {
       this.label = this.link.nodes.find(n => n.node_id === this.linkNode.node_id).label;
       this.rotation = this.label.rotation.toString();
       this.element = this.getTextElementFromLabel();
-    }
+    } else if (this.drawing) {
+      this.isTextEditable = true;
+      this.rotation = this.drawing.rotation.toString();
+      this.element = this.drawing.element as TextElement;
+    };
 
     this.formGroup.controls['rotation'].setValue(this.rotation);
     this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
@@ -116,20 +116,7 @@ export class TextEditorDialogComponent implements OnInit {
     if (this.formGroup.valid) {
       this.rotation = this.formGroup.get('rotation').value;
 
-      if (this.drawing) {
-        this.drawing.rotation = +this.rotation;
-        this.drawing.element = this.element;
-  
-        let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
-        mapDrawing.element = this.drawing.element;
-  
-        this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
-  
-        this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
-          this.drawingsDataSource.update(serverDrawing);
-          this.dialogRef.close();
-        });
-      } else if (this.label && this.node) {
+      if (this.label && this.node) {
         this.node.label.style = this.getStyleFromTextElement();
         this.node.label.rotation = +this.rotation;
   
@@ -146,7 +133,20 @@ export class TextEditorDialogComponent implements OnInit {
           this.linksDataSource.update(link);
           this.dialogRef.close();
         });
-      }
+      } else if (this.drawing) {
+        this.drawing.rotation = +this.rotation;
+        this.drawing.element = this.element;
+  
+        let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
+        mapDrawing.element = this.drawing.element;
+  
+        this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
+  
+        this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
+          this.drawingsDataSource.update(serverDrawing);
+          this.dialogRef.close();
+        });
+      };
     } else {
       this.toasterService.error(`Entered data is incorrect`);
     }
