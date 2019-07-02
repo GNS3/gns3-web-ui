@@ -19,6 +19,16 @@ export class DrawingService {
     });
   }
 
+  duplicate(server: Server, project_id: string, drawing: Drawing) {
+    return this.httpServer.post<Drawing>(server, `/projects/${project_id}/drawings`, {
+      svg: drawing.svg,
+      rotation: drawing.rotation,
+      x: drawing.x + 10,
+      y: drawing.y + 10,
+      z: drawing.z
+    });
+  }
+
   updatePosition(server: Server, drawing: Drawing, x: number, y: number): Observable<Drawing> {
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       x: Math.round(x),
