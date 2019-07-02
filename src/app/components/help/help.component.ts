@@ -8,6 +8,7 @@ styleUrls: ['./help.component.scss']
 })
 export class HelpComponent implements OnInit {
     thirdpartylicenses = '';
+    releasenotes = '';
 
     constructor(
         private httpClient: HttpClient
@@ -22,6 +23,11 @@ export class HelpComponent implements OnInit {
                 if (error.status === 404) {
                     this.thirdpartylicenses = 'File not found';
                 } 
+            });
+
+        this.httpClient.get('ReleaseNotes.txt', {responseType: 'text'})
+            .subscribe(data => {
+                this.releasenotes = data.replace(new RegExp('\n', 'g'), "<br />")
             });
     }
 }

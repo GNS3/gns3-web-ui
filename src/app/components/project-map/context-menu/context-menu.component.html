@@ -8,6 +8,12 @@
       [server]="server"
       [nodes]="nodes"
     ></app-console-device-action>
+    <app-duplicate-action *ngIf="drawings.length>0 || nodes.length>0"
+      [server]="server"
+      [project]="project"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-duplicate-action>
     <app-edit-style-action *ngIf="!projectService.isReadOnly(project) && drawings.length===1 && !hasTextCapabilities"
       [server]="server"
       [project]="project"

@@ -215,4 +215,15 @@ describe('NodeService', () => {
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/nodes/id');
     expect(req.request.method).toEqual('DELETE');
   }));
+
+  it('should duplicate node', inject([NodeService], (service: NodeService) => {
+    const node = new Node();
+    node.project_id = "project_id_1";
+    node.node_id = "node_id_1";
+
+    service.duplicate(server, node).subscribe();
+
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/v2/projects/${node.project_id}/nodes/${node.node_id}/duplicate`);
+    expect(req.request.method).toEqual('POST');
+  }));
 });
