@@ -10,6 +10,7 @@ import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Label } from '../../../cartography/models/label';
 import { Link } from '../../../models/link';
 import { ElectronService } from 'ngx-electron';
+import { LinkNode } from '../../../models/link-node';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class ContextMenuComponent implements OnInit {
   nodes: Node[] = [];
   labels: Label[] = [];
   links: Link[] = [];
+  linkNodes: LinkNode[] = [];
 
   hasTextCapabilities = false;
   isElectronApp = false;
@@ -74,10 +76,21 @@ export class ContextMenuComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
-  public openMenuForLabel(label: Label, top: number, left: number) {
+  public openMenuForLabel(label: Label, node: Node, top: number, left: number) {
     this.resetCapabilities();
 
     this.labels = [label];
+    this.nodes = [node];
+    this.setPosition(top, left);
+
+    this.contextMenu.openMenu();
+  }
+
+  public openMenuForInterfaceLabel(linkNode: LinkNode, link: Link, top: number, left: number) {
+    this.resetCapabilities();
+
+    this.linkNodes = [linkNode];
+    this.links = [link];
     this.setPosition(top, left);
 
     this.contextMenu.openMenu();
@@ -99,6 +112,8 @@ export class ContextMenuComponent implements OnInit {
     this.drawings = [];
     this.nodes = [];
     this.labels = [];
+    this.linkNodes = [];
+    this.links = [];
     this.hasTextCapabilities = false;
   }
 }

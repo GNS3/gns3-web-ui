@@ -11,7 +11,7 @@
     </mat-form-field>
   </form>
 
-  <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text"> </textarea> 
+  <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text" [readonly]="!isTextEditable"></textarea> 
 </div>
 
 <div mat-dialog-actions>
