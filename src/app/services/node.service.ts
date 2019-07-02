@@ -75,4 +75,13 @@ export class NodeService {
   delete(server: Server, node: Node) {
     return this.httpServer.delete<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
+
+  duplicate(server: Server, node: Node) {
+    return this.httpServer.post(server, `/projects/${node.project_id}/nodes/${node.node_id}/duplicate`, 
+    {
+      "x": node.x + 10,
+      "y": node.y + 10,
+      "z": node.z
+    });
+  }
 }
