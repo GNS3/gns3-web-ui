@@ -51,7 +51,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
         });
 
         this.memoryForm = this.formBuilder.group({
-            binary: new FormControl('', Validators.required),
             ramMemory: new FormControl('', Validators.required)
         });
 
@@ -95,7 +94,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
     addTemplate() {
         if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
-            this.qemuTemplate.ram = this.ramMemory;
+            this.qemuTemplate.ram = this.memoryForm.get("ramMemory").value;
             this.qemuTemplate.qemu_path = this.selectedBinary.path;
             if (this.newImageSelected) {
                 this.qemuTemplate.hda_disk_image =  this.chosenImage;
@@ -103,6 +102,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
                 this.qemuTemplate.hda_disk_image = this.selectedImage.path;
             }
             this.qemuTemplate.template_id = uuid();
+            this.qemuTemplate.name = this.nameForm.get("templateName").value();
 
             this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
                 this.goBack();
