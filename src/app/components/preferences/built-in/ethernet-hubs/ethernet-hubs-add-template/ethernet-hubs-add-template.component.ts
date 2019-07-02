@@ -56,9 +56,9 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
             });
 
             ethernetHubTemplate.template_id = uuid();
-            ethernetHubTemplate.name = this.templateName;
+            ethernetHubTemplate.name = this.formGroup.get('templateName').value;
 
-            for(let i=0; i<this.numberOfPorts; i++){
+            for(let i=0; i<this.formGroup.get('numberOfPorts').value; i++){
                 ethernetHubTemplate.ports_mapping.push({
                     name: `Ethernet${i}`,
                     port_number: i

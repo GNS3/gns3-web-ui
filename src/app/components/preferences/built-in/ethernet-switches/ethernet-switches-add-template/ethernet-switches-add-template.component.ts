@@ -56,7 +56,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
             });
 
             ethernetSwitchTemplate.template_id = uuid();
-            ethernetSwitchTemplate.name = this.templateName;
+            ethernetSwitchTemplate.name = this.formGroup.get('templateName').value;
 
             for(let i=0; i<this.numberOfPorts; i++){
                 ethernetSwitchTemplate.ports_mapping.push({

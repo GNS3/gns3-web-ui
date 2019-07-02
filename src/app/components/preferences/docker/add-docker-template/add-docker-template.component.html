@@ -34,7 +34,6 @@
                                     matInput
                                     class="filename"
                                     type="text"
-                                    [(ngModel)]="dockerTemplate.image"
                                     formControlName="filename"
                                     placeholder="Image name"/>
                             </mat-form-field>
@@ -48,7 +47,6 @@
                                 matInput
                                 class="templatename"
                                 type="text"
-                                [(ngModel)]="dockerTemplate.name"
                                 formControlName="templateName"
                                 placeholder="Container name"/>
                         </mat-form-field>
@@ -61,7 +59,6 @@
                                 matInput
                                 class="networkadapter"
                                 type="number"
-                                [(ngModel)]="dockerTemplate.adapters"
                                 formControlName="adapters"
                                 placeholder="Adapters"/>
                         </mat-form-field>
