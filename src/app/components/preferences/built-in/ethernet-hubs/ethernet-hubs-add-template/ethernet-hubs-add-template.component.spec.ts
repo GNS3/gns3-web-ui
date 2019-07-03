@@ -75,7 +75,6 @@ describe('EthernetHubsAddTemplateComponent', () => {
     it('should call add template', () => {
         spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
         component.templateName = "sample name";
-        component.numberOfPorts = 2;
         component.server = {id: 1} as Server;
         component.formGroup.controls['templateName'].setValue('template name');
         component.formGroup.controls['numberOfPorts'].setValue('1');
@@ -89,7 +88,6 @@ describe('EthernetHubsAddTemplateComponent', () => {
         spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
         spyOn(mockedToasterService, 'error');
         component.templateName = "";
-        component.numberOfPorts = 2;
         component.server = {id: 1} as Server;
 
         component.addTemplate();

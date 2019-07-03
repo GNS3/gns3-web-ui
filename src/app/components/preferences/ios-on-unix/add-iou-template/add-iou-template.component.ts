@@ -82,6 +82,8 @@ export class AddIouTemplateComponent implements OnInit {
     addTemplate() {
         if (!this.templateNameForm.invalid && ((this.newImageSelected && !this.imageForm.invalid) || (!this.newImageSelected && this.iouTemplate.path))) {
             this.iouTemplate.template_id = uuid();
+            this.iouTemplate.name = this.templateNameForm.get("templateName").value;
+            this.iouTemplate.path = this.imageForm.get("imageName").value;
 
             this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
                 this.goBack();
