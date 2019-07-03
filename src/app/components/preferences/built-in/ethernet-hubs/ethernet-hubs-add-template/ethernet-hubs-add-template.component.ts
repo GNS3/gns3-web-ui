@@ -17,7 +17,6 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 })
 export class EthernetHubsAddTemplateComponent implements OnInit {
     server: Server;
-    numberOfPorts: number;
     templateName: string = '';
     formGroup: FormGroup;
     

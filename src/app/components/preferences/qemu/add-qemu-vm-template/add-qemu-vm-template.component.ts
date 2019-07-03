@@ -102,7 +102,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
                 this.qemuTemplate.hda_disk_image = this.selectedImage.path;
             }
             this.qemuTemplate.template_id = uuid();
-            this.qemuTemplate.name = this.nameForm.get("templateName").value();
+            this.qemuTemplate.name = this.nameForm.get("templateName").value;
 
             this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
                 this.goBack();

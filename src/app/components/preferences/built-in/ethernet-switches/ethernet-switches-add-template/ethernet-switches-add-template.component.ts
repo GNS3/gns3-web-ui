@@ -17,7 +17,6 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 })
 export class EthernetSwitchesAddTemplateComponent implements OnInit {
     server: Server;
-    numberOfPorts: number;
     templateName: string = '';
     formGroup: FormGroup;
     
@@ -58,7 +57,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
             ethernetSwitchTemplate.template_id = uuid();
             ethernetSwitchTemplate.name = this.formGroup.get('templateName').value;
 
-            for(let i=0; i<this.numberOfPorts; i++){
+            for(let i=0; i<this.formGroup.get('numberOfPorts').value; i++){
                 ethernetSwitchTemplate.ports_mapping.push({
                     ethertype: '',
                     name: `Ethernet${i}`,
