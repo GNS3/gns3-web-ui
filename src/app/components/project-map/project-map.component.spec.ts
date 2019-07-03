@@ -45,6 +45,9 @@ import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { LabelWidget } from '../../cartography/widgets/label';
+import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
+import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 import { MapSettingService } from '../../services/mapsettings.service';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
@@ -217,10 +220,13 @@ describe('ProjectMapComponent', () => {
         { provide: NodeWidget },
         { provide: LinkWidget },
         { provide: DrawingsWidget },
+        { provide: LabelWidget },
+        { provide: InterfaceLabelWidget },
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },
         { provide: MapLabelToLabelConverter },
         { provide: MapLinkToLinkConverter },
+        { provide: MapLinkNodeToLinkNodeConverter },
         { provide: NodesDataSource, useValue: nodesDataSource },
         { provide: LinksDataSource, useValue: linksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
@@ -261,7 +267,7 @@ describe('ProjectMapComponent', () => {
   it('should hide draw tools when hide menu is called', () => {
     var dummyElement = document.createElement('map');
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
-    return [dummyElement];
+      return [dummyElement];
     });
     spyOn(component.projectMapMenuComponent, 'resetDrawToolChoice').and.returnValue();
 
