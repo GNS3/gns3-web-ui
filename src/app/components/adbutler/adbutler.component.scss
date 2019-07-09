@@ -1,27 +1,24 @@
-.butler a {
+.ad {
+  background-color: #263238;
+  width: 400px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 12px;
+}
+
+button {
+  background-color: #0097a7;
+  margin-top: 10px;
+  border: none;
+  outline: none;
+  padding: 5px;
+  color: white;
+  font-weight: bold;
+  padding-right: 15px;
+  padding-left: 15px;
+  border-radius: 5px;
+}
+
+a {
   color: #0097a7;
-}
-
-.butler {
-  font-size: 14px;
-}
-
-.butlerdark {
-  width: 400px; 
-  border: 0px solid #C0C0C0; 
-  background-color: #263238;
-}
-
-.butlerlight {
-  width: 400px; 
-  border: 0px solid #C0C0C0; 
-  background-color: white;
-}
-
-.rowdark {
-  background-color: #263238;
-}
-
-.rowlight {
-  background-color: #263238;
 }
