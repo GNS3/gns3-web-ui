@@ -68,7 +68,7 @@
     "rxjs": "^6.5.1",
     "rxjs-compat": "^6.5.1",
     "tree-kill": "^1.2.1",
-    "typeface-roboto": "^0.0.54",
+    "typeface-roboto": "^0.0.75",
     "yargs": "^13.2.2",
     "zone.js": "^0.9.0"
   },
