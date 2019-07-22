@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const { app } = require('electron');
+const shell = require('node-powershell');
 const path = require('path');
 
 async function setPATHEnv() {
@@ -29,21 +30,50 @@ exports.openConsole = async (consoleRequest) => {
   
   console.log(`Starting console with command: '${command}'`);
 
-  let consoleProcess = spawn(command, [], {
-    shell :true
-  });
+  //with node-powershell
 
-  consoleProcess.stdout.on('data', (data) => {
-    console.log(`Console stdout is producing: ${data.toString()}`);
-  });
+  var ps = new shell();
+  ps.addCommand(command);
+  ps.invoke()
+    .then((output) => {
+        console.log(output)
+    })
+    .catch((err) => {
+        console.log(err)
+        ps.dispose()
+    });
 
-  consoleProcess.stderr.on('data', (data) => {
-    console.log(`Console stderr is producing: ${data.toString()}`);
-  });
+  //with exec
 
-  consoleProcess.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
-  });
+  // var exec = require('child_process').exec;
+  // function Callback(err, stdout, stderr) {
+  //     if (err) {
+  //         console.log(`exec error: ${err}`);
+  //         return;
+  //     }else{
+  //         console.log(`${stdout}`);
+  //     }
+  // }
+
+  // res = exec(command, Callback);
+
+  //with spawn
+
+  // let consoleProcess = spawn('cmd.exe dir', [], {
+  //   shell :true
+  // });
+
+  // consoleProcess.stdout.on('data', (data) => {
+  //   console.log(`Console stdout is producing: ${data.toString()}`);
+  // });
+
+  // consoleProcess.stderr.on('data', (data) => {
+  //   console.log(`Console stderr is producing: ${data.toString()}`);
+  // });
+
+  // consoleProcess.on('close', (code) => {
+  //   console.log(`child process exited with code ${code}`);
+  // });
 }
 
 

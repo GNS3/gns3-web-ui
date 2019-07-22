@@ -25,7 +25,8 @@ export class ConsoleDeviceActionComponent implements OnInit {
   }
 
   async console() {
-    const consoleCommand = this.settingsService.get<string>('console_command');
+    let consoleCommand = this.settingsService.get<string>('console_command');
+    consoleCommand = `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
 
     if(consoleCommand === undefined) {
       this.toasterService.error('Console command is not defined. Please change it in the Settings.');
