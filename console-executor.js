@@ -1,6 +1,5 @@
 const { spawn } = require('child_process');
 const { app } = require('electron');
-const shell = require('node-powershell');
 const path = require('path');
 
 async function setPATHEnv() {
@@ -17,6 +16,8 @@ async function setPATHEnv() {
   });
   extra.push(process.env.PATH);
   process.env.PATH = extra.join(";");
+
+  console.log('PATH', extra.join(";"));
 }
 
 exports.openConsole = async (consoleRequest) => {
@@ -30,50 +31,21 @@ exports.openConsole = async (consoleRequest) => {
   
   console.log(`Starting console with command: '${command}'`);
 
-  //with node-powershell
+  let consoleProcess = spawn(command, [], {
+    shell :true
+  });
 
-  var ps = new shell();
-  ps.addCommand(command);
-  ps.invoke()
-    .then((output) => {
-        console.log(output)
-    })
-    .catch((err) => {
-        console.log(err)
-        ps.dispose()
-    });
+  consoleProcess.stdout.on('data', (data) => {
+    console.log(`Console stdout is producing: ${data.toString()}`);
+  });
 
-  //with exec
+  consoleProcess.stderr.on('data', (data) => {
+    console.log(`Console stderr is producing: ${data.toString()}`);
+  });
 
-  // var exec = require('child_process').exec;
-  // function Callback(err, stdout, stderr) {
-  //     if (err) {
-  //         console.log(`exec error: ${err}`);
-  //         return;
-  //     }else{
-  //         console.log(`${stdout}`);
-  //     }
-  // }
-
-  // res = exec(command, Callback);
-
-  //with spawn
-
-  // let consoleProcess = spawn('cmd.exe dir', [], {
-  //   shell :true
-  // });
-
-  // consoleProcess.stdout.on('data', (data) => {
-  //   console.log(`Console stdout is producing: ${data.toString()}`);
-  // });
-
-  // consoleProcess.stderr.on('data', (data) => {
-  //   console.log(`Console stderr is producing: ${data.toString()}`);
-  // });
-
-  // consoleProcess.on('close', (code) => {
-  //   console.log(`child process exited with code ${code}`);
-  // });
+  consoleProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+  });
 }
 
 
