@@ -5,6 +5,9 @@ jobs:
     macos:
       xcode: "9.4.0"
 
+    docker:
+      - image: node:11.0
+
     steps:
       - checkout
 
