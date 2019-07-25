@@ -7,6 +7,7 @@ import { NodeService } from '../../../../../services/node.service';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
 selector: 'app-duplicate-action',
@@ -22,14 +23,20 @@ export class DuplicateActionComponent {
         private nodeService: NodeService,
         private nodesDataSource: NodesDataSource,
         private drawingService: DrawingService,
-        private drawingsDataSource: DrawingsDataSource
+        private drawingsDataSource: DrawingsDataSource,
+        private toasterService: ToasterService
     ) {}
 
     duplicate() {
+        let runningNodes: string = '';
         for(let node of this.nodes) {
-            this.nodeService.duplicate(this.server, node).subscribe((node: Node) => {
-                this.nodesDataSource.add(node);
-            });
+            if (node.status === 'stopped') {
+                this.nodeService.duplicate(this.server, node).subscribe((node: Node) => {
+                    this.nodesDataSource.add(node);
+                });
+            } else {
+                runningNodes += `${node.name}, `;
+            }
         }
 
         for(let drawing of this.drawings) {
@@ -37,5 +44,8 @@ export class DuplicateActionComponent {
                 this.drawingsDataSource.add(drawing);
             })
         }
+
+        runningNodes = runningNodes.substring(0, runningNodes.length-2);
+        this.toasterService.error(`Cannot duplicate node data for nodes: ${runningNodes}`);
     }
 }
