@@ -16,7 +16,7 @@ import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 export class IosTemplatesComponent implements OnInit {
     server: Server;
     iosTemplates: IosTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

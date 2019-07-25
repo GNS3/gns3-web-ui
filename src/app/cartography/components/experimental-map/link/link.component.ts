@@ -26,7 +26,7 @@ export class LinkComponent implements OnInit, OnDestroy {
   @Input('node-changed') nodeChanged: EventEmitter<Node>;
   @Input('show-interface-labels') showInterfaceLabels: boolean;
 
-  @ViewChild('path') path: ElementRef;
+  @ViewChild('path', {static: false}) path: ElementRef;
 
   private ethernetLinkStrategy = new EthernetLinkStrategy();
   private serialLinkStrategy = new SerialLinkStrategy();

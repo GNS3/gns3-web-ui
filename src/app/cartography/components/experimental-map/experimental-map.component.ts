@@ -43,7 +43,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @ViewChild('svg') svg: ElementRef;
+  @ViewChild('svg', {static: false}) svg: ElementRef;
 
   private changesDetected: Subscription;
 

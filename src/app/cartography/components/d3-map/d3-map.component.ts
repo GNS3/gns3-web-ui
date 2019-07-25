@@ -48,8 +48,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @ViewChild('svg') svgRef: ElementRef;
-  @ViewChild('textEditor') textEditor: TextEditorComponent;
+  @ViewChild('svg', {static: false}) svgRef: ElementRef;
+  @ViewChild('textEditor', {static: false}) textEditor: TextEditorComponent;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
