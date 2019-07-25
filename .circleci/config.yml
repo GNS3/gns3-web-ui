@@ -6,7 +6,7 @@ jobs:
       xcode: "9.4.0"
 
     docker:
-      - image: node:11.0
+      - image: "circleci/node:11.0.0"
 
     steps:
       - checkout
