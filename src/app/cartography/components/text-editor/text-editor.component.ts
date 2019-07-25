@@ -14,7 +14,7 @@ import { MapScaleService } from '../../../services/mapScale.service';
   styleUrls: ['./text-editor.component.scss']
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
-  @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
+  @ViewChild('temporaryTextElement', {static: false}) temporaryTextElement: ElementRef;
   @Input('svg') svg: SVGSVGElement;
 
   leftPosition: string = '0px';

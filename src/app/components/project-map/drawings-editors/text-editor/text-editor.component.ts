@@ -26,7 +26,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   styleUrls: ['./text-editor.component.scss']
 })
 export class TextEditorDialogComponent implements OnInit {
-  @ViewChild('textArea') textArea: ElementRef;
+  @ViewChild('textArea', {static: false}) textArea: ElementRef;
 
   server: Server;
   project: Project;

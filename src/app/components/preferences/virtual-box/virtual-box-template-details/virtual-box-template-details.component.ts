@@ -29,7 +29,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     generalSettingsForm: FormGroup;
     networkForm: FormGroup
 
-    @ViewChild("customAdaptersConfigurator") 
+    @ViewChild("customAdaptersConfigurator", {static: false}) 
         customAdaptersConfigurator: CustomAdaptersComponent;
 
     constructor(
