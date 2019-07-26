@@ -2,9 +2,6 @@
 version: 2
 jobs:
   build:
-    environment:
-      BASH_ENV: ~/.nvm/nvm.sh
-
     macos:
       xcode: "9.4.0"
 
@@ -14,7 +11,7 @@ jobs:
       - run:
           name: Install nodejs
           command: |
-            nvm install 11.0.0
+            npm install 11.0.0
 
       - run:
           name: Set timezone and check current datetime
