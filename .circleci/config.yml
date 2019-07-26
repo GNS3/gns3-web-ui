@@ -2,6 +2,9 @@
 version: 2
 jobs:
   build:
+    environment:
+      BASH_ENV: ~/.nvm/nvm.sh
+
     macos:
       xcode: "9.4.0"
 
