@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Install nodejs
           command: |
-            brew install node@11
+            brew install node
 
       - run:
           name: Set timezone and check current datetime
