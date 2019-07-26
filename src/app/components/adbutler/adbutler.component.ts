@@ -14,7 +14,7 @@ export class AdbutlerComponent implements OnInit, AfterViewInit, OnDestroy {
   sparkCounter: number;
   divId: string;
 
-  @ViewChild('code') code: ElementRef;
+  @ViewChild('code', {static: false}) code: ElementRef;
 
   constructor() { }
 

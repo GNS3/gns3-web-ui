@@ -15,7 +15,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
 export class QemuVmTemplatesComponent implements OnInit {
     server: Server;
     qemuTemplates: QemuTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

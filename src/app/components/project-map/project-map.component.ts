@@ -78,9 +78,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   protected settings: Settings;
   private inReadOnlyMode = false;
 
-  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
-  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
-  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
+  @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
+  @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private subscriptions: Subscription[] = [];
 

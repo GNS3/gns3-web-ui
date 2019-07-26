@@ -20,7 +20,7 @@ export class TemplateListDialogComponent implements OnInit {
   dataSource: TemplateDataSource;
   displayedColumns = ['name'];
 
-  @ViewChild('filter') filter: ElementRef;
+  @ViewChild('filter', {static: false}) filter: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,

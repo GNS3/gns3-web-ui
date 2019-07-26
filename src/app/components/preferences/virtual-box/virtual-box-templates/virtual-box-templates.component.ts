@@ -16,7 +16,7 @@ import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 export class VirtualBoxTemplatesComponent implements OnInit {
     server: Server;
     virtualBoxTemplates: VirtualBoxTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

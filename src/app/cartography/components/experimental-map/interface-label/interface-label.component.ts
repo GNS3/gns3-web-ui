@@ -10,7 +10,7 @@ import { CssFixer } from '../../../helpers/css-fixer';
 export class InterfaceLabelComponent implements OnInit {
   @Input('app-interface-label') ignore: any;
 
-  @ViewChild('textSvg') textRef: ElementRef;
+  @ViewChild('textSvg', {static: false}) textRef: ElementRef;
 
   private label = {
     x: 0,

@@ -15,7 +15,7 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
 export class CloudNodesTemplatesComponent implements OnInit {
     server: Server;
     cloudNodesTemplates: CloudTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,
