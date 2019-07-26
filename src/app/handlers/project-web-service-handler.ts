@@ -21,36 +21,36 @@ export class ProjectWebServiceHandler {
     private drawingsDataSource: DrawingsDataSource
   ) {}
 
-  public connect(ws: Subject<WebServiceMessage>) {
-    const subscription = ws.subscribe((message: WebServiceMessage) => {
-      if (message.action === 'node.updated') {
-        this.nodesDataSource.update(message.event as Node);
-      }
-      if (message.action === 'node.created') {
-        this.nodesDataSource.add(message.event as Node);
-      }
-      if (message.action === 'node.deleted') {
-        this.nodesDataSource.remove(message.event as Node);
-      }
-      if (message.action === 'link.created') {
-        this.linksDataSource.add(message.event as Link);
-      }
-      if (message.action === 'link.updated') {
-        this.linksDataSource.update(message.event as Link);
-      }
-      if (message.action === 'link.deleted') {
-        this.linksDataSource.remove(message.event as Link);
-      }
-      if (message.action === 'drawing.created') {
-        this.drawingsDataSource.add(message.event as Drawing);
-      }
-      if (message.action === 'drawing.updated') {
-        this.drawingsDataSource.update(message.event as Drawing);
-      }
-      if (message.action === 'drawing.deleted') {
-        this.drawingsDataSource.remove(message.event as Drawing);
-      }
-    });
-    return subscription;
+  public handleMessage(event: MessageEvent) {
+    console.log(event);
+    let message = event.data;
+    if (message.action === 'node.updated') {
+      console.log('should work');
+      this.nodesDataSource.update(message.event as Node);
+    }
+    if (message.action === 'node.created') {
+      this.nodesDataSource.add(message.event as Node);
+    }
+    if (message.action === 'node.deleted') {
+      this.nodesDataSource.remove(message.event as Node);
+    }
+    if (message.action === 'link.created') {
+      this.linksDataSource.add(message.event as Link);
+    }
+    if (message.action === 'link.updated') {
+      this.linksDataSource.update(message.event as Link);
+    }
+    if (message.action === 'link.deleted') {
+      this.linksDataSource.remove(message.event as Link);
+    }
+    if (message.action === 'drawing.created') {
+      this.drawingsDataSource.add(message.event as Drawing);
+    }
+    if (message.action === 'drawing.updated') {
+      this.drawingsDataSource.update(message.event as Drawing);
+    }
+    if (message.action === 'drawing.deleted') {
+      this.drawingsDataSource.remove(message.event as Drawing);
+    }
   }
 }

@@ -50,6 +50,7 @@ import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label'
 import { LabelWidget } from '../../cartography/widgets/label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
+import { ToasterService } from '../../services/toaster.service';
 
 
 @Component({
@@ -65,7 +66,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
-  private ws: Subject<any>;
+  private ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
 
   tools = {
@@ -113,7 +114,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private movingEventSource: MovingEventSource,
     private mapScaleService: MapScaleService,
-    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
+    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
+    private toasterService: ToasterService
   ) {}
 
   ngOnInit() {
@@ -228,9 +230,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpWS(project: Project) {
-    this.ws = webSocket(this.projectService.notificationsPath(this.server, project.project_id));
+    this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
-    this.subscriptions.push(this.projectWebServiceHandler.connect(this.ws));
+    this.ws.onmessage = (ev: MessageEvent) => {
+      this.projectWebServiceHandler.handleMessage(ev);
+    };
+
+    this.ws.onerror = (ev: MessageEvent) => {
+      this.toasterService.error('Connection to host lost.');
+    };
   }
 
   setUpMapCallbacks() {
@@ -405,8 +413,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
 
-    if (this.ws) {
-      this.ws.unsubscribe();
+    if (this.ws.OPEN) {
+      this.ws.close();
     }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
