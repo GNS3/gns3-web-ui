@@ -6,18 +6,10 @@ jobs:
       xcode: "9.4.0"
 
     docker:
-      - image: node:11.0.0
+      - image: circleci/node:11.0.0
 
     steps:
       - checkout
-
-      - run: apt-get install -y sudo
-
-      - run:
-          name: Set timezone and check current datetime
-          command: |
-            sudo systemsetup -settimezone Europe/Warsaw
-            echo "Today is $(date +"%Y-%m-%d %T")"
 
       - run:
           name: Installed python and pip version
