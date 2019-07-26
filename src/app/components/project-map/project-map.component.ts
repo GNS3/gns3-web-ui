@@ -66,7 +66,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
-  private ws: WebSocket;
+  public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
 
   tools = {
@@ -232,11 +232,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   setUpWS(project: Project) {
     this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
-    this.ws.onmessage = (ev: MessageEvent) => {
-      this.projectWebServiceHandler.handleMessage(ev);
+    this.ws.onmessage = (event: MessageEvent) => {
+      this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
-    this.ws.onerror = (ev: MessageEvent) => {
+    this.ws.onerror = (event: MessageEvent) => {
       this.toasterService.error('Connection to host lost.');
     };
   }

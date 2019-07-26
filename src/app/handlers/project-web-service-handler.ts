@@ -21,11 +21,8 @@ export class ProjectWebServiceHandler {
     private drawingsDataSource: DrawingsDataSource
   ) {}
 
-  public handleMessage(event: MessageEvent) {
-    console.log(event);
-    let message = event.data;
+  public handleMessage(message: WebServiceMessage) {
     if (message.action === 'node.updated') {
-      console.log('should work');
       this.nodesDataSource.update(message.event as Node);
     }
     if (message.action === 'node.created') {

@@ -50,6 +50,8 @@ import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label'
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 import { MapSettingService } from '../../services/mapsettings.service';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
+import { MockedToasterService } from '../../services/toaster.service.spec';
+import { ToasterService } from '../../services/toaster.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -198,6 +200,7 @@ describe('ProjectMapComponent', () => {
   let drawingsDataSource = new MockedDrawingsDataSource();
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
+  let mockedToasterService = new MockedToasterService();
   let nodeCreatedLabelStylesFixer;
 
   beforeEach(async(() => {
@@ -241,7 +244,8 @@ describe('ProjectMapComponent', () => {
         },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
         { provide: MapScaleService },
-        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: ToasterService, useValue: mockedToasterService }
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
@@ -254,6 +258,10 @@ describe('ProjectMapComponent', () => {
     component.projectMapMenuComponent = { 
       resetDrawToolChoice(){}
     } as ProjectMapMenuComponent;
+
+    component.ws = {
+      OPEN: 0,
+    } as WebSocket;
   });
 
   afterEach(() => {
