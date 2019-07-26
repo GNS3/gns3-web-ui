@@ -6,10 +6,12 @@ jobs:
       xcode: "9.4.0"
 
     docker:
-      - image: "circleci/node:11.0.0"
+      - image: node:11.0.0
 
     steps:
       - checkout
+
+      - run: apt-get install -y sudo
 
       - run:
           name: Set timezone and check current datetime
