@@ -11,8 +11,7 @@ jobs:
       - run:
           name: Install nodejs
           command: |
-            npm install nvm
-            nvm install 11.0.0
+            brew install node@11
 
       - run:
           name: Set timezone and check current datetime
