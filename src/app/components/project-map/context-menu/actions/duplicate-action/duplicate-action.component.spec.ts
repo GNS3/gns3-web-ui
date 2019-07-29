@@ -13,7 +13,7 @@ import { DuplicateActionComponent } from './duplicate-action.component';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
 
-fdescribe('DuplicateActionComponent', () => {
+describe('DuplicateActionComponent', () => {
     let component: DuplicateActionComponent;
     let fixture: ComponentFixture<DuplicateActionComponent>;
     let mockedNodeService: MockedNodeService = new MockedNodeService();
