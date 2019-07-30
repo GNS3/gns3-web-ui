@@ -94,6 +94,14 @@ export class MockedNodeService {
   duplicate(server: Server, node: Node) {
     return of(node);
   }
+
+  getConfiguration(server: Server, node: Node) {
+    return of('sample config');
+  }
+
+  saveConfiguration(server: Server, node: Node, configuration: string) {
+    return of(configuration);
+  }
 }
 
 export class MockedDrawingService {
