@@ -1,6 +1,7 @@
 <div *ngIf="project" class="project-map">
   <app-d3-map
     *ngIf="!settings.angular_map"
+    [server]="server"
     [symbols]="symbols"
     [nodes]="nodes"
     [links]="links"
