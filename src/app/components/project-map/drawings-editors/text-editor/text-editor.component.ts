@@ -19,6 +19,8 @@ import { LinksDataSource } from '../../../../cartography/datasources/links-datas
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToasterService } from '../../../../services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
+import { Font } from '../../../../cartography/models/font';
+import { FontFixer } from '../../../../cartography/helpers/font-fixer';
 
 @Component({
   selector: 'app-text-editor',
@@ -53,7 +55,8 @@ export class TextEditorDialogComponent implements OnInit {
     private linksDataSource: LinksDataSource,
     private formBuilder: FormBuilder,
     private toasterService: ToasterService,
-    private rotationValidator: RotationValidator
+    private rotationValidator: RotationValidator,
+    private fontFixer: FontFixer 
   ) {}
 
   ngOnInit() {
@@ -76,11 +79,18 @@ export class TextEditorDialogComponent implements OnInit {
       this.element = this.drawing.element as TextElement;
     };
 
+    let font: Font = {
+      font_family: this.element.font_family,
+      font_size: this.element.font_size,
+      font_weight: this.element.font_weight
+    };
+    font = this.fontFixer.fix(font);
+
     this.formGroup.controls['rotation'].setValue(this.rotation);
     this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-family', this.element.font_family);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${this.element.font_size}pt`);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', this.element.font_weight);
+    this.renderer.setStyle(this.textArea.nativeElement, 'font-family', font.font_family);
+    this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${font.font_size}pt`);
+    this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', font.font_weight);
   }
 
   getTextElementFromLabel(): TextElement{
