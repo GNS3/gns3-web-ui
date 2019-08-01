@@ -185,7 +185,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setLinks(this.links);
     this.graphDataManager.setDrawings(this.drawings);
     this.graphLayout.draw(this.svg, this.context);
-    this.textEditor.activateTextEditing();
+    this.textEditor.activateTextEditingForDrawings();
+    this.textEditor.activateTextEditingForNodeLabels();
   }
 
   @HostListener('window:resize', ['$event'])

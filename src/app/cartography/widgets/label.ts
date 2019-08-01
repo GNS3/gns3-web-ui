@@ -11,6 +11,7 @@ import { Draggable } from '../events/draggable';
 import { MapLabel } from '../models/map/map-label';
 import { MapSettingsManager } from '../managers/map-settings-manager';
 import { LabelContextMenu } from '../events/event-source';
+import { TextElement } from '../models/drawings/text-element';
 
 @Injectable()
 export class LabelWidget implements Widget {
@@ -91,7 +92,9 @@ export class LabelWidget implements Widget {
 
     label_body_merge
       .select<SVGRectElement>('rect.label_selection')
-      .attr('visibility', (l: MapLabel) => (this.selectionManager.isSelected(l) ? 'visible' : 'hidden'))
+      .attr('visibility', (l: MapLabel) => {
+        return (this.selectionManager.isSelected(l) ? 'visible' : 'hidden')
+      })
       .attr('stroke', 'black')
       .attr('stroke-dasharray', '3,3')
       .attr('stroke-width', '0.5')
