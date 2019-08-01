@@ -19,6 +19,7 @@ import { LinksDataSource } from '../../datasources/links-datasource';
 import { Link } from '../../../models/link';
 import { StyleProperty } from '../../../components/project-map/drawings-editors/text-editor/text-editor.component';
 import { FontFixer } from '../../helpers/font-fixer';
+import { Font } from '../../models/font';
 
 @Component({
   selector: 'app-text-editor',
@@ -119,28 +120,30 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
         this.editedNode = this.nodesDataSource.get(elem.nodeId);
         this.editedLink = elem;
-        var x = ((elem.label.originalX + this.editedNode.x - 1) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
-        var y = ((elem.label.originalY + this.editedNode.y + 4) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
+        let x = ((elem.label.originalX + this.editedNode.x - 1) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
+        let y = ((elem.label.originalY + this.editedNode.y + 4) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
         this.temporaryTextElement.nativeElement.innerText = elem.label.text;
 
-        console.log('style', elem);
-        elem.label.style = this.fontFixer.fixStyles(elem.label.style);
-        console.log(elem.label.style);
-        var styleProperties: StyleProperty[] = [];
-        for (var property of elem.label.style.split(";")){
+        let styleProperties: StyleProperty[] = [];
+        for (let property of elem.label.style.split(";")){
           styleProperties.push({
             property: property.split(": ")[0],
             value: property.split(": ")[1]
           });
         }
-
+        let font: Font = {
+          font_family: styleProperties.find(p => p.property === 'font-family') ? styleProperties.find(p => p.property === 'font-family').value : 'TypeWriter',
+          font_size: styleProperties.find(p => p.property === 'font-size') ? Number(styleProperties.find(p => p.property === 'font-size').value) : 10.0,
+          font_weight: styleProperties.find(p => p.property === 'font-weight') ? styleProperties.find(p => p.property === 'font-weight').value : 'normal'
+        };
+        font = this.fontFixer.fix(font);
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'color', styleProperties.find(p => p.property === 'fill') ? styleProperties.find(p => p.property === 'fill').value : '#000000');
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', styleProperties.find(p => p.property === 'font-family') ? styleProperties.find(p => p.property === 'font-family').value : 'TypeWriter');
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', styleProperties.find(p => p.property === 'font-size') ? `${styleProperties.find(p => p.property === 'font-size').value}pt` : '10.0pt');
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', styleProperties.find(p => p.property === 'font-weight') ? styleProperties.find(p => p.property === 'font-weight').value : 'normal');
-
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', font.font_family);
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', `${font.font_size}pt`);
+        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', font.font_weight);
+        
         let listener = () => {
           let innerText = this.temporaryTextElement.nativeElement.innerText;
           let link: Link = this.linksDataSource.get(this.editedLink.linkId);
