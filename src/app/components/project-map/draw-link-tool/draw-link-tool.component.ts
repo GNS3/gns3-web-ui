@@ -19,7 +19,7 @@ import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   @Input() links: Link[];
-  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
+  @ViewChild(NodeSelectInterfaceComponent, {static: false}) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
   private nodeClicked$: Subscription;
 

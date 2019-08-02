@@ -47,15 +47,6 @@ describe('ContextMenuComponent', () => {
     expect(component.isElectronApp).toBeTruthy();
   });
 
-  it('should reset capabilities while opening menu for node', () => {
-    component.contextMenu = { openMenu() {} } as MatMenuTrigger;
-    var spy = spyOn<any>(component, 'resetCapabilities');
-
-    component.openMenuForNode(null, 0, 0);
-
-    expect(spy.calls.any()).toBeTruthy();
-  });
-
   it('should reset capabilities while opening menu for drawing', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;
     let drawing = {} as Drawing;

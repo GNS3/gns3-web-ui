@@ -36,8 +36,7 @@ export class ProgressComponent implements OnInit, OnDestroy {
   }
 
   refresh() {
-    // unfortunately we need to use global var
-    location.reload();
+    this.router.navigateByUrl(this.router.url);
   }
 
   ngOnDestroy() {

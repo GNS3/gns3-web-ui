@@ -13,8 +13,9 @@
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a [routerLink]="['/server', row.id, 'projects']" class="table-link">{{ row.name }}</a></mat-cell
-          >
+            <a *ngIf="getServerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'" [routerLink]="['/server', row.id, 'projects']" class="table-link">{{ row.name }}</a>
+            <span *ngIf="getServerStatus(row) != 'running' && row.location !== 'remote' && row.location !== 'bundled'">{{ row.name }}</span>
+          </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="location">
@@ -42,6 +43,8 @@
             <button mat-icon-button (click)="stopServer(row)" *ngIf="row.location === 'local' && getServerStatus(row) === 'running'">
               <mat-icon aria-label="Stop server">stop</mat-icon>
             </button>
+
+            <mat-spinner [diameter]="24" *ngIf="row.location === 'local' && getServerStatus(row) === 'starting'"></mat-spinner>
             
             <button mat-icon-button (click)="deleteServer(row)">
               <mat-icon aria-label="Remove server">delete</mat-icon>

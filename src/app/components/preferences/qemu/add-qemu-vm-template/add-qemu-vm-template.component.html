@@ -12,7 +12,6 @@
                         <mat-form-field class="form-field">
                             <input 
                                 matInput type="text" 
-                                [(ngModel)]="qemuTemplate.name" 
                                 formControlName="templateName"
                                 placeholder="Please choose a descriptive name for your new QEMU virtual machine"
                                 ngDefaultContro/>
@@ -26,9 +25,9 @@
                     <form [formGroup]="memoryForm">
                         <mat-form-field class="form-field">
                             <mat-select 
-                                placeholder="Qemu binary" 
+                                placeholder="Qemu binary"
                                 [(ngModel)]="selectedBinary"
-                                formControlName="binary" >
+                                [ngModelOptions]="{standalone: true}">
                                 <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
                                     {{binary.path}}
                                 </mat-option>
@@ -38,7 +37,6 @@
                             <input 
                             matInput type="number" 
                             placeholder="RAM" 
-                            [(ngModel)]="ramMemory"
                             formControlName="ramMemory"
                             ngDefaultContro/>
                         </mat-form-field>

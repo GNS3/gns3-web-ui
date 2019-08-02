@@ -30,7 +30,7 @@ import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-nod
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { ToolsService } from '../../services/tools.service';
-import { DrawingContextMenu, LinkContextMenu } from '../../cartography/events/event-source';
+import { DrawingContextMenu, LinkContextMenu, LabelContextMenu, InterfaceLabelContextMenu } from '../../cartography/events/event-source';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { SelectionManager } from '../../cartography/managers/selection-manager';
 import { SelectionTool } from '../../cartography/tools/selection-tool';
@@ -42,8 +42,15 @@ import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-l
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
+import { LabelWidget } from '../../cartography/widgets/label';
+import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
+import { ToasterService } from '../../services/toaster.service';
 
 
 @Component({
@@ -59,8 +66,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
-  public selectedDrawing: string;
-  private ws: Subject<any>;
+  public ws: WebSocket;
+  public isProjectMapMenuVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -70,19 +77,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected settings: Settings;
-
-  protected drawTools = {
-    isRectangleChosen: false,
-    isEllipseChosen: false,
-    isLineChosen: false,
-    isTextChosen: false,
-    visibility: false
-  };
-
   private inReadOnlyMode = false;
 
-  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
-  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
+  @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private subscriptions: Subscription[] = [];
 
@@ -98,10 +97,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeWidget: NodeWidget,
     private drawingsWidget: DrawingsWidget,
     private linkWidget: LinkWidget,
+    private labelWidget: LabelWidget,
+    private interfaceLabelWidget: InterfaceLabelWidget,
     private mapNodeToNode: MapNodeToNodeConverter,
     private mapDrawingToDrawing: MapDrawingToDrawingConverter,
     private mapLabelToLabel: MapLabelToLabelConverter,
     private mapLinkToLink: MapLinkToLinkConverter,
+    private mapLinkNodeToLinkNode: MapLinkNodeToLinkNodeConverter,
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
     private drawingsDataSource: DrawingsDataSource,
@@ -110,7 +112,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private selectionManager: SelectionManager,
     private selectionTool: SelectionTool,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer
+    private movingEventSource: MovingEventSource,
+    private mapScaleService: MapScaleService,
+    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
+    private toasterService: ToasterService
   ) {}
 
   ngOnInit() {
@@ -184,6 +189,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.mapChangeDetectorRef.detectChanges();
       })
     );
+
+    this.addKeyboardListeners();
+  }
+
+  addKeyboardListeners() {
+    Mousetrap.bind('ctrl++', (event: Event) => {
+      event.preventDefault();
+    });
+
+    Mousetrap.bind('ctrl+-', (event: Event) => {
+      event.preventDefault();
+    });;
   }
 
   onProjectLoad(project: Project) {
@@ -213,9 +230,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpWS(project: Project) {
-    this.ws = webSocket(this.projectService.notificationsPath(this.server, project.project_id));
+    this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
-    this.subscriptions.push(this.projectWebServiceHandler.connect(this.ws));
+    this.ws.onmessage = (event: MessageEvent) => {
+      this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
+    };
+
+    this.ws.onerror = (event: MessageEvent) => {
+      this.toasterService.error('Connection to host lost.');
+    };
   }
 
   setUpMapCallbacks() {
@@ -238,9 +261,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.pageY, eventDrawing.event.pageX);
     });
 
+    const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
+      const label = this.mapLabelToLabel.convert(eventLabel.label);
+      const node = this.nodes.find(n => n.node_id === eventLabel.label.nodeId);
+      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.pageY, eventLabel.event.pageX);
+    });
+
+    const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe((eventInterfaceLabel: InterfaceLabelContextMenu) => {
+      const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
+      const link = this.links.find(l => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
+      this.contextMenu.openMenuForInterfaceLabel(linkNode, link, eventInterfaceLabel.event.pageY, eventInterfaceLabel.event.pageX);
+    });
+
     const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
       const selectedItems = this.selectionManager.getSelected();
-      if (selectedItems.length === 0 || !(event instanceof MouseEvent)) return;
+      if (selectedItems.length < 2 || !(event instanceof MouseEvent)) return;
 
       let drawings: Drawing[] = [];
       let nodes: Node[] = [];
@@ -266,6 +301,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(onNodeContextMenu);
     this.subscriptions.push(onDrawingContextMenu);
     this.subscriptions.push(onContextMenu);
+    this.subscriptions.push(onLabelContextMenu);
+    this.subscriptions.push(onInterfaceLabelContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -288,7 +325,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onDrawingSaved() {
-    this.resetDrawToolChoice();
+    this.projectMapMenuComponent.resetDrawToolChoice();
   }
 
   public set readonly(value) {
@@ -308,7 +345,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
-    this.toolsService.movingToolActivation(this.tools.moving);
+    this.movingEventSource.movingModeState.emit(this.tools.moving);
+    
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
       this.toolsService.selectionToolActivation(this.tools.selection);
@@ -324,56 +362,31 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.project.show_interface_labels = enabled;
   }
 
-  public addDrawing(selectedObject: string) {
-    switch (selectedObject) {
-      case 'rectangle':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = !this.drawTools.isRectangleChosen;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'ellipse':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = !this.drawTools.isEllipseChosen;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        break;
-      case 'line':
-        this.drawTools.isTextChosen = false;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
-        break;
-      case 'text':
-        this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
-        this.drawTools.isEllipseChosen = false;
-        this.drawTools.isRectangleChosen = false;
-        this.drawTools.isLineChosen = false;
-        this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-        break;
-    }
-
-    this.selectedDrawing = this.selectedDrawing === selectedObject ? '' : selectedObject;
-  }
-
-  public resetDrawToolChoice() {
-    this.drawTools.isRectangleChosen = false;
-    this.drawTools.isEllipseChosen = false;
-    this.drawTools.isLineChosen = false;
-    this.drawTools.isTextChosen = false;
-    this.selectedDrawing = '';
-    this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
-  }
-
   public hideMenu() {
-    this.resetDrawToolChoice();
-    this.drawTools.visibility = false;
+    this.projectMapMenuComponent.resetDrawToolChoice()
+    this.isProjectMapMenuVisible = false;
   }
 
   public showMenu() {
-    this.drawTools.visibility = true;
+    this.isProjectMapMenuVisible = true;
   }
 
+  zoomIn() {
+    this.mapScaleService.setScale(this.mapScaleService.getScale() + 0.1);
+  }
+
+  zoomOut() {
+    let currentScale = this.mapScaleService.getScale();
+
+    if ((currentScale - 0.1) > 0) {
+      this.mapScaleService.setScale(currentScale - 0.1);
+    }
+  }
+
+  resetZoom() {
+    this.mapScaleService.resetToDefault();
+  }
+  
   public uploadImageFile(event) {
     this.readImageFile(event.target);
   }
@@ -400,8 +413,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
 
-    if (this.ws) {
-      this.ws.unsubscribe();
+    if (this.ws.OPEN) {
+      this.ws.close();
     }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }

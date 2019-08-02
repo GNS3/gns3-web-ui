@@ -28,7 +28,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     onCloseOptions = [];
     networkTypes = [];
 
-    @ViewChild("customAdaptersConfigurator") 
+    @ViewChild("customAdaptersConfigurator", {static: false}) 
         customAdaptersConfigurator: CustomAdaptersComponent;
 
     constructor(
