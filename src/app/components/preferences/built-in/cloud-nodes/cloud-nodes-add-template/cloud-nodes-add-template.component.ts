@@ -54,7 +54,7 @@ export class CloudNodesAddTemplateComponent implements OnInit {
             });
 
             cloudTemplate.template_id = uuid();
-            cloudTemplate.name = this.templateName;
+            cloudTemplate.name = this.formGroup.get('templateName').value;
 
             this.builtInTemplatesService.addTemplate(this.server, cloudTemplate).subscribe((cloudNodeTemplate) => {
                 this.goBack();

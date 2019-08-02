@@ -87,6 +87,9 @@ export class AddDockerTemplateComponent implements OnInit {
     addTemplate() {
         if ((!this.virtualMachineForm.invalid || !this.newImageSelected) && !this.containerNameForm.invalid && !this.networkAdaptersForm.invalid) {
             this.dockerTemplate.template_id = uuid();
+            this.dockerTemplate.image = this.virtualMachineForm.get('filename').value;
+            this.dockerTemplate.name = this.containerNameForm.get('templateName').value;
+            this.dockerTemplate.adapters = this.networkAdaptersForm.get('adapters').value;
 
             this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
                 this.goBack();

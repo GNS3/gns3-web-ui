@@ -75,7 +75,6 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
     it('should call add template', () => {
         spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
         component.templateName = "sample name";
-        component.numberOfPorts = 2;
         component.server = {id: 1} as Server;
         component.formGroup.controls['templateName'].setValue('template name');
         component.formGroup.controls['numberOfPorts'].setValue('1');

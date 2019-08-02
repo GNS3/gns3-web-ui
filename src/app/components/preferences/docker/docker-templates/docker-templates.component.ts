@@ -15,7 +15,7 @@ import { DockerService } from '../../../../services/docker.service';
 export class DockerTemplatesComponent implements OnInit {
     server: Server;
     dockerTemplates: DockerTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

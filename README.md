@@ -93,24 +93,21 @@ If you would like to bump prepatch just type:
         
 ### Distribute release
 
-We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag&push your changes.
+We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag&push your changes from master.
 
-Using `bump`:
+First of all please remove `dev` from version in `package.json` (for instance `2019.2.0-alpha.4dev` to `2019.2.0-alpha.4`). Commit & push changes with message `Release 2019.2.0-alpha.4` . Next step is to tag repository and push to origin:
 
-        bump --patch --tag --push
 
-Or manually:
-
-        git tag v0.0.1
-        git push origin v0.0.1
+        git tag v2019.2.0-alpha.4
+        git push origin v2019.2.0-alpha.4
         
 
 When artifacts are made you can see draft release here: [gns3-web-ui releases](https://github.com/GNS3/gns3-web-ui/releases) which is waiting to be published.
-After release please change current version in `package.json` to `X.X.X-beta.0`'. Otherwise artifacts will be overwritten during the next commit. 
+After release please change current version in `package.json` to `2019.2.0-alpha.5dev`'. Otherwise artifacts will be overwritten during the next commit. Don't forget to commit & push changes.
 
-You may use `bump` to achieve that:
-      
-        bump --prepatch
+#### Updating gns3server
+
+Checkout the latest master of `gns3server`. Run command `./scripts/update-bundled-web-ui.sh --tag=v2019.2.0-alpha.5`. Commit & push changes with message `Release 2019.2.0-alpha.4`.
 
 ### Staging release
 

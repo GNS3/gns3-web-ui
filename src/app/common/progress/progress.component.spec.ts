@@ -5,7 +5,7 @@ import { MatIconModule, MatProgressSpinnerModule } from '@angular/material';
 import { ProgressService } from './progress.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 class MockedRouter {
   events: BehaviorSubject<boolean>;
@@ -13,18 +13,20 @@ class MockedRouter {
   constructor() {
     this.events = new BehaviorSubject(true);
   }
+
+  navigateByUrl() {}
 }
 
 describe('ProgressComponent', () => {
   let component: ProgressComponent;
   let fixture: ComponentFixture<ProgressComponent>;
   let progressService: ProgressService;
-  let router: MockedRouter;
+  let router: MockedRouter = new MockedRouter();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
-      providers: [ProgressService, { provide: Router, useClass: MockedRouter }],
+      providers: [ProgressService, { provide: Router, useValue: router }],
       declarations: [ProgressComponent]
     }).compileComponents();
 
@@ -70,5 +72,13 @@ describe('ProgressComponent', () => {
     router.events.next(true);
 
     expect(progressService.clear).toHaveBeenCalled();
+  });
+
+  it("should reload page after clicking refresh", () => {
+    spyOn(router, 'navigateByUrl');
+
+    component.refresh();
+
+    expect(router.navigateByUrl).toHaveBeenCalled();
   });
 });

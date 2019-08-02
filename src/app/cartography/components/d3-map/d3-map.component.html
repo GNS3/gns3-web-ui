@@ -1,4 +1,4 @@
-<svg #svg class="map" preserveAspectRatio="none">
+<svg #svg class="map" preserveAspectRatio="none" movingCanvas zoomingCanvas>
   <filter id="grayscale"><feColorMatrix id="feGrayscale" type="saturate" values="0" /></filter>
 </svg>
 
@@ -6,5 +6,5 @@
 <app-drawing-resizing></app-drawing-resizing>
 <app-selection-control></app-selection-control>
 <app-selection-select></app-selection-select>
-<app-text-editor #textEditor [svg]="svg"></app-text-editor>
+<app-text-editor #textEditor [server]="server" [svg]="svg"></app-text-editor>
 <app-draggable-selection [svg]="svg"></app-draggable-selection>

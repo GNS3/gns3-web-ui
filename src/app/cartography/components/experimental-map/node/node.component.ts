@@ -30,8 +30,8 @@ import { DraggedDataEvent } from '../../../events/event-source';
 export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   static NODE_LABEL_MARGIN = 3;
 
-  @ViewChild('label') label: ElementRef;
-  @ViewChild('image') imageRef: ElementRef;
+  @ViewChild('label', {static: false}) label: ElementRef;
+  @ViewChild('image', {static: false}) imageRef: ElementRef;
 
   @Input('app-node') node: MapNode;
   @Input('symbols') symbols: Symbol[];

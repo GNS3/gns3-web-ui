@@ -12,7 +12,6 @@
                         <mat-form-field class="form-field">
                             <input 
                                 matInput type="text" 
-                                [(ngModel)]="iosTemplate.image" 
                                 formControlName="imageName"
                                 placeholder="IOS image"/>
                         </mat-form-field>
@@ -23,7 +22,6 @@
                         <mat-form-field class="form-field">
                             <input 
                                 matInput type="text" 
-                                [(ngModel)]="iosTemplate.name" 
                                 formControlName="templateName"
                                 placeholder="Name"/>
                         </mat-form-field>
@@ -31,8 +29,7 @@
                             <mat-select 
                                 placeholder="Platform" 
                                 (selectionChange)="onPlatformChosen($event)"
-                                formControlName="platform"
-                                [(ngModel)]="iosTemplate.platform">
+                                formControlName="platform">
                                 <mat-option *ngFor="let platform of platforms" [value]="platform">
                                     {{platform}}
                                 </mat-option>
@@ -42,8 +39,7 @@
                             <mat-select 
                                 placeholder="Chassis" 
                                 (selectionChange)="onChassisChosen($event)"
-                                formControlName="chassis"
-                                [(ngModel)]="iosTemplate.chassis">
+                                formControlName="chassis">
                                 <mat-option *ngFor="let chassis of chassis[iosTemplate.platform]" [value]="chassis">
                                     {{chassis}}
                                 </mat-option>
@@ -61,7 +57,6 @@
                         <mat-form-field class="form-field">
                             <input 
                                 matInput type="number" 
-                                [(ngModel)]="iosTemplate.ram" 
                                 formControlName="memory"
                                 value="defaultRam[iosTemplate.platform]"
                                 placeholder="Default RAM"/>

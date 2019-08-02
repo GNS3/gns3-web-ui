@@ -103,10 +103,10 @@ describe('ConsoleDeviceActionComponent', () => {
       });
     });
 
-    it('should show message when command is not defined', async () => {
+    it('should set command when it is not defined', async () => {
       mockedSettingsService.set('console_command', undefined);
       await component.console();
-      expect(component.openConsole).not.toHaveBeenCalled();
+      expect(component.openConsole).toHaveBeenCalled();
     });
 
     it('should show message when there is no started nodes', async () => {

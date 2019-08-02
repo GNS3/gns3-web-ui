@@ -1,6 +1,7 @@
 <div *ngIf="project" class="project-map">
   <app-d3-map
     *ngIf="!settings.angular_map"
+    [server]="server"
     [symbols]="symbols"
     [nodes]="nodes"
     [links]="links"
@@ -87,86 +88,30 @@
     </mat-toolbar>
   </div>
 
-  <div id="show-menu-wrapper" [ngClass]="{ shadowed: !drawTools.visibility }" *ngIf="!readonly">
+  <div id="show-menu-wrapper" [ngClass]="{ shadowed: !isProjectMapMenuVisible }" *ngIf="!readonly">
     <button class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon>keyboard_arrow_right</mat-icon></button>
   </div>
 
-  <div id="menu-wrapper" [ngClass]="{ extended: drawTools.visibility }">
+  <div id="menu-wrapper" [ngClass]="{ extended: isProjectMapMenuVisible }">
     <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
     <mat-divider class="divider" [vertical]="true"></mat-divider>
-    <button
-      matTooltip="Add a note"
-      mat-icon-button
-      class="menu-button"
-      [color]="drawTools.isTextChosen ? 'primary' : 'basic'"
-      (click)="addDrawing('text')"
-    >
-      <mat-icon>create</mat-icon>
-    </button>
-    <input
-      type="file"
-      accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
-      class="non-visible"
-      #file
-      (change)="uploadImageFile($event)"
-    />
-    <button
-      matTooltip="Insert a picture"
-      mat-icon-button
-      class="menu-button"
-      (click)="file.click()"
-    >
-      <mat-icon>image</mat-icon>
-    </button>
-    <button
-      matTooltip="Draw a rectangle"
-      mat-icon-button
-      class="menu-button"
-      [color]="drawTools.isRectangleChosen ? 'primary' : 'basic'"
-      (click)="addDrawing('rectangle')"
-    >
-      <mat-icon>crop_3_2</mat-icon>
-    </button>
-    <button
-      matTooltip="Draw an ellipse"
-      mat-icon-button
-      class="menu-button"
-      [color]="drawTools.isEllipseChosen ? 'primary' : 'basic'"
-      (click)="addDrawing('ellipse')"
-    >
-      <mat-icon>panorama_fish_eye</mat-icon>
-    </button>
-    <button matTooltip="Draw a line" mat-icon-button class="menu-button" (click)="addDrawing('line')">
-      <svg height="40" width="40">
-        <line
-          [ngClass]="{ selected: drawTools.isLineChosen }"
-          x1="30"
-          y1="10"
-          x2="10"
-          y2="30"
-          style="stroke:white;stroke-width:2"
-        />
-      </svg>
-    </button>
+    <app-project-map-menu [server]="server" [project]="project"></app-project-map-menu>
     <button class="arrow-button" mat-icon-button (click)="hideMenu()"><mat-icon>keyboard_arrow_left</mat-icon></button>
   </div>
 
   <app-context-menu [project]="project" [server]="server"></app-context-menu>
 </div>
 
+<div id="zoom-buttons">
+  <button class="zoom-button" (click)="zoomIn()">+</button>
+  <button class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
+  <button class="zoom-button" (click)="zoomOut()">-</button>
+</div>
+
 <app-progress></app-progress>
-
-<app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server"> </app-project-map-shortcuts>
-
+<app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server"></app-project-map-shortcuts>
 <app-draw-link-tool [links]="links" *ngIf="tools.draw_link"></app-draw-link-tool>
 
-<app-drawing-added
-  [server]="server"
-  [project]="project"
-  [selectedDrawing]="selectedDrawing"
-  (drawingSaved)="onDrawingSaved()"
->
-</app-drawing-added>
 <app-drawing-dragged [server]="server"></app-drawing-dragged>
 <app-drawing-resized [server]="server"></app-drawing-resized>
 <app-interface-label-dragged [server]="server"></app-interface-label-dragged>

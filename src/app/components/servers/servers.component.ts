@@ -49,6 +49,9 @@ export class ServersComponent implements OnInit, OnDestroy {
       if(!server) {
         return;
       }
+      if(serverStatus.status === 'starting') {
+        server.status = 'starting';
+      }
       if(serverStatus.status === 'stopped') {
         server.status = 'stopped';
       }

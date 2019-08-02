@@ -40,9 +40,18 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
 import { CapturingSettings } from '../../models/capturingSettings';
 import { LinkWidget } from '../../cartography/widgets/link';
+import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { LabelWidget } from '../../cartography/widgets/label';
+import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
+import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
+import { MapSettingService } from '../../services/mapsettings.service';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
+import { MockedToasterService } from '../../services/toaster.service.spec';
+import { ToasterService } from '../../services/toaster.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -81,6 +90,10 @@ export class MockedNodeService {
   reloadAll(server: Server, project: Project) {
     return of();
   }
+
+  duplicate(server: Server, node: Node) {
+    return of(node);
+  }
 }
 
 export class MockedDrawingService {
@@ -89,6 +102,10 @@ export class MockedDrawingService {
 
   add(_server: Server, _project_id: string, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
+  }
+
+  duplicate(server: Server, project_id: string, drawing: Drawing) {
+    return of(drawing);
   }
 
   updatePosition(_server: Server, _drawing: Drawing, _x: number, _y: number) {
@@ -183,6 +200,7 @@ describe('ProjectMapComponent', () => {
   let drawingsDataSource = new MockedDrawingsDataSource();
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
+  let mockedToasterService = new MockedToasterService();
   let nodeCreatedLabelStylesFixer;
 
   beforeEach(async(() => {
@@ -205,10 +223,13 @@ describe('ProjectMapComponent', () => {
         { provide: NodeWidget },
         { provide: LinkWidget },
         { provide: DrawingsWidget },
+        { provide: LabelWidget },
+        { provide: InterfaceLabelWidget },
         { provide: MapNodeToNodeConverter },
         { provide: MapDrawingToDrawingConverter },
         { provide: MapLabelToLabelConverter },
         { provide: MapLinkToLinkConverter },
+        { provide: MapLinkNodeToLinkNodeConverter },
         { provide: NodesDataSource, useValue: nodesDataSource },
         { provide: LinksDataSource, useValue: linksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
@@ -216,13 +237,17 @@ describe('ProjectMapComponent', () => {
         { provide: ToolsService },
         { provide: SelectionManager },
         { provide: SelectionTool },
+        { provide: MovingEventSource },
         {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService
         },
-        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer}
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: MapScaleService },
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: ToasterService, useValue: mockedToasterService }
       ],
-      declarations: [ProjectMapComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
+      declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
@@ -230,6 +255,13 @@ describe('ProjectMapComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
+    component.projectMapMenuComponent = { 
+      resetDrawToolChoice(){}
+    } as ProjectMapMenuComponent;
+
+    component.ws = {
+      OPEN: 0,
+    } as WebSocket;
   });
 
   afterEach(() => {
@@ -245,18 +277,10 @@ describe('ProjectMapComponent', () => {
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
       return [dummyElement];
     });
-    spyOn(component, 'resetDrawToolChoice');
+    spyOn(component.projectMapMenuComponent, 'resetDrawToolChoice').and.returnValue();
 
     component.hideMenu();
 
-    expect(component.resetDrawToolChoice).toHaveBeenCalled();
-  });
-
-  it('should reset choice on draw menu after saving drawing', () => {
-    spyOn(component, 'resetDrawToolChoice');
-
-    component.onDrawingSaved();
-
-    expect(component.resetDrawToolChoice).toHaveBeenCalled();
+    expect(component.projectMapMenuComponent.resetDrawToolChoice).toHaveBeenCalled();
   });
 });

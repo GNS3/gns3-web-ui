@@ -1,0 +1,65 @@
+<button
+    matTooltip="Add a note"
+    mat-icon-button
+    class="menu-button"
+    [color]="drawTools.isTextChosen ? 'primary' : 'basic'"
+    (click)="addDrawing('text')">
+    <mat-icon>create</mat-icon>
+</button>
+<input
+    type="file"
+    accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
+    class="non-visible"
+    #file
+    (change)="uploadImageFile($event)"/>
+<button
+    matTooltip="Insert a picture"
+    mat-icon-button
+    class="menu-button"
+    (click)="file.click()">
+    <mat-icon>image</mat-icon>
+</button>
+<button
+    matTooltip="Draw a rectangle"
+    mat-icon-button
+    class="menu-button"
+    [color]="drawTools.isRectangleChosen ? 'primary' : 'basic'"
+    (click)="addDrawing('rectangle')">
+    <mat-icon>crop_3_2</mat-icon>
+</button>
+<button
+    matTooltip="Draw an ellipse"
+    mat-icon-button
+    class="menu-button"
+    [color]="drawTools.isEllipseChosen ? 'primary' : 'basic'"
+    (click)="addDrawing('ellipse')">
+    <mat-icon>panorama_fish_eye</mat-icon>
+</button>
+<button 
+    matTooltip="Draw a line" 
+    mat-icon-button class="menu-button" 
+    (click)="addDrawing('line')">
+    <svg height="40" width="40">
+    <line
+        [ngClass]="{ selected: drawTools.isLineChosen }"
+        x1="30"
+        y1="10"
+        x2="10"
+        y2="30"
+        style="stroke:white;stroke-width:2"/>
+    </svg>
+</button>
+<button
+    matTooltip="Lock or unlock all items"
+    mat-icon-button
+    class="menu-button"
+    [color]="isLocked ? 'primary' : 'basic'"
+    (click)="changeLockValue()">
+    <mat-icon>lock</mat-icon>
+</button>
+<app-drawing-added
+  [server]="server"
+  [project]="project"
+  [selectedDrawing]="selectedDrawing"
+  (drawingSaved)="onDrawingSaved()">
+</app-drawing-added>

@@ -9,9 +9,8 @@ import { AdButlerResponse } from '../../models/adbutler';
   encapsulation: ViewEncapsulation.None
 })
 export class AdbutlerComponent implements OnInit {
-  @ViewChild('ad') ad: ElementRef;
+  @ViewChild('ad', {static: false}) ad: ElementRef;
   @Input() theme: string;
-
   htmlCode: string;
 
   constructor(

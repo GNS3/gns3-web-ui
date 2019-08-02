@@ -16,7 +16,7 @@
                 <mat-step label="Name">
                     <form [formGroup]="templateNameForm">
                         <mat-form-field class="form-field">
-                            <input matInput placeholder="Name" type="text" [(ngModel)]="iouTemplate.name" formControlName="templateName"/>
+                            <input matInput placeholder="Name" type="text" formControlName="templateName"/>
                         </mat-form-field>
                     </form>
                 </mat-step>
@@ -59,7 +59,6 @@
                                 <input
                                     matInput
                                     type="text"
-                                    [(ngModel)]="iouTemplate.path"
                                     formControlName="imageName"
                                     placeholder="IOU image"/>
                             </mat-form-field>

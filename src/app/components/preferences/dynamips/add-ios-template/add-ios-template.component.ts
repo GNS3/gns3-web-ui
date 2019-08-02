@@ -90,6 +90,11 @@ export class AddIosTemplateComponent implements OnInit {
     addTemplate() {
         if (!this.iosImageForm.invalid && !this.iosNameForm.invalid && !this.iosMemoryForm.invalid) {
             this.iosTemplate.template_id = uuid();
+            this.iosTemplate.image = this.iosImageForm.get("imageName").value;
+            this.iosTemplate.name = this.iosNameForm.get('templateName').value;
+            this.iosTemplate.platform = this.iosNameForm.get('platform').value;
+            this.iosTemplate.chassis = this.iosNameForm.get('chassis').value;
+            this.iosTemplate.ram = this.iosMemoryForm.get('memory').value;
 
             if (this.isEtherSwitchRouter) {
                 this.iosTemplate.symbol = ":/symbols/multilayer_switch.svg";

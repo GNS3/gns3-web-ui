@@ -31,6 +31,7 @@ import { MapSettingsManager } from '../../managers/map-settings-manager';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
+import { MapScaleService } from '../../../services/mapScale.service';
 
 @Component({
   selector: 'app-d3-map',
@@ -47,8 +48,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() width = 1500;
   @Input() height = 600;
 
-  @ViewChild('svg') svgRef: ElementRef;
-  @ViewChild('textEditor') textEditor: TextEditorComponent;
+  @ViewChild('svg', {static: false}) svgRef: ElementRef;
+  @ViewChild('textEditor', {static: false}) textEditor: TextEditorComponent;
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -73,7 +74,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected selectionToolWidget: SelectionTool,
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout,
-    private toolsService: ToolsService
+    private toolsService: ToolsService,
+    private mapScaleService: MapScaleService
   ) {
     this.parentNativeElement = element.nativeElement;
   }
@@ -120,8 +122,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     this.subscriptions.push(
+      this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.redraw())
+    );
+
+    this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
-        this.movingToolWidget.setEnabled(value);
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -180,7 +185,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphDataManager.setLinks(this.links);
     this.graphDataManager.setDrawings(this.drawings);
     this.graphLayout.draw(this.svg, this.context);
-    this.textEditor.activateTextEditing();
+    this.textEditor.activateTextEditingForDrawings();
+    this.textEditor.activateTextEditingForNodeLabels();
   }
 
   @HostListener('window:resize', ['$event'])

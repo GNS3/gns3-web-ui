@@ -25,11 +25,10 @@ export class ConsoleDeviceActionComponent implements OnInit {
   }
 
   async console() {
-    const consoleCommand = this.settingsService.get<string>('console_command');
+    let consoleCommand = this.settingsService.get<string>('console_command');
 
     if(consoleCommand === undefined) {
-      this.toasterService.error('Console command is not defined. Please change it in the Settings.');
-      return;
+      consoleCommand = `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
     }
 
     const startedNodes = this.nodes.filter(node => node.status === 'started');

@@ -29,7 +29,7 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['name', 'actions'];
   settings: Settings;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
 
   constructor(
     private route: ActivatedRoute,
