@@ -18,7 +18,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     interval = 10;
 
     delayTime: number = 0;
-    breakTime: number = 1000;
+    breakTime: number = 20;
     isEndless: boolean = true;
     numberOfViews: number = 1;
 
