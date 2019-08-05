@@ -1,0 +1,76 @@
+.consoleWrapper {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    height: 120px;
+    width: 600px;
+    background: #263238;
+    color: white;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+.consoleHeader {
+    width: 100%;
+    height: 24px;
+    font-size: 12px;
+    overflow: hidden;
+    margin-right: 5px;
+    display: flex;
+    padding: 2px;
+    justify-content: space-between;
+}
+
+.console {
+    width: 596px;
+    height: 64px;
+    overflow-y: scroll;
+    margin: 2px;
+    color: #dbd5d5;
+    scrollbar-color: darkgrey #263238;
+    scrollbar-width: thin;
+}
+
+.consoleInput {
+    width: 100%;
+    height: 24px;
+    padding: 2px;
+    display: flex;
+}
+
+.commandLine {
+    background-color: #263238;
+    color: white;
+    border: none;
+}
+
+.divider {
+    width: 580px;
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 2px;
+}
+
+mat-icon {
+    font-size: 18px;
+    width: 20px;
+    height: 20px;
+}
+
+input:focus{
+    outline: none;
+}
+
+::-webkit-scrollbar {
+    width: 0.5em;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid #263238;
+}

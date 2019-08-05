@@ -1,0 +1,21 @@
+<div class="consoleWrapper">
+    <div class="consoleHeader">
+        <span>Console</span>
+        <div class="consoleMenu">
+            <mat-icon>help_outline</mat-icon>
+            <mat-icon>close</mat-icon>
+        </div>
+    </div>
+    <div class="divider"></div>
+    <div #console class="console"></div>
+    <div class="divider"></div>
+    <div class="consoleInput">
+        <mat-icon>keyboard_arrow_right</mat-icon>
+        <input
+            class="commandLine"
+            autofocus
+            (keydown)="onKeyDown($event)"
+            type="text"
+            [(ngModel)]="command"/>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
@@ -15,6 +15,8 @@ export class WebServiceMessage {
 
 @Injectable()
 export class ProjectWebServiceHandler {
+  public logEmitter = new EventEmitter<any>();
+
   constructor(
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
@@ -22,6 +24,9 @@ export class ProjectWebServiceHandler {
   ) {}
 
   public handleMessage(message: WebServiceMessage) {
+    if( message.action !== 'ping' && message.action !== 'compute.updated') {
+      this.logEmitter.emit(message);
+    }
     if (message.action === 'node.updated') {
       this.nodesDataSource.update(message.event as Node);
     }
