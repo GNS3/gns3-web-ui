@@ -15,7 +15,9 @@ export class WebServiceMessage {
 
 @Injectable()
 export class ProjectWebServiceHandler {
-  public logEmitter = new EventEmitter<any>();
+  public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
+  public linkNotificationEmitter = new EventEmitter<WebServiceMessage>();
+  public drawingNotificationEmitter = new EventEmitter<WebServiceMessage>();
 
   constructor(
     private nodesDataSource: NodesDataSource,
@@ -24,35 +26,41 @@ export class ProjectWebServiceHandler {
   ) {}
 
   public handleMessage(message: WebServiceMessage) {
-    if( message.action !== 'ping' && message.action !== 'compute.updated') {
-      this.logEmitter.emit(message);
-    }
     if (message.action === 'node.updated') {
       this.nodesDataSource.update(message.event as Node);
+      this.nodeNotificationEmitter.emit(message);
     }
     if (message.action === 'node.created') {
       this.nodesDataSource.add(message.event as Node);
+      this.nodeNotificationEmitter.emit(message);
     }
     if (message.action === 'node.deleted') {
       this.nodesDataSource.remove(message.event as Node);
+      this.nodeNotificationEmitter.emit(message);
     }
     if (message.action === 'link.created') {
       this.linksDataSource.add(message.event as Link);
+      this.linkNotificationEmitter.emit(message);
     }
     if (message.action === 'link.updated') {
       this.linksDataSource.update(message.event as Link);
+      this.linkNotificationEmitter.emit(message);
     }
     if (message.action === 'link.deleted') {
       this.linksDataSource.remove(message.event as Link);
+      this.linkNotificationEmitter.emit(message);
     }
     if (message.action === 'drawing.created') {
       this.drawingsDataSource.add(message.event as Drawing);
+      this.drawingNotificationEmitter.emit(message);
     }
     if (message.action === 'drawing.updated') {
       this.drawingsDataSource.update(message.event as Drawing);
+      this.drawingNotificationEmitter.emit(message);
     }
     if (message.action === 'drawing.deleted') {
       this.drawingsDataSource.remove(message.event as Drawing);
+      this.drawingNotificationEmitter.emit(message);
     }
   }
 }
