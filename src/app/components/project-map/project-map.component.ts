@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
@@ -115,7 +115,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private movingEventSource: MovingEventSource,
     private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -406,6 +407,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
+  }
+
+  public deleteProject() {
+    this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
+      this.router.navigate(['/server', this.server.id, 'projects']);
+    });
   }
 
   public ngOnDestroy() {
