@@ -68,6 +68,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
+  public isConsoleVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -360,6 +361,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
+  }
+
+  public toggleShowConsole(visible: boolean) {
+    this.isConsoleVisible = visible;
   }
 
   public hideMenu() {

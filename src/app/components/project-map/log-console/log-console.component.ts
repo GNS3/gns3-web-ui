@@ -9,6 +9,7 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { Link } from '../../../models/link';
 import { Node } from '../../../cartography/models/node';
 import { Port } from '../../../models/port';
+import { LogEventsDataSource } from './log-events-datasource';
 
 
 @Component({
@@ -34,7 +35,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private projectWebServiceHandler: ProjectWebServiceHandler,
         private nodeService: NodeService,
-        private nodesDataSource: NodesDataSource
+        private nodesDataSource: NodesDataSource,
+        private logEventsDataSource: LogEventsDataSource
     ) {}
     
     ngOnInit() {
@@ -56,6 +58,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
+        this.console.nativeElement.innerHTML = this.logEventsDataSource.getItems()[0] ? this.logEventsDataSource.getItems()[0] : '';
         this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
@@ -130,8 +133,16 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.command = '';
     }
 
+    clearConsole() {
+        this.console.nativeElement.innerHTML = '';
+        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    }
+
     showMessage(message: string) {
-        this.console.nativeElement.innerHTML += message += "<br />";
+        this.logEventsDataSource.clear();
+        this.logEventsDataSource.add(this.console.nativeElement.innerHTML + message + " <br />");
+
+        this.console.nativeElement.innerHTML += message += " <br />";
         this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
