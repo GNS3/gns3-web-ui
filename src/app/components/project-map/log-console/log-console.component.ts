@@ -8,6 +8,7 @@ import { Server } from '../../../models/server';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Link } from '../../../models/link';
 import { Node } from '../../../cartography/models/node';
+import { Port } from '../../../models/port';
 
 
 @Component({
@@ -96,7 +97,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.showMessage("All nodes reloaded.")
             });
         } else if (
-            this.regexStart.test(this.command) || this.regexStop.test(this.command) || this.regexSuspend.test(this.command) || this.regexReload.test(this.command)) {
+            this.regexStart.test(this.command) || this.regexStop.test(this.command) || this.regexSuspend.test(this.command) || this.regexReload.test(this.command) || this.regexShow.test(this.command)) {
             let splittedCommand = this.command.split(/[ ,]+/);
             let node = this.nodesDataSource.getItems().find(n => n.name.valueOf() === splittedCommand[1].valueOf());
             if (node) {
@@ -135,15 +136,60 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     printNode(node: Node): string {
-        return 'command line: ' + node.command_line + ', ' 
-        + 'name: ' + node.name
+        return `command_line: ${node.command_line}, 
+            compute_id: ${node.compute_id}, 
+            console: ${node.console}, 
+            console_host: ${node.console_host}, 
+            console_type: ${node.console_type}, 
+            first_port_name: ${node.first_port_name}, 
+            height: ${node.height}, 
+            label: ${node.label.text}, 
+            name: ${node.name}, 
+            node_directory: ${node.node_directory}, 
+            node_id: ${node.node_id}, 
+            node_type: ${node.node_type}, 
+            port_name_format: ${node.port_name_format}, 
+            port_segment_size: ${node.port_segment_size}, ` +
+            this.printPorts(node.ports) +
+            `project_id: ${node.project_id}, 
+            status: ${node.status}, 
+            symbol: ${node.symbol}, 
+            symbol_url: ${node.symbol_url}, 
+            width: ${node.width}, 
+            x: ${node.x}, 
+            y: ${node.y}, 
+            z: ${node.z}`;
+    }
+
+    printPorts(ports: Port[]): string {
+        let response: string = `ports: `
+        ports.forEach(port => {
+            response = response + `adapter_number: ${port.adapter_number}, 
+            link_type: ${port.link_type}, 
+            name: ${port.name}, 
+            port_number: ${port.port_number}, 
+            short_name: ${port.short_name}, `
+        });
+        return response;
     }
 
     printLink(link: Link): string {
-        return '';
+        return `capture_file_name: ${link.capture_file_name}, 
+            capture_file_path: ${link.capture_file_path}, 
+            capturing: ${link.capturing}, 
+            link_id: ${link.link_id}, 
+            link_type: ${link.link_type}, 
+            project_id: ${link.project_id}, 
+            suspend: ${link.suspend}, `;
     }
 
     printDrawing(drawing: Drawing): string {
-        return '';
+        return `drawing_id: ${drawing.drawing_id}, 
+            project_id: ${drawing.project_id}, 
+            rotation: ${drawing.rotation}, 
+            svg: ${drawing.svg}, 
+            x: ${drawing.x}, 
+            y: ${drawing.y}, 
+            z: ${drawing.z}`;
     }
 }
