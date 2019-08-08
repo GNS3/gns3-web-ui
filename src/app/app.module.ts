@@ -191,6 +191,9 @@ import { DuplicateActionComponent } from './components/project-map/context-menu/
 import { MapSettingService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
+import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
+import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
+import { InfoService } from './services/info.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -309,10 +312,12 @@ if (environment.production) {
     NodesMenuComponent,
     AdbutlerComponent,
     ConsoleDeviceActionComponent,
+    ShowNodeActionComponent,
     ConsoleComponent,
     NodesMenuComponent,
     ProjectMapMenuComponent,
-    HelpComponent
+    HelpComponent,
+    InfoDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -388,7 +393,8 @@ if (environment.production) {
     NodeCreatedLabelStylesFixer,
     NonNegativeValidator,
     RotationValidator,
-    MapSettingService
+    MapSettingService,
+    InfoService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -404,7 +410,8 @@ if (environment.production) {
     SymbolsComponent,
     DeleteConfirmationDialogComponent,
     HelpDialogComponent,
-    StartCaptureDialogComponent
+    StartCaptureDialogComponent,
+    InfoDialogComponent
   ],
   bootstrap: [AppComponent]
 })
