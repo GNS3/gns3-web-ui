@@ -46,14 +46,12 @@ export class InfoService {
     }
 
     getInfoAboutPorts(ports: Port[]): string {
-        let response: string = `ports: `
+        let response: string = `Ports: `
         ports.forEach(port => {
-            response = response + `adapter_number: ${port.adapter_number}, 
-            link_type: ${port.link_type}, 
-            name: ${port.name}, 
-            port_number: ${port.port_number}, 
-            short_name: ${port.short_name}, `
+            response += `link_type: ${port.link_type}, 
+                        name: ${port.name}; `
         });
+        response = response.substring(0, response.length - 2);
         return response;
     }
 
@@ -61,7 +59,11 @@ export class InfoService {
         if (node.node_type ===  'cloud' || "nat" || "ethernet_hub" || "ethernet_switch" || "frame_relay_switch" || "atm_switch" || "dynamips" || "traceng" || "iou") {
             return 'Command line information is not supported for this type of node.';
         } else {
-            return node.command_line;
+            if (node.status === 'started') {
+                return node.command_line;
+            } else {
+                return 'Please start the node in order to get the command line information.';
+            }
         }
     }
 }

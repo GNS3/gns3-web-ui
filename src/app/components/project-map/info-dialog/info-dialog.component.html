@@ -4,19 +4,17 @@
     <mat-tab-group>
         <mat-tab label="General information">
             <div class='textBox'>
-                <mat-list>
-                    <mat-list-item *ngFor="let info of infoList">
-                        {{info}}
-                    </mat-list-item>
-                </mat-list>
+                <div *ngFor="let info of infoList">
+                    {{info}}
+                </div>
             </div>
         </mat-tab>
         <mat-tab label="Command line">
             <div *ngIf="node.status !== 'started'" class='textBox'>
                 Please start the node in order to get the command line information.
             </div>
-            <div *ngIf="node.status === 'started'" class="textBox">
-                {{node.command_line}}
+            <div class="textBox">
+                {{command_line}}
             </div>
         </mat-tab>
     </mat-tab-group>
