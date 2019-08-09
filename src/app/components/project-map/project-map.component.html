@@ -46,6 +46,14 @@
           <mat-icon>developer_board</mat-icon>
           <span>Go to servers</span>
         </button>
+        <button mat-menu-item (click)="addNewProject()">
+          <mat-icon>add</mat-icon>
+          <span>New blank project</span>
+        </button>
+        <button mat-menu-item (click)="saveProject()">
+          <mat-icon>save</mat-icon>
+          <span>Save project as</span>
+        </button>
         <button mat-menu-item (click)="exportProject()">
           <mat-icon>call_made</mat-icon>
           <span>Export portable project</span>

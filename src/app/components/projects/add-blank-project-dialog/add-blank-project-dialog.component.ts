@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -20,6 +20,8 @@ import { ToasterService } from '../../../services/toaster.service';
 export class AddBlankProjectDialogComponent implements OnInit {
   server: Server;
   projectNameForm: FormGroup;
+  uuid: string;
+  onAddProject = new EventEmitter<string>();
 
   constructor(
     public dialogRef: MatDialogRef<AddBlankProjectDialogComponent>,
@@ -62,8 +64,9 @@ export class AddBlankProjectDialogComponent implements OnInit {
   }
 
   addProject(): void {
+    this.uuid = uuid();
     this.projectService
-      .add(this.server, this.projectNameForm.controls['projectName'].value, uuid())
+      .add(this.server, this.projectNameForm.controls['projectName'].value, this.uuid)
       .subscribe((project: Project) => {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);

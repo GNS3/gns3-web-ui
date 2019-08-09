@@ -53,6 +53,7 @@ import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.com
 import { ToasterService } from '../../services/toaster.service';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
 import { MatDialog } from '@angular/material';
+import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 
 
 @Component({
@@ -389,6 +390,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   resetZoom() {
     this.mapScaleService.resetToDefault();
+  }
+
+  addNewProject() {
+    const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+  }
+
+  saveProject() {
+
   }
 
   importProject() {
