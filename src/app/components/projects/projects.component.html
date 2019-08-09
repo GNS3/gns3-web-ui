@@ -40,6 +40,9 @@
             <button mat-icon-button matTooltip="Delete project" (click)="delete(row)" *ngIf="row.status == 'closed'">
               <mat-icon aria-label="Delete project">delete</mat-icon>
             </button>
+            <button mat-icon-button matTooltip="Duplicate project" (click)="duplicate(row)">
+              <mat-icon aria-label="Duplicate project">filter_2</mat-icon>
+            </button>
             <button mat-icon-button matTooltip="Open project" (click)="open(row)" *ngIf="row.status == 'closed'">
               <mat-icon aria-label="Open project">play_arrow</mat-icon>
             </button>

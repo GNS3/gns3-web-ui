@@ -49,6 +49,10 @@ export class ProjectService {
     return this.httpServer.delete(server, `/projects/${project_id}`);
   }
 
+  duplicate(server: Server, project_id: string, project_name): Observable<any> {
+    return this.httpServer.post(server, `/projects/${project_id}/duplicate`, { name: project_name });
+  }
+
   notificationsPath(server: Server, project_id: string): string {
     return `ws://${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
   }

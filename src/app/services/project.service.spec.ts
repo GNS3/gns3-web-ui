@@ -132,6 +132,13 @@ describe('ProjectService', () => {
     expect(req.request.method).toEqual('DELETE');
   });
 
+  it('should duplicate the project', () => {
+    service.duplicate(server, 'projectId', 'projectName').subscribe();
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/projectId/duplicate');
+    expect(req.request.method).toEqual('POST');
+  });
+
   it('should get notifications path of project', () => {
     const path = service.notificationsPath(server, 'myproject');
     expect(path).toEqual('ws://127.0.0.1:3080/v2/projects/myproject/notifications/ws');
