@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
@@ -51,6 +51,8 @@ import { LabelWidget } from '../../cartography/widgets/label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
+import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
+import { MatDialog } from '@angular/material';
 
 
 @Component({
@@ -115,7 +117,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private movingEventSource: MovingEventSource,
     private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -385,6 +389,30 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   resetZoom() {
     this.mapScaleService.resetToDefault();
+  }
+
+  importProject() {
+    let uuid: string = '';
+    const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    const subscription = dialogRef.componentInstance.onImportProject.subscribe((projectId: string) => {
+      uuid = projectId;
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      subscription.unsubscribe();
+      this.projectService.open(this.server, uuid).subscribe(() => {
+        this.router.navigate(['/server', this.server.id, 'project', uuid]);
+      });
+    });
+  }
+
+  exportProject() {
+    window.location.href = `http://${this.server.host}:${this.server.port}/v2/projects/${this.project.project_id}/export`;
   }
   
   public uploadImageFile(event) {

@@ -49,6 +49,10 @@ export class ProjectService {
     return this.httpServer.delete(server, `/projects/${project_id}`);
   }
 
+  export(server: Server, project_id: string): Observable<any> {
+    return this.httpServer.get(server, `/projects/${project_id}/export`)
+  }
+
   notificationsPath(server: Server, project_id: string): string {
     return `ws://${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
   }

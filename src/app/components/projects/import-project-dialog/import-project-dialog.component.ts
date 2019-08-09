@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
@@ -26,6 +26,8 @@ export class ImportProjectDialogComponent implements OnInit {
   projectNameForm: FormGroup;
   submitted: boolean = false;
   isFirstStepCompleted: boolean = false;
+  uuid: string;
+  onImportProject = new EventEmitter<string>();
 
   constructor(
     private dialog: MatDialog,
@@ -58,6 +60,7 @@ export class ImportProjectDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
+      this.onImportProject.emit(this.uuid);
       this.resultMessage = 'Project was imported succesfully!';
       this.isFinishEnabled = true;
     };
@@ -138,7 +141,8 @@ export class ImportProjectDialogComponent implements OnInit {
   }
 
   prepareUploadPath(): string {
+    this.uuid = uuid();
     const projectName = this.projectNameForm.controls['projectName'].value;
-    return `http://${this.server.host}:${this.server.port}/v2/projects/${uuid()}/import?name=${projectName}`;
+    return `http://${this.server.host}:${this.server.port}/v2/projects/${this.uuid}/import?name=${projectName}`;
   }
 }
