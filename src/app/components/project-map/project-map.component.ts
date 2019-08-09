@@ -54,6 +54,7 @@ import { ToasterService } from '../../services/toaster.service';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
 import { MatDialog } from '@angular/material';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
+import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 
 
 @Component({
@@ -402,7 +403,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   saveProject() {
-
+    const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.project = this.project;
   }
 
   importProject() {
