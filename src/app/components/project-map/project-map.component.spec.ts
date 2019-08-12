@@ -94,6 +94,10 @@ export class MockedNodeService {
   duplicate(server: Server, node: Node) {
     return of(node);
   }
+  
+  update(server: Server, node: Node) {
+    return of(node);
+  }
 }
 
 export class MockedDrawingService {
