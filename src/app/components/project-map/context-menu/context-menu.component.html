@@ -44,6 +44,12 @@
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-down-action>
+    <app-bring-to-front-action
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length) && labels.length===0"
+      [server]="server"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-bring-to-front-action>
     <app-start-capture-action
       *ngIf="!projectService.isReadOnly(project) && isBundledServer 
       && drawings.length===0 && nodes.length===0 && links.length===1"
