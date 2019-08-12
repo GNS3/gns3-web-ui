@@ -49,6 +49,10 @@ export class ProjectService {
     return this.httpServer.delete(server, `/projects/${project_id}`);
   }
 
+  getStatistics(server: Server, project_id: string) {
+    return this.httpServer.get(server, `/projects/${project_id}/stats`);
+  }
+
   notificationsPath(server: Server, project_id: string): string {
     return `ws://${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
   }
