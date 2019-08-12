@@ -433,7 +433,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   exportProject() {
-    window.location.href = `http://${this.server.host}:${this.server.port}/v2/projects/${this.project.project_id}/export`;
+    if (this.nodes.filter(node => node.node_type = 'virtualbox').length > 0) {
+      this.toasterService.error('Map with VirtualBox machines cannot be exported.')
+    } else {
+      window.location.href = `http://${this.server.host}:${this.server.port}/v2/projects/${this.project.project_id}/export`;
+    }
   }
   
   public uploadImageFile(event) {
