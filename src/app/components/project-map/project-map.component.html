@@ -120,3 +120,4 @@
 <app-node-label-dragged [server]="server"></app-node-label-dragged>
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
+<app-topology-summary *ngIf="project" [server]="server" [project]="project"></app-topology-summary>

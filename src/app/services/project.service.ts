@@ -49,7 +49,7 @@ export class ProjectService {
     return this.httpServer.delete(server, `/projects/${project_id}`);
   }
 
-  getStatistics(server: Server, project_id: string) {
+  getStatistics(server: Server, project_id: string): Observable<any> {
     return this.httpServer.get(server, `/projects/${project_id}/stats`);
   }
 

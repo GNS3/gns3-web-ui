@@ -191,6 +191,7 @@ import { DuplicateActionComponent } from './components/project-map/context-menu/
 import { MapSettingService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
+import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -312,7 +313,8 @@ if (environment.production) {
     ConsoleComponent,
     NodesMenuComponent,
     ProjectMapMenuComponent,
-    HelpComponent
+    HelpComponent,
+    TopologySummaryComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,53 @@
+<div class="summaryWrapper" *ngIf="projectsStatistics">
+    <div class="summaryHeader">
+        <span class="title">Topology summary ({{projectsStatistics.snapshots}} snapshots)</span>
+        <mat-icon>close</mat-icon>
+    </div>
+    <mat-divider class="divider"></mat-divider>
+    <div class="summaryFilters">
+        Filters <br/>
+        <mat-checkbox (change)="applyStatusFilter($event.checked)">Running state</mat-checkbox>
+    </div>
+    <div class="summarySorting">
+        Sorting <br/>
+        <div class="radio-group">
+            <mat-radio-group aria-label="Sorting">
+                <mat-radio-button value="1" (click)="setSortingOrder('asc')" checked>By name ascending </mat-radio-button><br/>
+                <mat-radio-button value="2" (click)="setSortingOrder('desc')">By name descending</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+    <mat-divider class="divider"></mat-divider>
+    <div class="summaryContent">
+        <div class="nodeRow" *ngFor="let node of filteredNodes">
+            <div>
+                <svg *ngIf="node.status==='started'" width="10" height="10">
+                    <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
+                </svg>
+                <svg *ngIf="node.status==='stopped'" width="10" height="10">
+                    <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
+                </svg>
+                {{node.name}}
+            </div>
+            <div>
+                {{node.console_type}} {{node.console_host}}:{{node.console}}
+            </div>
+        </div>
+        <!-- <div>
+            <table mat-table [dataSource]="dataSource">
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let element">{{element.name}}</td>
+                </ng-container>
+            
+                <ng-container matColumnDef="console">
+                    <th mat-header-cell *matHeaderCellDef>Console</th>
+                    <td mat-cell *matCellDef="let element">{{element.console}}</td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div> -->
+    </div>
+</div>
