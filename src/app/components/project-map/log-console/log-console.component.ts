@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProjectWebServiceHandler } from '../../../handlers/project-web-service-handler';
 import { NodeService } from '../../../services/node.service';
@@ -20,6 +20,7 @@ import { LogEventsDataSource } from './log-events-datasource';
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() project: Project;
     @Input() server: Server;
+    @Output() closeConsole =  new EventEmitter<boolean>();
     @ViewChild('console', {static: false}) console: ElementRef;
     private nodeSubscription: Subscription;
     private linkSubscription: Subscription;
@@ -202,5 +203,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             x: ${drawing.x}, 
             y: ${drawing.y}, 
             z: ${drawing.z}`;
+    }
+
+    close() {
+        this.closeConsole.emit(false);
     }
 }

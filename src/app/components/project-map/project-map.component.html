@@ -124,5 +124,5 @@
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
 <div [ngClass]="{ visible: !isConsoleVisible }">
-    <app-log-console [server]="server" [project]="project"></app-log-console>
+    <app-log-console [server]="server" [project]="project" (closeConsole)='toggleShowConsole($event)'></app-log-console>
 </div>
