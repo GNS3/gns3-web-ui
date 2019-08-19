@@ -49,13 +49,16 @@
       </mat-menu>
 
       <mat-toolbar-row>
-        <button matTooltip="Show/hide interface labels" mat-icon-button [matMenuTriggerFor]="viewMenu"><mat-icon>view_module</mat-icon></button>
+        <button matTooltip="Map settings" mat-icon-button [matMenuTriggerFor]="viewMenu"><mat-icon>view_module</mat-icon></button>
       </mat-toolbar-row>
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
           <mat-checkbox [ngModel]="project.show_interface_labels" (change)="toggleShowInterfaceLabels($event.checked)">
             Show interface labels
+          </mat-checkbox>
+          <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
+            Show topology summary
           </mat-checkbox>
         </div>
       </mat-menu>
@@ -120,4 +123,6 @@
 <app-node-label-dragged [server]="server"></app-node-label-dragged>
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
-<app-topology-summary *ngIf="project" [server]="server" [project]="project"></app-topology-summary>
+<div [ngClass]="{ visible: !isTopologySummaryVisible }">
+  <app-topology-summary *ngIf="project" [server]="server" [project]="project" (closeTopologySummary)='toggleShowTopologySummary($event)'></app-topology-summary>
+</div>

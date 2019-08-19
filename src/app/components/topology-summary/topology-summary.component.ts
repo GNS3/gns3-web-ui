@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
@@ -17,6 +17,8 @@ import { ProjectStatistics } from '../../models/project-statistics';
 export class TopologySummaryComponent implements OnInit, OnDestroy {
     @Input() server: Server;
     @Input() project: Project;
+
+    @Output() closeTopologySummary = new EventEmitter<boolean>();
 
     private subscriptions: Subscription[] = [];
     projectsStatistics: ProjectStatistics;
@@ -90,5 +92,9 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         } else {
             this.filteredNodes = nodes.sort(this.compareDesc);
         }    
+    }
+
+    close() {
+        this.closeTopologySummary.emit(false);
     }
 }

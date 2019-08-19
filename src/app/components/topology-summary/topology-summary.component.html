@@ -1,7 +1,7 @@
 <div class="summaryWrapper" *ngIf="projectsStatistics">
     <div class="summaryHeader">
         <span class="title">Topology summary ({{projectsStatistics.snapshots}} snapshots)</span>
-        <mat-icon>close</mat-icon>
+        <mat-icon (click)="close()" class="closeButton">close</mat-icon>
     </div>
     <mat-divider class="divider"></mat-divider>
     <div class="summaryFilters">
