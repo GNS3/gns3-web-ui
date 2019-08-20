@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectMapComponent } from './project-map.component';
 import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
+import { Router } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';
@@ -52,6 +53,8 @@ import { MapSettingService } from '../../services/mapsettings.service';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import { MockedRouter } from '../../common/progress/progress.component.spec';
 
 export class MockedProgressService {
   public activate() {}
@@ -205,6 +208,7 @@ describe('ProjectMapComponent', () => {
   let nodesDataSource = new MockedNodesDataSource();
   let linksDataSource = new MockedLinksDataSource();
   let mockedToasterService = new MockedToasterService();
+  let router = new MockedRouter();
   let nodeCreatedLabelStylesFixer;
 
   beforeEach(async(() => {
@@ -249,7 +253,12 @@ describe('ProjectMapComponent', () => {
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
         { provide: MapScaleService },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
-        { provide: ToasterService, useValue: mockedToasterService }
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: MapNodesDataSource, useClass: MapNodesDataSource },
+        { provide: MapLinksDataSource, useClass: LinksDataSource },
+        { provide: MapDrawingsDataSource, useClass: MapDrawingsDataSource },
+        { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource },
+        { provide: Router, useValue: router}
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
