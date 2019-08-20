@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-class MockedRouter {
+export class MockedRouter {
   events: BehaviorSubject<boolean>;
 
   constructor() {

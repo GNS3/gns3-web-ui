@@ -192,6 +192,7 @@ import { MapSettingService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
 import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
+import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -314,7 +315,8 @@ if (environment.production) {
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
-    TopologySummaryComponent
+    TopologySummaryComponent,
+    BringToFrontActionComponent
   ],
   imports: [
     BrowserModule,
