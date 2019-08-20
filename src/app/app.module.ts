@@ -193,6 +193,7 @@ import { ProjectMapMenuComponent } from './components/project-map/project-map-me
 import { HelpComponent } from './components/help/help.component';
 import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
 import { LogEventsDataSource } from './components/project-map/log-console/log-events-datasource';
+import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -315,7 +316,8 @@ if (environment.production) {
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
-    LogConsoleComponent
+    LogConsoleComponent,
+    BringToFrontActionComponent
   ],
   imports: [
     BrowserModule,
