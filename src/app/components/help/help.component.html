@@ -5,6 +5,19 @@
             <mat-accordion>
                 <mat-expansion-panel>
                     <mat-expansion-panel-header>
+                        <mat-panel-title> Useful shortcuts </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-list>
+                        <mat-list-item> ctrl + + to zoom in </mat-list-item>
+                        <mat-list-item> ctrl + - to zoom out </mat-list-item>
+                        <mat-list-item> ctrl + 0 to reset zoom </mat-list-item>
+                        <mat-list-item> ctrl + a to select all items on map </mat-list-item>
+                        <mat-list-item> ctrl + shift + a to deselect all items on map </mat-list-item>
+                        <mat-list-item> ctrl + shift + s to go to preferences </mat-list-item>
+                    </mat-list>
+                </mat-expansion-panel>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
                         <mat-panel-title> Third party components </mat-panel-title>
                     </mat-expansion-panel-header>
                     <div [innerHTML]="thirdpartylicenses"></div>

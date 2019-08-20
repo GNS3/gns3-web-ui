@@ -55,6 +55,7 @@ import { ImportProjectDialogComponent } from '../projects/import-project-dialog/
 import { MatDialog } from '@angular/material';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
 
 
 @Component({
@@ -121,6 +122,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
     private toasterService: ToasterService,
     private dialog: MatDialog,
+    private mapNodesDataSource: MapNodesDataSource,
+    private mapLinksDataSource: MapLinksDataSource,
+    private mapDrawingsDataSource: MapDrawingsDataSource,
+    private mapSymbolsDataSource: MapSymbolsDataSource,
     private router: Router
   ) {}
 
@@ -202,11 +207,37 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addKeyboardListeners() {
     Mousetrap.bind('ctrl++', (event: Event) => {
       event.preventDefault();
+      this.zoomIn();
     });
 
     Mousetrap.bind('ctrl+-', (event: Event) => {
       event.preventDefault();
-    });;
+      this.zoomOut();
+    });
+
+    Mousetrap.bind('ctrl+0', (event: Event) => {
+      event.preventDefault();
+      this.resetZoom();
+    });
+
+    Mousetrap.bind('ctrl+a', (event: Event) => {
+      event.preventDefault();
+      let allNodes: Indexed[] = this.mapNodesDataSource.getItems();
+      let allDrawings: Indexed[] = this.mapDrawingsDataSource.getItems();
+      let allLinks: Indexed[] = this.mapLinksDataSource.getItems();
+      let allSymbols: Indexed[] = this.mapSymbolsDataSource.getItems();
+      this.selectionManager.setSelected(allNodes.concat(allDrawings).concat(allLinks).concat(allSymbols));
+    });
+
+    Mousetrap.bind('ctrl+shift+a', (event: Event) => {
+      event.preventDefault();
+      this.selectionManager.setSelected([]);
+    });
+
+    Mousetrap.bind('ctrl+shift+s', (event: Event) => {
+      event.preventDefault();
+      this.router.navigate(['/server', this.server.id, 'preferences']);
+    });
   }
 
   onProjectLoad(project: Project) {
