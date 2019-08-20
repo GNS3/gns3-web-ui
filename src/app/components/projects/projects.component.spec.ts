@@ -85,6 +85,28 @@ describe('ProjectsComponent', () => {
     expect(mockedProjectService.delete).toHaveBeenCalled();
   });
 
+  it('should call project service after duplicate action', () => {
+    spyOn(mockedProjectService, 'duplicate').and.returnValue(of());
+    let project = new Project();
+    project.project_id = '1';
+    project.status = 'closed';
+
+    component.duplicate(project);
+
+    expect(mockedProjectService.duplicate).toHaveBeenCalled();
+  });
+
+  it('should call refresh after duplicate action', () => {
+    spyOn(component, 'refresh');
+    let project = new Project();
+    project.project_id = '1';
+    project.status = 'closed';
+
+    component.duplicate(project);
+
+    expect(component.refresh).toHaveBeenCalled();
+  });
+
   describe('ProjectComponent open', () => {
     let project: Project;
 

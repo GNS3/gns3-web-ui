@@ -41,6 +41,10 @@ export class MockedProjectService {
   delete(server: Server, project_id: string) {
     return of(project_id);
   }
+
+  duplicate(server: Server, project_id: string) {
+    return of(project_id);
+  }
 }
 
 describe('ProjectService', () => {
