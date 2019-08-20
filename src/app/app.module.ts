@@ -194,6 +194,7 @@ import { HelpComponent } from './components/help/help.component';
 import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
 import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
 import { InfoService } from './services/info.service';
+import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -317,7 +318,8 @@ if (environment.production) {
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
-    InfoDialogComponent
+    InfoDialogComponent,
+    BringToFrontActionComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
@@ -51,6 +51,7 @@ import { LabelWidget } from '../../cartography/widgets/label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
 
 
 @Component({
@@ -115,7 +116,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private movingEventSource: MovingEventSource,
     private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private router: Router,
+    private mapNodesDataSource: MapNodesDataSource,
+    private mapLinksDataSource: MapLinksDataSource,
+    private mapDrawingsDataSource: MapDrawingsDataSource,
+    private mapSymbolsDataSource: MapSymbolsDataSource
   ) {}
 
   ngOnInit() {
@@ -196,11 +202,37 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addKeyboardListeners() {
     Mousetrap.bind('ctrl++', (event: Event) => {
       event.preventDefault();
+      this.zoomIn();
     });
 
     Mousetrap.bind('ctrl+-', (event: Event) => {
       event.preventDefault();
-    });;
+      this.zoomOut();
+    });
+
+    Mousetrap.bind('ctrl+0', (event: Event) => {
+      event.preventDefault();
+      this.resetZoom();
+    });
+
+    Mousetrap.bind('ctrl+a', (event: Event) => {
+      event.preventDefault();
+      let allNodes: Indexed[] = this.mapNodesDataSource.getItems();
+      let allDrawings: Indexed[] = this.mapDrawingsDataSource.getItems();
+      let allLinks: Indexed[] = this.mapLinksDataSource.getItems();
+      let allSymbols: Indexed[] = this.mapSymbolsDataSource.getItems();
+      this.selectionManager.setSelected(allNodes.concat(allDrawings).concat(allLinks).concat(allSymbols));
+    });
+
+    Mousetrap.bind('ctrl+shift+a', (event: Event) => {
+      event.preventDefault();
+      this.selectionManager.setSelected([]);
+    });
+
+    Mousetrap.bind('ctrl+shift+s', (event: Event) => {
+      event.preventDefault();
+      this.router.navigate(['/server', this.server.id, 'preferences']);
+    });
   }
 
   onProjectLoad(project: Project) {
@@ -406,6 +438,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
+  }
+
+  public deleteProject() {
+    this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
+      this.router.navigate(['/server', this.server.id, 'projects']);
+    });
   }
 
   public ngOnDestroy() {
