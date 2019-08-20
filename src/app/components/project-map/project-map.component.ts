@@ -122,11 +122,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
     private toasterService: ToasterService,
     private dialog: MatDialog,
+    private router: Router,
     private mapNodesDataSource: MapNodesDataSource,
     private mapLinksDataSource: MapLinksDataSource,
     private mapDrawingsDataSource: MapDrawingsDataSource,
-    private mapSymbolsDataSource: MapSymbolsDataSource,
-    private router: Router
+    private mapSymbolsDataSource: MapSymbolsDataSource
   ) {}
 
   ngOnInit() {
@@ -490,6 +490,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
+  }
+
+  public deleteProject() {
+    this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
+      this.router.navigate(['/server', this.server.id, 'projects']);
+    });
   }
 
   public ngOnDestroy() {
