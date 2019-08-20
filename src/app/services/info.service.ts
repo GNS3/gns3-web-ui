@@ -56,7 +56,15 @@ export class InfoService {
     }
 
     getCommandLine(node: Node): string {
-        if (node.node_type ===  'cloud' || "nat" || "ethernet_hub" || "ethernet_switch" || "frame_relay_switch" || "atm_switch" || "dynamips" || "traceng" || "iou") {
+        if (node.node_type ===  "cloud" || 
+            node.node_type ===  "nat" || 
+            node.node_type ===  "ethernet_hub" || 
+            node.node_type ===  "ethernet_switch" || 
+            node.node_type ===  "frame_relay_switch" || 
+            node.node_type ===  "atm_switch" || 
+            node.node_type ===  "dynamips" || 
+            node.node_type ===  "traceng" || 
+            node.node_type ===  "iou") {
             return 'Command line information is not supported for this type of node.';
         } else {
             if (node.status === 'started') {
