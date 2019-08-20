@@ -53,6 +53,7 @@ import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.com
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
 
 export class MockedProgressService {
   public activate() {}
@@ -93,6 +94,10 @@ export class MockedNodeService {
   }
 
   duplicate(server: Server, node: Node) {
+    return of(node);
+  }
+  
+  update(server: Server, node: Node) {
     return of(node);
   }
 }
@@ -248,7 +253,11 @@ describe('ProjectMapComponent', () => {
         { provide: MapScaleService },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
         { provide: ToasterService, useValue: mockedToasterService },
-        { provide: Router, useValue: mockedRouter }
+        { provide: Router, useValue: mockedRouter },
+        { provide: MapNodesDataSource, useClass: MapNodesDataSource },
+        { provide: MapLinksDataSource, useClass: LinksDataSource },
+        { provide: MapDrawingsDataSource, useClass: MapDrawingsDataSource },
+        { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource }
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
