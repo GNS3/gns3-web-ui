@@ -36,6 +36,10 @@
 .summaryContent {
     margin-left: 5px;
     margin-right: 5px;
+    max-height: 220px;
+    overflow: auto;
+    scrollbar-color: darkgrey #263238;
+    scrollbar-width: thin;
 }
 
 .title {
@@ -53,6 +57,7 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+    padding-right: 5px;
 }
 
 mat-icon {
@@ -62,10 +67,28 @@ mat-icon {
     margin-top: 4px;
 }
 
+::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid #263238;
+}
+
 .radio-group {
     margin-top: 5px;
 }
 
 .closeButton {
     cursor: pointer;
+}
+
+.filterBox {
+    display: flex;
+    justify-content: space-between;
 }

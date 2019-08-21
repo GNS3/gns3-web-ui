@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Input, AfterViewInit, Output, EventEmitte
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../services/node.service';
 import { Node } from '../../cartography/models/node';
 import { Subscription } from 'rxjs';
 import { ProjectService } from '../../services/project.service';
@@ -27,12 +26,13 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     dataSource: Node[] = [];
     displayedColumns: string[] = ['name', 'console'];
     sortingOrder: string = 'asc';
-    statusFilterEnabled: boolean = false;
+    startedStatusFilterEnabled: boolean = false;
+    suspendedStatusFilterEnabled: boolean = false;
+    stoppedStatusFilterEnabled: boolean = false;
 
     constructor(
         private nodesDataSource: NodesDataSource,
-        private projectService: ProjectService,
-        private nodeService: NodeService
+        private projectService: ProjectService
     ) {}
 
     ngOnInit() {
@@ -75,16 +75,34 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         }   
     }
 
-    applyStatusFilter(value: boolean) {
-        this.statusFilterEnabled = value;
+    applyStatusFilter(value: boolean, filter: string) {
+        if (filter === 'started') {
+            this.startedStatusFilterEnabled = value;
+        } else if (filter === 'stopped') {
+            this.stoppedStatusFilterEnabled = value;
+        } else if (filter === 'suspended') {
+            this.suspendedStatusFilterEnabled = value;
+        }
         this.applyFilters();
     }
 
     applyFilters() {
-        var nodes = this.nodes;
+        let nodes: Node[] = [];
 
-        if (this.statusFilterEnabled) {
-            nodes = nodes.filter(n => n.status === 'started');
+        if (this.startedStatusFilterEnabled) {
+            nodes = nodes.concat(this.nodes.filter(n => n.status === 'started'));
+        }
+        
+        if (this.stoppedStatusFilterEnabled) {
+            nodes = nodes.concat(this.nodes.filter(n => n.status === 'stopped'));
+        }
+        
+        if (this.suspendedStatusFilterEnabled) {
+            nodes = nodes.concat(this.nodes.filter(n => n.status === 'suspended'));
+        }
+        
+        if (!this.startedStatusFilterEnabled && !this.stoppedStatusFilterEnabled && !this.suspendedStatusFilterEnabled) {
+            nodes = nodes.concat(this.nodes);
         }
 
         if (this.sortingOrder === 'asc') {

@@ -5,8 +5,12 @@
     </div>
     <mat-divider class="divider"></mat-divider>
     <div class="summaryFilters">
-        Filters <br/>
-        <mat-checkbox (change)="applyStatusFilter($event.checked)">Running state</mat-checkbox>
+        Filter by status <br/>
+        <div class="filterBox">
+            <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">Started</mat-checkbox>
+            <mat-checkbox (change)="applyStatusFilter($event.checked, 'suspended')">Suspended</mat-checkbox>
+            <mat-checkbox (change)="applyStatusFilter($event.checked, 'stopped')">Stopped</mat-checkbox>
+        </div>
     </div>
     <div class="summarySorting">
         Sorting <br/>
@@ -29,8 +33,11 @@
                 </svg>
                 {{node.name}}
             </div>
-            <div>
+            <div *ngIf="node.console!=null && node.console!=undefined && node.console_type!='none'">
                 {{node.console_type}} {{node.console_host}}:{{node.console}}
+            </div>
+            <div *ngIf="node.console===null || node.console===undefined || node.console_type==='none'">
+                none
             </div>
         </div>
         <!-- <div>

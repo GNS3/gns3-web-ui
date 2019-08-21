@@ -27,7 +27,7 @@ import { MockedProjectService } from '../../services/project.service.spec';
 import { Observable } from 'rxjs/Rx';
 import { Drawing } from '../../cartography/models/drawing';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
-import { of } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 import { Server } from '../../models/server';
 import { Node } from '../../cartography/models/node';
 import { ToolsService } from '../../services/tools.service';
@@ -192,6 +192,10 @@ export class MockedNodesDataSource {
 
   update() {
     return of({});
+  }
+
+  public get changes() {
+    return new BehaviorSubject<[]>([]);
   }
 }
 
