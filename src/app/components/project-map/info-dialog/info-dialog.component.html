@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>{{node.name}}</h1>
+
+<div class="modal-form-container">
+    <mat-tab-group>
+        <mat-tab label="General information">
+            <div class='textBox'>
+                <div *ngFor="let info of infoList">
+                    {{info}}
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Command line">
+            <div *ngIf="node.status !== 'started'" class='textBox'>
+                Please start the node in order to get the command line information.
+            </div>
+            <div class="textBox">
+                {{commandLine}}
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button (click)="onCloseClick()" color="accent">Close</button>
+</div>
