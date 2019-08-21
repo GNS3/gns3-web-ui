@@ -41,6 +41,10 @@ export class MockedProjectService {
   delete(server: Server, project_id: string) {
     return of(project_id);
   }
+
+  duplicate(server: Server, project_id: string) {
+    return of(project_id);
+  }
 }
 
 describe('ProjectService', () => {
@@ -130,6 +134,13 @@ describe('ProjectService', () => {
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject');
     expect(req.request.method).toEqual('DELETE');
+  });
+
+  it('should duplicate the project', () => {
+    service.duplicate(server, 'projectId', 'projectName').subscribe();
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/projectId/duplicate');
+    expect(req.request.method).toEqual('POST');
   });
 
   it('should get notifications path of project', () => {
