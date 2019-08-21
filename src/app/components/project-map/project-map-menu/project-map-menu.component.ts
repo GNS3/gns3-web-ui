@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
-import { MapSettingService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
 
 
@@ -26,7 +26,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
     constructor(
         private toolsService: ToolsService,
-        private mapSettingsService: MapSettingService,
+        private mapSettingsService: MapSettingsService,
         private drawingService: DrawingService
     ) {}
 

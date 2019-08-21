@@ -27,7 +27,7 @@ import { MockedProjectService } from '../../services/project.service.spec';
 import { Observable } from 'rxjs/Rx';
 import { Drawing } from '../../cartography/models/drawing';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
-import { of } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 import { Server } from '../../models/server';
 import { Node } from '../../cartography/models/node';
 import { ToolsService } from '../../services/tools.service';
@@ -48,7 +48,7 @@ import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles
 import { LabelWidget } from '../../cartography/widgets/label';
 import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
-import { MapSettingService } from '../../services/mapsettings.service';
+import { MapSettingsService } from '../../services/mapsettings.service';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
@@ -213,6 +213,10 @@ export class MockedNodesDataSource {
   update() {
     return of({});
   }
+
+  public get changes() {
+    return new BehaviorSubject<[]>([]);
+  }
 }
 
 export class MockedLinksDataSource {
@@ -277,7 +281,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapNodesDataSource, useClass: MapNodesDataSource },
         { provide: MapLinksDataSource, useClass: LinksDataSource },
         { provide: MapDrawingsDataSource, useClass: MapDrawingsDataSource },
-        { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource }
+        { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource },
+        { provide: MapSettingsService, useClass: MapSettingsService }
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]

@@ -1,0 +1,44 @@
+<div class="summaryWrapper" *ngIf="projectsStatistics">
+    <div class="summaryHeader">
+        <span class="title">Topology summary ({{projectsStatistics.snapshots}} snapshots)</span>
+        <mat-icon (click)="close()" class="closeButton">close</mat-icon>
+    </div>
+    <mat-divider class="divider"></mat-divider>
+    <div class="summaryFilters">
+        Filter by status <br/>
+        <div class="filterBox">
+            <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">Started</mat-checkbox>
+            <mat-checkbox (change)="applyStatusFilter($event.checked, 'suspended')">Suspended</mat-checkbox>
+            <mat-checkbox (change)="applyStatusFilter($event.checked, 'stopped')">Stopped</mat-checkbox>
+        </div>
+    </div>
+    <div class="summarySorting">
+        Sorting <br/>
+        <div class="radio-group-wrapper">
+            <mat-radio-group class="radio-group" aria-label="Sorting">
+                <mat-radio-button value="1" (click)="setSortingOrder('asc')" checked>By name ascending</mat-radio-button>
+                <mat-radio-button value="2" (click)="setSortingOrder('desc')">By name descending</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+    <mat-divider class="divider"></mat-divider>
+    <div class="summaryContent">
+        <div class="nodeRow" *ngFor="let node of filteredNodes">
+            <div>
+                <svg *ngIf="node.status==='started'" width="10" height="10">
+                    <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
+                </svg>
+                <svg *ngIf="node.status==='stopped'" width="10" height="10">
+                    <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
+                </svg>
+                {{node.name}}
+            </div>
+            <div *ngIf="node.console!=null && node.console!=undefined && node.console_type!='none'">
+                {{node.console_type}} {{node.console_host}}:{{node.console}}
+            </div>
+            <div *ngIf="node.console===null || node.console===undefined || node.console_type==='none'">
+                none
+            </div>
+        </div>
+    </div>
+</div>
