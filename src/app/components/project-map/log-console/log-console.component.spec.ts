@@ -9,6 +9,7 @@ import { NodeService } from '../../../services/node.service';
 import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { of } from 'rxjs';
+import { LogEventsDataSource } from './log-events-datasource';
 
 export class MockedProjectWebServiceHandler {
     public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
@@ -30,7 +31,8 @@ describe('LogConsoleComponent', () => {
       providers: [
         { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler }, 
         { provide: NodeService, useValue: mockedNodeService },
-        { provide: NodesDataSource, useValue: mockedNodesDataSource }
+        { provide: NodesDataSource, useValue: mockedNodesDataSource },
+        { provide: LogEventsDataSource, useClass: LogEventsDataSource }
       ],
       declarations: [LogConsoleComponent],
       schemas: [NO_ERRORS_SCHEMA]
