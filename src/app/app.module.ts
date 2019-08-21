@@ -188,9 +188,10 @@ import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/no
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
-import { MapSettingService } from './services/mapsettings.service';
+import { MapSettingsService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
+import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
 import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
 import { InfoService } from './services/info.service';
@@ -318,6 +319,7 @@ if (environment.production) {
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
+    TopologySummaryComponent,
     InfoDialogComponent,
     BringToFrontActionComponent
   ],
@@ -395,7 +397,7 @@ if (environment.production) {
     NodeCreatedLabelStylesFixer,
     NonNegativeValidator,
     RotationValidator,
-    MapSettingService,
+    MapSettingsService,
     InfoService
   ],
   entryComponents: [

@@ -45,6 +45,10 @@ export class MockedProjectService {
   duplicate(server: Server, project_id: string) {
     return of(project_id);
   }
+
+  getStatistics(server: Server, project_id: string) {
+    return of({});
+  }
 }
 
 describe('ProjectService', () => {

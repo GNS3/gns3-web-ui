@@ -52,6 +52,7 @@ import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
+import { MapSettingsService } from '../../services/mapsettings.service';
 
 
 @Component({
@@ -69,6 +70,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
+  public isTopologySummaryVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -121,11 +123,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapNodesDataSource: MapNodesDataSource,
     private mapLinksDataSource: MapLinksDataSource,
     private mapDrawingsDataSource: MapDrawingsDataSource,
-    private mapSymbolsDataSource: MapSymbolsDataSource
+    private mapSymbolsDataSource: MapSymbolsDataSource,
+    private mapSettingsService: MapSettingsService
   ) {}
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
+    this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
 
     this.progressService.activate();
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -392,6 +396,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.project.show_interface_labels = enabled;
+  }
+
+  public toggleShowTopologySummary(visible: boolean) {
+    this.isTopologySummaryVisible = visible;
+    this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
   }
 
   public hideMenu() {
