@@ -14,9 +14,9 @@
     </div>
     <div class="summarySorting">
         Sorting <br/>
-        <div class="radio-group">
-            <mat-radio-group aria-label="Sorting">
-                <mat-radio-button value="1" (click)="setSortingOrder('asc')" checked>By name ascending </mat-radio-button><br/>
+        <div class="radio-group-wrapper">
+            <mat-radio-group class="radio-group" aria-label="Sorting">
+                <mat-radio-button value="1" (click)="setSortingOrder('asc')" checked>By name ascending</mat-radio-button>
                 <mat-radio-button value="2" (click)="setSortingOrder('desc')">By name descending</mat-radio-button>
             </mat-radio-group>
         </div>
@@ -40,21 +40,5 @@
                 none
             </div>
         </div>
-        <!-- <div>
-            <table mat-table [dataSource]="dataSource">
-                <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let element">{{element.name}}</td>
-                </ng-container>
-            
-                <ng-container matColumnDef="console">
-                    <th mat-header-cell *matHeaderCellDef>Console</th>
-                    <td mat-cell *matCellDef="let element">{{element.console}}</td>
-                </ng-container>
-            
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-        </div> -->
     </div>
 </div>

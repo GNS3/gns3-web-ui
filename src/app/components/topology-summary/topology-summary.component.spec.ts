@@ -13,7 +13,7 @@ import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
 
 
-fdescribe('TopologySummaryComponent', () => {
+describe('TopologySummaryComponent', () => {
     let component: TopologySummaryComponent;
     let fixture: ComponentFixture<TopologySummaryComponent>;
     let mockedProjectService: MockedProjectService = new MockedProjectService();

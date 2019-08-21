@@ -23,8 +23,6 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     projectsStatistics: ProjectStatistics;
     nodes: Node[] = [];
     filteredNodes: Node[] = [];
-    dataSource: Node[] = [];
-    displayedColumns: string[] = ['name', 'console'];
     sortingOrder: string = 'asc';
     startedStatusFilterEnabled: boolean = false;
     suspendedStatusFilterEnabled: boolean = false;

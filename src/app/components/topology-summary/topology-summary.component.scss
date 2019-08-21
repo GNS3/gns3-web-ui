@@ -36,7 +36,7 @@
 .summaryContent {
     margin-left: 5px;
     margin-right: 5px;
-    max-height: 220px;
+    max-height: 240px;
     overflow: auto;
     scrollbar-color: darkgrey #263238;
     scrollbar-width: thin;
@@ -80,8 +80,13 @@ mat-icon {
     outline: 1px solid #263238;
 }
 
-.radio-group {
+.radio-group-wrapper {
     margin-top: 5px;
+}
+
+.radio-group {
+    display: flex;
+    justify-content: space-between;
 }
 
 .closeButton {

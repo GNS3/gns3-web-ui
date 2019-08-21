@@ -21,7 +21,7 @@ import { MapLabel } from '../../models/map/map-label';
 import { MapLinkNode } from '../../models/map/map-link-node';
 import { select } from 'd3-selection';
 import { MapLink } from '../../models/map/map-link';
-import { MapSettingService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 
 describe('DraggableSelectionComponent', () => {
   let component: DraggableSelectionComponent;
@@ -123,7 +123,7 @@ describe('DraggableSelectionComponent', () => {
         { provide: DrawingsEventSource, useValue: drawingsEventSourceStub },
         { provide: GraphDataManager, useValue: mockedGraphDataManager },
         { provide: LinksEventSource, useValue: linksEventSourceStub },
-        { provide: MapSettingService, useClass: MapSettingService }
+        { provide: MapSettingsService, useClass: MapSettingsService }
       ],
       declarations: [DraggableSelectionComponent]
     }).compileComponents();
