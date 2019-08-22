@@ -17,7 +17,7 @@ import { LabelWidget } from '../../widgets/label';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { MapLinkNode } from '../../models/map/map-link-node';
 import { LinksEventSource } from '../../events/links-event-source';
-import { MapSettingService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 
 @Component({
   selector: 'app-draggable-selection',
@@ -44,7 +44,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
     private drawingsEventSource: DrawingsEventSource,
     private graphDataManager: GraphDataManager,
     private linksEventSource: LinksEventSource,
-    private mapSettingsService: MapSettingService
+    private mapSettingsService: MapSettingsService
   ) {}
 
   ngOnInit() {

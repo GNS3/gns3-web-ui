@@ -52,6 +52,10 @@ export class ProjectService {
   export(server: Server, project_id: string): Observable<any> {
     return this.httpServer.get(server, `/projects/${project_id}/export`)
   }
+
+  getStatistics(server: Server, project_id: string): Observable<any> {
+    return this.httpServer.get(server, `/projects/${project_id}/stats`);
+  }
   
   duplicate(server: Server, project_id: string, project_name): Observable<any> {
     return this.httpServer.post(server, `/projects/${project_id}/duplicate`, { name: project_name });
