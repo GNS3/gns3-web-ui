@@ -51,6 +51,10 @@ import { LabelWidget } from '../../cartography/widgets/label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
+import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
+import { MatDialog } from '@angular/material';
+import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
+import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
 import { MapSettingsService } from '../../services/mapsettings.service';
 
@@ -119,6 +123,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapScaleService: MapScaleService,
     private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
     private toasterService: ToasterService,
+    private dialog: MatDialog,
     private router: Router,
     private mapNodesDataSource: MapNodesDataSource,
     private mapLinksDataSource: MapLinksDataSource,
@@ -426,6 +431,58 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   resetZoom() {
     this.mapScaleService.resetToDefault();
+  }
+
+  addNewProject() {
+    const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+  }
+
+  saveProject() {
+    const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.project = this.project;
+  }
+
+  importProject() {
+    let uuid: string = '';
+    const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    const subscription = dialogRef.componentInstance.onImportProject.subscribe((projectId: string) => {
+      uuid = projectId;
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      subscription.unsubscribe();
+      this.projectService.open(this.server, uuid).subscribe(() => {
+        this.router.navigate(['/server', this.server.id, 'project', uuid]);
+      });
+    });
+  }
+
+  exportProject() {
+    if (this.nodes.filter(node => node.node_type === 'virtualbox').length > 0) {
+      this.toasterService.error('Map with VirtualBox machines cannot be exported.')
+    } else if (this.nodes.filter(node => 
+        (node.status === 'started' && node.node_type==='vpcs') || 
+        (node.status === 'started' && node.node_type==='virtualbox') || 
+        (node.status === 'started' && node.node_type==='vmware')).length > 0) {
+      this.toasterService.error('Project with running nodes cannot be exported.')
+    } else {
+      location.assign(this.projectService.getExportPath(this.server, this.project));
+    }
   }
   
   public uploadImageFile(event) {

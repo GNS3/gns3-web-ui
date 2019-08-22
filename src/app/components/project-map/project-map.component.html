@@ -40,11 +40,27 @@
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
         <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
           <mat-icon>work</mat-icon>
-          <span>Projects</span>
+          <span>Go to projects</span>
         </button>
         <button mat-menu-item [routerLink]="['/servers']">
           <mat-icon>developer_board</mat-icon>
-          <span>Servers</span>
+          <span>Go to servers</span>
+        </button>
+        <button mat-menu-item (click)="addNewProject()">
+          <mat-icon>add</mat-icon>
+          <span>Add new blank project</span>
+        </button>
+        <button mat-menu-item (click)="saveProject()">
+          <mat-icon>save</mat-icon>
+          <span>Save project as</span>
+        </button>
+        <button mat-menu-item (click)="exportProject()">
+          <mat-icon>call_made</mat-icon>
+          <span>Export portable project</span>
+        </button>
+        <button mat-menu-item (click)="importProject()">
+          <mat-icon>call_received</mat-icon>
+          <span>Import portable project</span>
         </button>
         <button mat-menu-item (click)="deleteProject()">
           <mat-icon>delete</mat-icon>
