@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectMapComponent } from './project-map.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
+import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';
@@ -240,7 +240,7 @@ describe('ProjectMapComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+      imports: [MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },

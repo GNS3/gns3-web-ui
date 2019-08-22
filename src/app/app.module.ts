@@ -193,6 +193,7 @@ import { ProjectMapMenuComponent } from './components/project-map/project-map-me
 import { HelpComponent } from './components/help/help.component';
 import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
 import { LogEventsDataSource } from './components/project-map/log-console/log-events-datasource';
+import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
 import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
 import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
@@ -322,6 +323,7 @@ if (environment.production) {
     ProjectMapMenuComponent,
     HelpComponent,
     LogConsoleComponent,
+    SaveProjectDialogComponent,
     TopologySummaryComponent,
     InfoDialogComponent,
     BringToFrontActionComponent
@@ -419,6 +421,7 @@ if (environment.production) {
     DeleteConfirmationDialogComponent,
     HelpDialogComponent,
     StartCaptureDialogComponent,
+    SaveProjectDialogComponent,
     InfoDialogComponent
   ],
   bootstrap: [AppComponent]

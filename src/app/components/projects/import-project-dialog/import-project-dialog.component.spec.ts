@@ -46,6 +46,14 @@ export class MockedProjectService {
   list() {
     return of(this.projects);
   }
+
+  getUploadPath(server: Server, uuid: string, project_name: string) {
+    return `http://${server.host}:${server.port}/v2/projects/${uuid}/import?name=${project_name}`;
+  }
+
+  getExportPath(server: Server, project: Project) {
+    return `http://${server.host}:${server.port}/v2/projects/${project.project_id}/export`;
+  }
 }
 
 describe('ImportProjectDialogComponent', () => {
