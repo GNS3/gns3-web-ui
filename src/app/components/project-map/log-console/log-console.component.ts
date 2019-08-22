@@ -10,6 +10,7 @@ import { Link } from '../../../models/link';
 import { Node } from '../../../cartography/models/node';
 import { Port } from '../../../models/port';
 import { LogEventsDataSource } from './log-events-datasource';
+import { HttpServer } from '../../../services/http-server.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private nodeSubscription: Subscription;
     private linkSubscription: Subscription;
     private drawingSubscription: Subscription;
+    private serverRequestsSubscription: Subscription;
     command: string = '';
 
     private regexStart: RegExp = /^start (.*?)$/;
@@ -37,7 +39,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         private projectWebServiceHandler: ProjectWebServiceHandler,
         private nodeService: NodeService,
         private nodesDataSource: NodesDataSource,
-        private logEventsDataSource: LogEventsDataSource
+        private logEventsDataSource: LogEventsDataSource,
+        private httpService: HttpServer
     ) {}
     
     ngOnInit() {
@@ -55,6 +58,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             let drawing: Drawing = event.event as Drawing;
             let message = `Event received: ${event.action} - ${this.printDrawing(drawing)}.`
             this.showMessage(message);
+        });
+        this.serverRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((event) => {
+            this.showMessage(event);
         });
     }
 
@@ -199,7 +205,6 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         return `drawing_id: ${drawing.drawing_id}, 
             project_id: ${drawing.project_id}, 
             rotation: ${drawing.rotation}, 
-            svg: ${drawing.svg}, 
             x: ${drawing.x}, 
             y: ${drawing.y}, 
             z: ${drawing.z}`;
