@@ -49,6 +49,14 @@ export class ProjectService {
     return this.httpServer.delete(server, `/projects/${project_id}`);
   }
 
+  getUploadPath(server: Server, uuid: string, project_name: string) {
+    return `http://${server.host}:${server.port}/v2/projects/${uuid}/import?name=${project_name}`;
+  }
+
+  getExportPath(server: Server, project: Project) {
+    return `http://${server.host}:${server.port}/v2/projects/${project.project_id}/export`;
+  }
+
   export(server: Server, project_id: string): Observable<any> {
     return this.httpServer.get(server, `/projects/${project_id}/export`)
   }
