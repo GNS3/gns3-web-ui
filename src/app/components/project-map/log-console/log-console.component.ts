@@ -11,6 +11,7 @@ import { Node } from '../../../cartography/models/node';
 import { Port } from '../../../models/port';
 import { LogEventsDataSource } from './log-events-datasource';
 import { HttpServer } from '../../../services/http-server.service';
+import { LogEvent } from '../../../models/logEvent';
 
 
 @Component({
@@ -28,6 +29,10 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private drawingSubscription: Subscription;
     private serverRequestsSubscription: Subscription;
     command: string = '';
+
+    filters: string[] = ['all', 'errors', 'warnings', 'map updates', 'server requests'];
+    selectedFilter: string = 'all';
+    filteredEvents: LogEvent[] = [];
 
     private regexStart: RegExp = /^start (.*?)$/;
     private regexStop: RegExp = /^stop (.*?)$/;
@@ -47,25 +52,36 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.nodeSubscription = this.projectWebServiceHandler.nodeNotificationEmitter.subscribe((event) => {
             let node: Node = event.event as Node;
             let message = `Event received: ${event.action} - ${this.printNode(node)}.`
-            this.showMessage(message);
+            this.showMessage({
+                type: 'map update',
+                message: message
+            });
         });
         this.linkSubscription = this.projectWebServiceHandler.linkNotificationEmitter.subscribe((event) => {
             let link: Link = event.event as Link;
             let message = `Event received: ${event.action} - ${this.printLink(link)}.`
-            this.showMessage(message);
+            this.showMessage({
+                type: 'map update',
+                message: message
+            });
         });
         this.drawingSubscription = this.projectWebServiceHandler.drawingNotificationEmitter.subscribe((event) => {
             let drawing: Drawing = event.event as Drawing;
             let message = `Event received: ${event.action} - ${this.printDrawing(drawing)}.`
-            this.showMessage(message);
+            this.showMessage({
+                type: 'map update',
+                message: message
+            });
         });
-        this.serverRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((event) => {
-            this.showMessage(event);
+        this.serverRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((message) => {
+            this.showMessage({
+                type: 'server request',
+                message: message
+            });
         });
     }
 
     ngAfterViewInit() {
-        this.console.nativeElement.innerHTML = this.logEventsDataSource.getItems()[0] ? this.logEventsDataSource.getItems()[0] : '';
         this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
@@ -73,6 +89,11 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.nodeSubscription.unsubscribe();
         this.linkSubscription.unsubscribe();
         this.drawingSubscription.unsubscribe();
+        this.serverRequestsSubscription.unsubscribe();
+    }
+
+    applyFilter() {
+        this.filteredEvents = this.getFilteredEvents();
     }
 
     onKeyDown(event) {
@@ -83,28 +104,28 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     handleCommand() {
         if (this.command === 'help') {
-            this.showMessage("Available commands: help, version, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.")
+            this.showCommand("Available commands: help, version, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.")
         } else if (this.command === 'version') {
-            this.showMessage("Current version: 2019.2.0");
+            this.showCommand("Current version: 2019.2.0");
         } else if (this.command === 'start all') {
-            this.showMessage("Starting all nodes...");
+            this.showCommand("Starting all nodes...");
             this.nodeService.startAll(this.server, this.project).subscribe(() => {
-                this.showMessage("All nodes started.")
+                this.showCommand("All nodes started.")
             });
         } else if (this.command === 'stop all') {
-            this.showMessage("Stopping all nodes...");
+            this.showCommand("Stopping all nodes...");
             this.nodeService.stopAll(this.server, this.project).subscribe(() => {
-                this.showMessage("All nodes stopped.")
+                this.showCommand("All nodes stopped.")
             });
         } else if (this.command === 'suspend all') {
-            this.showMessage("Suspending all nodes...");
+            this.showCommand("Suspending all nodes...");
             this.nodeService.suspendAll(this.server, this.project).subscribe(() => {
-                this.showMessage("All nodes suspended.")
+                this.showCommand("All nodes suspended.")
             });
         } else if (this.command === 'reload all') {
-            this.showMessage("Reloading all nodes...");
+            this.showCommand("Reloading all nodes...");
             this.nodeService.reloadAll(this.server, this.project).subscribe(() => {
-                this.showMessage("All nodes reloaded.")
+                this.showCommand("All nodes reloaded.")
             });
         } else if (
             this.regexStart.test(this.command) || this.regexStop.test(this.command) || this.regexSuspend.test(this.command) || this.regexReload.test(this.command) || this.regexShow.test(this.command)) {
@@ -112,45 +133,64 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             let node = this.nodesDataSource.getItems().find(n => n.name.valueOf() === splittedCommand[1].valueOf());
             if (node) {
                 if (this.regexStart.test(this.command)) {
-                    this.showMessage(`Starting node ${splittedCommand[1]}...`);
-                    this.nodeService.start(this.server, node).subscribe(() => this.showMessage(`Node ${node.name} started.`));
+                    this.showCommand(`Starting node ${splittedCommand[1]}...`);
+                    this.nodeService.start(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
                 }
                 else if (this.regexStop.test(this.command)) {
-                    this.showMessage(`Stopping node ${splittedCommand[1]}...`);
-                    this.nodeService.stop(this.server, node).subscribe(() => this.showMessage(`Node ${node.name} stopped.`));
+                    this.showCommand(`Stopping node ${splittedCommand[1]}...`);
+                    this.nodeService.stop(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
                 }
                 else if (this.regexSuspend.test(this.command)) {
-                    this.showMessage(`Suspending node ${splittedCommand[1]}...`);
-                    this.nodeService.suspend(this.server, node).subscribe(() => this.showMessage(`Node ${node.name} suspended.`));
+                    this.showCommand(`Suspending node ${splittedCommand[1]}...`);
+                    this.nodeService.suspend(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
                 }
                 else if (this.regexReload.test(this.command)) {
-                    this.showMessage(`Reloading node ${splittedCommand[1]}...`);
-                    this.nodeService.reload(this.server, node).subscribe(() => this.showMessage(`Node ${node.name} reloaded.`));
+                    this.showCommand(`Reloading node ${splittedCommand[1]}...`);
+                    this.nodeService.reload(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
                 }
                 else if (this.regexShow.test(this.command)) {
-                    this.showMessage(`Information about node ${node.name}:`);
-                    this.showMessage(this.printNode(node));
+                    this.showCommand(`Information about node ${node.name}:`);
+                    this.showCommand(this.printNode(node));
                 }
             } else {
-                this.showMessage(`Node with ${splittedCommand[1]} name was not found.`);
+                this.showCommand(`Node with ${splittedCommand[1]} name was not found.`);
             }
         } else {
-            this.showMessage(`Unknown syntax: ${this.command}`);
+            this.showCommand(`Unknown syntax: ${this.command}`);
         }
         this.command = '';
     }
 
     clearConsole() {
-        this.console.nativeElement.innerHTML = '';
+        this.filteredEvents = [];
         this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
-    showMessage(message: string) {
-        this.logEventsDataSource.clear();
-        this.logEventsDataSource.add(this.console.nativeElement.innerHTML + message + " <br />");
+    showCommand(message: string) {
+        this.showMessage({
+            type: 'command',
+            message: message
+        });
+    }
 
-        this.console.nativeElement.innerHTML += message += " <br />";
+    showMessage(event: LogEvent) {
+        this.logEventsDataSource.add(event);
+        this.filteredEvents = this.getFilteredEvents();
         this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    }
+
+    getFilteredEvents(): LogEvent[] {
+        if (this.selectedFilter === 'server requests') {
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'server request' || n.type === 'command');
+        } else if (this.selectedFilter === 'errors') {
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'error' || n.type === 'command');
+        } else if (this.selectedFilter === 'warnings') {
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'warning' || n.type === 'command');
+        } else if (this.selectedFilter === 'map updates') {
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'map update' || n.type === 'command');
+        } else {
+            return this.logEventsDataSource.getItems();
+        }
     }
 
     printNode(node: Node): string {

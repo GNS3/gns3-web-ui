@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 export class MapSettingsService {
     public isMapLocked = new Subject<boolean>();
     public isTopologySummaryVisible: boolean = false;
+    public isLogConsoleVisible: boolean = false;
 
     constructor() {}
 
@@ -14,5 +15,9 @@ export class MapSettingsService {
 
     toggleTopologySummary(value: boolean) {
         this.isTopologySummaryVisible = value;
+    }
+
+    toggleLogConsole(value: boolean) {
+        this.isLogConsoleVisible = value;
     }
 }

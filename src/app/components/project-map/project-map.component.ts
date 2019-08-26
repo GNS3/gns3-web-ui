@@ -136,6 +136,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.settings = this.settingsService.getAll();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
+    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
 
     this.progressService.activate();
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -275,6 +276,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
     this.ws.onmessage = (event: MessageEvent) => {
+      // console.log(event);
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
@@ -406,6 +408,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleShowConsole(visible: boolean) {
     this.isConsoleVisible = visible;
+    this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
   }
   
   public toggleShowTopologySummary(visible: boolean) {

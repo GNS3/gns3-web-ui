@@ -1,13 +1,29 @@
 <div class="consoleWrapper">
     <div class="consoleHeader">
-        <span>Console</span>
+        <div>
+            Console
+            <mat-form-field>
+                <mat-label>Select filter</mat-label>
+                <mat-select [(ngModel)]="selectedFilter" name="filter" (selectionChange)="applyFilter()">
+                    <mat-option *ngFor="let filter of filters" [value]="filter">
+                        {{filter}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
         <div class="consoleMenu">
             <mat-icon (click)="close()" class="closeButton">close</mat-icon>
         </div>
     </div>
+
+    <div #console class="console">
+        <span *ngFor="let event of filteredEvents">
+            {{event.message}} <br/>
+        </span>
+    </div>
     <div class="divider"></div>
-    <div #console class="console"></div>
-    <div class="divider"></div>
+
     <div class="consoleInput">
         <mat-icon>keyboard_arrow_right</mat-icon>
         <input
@@ -17,4 +33,5 @@
             type="text"
             [(ngModel)]="command"/>
     </div>
+    <div class="divider"></div>
 </div>
