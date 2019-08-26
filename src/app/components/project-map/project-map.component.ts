@@ -276,7 +276,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
     this.ws.onmessage = (event: MessageEvent) => {
-      // console.log(event);
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 

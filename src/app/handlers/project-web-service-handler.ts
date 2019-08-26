@@ -19,6 +19,10 @@ export class ProjectWebServiceHandler {
   public linkNotificationEmitter = new EventEmitter<WebServiceMessage>();
   public drawingNotificationEmitter = new EventEmitter<WebServiceMessage>();
 
+  public infoNotificationEmitter = new EventEmitter<any>();
+  public warningNotificationEmitter = new EventEmitter<any>();
+  public errorNotificationEmitter = new EventEmitter<any>();
+
   constructor(
     private nodesDataSource: NodesDataSource,
     private linksDataSource: LinksDataSource,
@@ -61,6 +65,15 @@ export class ProjectWebServiceHandler {
     if (message.action === 'drawing.deleted') {
       this.drawingsDataSource.remove(message.event as Drawing);
       this.drawingNotificationEmitter.emit(message);
+    }
+    if (message.action === 'log.error') {
+      this.errorNotificationEmitter.emit(message.event);
+    }
+    if (message.action === 'log.warning') {
+      this.warningNotificationEmitter.emit(message.event);
+    }
+    if (message.action === 'log.info') {
+      this.infoNotificationEmitter.emit(message.event);
     }
   }
 }

@@ -28,9 +28,12 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private linkSubscription: Subscription;
     private drawingSubscription: Subscription;
     private serverRequestsSubscription: Subscription;
+    private errorSubscription: Subscription;
+    private warningSubscription: Subscription;
+    private infoSubscription: Subscription;
     command: string = '';
 
-    filters: string[] = ['all', 'errors', 'warnings', 'map updates', 'server requests'];
+    filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'server requests'];
     selectedFilter: string = 'all';
     filteredEvents: LogEvent[] = [];
 
@@ -79,6 +82,24 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 message: message
             });
         });
+        this.errorSubscription = this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
+            this.showMessage({
+                type: 'error',
+                message: message
+            });
+        });
+        this.errorSubscription = this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+            this.showMessage({
+                type: 'warning',
+                message: message
+            });
+        });
+        this.errorSubscription = this.projectWebServiceHandler.infoNotificationEmitter.subscribe((message) => {
+            this.showMessage({
+                type: 'info',
+                message: message
+            });
+        });
     }
 
     ngAfterViewInit() {
@@ -90,6 +111,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.linkSubscription.unsubscribe();
         this.drawingSubscription.unsubscribe();
         this.serverRequestsSubscription.unsubscribe();
+        this.errorSubscription.unsubscribe();
+        this.warningSubscription.unsubscribe();
+        this.infoSubscription.unsubscribe();
     }
 
     applyFilter() {
@@ -181,11 +205,13 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     getFilteredEvents(): LogEvent[] {
         if (this.selectedFilter === 'server requests') {
-            return this.logEventsDataSource.getItems().filter(n => n.type === 'server request' || n.type === 'command');
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'server request');
         } else if (this.selectedFilter === 'errors') {
-            return this.logEventsDataSource.getItems().filter(n => n.type === 'error' || n.type === 'command');
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'error');
         } else if (this.selectedFilter === 'warnings') {
-            return this.logEventsDataSource.getItems().filter(n => n.type === 'warning' || n.type === 'command');
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'warning');
+        } else if (this.selectedFilter === 'info') {
+            return this.logEventsDataSource.getItems().filter(n => n.type === 'info');
         } else if (this.selectedFilter === 'map updates') {
             return this.logEventsDataSource.getItems().filter(n => n.type === 'map update' || n.type === 'command');
         } else {

@@ -18,6 +18,9 @@ export class MockedProjectWebServiceHandler {
     public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
     public linkNotificationEmitter = new EventEmitter<WebServiceMessage>();
     public drawingNotificationEmitter = new EventEmitter<WebServiceMessage>();
+    public infoNotificationEmitter = new EventEmitter<any>();
+    public warningNotificationEmitter = new EventEmitter<any>();
+    public errorNotificationEmitter = new EventEmitter<any>();
 }
 
 describe('LogConsoleComponent', () => {
