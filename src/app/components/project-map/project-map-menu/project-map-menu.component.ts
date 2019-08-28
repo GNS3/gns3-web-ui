@@ -45,21 +45,19 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         let i = 1;
 
         while (i < splittedSvg.length) {
-            var splittedImage = splittedSvg[i].split("\"");
-            var splittedUrl = splittedImage[1].split("/");
-
+            let splittedImage = splittedSvg[i].split("\"");
+            let splittedUrl = splittedImage[1].split("/");
+            
             let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
-
             let splittedElement = elem.split('-->');
             splittedSvg[i] = splittedElement[1].substring(2);
-
             i += 2;
         }
         let svgString = splittedSvg.join();
 
-        var placeholder = document.createElement('div');
+        let placeholder = document.createElement('div');
         placeholder.innerHTML = svgString;
-        var element = placeholder.firstChild;
+        let element = placeholder.firstChild;
 
         svg.saveSvgAsPng(element, "plot.png");
     }
