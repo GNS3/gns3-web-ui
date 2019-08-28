@@ -187,7 +187,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     clearConsole() {
         this.filteredEvents = [];
-        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight * 2;
     }
 
     showCommand(message: string) {

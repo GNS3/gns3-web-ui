@@ -11,22 +11,31 @@
     font-size: 12px;
 }
 
+.filterButton {
+    background: #263238;
+    color: white;
+    border: none;
+}
+
+.consoleFiltering {
+    display: flex;
+}
+
 .consoleHeader {
     width: 100%;
-    height: 50px;
+    height: 30px;
     font-size: 12px;
     overflow: hidden;
-    margin-right: 5px;
     display: flex;
-    padding: 5px;
+    padding: 2px;
     justify-content: space-between;
 }
 
 .console {
     width: 596px;
-    height: 100px;
+    height: 120px;
     overflow-y: scroll;
-    margin: 2px;
+    padding: 2px;
     color: #dbd5d5;
     scrollbar-color: darkgrey #263238;
     scrollbar-width: thin;
@@ -45,23 +54,14 @@
     border: none;
 }
 
-.divider {
-    width: 580px;
-    margin-left: 10px;
-    margin-right: 10px;
-    height: 2px;
+.inputIcon {
+    margin-top: 2px;
 }
 
 mat-icon {
-    margin-top: 4px;
     font-size: 20px;
     width: 20px;
     height: 20px;
-}
-
-mat-checkbox {
-    margin-right: 5px;
-    margin-left: 5px;
 }
 
 input:focus{

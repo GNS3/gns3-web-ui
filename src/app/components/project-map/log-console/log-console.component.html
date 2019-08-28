@@ -1,15 +1,26 @@
 <div class="consoleWrapper">
     <div class="consoleHeader">
-        <div>
-            Console
-            <mat-form-field>
+        <div class="consoleFiltering">
+            <div class="consoleName">Console</div>
+            <!-- <mat-form-field>
                 <mat-label>Select filter</mat-label>
                 <mat-select [(ngModel)]="selectedFilter" name="filter" (selectionChange)="applyFilter()">
                     <mat-option *ngFor="let filter of filters" [value]="filter">
                         {{filter}}
                     </mat-option>
                 </mat-select>
-            </mat-form-field>
+            </mat-form-field> -->
+            <button class="filterButton" [matMenuTriggerFor]="filterMenu">
+                <mat-icon>keyboard_arrow_down</mat-icon>
+            </button>
+            <mat-menu #filterMenu="matMenu" xPosition="after">
+                <button mat-menu-item>all</button>
+                <button mat-menu-item>errors</button>
+                <button mat-menu-item>warnings</button>
+                <button mat-menu-item>info</button>
+                <button mat-menu-item>map updates</button>
+                <button mat-menu-item>server requests</button>
+            </mat-menu>
         </div>
 
         <div class="consoleMenu">
@@ -22,10 +33,9 @@
             {{event.message}} <br/>
         </span>
     </div>
-    <div class="divider"></div>
 
     <div class="consoleInput">
-        <mat-icon>keyboard_arrow_right</mat-icon>
+        <mat-icon class="inputIcon">keyboard_arrow_right</mat-icon>
         <input
             class="commandLine"
             autofocus
@@ -33,5 +43,4 @@
             type="text"
             [(ngModel)]="command"/>
     </div>
-    <div class="divider"></div>
 </div>
