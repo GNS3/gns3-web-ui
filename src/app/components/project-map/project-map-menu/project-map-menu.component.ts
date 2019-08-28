@@ -4,11 +4,8 @@ import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
-import { SymbolsDataSource } from '../../../cartography/datasources/symbols-datasource';
 import * as svg from 'save-svg-as-png';
-import { MapSymbolsDataSource } from '../../../cartography/datasources/map-datasource';
 import { SymbolService } from '../../../services/symbol.service';
-import { Observable } from 'rxjs';
 
 
 @Component({
@@ -33,8 +30,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         private toolsService: ToolsService,
         private mapSettingsService: MapSettingsService,
         private drawingService: DrawingService,
-        private symbolsDataSource: SymbolsDataSource,
-        private mapSymbolsDataSource: MapSymbolsDataSource,
         private symbolService: SymbolService
     ) {}
 
@@ -47,7 +42,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         while (i < splittedSvg.length) {
             let splittedImage = splittedSvg[i].split("\"");
             let splittedUrl = splittedImage[1].split("/");
-            
+
             let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
             let splittedElement = elem.split('-->');
             splittedSvg[i] = splittedElement[1].substring(2);
@@ -59,7 +54,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         placeholder.innerHTML = svgString;
         let element = placeholder.firstChild;
 
-        svg.saveSvgAsPng(element, "plot.png");
+        svg.saveSvgAsPng(element, "screenshot.png");
     }
 
     public addDrawing(selectedObject: string) {

@@ -10,12 +10,15 @@ import { ToolsService } from '../../../services/tools.service';
 import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
 import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { SymbolService } from '../../../services/symbol.service';
+import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
 
 describe('ProjectMapMenuComponent', () => {
     let component: ProjectMapMenuComponent;
     let fixture: ComponentFixture<ProjectMapMenuComponent>;
     let drawingService = new MockedDrawingService();
     let mapSettingService = new MapSettingsService();
+    let mockedSymbolService = new MockedSymbolService;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -23,7 +26,8 @@ describe('ProjectMapMenuComponent', () => {
             providers: [
               { provide: DrawingService, useValue: drawingService },
               { provide: ToolsService },
-              { provide: MapSettingsService, useValue: mapSettingService }
+              { provide: MapSettingsService, useValue: mapSettingService },
+              { provide: SymbolService, useValue: mockedSymbolService}
             ],
             declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
             schemas: [NO_ERRORS_SCHEMA]
