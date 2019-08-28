@@ -43,6 +43,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { MovingEventSource } from '../../cartography/events/moving-event-source';
+import { log } from 'util';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
