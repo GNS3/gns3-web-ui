@@ -2,14 +2,6 @@
     <div class="consoleHeader">
         <div class="consoleFiltering">
             <div class="consoleName">Console</div>
-            <!-- <mat-form-field>
-                <mat-label>Select filter</mat-label>
-                <mat-select [(ngModel)]="selectedFilter" name="filter" (selectionChange)="applyFilter()">
-                    <mat-option *ngFor="let filter of filters" [value]="filter">
-                        {{filter}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field> -->
             <button class="filterButton" [matMenuTriggerFor]="filterMenu">
                 <mat-icon>keyboard_arrow_down</mat-icon>
             </button>
@@ -29,7 +21,7 @@
     </div>
 
     <div #console class="console">
-        <span *ngFor="let event of filteredEvents">
+        <span class="console-item" *ngFor="let event of filteredEvents">
             {{event.message}} <br/>
         </span>
     </div>

@@ -187,7 +187,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     clearConsole() {
         this.filteredEvents = [];
-        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight * 2;
+        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
     showCommand(message: string) {
@@ -201,6 +201,10 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.logEventsDataSource.add(event);
         this.filteredEvents = this.getFilteredEvents();
         this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+
+        setTimeout( () => { 
+            this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        }, 100 );
     }
 
     getFilteredEvents(): LogEvent[] {
