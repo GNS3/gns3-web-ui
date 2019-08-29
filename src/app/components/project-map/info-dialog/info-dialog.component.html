@@ -10,9 +10,6 @@
             </div>
         </mat-tab>
         <mat-tab label="Command line">
-            <div *ngIf="node.status !== 'started'" class='textBox'>
-                Please start the node in order to get the command line information.
-            </div>
             <div class="textBox">
                 {{commandLine}}
             </div>
