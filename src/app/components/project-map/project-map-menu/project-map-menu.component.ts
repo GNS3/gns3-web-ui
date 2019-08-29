@@ -66,7 +66,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
     public onDrawingSaved() {
         this.resetDrawToolChoice();
-      }
+    }
 
     public resetDrawToolChoice() {
         this.drawTools.isRectangleChosen = false;

@@ -466,9 +466,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(() => {
       subscription.unsubscribe();
-      this.projectService.open(this.server, uuid).subscribe(() => {
-        this.router.navigate(['/server', this.server.id, 'project', uuid]);
-      });
+      if (uuid) {
+        this.projectService.open(this.server, uuid).subscribe(() => {
+          this.router.navigate(['/server', this.server.id, 'project', uuid]);
+        });
+      }
     });
   }
 
