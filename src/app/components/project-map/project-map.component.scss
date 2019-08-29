@@ -234,3 +234,7 @@ g.node text,
 .visible {
   display: none;
 }
+
+mat-menu-panel {
+  min-height: 0px;
+}

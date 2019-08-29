@@ -1,6 +1,6 @@
 GNS3 WebUI is web implementation of user interface for GNS3 software.
 
-Current version: 2019.3.0
+Current version: 2019.2.0
 
 What's New
 - Editing interface labels on double click
