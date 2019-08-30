@@ -188,11 +188,17 @@ import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/no
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
-import { MapSettingService } from './services/mapsettings.service';
+import { MapSettingsService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
 import { ConfigEditorDialogComponent } from './components/project-map/node-editors/config-editor/config-editor.component';
 import { EditConfigActionComponent } from './components/project-map/context-menu/actions/edit-config/edit-config-action.component';
+import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
+import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
+import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
+import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
+import { InfoService } from './services/info.service';
+import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -311,12 +317,17 @@ if (environment.production) {
     NodesMenuComponent,
     AdbutlerComponent,
     ConsoleDeviceActionComponent,
+    ShowNodeActionComponent,
     ConsoleComponent,
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
     ConfigEditorDialogComponent,
-    EditConfigActionComponent
+    EditConfigActionComponent,
+    SaveProjectDialogComponent,
+    TopologySummaryComponent,
+    InfoDialogComponent,
+    BringToFrontActionComponent
   ],
   imports: [
     BrowserModule,
@@ -392,7 +403,8 @@ if (environment.production) {
     NodeCreatedLabelStylesFixer,
     NonNegativeValidator,
     RotationValidator,
-    MapSettingService
+    MapSettingsService,
+    InfoService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -409,7 +421,9 @@ if (environment.production) {
     DeleteConfirmationDialogComponent,
     HelpDialogComponent,
     StartCaptureDialogComponent,
-    ConfigEditorDialogComponent
+    ConfigEditorDialogComponent,
+    SaveProjectDialogComponent,
+    InfoDialogComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -33,3 +33,7 @@ a.table-link {
 app-root {
   width: 100%;
 }
+
+mat-menu-panel {
+  min-height: 0px;
+}

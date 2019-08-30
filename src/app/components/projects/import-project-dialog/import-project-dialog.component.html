@@ -11,7 +11,7 @@
       [uploader]="uploader"
     />
     <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Choose file</button>
-    <mat-form-field class="file-name-form-field">
+    <mat-form-field [ngClass]="{ empty: !isDeleteVisible }" class="file-name-form-field">
       <input
         matInput
         type="text"

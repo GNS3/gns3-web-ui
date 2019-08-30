@@ -40,22 +40,45 @@
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
         <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
           <mat-icon>work</mat-icon>
-          <span>Projects</span>
+          <span>Go to projects</span>
         </button>
         <button mat-menu-item [routerLink]="['/servers']">
           <mat-icon>developer_board</mat-icon>
-          <span>Servers</span>
+          <span>Go to servers</span>
+        </button>
+        <button mat-menu-item (click)="addNewProject()">
+          <mat-icon>add</mat-icon>
+          <span>Add new blank project</span>
+        </button>
+        <button mat-menu-item (click)="saveProject()">
+          <mat-icon>save</mat-icon>
+          <span>Save project as</span>
+        </button>
+        <button mat-menu-item (click)="exportProject()">
+          <mat-icon>call_made</mat-icon>
+          <span>Export portable project</span>
+        </button>
+        <button mat-menu-item (click)="importProject()">
+          <mat-icon>call_received</mat-icon>
+          <span>Import portable project</span>
+        </button>
+        <button mat-menu-item (click)="deleteProject()">
+          <mat-icon>delete</mat-icon>
+          <span>Delete project</span>
         </button>
       </mat-menu>
 
       <mat-toolbar-row>
-        <button matTooltip="Show/hide interface labels" mat-icon-button [matMenuTriggerFor]="viewMenu"><mat-icon>view_module</mat-icon></button>
+        <button matTooltip="Map settings" mat-icon-button [matMenuTriggerFor]="viewMenu"><mat-icon>view_module</mat-icon></button>
       </mat-toolbar-row>
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
           <mat-checkbox [ngModel]="project.show_interface_labels" (change)="toggleShowInterfaceLabels($event.checked)">
             Show interface labels
+          </mat-checkbox>
+          <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
+            Show topology summary
           </mat-checkbox>
         </div>
       </mat-menu>
@@ -120,3 +143,6 @@
 <app-node-label-dragged [server]="server"></app-node-label-dragged>
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
+<div [ngClass]="{ visible: !isTopologySummaryVisible }">
+  <app-topology-summary *ngIf="project" [server]="server" [project]="project" (closeTopologySummary)='toggleShowTopologySummary($event)'></app-topology-summary>
+</div>

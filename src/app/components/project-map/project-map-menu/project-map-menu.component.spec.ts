@@ -1,7 +1,7 @@
 import { ProjectMapMenuComponent } from "./project-map-menu.component";
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { MockedDrawingService } from '../project-map.component.spec';
-import { MapSettingService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,7 +15,7 @@ describe('ProjectMapMenuComponent', () => {
     let component: ProjectMapMenuComponent;
     let fixture: ComponentFixture<ProjectMapMenuComponent>;
     let drawingService = new MockedDrawingService();
-    let mapSettingService = new MapSettingService();
+    let mapSettingService = new MapSettingsService();
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -23,7 +23,7 @@ describe('ProjectMapMenuComponent', () => {
             providers: [
               { provide: DrawingService, useValue: drawingService },
               { provide: ToolsService },
-              { provide: MapSettingService, useValue: mapSettingService }
+              { provide: MapSettingsService, useValue: mapSettingService }
             ],
             declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
             schemas: [NO_ERRORS_SCHEMA]

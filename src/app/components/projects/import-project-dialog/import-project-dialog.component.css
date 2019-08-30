@@ -15,6 +15,10 @@
 }
 
 .file-name-form-field {
+    width: 90%; 
+}
+
+.empty {
     width: 100%; 
 }
 

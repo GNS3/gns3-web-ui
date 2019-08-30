@@ -107,6 +107,12 @@ export class ProjectsComponent implements OnInit {
     );
   }
 
+  duplicate(project: Project) {
+    this.projectService.duplicate(this.server, project.project_id, project.name).subscribe(() => {
+      this.refresh();
+    });
+  }
+
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',

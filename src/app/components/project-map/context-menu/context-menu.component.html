@@ -1,6 +1,10 @@
 <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
   <span [matMenuTriggerFor]="contextMenu"></span>
   <mat-menu #contextMenu="matMenu" class="context-menu-items">
+    <app-show-node-action *ngIf="nodes.length===1"
+      [server]="server"
+      [node]="nodes[0]"
+    ></app-show-node-action>
     <app-start-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-start-node-action>
     <app-stop-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-stop-node-action>
     <app-console-device-action
@@ -49,6 +53,12 @@
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-down-action>
+    <app-bring-to-front-action
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length) && labels.length===0"
+      [server]="server"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-bring-to-front-action>
     <app-start-capture-action
       *ngIf="!projectService.isReadOnly(project) && isBundledServer 
       && drawings.length===0 && nodes.length===0 && links.length===1"
