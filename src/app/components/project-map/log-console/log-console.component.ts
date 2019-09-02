@@ -88,13 +88,13 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 message: message
             });
         });
-        this.errorSubscription = this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+        this.warningSubscription = this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
             this.showMessage({
                 type: 'warning',
                 message: message
             });
         });
-        this.errorSubscription = this.projectWebServiceHandler.infoNotificationEmitter.subscribe((message) => {
+        this.infoSubscription = this.projectWebServiceHandler.infoNotificationEmitter.subscribe((message) => {
             this.showMessage({
                 type: 'info',
                 message: message
