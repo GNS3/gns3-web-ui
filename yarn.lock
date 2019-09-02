@@ -7351,6 +7351,11 @@ saucelabs@^1.5.0:
   dependencies:
     https-proxy-agent "^2.2.1"
 
+save-svg-as-png@^1.4.14:
+  version "1.4.14"
+  resolved "https://registry.npmjs.org/save-svg-as-png/-/save-svg-as-png-1.4.14.tgz#d5017bb9746adf00c146a17e63ed4badd1e10b40"
+  integrity sha512-hJqOFSdRvhBVD2pQSM+mJStvQGfnvQCCF6ULtAxdjF4lDwXYfWZ9Eug0fcRl05YyPL2yknCDBEOpbO4Fkw5qmg==
+
 sax@0.5.x:
   version "0.5.8"
   resolved "https://registry.npmjs.org/sax/-/sax-0.5.8.tgz#d472db228eb331c2506b0e8c15524adb939d12c1"
@@ -9005,6 +9010,11 @@ xtend@~2.1.1:
   integrity sha1-bv7MKk2tjmlixJAbM3znuoe10os=
   dependencies:
     object-keys "~0.4.0"
+
+xterm@^3.14.5:
+  version "3.14.5"
+  resolved "https://registry.npmjs.org/xterm/-/xterm-3.14.5.tgz#c9d14e48be6873aa46fb429f22f2165557fd2dea"
+  integrity sha512-DVmQ8jlEtL+WbBKUZuMxHMBgK/yeIZwkXB81bH+MGaKKnJGYwA+770hzhXPfwEIokK9On9YIFPRleVp/5G7z9g==
 
 y18n@^3.2.1:
   version "3.2.1"

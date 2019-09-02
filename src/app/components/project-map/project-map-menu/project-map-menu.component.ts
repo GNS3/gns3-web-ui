@@ -4,6 +4,8 @@ import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
+import * as svg from 'save-svg-as-png';
+import { SymbolService } from '../../../services/symbol.service';
 
 
 @Component({
@@ -27,10 +29,33 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     constructor(
         private toolsService: ToolsService,
         private mapSettingsService: MapSettingsService,
-        private drawingService: DrawingService
+        private drawingService: DrawingService,
+        private symbolService: SymbolService
     ) {}
 
     ngOnInit() {}
+
+    public async takeScreenshot() {
+        let splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
+        let i = 1;
+
+        while (i < splittedSvg.length) {
+            let splittedImage = splittedSvg[i].split("\"");
+            let splittedUrl = splittedImage[1].split("/");
+
+            let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
+            let splittedElement = elem.split('-->');
+            splittedSvg[i] = splittedElement[1].substring(2);
+            i += 2;
+        }
+        let svgString = splittedSvg.join();
+
+        let placeholder = document.createElement('div');
+        placeholder.innerHTML = svgString;
+        let element = placeholder.firstChild;
+
+        svg.saveSvgAsPng(element, "screenshot.png");
+    }
 
     public addDrawing(selectedObject: string) {
         switch (selectedObject) {

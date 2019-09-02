@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
@@ -79,11 +79,15 @@ export class ServerErrorHandler {
 
 @Injectable()
 export class HttpServer {
+  public requestsNotificationEmitter = new EventEmitter<string>();
+
   constructor(private http: HttpClient, private errorHandler: ServerErrorHandler) {}
 
   get<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer<JsonOptions>(server, url, options);
+    this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
+
     return this.http
       .get<T>(intercepted.url, intercepted.options as JsonOptions)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -92,6 +96,8 @@ export class HttpServer {
   getText(server: Server, url: string, options?: TextOptions): Observable<string> {
     options = this.getTextOptions(options);
     const intercepted = this.getOptionsForServer<TextOptions>(server, url, options);
+    this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
+
     return this.http
       .get(intercepted.url, intercepted.options as TextOptions)
       .pipe(catchError(this.errorHandler.handleError));
@@ -100,6 +106,8 @@ export class HttpServer {
   post<T>(server: Server, url: string, body: any | null, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
+    this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
+
     return this.http
       .post<T>(intercepted.url, body, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -108,6 +116,8 @@ export class HttpServer {
   put<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
+    this.requestsNotificationEmitter.emit(`PUT ${intercepted.url}`);
+
     return this.http
       .put<T>(intercepted.url, body, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -116,6 +126,8 @@ export class HttpServer {
   delete<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForServer(server, url, options);
+    this.requestsNotificationEmitter.emit(`DELETE ${intercepted.url}`);
+
     return this.http
       .delete<T>(intercepted.url, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;

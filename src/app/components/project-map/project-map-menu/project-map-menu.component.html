@@ -57,6 +57,14 @@
     (click)="changeLockValue()">
     <mat-icon>lock</mat-icon>
 </button>
+<button
+    matTooltip="Take a screenshot"
+    mat-icon-button
+    class="menu-button"
+    (click)="takeScreenshot()"
+    >
+    <mat-icon>photo_camera</mat-icon>
+</button>
 <app-drawing-added
   [server]="server"
   [project]="project"

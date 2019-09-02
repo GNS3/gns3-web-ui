@@ -43,6 +43,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { MapLink } from '../../cartography/models/map/map-link';
 import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
 import { MovingEventSource } from '../../cartography/events/moving-event-source';
+import { log } from 'util';
 import { LinkWidget } from '../../cartography/widgets/link';
 import { MapScaleService } from '../../services/mapScale.service';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
@@ -74,6 +75,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
+  public isConsoleVisible: boolean = false;
   public isTopologySummaryVisible: boolean = false;
 
   tools = {
@@ -135,6 +137,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.settings = this.settingsService.getAll();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
+    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
 
     this.progressService.activate();
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -403,6 +406,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.project.show_interface_labels = enabled;
   }
 
+  public toggleShowConsole(visible: boolean) {
+    this.isConsoleVisible = visible;
+    this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
+  }
+  
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);

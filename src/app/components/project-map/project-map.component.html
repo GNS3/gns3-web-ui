@@ -77,6 +77,9 @@
           <mat-checkbox [ngModel]="project.show_interface_labels" (change)="toggleShowInterfaceLabels($event.checked)">
             Show interface labels
           </mat-checkbox>
+          <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
+            Show console
+          </mat-checkbox>
           <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
             Show topology summary
           </mat-checkbox>
@@ -143,6 +146,9 @@
 <app-node-label-dragged [server]="server"></app-node-label-dragged>
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
+<div [ngClass]="{ visible: !isConsoleVisible }">
+  <app-log-console [server]="server" [project]="project" (closeConsole)='toggleShowConsole($event)'></app-log-console>
+</div>
 <div [ngClass]="{ visible: !isTopologySummaryVisible }">
   <app-topology-summary *ngIf="project" [server]="server" [project]="project" (closeTopologySummary)='toggleShowTopologySummary($event)'></app-topology-summary>
 </div>

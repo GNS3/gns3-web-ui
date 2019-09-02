@@ -193,6 +193,8 @@ import { ProjectMapMenuComponent } from './components/project-map/project-map-me
 import { HelpComponent } from './components/help/help.component';
 import { ConfigEditorDialogComponent } from './components/project-map/node-editors/config-editor/config-editor.component';
 import { EditConfigActionComponent } from './components/project-map/context-menu/actions/edit-config/edit-config-action.component';
+import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
+import { LogEventsDataSource } from './components/project-map/log-console/log-events-datasource';
 import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
 import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
@@ -201,6 +203,7 @@ import { InfoService } from './services/info.service';
 import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
 import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
 import { ImportConfigActionComponent } from './components/project-map/context-menu/actions/import-config/import-config-action.component';
+import { ConsoleDeviceActionBrowserComponent } from './components/project-map/context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -326,12 +329,14 @@ if (environment.production) {
     HelpComponent,
     ConfigEditorDialogComponent,
     EditConfigActionComponent,
+    LogConsoleComponent,
     SaveProjectDialogComponent,
     TopologySummaryComponent,
     InfoDialogComponent,
     BringToFrontActionComponent,
     ExportConfigActionComponent,
-    ImportConfigActionComponent
+    ImportConfigActionComponent,
+    ConsoleDeviceActionBrowserComponent
   ],
   imports: [
     BrowserModule,
@@ -371,6 +376,7 @@ if (environment.production) {
     LinksDataSource,
     NodesDataSource,
     SymbolsDataSource,
+    LogEventsDataSource,
     SelectionManager,
     InRectangleHelper,
     DrawingsDataSource,

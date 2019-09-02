@@ -14,6 +14,10 @@ export class MockedSymbolService {
     public list() {
       return of([]);
     }
+
+    public raw() {
+      return of('<svg></svg>')
+    }
 }
 
 describe('Symbols component', () => {

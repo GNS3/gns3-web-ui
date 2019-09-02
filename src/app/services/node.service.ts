@@ -29,8 +29,16 @@ export class NodeService {
     return this.httpServer.post(server, `/projects/${project.project_id}/nodes/stop`, {});
   }
 
+  suspend(server: Server, node: Node) {
+    return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/suspend`, {});
+  }
+
   suspendAll(server: Server, project: Project) {
     return this.httpServer.post(server, `/projects/${project.project_id}/nodes/suspend`, {});
+  }
+
+  reload(server: Server, node: Node) {
+    return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/reload`, {});
   }
 
   reloadAll(server: Server, project: Project) {
