@@ -200,6 +200,7 @@ import { InfoDialogComponent } from './components/project-map/info-dialog/info-d
 import { InfoService } from './services/info.service';
 import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
 import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
+import { ImportConfigActionComponent } from './components/project-map/context-menu/actions/import-config/import-config-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -329,7 +330,8 @@ if (environment.production) {
     TopologySummaryComponent,
     InfoDialogComponent,
     BringToFrontActionComponent,
-    ExportConfigActionComponent
+    ExportConfigActionComponent,
+    ImportConfigActionComponent
   ],
   imports: [
     BrowserModule,

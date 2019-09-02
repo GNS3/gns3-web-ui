@@ -23,9 +23,9 @@ export class ExportConfigActionComponent {
 
     private downloadByHtmlTag(config: string) {
         const element = document.createElement('a');
-        const fileType = 'vpc';
+        const fileType = 'text/plain';
         element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(config)}`);
-        element.setAttribute('download', 'configFile.vpc');
+        element.setAttribute('download', `${this.node.name}_startup.vpc`);
 
         var event = new MouseEvent("click");
         element.dispatchEvent(event);
