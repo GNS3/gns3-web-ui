@@ -64,6 +64,30 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({});
   }));
 
+  it('should suspend node', inject([NodeService], (service:NodeService) => {
+    const node = new Node();
+    node.project_id = 'myproject';
+    node.node_id = 'id';
+
+    service.suspend(server, node).subscribe();
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/nodes/id/suspend');
+    expect(req.request.method).toEqual('POST');
+    expect(req.request.body).toEqual({});
+  }));
+
+  it('should reload node', inject([NodeService], (service:NodeService) => {
+    const node = new Node();
+    node.project_id = 'myproject';
+    node.node_id = 'id';
+
+    service.reload(server, node).subscribe();
+
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/nodes/id/reload');
+    expect(req.request.method).toEqual('POST');
+    expect(req.request.body).toEqual({});
+  }));
+
   it('should start all nodes', inject([NodeService], (service: NodeService) => {
     let project = {
       project_id: '1'

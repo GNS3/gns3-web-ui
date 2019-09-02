@@ -191,6 +191,8 @@ import { DuplicateActionComponent } from './components/project-map/context-menu/
 import { MapSettingsService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
+import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
+import { LogEventsDataSource } from './components/project-map/log-console/log-events-datasource';
 import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
 import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
@@ -321,6 +323,7 @@ if (environment.production) {
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
+    LogConsoleComponent,
     SaveProjectDialogComponent,
     TopologySummaryComponent,
     InfoDialogComponent,
@@ -365,6 +368,7 @@ if (environment.production) {
     LinksDataSource,
     NodesDataSource,
     SymbolsDataSource,
+    LogEventsDataSource,
     SelectionManager,
     InRectangleHelper,
     DrawingsDataSource,

@@ -93,6 +93,22 @@ export class MockedNodeService {
     return of();
   }
 
+  start(server: Server, node: Node) {
+    return of();
+  }
+
+  stop(server: Server, node: Node) {
+    return of();
+  }
+
+  suspend(server: Server, node: Node) {
+    return of();
+  }
+
+  reload(server: Server, node: Node) {
+    return of();
+  }
+
   duplicate(server: Server, node: Node) {
     return of(node);
   }
@@ -188,6 +204,10 @@ export class MockedNodesDataSource {
 
   get() {
     return {status: 'started'};
+  }
+
+  getItems() {
+    return [{name: 'testNode'}];
   }
 
   update() {
