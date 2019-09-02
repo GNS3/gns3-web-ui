@@ -36,11 +36,15 @@
       [link]="links[0]"
       [linkNode]="linkNodes[0]"
     ></app-edit-text-action>
-    <app-edit-config-action *ngIf="nodes.length === 1"
-        [server]="server"
-        [project]="project"
-        [node]="nodes[0]"
+    <app-edit-config-action *ngIf="nodes.length===1"
+      [server]="server"
+      [project]="project"
+      [node]="nodes[0]"
     ></app-edit-config-action>
+    <app-export-config-action *ngIf="nodes.length===1"
+      [server]="server"
+      [node]="nodes[0]"
+    ></app-export-config-action>
     <app-move-layer-up-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length) && labels.length===0"
       [server]="server"
