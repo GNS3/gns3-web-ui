@@ -92,4 +92,22 @@ export class NodeService {
       "z": node.z
     });
   }
+
+  getConfiguration(server: Server, node: Node) {
+    let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`
+
+    if (node.node_type === 'vpcs') {
+      urlPath += '/files/startup.vpc';
+      return this.httpServer.get(server, urlPath, { responseType: 'text' as 'json'});
+    }
+  }
+
+  saveConfiguration(server: Server, node: Node, configuration: string) {
+    let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`
+
+    if (node.node_type === 'vpcs') {
+      urlPath += '/files/startup.vpc';
+      return this.httpServer.post(server, urlPath, configuration);
+    }
+  }
 }

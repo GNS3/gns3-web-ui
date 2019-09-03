@@ -191,6 +191,8 @@ import { DuplicateActionComponent } from './components/project-map/context-menu/
 import { MapSettingsService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
+import { ConfigEditorDialogComponent } from './components/project-map/node-editors/config-editor/config-editor.component';
+import { EditConfigActionComponent } from './components/project-map/context-menu/actions/edit-config/edit-config-action.component';
 import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
 import { LogEventsDataSource } from './components/project-map/log-console/log-events-datasource';
 import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
@@ -199,6 +201,8 @@ import { ShowNodeActionComponent } from './components/project-map/context-menu/a
 import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
 import { InfoService } from './services/info.service';
 import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
+import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
+import { ImportConfigActionComponent } from './components/project-map/context-menu/actions/import-config/import-config-action.component';
 import { ConsoleDeviceActionBrowserComponent } from './components/project-map/context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
 if (environment.production) {
@@ -323,11 +327,15 @@ if (environment.production) {
     NodesMenuComponent,
     ProjectMapMenuComponent,
     HelpComponent,
+    ConfigEditorDialogComponent,
+    EditConfigActionComponent,
     LogConsoleComponent,
     SaveProjectDialogComponent,
     TopologySummaryComponent,
     InfoDialogComponent,
     BringToFrontActionComponent,
+    ExportConfigActionComponent,
+    ImportConfigActionComponent,
     ConsoleDeviceActionBrowserComponent
   ],
   imports: [
@@ -423,6 +431,7 @@ if (environment.production) {
     DeleteConfirmationDialogComponent,
     HelpDialogComponent,
     StartCaptureDialogComponent,
+    ConfigEditorDialogComponent,
     SaveProjectDialogComponent,
     InfoDialogComponent
   ],

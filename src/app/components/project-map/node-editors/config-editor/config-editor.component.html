@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Configuration for node {{node.name}}</h1>
+
+<div class="modal-form-container">
+    <textarea #textArea id="textArea" class="textArea" [(ngModel)]="config"></textarea> 
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>
