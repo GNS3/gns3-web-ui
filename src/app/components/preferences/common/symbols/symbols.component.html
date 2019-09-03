@@ -1,9 +1,9 @@
 <mat-card>
     <div class="menu">
         <mat-radio-group aria-label="Select an option" class="radio-selection">
-            <mat-radio-button value="1">All symbols</mat-radio-button>
-            <mat-radio-button value="2">Built-in symbols</mat-radio-button>
-            <mat-radio-button value="2">Custom symbols</mat-radio-button>
+            <mat-radio-button value="1" (click)="setFilter('all')" checked>All symbols</mat-radio-button>
+            <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
+            <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
         </mat-radio-group>
         <input
             type="file"
@@ -15,10 +15,10 @@
             <mat-icon>add</mat-icon>
             Add symbol
         </button>
-    </div><br/><br/>
+    </div><br/>
     <input matInput type="text" [(ngModel)]="searchText" placeholder="Search by filename"><br/><br/>
     <div class="wrapper">
-        <div class="buttonWrapper" *ngFor="let symbol of symbols | filenamefilter: searchText">
+        <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
             <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
                 <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
             </button>

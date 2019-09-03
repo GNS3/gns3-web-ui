@@ -15,6 +15,7 @@ export class SymbolsComponent implements OnInit {
     @Output() symbolChanged = new EventEmitter<string>();
     
     symbols: Symbol[] = [];
+    filteredSymbols: Symbol[] = [];
     isSelected: string = '';
     searchText: string = '';
 
@@ -27,6 +28,16 @@ export class SymbolsComponent implements OnInit {
         this.loadSymbols();
     }
 
+    setFilter(filter: string) {
+        if (filter === 'all') {
+            this.filteredSymbols = this.symbols;
+        } else if (filter === 'builtin') {
+            this.filteredSymbols = this.symbols.filter(elem => elem.builtin);
+        } else {
+            this.filteredSymbols = this.symbols.filter(elem => !elem.builtin);
+        }
+    }
+
     setSelected(symbol_id: string) {
         this.isSelected = symbol_id;
         this.symbolChanged.emit(this.isSelected);
@@ -35,6 +46,7 @@ export class SymbolsComponent implements OnInit {
     loadSymbols() {
         this.symbolService.list(this.server).subscribe((symbols: Symbol[]) => {
             this.symbols = symbols;
+            this.filteredSymbols = symbols;
         });
     }
 
