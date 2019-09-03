@@ -15,6 +15,10 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
   }
 
+  add(server: Server, symbolName: string, symbol: string) {
+    return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol)
+  }
+
   load(server: Server): Observable<Symbol[]> {
     const subscription = this.list(server).subscribe((symbols: Symbol[]) => {
       const streams = symbols.map(symbol => this.raw(server, symbol.symbol_id));

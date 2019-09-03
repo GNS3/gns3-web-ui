@@ -1,4 +1,21 @@
 <mat-card>
+    <div class="menu">
+        <mat-radio-group aria-label="Select an option" class="radio-selection">
+            <mat-radio-button value="1">All symbols</mat-radio-button>
+            <mat-radio-button value="2">Built-in symbols</mat-radio-button>
+            <mat-radio-button value="2">Custom symbols</mat-radio-button>
+        </mat-radio-group>
+        <input
+            type="file"
+            accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
+            class="non-visible"
+            #file
+            (change)="uploadSymbolFile($event)"/>
+        <button mat-button (click)="file.click()">
+            <mat-icon>add</mat-icon>
+            Add symbol
+        </button>
+    </div><br/><br/>
     <input matInput type="text" [(ngModel)]="searchText" placeholder="Search by filename"><br/><br/>
     <div class="wrapper">
         <div class="buttonWrapper" *ngFor="let symbol of symbols | filenamefilter: searchText">
