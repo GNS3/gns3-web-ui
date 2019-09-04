@@ -15,8 +15,15 @@
             <mat-icon>add</mat-icon>
             Add symbol
         </button>
-    </div><br/>
-    <input matInput type="text" [(ngModel)]="searchText" placeholder="Search by filename"><br/><br/>
+    </div>
+    <form>
+        <mat-form-field class="example-full-width">
+            <input matInput
+                placeholder="Search by filename"
+                [(ngModel)]="searchText"
+                [ngModelOptions]="{standalone: true}">
+        </mat-form-field>
+    </form>
     <div class="wrapper">
         <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
             <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">

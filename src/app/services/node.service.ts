@@ -72,6 +72,12 @@ export class NodeService {
     });
   }
 
+  updateSymbol(server: Server, node: Node, changedSymbol: string): Observable<Node> {
+    return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+      symbol: changedSymbol
+    });
+  }
+
   update(server: Server, node: Node): Observable<Node> {
     return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       x: Math.round(node.x),

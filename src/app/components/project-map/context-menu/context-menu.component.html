@@ -16,6 +16,11 @@
       *ngIf="!projectService.isReadOnly(project) && nodes.length===1 && !isElectronApp && nodes[0].console_type!=='none'"
       [node]="nodes[0]"
     ></app-console-device-action-browser>
+    <app-change-symbol-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
+      [server]="server"
+      [node]="nodes[0]"
+    ></app-change-symbol-action>
     <app-duplicate-action *ngIf="drawings.length>0 || nodes.length>0"
       [server]="server"
       [project]="project"
