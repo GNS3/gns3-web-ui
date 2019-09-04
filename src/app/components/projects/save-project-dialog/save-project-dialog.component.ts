@@ -8,6 +8,7 @@ import { ProjectService } from '../../../services/project.service';
 import { v4 as uuid } from 'uuid';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 
 
 @Component({
@@ -24,9 +25,8 @@ export class SaveProjectDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<SaveProjectDialogComponent>,
-    private router: Router,
-    private dialog: MatDialog,
     private projectService: ProjectService,
+    private nodesDataSource: NodesDataSource,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
     private projectNameValidator: ProjectNameValidator
@@ -51,7 +51,12 @@ export class SaveProjectDialogComponent implements OnInit {
       let existingProject = projects.find(project => project.name === projectName);
 
       if (existingProject) {
-        this.toasterService.success(`Project with this name already exists.`);
+        this.toasterService.error(`Project with this name already exists.`);
+      } else if (this.nodesDataSource.getItems().filter(node => 
+        (node.status === 'started' && node.node_type==='vpcs') || 
+        (node.status === 'started' && node.node_type==='virtualbox') || 
+        (node.status === 'started' && node.node_type==='vmware')).length > 0) {
+        this.toasterService.error('Please stop all nodes in order to save project.')
       } else {
         this.addProject();
       }
