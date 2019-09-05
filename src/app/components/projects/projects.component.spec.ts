@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule } from '@angular/material';
+import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -16,6 +16,9 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { Server } from '../../models/server';
 import { Settings } from '../../services/settings.service';
 import { Project } from '../../models/project';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -36,6 +39,10 @@ describe('ProjectsComponent', () => {
         MatSortModule,
         MatDialogModule,
         NoopAnimationsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        ReactiveFormsModule,
         RouterTestingModule.withRoutes([])
       ],
       providers: [
@@ -44,7 +51,8 @@ describe('ProjectsComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         ProgressService
       ],
-      declarations: [ProjectsComponent]
+      declarations: [ProjectsComponent, ProjectsFilter],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     serverService = TestBed.get(ServerService);
