@@ -58,6 +58,7 @@ import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-di
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
 import { MapSettingsService } from '../../services/mapsettings.service';
+import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
 
 
 @Component({
@@ -453,6 +454,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   saveProject() {
     const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
       width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.project = this.project;
+  }
+
+  editProject() {
+    const dialogRef = this.dialog.open(EditProjectDialogComponent, {
+      width: '500px',
       autoFocus: false
     });
     let instance = dialogRef.componentInstance;

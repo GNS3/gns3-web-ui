@@ -206,6 +206,7 @@ import { ImportConfigActionComponent } from './components/project-map/context-me
 import { ConsoleDeviceActionBrowserComponent } from './components/project-map/context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 import { ChangeSymbolDialogComponent } from './components/project-map/change-symbol-dialog/change-symbol-dialog.component';
 import { ChangeSymbolActionComponent } from './components/project-map/context-menu/actions/change-symbol/change-symbol-action.component';
+import { EditProjectDialogComponent } from './components/projects/edit-project-dialog/edit-project-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -340,7 +341,8 @@ if (environment.production) {
     ImportConfigActionComponent,
     ConsoleDeviceActionBrowserComponent,
     ChangeSymbolDialogComponent,
-    ChangeSymbolActionComponent
+    ChangeSymbolActionComponent,
+    EditProjectDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -438,7 +440,8 @@ if (environment.production) {
     ConfigEditorDialogComponent,
     SaveProjectDialogComponent,
     InfoDialogComponent,
-    ChangeSymbolDialogComponent
+    ChangeSymbolDialogComponent,
+    EditProjectDialogComponent
   ],
   bootstrap: [AppComponent]
 })

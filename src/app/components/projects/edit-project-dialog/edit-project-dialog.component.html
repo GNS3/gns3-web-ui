@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Edit project</h1>
+
+<form [formGroup]="formGroup">
+    <mat-form-field class="form-field">
+        <input matInput formControlName="projectName" placeholder="Project name" type="text">
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+        <input matInput formControlName="width" placeholder="Scene width (px)" type="number">
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+        <input matInput formControlName="height" placeholder="Scene height (px)" type="number">
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+        <input matInput formControlName="nodeGridSize" placeholder="Node grid size" type="number">
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+        <input matInput formControlName="drawingGridSize" placeholder="Drawing grid size" type="number">
+    </mat-form-field>
+</form>
+
+<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_open">
+    Open this project in the background when GNS3 server starts
+</mat-checkbox>
+
+<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_start">
+    Start all nodes when this project is opened
+</mat-checkbox>
+
+<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="!project.auto_close">
+    Leave this project running in the background after closing
+</mat-checkbox>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

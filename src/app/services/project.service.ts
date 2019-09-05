@@ -45,6 +45,19 @@ export class ProjectService {
     return this.httpServer.post<Project>(server, `/projects`, { name: project_name, project_id: project_id });
   }
 
+  update(server: Server, project: Project) : Observable<Project> {
+    return this.httpServer.put<Project>(server, `/projects/${project.project_id}`, {
+      auto_close: project.auto_close,
+      auto_open: project.auto_open,
+      auto_start: project.auto_start,
+      drawing_grid_size: project.drawing_grid_size,
+      grid_size: project.grid_size,
+      name: project.name,
+      scene_width: project.scene_width,
+      scene_height: project.scene_height
+    });
+  }
+
   delete(server: Server, project_id: string): Observable<any> {
     return this.httpServer.delete(server, `/projects/${project_id}`);
   }
