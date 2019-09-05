@@ -29,6 +29,8 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['name', 'actions'];
   settings: Settings;
 
+  searchText: string = '';
+
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
   constructor(
@@ -157,7 +159,7 @@ export class ProjectDatabase {
 }
 
 export class ProjectDataSource extends DataSource<any> {
-  constructor(private projectDatabase: ProjectDatabase, private sort: MatSort) {
+  constructor(public projectDatabase: ProjectDatabase, private sort: MatSort) {
     super();
   }
 

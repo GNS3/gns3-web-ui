@@ -207,6 +207,7 @@ import { ConsoleDeviceActionBrowserComponent } from './components/project-map/co
 import { ChangeSymbolDialogComponent } from './components/project-map/change-symbol-dialog/change-symbol-dialog.component';
 import { ChangeSymbolActionComponent } from './components/project-map/context-menu/actions/change-symbol/change-symbol-action.component';
 import { EditProjectDialogComponent } from './components/projects/edit-project-dialog/edit-project-dialog.component';
+import { ProjectsFilter } from './filters/projectsFilter.pipe';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -320,6 +321,7 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
+    ProjectsFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
     NodesMenuComponent,
