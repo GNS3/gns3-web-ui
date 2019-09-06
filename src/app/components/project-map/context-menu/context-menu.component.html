@@ -7,6 +7,9 @@
     ></app-show-node-action>
     <app-start-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-start-node-action>
     <app-stop-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-stop-node-action>
+    <app-reload-node-action
+      *ngIf="nodes.length" [server]="server" [nodes]="nodes"
+    ></app-reload-node-action>
     <app-console-device-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
       [server]="server"

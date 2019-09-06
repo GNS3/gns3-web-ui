@@ -209,6 +209,7 @@ import { ChangeSymbolActionComponent } from './components/project-map/context-me
 import { EditProjectDialogComponent } from './components/projects/edit-project-dialog/edit-project-dialog.component';
 import { ProjectsFilter } from './filters/projectsFilter.pipe';
 import { ComputeService } from './services/compute.service';
+import { ReloadNodeActionComponent } from './components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -345,7 +346,8 @@ if (environment.production) {
     ConsoleDeviceActionBrowserComponent,
     ChangeSymbolDialogComponent,
     ChangeSymbolActionComponent,
-    EditProjectDialogComponent
+    EditProjectDialogComponent,
+    ReloadNodeActionComponent
   ],
   imports: [
     BrowserModule,
