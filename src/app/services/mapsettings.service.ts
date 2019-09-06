@@ -6,6 +6,7 @@ export class MapSettingsService {
     public isMapLocked = new Subject<boolean>();
     public isTopologySummaryVisible: boolean = false;
     public isLogConsoleVisible: boolean = false;
+    public interfaceLabels: Map<string, boolean> = new Map<string, boolean>();
 
     constructor() {}
 
@@ -19,5 +20,9 @@ export class MapSettingsService {
 
     toggleLogConsole(value: boolean) {
         this.isLogConsoleVisible = value;
+    }
+
+    toggleShowInterfaceLabels(projectId: string, value: boolean) {
+        this.interfaceLabels.set(projectId, value);
     }
 }

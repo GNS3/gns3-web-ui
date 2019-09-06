@@ -8,7 +8,7 @@
     [drawings]="drawings"
     [width]="project.scene_width"
     [height]="project.scene_height"
-    [show-interface-labels]="project.show_interface_labels"
+    [show-interface-labels]="isInterfaceLabelVisible"
     [readonly]="inReadOnlyMode"
     (nodeDragged)="onNodeDragged($event)"
     (drawingDragged)="onDrawingDragged($event)"
@@ -24,7 +24,7 @@
     [drawings]="drawings"
     [width]="project.scene_width"
     [height]="project.scene_height"
-    [show-interface-labels]="project.show_interface_labels"
+    [show-interface-labels]="isInterfaceLabelVisible"
     [selection-tool]="tools.selection"
     [moving-tool]="tools.moving"
     [draw-link-tool]="tools.draw_link"
@@ -78,7 +78,7 @@
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
-          <mat-checkbox [ngModel]="project.show_interface_labels" (change)="toggleShowInterfaceLabels($event.checked)">
+          <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
             Show interface labels
           </mat-checkbox>
           <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">

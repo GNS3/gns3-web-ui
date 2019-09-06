@@ -78,6 +78,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = false;
   public isTopologySummaryVisible: boolean = false;
+  public isInterfaceLabelVisible: boolean = false;
 
   tools = {
     selection: true,
@@ -156,6 +157,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
+
+            if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
+              this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
+            } else {
+              this.isInterfaceLabelVisible = this.project.show_interface_labels;
+            }
             
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
             this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
@@ -403,8 +410,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.toolsService.drawLinkToolActivation(this.tools.draw_link);
   }
 
-  public toggleShowInterfaceLabels(enabled: boolean) {
-    this.project.show_interface_labels = enabled;
+  public toggleShowInterfaceLabels(visible: boolean) {
+    this.isInterfaceLabelVisible = visible;
+    this.mapSettingsService.toggleShowInterfaceLabels(this.project.project_id, this.isInterfaceLabelVisible);
   }
 
   public toggleShowConsole(visible: boolean) {
