@@ -116,7 +116,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.infoSubscription.unsubscribe();
     }
 
-    applyFilter() {
+    applyFilter(filter: string) {
+        this.selectedFilter = filter;
         this.filteredEvents = this.getFilteredEvents();
     }
 

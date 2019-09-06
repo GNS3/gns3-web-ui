@@ -6,12 +6,12 @@
                 <mat-icon>keyboard_arrow_down</mat-icon>
             </button>
             <mat-menu #filterMenu="matMenu" xPosition="after">
-                <button mat-menu-item>all</button>
-                <button mat-menu-item>errors</button>
-                <button mat-menu-item>warnings</button>
-                <button mat-menu-item>info</button>
-                <button mat-menu-item>map updates</button>
-                <button mat-menu-item>server requests</button>
+                <button (click)="applyFilter('all')" mat-menu-item>all</button>
+                <button (click)="applyFilter('errors')" mat-menu-item>errors</button>
+                <button (click)="applyFilter('warnings')" mat-menu-item>warnings</button>
+                <button (click)="applyFilter('info')" mat-menu-item>info</button>
+                <button (click)="applyFilter('map updates')" mat-menu-item>map updates</button>
+                <button (click)="applyFilter('server requests')" mat-menu-item>server requests</button>
             </mat-menu>
         </div>
 
