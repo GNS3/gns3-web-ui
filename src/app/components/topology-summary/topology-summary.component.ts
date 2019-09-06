@@ -6,6 +6,8 @@ import { Node } from '../../cartography/models/node';
 import { Subscription } from 'rxjs';
 import { ProjectService } from '../../services/project.service';
 import { ProjectStatistics } from '../../models/project-statistics';
+import { Compute } from '../../models/compute';
+import { ComputeService } from '../../services/compute.service';
 
 
 @Component({
@@ -27,10 +29,13 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     startedStatusFilterEnabled: boolean = false;
     suspendedStatusFilterEnabled: boolean = false;
     stoppedStatusFilterEnabled: boolean = false;
+    computes: Compute[] = [];
+    isTopologyVisible: boolean = true;
 
     constructor(
         private nodesDataSource: NodesDataSource,
-        private projectService: ProjectService
+        private projectService: ProjectService,
+        private computeService: ComputeService
     ) {}
 
     ngOnInit() {
@@ -48,6 +53,14 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.projectService.getStatistics(this.server, this.project.project_id).subscribe((stats) => {
             this.projectsStatistics = stats;
         });
+
+        this.computeService.getComputes(this.server).subscribe((computes) => {
+            this.computes = computes;
+        });
+    }
+
+    toogleTopologyVisibility(value: boolean) {
+        this.isTopologyVisible = value;
     }
 
     compareAsc(first: Node, second: Node) {

@@ -208,6 +208,7 @@ import { ChangeSymbolDialogComponent } from './components/project-map/change-sym
 import { ChangeSymbolActionComponent } from './components/project-map/context-menu/actions/change-symbol/change-symbol-action.component';
 import { EditProjectDialogComponent } from './components/projects/edit-project-dialog/edit-project-dialog.component';
 import { ProjectsFilter } from './filters/projectsFilter.pipe';
+import { ComputeService } from './services/compute.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -422,7 +423,8 @@ if (environment.production) {
     NonNegativeValidator,
     RotationValidator,
     MapSettingsService,
-    InfoService
+    InfoService,
+    ComputeService
   ],
   entryComponents: [
     AddServerDialogComponent,

@@ -11,13 +11,21 @@ import { NodesDataSource } from '../../cartography/datasources/nodes-datasource'
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
+import { Server } from '../../models/server';
+import { ComputeService } from '../../services/compute.service';
 
+export class MockedComputeService {
+    getComputes(server: Server) {
+        return of([]);
+    }
+}
 
 describe('TopologySummaryComponent', () => {
     let component: TopologySummaryComponent;
     let fixture: ComponentFixture<TopologySummaryComponent>;
     let mockedProjectService: MockedProjectService = new MockedProjectService();
     let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
+    let mockedComputeService: MockedComputeService = new MockedComputeService();
   
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -32,7 +40,8 @@ describe('TopologySummaryComponent', () => {
             ],
             providers: [
                 { provide: ProjectService, useValue: mockedProjectService },
-                { provide: NodesDataSource, useValue: mockedNodesDataSource }
+                { provide: NodesDataSource, useValue: mockedNodesDataSource },
+                { provide: ComputeService, useValue: mockedComputeService}
             ],
             declarations: [TopologySummaryComponent],
             schemas: [NO_ERRORS_SCHEMA]
