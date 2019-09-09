@@ -9,20 +9,20 @@ import { MatDialogRef } from '@angular/material';
 
 
 @Component({
-    selector: 'app-configurator-vpcs',
-    templateUrl: './configurator-vpcs.component.html',
+    selector: 'app-configurator-ethernet-hub',
+    templateUrl: './configurator-ethernet-hub.component.html',
     styleUrls: ['../configurator.component.scss']
 })
-export class ConfiguratorDialogVpcsComponent implements OnInit {
+export class ConfiguratorDialogEthernetHubComponent implements OnInit {
     server: Server;
     node: Node;
-
+    numberOfPorts: number;
     inputForm: FormGroup;
     consoleTypes: string[] = [];
     categories = [];
 
     constructor(
-        public dialogRef: MatDialogRef<ConfiguratorDialogVpcsComponent>,
+        public dialogRef: MatDialogRef<ConfiguratorDialogEthernetHubComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
@@ -47,12 +47,33 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
 
     onSaveClick() {
         if (this.inputForm.valid) {
+            for(let i=0; i<this.numberOfPorts; i++){
+                this.node.ports.push({
+                    adapter_number: 0,
+                    link_type: 'ethernet',
+                    name: `Ethernet${i}`,
+                    port_number: i,
+                    short_name: `e${i}`
+                });
+            }
+
+            // {
+            //     "adapter_number": 0,
+            //     "data_link_types": {
+            //         "Ethernet": "DLT_EN10MB"
+            //     },
+            //     "link_type": "ethernet",
+            //     "name": "Ethernet0",
+            //     "port_number": 0,
+            //     "short_name": "e0"
+            // }
+
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
                 this.onCancelClick();
             });
         } else {
-            this.toasterService.error(`Fill all required fields.`);
+            this.toasterService.error(`Fill all required fields.`)
         }
     }
 

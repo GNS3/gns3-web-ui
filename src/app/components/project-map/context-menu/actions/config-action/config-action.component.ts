@@ -3,6 +3,7 @@ import { Server } from '../../../../../models/server';
 import { Node } from '../../../../../cartography/models/node';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
+import { ConfiguratorDialogEthernetHubComponent } from '../../../node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
 
 
 @Component({
@@ -24,7 +25,7 @@ export class ConfigActionComponent {
     if (this.node.node_type === 'vpcs') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogVpcsComponent, this.conf);
     } else if (this.node.node_type === 'ethernet_hub') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogEthernetHubComponent, this.conf);
     } else if (this.node.node_type === 'ethernet_switch') {
 
     } else if (this.node.node_type === 'cloud') {
@@ -43,11 +44,11 @@ export class ConfigActionComponent {
 
     } else if (this.node.node_type === 'nat') {
 
-    }  else if (this.node.node_type === 'frame_relay_switch') {
+    } else if (this.node.node_type === 'frame_relay_switch') {
 
-    }  else if (this.node.node_type === 'atm_switch') {
+    } else if (this.node.node_type === 'atm_switch') {
 
-    }  else if (this.node.node_type === 'traceng') {
+    } else if (this.node.node_type === 'traceng') {
 
     }
 
