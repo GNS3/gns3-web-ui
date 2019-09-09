@@ -86,6 +86,13 @@ export class NodeService {
     });
   }
 
+  updateNode(server: Server, node: Node): Observable<Node> {
+    return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+      console_type: node.console_type,
+      name: node.name
+    });
+  }
+
   delete(server: Server, node: Node) {
     return this.httpServer.delete<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
@@ -97,6 +104,10 @@ export class NodeService {
       "y": node.y + 10,
       "z": node.z
     });
+  }
+
+  getNode(server: Server, node: Node) {
+    return this.httpServer.get(server, `/projects/${node.project_id}/nodes/${node.node_id}`)
   }
 
   getConfiguration(server: Server, node: Node) {

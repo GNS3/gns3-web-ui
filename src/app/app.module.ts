@@ -211,6 +211,8 @@ import { ProjectsFilter } from './filters/projectsFilter.pipe';
 import { ComputeService } from './services/compute.service';
 import { ReloadNodeActionComponent } from './components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
 import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
+import { ConfigActionComponent } from './components/project-map/context-menu/actions/config-action/config-action.component';
+import { ConfiguratorDialogVpcsComponent } from './components/project-map/node-editors/configurator/vpcs/configurator-vpcs.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -349,7 +351,9 @@ if (environment.production) {
     ChangeSymbolActionComponent,
     EditProjectDialogComponent,
     ReloadNodeActionComponent,
-    SuspendNodeActionComponent
+    SuspendNodeActionComponent,
+    ConfigActionComponent,
+    ConfiguratorDialogVpcsComponent
   ],
   imports: [
     BrowserModule,
@@ -449,7 +453,8 @@ if (environment.production) {
     SaveProjectDialogComponent,
     InfoDialogComponent,
     ChangeSymbolDialogComponent,
-    EditProjectDialogComponent
+    EditProjectDialogComponent,
+    ConfiguratorDialogVpcsComponent
   ],
   bootstrap: [AppComponent]
 })

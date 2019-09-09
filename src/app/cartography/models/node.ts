@@ -5,6 +5,7 @@ export class Node {
   command_line: string;
   compute_id: string;
   console: number;
+  console_auto_start: boolean;
   console_host: string;
   console_type: string;
   first_port_name: string;
