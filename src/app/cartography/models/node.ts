@@ -1,6 +1,15 @@
 import { Label } from './label';
 import { Port } from '../../models/port';
 
+export class PortsMapping {
+  name: string;
+  port_number: number;
+}
+
+export class Properties {
+  ports_mapping: PortsMapping[];
+}
+
 export class Node {
   command_line: string;
   compute_id: string;
@@ -19,6 +28,7 @@ export class Node {
   port_segment_size: number;
   ports: Port[];
   project_id: string;
+  properties: Properties;
   status: string;
   symbol: string;
   symbol_url: string; // @TODO: full URL to symbol, move to MapNode once converters are moved to app module

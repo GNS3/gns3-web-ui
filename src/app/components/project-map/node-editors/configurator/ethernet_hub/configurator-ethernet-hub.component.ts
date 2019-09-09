@@ -36,6 +36,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
     ngOnInit() {
         this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
             this.node = node;
+            this.numberOfPorts = this.node.ports.length;
             this.getConfiguration();
         })
     }
@@ -47,26 +48,13 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
 
     onSaveClick() {
         if (this.inputForm.valid) {
+            this.node.properties.ports_mapping = [];
             for(let i=0; i<this.numberOfPorts; i++){
-                this.node.ports.push({
-                    adapter_number: 0,
-                    link_type: 'ethernet',
+                this.node.properties.ports_mapping.push({
                     name: `Ethernet${i}`,
-                    port_number: i,
-                    short_name: `e${i}`
+                    port_number: i
                 });
             }
-
-            // {
-            //     "adapter_number": 0,
-            //     "data_link_types": {
-            //         "Ethernet": "DLT_EN10MB"
-            //     },
-            //     "link_type": "ethernet",
-            //     "name": "Ethernet0",
-            //     "port_number": 0,
-            //     "short_name": "e0"
-            // }
 
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
