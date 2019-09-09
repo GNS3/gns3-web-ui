@@ -6,6 +6,7 @@
       [node]="nodes[0]"
     ></app-show-node-action>
     <app-start-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-start-node-action>
+    <app-suspend-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-suspend-node-action>
     <app-stop-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-stop-node-action>
     <app-reload-node-action
       *ngIf="nodes.length" [server]="server" [nodes]="nodes"

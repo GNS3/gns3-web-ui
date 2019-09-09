@@ -210,6 +210,7 @@ import { EditProjectDialogComponent } from './components/projects/edit-project-d
 import { ProjectsFilter } from './filters/projectsFilter.pipe';
 import { ComputeService } from './services/compute.service';
 import { ReloadNodeActionComponent } from './components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
+import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -347,7 +348,8 @@ if (environment.production) {
     ChangeSymbolDialogComponent,
     ChangeSymbolActionComponent,
     EditProjectDialogComponent,
-    ReloadNodeActionComponent
+    ReloadNodeActionComponent,
+    SuspendNodeActionComponent
   ],
   imports: [
     BrowserModule,
