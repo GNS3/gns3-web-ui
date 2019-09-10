@@ -8,6 +8,7 @@ export class PortsMapping {
 
 export class Properties {
   ports_mapping: PortsMapping[];
+  mappings: any;
 }
 
 export class Node {

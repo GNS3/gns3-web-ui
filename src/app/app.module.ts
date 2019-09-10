@@ -216,6 +216,8 @@ import { ConfiguratorDialogVpcsComponent } from './components/project-map/node-e
 import { ConfiguratorDialogEthernetHubComponent } from './components/project-map/node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
 import { ConfiguratorDialogEthernetSwitchComponent } from './components/project-map/node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
 import { PortsComponent } from './components/preferences/common/ports/ports.component';
+import { ConfiguratorDialogSwitchComponent } from './components/project-map/node-editors/configurator/switch/configurator-switch.component';
+import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -359,7 +361,9 @@ if (environment.production) {
     ConfiguratorDialogVpcsComponent,
     ConfiguratorDialogEthernetHubComponent,
     ConfiguratorDialogEthernetSwitchComponent,
-    PortsComponent
+    PortsComponent,
+    ConfiguratorDialogSwitchComponent,
+    ConfiguratorDialogVirtualBoxComponent
   ],
   imports: [
     BrowserModule,
@@ -462,7 +466,9 @@ if (environment.production) {
     EditProjectDialogComponent,
     ConfiguratorDialogVpcsComponent,
     ConfiguratorDialogEthernetHubComponent,
-    ConfiguratorDialogEthernetSwitchComponent
+    ConfiguratorDialogEthernetSwitchComponent,
+    ConfiguratorDialogSwitchComponent,
+    ConfiguratorDialogVirtualBoxComponent
   ],
   bootstrap: [AppComponent]
 })

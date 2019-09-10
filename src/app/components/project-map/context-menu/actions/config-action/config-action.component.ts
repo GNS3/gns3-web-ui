@@ -5,6 +5,8 @@ import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
 import { ConfiguratorDialogEthernetHubComponent } from '../../../node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
 import { ConfiguratorDialogEthernetSwitchComponent } from '../../../node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
+import { ConfiguratorDialogSwitchComponent } from '../../../node-editors/configurator/switch/configurator-switch.component';
+import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/configurator/virtualbox/configurator-virtualbox.component';
 
 
 @Component({
@@ -38,7 +40,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'qemu') {
 
     } else if (this.node.node_type === 'virtualbox') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogVirtualBoxComponent, this.conf);
     } else if (this.node.node_type === 'vmware') {
 
     } else if (this.node.node_type === 'docker') {
@@ -46,9 +48,9 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'nat') {
 
     } else if (this.node.node_type === 'frame_relay_switch') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
     } else if (this.node.node_type === 'atm_switch') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
     } else if (this.node.node_type === 'traceng') {
 
     }

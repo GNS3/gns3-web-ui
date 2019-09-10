@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>Configurator for node {{name}}</h1>
+
+<div class="modal-form-container">
+    <div class="content">
+        <div class="default-content">
+            <mat-card class="matCard">
+                <mat-tab-group>
+                    <mat-tab label="General settings">
+                        <form [formGroup]="generalSettingsForm">
+                            <mat-form-field class="form-field">
+                                <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name">
+                            </mat-form-field>
+                            <mat-form-field class="select">
+                                <mat-select [ngModelOptions]="{standalone: true}" placeholder="Console type" [(ngModel)]="node.console_type">
+                                    <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                        {{type}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="node.console_auto_start">
+                                Auto start console
+                            </mat-checkbox>
+                            <mat-form-field class="form-field">
+                                <input matInput formControlName="ram" type="number" [(ngModel)]="node.ram" placeholder="RAM">
+                            </mat-form-field>
+                            <mat-form-field class="form-field">
+                                <mat-select [ngModelOptions]="{standalone: true}" placeholder="On close" [(ngModel)]="node.on_close">
+                                    <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
+                                        {{option[0]}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
+                        <mat-checkbox [(ngModel)]="node.headless">
+                            Start VM in headless mode
+                        </mat-checkbox>
+                    </mat-tab>
+                    <mat-tab label="Network">
+                        <form [formGroup]="networkForm">
+                            <mat-form-field class="form-field">
+                                <input formControlName="adapters" matInput type="number" [(ngModel)]="node.adapters" placeholder="Adapters">
+                            </mat-form-field>
+                            <mat-form-field class="form-field">
+                                <mat-select [ngModelOptions]="{standalone: true}" placeholder="Type" [(ngModel)]="node.adapter_type">
+                                    <mat-option *ngFor="let type of networkTypes" [value]="type">
+                                        {{type}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
+                        <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">Configure custom adapters</button><br/>
+                        <mat-checkbox [(ngModel)]="node.use_any_adapter">
+                            Allow GNS3 to use any configured VirtualBox adapter
+                        </mat-checkbox>
+                    </mat-tab>
+                    <mat-tab label="Usage">
+                        <mat-form-field class="form-field">
+                            <textarea matInput type="text" [(ngModel)]="node.usage"></textarea>
+                        </mat-form-field>
+                    </mat-tab>
+                </mat-tab-group>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>
