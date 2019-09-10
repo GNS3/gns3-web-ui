@@ -20,6 +20,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
     inputForm: FormGroup;
     consoleTypes: string[] = [];
     categories = [];
+    name: string;
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogEthernetHubComponent>,
@@ -36,6 +37,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
     ngOnInit() {
         this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
             this.node = node;
+            this.name = this.node.name;
             this.numberOfPorts = this.node.ports.length;
             this.getConfiguration();
         })

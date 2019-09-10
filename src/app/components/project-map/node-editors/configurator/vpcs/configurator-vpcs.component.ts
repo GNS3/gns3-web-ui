@@ -16,7 +16,7 @@ import { MatDialogRef } from '@angular/material';
 export class ConfiguratorDialogVpcsComponent implements OnInit {
     server: Server;
     node: Node;
-
+    name: string;
     inputForm: FormGroup;
     consoleTypes: string[] = [];
 
@@ -35,6 +35,7 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
     ngOnInit() {
         this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
             this.node = node;
+            this.name = node.name;
             this.getConfiguration();
         })
     }

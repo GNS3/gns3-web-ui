@@ -18,7 +18,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
     @ViewChild(PortsComponent, {static: false}) portsComponent: PortsComponent;
     server: Server;
     node: Node;
-
+    name: string;
     inputForm: FormGroup;
     consoleTypes: string[] = [];
 
@@ -37,6 +37,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
     ngOnInit() {
         this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
             this.node = node;
+            this.name = this.node.name;
             this.getConfiguration();
         })
     }
