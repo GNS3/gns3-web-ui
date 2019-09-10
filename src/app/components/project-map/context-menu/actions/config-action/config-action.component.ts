@@ -4,6 +4,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
 import { ConfiguratorDialogEthernetHubComponent } from '../../../node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
+import { ConfiguratorDialogEthernetSwitchComponent } from '../../../node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
 
 
 @Component({
@@ -27,7 +28,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'ethernet_hub') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogEthernetHubComponent, this.conf);
     } else if (this.node.node_type === 'ethernet_switch') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogEthernetSwitchComponent, this.conf);
     } else if (this.node.node_type === 'cloud') {
 
     } else if (this.node.node_type === 'dynamips') {

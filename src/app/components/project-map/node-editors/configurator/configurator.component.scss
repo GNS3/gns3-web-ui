@@ -5,3 +5,23 @@
 .select {
     width: 100%;
 }
+
+.default-content {
+    max-height: 400px;
+    overflow-y: scroll;
+    scrollbar-color: darkgrey #263238;
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+    width: 0.5em;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid #263238;
+}

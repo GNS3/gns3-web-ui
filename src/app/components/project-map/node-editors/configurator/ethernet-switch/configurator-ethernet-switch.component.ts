@@ -1,19 +1,21 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MatDialogRef } from '@angular/material';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
 
 
 @Component({
-    selector: 'app-configurator-vpcs',
-    templateUrl: './configurator-vpcs.component.html',
+    selector: 'app-configurator-ethernet-switch',
+    templateUrl: './configurator-ethernet-switch.component.html',
     styleUrls: ['../configurator.component.scss']
 })
-export class ConfiguratorDialogVpcsComponent implements OnInit {
+export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
+    @ViewChild(PortsComponent, {static: false}) portsComponent: PortsComponent;
     server: Server;
     node: Node;
 
@@ -21,11 +23,11 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
     consoleTypes: string[] = [];
 
     constructor(
-        public dialogRef: MatDialogRef<ConfiguratorDialogVpcsComponent>,
+        public dialogRef: MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private vpcsConfigurationService: VpcsConfigurationService
+        private ethernetSwitchesConfigurationService: BuiltInTemplatesConfigurationService
     ) {
         this.inputForm = this.formBuilder.group({
             name: new FormControl('', Validators.required)
@@ -40,11 +42,12 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
     }
 
     getConfiguration() {
-        this.consoleTypes = this.vpcsConfigurationService.getConsoleTypes();
+        this.consoleTypes = this.ethernetSwitchesConfigurationService.getConsoleTypesForEthernetSwitches();
     }
 
     onSaveClick() {
         if (this.inputForm.valid) {
+            this.node.properties.ports_mapping = this.portsComponent.ethernetPorts;
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
                 this.onCancelClick();

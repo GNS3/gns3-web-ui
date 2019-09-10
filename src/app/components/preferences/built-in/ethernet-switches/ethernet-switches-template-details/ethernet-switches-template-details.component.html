@@ -57,69 +57,13 @@
                     </mat-form-field>
                 </form>
             </mat-expansion-panel>
-            <mat-expansion-panel *ngIf="newPort">
+            <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Port settings
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <table class="table" mat-table [dataSource]="dataSource">
-                    <ng-container matColumnDef="port_number">
-                        <th mat-header-cell *matHeaderCellDef> Port number </th>
-                        <td mat-cell *matCellDef="let element"> {{element.port_number}} </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="vlan">
-                        <th mat-header-cell *matHeaderCellDef> VLAN </th>
-                        <td mat-cell *matCellDef="let element"> {{element.vlan}} </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="type">
-                        <th mat-header-cell *matHeaderCellDef> Type </th>
-                        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="ethertype">
-                        <th mat-header-cell *matHeaderCellDef> EtherType </th>
-                        <td mat-cell *matCellDef="let element"> {{element.ethertype}} </td>
-                    </ng-container>
-                    
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table><br/>
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="number" 
-                        [(ngModel)]="newPort.port_number" 
-                        placeholder="Port">
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="number" 
-                        [(ngModel)]="newPort.vlan" 
-                        placeholder="VLAN">
-                </mat-form-field>
-                <mat-form-field class="select">
-                    <mat-select 
-                        placeholder="Type" 
-                        [ngModelOptions]="{standalone: true}" 
-                        [(ngModel)]="newPort.type">
-                        <mat-option *ngFor="let type of portTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="select">
-                    <mat-select 
-                        placeholder="EtherType" 
-                        [ngModelOptions]="{standalone: true}" 
-                        [(ngModel)]="newPort.ethertype">
-                            <mat-option *ngFor="let type of etherTypes" [value]="type">
-                                {{type}}
-                            </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <button mat-button class="form-field" (click)="onAdd()">Add</button>
+            <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
             </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar">

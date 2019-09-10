@@ -214,6 +214,8 @@ import { SuspendNodeActionComponent } from './components/project-map/context-men
 import { ConfigActionComponent } from './components/project-map/context-menu/actions/config-action/config-action.component';
 import { ConfiguratorDialogVpcsComponent } from './components/project-map/node-editors/configurator/vpcs/configurator-vpcs.component';
 import { ConfiguratorDialogEthernetHubComponent } from './components/project-map/node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
+import { ConfiguratorDialogEthernetSwitchComponent } from './components/project-map/node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
+import { PortsComponent } from './components/preferences/common/ports/ports.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -355,7 +357,9 @@ if (environment.production) {
     SuspendNodeActionComponent,
     ConfigActionComponent,
     ConfiguratorDialogVpcsComponent,
-    ConfiguratorDialogEthernetHubComponent
+    ConfiguratorDialogEthernetHubComponent,
+    ConfiguratorDialogEthernetSwitchComponent,
+    PortsComponent
   ],
   imports: [
     BrowserModule,
@@ -457,7 +461,8 @@ if (environment.production) {
     ChangeSymbolDialogComponent,
     EditProjectDialogComponent,
     ConfiguratorDialogVpcsComponent,
-    ConfiguratorDialogEthernetHubComponent
+    ConfiguratorDialogEthernetHubComponent,
+    ConfiguratorDialogEthernetSwitchComponent
   ],
   bootstrap: [AppComponent]
 })
