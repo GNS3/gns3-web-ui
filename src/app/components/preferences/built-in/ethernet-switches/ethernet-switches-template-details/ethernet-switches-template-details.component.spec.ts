@@ -17,6 +17,7 @@ import { BuiltInTemplatesService } from '../../../../../services/built-in-templa
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { EthernetSwitchesTemplateDetailsComponent } from './ethernet-switches-template-details.component';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { PortsComponent } from '../../../common/ports/ports.component';
 
 export class MockedBuiltInTemplatesService {
     public getTemplate(server: Server, template_id: string) {
@@ -68,6 +69,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
+        component.portsComponent = {ethernetPorts: []} as PortsComponent;
         component.inputForm.controls['templateName'].setValue('template name');
         component.inputForm.controls['defaultName'].setValue('default name');
         component.inputForm.controls['symbol'].setValue('symbol');
@@ -102,7 +104,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
         expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
     });
 
-    it('should call save template when symbol path is empty', () => {
+    it('should not call save template when symbol path is empty', () => {
         spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
         component.inputForm.controls['templateName'].setValue('template name');
         component.inputForm.controls['defaultName'].setValue('default name');
