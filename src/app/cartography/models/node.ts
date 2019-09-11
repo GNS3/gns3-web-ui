@@ -1,5 +1,6 @@
 import { Label } from './label';
 import { Port } from '../../models/port';
+import { CustomAdapter } from '../../models/qemu/qemu-custom-adapter';
 
 export class PortsMapping {
   name: string;
@@ -27,6 +28,7 @@ export class Node {
   console_auto_start: boolean;
   console_host: string;
   console_type: string;
+  custom_adapters?: CustomAdapter[];
   first_port_name: string;
   height: number;
   label: Label;

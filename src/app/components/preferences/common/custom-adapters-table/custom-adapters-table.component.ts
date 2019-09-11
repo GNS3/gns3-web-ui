@@ -19,9 +19,7 @@ export class CustomAdaptersTableComponent {
             adapter_number: this.adapters.length,
             adapter_type: this.networkTypes[0]
         }
-        this.adapters.push(adapter);
-        console.log(this.adapters);
-        this.adapters = [adapter];
+        this.adapters = this.adapters.concat([adapter]);
     }
 
     delete(adapter: CustomAdapter) {

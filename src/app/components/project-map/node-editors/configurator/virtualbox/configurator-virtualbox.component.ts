@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
@@ -6,6 +6,7 @@ import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MatDialogRef } from '@angular/material';
 import { VirtualBoxConfigurationService } from '../../../../../services/virtual-box-configuration.service';
+import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 
 
 @Component({
@@ -24,6 +25,8 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
 
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
+
+    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogVirtualBoxComponent>,
@@ -58,7 +61,17 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
 
     onSaveClick() {
         if (this.generalSettingsForm.valid) {
-            this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+            this.node.custom_adapters = [];
+            this.customAdapters.adapters.forEach(n => {
+                this.node.custom_adapters.push({
+                    adapter_number: n.adapter_number,
+                    adapter_type: n.adapter_type
+                })
+            });
+
+            this.node.properties.adapters = this.node.custom_adapters.length;
+
+            this.nodeService.updateNodeWithCustomAdapters(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
                 this.onCancelClick();
             });

@@ -6,7 +6,7 @@
             <mat-card class="matCard">
                 <mat-tab-group *ngIf="name">
                     <mat-tab label="General settings">
-                        <form [formGroup]="generalSettingsForm">
+                        <br/><form [formGroup]="generalSettingsForm">
                             <mat-form-field class="form-field">
                                 <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name">
                             </mat-form-field>
@@ -36,10 +36,11 @@
                         </mat-checkbox>
                     </mat-tab>
                     <mat-tab label="Network">
-                        <mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
+                        <br/><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
                             Allow GNS3 to use any configured VirtualBox adapter
                         </mat-checkbox>
                         <app-custom-adapters-table 
+                            #customAdapters
                             [networkTypes]="networkTypes" 
                             [displayedColumns]="displayedColumns"
                             [adapters]="node.ports"
