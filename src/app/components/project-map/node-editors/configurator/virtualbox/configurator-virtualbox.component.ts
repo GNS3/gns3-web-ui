@@ -19,7 +19,6 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
     node: Node;
     name: string;
     generalSettingsForm: FormGroup;
-    networkForm: FormGroup;
     consoleTypes: string[] = [];
     onCloseOptions = [];
 
@@ -38,10 +37,6 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
         this.generalSettingsForm = this.formBuilder.group({
             name: new FormControl('', Validators.required),
             ram: new FormControl('', Validators.required)
-        });
-
-        this.networkForm = this.formBuilder.group({
-            adapters: new FormControl('', Validators.required)
         });
     }
 

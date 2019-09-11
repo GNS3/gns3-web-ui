@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
 
 
 @Component({
@@ -13,6 +14,8 @@ export class CustomAdaptersComponent {
     @Output() closeConfiguratorEmitter = new EventEmitter<boolean>();
     @Output() saveConfigurationEmitter =  new EventEmitter<CustomAdapter[]>();
 
+    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
+
     public adapters: CustomAdapter[];
     public numberOfAdapters: number;
 
@@ -21,6 +24,14 @@ export class CustomAdaptersComponent {
     }
 
     configureCustomAdapters(){
+        this.adapters = [];
+        this.customAdapters.adapters.forEach(n => {
+            this.adapters.push({
+                adapter_number: n.adapter_number,
+                adapter_type: n.adapter_type
+            })
+        });
+
         this.saveConfigurationEmitter.emit(this.adapters);
     }
 }
