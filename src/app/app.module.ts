@@ -218,6 +218,7 @@ import { ConfiguratorDialogEthernetSwitchComponent } from './components/project-
 import { PortsComponent } from './components/preferences/common/ports/ports.component';
 import { ConfiguratorDialogSwitchComponent } from './components/project-map/node-editors/configurator/switch/configurator-switch.component';
 import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
+import { CustomAdaptersTableComponent } from './components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -363,7 +364,8 @@ if (environment.production) {
     ConfiguratorDialogEthernetSwitchComponent,
     PortsComponent,
     ConfiguratorDialogSwitchComponent,
-    ConfiguratorDialogVirtualBoxComponent
+    ConfiguratorDialogVirtualBoxComponent,
+    CustomAdaptersTableComponent
   ],
   imports: [
     BrowserModule,

@@ -21,6 +21,8 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
     networkForm: FormGroup;
     consoleTypes: string[] = [];
     onCloseOptions = [];
+
+    displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
 
     constructor(

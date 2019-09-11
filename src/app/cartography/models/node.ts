@@ -7,6 +7,15 @@ export class PortsMapping {
 }
 
 export class Properties {
+  adapter_type: string;
+  adapters: number;
+  headless: boolean;
+  linked_clone: boolean;
+  on_close: string;
+  ram: number;
+  usage: string;
+  use_any_adapter: boolean;
+  vmname: string;
   ports_mapping: PortsMapping[];
   mappings: any;
 }
