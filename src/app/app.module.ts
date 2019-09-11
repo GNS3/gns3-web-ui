@@ -219,6 +219,7 @@ import { PortsComponent } from './components/preferences/common/ports/ports.comp
 import { ConfiguratorDialogSwitchComponent } from './components/project-map/node-editors/configurator/switch/configurator-switch.component';
 import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
 import { CustomAdaptersTableComponent } from './components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { ConfiguratorDialogQemuComponent } from './components/project-map/node-editors/configurator/qemu/configurator-qemu.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -365,7 +366,8 @@ if (environment.production) {
     PortsComponent,
     ConfiguratorDialogSwitchComponent,
     ConfiguratorDialogVirtualBoxComponent,
-    CustomAdaptersTableComponent
+    CustomAdaptersTableComponent,
+    ConfiguratorDialogQemuComponent
   ],
   imports: [
     BrowserModule,
@@ -470,7 +472,8 @@ if (environment.production) {
     ConfiguratorDialogEthernetHubComponent,
     ConfiguratorDialogEthernetSwitchComponent,
     ConfiguratorDialogSwitchComponent,
-    ConfiguratorDialogVirtualBoxComponent
+    ConfiguratorDialogVirtualBoxComponent,
+    ConfiguratorDialogQemuComponent
   ],
   bootstrap: [AppComponent]
 })

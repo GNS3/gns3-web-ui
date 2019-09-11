@@ -1,0 +1,157 @@
+<h1 mat-dialog-title>Configurator for node {{name}}</h1>
+
+<div class="modal-form-container">
+    <div class="content">
+        <div class="default-content">
+            <mat-card class="matCard">
+                <mat-tab-group *ngIf="name">
+                    <mat-tab label="General settings">
+                        <br/><form [formGroup]="generalSettingsForm">
+                            <mat-form-field class="form-field">
+                                <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name">
+                            </mat-form-field>
+                        </form>
+                        <mat-form-field class="form-field">
+                            <input matInput type="number" [(ngModel)]="node.properties.ram" placeholder="RAM">
+                        </mat-form-field>
+                        <mat-form-field class="form-field">
+                            <input matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="vCPUs">
+                        </mat-form-field>
+                        <mat-form-field class="form-field">
+                            <mat-select placeholder="Qemu binary" [(ngModel)]="node.properties.qemu_path">
+                                <mat-option *ngFor="let binary of binaries" [value]="binary.path">
+                                    {{binary.path}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="form-field">
+                            <mat-select placeholder="Boot priority" [(ngModel)]="node.properties.boot_priority">
+                                <mat-option *ngFor="let priority of bootPriorities" [value]="priority[1]">
+                                    {{priority[0]}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="form-field">
+                            <mat-select placeholder="On close" [(ngModel)]="node.properties.on_close">
+                                <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
+                                    {{option[0]}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="select">
+                            <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
+                                <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                                    {{type}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-checkbox [(ngModel)]="node.properties.console_auto_start">
+                            Auto start console
+                        </mat-checkbox>
+                    </mat-tab>
+                    <mat-tab label="HDD">
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                HDA (Primary Master)
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <mat-form-field class="form-field">
+                                    <input matInput [(ngModel)]="node.properties.hda_disk_image" placeholder="Disk image">
+                                </mat-form-field>
+                                <mat-form-field class="form-field">
+                                <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hda_disk_interface">
+                                    <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
+                                        {{interface}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                HDB (Primary Slave)
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <mat-form-field class="form-field">
+                                    <input matInput [(ngModel)]="node.properties.hdb_disk_image" placeholder="Disk image">
+                                </mat-form-field>
+                                <mat-form-field class="form-field">
+                                <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdb_disk_interface">
+                                    <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
+                                        {{interface}}
+                                    </mat-option>
+                                </mat-select>
+                                </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                HDC (Secondary Master)
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <mat-form-field class="form-field">
+                                    <input matInput [(ngModel)]="node.properties.hdc_disk_image" placeholder="Disk image">
+                                </mat-form-field>
+                                <mat-form-field class="form-field">
+                                <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdc_disk_interface">
+                                    <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
+                                        {{interface}}
+                                    </mat-option>
+                                </mat-select>
+                                </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                HDD (Secondary Slave)
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <mat-form-field class="form-field">
+                                    <input matInput [(ngModel)]="node.properties.hdd_disk_image" placeholder="Disk image">
+                                </mat-form-field>
+                                <mat-form-field class="form-field">
+                                <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdd_disk_interface">
+                                    <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
+                                        {{interface}}
+                                    </mat-option>
+                                </mat-select>
+                                </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
+                    </mat-tab>
+                    <mat-tab label="CD/DVD">
+
+                    </mat-tab>
+                    <mat-tab label="Network">
+                        <br/><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
+                            Allow GNS3 to use any configured VirtualBox adapter
+                        </mat-checkbox>
+                        <app-custom-adapters-table 
+                            #customAdapters
+                            [networkTypes]="networkTypes" 
+                            [displayedColumns]="displayedColumns"
+                            [adapters]="node.ports"
+                        ></app-custom-adapters-table>
+                    </mat-tab>
+                    <mat-tab label="Advanced">
+
+                    </mat-tab>
+                    <mat-tab label="Usage">
+                        <mat-form-field class="form-field">
+                            <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+                        </mat-form-field>
+                    </mat-tab>
+                </mat-tab-group>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

@@ -7,6 +7,7 @@ import { ConfiguratorDialogEthernetHubComponent } from '../../../node-editors/co
 import { ConfiguratorDialogEthernetSwitchComponent } from '../../../node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
 import { ConfiguratorDialogSwitchComponent } from '../../../node-editors/configurator/switch/configurator-switch.component';
 import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/configurator/virtualbox/configurator-virtualbox.component';
+import { ConfiguratorDialogQemuComponent } from '../../../node-editors/configurator/qemu/configurator-qemu.component';
 
 
 @Component({
@@ -38,7 +39,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'iou') {
 
     } else if (this.node.node_type === 'qemu') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, this.conf);
     } else if (this.node.node_type === 'virtualbox') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogVirtualBoxComponent, this.conf);
     } else if (this.node.node_type === 'vmware') {
@@ -48,9 +49,9 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'nat') {
 
     } else if (this.node.node_type === 'frame_relay_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
+      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf); // to do
     } else if (this.node.node_type === 'atm_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
+      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf); // to do
     } else if (this.node.node_type === 'traceng') {
 
     }

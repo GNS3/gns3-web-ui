@@ -19,6 +19,36 @@ export class Properties {
   vmname: string;
   ports_mapping: PortsMapping[];
   mappings: any;
+  bios_image: string;
+  bios_image_md5sum?: any;
+  boot_priority: string;
+  cdrom_image: string;
+  cdrom_image_md5sum?: any;
+  cpu_throttling: number;
+  cpus: number;
+  hda_disk_image: string;
+  hda_disk_image_md5sum: string;
+  hda_disk_interface: string;
+  hdb_disk_image: string;
+  hdb_disk_image_md5sum?: any;
+  hdb_disk_interface: string;
+  hdc_disk_image: string;
+  hdc_disk_image_md5sum?: any;
+  hdc_disk_interface: string;
+  hdd_disk_image: string;
+  hdd_disk_image_md5sum?: any;
+  hdd_disk_interface: string;
+  initrd: string;
+  initrd_md5sum?: any;
+  kernel_command_line: string;
+  kernel_image: string;
+  kernel_image_md5sum?: any;
+  legacy_networking: boolean;
+  mac_address: string;
+  options: string;
+  platform: string;
+  process_priority: string;
+  qemu_path: string;
 }
 
 export class Node {
