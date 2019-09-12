@@ -58,10 +58,28 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         });
     }
 
+    uploadCdromImageFile(event){
+        this.node.properties.cdrom_image = event.target.files[0].name;
+    }
+
+    uploadInitrdFile(event){
+        this.node.properties.initrd = event.target.files[0].name;
+    }
+
+    uploadKernelImageFile(event){
+        this.node.properties.kernel_image = event.target.files[0].name;
+    }
+
+    uploadBiosFile(event){
+        this.node.properties.bios_image = event.target.files[0].name;
+    }
+
     getConfiguration() {
         this.consoleTypes = this.qemuConfigurationService.getConsoleTypes();
         this.onCloseOptions = this.qemuConfigurationService.getOnCloseOptions();
-        this.networkTypes = this.qemuConfigurationService.getNetworkTypes();
+        this.qemuConfigurationService.getNetworkTypes().forEach(n => {
+            this.networkTypes.push(n[0]);
+        });
         this.bootPriorities = this.qemuConfigurationService.getBootPriorities();
         this.diskInterfaces = this.qemuConfigurationService.getDiskInterfaces();
     }
@@ -78,7 +96,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
             this.node.properties.adapters = this.node.custom_adapters.length;
 
-            this.nodeService.updateNodeWithCustomAdapters(this.server, this.node).subscribe(() => {
+            this.nodeService. updateNodeWithCustomAdapters(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
                 this.onCancelClick();
             });

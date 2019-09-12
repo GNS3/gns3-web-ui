@@ -10,10 +10,10 @@
                             <mat-form-field class="form-field">
                                 <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name">
                             </mat-form-field>
-                        </form>
                         <mat-form-field class="form-field">
-                            <input matInput type="number" [(ngModel)]="node.properties.ram" placeholder="RAM">
+                            <input matInput type="number" formControlName="ram" [(ngModel)]="node.properties.ram" placeholder="RAM">
                         </mat-form-field>
+                        </form>
                         <mat-form-field class="form-field">
                             <input matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="vCPUs">
                         </mat-form-field>
@@ -124,11 +124,25 @@
                         </mat-card>
                     </mat-tab>
                     <mat-tab label="CD/DVD">
-
+                        <div>
+                            <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">Browse</button>
+                            <input
+                                type="file"
+                                #filecdrom
+                                class="nonvisible"
+                                (change)="uploadCdromImageFile($event)"/>
+                            <mat-form-field class="file-name-form-field">
+                                <input
+                                    matInput
+                                    type="text"
+                                    [(ngModel)]="node.properties.cdrom_image"
+                                    placeholder="Image"/>
+                            </mat-form-field>
+                        </div>
                     </mat-tab>
                     <mat-tab label="Network">
-                        <br/><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
-                            Allow GNS3 to use any configured VirtualBox adapter
+                        <br/><mat-checkbox [(ngModel)]="node.properties.legacy_networking">
+                            Use the legacy networking mode
                         </mat-checkbox>
                         <app-custom-adapters-table 
                             #customAdapters
@@ -138,7 +152,102 @@
                         ></app-custom-adapters-table>
                     </mat-tab>
                     <mat-tab label="Advanced">
-
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                Linux boot specific settings
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <div>
+                                    <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">Browse</button>
+                                    <input
+                                        type="file"
+                                        #fileinitrd
+                                        class="nonvisible"
+                                        (change)="uploadInitrdFile($event)"/>
+                                    <mat-form-field class="file-name-form-field">
+                                        <input
+                                            matInput
+                                            type="text"
+                                            [(ngModel)]="node.properties.initrd"
+                                            placeholder="Initial RAM disk (initrd)"/>
+                                    </mat-form-field>
+                                </div>
+                                <div>
+                                    <button mat-raised-button color="primary" (click)="filekerenelimage.click()" class="file-button">Browse</button>
+                                    <input
+                                        type="file"
+                                        #filekernelimage
+                                        class="nonvisible"
+                                        (change)="uploadKernelImageFile($event)"/>
+                                    <mat-form-field class="file-name-form-field">
+                                        <input
+                                            matInput
+                                            type="text"
+                                            [(ngModel)]="node.properties.kernel_image"
+                                            placeholder="Kernel image"/>
+                                    </mat-form-field>
+                                </div>
+                                <mat-form-field class="form-field">
+                                    <input matInput type="text" [(ngModel)]="node.properties.kernel_command_line" placeholder="Kernel command line">
+                                </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                Bios
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <div>
+                                    <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">Browse</button>
+                                    <input
+                                        type="file"
+                                        #filebios
+                                        class="nonvisible"
+                                        (change)="uploadBiosFile($event)"/>
+                                    <mat-form-field class="file-name-form-field">
+                                        <input
+                                            matInput
+                                            type="text"
+                                            [(ngModel)]="node.properties.bios_image"
+                                            placeholder="Bios image"/>
+                                    </mat-form-field>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                Optimization
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <mat-checkbox [(ngModel)]="activateCpuThrottling">
+                                    Activate CPU throttling
+                                </mat-checkbox>
+                                <mat-form-field *ngIf="activateCpuThrottling" class="form-field">
+                                    <input matInput type="number" [(ngModel)]="node.properties.cpu_throttling" placeholder="Perecentage of CPU allowed">
+                                </mat-form-field>
+                                <mat-form-field class="form-field">
+                                <mat-select placeholder="Process priority" [(ngModel)]="node.properties.process_priority">
+                                    <mat-option *ngFor="let priority of priorities" [value]="priority">
+                                        {{priority}}
+                                    </mat-option>
+                                </mat-select>
+                                </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
+                        <mat-card>
+                            <mat-card-title></mat-card-title>
+                            <mat-card-subtitle>
+                                Additional settings
+                            </mat-card-subtitle>
+                            <mat-card-content>
+                                <mat-form-field class="form-field">
+                                    <input matInput type="text" [(ngModel)]="node.properties.options" placeholder="Options">
+                                </mat-form-field>
+                            </mat-card-content>
+                        </mat-card>
                     </mat-tab>
                     <mat-tab label="Usage">
                         <mat-form-field class="form-field">

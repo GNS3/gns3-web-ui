@@ -104,6 +104,16 @@ export class NodeService {
     });
   }
 
+  updateQemuNode(server: Server, node: Node): Observable<Node> {
+    return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+      console_type: node.console_type,
+      console_auto_start: node.console_auto_start,
+      custom_adapters: node.custom_adapters,
+      name: node.name,
+      properties: node.properties
+    });
+  }
+
   delete(server: Server, node: Node) {
     return this.httpServer.delete<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }

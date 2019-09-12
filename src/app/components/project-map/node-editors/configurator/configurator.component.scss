@@ -17,6 +17,19 @@
     scrollbar-width: thin;
 }
 
+.file-button {
+    width: 18%;
+}
+
+.file-name-form-field {
+    padding-left: 2%;
+    width: 80%;
+}
+
+.nonvisible {
+    display: none;
+}
+
 ::-webkit-scrollbar {
     width: 0.5em;
 }
