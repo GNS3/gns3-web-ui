@@ -19,6 +19,10 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     inputForm: FormGroup;
     consoleTypes: string[] = [];
 
+    nodeMappings = new Map<string, string>();
+    dataSource = [];
+    displayedColumns = ['Port: DLCI', 'Port: DLCI ']
+
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
         public nodeService: NodeService,
@@ -34,11 +38,30 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
         this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
             this.node = node;
             this.name = node.name;
-        })
+
+            let mappings = node.properties.mappings;
+            Object.keys(mappings).forEach(key => {
+                this.nodeMappings.set(key, mappings[key]);
+            });
+        });
+    }
+
+    delete(elem) {
+        
+    }
+
+    strMapToObj(strMap) {
+        let obj = Object.create(null);
+        for (let [k,v] of strMap) {
+          obj[k] = v;
+        }
+        return obj;
     }
 
     onSaveClick() {
         if (this.inputForm.valid) {
+            this.node.properties.mappings = Array.from(this.nodeMappings).reduce((obj, [key, value]) => (Object.assign(obj, { [key]: value })), {});
+
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
                 this.onCancelClick();
