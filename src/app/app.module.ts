@@ -220,6 +220,8 @@ import { ConfiguratorDialogSwitchComponent } from './components/project-map/node
 import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
 import { CustomAdaptersTableComponent } from './components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { ConfiguratorDialogQemuComponent } from './components/project-map/node-editors/configurator/qemu/configurator-qemu.component';
+import { ConfiguratorDialogCloudComponent } from './components/project-map/node-editors/configurator/cloud/configurator-cloud.component';
+import { UdpTunnelsComponent } from './components/preferences/common/udp-tunnels/udp-tunnels.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -367,7 +369,9 @@ if (environment.production) {
     ConfiguratorDialogSwitchComponent,
     ConfiguratorDialogVirtualBoxComponent,
     CustomAdaptersTableComponent,
-    ConfiguratorDialogQemuComponent
+    ConfiguratorDialogQemuComponent,
+    ConfiguratorDialogCloudComponent,
+    UdpTunnelsComponent
   ],
   imports: [
     BrowserModule,
@@ -473,7 +477,8 @@ if (environment.production) {
     ConfiguratorDialogEthernetSwitchComponent,
     ConfiguratorDialogSwitchComponent,
     ConfiguratorDialogVirtualBoxComponent,
-    ConfiguratorDialogQemuComponent
+    ConfiguratorDialogQemuComponent,
+    ConfiguratorDialogCloudComponent
   ],
   bootstrap: [AppComponent]
 })

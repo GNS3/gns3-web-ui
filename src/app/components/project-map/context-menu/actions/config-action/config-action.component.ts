@@ -8,6 +8,7 @@ import { ConfiguratorDialogEthernetSwitchComponent } from '../../../node-editors
 import { ConfiguratorDialogSwitchComponent } from '../../../node-editors/configurator/switch/configurator-switch.component';
 import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/configurator/virtualbox/configurator-virtualbox.component';
 import { ConfiguratorDialogQemuComponent } from '../../../node-editors/configurator/qemu/configurator-qemu.component';
+import { ConfiguratorDialogCloudComponent } from '../../../node-editors/configurator/cloud/configurator-cloud.component';
 
 
 @Component({
@@ -18,7 +19,6 @@ export class ConfigActionComponent {
   @Input() server: Server;
   @Input() node: Node;
   private conf = {
-    width: '600px',
     autoFocus: false
   };
   dialogRef;
@@ -33,7 +33,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'ethernet_switch') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogEthernetSwitchComponent, this.conf);
     } else if (this.node.node_type === 'cloud') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogCloudComponent, this.conf);
     } else if (this.node.node_type === 'dynamips') {
 
     } else if (this.node.node_type === 'iou') {

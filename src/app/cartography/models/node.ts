@@ -4,7 +4,9 @@ import { CustomAdapter } from '../../models/qemu/qemu-custom-adapter';
 
 export class PortsMapping {
   name: string;
+  interface?: string;
   port_number: number;
+  type?: string;
 }
 
 export class Properties {
