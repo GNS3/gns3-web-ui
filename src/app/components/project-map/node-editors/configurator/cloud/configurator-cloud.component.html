@@ -6,11 +6,33 @@
             <mat-card class="matCard">
                 <mat-tab-group *ngIf="name">
                     <mat-tab label="Ethernet interfaces">
-
+                        <div class="form-field" *ngFor="let port of portsMappingEthernet">
+                            <div class="form-field">{{port.name}}</div><br/><br/>
+                        </div>
+                        <mat-form-field class="select">
+                            <mat-select 
+                                placeholder="Ethernet interface" 
+                                [ngModelOptions]="{standalone: true}" 
+                                [(ngModel)]="ethernetInterface">
+                                    <mat-option *ngFor="let type of ethernetInterfaces" [value]="type">
+                                        {{type}}
+                                    </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button> 
                     </mat-tab>
 
                     <mat-tab label="TAP interfaces">
-
+                        <div class="form-field" *ngFor="let port of portsMappingTap">
+                            <div class="form-field">{{port.name}}</div><br/><br/>
+                        </div>
+                        <mat-form-field class="form-field">
+                            <input 
+                                matInput type="text" 
+                                [(ngModel)]="tapInterface" 
+                                placeholder="TAP interface">
+                        </mat-form-field>
+                        <button mat-button class="form-field" (click)="onAddTapInterface()">Add</button> 
                     </mat-tab>
 
                     <mat-tab label="UDP tunnels">

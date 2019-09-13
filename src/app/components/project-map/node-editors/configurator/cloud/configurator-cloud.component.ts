@@ -34,6 +34,9 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
+    tapInterface: string = '';
+    ethernetInterface: string = '';
+    ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
 
     @ViewChild("udpTunnels", {static: false}) udpTunnels: UdpTunnelsComponent;
 
@@ -70,21 +73,22 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
         this.consoleTypes = this.builtInTemplatesConfigurationService.getConsoleTypesForCloudNodes();
     }
 
+    onAddTapInterface() {
+        if (this.tapInterface) {
+            this.portsMappingTap.push({
+                interface: this.tapInterface,
+                name: this.tapInterface,
+                port_number: 0,
+                type: "tap"
+            });
+        }
+    }
+
     onSaveClick() {
         if (this.generalSettingsForm.valid) {
             this.portsMappingUdp = this.udpTunnels.dataSourceUdp;
 
             this.node.properties.ports_mapping = this.portsMappingUdp.concat(this.portsMappingEthernet).concat(this.portsMappingTap);
-
-            // this.node.custom_adapters = [];
-            // this.customAdapters.adapters.forEach(n => {
-            //     this.node.custom_adapters.push({
-            //         adapter_number: n.adapter_number,
-            //         adapter_type: n.adapter_type
-            //     })
-            // });
-
-            // this.node.properties.adapters = this.node.custom_adapters.length;
 
             this.nodeService. updateNode(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
