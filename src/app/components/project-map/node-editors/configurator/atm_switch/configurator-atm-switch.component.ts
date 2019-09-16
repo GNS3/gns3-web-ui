@@ -8,16 +8,17 @@ import { MatDialogRef } from '@angular/material';
 
 
 @Component({
-    selector: 'app-configurator-switch',
-    templateUrl: './configurator-switch.component.html',
+    selector: 'app-configurator-atm-switch',
+    templateUrl: './configurator-atm-switch.component.html',
     styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss']
 })
-export class ConfiguratorDialogSwitchComponent implements OnInit {
+export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
     server: Server;
     node: Node;
     name: string;
     nameForm: FormGroup;
     inputForm: FormGroup;
+    abstractForm: FormGroup;
     consoleTypes: string[] = [];
 
     nodeMappings = new Map<string, string>();
@@ -26,12 +27,16 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     displayedColumns = ['portIn', 'portOut', 'actions']
 
     sourcePort: string = '';
-    sourceDlci: string = '';
+    sourceVpi: string = '';
+    sourceVci: string = '';
     destinationPort: string = '';
-    destinationDlci: string = '';
+    destinationVpi: string = '';
+    destinationVci: string = '';
+
+    useVpiOnly: boolean = false;
 
     constructor(
-        public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
+        public dialogRef: MatDialogRef<ConfiguratorDialogAtmSwitchComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder
@@ -42,9 +47,14 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 
         this.inputForm = this.formBuilder.group({
             sourcePort: new FormControl('', Validators.required),
-            sourceDlci: new FormControl('', Validators.required),
+            sourceVci: new FormControl('', Validators.required),
             destinationPort: new FormControl('', Validators.required),
-            destinationDlci: new FormControl('', Validators.required),
+            destinationVci: new FormControl('', Validators.required),
+        });
+
+        this.abstractForm = this.formBuilder.group({
+            sourceVpi: new FormControl('', Validators.required),
+            destinationVpi: new FormControl('', Validators.required)
         });
     }
 
@@ -73,16 +83,35 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 
     add() {
         if (this.inputForm.valid) {
-            let nodeMapping: NodeMapping = {
-                portIn: `${this.sourcePort}:${this.sourceDlci}`,
-                portOut: `${this.destinationPort}:${this.destinationDlci}`
-            };
-    
-            if (this.nodeMappingsDataSource.filter(n => n.portIn === nodeMapping.portIn).length > 0) {
-                this.toasterService.error('Mapping already defined.');
+            let nodeMapping: NodeMapping;
+            if (!this.useVpiOnly) {
+                if (this.abstractForm.valid) {
+                    nodeMapping = {
+                        portIn: `${this.sourcePort}:${this.sourceVpi}:${this.sourceVci}`,
+                        portOut: `${this.destinationPort}:${this.destinationVpi}:${this.destinationVci}`
+                    };
+
+                    if (this.nodeMappingsDataSource.filter(n => n.portIn === nodeMapping.portIn).length > 0) {
+                        this.toasterService.error('Mapping already defined.');
+                    } else {
+                        this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
+                        this.clearUserInput();
+                    }
+                } else {
+                    this.toasterService.error('Fill all required fields.');
+                }
             } else {
-                this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
-                this.clearUserInput();
+                nodeMapping = {
+                    portIn: `${this.sourcePort}:${this.sourceVci}`,
+                    portOut: `${this.destinationPort}:${this.destinationVci}`
+                };
+
+                if (this.nodeMappingsDataSource.filter(n => n.portIn === nodeMapping.portIn).length > 0) {
+                    this.toasterService.error('Mapping already defined.');
+                } else {
+                    this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
+                    this.clearUserInput();
+                }
             }
         } else {
             this.toasterService.error('Fill all required fields.');
@@ -91,9 +120,11 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 
     clearUserInput() {
         this.sourcePort = '0';
-        this.sourceDlci = '0';
+        this.sourceVpi = '0';
+        this.sourceVci = '0';
         this.destinationPort = '0';
-        this.destinationDlci = '0';
+        this.destinationVpi = '0';
+        this.sourceVci = '0';
     }
 
     strMapToObj(strMap) {

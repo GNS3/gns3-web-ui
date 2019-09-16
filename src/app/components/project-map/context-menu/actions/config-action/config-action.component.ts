@@ -9,6 +9,7 @@ import { ConfiguratorDialogSwitchComponent } from '../../../node-editors/configu
 import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/configurator/virtualbox/configurator-virtualbox.component';
 import { ConfiguratorDialogQemuComponent } from '../../../node-editors/configurator/qemu/configurator-qemu.component';
 import { ConfiguratorDialogCloudComponent } from '../../../node-editors/configurator/cloud/configurator-cloud.component';
+import { ConfiguratorDialogAtmSwitchComponent } from '../../../node-editors/configurator/atm_switch/configurator-atm-switch.component';
 
 
 @Component({
@@ -50,9 +51,9 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'nat') {
 
     } else if (this.node.node_type === 'frame_relay_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf); // to do
+      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
     } else if (this.node.node_type === 'atm_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf); // to do
+      this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, this.conf);
     } else if (this.node.node_type === 'traceng') {
 
     }
