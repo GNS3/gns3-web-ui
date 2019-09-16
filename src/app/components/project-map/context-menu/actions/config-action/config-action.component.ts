@@ -19,7 +19,8 @@ export class ConfigActionComponent {
   @Input() server: Server;
   @Input() node: Node;
   private conf = {
-    autoFocus: false
+    autoFocus: false,
+    width: '800px'
   };
   dialogRef;
 

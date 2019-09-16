@@ -4,27 +4,18 @@
     <div class="content">
         <div class="default-content">
             <mat-card>
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="node.name" 
-                            formControlName="name"
-                            placeholder="Name">
-                    </mat-form-field>
-                </form>
-                <table class="table" mat-table [dataSource]="dataSource">
-                    <ng-container matColumnDef="Port: DLCI">
-                        <th mat-header-cell *matHeaderCellDef> Port number </th>
-                        <td mat-cell *matCellDef="let element"> {{element.port_number}} </td>
+                <table *ngIf="nodeMappingsDataSource.length" class="table" mat-table [dataSource]="nodeMappingsDataSource">
+                    <ng-container matColumnDef="portIn">
+                        <th mat-header-cell *matHeaderCellDef> Port : DLCI</th>
+                        <td mat-cell *matCellDef="let element"> {{element.portIn}} </td>
                     </ng-container>
                 
-                    <ng-container matColumnDef="Port: DLCI ">
-                        <th mat-header-cell *matHeaderCellDef> VLAN </th>
-                        <td mat-cell *matCellDef="let element"> {{element.vlan}} </td>
+                    <ng-container matColumnDef="portOut">
+                        <th mat-header-cell *matHeaderCellDef> Port : DLCI </th>
+                        <td mat-cell *matCellDef="let element"> {{element.portOut}} </td>
                     </ng-container>
                 
-                    <ng-container matColumnDef="action">
+                    <ng-container matColumnDef="actions">
                         <th mat-header-cell *matHeaderCellDef> Actions </th>
                         <td mat-cell *matCellDef="let element">
                             <button mat-icon-button matTooltip="Delete port" (click)="delete(element)">
@@ -36,39 +27,51 @@
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table><br/>
-                <!-- <mat-form-field class="form-field">
-                    <input 
-                        matInput type="number" 
-                        [(ngModel)]="newPort.port_number" 
-                        placeholder="Port">
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="number" 
-                        [(ngModel)]="newPort.vlan" 
-                        placeholder="VLAN">
-                </mat-form-field>
-                <mat-form-field class="select">
-                    <mat-select 
-                        placeholder="Type" 
-                        [ngModelOptions]="{standalone: true}" 
-                        [(ngModel)]="newPort.type">
-                        <mat-option *ngFor="let type of portTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="select">
-                    <mat-select 
-                        placeholder="EtherType" 
-                        [ngModelOptions]="{standalone: true}" 
-                        [(ngModel)]="newPort.ethertype">
-                            <mat-option *ngFor="let type of etherTypes" [value]="type">
-                                {{type}}
-                            </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <button mat-button class="form-field" (click)="onAdd()">Add</button> -->
+
+                <form [formGroup]="nameForm">
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="text" 
+                            [(ngModel)]="node.name" 
+                            formControlName="name"
+                            placeholder="Name">
+                    </mat-form-field>
+                </form>
+
+                <form [formGroup]="inputForm">
+                    Source
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="number" 
+                            [(ngModel)]="sourcePort" 
+                            formControlName="sourcePort"
+                            placeholder="Port">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="number" 
+                            [(ngModel)]="sourceDlci" 
+                            formControlName="sourceDlci"
+                            placeholder="DLCI">
+                    </mat-form-field>
+                    Destination
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="number" 
+                            [(ngModel)]="destinationPort" 
+                            formControlName="destinationPort"
+                            placeholder="Port">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="number" 
+                            [(ngModel)]="destinationDlci" 
+                            formControlName="destinationDlci"
+                            placeholder="DLCI">
+                    </mat-form-field>
+                </form>
+                
+                <button mat-button class="form-field" (click)="add()">Add</button>
             </mat-card>
         </div>
     </div>

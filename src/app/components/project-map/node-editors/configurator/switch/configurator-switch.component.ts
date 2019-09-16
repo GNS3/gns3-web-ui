@@ -10,18 +10,25 @@ import { MatDialogRef } from '@angular/material';
 @Component({
     selector: 'app-configurator-switch',
     templateUrl: './configurator-switch.component.html',
-    styleUrls: ['../configurator.component.scss']
+    styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss']
 })
 export class ConfiguratorDialogSwitchComponent implements OnInit {
     server: Server;
     node: Node;
     name: string;
+    nameForm: FormGroup;
     inputForm: FormGroup;
     consoleTypes: string[] = [];
 
     nodeMappings = new Map<string, string>();
+    nodeMappingsDataSource: NodeMapping[] = [];
     dataSource = [];
-    displayedColumns = ['Port: DLCI', 'Port: DLCI ']
+    displayedColumns = ['portIn', 'portOut', 'actions']
+
+    sourcePort: string = '';
+    sourceDlci: string = '';
+    destinationPort: string = '';
+    destinationDlci: string = '';
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
@@ -29,8 +36,15 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
         private toasterService: ToasterService,
         private formBuilder: FormBuilder
     ) {
+        this.nameForm = this.formBuilder.group({
+            name: new FormControl('', Validators.required),
+        });
+
         this.inputForm = this.formBuilder.group({
-            name: new FormControl('', Validators.required)
+            sourcePort: new FormControl('', Validators.required),
+            sourceDlci: new FormControl('', Validators.required),
+            destinationPort: new FormControl('', Validators.required),
+            destinationDlci: new FormControl('', Validators.required),
         });
     }
 
@@ -43,11 +57,43 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
             Object.keys(mappings).forEach(key => {
                 this.nodeMappings.set(key, mappings[key]);
             });
+
+            this.nodeMappings.forEach((value: string, key: string) => {
+                this.nodeMappingsDataSource.push({
+                    portIn: key,
+                    portOut: value
+                });
+            });
         });
     }
 
-    delete(elem) {
-        
+    delete(elem: NodeMapping) {
+        this.nodeMappingsDataSource = this.nodeMappingsDataSource.filter(n => n !== elem);
+    }
+
+    add() {
+        if (this.inputForm.valid) {
+            let nodeMapping: NodeMapping = {
+                portIn: `${this.sourcePort}:${this.sourceDlci}`,
+                portOut: `${this.destinationPort}:${this.destinationDlci}`
+            };
+    
+            if (this.nodeMappingsDataSource.filter(n => n.portIn === nodeMapping.portIn).length > 0) {
+                this.toasterService.error('Mapping already defined.');
+            } else {
+                this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
+                this.clearUserInput();
+            }
+        } else {
+            this.toasterService.error('Fill all required fields.');
+        }
+    }
+
+    clearUserInput() {
+        this.sourcePort = '';
+        this.sourceDlci = '';
+        this.destinationPort = '';
+        this.destinationDlci = '';
     }
 
     strMapToObj(strMap) {
@@ -59,7 +105,12 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     }
 
     onSaveClick() {
-        if (this.inputForm.valid) {
+        if (this.nameForm.valid) {
+            this.nodeMappings.clear();
+            this.nodeMappingsDataSource.forEach(elem => {
+                this.nodeMappings.set(elem.portIn, elem.portOut);
+            });
+
             this.node.properties.mappings = Array.from(this.nodeMappings).reduce((obj, [key, value]) => (Object.assign(obj, { [key]: value })), {});
 
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
@@ -74,4 +125,9 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     onCancelClick() {
         this.dialogRef.close();
     }
+}
+
+export interface NodeMapping {
+    portIn: string,
+    portOut: string
 }
