@@ -224,6 +224,7 @@ import { ConfiguratorDialogCloudComponent } from './components/project-map/node-
 import { UdpTunnelsComponent } from './components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { ConfiguratorDialogAtmSwitchComponent } from './components/project-map/node-editors/configurator/atm_switch/configurator-atm-switch.component';
 import { ConfiguratorDialogVmwareComponent } from './components/project-map/node-editors/configurator/vmware/configurator-vmware.component';
+import { ConfiguratorDialogIouComponent } from './components/project-map/node-editors/configurator/iou/configurator-iou.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -375,7 +376,8 @@ if (environment.production) {
     ConfiguratorDialogCloudComponent,
     UdpTunnelsComponent,
     ConfiguratorDialogAtmSwitchComponent,
-    ConfiguratorDialogVmwareComponent
+    ConfiguratorDialogVmwareComponent,
+    ConfiguratorDialogIouComponent
   ],
   imports: [
     BrowserModule,
@@ -484,7 +486,8 @@ if (environment.production) {
     ConfiguratorDialogQemuComponent,
     ConfiguratorDialogCloudComponent,
     ConfiguratorDialogAtmSwitchComponent,
-    ConfiguratorDialogVmwareComponent
+    ConfiguratorDialogVmwareComponent,
+    ConfiguratorDialogIouComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -11,6 +11,7 @@ import { ConfiguratorDialogQemuComponent } from '../../../node-editors/configura
 import { ConfiguratorDialogCloudComponent } from '../../../node-editors/configurator/cloud/configurator-cloud.component';
 import { ConfiguratorDialogAtmSwitchComponent } from '../../../node-editors/configurator/atm_switch/configurator-atm-switch.component';
 import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configurator/vmware/configurator-vmware.component';
+import { ConfiguratorDialogIouComponent } from '../../../node-editors/configurator/iou/configurator-iou.component';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'dynamips') {
 
     } else if (this.node.node_type === 'iou') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogIouComponent, this.conf);
     } else if (this.node.node_type === 'qemu') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, this.conf);
     } else if (this.node.node_type === 'virtualbox') {

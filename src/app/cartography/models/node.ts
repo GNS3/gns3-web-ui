@@ -16,6 +16,7 @@ export class Properties {
   linked_clone: boolean;
   on_close: string;
   ram: number;
+  nvram: number;
   usage: string;
   use_any_adapter: boolean;
   vmname: string;
@@ -61,6 +62,8 @@ export class Node {
   console_host: string;
   console_type: string;
   custom_adapters?: CustomAdapter[];
+  ethernet_adapters?: any;
+  serial_adapters?: any;
   first_port_name: string;
   height: number;
   label: Label;
