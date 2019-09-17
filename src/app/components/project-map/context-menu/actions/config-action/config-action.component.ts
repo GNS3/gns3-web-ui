@@ -10,6 +10,7 @@ import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/con
 import { ConfiguratorDialogQemuComponent } from '../../../node-editors/configurator/qemu/configurator-qemu.component';
 import { ConfiguratorDialogCloudComponent } from '../../../node-editors/configurator/cloud/configurator-cloud.component';
 import { ConfiguratorDialogAtmSwitchComponent } from '../../../node-editors/configurator/atm_switch/configurator-atm-switch.component';
+import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configurator/vmware/configurator-vmware.component';
 
 
 @Component({
@@ -45,7 +46,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'virtualbox') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogVirtualBoxComponent, this.conf);
     } else if (this.node.node_type === 'vmware') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogVmwareComponent, this.conf);
     } else if (this.node.node_type === 'docker') {
 
     } else if (this.node.node_type === 'nat') {
