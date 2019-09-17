@@ -19,12 +19,18 @@ export class CustomAdaptersComponent {
     public adapters: CustomAdapter[];
     public numberOfAdapters: number;
 
+    constructor() {
+        console.log(this.networkTypes);
+    }
+
     cancelConfigureCustomAdapters(){
         this.closeConfiguratorEmitter.emit(false);
     }
 
     configureCustomAdapters(){
         this.adapters = [];
+        console.log(this.customAdapters);
+        
         this.customAdapters.adapters.forEach(n => {
             this.adapters.push({
                 adapter_number: n.adapter_number,
