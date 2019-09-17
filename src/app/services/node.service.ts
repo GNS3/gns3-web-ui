@@ -89,6 +89,7 @@ export class NodeService {
   updateNode(server: Server, node: Node): Observable<Node> {
     return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
+      console_auto_start: node.console_auto_start,
       name: node.name,
       properties: node.properties
     });

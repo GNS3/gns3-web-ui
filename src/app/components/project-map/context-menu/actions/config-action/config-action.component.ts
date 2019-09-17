@@ -12,6 +12,7 @@ import { ConfiguratorDialogCloudComponent } from '../../../node-editors/configur
 import { ConfiguratorDialogAtmSwitchComponent } from '../../../node-editors/configurator/atm_switch/configurator-atm-switch.component';
 import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configurator/vmware/configurator-vmware.component';
 import { ConfiguratorDialogIouComponent } from '../../../node-editors/configurator/iou/configurator-iou.component';
+import { ConfiguratorDialogIosComponent } from '../../../node-editors/configurator/ios/configurator-ios.component';
 
 
 @Component({
@@ -39,7 +40,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'cloud') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogCloudComponent, this.conf);
     } else if (this.node.node_type === 'dynamips') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogIosComponent, this.conf);
     } else if (this.node.node_type === 'iou') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogIouComponent, this.conf);
     } else if (this.node.node_type === 'qemu') {
