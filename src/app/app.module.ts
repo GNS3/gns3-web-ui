@@ -229,6 +229,11 @@ import { ConfiguratorDialogIosComponent } from './components/project-map/node-ed
 import { ConfiguratorDialogDockerComponent } from './components/project-map/node-editors/configurator/docker/configurator-docker.component';
 import { ConfiguratorDialogNatComponent } from './components/project-map/node-editors/configurator/nat/configurator-nat.component';
 import { ConfiguratorDialogTracengComponent } from './components/project-map/node-editors/configurator/traceng/configurator-traceng.component';
+import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
+import { TracengPreferencesComponent } from './components/preferences/traceng/traceng-preferences/traceng-preferences.component';
+import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
+import { TracengService } from './services/traceng.service';
+import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -385,7 +390,11 @@ if (environment.production) {
     ConfiguratorDialogIosComponent,
     ConfiguratorDialogDockerComponent,
     ConfiguratorDialogNatComponent,
-    ConfiguratorDialogTracengComponent
+    ConfiguratorDialogTracengComponent,
+    AddTracengTemplateComponent,
+    TracengPreferencesComponent,
+    TracengTemplatesComponent,
+    TracengTemplateDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -464,7 +473,8 @@ if (environment.production) {
     RotationValidator,
     MapSettingsService,
     InfoService,
-    ComputeService
+    ComputeService,
+    TracengService
   ],
   entryComponents: [
     AddServerDialogComponent,
