@@ -14,6 +14,7 @@ import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configu
 import { ConfiguratorDialogIouComponent } from '../../../node-editors/configurator/iou/configurator-iou.component';
 import { ConfiguratorDialogIosComponent } from '../../../node-editors/configurator/ios/configurator-ios.component';
 import { ConfiguratorDialogDockerComponent } from '../../../node-editors/configurator/docker/configurator-docker.component';
+import { ConfiguratorDialogNatComponent } from '../../../node-editors/configurator/nat/configurator-nat.component';
 
 
 @Component({
@@ -53,7 +54,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'docker') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogDockerComponent, this.conf);
     } else if (this.node.node_type === 'nat') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogNatComponent, this.conf);
     } else if (this.node.node_type === 'frame_relay_switch') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
     } else if (this.node.node_type === 'atm_switch') {
