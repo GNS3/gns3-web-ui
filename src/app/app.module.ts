@@ -228,6 +228,7 @@ import { ConfiguratorDialogIouComponent } from './components/project-map/node-ed
 import { ConfiguratorDialogIosComponent } from './components/project-map/node-editors/configurator/ios/configurator-ios.component';
 import { ConfiguratorDialogDockerComponent } from './components/project-map/node-editors/configurator/docker/configurator-docker.component';
 import { ConfiguratorDialogNatComponent } from './components/project-map/node-editors/configurator/nat/configurator-nat.component';
+import { ConfiguratorDialogTracengComponent } from './components/project-map/node-editors/configurator/traceng/configurator-traceng.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -383,7 +384,8 @@ if (environment.production) {
     ConfiguratorDialogIouComponent,
     ConfiguratorDialogIosComponent,
     ConfiguratorDialogDockerComponent,
-    ConfiguratorDialogNatComponent
+    ConfiguratorDialogNatComponent,
+    ConfiguratorDialogTracengComponent
   ],
   imports: [
     BrowserModule,
@@ -496,7 +498,8 @@ if (environment.production) {
     ConfiguratorDialogIouComponent,
     ConfiguratorDialogIosComponent,
     ConfiguratorDialogDockerComponent,
-    ConfiguratorDialogNatComponent
+    ConfiguratorDialogNatComponent,
+    ConfiguratorDialogTracengComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -8,18 +8,18 @@ import { MatDialogRef } from '@angular/material';
 
 
 @Component({
-    selector: 'app-configurator-nat',
-    templateUrl: './configurator-nat.component.html',
+    selector: 'app-configurator-traceng',
+    templateUrl: './configurator-traceng.component.html',
     styleUrls: ['../configurator.component.scss']
 })
-export class ConfiguratorDialogNatComponent implements OnInit {
+export class ConfiguratorDialogTracengComponent implements OnInit {
     server: Server;
     node: Node;
     name: string;
     generalSettingsForm: FormGroup;
 
     constructor(
-        public dialogRef: MatDialogRef<ConfiguratorDialogNatComponent>,
+        public dialogRef: MatDialogRef<ConfiguratorDialogTracengComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder

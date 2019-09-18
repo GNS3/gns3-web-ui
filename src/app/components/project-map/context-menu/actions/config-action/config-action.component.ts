@@ -15,6 +15,7 @@ import { ConfiguratorDialogIouComponent } from '../../../node-editors/configurat
 import { ConfiguratorDialogIosComponent } from '../../../node-editors/configurator/ios/configurator-ios.component';
 import { ConfiguratorDialogDockerComponent } from '../../../node-editors/configurator/docker/configurator-docker.component';
 import { ConfiguratorDialogNatComponent } from '../../../node-editors/configurator/nat/configurator-nat.component';
+import { ConfiguratorDialogTracengComponent } from '../../../node-editors/configurator/traceng/configurator-traceng.component';
 
 
 @Component({
@@ -60,7 +61,7 @@ export class ConfigActionComponent {
     } else if (this.node.node_type === 'atm_switch') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, this.conf);
     } else if (this.node.node_type === 'traceng') {
-
+      this.dialogRef = this.dialog.open(ConfiguratorDialogTracengComponent, this.conf);
     }
 
     let instance = this.dialogRef.componentInstance;
