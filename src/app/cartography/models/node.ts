@@ -52,6 +52,8 @@ export class Properties {
   platform: string;
   process_priority: string;
   qemu_path: string;
+  environment: string;
+  extra_hosts: string;
 }
 
 export class Node {
