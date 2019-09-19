@@ -4,11 +4,12 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { QemuService } from '../../../../../services/qemu.service';
 import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
 import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
+import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 
 
 @Component({
@@ -30,9 +31,16 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
 
+    private conf = {
+        autoFocus: false,
+        width: '800px'
+    };
+    dialogRefQemuImageCreator;
+
     @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
 
     constructor(
+        private dialog: MatDialog,
         public dialogRef: MatDialogRef<ConfiguratorDialogQemuComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
@@ -56,6 +64,12 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.qemuService.getBinaries(this.server).subscribe((qemuBinaries: QemuBinary[]) => {
             this.binaries = qemuBinaries;
         });
+    }
+
+    openQemuImageCreator() {
+        this.dialogRefQemuImageCreator = this.dialog.open(QemuImageCreatorComponent, this.conf);
+        let instance = this.dialogRefQemuImageCreator.componentInstance;
+        instance.server = this.server;
     }
 
     uploadCdromImageFile(event){

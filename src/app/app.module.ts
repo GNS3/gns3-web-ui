@@ -234,6 +234,7 @@ import { TracengPreferencesComponent } from './components/preferences/traceng/tr
 import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
 import { TracengService } from './services/traceng.service';
 import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
+import { QemuImageCreatorComponent } from './components/project-map/node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -394,7 +395,8 @@ if (environment.production) {
     AddTracengTemplateComponent,
     TracengPreferencesComponent,
     TracengTemplatesComponent,
-    TracengTemplateDetailsComponent
+    TracengTemplateDetailsComponent,
+    QemuImageCreatorComponent
   ],
   imports: [
     BrowserModule,
@@ -509,7 +511,8 @@ if (environment.production) {
     ConfiguratorDialogIosComponent,
     ConfiguratorDialogDockerComponent,
     ConfiguratorDialogNatComponent,
-    ConfiguratorDialogTracengComponent
+    ConfiguratorDialogTracengComponent,
+    QemuImageCreatorComponent
   ],
   bootstrap: [AppComponent]
 })
