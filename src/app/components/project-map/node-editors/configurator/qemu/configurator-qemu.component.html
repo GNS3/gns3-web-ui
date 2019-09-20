@@ -52,15 +52,17 @@
                     <mat-tab label="HDD">
                         <mat-card>
                             <!-- to do -->
-                            <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="file-button">Create Qemu image</button>
+                            <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="create-button">Create Qemu image</button>
                             <mat-card-title></mat-card-title>
                             <mat-card-subtitle>
                                 HDA (Primary Master)
                             </mat-card-subtitle>
                             <mat-card-content>
-                                <mat-form-field class="form-field">
-                                    <input matInput [(ngModel)]="node.properties.hda_disk_image" placeholder="Disk image">
-                                </mat-form-field>
+                                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hda_disk_image">
+                                    <mat-option *ngFor="let image of qemuImages" [value]="image.filename">
+                                        {{image.filename}}
+                                    </mat-option>
+                                </mat-select>
                                 <mat-form-field class="form-field">
                                 <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hda_disk_interface">
                                     <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
@@ -76,9 +78,11 @@
                                 HDB (Primary Slave)
                             </mat-card-subtitle>
                             <mat-card-content>
-                                <mat-form-field class="form-field">
-                                    <input matInput [(ngModel)]="node.properties.hdb_disk_image" placeholder="Disk image">
-                                </mat-form-field>
+                                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdb_disk_image">
+                                    <mat-option *ngFor="let image of qemuImages" [value]="image.filename">
+                                        {{image.filename}}
+                                    </mat-option>
+                                </mat-select>
                                 <mat-form-field class="form-field">
                                 <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdb_disk_interface">
                                     <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
@@ -94,9 +98,11 @@
                                 HDC (Secondary Master)
                             </mat-card-subtitle>
                             <mat-card-content>
-                                <mat-form-field class="form-field">
-                                    <input matInput [(ngModel)]="node.properties.hdc_disk_image" placeholder="Disk image">
-                                </mat-form-field>
+                                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdc_disk_image">
+                                    <mat-option *ngFor="let image of qemuImages" [value]="image.filename">
+                                        {{image.filename}}
+                                    </mat-option>
+                                </mat-select>
                                 <mat-form-field class="form-field">
                                 <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdc_disk_interface">
                                     <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
@@ -112,9 +118,11 @@
                                 HDD (Secondary Slave)
                             </mat-card-subtitle>
                             <mat-card-content>
-                                <mat-form-field class="form-field">
-                                    <input matInput [(ngModel)]="node.properties.hdd_disk_image" placeholder="Disk image">
-                                </mat-form-field>
+                                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdd_disk_image">
+                                    <mat-option *ngFor="let image of qemuImages" [value]="image.filename">
+                                        {{image.filename}}
+                                    </mat-option>
+                                </mat-select>
                                 <mat-form-field class="form-field">
                                 <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdd_disk_interface">
                                     <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">

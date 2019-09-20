@@ -10,6 +10,7 @@ import { QemuService } from '../../../../../services/qemu.service';
 import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
 import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
+import { QemuImage } from '../../../../../models/qemu/qemu-image';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
+    qemuImages: QemuImage[] = [];
 
     private conf = {
         autoFocus: false,
@@ -63,6 +65,10 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
         this.qemuService.getBinaries(this.server).subscribe((qemuBinaries: QemuBinary[]) => {
             this.binaries = qemuBinaries;
+        });
+
+        this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+            this.qemuImages = qemuImages;
         });
     }
 
