@@ -18,6 +18,7 @@ install:
   - yarn install
 
 build_script:
+  - node --max-old-space-size=4096 node_modules/@angular/cli/bin/ng build --prod
   - yarn buildforelectron
   - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
   - "%PYTHON%\\python.exe scripts\\build.py download -a"
