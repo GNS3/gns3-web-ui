@@ -19,6 +19,7 @@ install:
 
 build_script:
   - yarn buildforelectron
+  - node --max-old-space-size=4096 node_modules/@angular/cli/bin/ng build --prod
   - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
   - "%PYTHON%\\python.exe scripts\\build.py download -a"
   - "%PYTHON%\\python.exe scripts\\build.py build_exe -b dist/exe.gns3server -s"
