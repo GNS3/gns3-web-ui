@@ -40,7 +40,7 @@ export class ProjectsComponent implements OnInit {
     private projectService: ProjectService,
     private settingsService: SettingsService,
     private progressService: ProgressService,
-    private dialog: MatDialog
+    public dialog: MatDialog
   ) {}
 
   ngOnInit() {

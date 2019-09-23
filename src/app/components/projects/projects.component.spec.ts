@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatDialogRef } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -19,6 +19,8 @@ import { Project } from '../../models/project';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -51,9 +53,11 @@ describe('ProjectsComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         ProgressService
       ],
-      declarations: [ProjectsComponent, ProjectsFilter],
+      declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],
       schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    })
+    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ChooseNameDialogComponent] } })
+    .compileComponents();
 
     serverService = TestBed.get(ServerService);
     settingsService = TestBed.get(SettingsService);
@@ -93,26 +97,15 @@ describe('ProjectsComponent', () => {
     expect(mockedProjectService.delete).toHaveBeenCalled();
   });
 
-  it('should call project service after duplicate action', () => {
-    spyOn(mockedProjectService, 'duplicate').and.returnValue(of());
+  it('should call open dialog after duplicate action', () => {
+    spyOn(component.dialog, 'open').and.callThrough();
     let project = new Project();
     project.project_id = '1';
     project.status = 'closed';
 
     component.duplicate(project);
 
-    expect(mockedProjectService.duplicate).toHaveBeenCalled();
-  });
-
-  it('should call refresh after duplicate action', () => {
-    spyOn(component, 'refresh');
-    let project = new Project();
-    project.project_id = '1';
-    project.status = 'closed';
-
-    component.duplicate(project);
-
-    expect(component.refresh).toHaveBeenCalled();
+    expect(component.dialog.open).toHaveBeenCalled();
   });
 
   describe('ProjectComponent open', () => {
