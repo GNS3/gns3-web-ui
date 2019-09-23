@@ -16,6 +16,7 @@ import { ProgressService } from '../../common/progress/progress.service';
 
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 
 @Component({
   selector: 'app-projects',
@@ -110,7 +111,14 @@ export class ProjectsComponent implements OnInit {
   }
 
   duplicate(project: Project) {
-    this.projectService.duplicate(this.server, project.project_id, project.name).subscribe(() => {
+    const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
+      width: '400px',
+      autoFocus: false
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.project = project;
+    dialogRef.afterClosed().subscribe(() => {
       this.refresh();
     });
   }
