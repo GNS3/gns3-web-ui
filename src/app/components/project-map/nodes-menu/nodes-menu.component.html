@@ -1,4 +1,12 @@
 <button
+    matTooltip="Console connect to all nodes"
+    mat-icon-button
+    (click)="startConsoleForAllNodes()"
+    class="menu-button"
+    >
+    <mat-icon>web_asset</mat-icon>
+</button>
+<button
     matTooltip="Start/Resume all nodes"
     mat-icon-button
     (click)="startNodes()"
