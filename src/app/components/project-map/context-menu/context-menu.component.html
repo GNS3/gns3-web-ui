@@ -21,7 +21,8 @@
       [nodes]="nodes"
     ></app-console-device-action>
     <app-console-device-action-browser
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1 && !isElectronApp && nodes[0].console_type!=='none'"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length===1 && !isElectronApp"
+      [server]="server"
       [node]="nodes[0]"
     ></app-console-device-action-browser>
     <app-change-symbol-action
