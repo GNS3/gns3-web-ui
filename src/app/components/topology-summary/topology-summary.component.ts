@@ -8,6 +8,7 @@ import { ProjectService } from '../../services/project.service';
 import { ProjectStatistics } from '../../models/project-statistics';
 import { Compute } from '../../models/compute';
 import { ComputeService } from '../../services/compute.service';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 
 
 @Component({
@@ -29,13 +30,16 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     startedStatusFilterEnabled: boolean = false;
     suspendedStatusFilterEnabled: boolean = false;
     stoppedStatusFilterEnabled: boolean = false;
+    captureFilterEnabled: boolean = false;
+    packetFilterEnabled: boolean = false;
     computes: Compute[] = [];
     isTopologyVisible: boolean = true;
 
     constructor(
         private nodesDataSource: NodesDataSource,
         private projectService: ProjectService,
-        private computeService: ComputeService
+        private computeService: ComputeService,
+        private linksDataSource: LinksDataSource
     ) {}
 
     ngOnInit() {
@@ -97,6 +101,15 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.applyFilters();
     }
 
+    applyCaptureFilter(value: boolean, filter: string) {
+        if (filter === 'capture') {
+            this.captureFilterEnabled = value;
+        } else if (filter === 'packet') {
+            this.packetFilterEnabled = value;
+        }
+        this.applyFilters();
+    }
+
     applyFilters() {
         let nodes: Node[] = [];
 
@@ -116,11 +129,61 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             nodes = nodes.concat(this.nodes);
         }
 
+        if (this.captureFilterEnabled) {
+            nodes = this.checkCapturing(nodes);
+        }
+
+        if(this.packetFilterEnabled) {
+            nodes = this.checkPacketFilters(nodes);
+        }
+
         if (this.sortingOrder === 'asc') {
             this.filteredNodes = nodes.sort(this.compareAsc);
         } else {
             this.filteredNodes = nodes.sort(this.compareDesc);
         }    
+    }
+
+    checkCapturing(nodes: Node[]): Node[] {
+        let links = this.linksDataSource.getItems();
+        let nodesWithCapturing: string[] = [];
+
+        links.forEach(link => {
+            if (link.capturing) {
+                link.nodes.forEach(node => {
+                    nodesWithCapturing.push(node.node_id);
+                });
+            }
+        });
+
+        let filteredNodes: Node[] = [];
+        nodes.forEach(node => {
+            if (nodesWithCapturing.includes(node.node_id)) {
+                filteredNodes.push(node);
+            }
+        });
+        return filteredNodes;
+    }
+
+    checkPacketFilters(nodes: Node[]): Node[] {
+        let links = this.linksDataSource.getItems();
+        let nodesWithPacketFilters: string[] = [];
+
+        links.forEach(link => {
+            if (link.filters.bpf || link.filters.corrupt || link.filters.corrupt || link.filters.packet_loss || link.filters.frequency_drop) {
+                link.nodes.forEach(node => {
+                    nodesWithPacketFilters.push(node.node_id);
+                });
+            }
+        });
+
+        let filteredNodes: Node[] = [];
+        nodes.forEach(node => {
+            if (nodesWithPacketFilters.includes(node.node_id)) {
+                filteredNodes.push(node);
+            }
+        });
+        return filteredNodes;
     }
 
     close() {
