@@ -86,6 +86,25 @@ export class NodeService {
     });
   }
 
+  updateNode(server: Server, node: Node): Observable<Node> {
+    return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+      console_type: node.console_type,
+      console_auto_start: node.console_auto_start,
+      name: node.name,
+      properties: node.properties
+    });
+  }
+
+  updateNodeWithCustomAdapters(server: Server, node: Node): Observable<Node> {
+    return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+      console_type: node.console_type,
+      console_auto_start: node.console_auto_start,
+      custom_adapters: node.custom_adapters,
+      name: node.name,
+      properties: node.properties
+    });
+  }
+
   delete(server: Server, node: Node) {
     return this.httpServer.delete<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
@@ -97,6 +116,10 @@ export class NodeService {
       "y": node.y + 10,
       "z": node.z
     });
+  }
+
+  getNode(server: Server, node: Node) {
+    return this.httpServer.get(server, `/projects/${node.project_id}/nodes/${node.node_id}`)
   }
 
   getConfiguration(server: Server, node: Node) {

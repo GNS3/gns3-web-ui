@@ -82,7 +82,7 @@
                         placeholder="Ethernet interface" 
                         [ngModelOptions]="{standalone: true}" 
                         [(ngModel)]="ethernetInterface">
-                            <mat-option *ngFor="let type of " [value]="type">
+                            <mat-option *ngFor="let type of ethernetInterfaces" [value]="type">
                                 {{type}}
                             </mat-option>
                     </mat-select>

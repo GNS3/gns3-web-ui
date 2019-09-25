@@ -5,6 +5,10 @@
       [server]="server"
       [node]="nodes[0]"
     ></app-show-node-action>
+    <app-config-node-action *ngIf="nodes.length===1"
+      [server]="server"
+      [node]="nodes[0]"
+    ></app-config-node-action>
     <app-start-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-start-node-action>
     <app-suspend-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-suspend-node-action>
     <app-stop-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-stop-node-action>

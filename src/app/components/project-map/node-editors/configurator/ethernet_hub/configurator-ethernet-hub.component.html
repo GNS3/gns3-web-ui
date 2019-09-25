@@ -1,0 +1,31 @@
+<h1 mat-dialog-title>Configurator for node {{name}}</h1>
+
+<div class="modal-form-container">
+    <div class="content">
+        <div class="default-content">
+            <mat-card class="matCard">
+                <form [formGroup]="inputForm">
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="text" 
+                            [(ngModel)]="node.name" 
+                            formControlName="name"
+                            placeholder="Name">
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                        <input 
+                            matInput type="number" 
+                            [(ngModel)]="numberOfPorts" 
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder="Number of ports">
+                    </mat-form-field>
+                </form>
+            </mat-card>
+        </div>
+    </div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

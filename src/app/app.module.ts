@@ -211,6 +211,30 @@ import { ProjectsFilter } from './filters/projectsFilter.pipe';
 import { ComputeService } from './services/compute.service';
 import { ReloadNodeActionComponent } from './components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
 import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
+import { ConfigActionComponent } from './components/project-map/context-menu/actions/config-action/config-action.component';
+import { ConfiguratorDialogVpcsComponent } from './components/project-map/node-editors/configurator/vpcs/configurator-vpcs.component';
+import { ConfiguratorDialogEthernetHubComponent } from './components/project-map/node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
+import { ConfiguratorDialogEthernetSwitchComponent } from './components/project-map/node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
+import { PortsComponent } from './components/preferences/common/ports/ports.component';
+import { ConfiguratorDialogSwitchComponent } from './components/project-map/node-editors/configurator/switch/configurator-switch.component';
+import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
+import { CustomAdaptersTableComponent } from './components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { ConfiguratorDialogQemuComponent } from './components/project-map/node-editors/configurator/qemu/configurator-qemu.component';
+import { ConfiguratorDialogCloudComponent } from './components/project-map/node-editors/configurator/cloud/configurator-cloud.component';
+import { UdpTunnelsComponent } from './components/preferences/common/udp-tunnels/udp-tunnels.component';
+import { ConfiguratorDialogAtmSwitchComponent } from './components/project-map/node-editors/configurator/atm_switch/configurator-atm-switch.component';
+import { ConfiguratorDialogVmwareComponent } from './components/project-map/node-editors/configurator/vmware/configurator-vmware.component';
+import { ConfiguratorDialogIouComponent } from './components/project-map/node-editors/configurator/iou/configurator-iou.component';
+import { ConfiguratorDialogIosComponent } from './components/project-map/node-editors/configurator/ios/configurator-ios.component';
+import { ConfiguratorDialogDockerComponent } from './components/project-map/node-editors/configurator/docker/configurator-docker.component';
+import { ConfiguratorDialogNatComponent } from './components/project-map/node-editors/configurator/nat/configurator-nat.component';
+import { ConfiguratorDialogTracengComponent } from './components/project-map/node-editors/configurator/traceng/configurator-traceng.component';
+import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
+import { TracengPreferencesComponent } from './components/preferences/traceng/traceng-preferences/traceng-preferences.component';
+import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
+import { TracengService } from './services/traceng.service';
+import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
+import { QemuImageCreatorComponent } from './components/project-map/node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -349,7 +373,30 @@ if (environment.production) {
     ChangeSymbolActionComponent,
     EditProjectDialogComponent,
     ReloadNodeActionComponent,
-    SuspendNodeActionComponent
+    SuspendNodeActionComponent,
+    ConfigActionComponent,
+    ConfiguratorDialogVpcsComponent,
+    ConfiguratorDialogEthernetHubComponent,
+    ConfiguratorDialogEthernetSwitchComponent,
+    PortsComponent,
+    ConfiguratorDialogSwitchComponent,
+    ConfiguratorDialogVirtualBoxComponent,
+    CustomAdaptersTableComponent,
+    ConfiguratorDialogQemuComponent,
+    ConfiguratorDialogCloudComponent,
+    UdpTunnelsComponent,
+    ConfiguratorDialogAtmSwitchComponent,
+    ConfiguratorDialogVmwareComponent,
+    ConfiguratorDialogIouComponent,
+    ConfiguratorDialogIosComponent,
+    ConfiguratorDialogDockerComponent,
+    ConfiguratorDialogNatComponent,
+    ConfiguratorDialogTracengComponent,
+    AddTracengTemplateComponent,
+    TracengPreferencesComponent,
+    TracengTemplatesComponent,
+    TracengTemplateDetailsComponent,
+    QemuImageCreatorComponent
   ],
   imports: [
     BrowserModule,
@@ -428,7 +475,8 @@ if (environment.production) {
     RotationValidator,
     MapSettingsService,
     InfoService,
-    ComputeService
+    ComputeService,
+    TracengService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -449,7 +497,22 @@ if (environment.production) {
     SaveProjectDialogComponent,
     InfoDialogComponent,
     ChangeSymbolDialogComponent,
-    EditProjectDialogComponent
+    EditProjectDialogComponent,
+    ConfiguratorDialogVpcsComponent,
+    ConfiguratorDialogEthernetHubComponent,
+    ConfiguratorDialogEthernetSwitchComponent,
+    ConfiguratorDialogSwitchComponent,
+    ConfiguratorDialogVirtualBoxComponent,
+    ConfiguratorDialogQemuComponent,
+    ConfiguratorDialogCloudComponent,
+    ConfiguratorDialogAtmSwitchComponent,
+    ConfiguratorDialogVmwareComponent,
+    ConfiguratorDialogIouComponent,
+    ConfiguratorDialogIosComponent,
+    ConfiguratorDialogDockerComponent,
+    ConfiguratorDialogNatComponent,
+    ConfiguratorDialogTracengComponent,
+    QemuImageCreatorComponent
   ],
   bootstrap: [AppComponent]
 })

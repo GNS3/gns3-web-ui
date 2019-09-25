@@ -20,7 +20,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     server: Server;
     vmwareTemplate: VmwareTemplate;
     generalSettingsForm: FormGroup;
-    displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
+    displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     isConfiguratorOpened: boolean = false;
     isSymbolSelectionOpened: boolean = false;
     consoleTypes: string[] = [];
