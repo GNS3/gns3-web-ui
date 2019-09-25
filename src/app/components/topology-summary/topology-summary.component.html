@@ -13,6 +13,11 @@
                 <mat-checkbox (change)="applyStatusFilter($event.checked, 'suspended')">Suspended</mat-checkbox>
                 <mat-checkbox (change)="applyStatusFilter($event.checked, 'stopped')">Stopped</mat-checkbox>
             </div>
+            Filter devices with captures <br/>
+            <div>
+                <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">Show devices with captures</mat-checkbox><br/>
+                <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">Show devices with packet filters</mat-checkbox>
+            </div>
         </div>
         <div class="summarySorting">
             Sorting <br/>
