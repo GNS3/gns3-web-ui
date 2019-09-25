@@ -6,13 +6,14 @@ import { MatTableModule, MatTooltipModule, MatIconModule, MatSortModule, MatDial
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { MockedNodesDataSource } from '../project-map/project-map.component.spec';
+import { MockedNodesDataSource, MockedLinksDataSource } from '../project-map/project-map.component.spec';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
 import { Server } from '../../models/server';
 import { ComputeService } from '../../services/compute.service';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 
 export class MockedComputeService {
     getComputes(server: Server) {
@@ -26,6 +27,7 @@ describe('TopologySummaryComponent', () => {
     let mockedProjectService: MockedProjectService = new MockedProjectService();
     let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
     let mockedComputeService: MockedComputeService = new MockedComputeService();
+    let mockedLinksDataSource: MockedLinksDataSource = new MockedLinksDataSource();
   
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -41,7 +43,8 @@ describe('TopologySummaryComponent', () => {
             providers: [
                 { provide: ProjectService, useValue: mockedProjectService },
                 { provide: NodesDataSource, useValue: mockedNodesDataSource },
-                { provide: ComputeService, useValue: mockedComputeService}
+                { provide: ComputeService, useValue: mockedComputeService},
+                { provide: LinksDataSource, useValue: mockedLinksDataSource }
             ],
             declarations: [TopologySummaryComponent],
             schemas: [NO_ERRORS_SCHEMA]
