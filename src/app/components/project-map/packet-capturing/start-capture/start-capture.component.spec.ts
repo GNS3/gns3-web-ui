@@ -12,6 +12,7 @@ import { MockedLinkService, MockedNodesDataSource } from '../../project-map.comp
 import { Link } from '../../../../models/link';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { PacketCaptureService } from '../../../../services/packet-capture.service';
 
 describe('StartCaptureDialogComponent', () => {
     let component: StartCaptureDialogComponent;
@@ -32,7 +33,8 @@ describe('StartCaptureDialogComponent', () => {
             { provide: MAT_DIALOG_DATA, useValue: [] },
             { provide: ToasterService, useValue: mockedToasterService },
             { provide: LinkService, useValue: mockedLinkService },
-            { provide: NodesDataSource, useValue: mockedNodesDataSource }
+            { provide: NodesDataSource, useValue: mockedNodesDataSource },
+            { provide: PacketCaptureService }
           ],
           declarations: [
             StartCaptureDialogComponent

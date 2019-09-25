@@ -236,6 +236,8 @@ import { TracengService } from './services/traceng.service';
 import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
 import { QemuImageCreatorComponent } from './components/project-map/node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component';
 import { ChooseNameDialogComponent } from './components/projects/choose-name-dialog/choose-name-dialog.component';
+import { PacketCaptureService } from './services/packet-capture.service';
+import { StartCaptureOnStartedLinkActionComponent } from './components/project-map/context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -398,7 +400,8 @@ if (environment.production) {
     TracengTemplatesComponent,
     TracengTemplateDetailsComponent,
     QemuImageCreatorComponent,
-    ChooseNameDialogComponent
+    ChooseNameDialogComponent,
+    StartCaptureOnStartedLinkActionComponent
   ],
   imports: [
     BrowserModule,
@@ -478,7 +481,8 @@ if (environment.production) {
     MapSettingsService,
     InfoService,
     ComputeService,
-    TracengService
+    TracengService,
+    PacketCaptureService
   ],
   entryComponents: [
     AddServerDialogComponent,

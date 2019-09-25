@@ -9,9 +9,14 @@
         <div class="summaryFilters">
             Filter by status <br/>
             <div class="filterBox">
-                <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">Started</mat-checkbox>
-                <mat-checkbox (change)="applyStatusFilter($event.checked, 'suspended')">Suspended</mat-checkbox>
-                <mat-checkbox (change)="applyStatusFilter($event.checked, 'stopped')">Stopped</mat-checkbox>
+                <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">started</mat-checkbox>
+                <mat-checkbox (change)="applyStatusFilter($event.checked, 'suspended')">suspended</mat-checkbox>
+                <mat-checkbox (change)="applyStatusFilter($event.checked, 'stopped')">stopped</mat-checkbox>
+            </div>
+            Show devices with <br/>
+            <div class="filterBox">
+                <mat-checkbox (change)="applyCaptureFilter($event.checked, 'capture')">active capture(s)</mat-checkbox>
+                <mat-checkbox (change)="applyCaptureFilter($event.checked, 'packet')">active packet filters</mat-checkbox>
             </div>
         </div>
         <div class="summarySorting">

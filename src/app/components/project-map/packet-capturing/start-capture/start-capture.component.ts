@@ -9,6 +9,8 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 import { ToasterService } from '../../../../services/toaster.service';
 import { LinkNode } from '../../../../models/link-node';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { Project } from '../../../../models/project';
 
 @Component({
     selector: 'app-start-capture',
@@ -17,6 +19,7 @@ import { NodesDataSource } from '../../../../cartography/datasources/nodes-datas
 })
 export class StartCaptureDialogComponent implements OnInit {
     server: Server;
+    project: Project;
     link: Link;
     linkTypes = [];
     inputForm: FormGroup;
@@ -27,7 +30,8 @@ export class StartCaptureDialogComponent implements OnInit {
         private linkService: LinkService,
         private formBuilder: FormBuilder, 
         private toasterService: ToasterService,
-        private nodesDataSource: NodesDataSource
+        private nodesDataSource: NodesDataSource,
+        private packetCaptureService: PacketCaptureService
     ) {
         this.inputForm = this.formBuilder.group({
             linkType: new FormControl('', Validators.required),
@@ -72,6 +76,10 @@ export class StartCaptureDialogComponent implements OnInit {
                 capture_file_name: this.inputForm.get('fileName').value,
                 data_link_type: this.inputForm.get('linkType').value
             };
+
+            if (this.startProgram) {
+                this.packetCaptureService.startCapture(this.server, this.project, this.link, captureSettings.capture_file_name);
+            }
 
             this.linkService.startCaptureOnLink(this.server, this.link, captureSettings).subscribe(() => {
                 this.dialogRef.close();
