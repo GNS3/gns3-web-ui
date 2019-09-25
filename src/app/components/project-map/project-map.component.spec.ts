@@ -64,6 +64,10 @@ export class MockedProgressService {
 export class MockedNodeService {
   public node = { label: {} } as Node;
   constructor() {}
+  
+  getDefaultCommand(): string {
+    return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
+  }
 
   updateLabel(): Observable<Node> {
     return of(this.node);

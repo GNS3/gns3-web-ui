@@ -122,6 +122,10 @@ export class NodeService {
     return this.httpServer.get(server, `/projects/${node.project_id}/nodes/${node.node_id}`)
   }
 
+  getDefaultCommand(): string {
+    return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
+  }
+
   getConfiguration(server: Server, node: Node) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`
 

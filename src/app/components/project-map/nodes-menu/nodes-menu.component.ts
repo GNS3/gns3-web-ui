@@ -28,10 +28,7 @@ export class NodesMenuComponent {
 
     async startConsoleForAllNodes() {
         if (this.electronService.isElectronApp) {
-            let consoleCommand = this.settingsService.get<string>('console_command');
-            if(consoleCommand === undefined) {
-                consoleCommand = `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
-            }
+            let consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
 
             let nodes = this.nodesDataSource.getItems();
             for(var node of nodes) {
