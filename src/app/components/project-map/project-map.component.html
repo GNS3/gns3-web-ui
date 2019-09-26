@@ -1,4 +1,4 @@
-<div *ngIf="project" class="project-map">
+<div *ngIf="project" class="project-map" #map>
   <app-d3-map
     *ngIf="!settings.angular_map"
     [server]="server"

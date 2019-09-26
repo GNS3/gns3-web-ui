@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -59,6 +59,7 @@ import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
+import { MapDimensions } from '../../models/map-dimensions';
 
 
 @Component({
@@ -93,6 +94,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
+  @ViewChild('map', {static: false}) map: ElementRef;
 
   private subscriptions: Subscription[] = [];
 
@@ -190,6 +192,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(routeSub);
+
+    this.subscriptions.push(this.mapSettingsService.onMapResized.subscribe((event: MapDimensions) => {
+        this.project.scene_width = this.project.scene_width + event.width;
+        this.project.scene_height = this.project.scene_height + event.height;
+
+        // this.map.nativeElement.scrollTo({ left: (this.map.nativeElement.scrollLeft + event.width), behavior: 'smooth' });
+        this.map.nativeElement.scrollLeft += event.width
+        this.map.nativeElement.scrollTop += event.height;
+      })
+    );
 
     this.subscriptions.push(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {

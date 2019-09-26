@@ -54,10 +54,14 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
       })
       .on('drag', (datum: Datum) => {
         const evt = new DraggableDrag<Datum>(datum);
+        console.log('evt from draggable ', evt);
+        console.log('evt client x ', event.sourceEvent.clientX);
         evt.dx = event.sourceEvent.clientX - lastX;
         evt.dy = event.sourceEvent.clientY - lastY;
         lastX = event.sourceEvent.clientX;
         lastY = event.sourceEvent.clientY;
+        console.log('evt x ', evt.x);
+
         this.drag.emit(evt);
       })
       .on('end', (datum: Datum) => {

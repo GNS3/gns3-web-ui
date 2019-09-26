@@ -32,6 +32,8 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
   private isMapLocked: boolean = false;
 
   @Input('svg') svg: SVGSVGElement;
+  @Input('width') width: number;
+  @Input('height') height: number;
 
   constructor(
     private nodesWidget: NodesWidget,
@@ -97,8 +99,29 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         const selectedNodes = selected.filter(item => item instanceof MapNode);
         // update nodes
         selectedNodes.forEach((node: MapNode) => {
+          // node.x += evt.dx;
+          // node.y += evt.dy;
+
+          // console.log(this.width);
+          // console.log(this.height);
+
+          // console.log(node.x);
+          // console.log(node.y);
+
+          // console.log(evt);
+
+          if (((node.x + evt.dx + 100) > this.width/2) || (node.y + evt.dy + 100) > this.height/2) {
+            this.mapSettingsService.onMapResized.emit({
+              width: node.x + evt.dx + 100 > this.width/2 && evt.dx > 0 ? evt.dx : 0,
+              height: node.y + evt.dy + 100 > this.height/2 && evt.dy > 0 ? evt.dy : 0
+            });
+          }
+
           node.x += evt.dx;
           node.y += evt.dy;
+
+          console.log("node.x ", node.x);
+          // console.log("node.y ", node.y);
 
           this.nodesWidget.redrawNode(svg, node);
 

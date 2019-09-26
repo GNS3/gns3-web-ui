@@ -45,8 +45,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() symbols: Symbol[] = [];
   @Input() server: Server;
 
-  @Input() width = 1500;
-  @Input() height = 600;
+  @Input() width = 2000;
+  @Input() height = 1000;
 
   @ViewChild('svg', {static: false}) svgRef: ElementRef;
   @ViewChild('textEditor', {static: false}) textEditor: TextEditorComponent;
