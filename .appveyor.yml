@@ -18,7 +18,7 @@ install:
   - yarn install
 
 build_script:
-  - cmd: set NODE_OPTIONS=--max-old-space-size=1028
+  - cmd: set NODE_OPTIONS=--max-old-space-size=8092
   - yarn buildforelectron
   - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
   - "%PYTHON%\\python.exe scripts\\build.py download -a"
