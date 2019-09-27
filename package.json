@@ -17,7 +17,7 @@
     "start": "ng serve",
     "startforelectron": "ng serve --configuration=electronDev",
     "build": "ng build",
-    "buildforelectron": "node --max_old_space_size=8192 ng build --configuration=electronProd",
+    "buildforelectron": "ng build --configuration=electronProd",
     "buildforgithub": "ng build --configuration=githubProd",
     "test": "ng test",
     "lint": "ng lint",
