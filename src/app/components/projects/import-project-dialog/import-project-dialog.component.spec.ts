@@ -122,12 +122,11 @@ describe('ImportProjectDialogComponent', () => {
 
     fileSelectDirective.onChange();
 
-    const expectedArguments = [
+    expect(fileSelectDirective.uploader.addToQueue).toHaveBeenCalledWith(
       debugElement.nativeElement.files,
       fileSelectDirective.getOptions(),
       fileSelectDirective.getFilters()
-    ];
-    expect(fileSelectDirective.uploader.addToQueue).toHaveBeenCalledWith(...expectedArguments);
+    );
   });
 
   it('should call uploading item', () => {
