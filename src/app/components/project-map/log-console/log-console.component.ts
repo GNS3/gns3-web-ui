@@ -42,6 +42,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private regexSuspend: RegExp = /^suspend (.*?)$/;
     private regexReload: RegExp = /^reload (.*?)$/;
     private regexShow: RegExp = /^show (.*?)$/;
+    private regexConsole: RegExp = /^console (.*?)$/;
 
     constructor(
         private projectWebServiceHandler: ProjectWebServiceHandler,
@@ -128,8 +129,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     handleCommand() {
-        if (this.command === 'help') {
-            this.showCommand("Available commands: help, version, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.")
+        if (this.command === 'help' || this.command === '') {
+            this.showCommand("Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.")
         } else if (this.command === 'version') {
             this.showCommand("Current version: 2019.2.0");
         } else if (this.command === 'start all') {
@@ -153,7 +154,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.showCommand("All nodes reloaded.")
             });
         } else if (
-            this.regexStart.test(this.command) || this.regexStop.test(this.command) || this.regexSuspend.test(this.command) || this.regexReload.test(this.command) || this.regexShow.test(this.command)) {
+            this.regexStart.test(this.command) || this.regexStop.test(this.command) || this.regexSuspend.test(this.command) || this.regexReload.test(this.command) || this.regexShow.test(this.command) || this.regexConsole.test(this.command)) {
             let splittedCommand = this.command.split(/[ ,]+/);
             let node = this.nodesDataSource.getItems().find(n => n.name.valueOf() === splittedCommand[1].valueOf());
             if (node) {
@@ -172,6 +173,22 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 else if (this.regexReload.test(this.command)) {
                     this.showCommand(`Reloading node ${splittedCommand[1]}...`);
                     this.nodeService.reload(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
+                }
+                else if (this.regexConsole.test(this.command)) {
+                    if (node.status === 'started') {
+                        this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
+                        if (node.console_type === "telnet") {
+                            location.assign(`gns3+telnet://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`);
+                        } else if (node.console_type === "vnc") {
+                            location.assign(`gns3+vnc://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`);
+                        } else if(node.console_type === "spice") {
+                            location.assign(`gns3+spice://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`);
+                        } else {
+                            this.showCommand("Supported console types: telnet, vnc, spice.");
+                        }
+                    } else {
+                        this.showCommand(`This node must be started before a console can be opened.`);
+                    }
                 }
                 else if (this.regexShow.test(this.command)) {
                     this.showCommand(`Information about node ${node.name}:`);
