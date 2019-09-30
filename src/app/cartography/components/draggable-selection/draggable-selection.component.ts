@@ -96,6 +96,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         const selected = this.selectionManager.getSelected();
         // update nodes
         let mapNodes = selected.filter(item => item instanceof MapNode);
+        const lockedNodes = mapNodes.filter((item: MapNode) => item.locked);
         const selectedNodes = mapNodes.filter((item: MapNode) => !item.locked);
         selectedNodes.forEach((node: MapNode) => {
           node.x += evt.dx;
@@ -127,7 +128,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
 
         // update labels
         let mapLabels = selected.filter(item => item instanceof MapLabel);
-        const selectedLabels = mapLabels.filter((item: MapLabel) => selectedNodes.filter((node) => node.id === item.nodeId).length > 0);
+        const selectedLabels = mapLabels.filter((item: MapLabel) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLabels.forEach((label: MapLabel) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
           if (isParentNodeSelected) {
@@ -142,7 +143,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
 
         // update interface labels
         let mapLinkNodes = selected.filter(item => item instanceof MapLinkNode);
-        const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => selectedNodes.filter((node) => node.id === item.nodeId).length > 0);
+        const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLinkNodes.forEach((interfaceLabel: MapLinkNode) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === interfaceLabel.nodeId).length > 0;
           if (isParentNodeSelected) {
@@ -176,6 +177,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         const selected = this.selectionManager.getSelected();
 
         let mapNodes = selected.filter(item => item instanceof MapNode);
+        const lockedNodes = mapNodes.filter((item: MapNode) => item.locked);
         const selectedNodes = mapNodes.filter((item: MapNode) => !item.locked);
         selectedNodes.forEach((item: MapNode) => {
           this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(item, evt.dx, evt.dy));
@@ -188,7 +190,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         });
 
         let mapLabels = selected.filter(item => item instanceof MapLabel);
-        const selectedLabels = mapLabels.filter((item: MapLabel) => selectedNodes.filter((node) => node.id === item.nodeId).length > 0);
+        const selectedLabels = mapLabels.filter((item: MapLabel) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLabels.forEach((label: MapLabel) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
           if (isParentNodeSelected) {
@@ -199,7 +201,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         });
 
         let mapLinkNodes = selected.filter(item => item instanceof MapLinkNode);
-        const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => selectedNodes.filter((node) => node.id === item.nodeId).length > 0);
+        const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0)
         selectedLinkNodes.forEach((label: MapLinkNode) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
           if (isParentNodeSelected) {
