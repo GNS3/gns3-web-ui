@@ -14,6 +14,7 @@ export class MapDrawingToDrawingConverter implements Converter<MapDrawing, Drawi
     drawing.project_id = mapDrawing.projectId;
     drawing.rotation = mapDrawing.rotation;
     drawing.svg = mapDrawing.svg;
+    drawing.locked = mapDrawing.locked;
     drawing.x = mapDrawing.x;
     drawing.y = mapDrawing.y;
     drawing.z = mapDrawing.z;

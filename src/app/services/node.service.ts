@@ -90,6 +90,7 @@ export class NodeService {
     return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
       console_auto_start: node.console_auto_start,
+      locked: node.locked,
       name: node.name,
       properties: node.properties
     });

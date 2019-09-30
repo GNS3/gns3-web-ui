@@ -5,6 +5,7 @@ export class Drawing {
   project_id: string;
   rotation: number;
   svg: string;
+  locked: boolean;
   x: number;
   y: number;
   z: number;
