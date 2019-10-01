@@ -59,6 +59,8 @@ import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
+import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
+import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 
 
 @Component({
@@ -133,7 +135,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapLinksDataSource: MapLinksDataSource,
     private mapDrawingsDataSource: MapDrawingsDataSource,
     private mapSymbolsDataSource: MapSymbolsDataSource,
-    private mapSettingsService: MapSettingsService
+    private mapSettingsService: MapSettingsService,
+    private ethernetLinkWidget: EthernetLinkWidget,
+    private serialLinkWidget: SerialLinkWidget
   ) {}
 
   ngOnInit() {
@@ -303,6 +307,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
     });
 
+    const onEthernetLinkContextMenu = this.ethernetLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
+      const link = this.mapLinkToLink.convert(eventLink.link);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+    });
+
+    const onSerialLinkContextMenu = this.serialLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
+      const link = this.mapLinkToLink.convert(eventLink.link);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+    });
+
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
       this.contextMenu.openMenuForNode(node, eventNode.event.pageY, eventNode.event.pageX);
@@ -350,6 +364,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(onLinkContextMenu);
+    this.subscriptions.push(onEthernetLinkContextMenu);
+    this.subscriptions.push(onSerialLinkContextMenu);
     this.subscriptions.push(onNodeContextMenu);
     this.subscriptions.push(onDrawingContextMenu);
     this.subscriptions.push(onContextMenu);

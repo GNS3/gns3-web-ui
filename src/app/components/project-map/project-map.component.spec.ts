@@ -54,6 +54,8 @@ import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
+import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 
 export class MockedProgressService {
   public activate() {}
@@ -265,6 +267,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
         { provide: LinkWidget },
+        { provide: EthernetLinkWidget },
+        { provide: SerialLinkWidget },
         { provide: DrawingsWidget },
         { provide: LabelWidget },
         { provide: InterfaceLabelWidget },
