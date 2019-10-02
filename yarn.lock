@@ -8256,6 +8256,11 @@ supports-color@^6.1.0:
   dependencies:
     has-flag "^3.0.0"
 
+svg-crowbar@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/svg-crowbar/-/svg-crowbar-0.2.3.tgz#2b68812a1fc118757d80ccf18a41e4cc675cb2dc"
+  integrity sha512-35CKMmoj3HY/5Q9HU0JJmpY0Oi+YU24mFPbR3piihOeddBabv/Un06KWXcWMiR5kJN2kwogUbmB0hem2vT7GjA==
+
 symbol-observable@1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"

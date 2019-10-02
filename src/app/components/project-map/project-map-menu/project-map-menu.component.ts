@@ -8,6 +8,7 @@ import * as svg from 'save-svg-as-png';
 import { saveAs } from 'file-saver';
 import { SymbolService } from '../../../services/symbol.service';
 import { select } from 'd3-selection';
+import downloadSvg from 'svg-crowbar';
 
 
 @Component({
@@ -38,40 +39,49 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     ngOnInit() {}
 
     public async takeScreenshot() {
-        let splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
-        let i = 1;
+        // original, first & second version
+        // let splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
+        // let i = 1;
 
-        while (i < splittedSvg.length) {
-            let splittedImage = splittedSvg[i].split("\"");
-            let splittedUrl = splittedImage[1].split("/");
+        // while (i < splittedSvg.length) {
+        //     let splittedImage = splittedSvg[i].split("\"");
+        //     let splittedUrl = splittedImage[1].split("/");
 
-            let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
-            let splittedElement = elem.split('-->');
-            splittedSvg[i] = splittedElement[1].substring(2);
-            i += 2;
-        }
-        let svgString = splittedSvg.join();
+        //     let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
+        //     let splittedElement = elem.split('-->');
+        //     splittedSvg[i] = splittedElement[1].substring(2);
+        //     i += 2;
+        // }
+        // let svgString = splittedSvg.join();
 
-        let placeholder = document.createElement('div');
-        placeholder.innerHTML = svgString;
-        let element = placeholder.firstChild;
+        // let placeholder = document.createElement('div');
+        // placeholder.innerHTML = svgString;
+        // let element = placeholder.firstChild;
 
+        // original version
         // svg.saveSvgAsPng(element, "screenshot.png");
 
-        // first
-        var canvas = document.createElement('canvas');
-        canvas.innerHTML = svgString;
-        canvas.width = 2000;
-        canvas.height = 1000;
+        // first version
+        // var canvas = document.createElement('canvas');
+        // canvas.innerHTML = svgString;
+        // canvas.width = 2000;
+        // canvas.height = 1000;
 
-        var a = document.createElement('a');
-        a.download = "image.png";
-        a.href = canvas.toDataURL('image/png');
-        document.body.appendChild(a);
-        a.click();
+        // var a = document.createElement('a');
+        // a.download = "image.png";
+        // a.href = canvas.toDataURL('image/png');
+        // document.body.appendChild(a);
+        // a.click();
 
-        // second
+        // second version
         // this.svgString2Image( svgString, 2000, 1000, 'png'); // passes Blob and filesize String to the callback
+
+        // third version
+        var svg_el = select("svg")
+            .attr("version", 1.1)
+            .attr("xmlns", "http://www.w3.org/2000/svg")
+            .node();
+        downloadSvg(select("svg").node(), 'screenshot');
     }
 
     // svgString2Image( svgString, width, height, format) {
