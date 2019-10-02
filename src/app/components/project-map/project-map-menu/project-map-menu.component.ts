@@ -5,7 +5,9 @@ import { ToolsService } from '../../../services/tools.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
 import * as svg from 'save-svg-as-png';
+import { saveAs } from 'file-saver';
 import { SymbolService } from '../../../services/symbol.service';
+import { select } from 'd3-selection';
 
 
 @Component({
@@ -54,8 +56,45 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         placeholder.innerHTML = svgString;
         let element = placeholder.firstChild;
 
-        svg.saveSvgAsPng(element, "screenshot.png");
+        // svg.saveSvgAsPng(element, "screenshot.png");
+
+        // first
+        var canvas = document.createElement('canvas');
+        canvas.innerHTML = svgString;
+        canvas.width = 2000;
+        canvas.height = 1000;
+
+        var a = document.createElement('a');
+        a.download = "image.png";
+        a.href = canvas.toDataURL('image/png');
+        document.body.appendChild(a);
+        a.click();
+
+        // second
+        // this.svgString2Image( svgString, 2000, 1000, 'png'); // passes Blob and filesize String to the callback
     }
+
+    // svgString2Image( svgString, width, height, format) {
+    //     var format = format ? format : 'png';
+    
+    //     var imgsrc = 'data:image/svg+xml;base64,'+ btoa( unescape( encodeURIComponent( svgString ) ) ); // Convert SVG string to data URL
+    
+    //     var canvas = document.createElement("canvas");
+    //     var context = canvas.getContext("2d");
+    
+    //     canvas.width = width;
+    //     canvas.height = height;
+    
+    //     var image = new Image();
+    //     image.src = document.getElementsByTagName("svg")[0].outerHTML;
+    //     context.clearRect ( 0, 0, width, height );
+    //     context.drawImage(image, 0, 0, width, height);
+
+    //     canvas.toBlob((blob: any) => {
+    //         var filesize = Math.round( blob.length/1024 ) + ' KB';
+    //         saveAs( blob, 'D3 vis exported to PNG.png' );
+    //     });
+    // }
 
     public addDrawing(selectedObject: string) {
         switch (selectedObject) {
