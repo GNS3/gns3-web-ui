@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { Node } from '../../../../../cartography/models/node';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
@@ -11,7 +11,7 @@ import { DrawingService } from '../../../../../services/drawing.service';
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html'
 })
-export class LockActionComponent implements OnInit {
+export class LockActionComponent implements OnChanges {
     @Input() server: Server;
     @Input() nodes: Node[];
     @Input() drawings: Drawing[];
@@ -24,7 +24,7 @@ export class LockActionComponent implements OnInit {
         private drawingService: DrawingService
     ) {}
 
-    ngOnInit() {
+    ngOnChanges() {
         if (this.nodes.length === 1 && this.drawings.length === 0) {
             this.command = this.nodes[0].locked ? 'Unlock item' : 'Lock item';
         } else if (this.nodes.length === 0 && this.drawings.length === 1) {
