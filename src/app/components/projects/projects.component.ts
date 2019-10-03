@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { MatSort, MatSortable, MatDialog } from '@angular/material';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { MatSort, MatSortable, MatDialog, MatBottomSheet } from '@angular/material';
 
 import { DataSource } from '@angular/cdk/collections';
 
@@ -17,6 +17,7 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 
 @Component({
   selector: 'app-projects',
@@ -40,7 +41,9 @@ export class ProjectsComponent implements OnInit {
     private projectService: ProjectService,
     private settingsService: SettingsService,
     private progressService: ProgressService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private router: Router,
+    private bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit() {
@@ -133,15 +136,33 @@ export class ProjectsComponent implements OnInit {
   }
 
   importProject() {
+    let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
       autoFocus: false
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
+    const subscription = dialogRef.componentInstance.onImportProject.subscribe((projectId: string) => {
+      uuid = projectId;
+    });
 
     dialogRef.afterClosed().subscribe(() => {
       this.refresh();
+      subscription.unsubscribe();
+      if (uuid) {
+        this.bottomSheet.open(NavigationDialogComponent);
+        let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+        bottomSheetRef.instance.projectMessage = 'imported project';
+        
+        const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+          if (result) {
+            this.projectService.open(this.server, uuid).subscribe(() => {
+              this.router.navigate(['/server', this.server.id, 'project', uuid]);
+            });
+          }
+        });
+      }
     });
   }
 }
