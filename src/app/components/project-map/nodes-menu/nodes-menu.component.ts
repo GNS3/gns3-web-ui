@@ -45,7 +45,7 @@ export class NodesMenuComponent {
                 await this.electronService.remote.require('./console-executor.js').openConsole(request);
             }
         } else {
-            this.toasterService.error("Starting all nodes available only in Electron app.");
+            this.toasterService.error("Option to start all nodes not available in web browser.");
         }
     }
 
