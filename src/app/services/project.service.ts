@@ -54,7 +54,8 @@ export class ProjectService {
       grid_size: project.grid_size,
       name: project.name,
       scene_width: project.scene_width,
-      scene_height: project.scene_height
+      scene_height: project.scene_height,
+      show_interface_labels: project.show_interface_labels
     });
   }
 
