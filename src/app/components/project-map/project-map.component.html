@@ -115,6 +115,12 @@
           <mat-icon>settings_applications</mat-icon>
         </button>
       </mat-toolbar-row>
+
+      <mat-toolbar-row *ngIf="!readonly">
+        <button  matTooltip="Center view" mat-icon-button (click)="centerView()">
+          <mat-icon>center_focus_strong</mat-icon>
+        </button>
+      </mat-toolbar-row>
     </mat-toolbar>
   </div>
 
