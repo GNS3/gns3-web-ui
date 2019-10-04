@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -392,6 +392,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.nodesDataSource.set(nodes);
       });
     });
+  }
+
+  public centerView() {
+    if (this.project) {
+      let scrollX: number = (this.project.scene_width - document.documentElement.clientWidth) > 0 ? (this.project.scene_width - document.documentElement.clientWidth)/2 : 0;
+      let scrollY: number = (this.project.scene_height - document.documentElement.clientHeight) > 0 ? (this.project.scene_height - document.documentElement.clientHeight)/2 : 0;
+  
+      window.scrollTo(scrollX, scrollY);
+    } else {
+      this.toasterService.error('Please wait until all components are loaded.');
+    }
   }
 
   public onDrawingSaved() {
