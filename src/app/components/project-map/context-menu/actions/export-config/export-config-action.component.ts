@@ -16,7 +16,7 @@ export class ExportConfigActionComponent {
     ) {}
 
     exportConfig() {
-        this.nodeService.getConfiguration(this.server, this.node).subscribe((config: any) => {
+        this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
             this.downloadByHtmlTag(config);
         });
     }
