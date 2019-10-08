@@ -6,6 +6,7 @@ export class MapDrawing implements Indexed {
   projectId: string;
   rotation: number;
   svg: string;
+  locked: boolean;
   x: number;
   y: number;
   z: number;

@@ -69,6 +69,7 @@ export class Node {
   first_port_name: string;
   height: number;
   label: Label;
+  locked: boolean;
   name: string;
   node_directory: string;
   node_id: string;

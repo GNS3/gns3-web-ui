@@ -34,31 +34,39 @@ export class GraphDataManager {
   ) {}
 
   public setNodes(nodes: Node[]) {
-    const mapNodes = nodes.map(n => this.nodeToMapNode.convert(n));
-    this.mapNodesDataSource.set(mapNodes);
+    if (nodes) {
+      const mapNodes = nodes.map(n => this.nodeToMapNode.convert(n));
+      this.mapNodesDataSource.set(mapNodes);
 
-    this.assignDataToLinks();
-    this.onDataUpdate();
+      this.assignDataToLinks();
+      this.onDataUpdate();
+    }
   }
 
   public setLinks(links: Link[]) {
-    const mapLinks = links.map(l => this.linkToMapLink.convert(l));
-    this.mapLinksDataSource.set(mapLinks);
+    if (links) {
+      const mapLinks = links.map(l => this.linkToMapLink.convert(l));
+      this.mapLinksDataSource.set(mapLinks);
 
-    this.assignDataToLinks();
-    this.onDataUpdate();
+      this.assignDataToLinks();
+      this.onDataUpdate();
+    }
   }
 
   public setDrawings(drawings: Drawing[]) {
-    const mapDrawings = drawings.map(d => this.drawingToMapDrawing.convert(d));
-    this.mapDrawingsDataSource.set(mapDrawings);
-
-    this.onDataUpdate();
+    if (drawings) {
+      const mapDrawings = drawings.map(d => this.drawingToMapDrawing.convert(d));
+      this.mapDrawingsDataSource.set(mapDrawings);
+  
+      this.onDataUpdate();
+    }
   }
 
   public setSymbols(symbols: Symbol[]) {
-    const mapSymbols = symbols.map(s => this.symbolToMapSymbol.convert(s));
-    this.mapSymbolsDataSource.set(mapSymbols);
+    if (symbols) {
+      const mapSymbols = symbols.map(s => this.symbolToMapSymbol.convert(s));
+      this.mapSymbolsDataSource.set(mapSymbols);
+    }
   }
 
   public getNodes() {

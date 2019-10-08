@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -53,7 +53,7 @@ import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatBottomSheet } from '@angular/material';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
@@ -61,6 +61,7 @@ import { MapSettingsService } from '../../services/mapsettings.service';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
+import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 
 
 @Component({
@@ -137,7 +138,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapSymbolsDataSource: MapSymbolsDataSource,
     private mapSettingsService: MapSettingsService,
     private ethernetLinkWidget: EthernetLinkWidget,
-    private serialLinkWidget: SerialLinkWidget
+    private serialLinkWidget: SerialLinkWidget,
+    private bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit() {
@@ -392,6 +394,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
   }
 
+  public centerView() {
+    if (this.project) {
+      let scrollX: number = (this.project.scene_width - document.documentElement.clientWidth) > 0 ? (this.project.scene_width - document.documentElement.clientWidth)/2 : 0;
+      let scrollY: number = (this.project.scene_height - document.documentElement.clientHeight) > 0 ? (this.project.scene_height - document.documentElement.clientHeight)/2 : 0;
+  
+      window.scrollTo(scrollX, scrollY);
+    } else {
+      this.toasterService.error('Please wait until all components are loaded.');
+    }
+  }
+
   public onDrawingSaved() {
     this.projectMapMenuComponent.resetDrawToolChoice();
   }
@@ -510,8 +523,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(() => {
       subscription.unsubscribe();
       if (uuid) {
-        this.projectService.open(this.server, uuid).subscribe(() => {
-          this.router.navigate(['/server', this.server.id, 'project', uuid]);
+        this.bottomSheet.open(NavigationDialogComponent);
+        let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+        bottomSheetRef.instance.projectMessage = 'imported project';
+        
+        const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+          if (result) {
+            this.projectService.open(this.server, uuid).subscribe(() => {
+              this.router.navigate(['/server', this.server.id, 'project', uuid]);
+            });
+          }
         });
       }
     });

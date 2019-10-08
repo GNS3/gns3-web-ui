@@ -34,6 +34,10 @@
     Leave this project running in the background after closing
 </mat-checkbox>
 
+<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.show_interface_labels">
+    Show interface labels at start
+</mat-checkbox>
+
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
   <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>

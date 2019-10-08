@@ -5,7 +5,8 @@ import {
   MatFormFieldModule,
   MatDialogRef,
   MAT_DIALOG_DATA,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatTabsModule
 } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -36,7 +37,8 @@ describe('ConfigEditorDialogComponent', () => {
         MatFormFieldModule,
         NoopAnimationsModule,
         MatSnackBarModule,
-        FormsModule
+        FormsModule,
+        MatTabsModule
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
