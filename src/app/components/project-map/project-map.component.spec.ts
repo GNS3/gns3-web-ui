@@ -119,7 +119,7 @@ export class MockedNodeService {
     return of(node);
   }
 
-  getConfiguration(server: Server, node: Node) {
+  getStartupConfiguration(server: Server, node: Node) {
     return of('sample config');
   }
 

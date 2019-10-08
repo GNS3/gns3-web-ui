@@ -17,6 +17,7 @@ export class ConfigEditorDialogComponent implements OnInit {
     node: Node;
 
     config: any;
+    privateConfig: any;
 
     constructor(
         public dialogRef: MatDialogRef<ConfigEditorDialogComponent>,
@@ -25,15 +26,28 @@ export class ConfigEditorDialogComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.nodeService.getConfiguration(this.server, this.node).subscribe((config: any) => {
+        this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
             this.config = config;
         });
+
+        if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
+            this.nodeService.getPrivateConfiguration(this.server, this.node).subscribe((privateConfig: any) => {
+                this.privateConfig = privateConfig;
+            });
+        }
     }
 
     onSaveClick() {
         this.nodeService.saveConfiguration(this.server, this.node, this.config).subscribe((response) => {
-            this.dialogRef.close();
-            this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
+            if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
+                this.nodeService.savePrivateConfiguration(this.server, this.node, this.privateConfig).subscribe((resp) => {
+                    this.dialogRef.close();
+                    this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
+                });
+            } else {
+                this.dialogRef.close();
+                this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
+            }
         });
     }
 

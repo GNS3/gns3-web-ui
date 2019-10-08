@@ -16,7 +16,7 @@ export class ExportConfigActionComponent {
     ) {}
 
     exportConfig() {
-        this.nodeService.getConfiguration(this.server, this.node).subscribe((config: any) => {
+        this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
             this.downloadByHtmlTag(config);
         });
     }
@@ -25,7 +25,11 @@ export class ExportConfigActionComponent {
         const element = document.createElement('a');
         const fileType = 'text/plain';
         element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(config)}`);
-        element.setAttribute('download', `${this.node.name}_startup.vpc`);
+        if (this.node.node_type === 'vpcs') {
+            element.setAttribute('download', `${this.node.name}_startup.vpc`);
+        } else if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
+            element.setAttribute('download', `${this.node.name}_startup.cfg`);
+        }
 
         var event = new MouseEvent("click");
         element.dispatchEvent(event);

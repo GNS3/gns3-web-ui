@@ -127,13 +127,30 @@ export class NodeService {
     return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
   }
 
-  getConfiguration(server: Server, node: Node) {
-    let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`
+  getStartupConfiguration(server: Server, node: Node) {
+    let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'vpcs') {
       urlPath += '/files/startup.vpc';
-      return this.httpServer.get(server, urlPath, { responseType: 'text' as 'json'});
+    } else if (node.node_type === 'iou') {
+      urlPath += '/files/startup-config.cfg';
+    } else if (node.node_type === 'dynamips') {
+      urlPath += `/files/configs/i${node.node_id}_startup-config.cfg`;
     }
+
+    return this.httpServer.get(server, urlPath, { responseType: 'text' as 'json'});
+  }
+
+  getPrivateConfiguration(server: Server, node: Node) {
+    let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
+
+    if (node.node_type === 'iou') {
+      urlPath += '/files/private-config.cfg';
+    } else if (node.node_type === 'dynamips') {
+      urlPath += `/files/configs/i${node.node_id}_private-config.cfg`;
+    }
+
+    return this.httpServer.get(server, urlPath, { responseType: 'text' as 'json'});
   }
 
   saveConfiguration(server: Server, node: Node, configuration: string) {
@@ -141,7 +158,24 @@ export class NodeService {
 
     if (node.node_type === 'vpcs') {
       urlPath += '/files/startup.vpc';
-      return this.httpServer.post(server, urlPath, configuration);
+    } else if (node.node_type === 'iou') {
+      urlPath += '/files/startup-config.cfg';
+    } else if (node.node_type === 'dynamips') {
+      urlPath += `/files/configs/i${node.node_id}_startup-config.cfg`;
     }
+
+    return this.httpServer.post(server, urlPath, configuration);
+  }
+
+  savePrivateConfiguration(server: Server, node: Node, configuration: string) {
+    let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`
+
+    if (node.node_type === 'iou') {
+      urlPath += '/files/private-config.cfg';
+    } else if (node.node_type === 'dynamips') {
+      urlPath += `/files/configs/i${node.node_id}_private-config.cfg`;
+    }
+
+    return this.httpServer.post(server, urlPath, configuration);
   }
 }
