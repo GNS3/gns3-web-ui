@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Take a screenshot</h1>
+
+<mat-radio-group class="radio-group" aria-label="Sorting">
+    <mat-radio-button value="1" (click)="setFiletype('svg')" checked>SVG</mat-radio-button>
+    <mat-radio-button [disabled]="!isPngAvailable" value="2" (click)="setFiletype('png')">PNG</mat-radio-button>
+</mat-radio-group>
+
+<form [formGroup]="nameForm" class="name-form">
+  <mat-form-field class="name-form">
+    <input
+      matInput
+      (keydown)="onKeyDown($event)"
+      type="text"
+      formControlName="screenshotName"
+      [ngClass]="{ 'is-invalid': form.acreenshotName?.errors }"
+      placeholder="Please enter name"
+    />
+    <mat-error *ngIf="form.screenshotName?.touched && form.screenshotName?.errors && form.screenshotName?.errors.required"
+      >Name for screenshot is required</mat-error
+    >
+    <mat-error *ngIf="form.screenshotName?.touched && form.screenshotName?.errors && form.acreenshotName?.errors.invalidName"
+      >Entered name is incorrect</mat-error
+    >
+  </mat-form-field>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Take a screenshot</button>
+  </div>
+</form>

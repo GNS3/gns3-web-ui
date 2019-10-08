@@ -240,6 +240,7 @@ import { PacketCaptureService } from './services/packet-capture.service';
 import { StartCaptureOnStartedLinkActionComponent } from './components/project-map/context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component';
 import { LockActionComponent } from './components/project-map/context-menu/actions/lock-action/lock-action.component';
 import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
+import { ScreenshotDialogComponent } from './components/project-map/screenshot-dialog/screenshot-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -405,7 +406,8 @@ if (environment.production) {
     ChooseNameDialogComponent,
     StartCaptureOnStartedLinkActionComponent,
     LockActionComponent,
-    NavigationDialogComponent
+    NavigationDialogComponent,
+    ScreenshotDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -524,7 +526,8 @@ if (environment.production) {
     ConfiguratorDialogTracengComponent,
     QemuImageCreatorComponent,
     ChooseNameDialogComponent,
-    NavigationDialogComponent
+    NavigationDialogComponent,
+    ScreenshotDialogComponent
   ],
   bootstrap: [AppComponent]
 })

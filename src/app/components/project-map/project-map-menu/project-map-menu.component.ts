@@ -5,11 +5,12 @@ import { ToolsService } from '../../../services/tools.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
 import * as svg from 'save-svg-as-png';
-import { saveAs } from 'file-saver';
 import { SymbolService } from '../../../services/symbol.service';
 import { select } from 'd3-selection';
 import downloadSvg from 'svg-crowbar';
 import { ElectronService } from 'ngx-electron';
+import { MatDialog } from '@angular/material';
+import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
 
 
 @Component({
@@ -35,13 +36,23 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         private mapSettingsService: MapSettingsService,
         private drawingService: DrawingService,
         private symbolService: SymbolService,
-        private electronService: ElectronService
+        private dialog: MatDialog
     ) {}
 
     ngOnInit() {}
 
-    public async takeScreenshot() {
-        if (this.electronService.isWindows) {
+    public takeScreenshot() {
+        const dialogRef = this.dialog.open(ScreenshotDialogComponent, {
+            width: '400px',
+            autoFocus: false
+        });
+        dialogRef.afterClosed().subscribe((result: Screenshot) => {
+            if (result) this.saveImage(result);
+        });
+    }
+
+    private async saveImage(screenshotProperties: Screenshot) {
+        if (screenshotProperties.filetype === 'png') {
             let splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
             let i = 1;
 
@@ -60,52 +71,15 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
             placeholder.innerHTML = svgString;
             let element = placeholder.firstChild;
 
-            svg.saveSvgAsPng(element, "screenshot.png");
+            svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
         } else {
             var svg_el = select("svg")
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .node();
-            downloadSvg(select("svg").node(), 'screenshot');
+            downloadSvg(select("svg").node(), `${screenshotProperties.name}`);
         }
-
-        // first alternative version
-        // var canvas = document.createElement('canvas');
-        // canvas.innerHTML = svgString;
-        // canvas.width = 2000;
-        // canvas.height = 1000;
-
-        // var a = document.createElement('a');
-        // a.download = "image.png";
-        // a.href = canvas.toDataURL('image/png');
-        // document.body.appendChild(a);
-        // a.click();
-
-        // second version
-        // this.svgString2Image( svgString, 2000, 1000, 'png'); // passes Blob and filesize String to the callback
     }
-
-    // svgString2Image( svgString, width, height, format) {
-    //     var format = format ? format : 'png';
-    
-    //     var imgsrc = 'data:image/svg+xml;base64,'+ btoa( unescape( encodeURIComponent( svgString ) ) ); // Convert SVG string to data URL
-    
-    //     var canvas = document.createElement("canvas");
-    //     var context = canvas.getContext("2d");
-    
-    //     canvas.width = width;
-    //     canvas.height = height;
-    
-    //     var image = new Image();
-    //     image.src = document.getElementsByTagName("svg")[0].outerHTML;
-    //     context.clearRect ( 0, 0, width, height );
-    //     context.drawImage(image, 0, 0, width, height);
-
-    //     canvas.toBlob((blob: any) => {
-    //         var filesize = Math.round( blob.length/1024 ) + ' KB';
-    //         saveAs( blob, 'D3 vis exported to PNG.png' );
-    //     });
-    // }
 
     public addDrawing(selectedObject: string) {
         switch (selectedObject) {
