@@ -12,6 +12,7 @@ import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.impor
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { SymbolService } from '../../../services/symbol.service';
 import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
+import { ElectronService } from 'ngx-electron';
 
 describe('ProjectMapMenuComponent', () => {
     let component: ProjectMapMenuComponent;
@@ -27,7 +28,8 @@ describe('ProjectMapMenuComponent', () => {
               { provide: DrawingService, useValue: drawingService },
               { provide: ToolsService },
               { provide: MapSettingsService, useValue: mapSettingService },
-              { provide: SymbolService, useValue: mockedSymbolService}
+              { provide: SymbolService, useValue: mockedSymbolService},
+              { provide: ElectronService }
             ],
             declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
             schemas: [NO_ERRORS_SCHEMA]
