@@ -55,7 +55,14 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit() {
         this.nodeSubscription = this.projectWebServiceHandler.nodeNotificationEmitter.subscribe((event) => {
             let node: Node = event.event as Node;
-            let message = `Event received: ${event.action} - ${this.printNode(node)}.`
+            let message: string = '';
+
+            if (node.label) {
+                message = `Event received: ${event.action} - ${this.printNode(node)}.`;
+            } else {
+                message = `Event received: ${event.action} - ${node.name}.`;
+            }
+
             this.showMessage({
                 type: 'map update',
                 message: message
