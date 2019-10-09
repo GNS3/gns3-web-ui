@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 
 export interface Settings {
   crash_reports: boolean;
-  experimental_features: boolean;
   angular_map: boolean;
   console_command: string;
 }
@@ -13,7 +12,6 @@ export interface Settings {
 export class SettingsService {
   static DEFAULTS: Settings = {
     crash_reports: true,
-    experimental_features: false,
     angular_map: false,
     console_command: undefined
   };
@@ -55,10 +53,6 @@ export class SettingsService {
     Object.keys(settings).forEach(key => {
       this.set(key, settings[key]);
     });
-  }
-
-  isExperimentalEnabled(): boolean {
-    return this.get('experimental_features');
   }
 
   subscribe(subscriber: ((settings: Settings) => void)) {

@@ -6,9 +6,6 @@ import { Settings, SettingsService } from './settings.service';
 export class MockedSettingsService {
   settings = {};
 
-  isExperimentalEnabled() {
-    return true;
-  }
   getAll() {}
 
   get(key: string) {
@@ -59,7 +56,6 @@ describe('SettingsService', () => {
   it('should get all values', inject([SettingsService], (service: SettingsService) => {
     expect(service.getAll()).toEqual({
       crash_reports: true,
-      experimental_features: false,
       angular_map: false,
       console_command: undefined
     });
@@ -73,7 +69,6 @@ describe('SettingsService', () => {
 
     expect(service.getAll()).toEqual({
       crash_reports: false,
-      experimental_features: false,
       angular_map: false,
       console_command: undefined
     });
@@ -93,10 +88,4 @@ describe('SettingsService', () => {
       expect(changedSettings.crash_reports).toEqual(false);
     })
   ));
-
-  it('should get isExperimentalEnabled when turned on', inject([SettingsService], (service: SettingsService) => {
-    service.set('experimental_features', true);
-
-    expect(service.isExperimentalEnabled()).toEqual(true);
-  }));
 });

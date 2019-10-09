@@ -48,7 +48,6 @@ describe('SettingsComponent', () => {
   it('should get and save new settings', () => {
     const settings = {
       crash_reports: true,
-      experimental_features: true,
       angular_map: false,
       console_command: ''
     };
