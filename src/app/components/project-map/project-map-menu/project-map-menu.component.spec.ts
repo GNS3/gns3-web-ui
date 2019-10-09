@@ -2,7 +2,7 @@ import { ProjectMapMenuComponent } from "./project-map-menu.component";
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { MockedDrawingService } from '../project-map.component.spec';
 import { MapSettingsService } from '../../../services/mapsettings.service';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
+import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingService } from '../../../services/drawing.service';
@@ -23,7 +23,7 @@ describe('ProjectMapMenuComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+            imports: [MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
             providers: [
               { provide: DrawingService, useValue: drawingService },
               { provide: ToolsService },
