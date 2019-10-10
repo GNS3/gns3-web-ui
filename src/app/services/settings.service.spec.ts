@@ -56,6 +56,7 @@ describe('SettingsService', () => {
   it('should get all values', inject([SettingsService], (service: SettingsService) => {
     expect(service.getAll()).toEqual({
       crash_reports: true,
+      experimental_features: true,
       angular_map: false,
       console_command: undefined
     });
@@ -69,6 +70,7 @@ describe('SettingsService', () => {
 
     expect(service.getAll()).toEqual({
       crash_reports: false,
+      experimental_features: true,
       angular_map: false,
       console_command: undefined
     });
