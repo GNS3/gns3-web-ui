@@ -91,6 +91,6 @@ export class ProjectService {
     if (project.readonly) {
       return project.readonly;
     }
-    return !this.settingsService.isExperimentalEnabled();
+    return false;
   }
 }
