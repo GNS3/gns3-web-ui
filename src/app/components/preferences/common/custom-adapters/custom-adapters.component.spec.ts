@@ -4,6 +4,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CustomAdaptersComponent } from './custom-adapters.component';
+import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
 
 describe('Custom adapters component', () => {
     let component: CustomAdaptersComponent;
@@ -31,6 +32,7 @@ describe('Custom adapters component', () => {
 
     it('should emit event when apply clicked', () => {
         spyOn(component.saveConfigurationEmitter, 'emit');
+        component.customAdapters = {adapters: []} as CustomAdaptersTableComponent;
 
         component.configureCustomAdapters();
 

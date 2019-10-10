@@ -48,6 +48,7 @@ describe('DrawingDraggedComponent', () => {
     };
     const mapDrawing: MapDrawing = {
       id: 'sampleId',
+      locked: false,
       projectId: 'sampleprojectId',
       rotation: 0,
       svg: 'sampleSvg',

@@ -2,8 +2,15 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
-import { MapSettingService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
+import * as svg from 'save-svg-as-png';
+import { SymbolService } from '../../../services/symbol.service';
+import { select } from 'd3-selection';
+import downloadSvg from 'svg-crowbar';
+import { ElectronService } from 'ngx-electron';
+import { MatDialog } from '@angular/material';
+import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
 
 
 @Component({
@@ -26,11 +33,53 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
     constructor(
         private toolsService: ToolsService,
-        private mapSettingsService: MapSettingService,
-        private drawingService: DrawingService
+        private mapSettingsService: MapSettingsService,
+        private drawingService: DrawingService,
+        private symbolService: SymbolService,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit() {}
+
+    public takeScreenshot() {
+        const dialogRef = this.dialog.open(ScreenshotDialogComponent, {
+            width: '400px',
+            autoFocus: false
+        });
+        dialogRef.afterClosed().subscribe((result: Screenshot) => {
+            if (result) this.saveImage(result);
+        });
+    }
+
+    private async saveImage(screenshotProperties: Screenshot) {
+        if (screenshotProperties.filetype === 'png') {
+            let splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
+            let i = 1;
+
+            while (i < splittedSvg.length) {
+                let splittedImage = splittedSvg[i].split("\"");
+                let splittedUrl = splittedImage[1].split("/");
+
+                let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
+                let splittedElement = elem.split('-->');
+                splittedSvg[i] = splittedElement[1].substring(2);
+                i += 2;
+            }
+            let svgString = splittedSvg.join();
+
+            let placeholder = document.createElement('div');
+            placeholder.innerHTML = svgString;
+            let element = placeholder.firstChild;
+
+            svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
+        } else {
+            var svg_el = select("svg")
+            .attr("version", 1.1)
+            .attr("xmlns", "http://www.w3.org/2000/svg")
+            .node();
+            downloadSvg(select("svg").node(), `${screenshotProperties.name}`);
+        }
+    }
 
     public addDrawing(selectedObject: string) {
         switch (selectedObject) {
@@ -66,7 +115,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
     public onDrawingSaved() {
         this.resetDrawToolChoice();
-      }
+    }
 
     public resetDrawToolChoice() {
         this.drawTools.isRectangleChosen = false;

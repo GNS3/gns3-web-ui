@@ -24,7 +24,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     onCloseOptions = [];
     categories = [];
     networkTypes = [];
-    displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type'];
+    displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     isConfiguratorOpened: boolean = false;
     generalSettingsForm: FormGroup;
     networkForm: FormGroup

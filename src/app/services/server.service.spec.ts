@@ -79,10 +79,7 @@ describe('ServerService', () => {
     const upgradeCallback = openDatabaseSpy.calls.first().args[1];
     upgradeCallback(evnt);
 
-    expect(evnt.currentTarget.result.createObjectStore).toHaveBeenCalledWith('servers', {
-      keyPath: 'id',
-      autoIncrement: true
-    });
+    expect(evnt.currentTarget.result.createObjectStore).toHaveBeenCalled();
   });
 
   describe('operations on records', () => {

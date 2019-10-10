@@ -1,8 +1,8 @@
 import { ProjectMapMenuComponent } from "./project-map-menu.component";
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { MockedDrawingService } from '../project-map.component.spec';
-import { MapSettingService } from '../../../services/mapsettings.service';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
+import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingService } from '../../../services/drawing.service';
@@ -10,20 +10,26 @@ import { ToolsService } from '../../../services/tools.service';
 import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
 import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { SymbolService } from '../../../services/symbol.service';
+import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
+import { ElectronService } from 'ngx-electron';
 
 describe('ProjectMapMenuComponent', () => {
     let component: ProjectMapMenuComponent;
     let fixture: ComponentFixture<ProjectMapMenuComponent>;
     let drawingService = new MockedDrawingService();
-    let mapSettingService = new MapSettingService();
+    let mapSettingService = new MapSettingsService();
+    let mockedSymbolService = new MockedSymbolService;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+            imports: [MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
             providers: [
               { provide: DrawingService, useValue: drawingService },
               { provide: ToolsService },
-              { provide: MapSettingService, useValue: mapSettingService }
+              { provide: MapSettingsService, useValue: mapSettingService },
+              { provide: SymbolService, useValue: mockedSymbolService},
+              { provide: ElectronService }
             ],
             declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
             schemas: [NO_ERRORS_SCHEMA]

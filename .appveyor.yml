@@ -14,10 +14,11 @@ init:
   - git config --global core.autocrlf input
 
 install:
-  - ps: Install-Product node 11 x64
+  - ps: Install-Product node 12 x64
   - yarn install
 
 build_script:
+  - cmd: set NODE_OPTIONS=--max-old-space-size=8092
   - yarn buildforelectron
   - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
   - "%PYTHON%\\python.exe scripts\\build.py download -a"

@@ -55,6 +55,7 @@ export class DrawingService {
 
   update(server: Server, drawing: Drawing): Observable<Drawing> {
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+      locked: drawing.locked,
       svg: drawing.svg,
       rotation: drawing.rotation,
       x: Math.round(drawing.x),

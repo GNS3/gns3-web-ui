@@ -53,6 +53,10 @@ import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/c
 import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
 import { ConsoleComponent } from './components/settings/console/console.component';
 import { HelpComponent } from './components/help/help.component';
+import { TracengPreferencesComponent } from './components/preferences/traceng/traceng-preferences/traceng-preferences.component';
+import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
+import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
+import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
 
 const routes: Routes = [
   {
@@ -110,6 +114,11 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/vmware/templates', component: VmwareTemplatesComponent },
       { path: 'server/:server_id/preferences/vmware/templates/:template_id', component: VmwareTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent },
+
+      // { path: 'server/:server_id/preferences/traceng', component: TracengPreferencesComponent },
+      // { path: 'server/:server_id/preferences/traceng/templates', component: TracengTemplatesComponent },
+      // { path: 'server/:server_id/preferences/traceng/templates/:template_id', component: TracengTemplateDetailsComponent },
+      // { path: 'server/:server_id/preferences/traceng/addtemplate', component: AddTracengTemplateComponent },
 
       { path: 'server/:server_id/preferences/docker/templates', component: DockerTemplatesComponent },
       { path: 'server/:server_id/preferences/docker/templates/:template_id', component: DockerTemplateDetailsComponent },

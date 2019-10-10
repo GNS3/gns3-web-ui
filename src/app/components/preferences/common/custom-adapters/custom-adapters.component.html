@@ -6,31 +6,12 @@
     </div>
     <div class="default-content">
         <div class="container mat-elevation-z8">
-            <table class="table" mat-table [dataSource]="adapters">
-                <ng-container matColumnDef="adapter_number">
-                    <th mat-header-cell *matHeaderCellDef> Adapter number </th>
-                    <td mat-cell *matCellDef="let element"> Adapter {{element.adapter_number}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="port_name">
-                    <th mat-header-cell *matHeaderCellDef> Port name </th>
-                    <td mat-cell *matCellDef="let element"> Ethernet {{element.adapter_number}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="adapter_type">
-                    <th mat-header-cell *matHeaderCellDef> Adapter type </th>
-                    <td mat-cell *matCellDef="let element; let i = index;">
-                        <mat-select placeholder="Type" [(ngModel)]="adapters[i].adapter_type">
-                            <mat-option *ngFor="let type of networkTypes" [value]="type[0]">
-                                {{type[1]}} ({{type[0]}})
-                            </mat-option>
-                        </mat-select>
-                    </td>
-                </ng-container>
-                
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
+            <app-custom-adapters-table 
+                #customAdapters
+                [networkTypes]="networkTypes" 
+                [displayedColumns]="displayedColumns"
+                [adapters]="adapters"
+            ></app-custom-adapters-table>
         </div>
         <div class="buttons-bar">
             <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>

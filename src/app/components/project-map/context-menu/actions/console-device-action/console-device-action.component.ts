@@ -5,6 +5,7 @@ import { ElectronService } from 'ngx-electron';
 import { ServerService } from '../../../../../services/server.service';
 import { SettingsService } from '../../../../../services/settings.service';
 import { ToasterService } from '../../../../../services/toaster.service';
+import { NodeService } from '../../../../../services/node.service';
 
 @Component({
   selector: 'app-console-device-action',
@@ -18,19 +19,14 @@ export class ConsoleDeviceActionComponent implements OnInit {
     private electronService: ElectronService,
     private serverService: ServerService,
     private settingsService: SettingsService,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private nodeService: NodeService
   ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   async console() {
-    let consoleCommand = this.settingsService.get<string>('console_command');
-
-    if(consoleCommand === undefined) {
-      consoleCommand = `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
-    }
-
+    let consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
     const startedNodes = this.nodes.filter(node => node.status === 'started');
 
     if(startedNodes.length === 0) {

@@ -11,6 +11,8 @@ import { SettingsService } from '../../../../../services/settings.service';
 import { MockedSettingsService } from '../../../../../services/settings.service.spec';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { MockedNodeService } from '../../../project-map.component.spec';
+import { NodeService } from '../../../../../services/node.service';
 
 
 describe('ConsoleDeviceActionComponent', () => {
@@ -20,7 +22,8 @@ describe('ConsoleDeviceActionComponent', () => {
   let server: Server;
   let mockedSettingsService: MockedSettingsService;
   let mockedServerService: MockedServerService;
-  let mockedToaster: MockedToasterService
+  let mockedToaster: MockedToasterService;
+  let mockedNodeService: MockedNodeService = new MockedNodeService();
 
   beforeEach(() => {
     electronService = {
@@ -47,7 +50,8 @@ describe('ConsoleDeviceActionComponent', () => {
         { provide: ElectronService, useValue: electronService },
         { provide: ServerService, useValue: mockedServerService },
         { provide: SettingsService, useValue: mockedSettingsService },
-        { provide: ToasterService, useValue: mockedToaster }
+        { provide: ToasterService, useValue: mockedToaster },
+        { provide: NodeService, useValue: mockedNodeService }
       ],
       imports: [
         MatIconModule

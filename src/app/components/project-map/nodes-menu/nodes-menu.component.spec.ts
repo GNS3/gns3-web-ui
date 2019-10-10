@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NodesMenuComponent } from './nodes-menu.component';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { MockedNodeService } from '../project-map.component.spec';
+import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
 import { MatButtonModule, MatIconModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -9,19 +9,28 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { NodeService } from '../../../services/node.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { of } from 'rxjs';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { ServerService } from '../../../services/server.service';
+import { SettingsService } from '../../../services/settings.service';
+import { ElectronService } from 'ngx-electron';
 
 describe('NodesMenuComponent', () => {
     let component: NodesMenuComponent;
     let fixture: ComponentFixture<NodesMenuComponent>;
     let mockedToasterService: MockedToasterService = new MockedToasterService();
     let mockedNodeService: MockedNodeService = new MockedNodeService();
+    let mockedNodesDataSource: MockedNodesDataSource =  new MockedNodesDataSource();
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports:  [MatButtonModule, MatIconModule, CommonModule, NoopAnimationsModule],
             providers: [
                 { provide: NodeService, useValue: mockedNodeService },
-                { provide: ToasterService, useValue: mockedToasterService }
+                { provide: ToasterService, useValue: mockedToasterService },
+                { provide: NodesDataSource, useValue: mockedNodesDataSource },
+                { provide: ServerService },
+                { provide: SettingsService },
+                { provide: ElectronService }
             ],
             declarations: [
                 NodesMenuComponent,

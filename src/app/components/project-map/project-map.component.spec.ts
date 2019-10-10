@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectMapComponent } from './project-map.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
+import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatBottomSheetModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';
@@ -20,14 +20,14 @@ import { DrawingsDataSource } from '../../cartography/datasources/drawings-datas
 import { CommonModule } from '@angular/common';
 import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MockedSettingsService } from '../../services/settings.service.spec';
 import { MockedServerService } from '../../services/server.service.spec';
 import { MockedProjectService } from '../../services/project.service.spec';
 import { Observable } from 'rxjs/Rx';
 import { Drawing } from '../../cartography/models/drawing';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
-import { of } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 import { Server } from '../../models/server';
 import { Node } from '../../cartography/models/node';
 import { ToolsService } from '../../services/tools.service';
@@ -48,10 +48,14 @@ import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles
 import { LabelWidget } from '../../cartography/widgets/label';
 import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
-import { MapSettingService } from '../../services/mapsettings.service';
+import { MapSettingsService } from '../../services/mapsettings.service';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
+import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
+import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
+import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 
 export class MockedProgressService {
   public activate() {}
@@ -62,6 +66,10 @@ export class MockedProgressService {
 export class MockedNodeService {
   public node = { label: {} } as Node;
   constructor() {}
+  
+  getDefaultCommand(): string {
+    return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
+  }
 
   updateLabel(): Observable<Node> {
     return of(this.node);
@@ -91,7 +99,35 @@ export class MockedNodeService {
     return of();
   }
 
+  start(server: Server, node: Node) {
+    return of();
+  }
+
+  stop(server: Server, node: Node) {
+    return of();
+  }
+
+  suspend(server: Server, node: Node) {
+    return of();
+  }
+
+  reload(server: Server, node: Node) {
+    return of();
+  }
+
   duplicate(server: Server, node: Node) {
+    return of(node);
+  }
+
+  getStartupConfiguration(server: Server, node: Node) {
+    return of('sample config');
+  }
+
+  saveConfiguration(server: Server, node: Node, configuration: string) {
+    return of(configuration);
+  }
+  
+  update(server: Server, node: Node) {
     return of(node);
   }
 }
@@ -184,8 +220,16 @@ export class MockedNodesDataSource {
     return {status: 'started'};
   }
 
+  getItems() {
+    return [{name: 'testNode'}];
+  }
+
   update() {
     return of({});
+  }
+
+  public get changes() {
+    return new BehaviorSubject<[]>([]);
   }
 }
 
@@ -202,6 +246,7 @@ describe('ProjectMapComponent', () => {
   let linksDataSource = new MockedLinksDataSource();
   let mockedToasterService = new MockedToasterService();
   let nodeCreatedLabelStylesFixer;
+  let mockedRouter = new MockedActivatedRoute;
 
   beforeEach(async(() => {
     nodeCreatedLabelStylesFixer = {
@@ -209,7 +254,7 @@ describe('ProjectMapComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+      imports: [MatBottomSheetModule, MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },
@@ -222,6 +267,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
         { provide: LinkWidget },
+        { provide: EthernetLinkWidget },
+        { provide: SerialLinkWidget },
         { provide: DrawingsWidget },
         { provide: LabelWidget },
         { provide: InterfaceLabelWidget },
@@ -245,7 +292,13 @@ describe('ProjectMapComponent', () => {
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
         { provide: MapScaleService },
         { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
-        { provide: ToasterService, useValue: mockedToasterService }
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: Router, useValue: mockedRouter },
+        { provide: MapNodesDataSource, useClass: MapNodesDataSource },
+        { provide: MapLinksDataSource, useClass: LinksDataSource },
+        { provide: MapDrawingsDataSource, useClass: MapDrawingsDataSource },
+        { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource },
+        { provide: MapSettingsService, useClass: MapSettingsService }
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]
