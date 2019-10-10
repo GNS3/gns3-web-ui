@@ -1,0 +1,38 @@
+<div class="consoleWrapper">
+    <div class="consoleHeader">
+        <div class="consoleFiltering">
+            <div class="consoleName">Console</div>
+            <button class="filterButton" [matMenuTriggerFor]="filterMenu">
+                <mat-icon>keyboard_arrow_down</mat-icon>
+            </button>
+            <mat-menu #filterMenu="matMenu" xPosition="after">
+                <button (click)="applyFilter('all')" mat-menu-item>all</button>
+                <button (click)="applyFilter('errors')" mat-menu-item>errors</button>
+                <button (click)="applyFilter('warnings')" mat-menu-item>warnings</button>
+                <button (click)="applyFilter('info')" mat-menu-item>info</button>
+                <button (click)="applyFilter('map updates')" mat-menu-item>map updates</button>
+                <button (click)="applyFilter('server requests')" mat-menu-item>server requests</button>
+            </mat-menu>
+        </div>
+
+        <div class="consoleMenu">
+            <mat-icon (click)="close()" class="closeButton">close</mat-icon>
+        </div>
+    </div>
+
+    <div #console class="console">
+        <span class="console-item" *ngFor="let event of filteredEvents">
+            {{event.message}} <br/>
+        </span>
+    </div>
+
+    <div class="consoleInput">
+        <mat-icon class="inputIcon">keyboard_arrow_right</mat-icon>
+        <input
+            class="commandLine"
+            autofocus
+            (keydown)="onKeyDown($event)"
+            type="text"
+            [(ngModel)]="command"/>
+    </div>
+</div>

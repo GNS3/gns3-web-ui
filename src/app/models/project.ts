@@ -2,7 +2,9 @@ export class Project {
   auto_close: boolean;
   auto_open: boolean;
   auto_start: boolean;
+  drawing_grid_size: number;
   filename: string;
+  grid_size: number;
   name: string;
   path: string;
   project_id: string;

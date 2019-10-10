@@ -1,14 +1,19 @@
 import { path } from 'd3-path';
-
+import { EventEmitter, Injectable } from '@angular/core';
 import { Widget } from '../widget';
 import { SVGSelection } from '../../models/types';
 import { MapLink } from '../../models/map/map-link';
+import { LinkContextMenu } from '../../events/event-source';
 
 class EthernetLinkPath {
   constructor(public source: [number, number], public target: [number, number]) {}
 }
 
-export class EthernetLinkWidget implements Widget {
+@Injectable() export class EthernetLinkWidget implements Widget {
+  public onContextMenu = new EventEmitter<LinkContextMenu>();
+
+  constructor() {}
+  
   private linktoEthernetLink(link: MapLink) {
     return new EthernetLinkPath(
       [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2],
@@ -27,9 +32,21 @@ export class EthernetLinkWidget implements Widget {
     const link_enter = link
       .enter()
       .append<SVGPathElement>('path')
-      .attr('class', 'ethernet_link');
+      .attr('class', 'ethernet_link')
+      .on('contextmenu', (datum) => {
+        let link: MapLink = datum as unknown as MapLink;
+        const evt = event;
+        this.onContextMenu.emit(new LinkContextMenu(evt, link));
+      });
 
-    link_enter.attr('stroke', '#000').attr('stroke-width', '2');
+    link_enter
+      .attr('stroke', '#000')
+      .attr('stroke-width', '2')
+      .on('contextmenu', (datum) => {
+        let link: MapLink = datum as unknown as MapLink;
+        const evt = event;
+        this.onContextMenu.emit(new LinkContextMenu(evt, link));
+      });
 
     const link_merge = link.merge(link_enter);
 

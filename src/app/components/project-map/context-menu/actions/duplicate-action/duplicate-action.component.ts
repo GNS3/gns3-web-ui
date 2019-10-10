@@ -45,7 +45,9 @@ export class DuplicateActionComponent {
             })
         }
 
-        runningNodes = runningNodes.substring(0, runningNodes.length-2);
-        this.toasterService.error(`Cannot duplicate node data for nodes: ${runningNodes}`);
+        if (runningNodes.length > 0) {
+            runningNodes = runningNodes.substring(0, runningNodes.length-2);
+            this.toasterService.error(`Cannot duplicate node data for nodes: ${runningNodes}`);
+        }
     }
 }

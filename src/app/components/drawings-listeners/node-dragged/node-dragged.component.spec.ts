@@ -52,6 +52,7 @@ describe('NodeDraggedComponent', () => {
       firstPortName: 'sampleFirstPortName',
       height: 0,
       label: {} as MapLabel,
+      locked: false,
       name: 'sampleName',
       nodeDirectory: 'sampleNodeDirectory',
       nodeType: 'sampleNodeType',

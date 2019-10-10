@@ -189,9 +189,59 @@ import { NotificationBoxComponent } from './components/notification-box/notifica
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
-import { MapSettingService } from './services/mapsettings.service';
+import { MapSettingsService } from './services/mapsettings.service';
 import { ProjectMapMenuComponent } from './components/project-map/project-map-menu/project-map-menu.component';
 import { HelpComponent } from './components/help/help.component';
+import { ConfigEditorDialogComponent } from './components/project-map/node-editors/config-editor/config-editor.component';
+import { EditConfigActionComponent } from './components/project-map/context-menu/actions/edit-config/edit-config-action.component';
+import { LogConsoleComponent } from './components/project-map/log-console/log-console.component';
+import { LogEventsDataSource } from './components/project-map/log-console/log-events-datasource';
+import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
+import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
+import { ShowNodeActionComponent } from './components/project-map/context-menu/actions/show-node-action/show-node-action.component';
+import { InfoDialogComponent } from './components/project-map/info-dialog/info-dialog.component';
+import { InfoService } from './services/info.service';
+import { BringToFrontActionComponent } from './components/project-map/context-menu/actions/bring-to-front-action/bring-to-front-action.component';
+import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
+import { ImportConfigActionComponent } from './components/project-map/context-menu/actions/import-config/import-config-action.component';
+import { ConsoleDeviceActionBrowserComponent } from './components/project-map/context-menu/actions/console-device-action-browser/console-device-action-browser.component';
+import { ChangeSymbolDialogComponent } from './components/project-map/change-symbol-dialog/change-symbol-dialog.component';
+import { ChangeSymbolActionComponent } from './components/project-map/context-menu/actions/change-symbol/change-symbol-action.component';
+import { EditProjectDialogComponent } from './components/projects/edit-project-dialog/edit-project-dialog.component';
+import { ProjectsFilter } from './filters/projectsFilter.pipe';
+import { ComputeService } from './services/compute.service';
+import { ReloadNodeActionComponent } from './components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
+import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
+import { ConfigActionComponent } from './components/project-map/context-menu/actions/config-action/config-action.component';
+import { ConfiguratorDialogVpcsComponent } from './components/project-map/node-editors/configurator/vpcs/configurator-vpcs.component';
+import { ConfiguratorDialogEthernetHubComponent } from './components/project-map/node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component';
+import { ConfiguratorDialogEthernetSwitchComponent } from './components/project-map/node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component';
+import { PortsComponent } from './components/preferences/common/ports/ports.component';
+import { ConfiguratorDialogSwitchComponent } from './components/project-map/node-editors/configurator/switch/configurator-switch.component';
+import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
+import { CustomAdaptersTableComponent } from './components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { ConfiguratorDialogQemuComponent } from './components/project-map/node-editors/configurator/qemu/configurator-qemu.component';
+import { ConfiguratorDialogCloudComponent } from './components/project-map/node-editors/configurator/cloud/configurator-cloud.component';
+import { UdpTunnelsComponent } from './components/preferences/common/udp-tunnels/udp-tunnels.component';
+import { ConfiguratorDialogAtmSwitchComponent } from './components/project-map/node-editors/configurator/atm_switch/configurator-atm-switch.component';
+import { ConfiguratorDialogVmwareComponent } from './components/project-map/node-editors/configurator/vmware/configurator-vmware.component';
+import { ConfiguratorDialogIouComponent } from './components/project-map/node-editors/configurator/iou/configurator-iou.component';
+import { ConfiguratorDialogIosComponent } from './components/project-map/node-editors/configurator/ios/configurator-ios.component';
+import { ConfiguratorDialogDockerComponent } from './components/project-map/node-editors/configurator/docker/configurator-docker.component';
+import { ConfiguratorDialogNatComponent } from './components/project-map/node-editors/configurator/nat/configurator-nat.component';
+import { ConfiguratorDialogTracengComponent } from './components/project-map/node-editors/configurator/traceng/configurator-traceng.component';
+import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
+import { TracengPreferencesComponent } from './components/preferences/traceng/traceng-preferences/traceng-preferences.component';
+import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
+import { TracengService } from './services/traceng.service';
+import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
+import { QemuImageCreatorComponent } from './components/project-map/node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component';
+import { ChooseNameDialogComponent } from './components/projects/choose-name-dialog/choose-name-dialog.component';
+import { PacketCaptureService } from './services/packet-capture.service';
+import { StartCaptureOnStartedLinkActionComponent } from './components/project-map/context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component';
+import { LockActionComponent } from './components/project-map/context-menu/actions/lock-action/lock-action.component';
+import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
+import { ScreenshotDialogComponent } from './components/project-map/screenshot-dialog/screenshot-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -305,16 +355,61 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
+    ProjectsFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
     NodesMenuComponent,
     AdbutlerComponent,
     ConsoleDeviceActionComponent,
+    ShowNodeActionComponent,
     ConsoleComponent,
     NodesMenuComponent,
     NotificationBoxComponent,
     ProjectMapMenuComponent,
-    HelpComponent
+    HelpComponent,
+    ConfigEditorDialogComponent,
+    EditConfigActionComponent,
+    LogConsoleComponent,
+    SaveProjectDialogComponent,
+    TopologySummaryComponent,
+    InfoDialogComponent,
+    BringToFrontActionComponent,
+    ExportConfigActionComponent,
+    ImportConfigActionComponent,
+    ConsoleDeviceActionBrowserComponent,
+    ChangeSymbolDialogComponent,
+    ChangeSymbolActionComponent,
+    EditProjectDialogComponent,
+    ReloadNodeActionComponent,
+    SuspendNodeActionComponent,
+    ConfigActionComponent,
+    ConfiguratorDialogVpcsComponent,
+    ConfiguratorDialogEthernetHubComponent,
+    ConfiguratorDialogEthernetSwitchComponent,
+    PortsComponent,
+    ConfiguratorDialogSwitchComponent,
+    ConfiguratorDialogVirtualBoxComponent,
+    CustomAdaptersTableComponent,
+    ConfiguratorDialogQemuComponent,
+    ConfiguratorDialogCloudComponent,
+    UdpTunnelsComponent,
+    ConfiguratorDialogAtmSwitchComponent,
+    ConfiguratorDialogVmwareComponent,
+    ConfiguratorDialogIouComponent,
+    ConfiguratorDialogIosComponent,
+    ConfiguratorDialogDockerComponent,
+    ConfiguratorDialogNatComponent,
+    ConfiguratorDialogTracengComponent,
+    AddTracengTemplateComponent,
+    TracengPreferencesComponent,
+    TracengTemplatesComponent,
+    TracengTemplateDetailsComponent,
+    QemuImageCreatorComponent,
+    ChooseNameDialogComponent,
+    StartCaptureOnStartedLinkActionComponent,
+    LockActionComponent,
+    NavigationDialogComponent,
+    ScreenshotDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -354,6 +449,7 @@ if (environment.production) {
     LinksDataSource,
     NodesDataSource,
     SymbolsDataSource,
+    LogEventsDataSource,
     SelectionManager,
     InRectangleHelper,
     DrawingsDataSource,
@@ -390,7 +486,11 @@ if (environment.production) {
     NodeCreatedLabelStylesFixer,
     NonNegativeValidator,
     RotationValidator,
-    MapSettingService
+    MapSettingsService,
+    InfoService,
+    ComputeService,
+    TracengService,
+    PacketCaptureService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -406,7 +506,30 @@ if (environment.production) {
     SymbolsComponent,
     DeleteConfirmationDialogComponent,
     HelpDialogComponent,
-    StartCaptureDialogComponent
+    StartCaptureDialogComponent,
+    ConfigEditorDialogComponent,
+    SaveProjectDialogComponent,
+    InfoDialogComponent,
+    ChangeSymbolDialogComponent,
+    EditProjectDialogComponent,
+    ConfiguratorDialogVpcsComponent,
+    ConfiguratorDialogEthernetHubComponent,
+    ConfiguratorDialogEthernetSwitchComponent,
+    ConfiguratorDialogSwitchComponent,
+    ConfiguratorDialogVirtualBoxComponent,
+    ConfiguratorDialogQemuComponent,
+    ConfiguratorDialogCloudComponent,
+    ConfiguratorDialogAtmSwitchComponent,
+    ConfiguratorDialogVmwareComponent,
+    ConfiguratorDialogIouComponent,
+    ConfiguratorDialogIosComponent,
+    ConfiguratorDialogDockerComponent,
+    ConfiguratorDialogNatComponent,
+    ConfiguratorDialogTracengComponent,
+    QemuImageCreatorComponent,
+    ChooseNameDialogComponent,
+    NavigationDialogComponent,
+    ScreenshotDialogComponent
   ],
   bootstrap: [AppComponent]
 })

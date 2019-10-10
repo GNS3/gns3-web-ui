@@ -7,3 +7,9 @@
     height: 40px;
     margin: 20px;
 }
+
+.full-width {
+    width: 940px;
+    margin-left: -470px;
+    left: 50%;
+}

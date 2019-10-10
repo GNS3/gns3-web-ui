@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule } from '@angular/material';
+import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatDialogRef, MatDialogContainer, MatBottomSheetModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -16,6 +16,12 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { Server } from '../../models/server';
 import { Settings } from '../../services/settings.service';
 import { Project } from '../../models/project';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { OverlayRef } from '@angular/cdk/overlay';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -36,6 +42,11 @@ describe('ProjectsComponent', () => {
         MatSortModule,
         MatDialogModule,
         NoopAnimationsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatBottomSheetModule,
+        FormsModule,
+        ReactiveFormsModule,
         RouterTestingModule.withRoutes([])
       ],
       providers: [
@@ -44,8 +55,11 @@ describe('ProjectsComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         ProgressService
       ],
-      declarations: [ProjectsComponent]
-    }).compileComponents();
+      declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],
+      schemas: [NO_ERRORS_SCHEMA]
+    })
+    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ChooseNameDialogComponent] } })
+    .compileComponents();
 
     serverService = TestBed.get(ServerService);
     settingsService = TestBed.get(SettingsService);
@@ -83,6 +97,14 @@ describe('ProjectsComponent', () => {
     component.delete(project);
 
     expect(mockedProjectService.delete).toHaveBeenCalled();
+  });
+
+  it('should call list on refresh', () => {
+    mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
+
+    component.refresh();
+
+    expect(mockedProjectService.list).toHaveBeenCalled();
   });
 
   describe('ProjectComponent open', () => {

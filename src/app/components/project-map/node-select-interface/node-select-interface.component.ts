@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';

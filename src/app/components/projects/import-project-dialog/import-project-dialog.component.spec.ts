@@ -28,6 +28,8 @@ export class MockedProjectService {
       auto_close: false,
       auto_open: false,
       auto_start: false,
+      drawing_grid_size: 10,
+      grid_size: 10,
       filename: 'blank',
       name: 'blank',
       path: '',
@@ -45,6 +47,14 @@ export class MockedProjectService {
 
   list() {
     return of(this.projects);
+  }
+
+  getUploadPath(server: Server, uuid: string, project_name: string) {
+    return `http://${server.host}:${server.port}/v2/projects/${uuid}/import?name=${project_name}`;
+  }
+
+  getExportPath(server: Server, project: Project) {
+    return `http://${server.host}:${server.port}/v2/projects/${project.project_id}/export`;
   }
 }
 
@@ -112,12 +122,11 @@ describe('ImportProjectDialogComponent', () => {
 
     fileSelectDirective.onChange();
 
-    const expectedArguments = [
+    expect(fileSelectDirective.uploader.addToQueue).toHaveBeenCalledWith(
       debugElement.nativeElement.files,
       fileSelectDirective.getOptions(),
       fileSelectDirective.getFilters()
-    ];
-    expect(fileSelectDirective.uploader.addToQueue).toHaveBeenCalledWith(...expectedArguments);
+    );
   });
 
   it('should call uploading item', () => {

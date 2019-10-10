@@ -80,7 +80,7 @@ g.node:hover {
 }
 
 .extended {
-  width: 700px !important;
+  width: 830px !important;
   height: 100%;
   overflow: hidden;
 }
@@ -229,4 +229,12 @@ g.node text,
 
 .context-menu-items .mat-menu-item:focus {
   background: none;
+}
+
+.visible {
+  display: none;
+}
+
+mat-menu-panel {
+  min-height: 0px;
 }

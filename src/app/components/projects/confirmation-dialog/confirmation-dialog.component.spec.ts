@@ -15,6 +15,8 @@ describe('ConfirmationDialogComponent', () => {
     auto_close: false,
     auto_open: false,
     auto_start: false,
+    drawing_grid_size: 10,
+    grid_size: 10,
     filename: 'blank',
     name: 'blank',
     path: '',

@@ -3,6 +3,7 @@ import { Server } from '../../../../../models/server';
 import { Link } from '../../../../../models/link';
 import { MatDialog } from '@angular/material';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
+import { Project } from '../../../../../models/project';
 
 @Component({
   selector: 'app-start-capture-action',
@@ -10,6 +11,7 @@ import { StartCaptureDialogComponent } from '../../../packet-capturing/start-cap
 })
 export class StartCaptureActionComponent {
   @Input() server: Server;
+  @Input() project: Project;
   @Input() link: Link;
 
   constructor(private dialog: MatDialog) {}
@@ -21,6 +23,7 @@ export class StartCaptureActionComponent {
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
+    instance.project = this.project;
     instance.link = this.link;
   }
 }
