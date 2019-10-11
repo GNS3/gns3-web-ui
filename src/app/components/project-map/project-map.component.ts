@@ -53,7 +53,7 @@ import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
-import { MatDialog, MatBottomSheet } from '@angular/material';
+import { MatDialog, MatBottomSheet, mixinColor } from '@angular/material';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
@@ -392,6 +392,45 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.nodesDataSource.set(nodes);
       });
     });
+  }
+
+  public fitInView() {
+    if ((this.nodes.length === 0) || (this.drawings.length === 0)) { return };
+
+    let minX: number = + this.project.scene_width/2;
+    let minY: number = + this.project.scene_height/2;
+    let maxX: number = - this.project.scene_width/2;
+    let maxY: number = - this.project.scene_width/2;
+
+    this.nodes.forEach((node: Node) => {
+      minX = node.x < minX ? node.x : minX;
+      minY = node.y < minY ? node.y : minY;
+      maxX = node.x > maxX ? node.x : maxX;
+      maxY = node.y > maxY ? node.y : maxY;
+    });
+
+    this.drawings.forEach((drawing: Drawing) => {
+      minX = drawing.x < minX ? drawing.x : minX;
+      minY = drawing.y < minY ? drawing.y : minY;
+      maxX = drawing.x > maxX ? drawing.x : maxX;
+      maxY = drawing.y > maxY ? drawing.y : maxY;
+    });
+
+    let windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    let windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let margin = 0;
+    let widthToSceneWidthRatio = ((maxX-minX) + margin) / windowWidth;
+    let heightToSceneHeightRatio = ((maxY-minY) + margin) / windowHeight;
+
+    let scaleToSet = 1 / Math.max(widthToSceneWidthRatio, heightToSceneHeightRatio);
+    this.mapScaleService.setScale(scaleToSet);
+
+    this.project.scene_width = this.project.scene_width * scaleToSet;
+    this.project.scene_height = this.project.scene_height * scaleToSet;
+
+    let scrollX: number = (minX + maxX)/2 * scaleToSet;
+    let scrollY: number = (minY + maxY)/2 * scaleToSet;
+    window.scrollTo(scrollX, scrollY);
   }
 
   public centerView() {
