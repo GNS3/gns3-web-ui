@@ -395,25 +395,99 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public fitInView() {
+    this.drawings.forEach(drawing => {
+      let splittedSvg = drawing.svg.split("\"");
+      let height: number = parseInt(splittedSvg[1], 10);
+      let width: number =  parseInt(splittedSvg[3], 10);
+
+      drawing.element = {
+        width: width,
+        height: height
+      };
+    });
+
     if ((this.nodes.length === 0) && (this.drawings.length === 0)) { return };
-    let minX: number = + this.project.scene_width/2;
-    let minY: number = + this.project.scene_height/2;
-    let maxX: number = - this.project.scene_width/2;
-    let maxY: number = - this.project.scene_width/2;
+    let minX : number, maxX : number, minY: number, maxY : number;
 
-    this.nodes.forEach((node: Node) => {
-      minX = node.x < minX ? node.x : minX;
-      minY = node.y < minY ? node.y : minY;
-      maxX = node.x > maxX ? node.x : maxX;
-      maxY = node.y > maxY ? node.y : maxY;
+    let borderedNodes: BorderedNode[] = [];
+    this.nodes.forEach(n => {
+      let borderedNode: BorderedNode = new BorderedNode();
+      borderedNode.node = n;
+      borderedNode.top = n.y;
+      borderedNode.left = n.x;
+      borderedNode.bottom =  n.y + n.height;
+      borderedNode.right = n.x + n.width;
+
+      if ((n.y + n.label.y) < borderedNode.top) {
+        borderedNode.top = n.y + n.label.y;
+      };
+
+      if ((n.x + n.label.x) < borderedNode.left) {
+        borderedNode.left = n.x + n.label.x;
+      };
+
+      if ((n.y + n.label.y) > borderedNode.bottom) {
+        borderedNode.bottom = n.y + n.label.y;
+      };
+
+      if ((n.x + n.label.x) > borderedNode.right) {
+        borderedNode.right = n.x + n.label.x;
+      };
+
+      borderedNodes.push(borderedNode);
     });
 
-    this.drawings.forEach((drawing: Drawing) => {
-      minX = drawing.x < minX ? drawing.x : minX;
-      minY = drawing.y < minY ? drawing.y : minY;
-      maxX = drawing.x > maxX ? drawing.x : maxX;
-      maxY = drawing.y > maxY ? drawing.y : maxY;
+    let nodeMinX = borderedNodes.sort((n,m) => n.left - m.left)[0];
+    let nodeMaxX = borderedNodes.sort((n,m) => n.right - m.right)[borderedNodes.length - 1];
+    let nodeMinY = borderedNodes.sort((n,m) => n.top - m.top)[0];
+    let nodeMaxY = borderedNodes.sort((n,m) => n.bottom - m.bottom)[borderedNodes.length - 1];
+
+    let borderedDrawings: BorderedDrawing[] = [];
+    this.drawings.forEach(n => {
+      let borderedDrawing: BorderedDrawing =  new BorderedDrawing();
+      borderedDrawing.drawing = n;
+      borderedDrawing.top = n.y;
+      borderedDrawing.left = n.x;
+      borderedDrawing.bottom =  n.y + n.element.height;
+      borderedDrawing.right = n.x + n.element.width;
+
+      borderedDrawings.push(borderedDrawing);
     });
+
+    let drawingMinX = borderedDrawings.sort((n,m) => n.left - m.left)[0];
+    let drawingMaxX = borderedDrawings.sort((n,m) => n.right - m.right)[borderedDrawings.length - 1];
+    let drawingMinY = borderedDrawings.sort((n,m) => n.top - m.top)[0];
+    let drawingMaxY = borderedDrawings.sort((n,m) => n.bottom - m.bottom)[borderedDrawings.length - 1];
+
+    if (nodeMinX.left < drawingMinX.left) {
+      minX = nodeMinX.left;
+    } else {
+      minX = drawingMinX.left;
+    }
+
+    if (nodeMaxX.right > drawingMaxX.right) {
+      maxX = nodeMaxX.right;
+    } else {
+      maxX = drawingMaxX.right;
+    }
+
+    if (nodeMinY.top < drawingMinY.top) {
+      minY = nodeMinY.top;
+    } else {
+      minY = drawingMinY.top;
+    }
+
+    if (nodeMaxY.bottom > drawingMaxY.bottom) {
+      maxY = nodeMaxY.bottom;
+    } else {
+      maxY = drawingMaxY.bottom;
+    }
+
+    let margin: number = 20;
+    minX = minX - margin;
+    maxX = maxX + margin;
+    minY = minY - margin;
+    maxY = maxY + margin;
 
     console.log(maxX);
     console.log(minX);
@@ -435,19 +509,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     console.log('-----------------------------');
 
     let scale = 1 / Math.max(widthToSceneWidthRatio, heightToSceneHeightRatio);
-    this.mapScaleService.setScale(scale);
 
-    console.log(scale);
+    if (scale !== this.mapScaleService.currentScale) {
+      this.mapScaleService.setScale(scale);
 
-    this.project.scene_width = this.project.scene_width * scale;
-    this.project.scene_height = this.project.scene_height * scale;
-    let scrollX: number = ((minX + maxX)/2 * scale) + this.project.scene_width/2;
-    let scrollY: number = ((minY + maxY)/2 * scale) + this.project.scene_height/2;
+      this.project.scene_width = this.project.scene_width * scale;
+      this.project.scene_height = this.project.scene_height * scale;
+      let scrollX: number = (minX * scale) + this.project.scene_width/2;
+      let scrollY: number = (minY * scale) + this.project.scene_height/2;
 
-    console.log('scrollx ', scrollX);
-    console.log('scrolly ', scrollY);
+      window.scrollTo(scrollX, scrollY);
+    } else {
+      let scrollX: number = (minX * scale) + this.project.scene_width/2;
+      let scrollY: number = (minY * scale) + this.project.scene_height/2;
 
-    window.scrollTo(scrollX, scrollY);
+      window.scrollTo(scrollX, scrollY);
+    }
   }
 
   public centerView() {
@@ -644,4 +721,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
+}
+
+export class BorderedNode {
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
+  node: Node;
+}
+
+export class BorderedDrawing {
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
+  drawing: Drawing;
 }
