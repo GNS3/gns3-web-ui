@@ -185,6 +185,7 @@ import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
+import { NotificationBoxComponent } from './components/notification-box/notification-box.component';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
@@ -238,6 +239,9 @@ import { QemuImageCreatorComponent } from './components/project-map/node-editors
 import { ChooseNameDialogComponent } from './components/projects/choose-name-dialog/choose-name-dialog.component';
 import { PacketCaptureService } from './services/packet-capture.service';
 import { StartCaptureOnStartedLinkActionComponent } from './components/project-map/context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component';
+import { LockActionComponent } from './components/project-map/context-menu/actions/lock-action/lock-action.component';
+import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
+import { ScreenshotDialogComponent } from './components/project-map/screenshot-dialog/screenshot-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -360,6 +364,7 @@ if (environment.production) {
     ShowNodeActionComponent,
     ConsoleComponent,
     NodesMenuComponent,
+    NotificationBoxComponent,
     ProjectMapMenuComponent,
     HelpComponent,
     ConfigEditorDialogComponent,
@@ -401,7 +406,10 @@ if (environment.production) {
     TracengTemplateDetailsComponent,
     QemuImageCreatorComponent,
     ChooseNameDialogComponent,
-    StartCaptureOnStartedLinkActionComponent
+    StartCaptureOnStartedLinkActionComponent,
+    LockActionComponent,
+    NavigationDialogComponent,
+    ScreenshotDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -519,7 +527,9 @@ if (environment.production) {
     ConfiguratorDialogNatComponent,
     ConfiguratorDialogTracengComponent,
     QemuImageCreatorComponent,
-    ChooseNameDialogComponent
+    ChooseNameDialogComponent,
+    NavigationDialogComponent,
+    ScreenshotDialogComponent
   ],
   bootstrap: [AppComponent]
 })

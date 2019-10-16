@@ -115,6 +115,12 @@
           <mat-icon>settings_applications</mat-icon>
         </button>
       </mat-toolbar-row>
+
+      <mat-toolbar-row *ngIf="!readonly">
+        <button  matTooltip="Center view" mat-icon-button (click)="centerView()">
+          <mat-icon>center_focus_strong</mat-icon>
+        </button>
+      </mat-toolbar-row>
     </mat-toolbar>
   </div>
 
@@ -132,11 +138,11 @@
   <app-context-menu [project]="project" [server]="server"></app-context-menu>
 </div>
 
-<div id="zoom-buttons">
+<!-- <div id="zoom-buttons">
   <button class="zoom-button" (click)="zoomIn()">+</button>
   <button class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
   <button class="zoom-button" (click)="zoomOut()">-</button>
-</div>
+</div> -->
 
 <app-progress></app-progress>
 <app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server"></app-project-map-shortcuts>

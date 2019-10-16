@@ -28,13 +28,14 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     mapNode.consoleHost = node.console_host;
     mapNode.firstPortName = node.first_port_name;
     mapNode.height = node.height;
-    mapNode.label = this.labelToMapLabel.convert(node.label, { node_id: node.node_id });
+    mapNode.label = this.labelToMapLabel ? this.labelToMapLabel.convert(node.label, { node_id: node.node_id }) : undefined;
+    mapNode.locked = node.locked;
     mapNode.name = node.name;
     mapNode.nodeDirectory = node.node_directory;
     mapNode.nodeType = node.node_type;
     mapNode.portNameFormat = node.port_name_format;
     mapNode.portSegmentSize = node.port_segment_size;
-    mapNode.ports = node.ports.map(port => this.portToMapPort.convert(port));
+    mapNode.ports = node.ports ? node.ports.map(port => this.portToMapPort.convert(port)) : [];
     mapNode.projectId = node.project_id;
     mapNode.status = node.status;
     mapNode.symbol = node.symbol;

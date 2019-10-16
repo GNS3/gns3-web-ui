@@ -3,6 +3,8 @@ import { path } from 'd3-path';
 import { Widget } from '../widget';
 import { SVGSelection } from '../../models/types';
 import { MapLink } from '../../models/map/map-link';
+import { Injectable, EventEmitter } from '@angular/core';
+import { LinkContextMenu } from '../../events/event-source';
 
 class SerialLinkPath {
   constructor(
@@ -13,7 +15,11 @@ class SerialLinkPath {
   ) {}
 }
 
-export class SerialLinkWidget implements Widget {
+@Injectable() export class SerialLinkWidget implements Widget {
+  public onContextMenu = new EventEmitter<LinkContextMenu>();
+
+  constructor() {}
+  
   private linkToSerialLink(link: MapLink) {
     const source = {
       x: link.source.x + link.source.width / 2,
@@ -55,7 +61,12 @@ export class SerialLinkWidget implements Widget {
     const link_enter = link
       .enter()
       .append<SVGPathElement>('path')
-      .attr('class', 'serial_link');
+      .attr('class', 'serial_link')
+      .on('contextmenu', (datum) => {
+        let link: MapLink = datum as unknown as MapLink;
+        const evt = event;
+        this.onContextMenu.emit(new LinkContextMenu(evt, link));
+      });
 
     link_enter
       .attr('stroke', '#B22222')

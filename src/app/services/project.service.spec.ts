@@ -158,20 +158,4 @@ describe('ProjectService', () => {
 
     expect(service.isReadOnly(project)).toEqual(true);
   });
-
-  it('project should be readonly when experimentalFeatures disabled ', () => {
-    const project = new Project();
-    project.readonly = false;
-    spyOn(settingsService, 'isExperimentalEnabled').and.returnValue(false);
-
-    expect(service.isReadOnly(project)).toEqual(true);
-  });
-
-  it('project should not be readonly when experimentalFeatures enabled ', () => {
-    const project = new Project();
-    project.readonly = false;
-    spyOn(settingsService, 'isExperimentalEnabled').and.returnValue(true);
-
-    expect(service.isReadOnly(project)).toEqual(false);
-  });
 });

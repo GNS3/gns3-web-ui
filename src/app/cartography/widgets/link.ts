@@ -20,7 +20,9 @@ export class LinkWidget implements Widget {
     private multiLinkCalculatorHelper: MultiLinkCalculatorHelper,
     private interfaceLabelWidget: InterfaceLabelWidget,
     private interfaceStatusWidget: InterfaceStatusWidget,
-    private selectionManager: SelectionManager
+    private selectionManager: SelectionManager,
+    private ethernetLinkWidget: EthernetLinkWidget,
+    private serialLinkWidget: SerialLinkWidget
   ) {}
 
   public draw(view: SVGSelection) {
@@ -88,11 +90,8 @@ export class LinkWidget implements Widget {
         .attr('height', '48px')
         .attr("xlink:href", "assets/resources/images/filter.svg");
 
-    const serial_link_widget = new SerialLinkWidget();
-    serial_link_widget.draw(link_body_merge);
-
-    const ethernet_link_widget = new EthernetLinkWidget();
-    ethernet_link_widget.draw(link_body_merge);
+    this.serialLinkWidget.draw(link_body_merge);
+    this.ethernetLinkWidget.draw(link_body_merge);
 
     link_body_merge
       .select<SVGPathElement>('path')

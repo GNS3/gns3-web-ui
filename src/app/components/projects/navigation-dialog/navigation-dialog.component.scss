@@ -1,0 +1,17 @@
+.dialogWrapper {
+    background-color: #263238;
+    padding: 10px 20px;
+    margin-bottom: -8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+mat-bottom-sheet-container {
+    background: #263238;
+}
+
+.title {
+    margin-right: 10px;
+    margin-left: 10px;
+}

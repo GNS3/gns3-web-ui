@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectMapComponent } from './project-map.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule } from '@angular/material';
+import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatBottomSheetModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';
@@ -54,6 +54,8 @@ import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
+import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 
 export class MockedProgressService {
   public activate() {}
@@ -117,7 +119,7 @@ export class MockedNodeService {
     return of(node);
   }
 
-  getConfiguration(server: Server, node: Node) {
+  getStartupConfiguration(server: Server, node: Node) {
     return of('sample config');
   }
 
@@ -252,7 +254,7 @@ describe('ProjectMapComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+      imports: [MatBottomSheetModule, MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },
@@ -265,6 +267,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapChangeDetectorRef },
         { provide: NodeWidget },
         { provide: LinkWidget },
+        { provide: EthernetLinkWidget },
+        { provide: SerialLinkWidget },
         { provide: DrawingsWidget },
         { provide: LabelWidget },
         { provide: InterfaceLabelWidget },

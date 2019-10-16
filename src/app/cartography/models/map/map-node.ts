@@ -12,6 +12,7 @@ export class MapNode implements Indexed {
   firstPortName: string;
   height: number;
   label: MapLabel;
+  locked: boolean;
   name: string;
   nodeDirectory: string;
   nodeType: string;

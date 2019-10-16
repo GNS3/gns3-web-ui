@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatDialogRef } from '@angular/material';
+import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatDialogRef, MatDialogContainer, MatBottomSheetModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -21,6 +21,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { OverlayRef } from '@angular/cdk/overlay';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -43,6 +44,7 @@ describe('ProjectsComponent', () => {
         NoopAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
+        MatBottomSheetModule,
         FormsModule,
         ReactiveFormsModule,
         RouterTestingModule.withRoutes([])
@@ -97,15 +99,12 @@ describe('ProjectsComponent', () => {
     expect(mockedProjectService.delete).toHaveBeenCalled();
   });
 
-  it('should call open dialog after duplicate action', () => {
-    spyOn(component.dialog, 'open').and.callThrough();
-    let project = new Project();
-    project.project_id = '1';
-    project.status = 'closed';
+  it('should call list on refresh', () => {
+    mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
 
-    component.duplicate(project);
+    component.refresh();
 
-    expect(component.dialog.open).toHaveBeenCalled();
+    expect(mockedProjectService.list).toHaveBeenCalled();
   });
 
   describe('ProjectComponent open', () => {

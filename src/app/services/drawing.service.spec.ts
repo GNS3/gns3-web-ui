@@ -111,6 +111,7 @@ describe('DrawingService', () => {
     drawing.z = 30;
     drawing.rotation = 0;
     drawing.svg = '<svg></svg>';
+    drawing.locked = false;
 
     service.update(server, drawing).subscribe();
 
@@ -121,7 +122,8 @@ describe('DrawingService', () => {
       y: 20,
       z: 30,
       rotation: 0,
-      svg: '<svg></svg>'
+      svg: '<svg></svg>',
+      locked: false
     });
   }));
 

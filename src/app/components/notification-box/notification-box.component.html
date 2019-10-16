@@ -1,0 +1,9 @@
+<div class="notification-box" *ngIf="isVisible">
+    <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+    <div style="display: flex; height: 102px;">
+        <div class="content">
+            <app-adbutler theme="dark"></app-adbutler>
+            <mat-icon (click)="closeNotification()" class="close-button">close</mat-icon>
+        </div>
+    </div>
+</div>

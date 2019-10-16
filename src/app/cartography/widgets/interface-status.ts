@@ -16,16 +16,17 @@ export class InterfaceStatusWidget implements Widget {
       const link_group = select<SVGGElement, MapLink>(this);
       const link_path = link_group.select<SVGPathElement>('path');
 
-      const start_point: SVGPoint = link_path.node().getPointAtLength(45);
-      const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 45);
-
       let statuses = [];
+      if (link_path.node()) {
+        const start_point: SVGPoint = link_path.node().getPointAtLength(45);
+        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 45);
 
-      if (link_path.node().getTotalLength() > 2 * 45 + 10) {
-        statuses = [
-          new LinkStatus(start_point.x, start_point.y, l.source.status),
-          new LinkStatus(end_point.x, end_point.y, l.target.status)
-        ];
+        if (link_path.node().getTotalLength() > 2 * 45 + 10) {
+          statuses = [
+            new LinkStatus(start_point.x, start_point.y, l.source.status),
+            new LinkStatus(end_point.x, end_point.y, l.target.status)
+          ];
+        }
       }
 
       const status_started = link_group

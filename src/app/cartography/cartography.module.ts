@@ -58,6 +58,8 @@ import { DrawingAddingComponent } from './components/drawing-adding/drawing-addi
 import { MovingEventSource } from './events/moving-event-source';
 import { MovingCanvasDirective } from './directives/moving-canvas.directive';
 import { ZoomingCanvasDirective } from './directives/zooming-canvas.directive';
+import { EthernetLinkWidget } from './widgets/links/ethernet-link';
+import { SerialLinkWidget } from './widgets/links/serial-link';
 
 @NgModule({
   imports: [CommonModule, MatMenuModule, MatIconModule],
@@ -117,6 +119,8 @@ import { ZoomingCanvasDirective } from './directives/zooming-canvas.directive';
     MapSettingsManager,
     FontBBoxCalculator,
     StylesToFontConverter,
+    EthernetLinkWidget,
+    SerialLinkWidget,
     ...D3_MAP_IMPORTS
   ],
   exports: [D3MapComponent, ExperimentalMapComponent]
