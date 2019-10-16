@@ -517,12 +517,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.project.scene_height = this.project.scene_height * scale;
       let scrollX: number = (minX * scale) + this.project.scene_width/2;
       let scrollY: number = (minY * scale) + this.project.scene_height/2;
-
+      // console.log(scrollX);
+      // console.log(scrollY);
+      // let scrollY = (this.project.scene_height - windowHeight)/2;
+      // let scrollX = (this.project.scene_width - windowWidth)/2;
       window.scrollTo(scrollX, scrollY);
     } else {
       let scrollX: number = (minX * scale) + this.project.scene_width/2;
       let scrollY: number = (minY * scale) + this.project.scene_height/2;
-
+      // console.log(scrollX);
+      // console.log(scrollY);
+      // let scrollY = (this.project.scene_height - windowHeight)/2;
+      // let scrollX = (this.project.scene_width - windowWidth)/2;
       window.scrollTo(scrollX, scrollY);
     }
   }
