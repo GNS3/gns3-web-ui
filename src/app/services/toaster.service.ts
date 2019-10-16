@@ -9,12 +9,21 @@ export class ToasterService {
     MatSnackBarHorizontalPosition: 'center',
     MatSnackBarVerticalPosition: 'bottom'
   };
+
+  snackBarConfigForWarning = {
+    duration: 2000,
+    panelClass: ['snackabar-warning'],
+    MatSnackBarHorizontalPosition: 'center',
+    MatSnackBarVerticalPosition: 'bottom'
+  };
+
   snackBarConfigForError = {
     duration: 2000,
     panelClass: ['snackabar-error'],
     MatSnackBarHorizontalPosition: 'center',
     MatSnackBarVerticalPosition: 'bottom'
   };
+
   constructor(
     private snackbar: MatSnackBar,
     private zone: NgZone) {}
@@ -22,6 +31,12 @@ export class ToasterService {
   public error(message: string) {
     this.zone.run(() => {
       this.snackbar.open(message, 'Close', this.snackBarConfigForError);
+    });
+  }
+
+  public warning(message: string) {
+    this.zone.run(() => {
+      this.snackbar.open(message, 'Close', this.snackBarConfigForWarning);
     });
   }
 
