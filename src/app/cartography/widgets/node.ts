@@ -41,6 +41,11 @@ export class NodeWidget implements Widget {
       .on('click', (node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
+    
+    node_body_merge
+      .append<SVGTextElement>('text')
+      .attr('class', 'layer_label')
+      .text((n: MapNode) => { return n.z});
 
     // update image of node
     node_body_merge
