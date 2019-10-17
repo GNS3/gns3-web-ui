@@ -84,7 +84,7 @@
     "@sentry/cli": "^1.48.0",
     "@sentry/electron": "^0.17.4",
     "@types/jasmine": "^3.4.4",
-    "@types/jasminewd2": "^2.0.7",
+    "@types/jasminewd2": "^2.0.8",
     "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
     "electron": "6.0.12",
