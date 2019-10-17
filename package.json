@@ -72,7 +72,7 @@
     "svg-crowbar": "^0.2.3",
     "tree-kill": "^1.2.1",
     "typeface-roboto": "^0.0.75",
-    "xterm": "^3.14.5",
+    "xterm": "^4.0.0",
     "yargs": "^13.3.0",
     "zone.js": "^0.9.1"
   },
