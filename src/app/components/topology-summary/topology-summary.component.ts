@@ -9,6 +9,7 @@ import { ProjectStatistics } from '../../models/project-statistics';
 import { Compute } from '../../models/compute';
 import { ComputeService } from '../../services/compute.service';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
+import { ResizeEvent } from 'angular-resizable-element';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
     @Output() closeTopologySummary = new EventEmitter<boolean>();
 
+    public style: object = {};
     private subscriptions: Subscription[] = [];
     projectsStatistics: ProjectStatistics;
     nodes: Node[] = [];
@@ -61,6 +63,33 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.computeService.getComputes(this.server).subscribe((computes) => {
             this.computes = computes;
         });
+    }
+
+    validate(event: ResizeEvent): boolean {
+        const MIN_DIMENSIONS_PX: number = 50;
+        if (
+            event.rectangle.width &&
+            event.rectangle.height &&
+            (event.rectangle.width < MIN_DIMENSIONS_PX ||
+            event.rectangle.height < MIN_DIMENSIONS_PX)
+        ) {
+            return false;
+        }
+        return true;
+    }
+
+    onResizeEnd(event: ResizeEvent): void {
+        this.style = {
+            position: 'fixed',
+            left: `${event.rectangle.left}px`,
+            top: `${event.rectangle.top}px`,
+            width: `${event.rectangle.width}px`,
+            height: `${event.rectangle.height}px`
+        };
+    }
+
+    dragWidget(event) {
+        console.log(event);
     }
 
     toogleTopologyVisibility(value: boolean) {

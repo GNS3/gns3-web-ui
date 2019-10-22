@@ -1,4 +1,13 @@
-<div class="summaryWrapper" *ngIf="projectsStatistics">
+<div 
+    (mousedown)="dragWidget(event)" 
+    class="summaryWrapper" 
+    *ngIf="projectsStatistics" 
+    [ngStyle]="style"
+    mwlResizable
+    [validateResize]="validate"
+    [resizeEdges]="{ right: true, left: true}"
+    [enableGhostResize]="true"
+    (resizeEnd)="onResizeEnd($event)">
     <div class="summaryHeader">
         <button class="titleButton" [ngClass]="{ marked: isTopologyVisible }" (click)="toogleTopologyVisibility(true)" mat-button>Map topology</button>
         <button class="titleButton" [ngClass]="{ marked: !isTopologyVisible }" (click)=toogleTopologyVisibility(false) mat-button>Servers</button>

@@ -50,6 +50,8 @@
     "@angular/platform-browser-dynamic": "^8.2.8",
     "@angular/router": "^8.2.8",
     "angular-persistence": "^1.0.1",
+    "angular-resizable-element": "^3.2.6",
+    "angular2-draggable": "^2.3.2",
     "angular2-hotkeys": "^2.1.5",
     "angular2-indexeddb": "^1.2.3",
     "bootstrap": "4.3.1",

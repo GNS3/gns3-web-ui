@@ -1066,6 +1066,20 @@ angular-persistence@^1.0.1:
   resolved "https://registry.npmjs.org/angular-persistence/-/angular-persistence-1.0.1.tgz#79ffe7317f1f7aed88e69f07705f0ac32ccdb9da"
   integrity sha1-ef/nMX8feu2I5p8HcF8KwyzNudo=
 
+angular-resizable-element@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.npmjs.org/angular-resizable-element/-/angular-resizable-element-3.2.6.tgz#1df9b14853691e00b99c74492e729b7a35cf70a0"
+  integrity sha512-8vp5w4YFIrZ2M8EmGpIt/yMwLBjkUJe7aPLPxDDQhi5HQWF0HLJ6lb4tXgEzW572roxNnHFg105EM6XGAMZDIg==
+  dependencies:
+    tslib "^1.9.0"
+
+angular2-draggable@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/angular2-draggable/-/angular2-draggable-2.3.2.tgz#54ca569a6b3aa9ca1a8a4d663d3eee3024c48af3"
+  integrity sha512-rw2O/icgVang8uSVIU7nmm59f1DceSAUQkOuSGYnKbv/h8EbhJ9099sCjh/I5LymZBza1XPKeFZofIvhekdE+A==
+  dependencies:
+    tslib "^1.9.0"
+
 angular2-hotkeys@^2.1.5:
   version "2.1.5"
   resolved "https://registry.npmjs.org/angular2-hotkeys/-/angular2-hotkeys-2.1.5.tgz#d4d5df7cecd231d556089832609283f37674fdea"
