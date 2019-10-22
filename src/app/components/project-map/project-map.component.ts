@@ -79,8 +79,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public server: Server;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
-  public isConsoleVisible: boolean = false;
-  public isTopologySummaryVisible: boolean = false;
+  public isConsoleVisible: boolean = true;
+  public isTopologySummaryVisible: boolean = true;
   public isInterfaceLabelVisible: boolean = false;
 
   tools = {
