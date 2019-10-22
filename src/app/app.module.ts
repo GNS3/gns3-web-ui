@@ -243,6 +243,7 @@ import { LockActionComponent } from './components/project-map/context-menu/actio
 import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
 import { ScreenshotDialogComponent } from './components/project-map/screenshot-dialog/screenshot-dialog.component';
 import { ResizableModule } from 'angular-resizable-element';
+import { DragAndDropModule } from 'angular-draggable-droppable';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -427,6 +428,7 @@ if (environment.production) {
     FileUploadModule,
     MatSidenavModule,
     ResizableModule,
+    DragAndDropModule,
     MATERIAL_IMPORTS
   ],
   providers: [

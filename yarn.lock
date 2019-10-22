@@ -1061,6 +1061,14 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+angular-draggable-droppable@^4.3.8:
+  version "4.3.8"
+  resolved "https://registry.npmjs.org/angular-draggable-droppable/-/angular-draggable-droppable-4.3.8.tgz#fb13a358015478152bd066c7099dd00d3201981f"
+  integrity sha512-IIl3M+oXvaWPfLrbJdvdWcZLJb6/FqhImELNqBhbTlYMudyiJaLn1lUFYWz8xDti+b1eUoJpEPU3hliBYZmAvw==
+  dependencies:
+    dom-autoscroller "^2.3.4"
+    tslib "^1.9.0"
+
 angular-persistence@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/angular-persistence/-/angular-persistence-1.0.1.tgz#79ffe7317f1f7aed88e69f07705f0ac32ccdb9da"
@@ -1094,6 +1102,11 @@ angular2-indexeddb@^1.2.3:
   integrity sha512-ND9DZpqMnG7nBOgUsSnRn/t1PgcvrjPBv7C8ur9IuMcxPiQHRC7rIib7YhsWIXRyvQixiwga40JiKMuHJXAQPg==
   dependencies:
     "@angular/core" ">=4.3.1"
+
+animation-frame-polyfill@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/animation-frame-polyfill/-/animation-frame-polyfill-1.0.1.tgz#5f5ad993a78794bd176acde5b6dce62867410c9d"
+  integrity sha1-X1rZk6eHlL0Xas3lttzmKGdBDJ0=
 
 ansi-align@^3.0.0:
   version "3.0.0"
@@ -1274,6 +1287,11 @@ array-flatten@^2.1.0:
   version "2.1.2"
   resolved "https://registry.npmjs.org/array-flatten/-/array-flatten-2.1.2.tgz#24ef80a28c1a893617e2149b0c6d0d788293b099"
   integrity sha512-hNfzcOV8W4NdualtqBFPyVO+54DSJuZGY9qT4pRroB6S9e3iiido2ISIC5h9R2sPJ8H3FHCIiEnsv1lPXO3KtQ==
+
+array-from@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/array-from/-/array-from-2.1.1.tgz#cfe9d8c26628b9dc5aecc62a9f5d8f1f352c1195"
+  integrity sha1-z+nYwmYoudxa7MYqn12PHzUsEZU=
 
 array-union@^1.0.1:
   version "1.0.2"
@@ -2502,6 +2520,13 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+create-point-cb@^1.0.0:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/create-point-cb/-/create-point-cb-1.2.0.tgz#1bce47fc4fc01855ee12138d676b0cb2a7cbce71"
+  integrity sha1-G85H/E/AGFXuEhONZ2sMsqfLznE=
+  dependencies:
+    type-func "^1.0.1"
+
 cross-spawn@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-3.0.1.tgz#1256037ecb9f0c5f79e3d6ef135e30770184b982"
@@ -3196,6 +3221,30 @@ dns-txt@^2.0.2:
   dependencies:
     buffer-indexof "^1.0.0"
 
+dom-autoscroller@^2.3.4:
+  version "2.3.4"
+  resolved "https://registry.npmjs.org/dom-autoscroller/-/dom-autoscroller-2.3.4.tgz#1ed25cbde2bdf3bf3eb762937089b20ecef190bd"
+  integrity sha512-HcAdt/2Dq9x4CG6LWXc2x9Iq0MJPAu8fuzHncclq7byufqYEYVtx9sZ/dyzR+gdj4qwEC9p27Lw1G2HRRYX6jQ==
+  dependencies:
+    animation-frame-polyfill "^1.0.0"
+    create-point-cb "^1.0.0"
+    dom-mousemove-dispatcher "^1.0.1"
+    dom-plane "^1.0.1"
+    dom-set "^1.0.1"
+    type-func "^1.0.1"
+
+dom-mousemove-dispatcher@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/dom-mousemove-dispatcher/-/dom-mousemove-dispatcher-1.0.1.tgz#a24a6ddf93b27bb3694f72087546a57fc7e9140f"
+  integrity sha1-okpt35Oye7NpT3IIdUalf8fpFA8=
+
+dom-plane@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/dom-plane/-/dom-plane-1.0.2.tgz#f8c85e697c587f147e8fc2fac1de078c1fe4172c"
+  integrity sha1-+MheaXxYfxR+j8L6wd4HjB/kFyw=
+  dependencies:
+    create-point-cb "^1.0.0"
+
 dom-serialize@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/dom-serialize/-/dom-serialize-2.2.1.tgz#562ae8999f44be5ea3076f5419dcd59eb43ac95b"
@@ -3205,6 +3254,15 @@ dom-serialize@^2.2.0:
     ent "~2.2.0"
     extend "^3.0.0"
     void-elements "^2.0.0"
+
+dom-set@^1.0.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/dom-set/-/dom-set-1.1.1.tgz#5c2c610ee4839b520ed5f98ddbcbe314c0fa954a"
+  integrity sha1-XCxhDuSDm1IO1fmN28vjFMD6lUo=
+  dependencies:
+    array-from "^2.1.1"
+    is-array "^1.0.1"
+    iselement "^1.1.4"
 
 domain-browser@^1.1.1:
   version "1.2.0"
@@ -4675,6 +4733,11 @@ is-accessor-descriptor@^1.0.0:
   dependencies:
     kind-of "^6.0.0"
 
+is-array@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/is-array/-/is-array-1.0.1.tgz#e9850cc2cc860c3bc0977e84ccf0dd464584279a"
+  integrity sha1-6YUMwsyGDDvAl36EzPDdRkWEJ5o=
+
 is-arrayish@^0.2.1:
   version "0.2.1"
   resolved "https://registry.npmjs.org/is-arrayish/-/is-arrayish-0.2.1.tgz#77c99840527aa8ecb1a8ba697b80645a7a926a9d"
@@ -4963,6 +5026,11 @@ isbinaryfile@^4.0.2:
   version "4.0.2"
   resolved "https://registry.npmjs.org/isbinaryfile/-/isbinaryfile-4.0.2.tgz#bfc45642da645681c610cca831022e30af426488"
   integrity sha512-C3FSxJdNrEr2F4z6uFtNzECDM5hXk+46fxaa+cwBe5/XrWSmzdG8DDgyjfX6/NRdBB21q2JXuRAzPCUs+fclnQ==
+
+iselement@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.npmjs.org/iselement/-/iselement-1.1.4.tgz#7e55b52a8ebca50a7e2e80e5b8d2840f32353146"
+  integrity sha1-flW1Ko68pQp+LoDluNKEDzI1MUY=
 
 isexe@^2.0.0:
   version "2.0.0"
@@ -8583,6 +8651,11 @@ type-fest@^0.5.2:
   version "0.5.2"
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-0.5.2.tgz#d6ef42a0356c6cd45f49485c3b6281fc148e48a2"
   integrity sha512-DWkS49EQKVX//Tbupb9TFa19c7+MK1XmzkrZUR8TAktmE/DizXoaoJV6TZ/tSIPXipqNiRI6CyAe7x69Jb6RSw==
+
+type-func@^1.0.1:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/type-func/-/type-func-1.0.3.tgz#ab184234ae80d8d50057cefeff3b2d97d08ae9b0"
+  integrity sha1-qxhCNK6A2NUAV87+/zstl9CK6bA=
 
 type-is@~1.6.17, type-is@~1.6.18:
   version "1.6.18"
