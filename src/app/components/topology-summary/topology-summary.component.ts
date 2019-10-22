@@ -24,6 +24,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     @Output() closeTopologySummary = new EventEmitter<boolean>();
 
     public style: object = {};
+    public styleInside: object = { height: `180px` };
     private subscriptions: Subscription[] = [];
     projectsStatistics: ProjectStatistics;
     nodes: Node[] = [];
@@ -66,12 +67,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     }
 
     validate(event: ResizeEvent): boolean {
-        const MIN_DIMENSIONS_PX: number = 50;
         if (
             event.rectangle.width &&
             event.rectangle.height &&
-            (event.rectangle.width < MIN_DIMENSIONS_PX ||
-            event.rectangle.height < MIN_DIMENSIONS_PX)
+            (event.rectangle.width < 290 ||
+            event.rectangle.height < 260)
         ) {
             return false;
         }
@@ -86,10 +86,10 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             width: `${event.rectangle.width}px`,
             height: `${event.rectangle.height}px`
         };
-    }
 
-    dragWidget(event) {
-        console.log(event);
+        this.styleInside = {
+            height: `${event.rectangle.height - 220}px`
+        };
     }
 
     toogleTopologyVisibility(value: boolean) {

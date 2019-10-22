@@ -1,11 +1,10 @@
 <div 
-    (mousedown)="dragWidget(event)" 
     class="summaryWrapper" 
     *ngIf="projectsStatistics" 
-    [ngStyle]="style"
+    [ngStyle]="style" 
     mwlResizable
     [validateResize]="validate"
-    [resizeEdges]="{ right: true, left: true}"
+    [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
     [enableGhostResize]="true"
     (resizeEnd)="onResizeEnd($event)">
     <div class="summaryHeader">
@@ -38,7 +37,9 @@
             </div>
         </div>
         <mat-divider class="divider"></mat-divider>
-        <div class="summaryContent">
+        <div
+            [ngStyle]="styleInside" 
+            class="summaryContent">
             <div class="nodeRow" *ngFor="let node of filteredNodes">
                 <div>
                     <svg *ngIf="node.status==='started'" width="10" height="10">
