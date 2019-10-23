@@ -90,6 +90,9 @@
           <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
             Show notifications
           </mat-checkbox>
+          <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)">
+            Show layers
+          </mat-checkbox>
         </div>
       </mat-menu>
 
