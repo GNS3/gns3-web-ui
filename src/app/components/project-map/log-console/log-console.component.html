@@ -1,9 +1,15 @@
-<div class="consoleWrapper">
+<div 
+    class="consoleWrapper"
+    [ngStyle]="style" 
+    mwlResizable
+    [validateResize]="validate"
+    [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
+    [enableGhostResize]="true"
+    (resizeEnd)="onResizeEnd($event)">
     <div class="consoleHeader">
         <div class="consoleFiltering">
-            <div class="consoleName">Console</div>
             <button class="filterButton" [matMenuTriggerFor]="filterMenu">
-                <mat-icon>keyboard_arrow_down</mat-icon>
+                Apply filter
             </button>
             <mat-menu #filterMenu="matMenu" xPosition="after">
                 <button (click)="applyFilter('all')" mat-menu-item>all</button>
@@ -20,7 +26,7 @@
         </div>
     </div>
 
-    <div #console class="console">
+    <div #console class="console" [ngStyle]="styleInside">
         <span class="console-item" *ngFor="let event of filteredEvents">
             {{event.message}} <br/>
         </span>
