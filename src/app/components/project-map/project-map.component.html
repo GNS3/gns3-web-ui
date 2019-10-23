@@ -87,6 +87,9 @@
           <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
             Show topology/servers summary
           </mat-checkbox>
+          <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
+            Show notifications
+          </mat-checkbox>
         </div>
       </mat-menu>
 
