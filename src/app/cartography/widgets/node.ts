@@ -10,6 +10,7 @@ import { SelectionManager } from '../managers/selection-manager';
 import { LabelWidget } from './label';
 import { NodesEventSource } from '../events/nodes-event-source';
 import { ClickedDataEvent } from '../events/event-source';
+import { MapSettingsService } from '../../services/mapsettings.service';
 
 @Injectable()
 export class NodeWidget implements Widget {
@@ -20,7 +21,8 @@ export class NodeWidget implements Widget {
     private graphDataManager: GraphDataManager,
     private selectionManager: SelectionManager,
     private labelWidget: LabelWidget,
-    private nodesEventSource: NodesEventSource
+    private nodesEventSource: NodesEventSource,
+    private mapSettingsService: MapSettingsService
   ) {}
 
   public draw(view: SVGSelection) {
@@ -41,6 +43,40 @@ export class NodeWidget implements Widget {
       .on('click', (node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
+
+    node_body_merge.select('.layer_label_wrapper').remove();
+    if (this.mapSettingsService.isLayerNumberVisible) {
+      node_body_merge
+        .append<SVGRectElement>('rect')
+        .attr('class', 'layer_label_wrapper')
+        .attr('width', '26')
+        .attr('height', '26')
+        .attr('x', (n: MapNode) => n.width/2 - 13)
+        .attr('y', (n: MapNode) => n.height/2 - 13)
+        .attr('fill', 'red');
+    }
+
+    node_body_merge.select('.layer_label').remove();
+    if (this.mapSettingsService.isLayerNumberVisible) {
+      node_body_merge
+        .append<SVGTextElement>('text')
+        .attr('class', 'layer_label')
+        .text((n: MapNode) => { return n.z})
+        .attr('x', function(n: MapNode) {
+          if(n.z >= 100 ) return n.width/2 - 13
+          else if(n.z >= 10 ) return n.width/2 - 9
+          else return n.width/2 - 5
+        })
+        .attr('y', (n: MapNode) => n.height/2 + 5)
+        .attr('style', () => {
+          const styles: string[] = [];
+          styles.push(`font-family: "Noto Sans"`);
+          styles.push(`font-size: 11pt`);
+          styles.push(`font-weight: bold`);
+          return styles.join('; ');
+        })
+        .attr('fill', `#ffffff`);
+    }
 
     // update image of node
     node_body_merge

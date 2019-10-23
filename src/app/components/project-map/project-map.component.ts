@@ -83,6 +83,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isTopologySummaryVisible: boolean = true;
   public isInterfaceLabelVisible: boolean = false;
   public notificationsVisibility: boolean = false;
+  public layersVisibility: boolean = false;
 
   tools = {
     selection: true,
@@ -238,6 +239,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }));
 
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
+    this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.addKeyboardListeners();
   }
 
@@ -477,6 +479,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('notificationsVisibility');
     }
+  }
+
+  public toggleLayers(visible: boolean) {
+    this.layersVisibility = visible;
+    this.mapSettingsService.toggleLayers(visible);
+    if (this.layersVisibility) {
+      localStorage.setItem('layersVisibility', 'true');
+    } else {
+      localStorage.removeItem('layersVisibility')
+    }
+    this.mapChild.applyMapSettingsChanges();
   }
 
   private showMessage(msg) {
