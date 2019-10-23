@@ -242,6 +242,7 @@ import { StartCaptureOnStartedLinkActionComponent } from './components/project-m
 import { LockActionComponent } from './components/project-map/context-menu/actions/lock-action/lock-action.component';
 import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
 import { ScreenshotDialogComponent } from './components/project-map/screenshot-dialog/screenshot-dialog.component';
+import { ResizableModule } from 'angular-resizable-element';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -425,6 +426,7 @@ if (environment.production) {
     NgxElectronModule,
     FileUploadModule,
     MatSidenavModule,
+    ResizableModule,
     MATERIAL_IMPORTS
   ],
   providers: [

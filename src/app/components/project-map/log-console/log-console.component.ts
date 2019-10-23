@@ -12,6 +12,7 @@ import { Port } from '../../../models/port';
 import { LogEventsDataSource } from './log-events-datasource';
 import { HttpServer } from '../../../services/http-server.service';
 import { LogEvent } from '../../../models/logEvent';
+import { ResizeEvent } from 'angular-resizable-element';
 
 
 @Component({
@@ -43,6 +44,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private regexReload: RegExp = /^reload (.*?)$/;
     private regexShow: RegExp = /^show (.*?)$/;
     private regexConsole: RegExp = /^console (.*?)$/;
+
+    public style: object = {};
+    public styleInside: object = { height: `120px` };
 
     constructor(
         private projectWebServiceHandler: ProjectWebServiceHandler,
@@ -122,6 +126,33 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.errorSubscription.unsubscribe();
         this.warningSubscription.unsubscribe();
         this.infoSubscription.unsubscribe();
+    }
+
+    validate(event: ResizeEvent): boolean {
+        if (
+            event.rectangle.width &&
+            event.rectangle.height &&
+            (event.rectangle.width < 600 ||
+            event.rectangle.height < 180)
+        ) {
+            return false;
+        }
+        return true;
+    }
+
+    onResizeEnd(event: ResizeEvent): void {
+        this.style = {
+            position: 'fixed',
+            left: `${event.rectangle.left}px`,
+            top: `${event.rectangle.top}px`,
+            width: `${event.rectangle.width}px`,
+            height: `${event.rectangle.height}px`
+        };
+
+        this.styleInside = {
+            height: `${event.rectangle.height - 60}px`,
+            width: `${event.rectangle.width}px`
+        };
     }
 
     applyFilter(filter: string) {
