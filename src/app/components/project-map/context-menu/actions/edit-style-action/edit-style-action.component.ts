@@ -1,22 +1,26 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Server } from '../../../../../models/server';
 import { MatDialog } from '@angular/material';
 import { Project } from '../../../../../models/project';
 import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
+import { ImageElement } from '../../../../../cartography/models/drawings/image-element';
 
 @Component({
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html'
 })
-export class EditStyleActionComponent implements OnInit {
+export class EditStyleActionComponent implements OnChanges {
   @Input() server: Server;
   @Input() project: Project;
   @Input() drawing: Drawing;
+  isImageDrawing: boolean = false;
 
   constructor(private dialog: MatDialog) {}
 
-  ngOnInit() {}
+  ngOnChanges() {
+    this.isImageDrawing = this.drawing.element instanceof ImageElement;
+  }
 
   editStyle() {
     const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
