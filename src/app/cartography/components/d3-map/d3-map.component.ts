@@ -153,6 +153,10 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  public applyMapSettingsChanges() {
+    this.redraw();
+  }
+
   public createGraph(domElement: HTMLElement) {
     const rootElement = select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
