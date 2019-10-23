@@ -13,6 +13,7 @@ import { SelectionManager } from '../managers/selection-manager';
 import { LineElement } from '../models/drawings/line-element';
 import { EllipseElement } from '../models/drawings/ellipse-element';
 import { RectElement } from '../models/drawings/rect-element';
+import { MapSettingsService } from '../../services/mapsettings.service';
 
 @Injectable()
 export class DrawingWidget implements Widget {
@@ -24,7 +25,8 @@ export class DrawingWidget implements Widget {
     private rectDrawingWidget: RectDrawingWidget,
     private lineDrawingWidget: LineDrawingWidget,
     private ellipseDrawingWidget: EllipseDrawingWidget,
-    private selectionManager: SelectionManager
+    private selectionManager: SelectionManager,
+    private mapSettingsService: MapSettingsService
   ) {
     this.drawingWidgets = [
       this.textDrawingWidget,
@@ -52,36 +54,40 @@ export class DrawingWidget implements Widget {
     });
 
     drawing_body_merge.select('.layer_label_wrapper').remove();
-    drawing_body_merge
-      .filter(n => ((n.element instanceof RectElement) || (n.element instanceof EllipseElement)))
-      .append<SVGRectElement>('rect')
-      .attr('class', 'layer_label_wrapper')
-      .attr('width', '26')
-      .attr('height', '26')
-      .attr('x', n => n.element ? n.element.width/2 - 13 : 0)
-      .attr('y', n => n.element ? n.element.height/2 - 13 : 0)
-      .attr('fill', 'red');
+    if (this.mapSettingsService.isLayerNumberVisible) {
+      drawing_body_merge
+        .filter(n => ((n.element instanceof RectElement) || (n.element instanceof EllipseElement)))
+        .append<SVGRectElement>('rect')
+        .attr('class', 'layer_label_wrapper')
+        .attr('width', '26')
+        .attr('height', '26')
+        .attr('x', n => n.element ? n.element.width/2 - 13 : 0)
+        .attr('y', n => n.element ? n.element.height/2 - 13 : 0)
+        .attr('fill', 'red');
+    }
 
     drawing_body_merge.select('.layer_label').remove();
-    drawing_body_merge
-      .filter(n => ((n.element instanceof RectElement) || (n.element instanceof EllipseElement)))
-      .append<SVGTextElement>('text')
-      .attr('class', 'layer_label')
-      .text((elem) => elem.z)
-      .attr('x', function(n) {
-        if(n.z >= 100 ) return n.element ? n.element.width/2 - 13 : 0
-        else if(n.z >= 10 ) return n.element ? n.element.width/2 - 9 : 0
-        else return n.element.width/2 - 5
-      })
-      .attr('y', n => n.element ? n.element.height/2 + 5 : 0)
-      .attr('style', () => {
-        const styles: string[] = [];
-        styles.push(`font-family: "Noto Sans"`);
-        styles.push(`font-size: 11pt`);
-        styles.push(`font-weight: bold`);
-        return styles.join('; ');
-      })
-      .attr('fill', `#ffffff`);
+    if (this.mapSettingsService.isLayerNumberVisible) {
+      drawing_body_merge
+        .filter(n => ((n.element instanceof RectElement) || (n.element instanceof EllipseElement)))
+        .append<SVGTextElement>('text')
+        .attr('class', 'layer_label')
+        .text((elem) => elem.z)
+        .attr('x', function(n) {
+          if(n.z >= 100 ) return n.element ? n.element.width/2 - 13 : 0
+          else if(n.z >= 10 ) return n.element ? n.element.width/2 - 9 : 0
+          else return n.element.width/2 - 5
+        })
+        .attr('y', n => n.element ? n.element.height/2 + 5 : 0)
+        .attr('style', () => {
+          const styles: string[] = [];
+          styles.push(`font-family: "Noto Sans"`);
+          styles.push(`font-size: 11pt`);
+          styles.push(`font-weight: bold`);
+          return styles.join('; ');
+        })
+        .attr('fill', `#ffffff`);
+    }
 
     drawing_body_merge
       .select<SVGAElement>('line.top')
