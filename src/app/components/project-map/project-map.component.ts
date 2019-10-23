@@ -82,6 +82,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isConsoleVisible: boolean = true;
   public isTopologySummaryVisible: boolean = true;
   public isInterfaceLabelVisible: boolean = false;
+  public notificationsVisibility: boolean = false;
 
   tools = {
     selection: true,
@@ -222,6 +223,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.subscriptions.push(this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
+      this.showMessage({
+          type: 'error',
+          message: message
+      });
+    }));
+
+    this.subscriptions.push(this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+        this.showMessage({
+            type: 'warning',
+            message: message
+        });
+    }));
+
+    this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.addKeyboardListeners();
   }
 
@@ -452,6 +468,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
+  }
+
+  public toggleNotifications(visible: boolean) {
+    this.notificationsVisibility = visible;
+    if (this.notificationsVisibility) {
+      localStorage.setItem('notificationsVisibility', 'true');
+    } else {
+      localStorage.removeItem('notificationsVisibility');
+    }
+  }
+
+  private showMessage(msg) {
+    if (this.notificationsVisibility) {
+      if (msg.type === 'error') this.toasterService.error(msg.message);
+      if (msg.type === 'warning') this.toasterService.warning(msg.message);
+    }
   }
 
   public hideMenu() {

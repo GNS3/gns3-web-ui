@@ -11,6 +11,11 @@ a.table-link {
   color: white!important;
 }
 
+.snackbar-warning {
+  background: rgb(197, 199, 64)!important;
+  color: white!important;
+}
+
 .snackbar-error {
   background: #B00020!important;
   color: white!important;
