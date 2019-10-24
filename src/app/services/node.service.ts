@@ -58,8 +58,8 @@ export class NodeService {
     let yPosition: number = Math.round(y);
 
     if (project.snap_to_grid) {
-      xPosition = Math.round(xPosition / project.grid_size) * project.grid_size;
-      yPosition = Math.round(yPosition / project.grid_size) * project.grid_size;
+      xPosition = Math.round((xPosition + node.width/2) / project.grid_size) * project.grid_size;
+      yPosition = Math.round((yPosition + node.width/2) / project.grid_size) * project.grid_size;
 
       xPosition = Math.round(xPosition - node.width/2);
       yPosition = Math.round(yPosition - node.height/2);

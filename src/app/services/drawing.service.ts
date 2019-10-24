@@ -6,10 +6,14 @@ import 'rxjs/add/operator/map';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { Project } from '../models/project';
+import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 
 @Injectable()
 export class DrawingService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(
+    private httpServer: HttpServer,
+    private svgToDrawingConverter: SvgToDrawingConverter
+  ) {}
 
   add(server: Server, project_id: string, x: number, y: number, svg: string) {
     return this.httpServer.post<Drawing>(server, `/projects/${project_id}/drawings`, {
@@ -35,7 +39,13 @@ export class DrawingService {
     let yPosition: number = Math.round(y);
 
     if (project.snap_to_grid) {
+      drawing.element = this.svgToDrawingConverter.convert(drawing.svg);
 
+      xPosition = Math.round((xPosition + drawing.element.width/2) / project.drawing_grid_size) * project.drawing_grid_size;
+      yPosition = Math.round((yPosition + drawing.element.width/2) / project.drawing_grid_size) * project.drawing_grid_size;
+
+      xPosition = Math.round(xPosition - drawing.element.width/2);
+      yPosition = Math.round(yPosition - drawing.element.height/2);
     }
 
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
