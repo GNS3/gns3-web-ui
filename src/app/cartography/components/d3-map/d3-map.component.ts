@@ -55,15 +55,13 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-
   private onChangesDetected: Subscription;
   private subscriptions: Subscription[] = [];
-
   private drawLinkTool: boolean;
-
   protected settings = {
     show_interface_labels: true
   };
+  public gridVisibility: number = 0;
 
   constructor(
     private graphDataManager: GraphDataManager,
@@ -145,6 +143,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.drawLinkTool = value;
       })
     );
+
+    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? 1 : 0;
   }
 
   ngOnDestroy() {

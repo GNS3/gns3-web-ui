@@ -93,6 +93,9 @@
           </mat-checkbox>
           <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)">
             Show layers
+          </mat-checkbox><br/>
+          <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)">
+            Show grid
           </mat-checkbox>
         </div>
       </mat-menu>
