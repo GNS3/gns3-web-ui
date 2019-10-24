@@ -96,6 +96,9 @@
           </mat-checkbox><br/>
           <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)">
             Show grid
+          </mat-checkbox><br/>
+          <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
+            Snap to grid
           </mat-checkbox>
         </div>
       </mat-menu>
