@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
+import { Project } from '../models/project';
 
 @Injectable()
 export class DrawingService {
@@ -29,10 +30,17 @@ export class DrawingService {
     });
   }
 
-  updatePosition(server: Server, drawing: Drawing, x: number, y: number): Observable<Drawing> {
+  updatePosition(server: Server, project: Project, drawing: Drawing, x: number, y: number): Observable<Drawing> {
+    let xPosition: number = Math.round(x);
+    let yPosition: number = Math.round(y);
+
+    if (project.snap_to_grid) {
+
+    }
+
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
-      x: Math.round(x),
-      y: Math.round(y)
+      x: xPosition,
+      y: yPosition
     });
   }
 
