@@ -32,6 +32,7 @@ import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
 import { MapScaleService } from '../../../services/mapScale.service';
+import { Project } from '../../../models/project';
 
 @Component({
   selector: 'app-d3-map',
@@ -43,6 +44,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
+  @Input() project: Project;
   @Input() server: Server;
 
   @Input() width = 1500;
