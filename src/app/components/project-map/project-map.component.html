@@ -2,6 +2,7 @@
   <app-d3-map
     *ngIf="!settings.angular_map"
     [server]="server"
+    [project]="project"
     [symbols]="symbols"
     [nodes]="nodes"
     [links]="links"
@@ -96,6 +97,12 @@
           </mat-checkbox>
           <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)">
             Show layers
+          </mat-checkbox><br/>
+          <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)">
+            Show grid
+          </mat-checkbox><br/>
+          <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
+            Snap to grid
           </mat-checkbox>
         </div>
       </mat-menu>
@@ -158,11 +165,11 @@
 <app-project-map-shortcuts *ngIf="project" [project]="project" [server]="server"></app-project-map-shortcuts>
 <app-draw-link-tool [links]="links" *ngIf="tools.draw_link"></app-draw-link-tool>
 
-<app-drawing-dragged [server]="server"></app-drawing-dragged>
+<app-drawing-dragged [server]="server" [project]="project"></app-drawing-dragged>
 <app-drawing-resized [server]="server"></app-drawing-resized>
 <app-interface-label-dragged [server]="server"></app-interface-label-dragged>
 <app-link-created [server]="server" [project]="project"></app-link-created>
-<app-node-dragged [server]="server"></app-node-dragged>
+<app-node-dragged [server]="server" [project]="project"></app-node-dragged>
 <app-node-label-dragged [server]="server"></app-node-label-dragged>
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>

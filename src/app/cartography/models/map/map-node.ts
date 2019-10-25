@@ -23,6 +23,7 @@ export class MapNode implements Indexed {
   status: string;
   symbol: string;
   symbolUrl: string;
+  usage?: string;
   width: number;
   x: number;
   y: number;

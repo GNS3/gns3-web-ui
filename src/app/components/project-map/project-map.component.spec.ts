@@ -144,7 +144,7 @@ export class MockedDrawingService {
     return of(drawing);
   }
 
-  updatePosition(_server: Server, _drawing: Drawing, _x: number, _y: number) {
+  updatePosition(_server: Server, _project: Project, _drawing: Drawing, _x: number, _y: number) {
     return of(this.drawing);
   }
 
