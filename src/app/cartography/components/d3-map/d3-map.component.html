@@ -1,5 +1,19 @@
 <svg #svg class="map" preserveAspectRatio="none" movingCanvas zoomingCanvas>
   <filter id="grayscale"><feColorMatrix id="feGrayscale" type="saturate" values="0" /></filter>
+  <defs>
+    <pattern id="gridDrawing" attr.width="{{project.drawing_grid_size}}" attr.height="{{project.drawing_grid_size}}" patternUnits="userSpaceOnUse">
+      <path attr.d="M {{project.drawing_grid_size}} 0 L 0 0 0 {{project.drawing_grid_size}}" fill="none" stroke="silver" attr.stroke-width="{{gridVisibility}}"/>
+    </pattern>
+  </defs>
+
+  <defs>
+    <pattern id="gridNode" attr.width="{{project.grid_size}}" attr.height="{{project.grid_size}}" patternUnits="userSpaceOnUse">
+      <path attr.d="M {{project.grid_size}} 0 L 0 0 0 {{project.grid_size}}" fill="none" stroke="DarkSlateGray" attr.stroke-width="{{gridVisibility}}"/>
+    </pattern>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#gridDrawing)" />
+  <rect width="100%" height="100%" fill="url(#gridNode)" />
 </svg>
 
 <app-drawing-adding [svg]="svg"></app-drawing-adding>

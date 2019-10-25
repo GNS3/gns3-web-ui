@@ -85,6 +85,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isInterfaceLabelVisible: boolean = false;
   public notificationsVisibility: boolean = false;
   public layersVisibility: boolean = false;
+  public gridVisibility: boolean = false;
 
   tools = {
     selection: true,
@@ -252,6 +253,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
+    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
     this.addKeyboardListeners();
   }
 
@@ -502,6 +504,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       localStorage.removeItem('layersVisibility')
     }
     this.mapChild.applyMapSettingsChanges();
+  }
+
+  public toggleGrid(visible: boolean) {
+    this.gridVisibility = visible;
+    if (this.gridVisibility) {
+      localStorage.setItem('gridVisibility', 'true');
+    } else {
+      localStorage.removeItem('gridVisibility');
+    }
+    this.mapChild.gridVisibility =  this.gridVisibility ? 1 : 0;
+  }
+
+  public toggleSnapToGrid(enabled: boolean) {
+    this.project.snap_to_grid = enabled;
   }
 
   private showMessage(msg) {

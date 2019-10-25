@@ -13,6 +13,7 @@ export class InfoDialogComponent implements OnInit {
     @Input() server: Server;
     @Input() node: Node;
     infoList: string[] = [];
+    usage: string = '';
     commandLine: string = '';
 
     constructor(
@@ -23,6 +24,7 @@ export class InfoDialogComponent implements OnInit {
     ngOnInit() {
         this.infoList = this.infoService.getInfoAboutNode(this.node, this.server);
         this.commandLine = this.infoService.getCommandLine(this.node);
+        this.usage = this.node.usage ? this.node.usage : `No usage information has been provided for this node.`;
     }
 
     onCloseClick() {
