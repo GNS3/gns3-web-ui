@@ -8,17 +8,20 @@ import { Drawing } from '../cartography/models/drawing';
 import { getTestServer } from './testing';
 import { DrawingService } from './drawing.service';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { Project } from '../models/project';
+import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let server: Server;
+  let project: Project = new Project();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, DrawingService]
+      providers: [HttpServer, SvgToDrawingConverter, DrawingService]
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -40,7 +43,7 @@ describe('DrawingService', () => {
     drawing.project_id = 'myproject';
     drawing.drawing_id = 'id';
 
-    service.updatePosition(server, drawing, 10, 20).subscribe();
+    service.updatePosition(server, project, drawing, 10, 20).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
     expect(req.request.method).toEqual('PUT');
@@ -55,7 +58,7 @@ describe('DrawingService', () => {
     drawing.project_id = 'myproject';
     drawing.drawing_id = 'id';
 
-    service.updatePosition(server, drawing, 10.1, 20.6).subscribe();
+    service.updatePosition(server, project, drawing, 10.1, 20.6).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings/id');
     expect(req.request.method).toEqual('PUT');

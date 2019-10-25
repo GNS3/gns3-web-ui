@@ -32,6 +32,7 @@ import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
 import { MapScaleService } from '../../../services/mapScale.service';
+import { Project } from '../../../models/project';
 
 @Component({
   selector: 'app-d3-map',
@@ -43,6 +44,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() links: Link[] = [];
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
+  @Input() project: Project;
   @Input() server: Server;
 
   @Input() width = 1500;
@@ -53,15 +55,13 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
-
   private onChangesDetected: Subscription;
   private subscriptions: Subscription[] = [];
-
   private drawLinkTool: boolean;
-
   protected settings = {
     show_interface_labels: true
   };
+  public gridVisibility: number = 0;
 
   constructor(
     private graphDataManager: GraphDataManager,
@@ -143,6 +143,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
         this.drawLinkTool = value;
       })
     );
+
+    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? 1 : 0;
   }
 
   ngOnDestroy() {

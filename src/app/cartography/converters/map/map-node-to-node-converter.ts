@@ -31,6 +31,7 @@ export class MapNodeToNodeConverter implements Converter<MapNode, Node> {
     node.status = mapNode.status;
     node.symbol = mapNode.symbol;
     node.symbol_url = mapNode.symbolUrl;
+    node.usage = mapNode.usage;
     node.width = mapNode.width;
     node.x = mapNode.x;
     node.y = mapNode.y;
