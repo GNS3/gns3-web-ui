@@ -7,6 +7,7 @@ import { Server } from '../../../models/server';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { Subscription } from 'rxjs';
+import { Project } from '../../../models/project';
 
 @Component({
   selector: 'app-node-dragged',
@@ -15,6 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
+  @Input() project: Project
   private nodeDragged: Subscription;
 
   constructor(
@@ -32,7 +34,7 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
-    this.nodeService.updatePosition(this.server, node, node.x, node.y).subscribe((serverNode: Node) => {
+    this.nodeService.updatePosition(this.server, this.project, node, node.x, node.y).subscribe((serverNode: Node) => {
       this.nodesDataSource.update(serverNode);
     });
   }

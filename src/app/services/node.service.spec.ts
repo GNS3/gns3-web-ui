@@ -154,11 +154,14 @@ describe('NodeService', () => {
   }));
 
   it('should updatePosition of node', inject([NodeService], (service: NodeService) => {
+    let project = {
+      project_id: '1'
+    } as Project;
     const node = new Node();
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.updatePosition(server, node, 10, 20).subscribe();
+    service.updatePosition(server, project, node, 10, 20).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/nodes/id');
     expect(req.request.method).toEqual('PUT');
@@ -169,11 +172,14 @@ describe('NodeService', () => {
   }));
 
   it('should updatePosition of node and round to integer', inject([NodeService], (service: NodeService) => {
+    let project = {
+      project_id: '1'
+    } as Project;
     const node = new Node();
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.updatePosition(server, node, 10.1, 20.6).subscribe();
+    service.updatePosition(server, project, node, 10.1, 20.6).subscribe();
 
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/nodes/id');
     expect(req.request.method).toEqual('PUT');

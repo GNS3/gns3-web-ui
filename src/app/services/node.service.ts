@@ -53,10 +53,21 @@ export class NodeService {
     });
   }
 
-  updatePosition(server: Server, node: Node, x: number, y: number): Observable<Node> {
+  updatePosition(server: Server, project: Project, node: Node, x: number, y: number): Observable<Node> {
+    let xPosition: number = Math.round(x);
+    let yPosition: number = Math.round(y);
+
+    if (project.snap_to_grid) {
+      xPosition = Math.round((xPosition + node.width/2) / project.grid_size) * project.grid_size;
+      yPosition = Math.round((yPosition + node.width/2) / project.grid_size) * project.grid_size;
+
+      xPosition = Math.round(xPosition - node.width/2);
+      yPosition = Math.round(yPosition - node.height/2);
+    }
+
     return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
-      x: Math.round(x),
-      y: Math.round(y)
+      x: xPosition,
+      y: yPosition
     });
   }
 

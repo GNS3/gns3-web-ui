@@ -504,6 +504,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapChild.gridVisibility =  this.gridVisibility ? 1 : 0;
   }
 
+  public toggleSnapToGrid(enabled: boolean) {
+    this.project.snap_to_grid = enabled;
+  }
+
   private showMessage(msg) {
     if (this.notificationsVisibility) {
       if (msg.type === 'error') this.toasterService.error(msg.message);
