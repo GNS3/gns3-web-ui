@@ -507,12 +507,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     minY = minY - margin;
     maxY = maxY + margin;
 
-    console.log(maxX);
-    console.log(minX);
-    console.log(maxY);
-    console.log(minY);
-    console.log('-----------------------------');
-
     let windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     let windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     let widthOfAreaToShow = maxX - minX;
@@ -520,33 +514,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let widthToSceneWidthRatio = widthOfAreaToShow / windowWidth;
     let heightToSceneHeightRatio = heightOfAreaToShow / windowHeight;
 
-    console.log(widthOfAreaToShow);
-    console.log(heightOfAreaToShow);
-    console.log(widthToSceneWidthRatio);
-    console.log(heightToSceneHeightRatio);
-    console.log('-----------------------------');
-
     let scale = 1 / Math.max(widthToSceneWidthRatio, heightToSceneHeightRatio);
 
     if (scale !== this.mapScaleService.currentScale) {
       this.mapScaleService.setScale(scale);
-
       this.project.scene_width = this.project.scene_width * scale;
       this.project.scene_height = this.project.scene_height * scale;
-      let scrollX: number = (minX * scale) + this.project.scene_width/2;
-      let scrollY: number = (minY * scale) + this.project.scene_height/2;
-      // console.log(scrollX);
-      // console.log(scrollY);
-      // let scrollY = (this.project.scene_height - windowHeight)/2;
-      // let scrollX = (this.project.scene_width - windowWidth)/2;
-      window.scrollTo(scrollX, scrollY);
+      let scrollX: number = 0;
+      let scrollY: number = 0;
+      if (heightToSceneHeightRatio < widthOfAreaToShow) {
+        scrollX = (minX * scale) - ((windowWidth - widthOfAreaToShow*scale)/2) + this.project.scene_width/2;
+        scrollY = (minY * scale) + this.project.scene_height/2;
+      } else {
+        scrollX = (minX * scale) + this.project.scene_width/2;
+        scrollY = (minY * scale) - ((windowHeight - heightOfAreaToShow*scale)/2) + this.project.scene_height/2;
+      }
+      setTimeout(function(){window.scrollTo(scrollX, scrollY)}, 100);     
     } else {
       let scrollX: number = (minX * scale) + this.project.scene_width/2;
       let scrollY: number = (minY * scale) + this.project.scene_height/2;
-      // console.log(scrollX);
-      // console.log(scrollY);
-      // let scrollY = (this.project.scene_height - windowHeight)/2;
-      // let scrollX = (this.project.scene_width - windowWidth)/2;
       window.scrollTo(scrollX, scrollY);
     }
   }

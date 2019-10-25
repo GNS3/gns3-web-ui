@@ -56,7 +56,6 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   private onChangesDetected: Subscription;
   private subscriptions: Subscription[] = [];
-
   private drawLinkTool: boolean;
 
   protected settings = {
@@ -191,6 +190,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor.activateTextEditingForDrawings();
     this.textEditor.activateTextEditingForNodeLabels();
+
+    console.log("DONE!!!")
   }
 
   @HostListener('window:resize', ['$event'])
