@@ -95,6 +95,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   protected settings: Settings;
   private inReadOnlyMode = false;
+  private scrollX: number = 0;
+  private scrollY: number = 0;
+  private scrollEnabled: boolean = false;
 
   @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
@@ -199,6 +202,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(routeSub);
+
+    this.subscriptions.push(
+      this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
+        if (this.scrollEnabled) this.centerCanvas();
+      })
+    );
 
     this.subscriptions.push(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
@@ -522,21 +531,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.mapScaleService.setScale(scale);
       this.project.scene_width = this.project.scene_width * scale;
       this.project.scene_height = this.project.scene_height * scale;
-      let scrollX: number = 0;
-      let scrollY: number = 0;
       if (heightToSceneHeightRatio < widthOfAreaToShow) {
-        scrollX = (minX * scale) - ((windowWidth - widthOfAreaToShow*scale)/2) + this.project.scene_width/2;
-        scrollY = (minY * scale) + this.project.scene_height/2;
+        this.scrollX = (minX * scale) - ((windowWidth - widthOfAreaToShow*scale)/2) + this.project.scene_width/2;
+        this.scrollY = (minY * scale) + this.project.scene_height/2;
       } else {
-        scrollX = (minX * scale) + this.project.scene_width/2;
-        scrollY = (minY * scale) - ((windowHeight - heightOfAreaToShow*scale)/2) + this.project.scene_height/2;
+        this.scrollX = (minX * scale) + this.project.scene_width/2;
+        this.scrollY = (minY * scale) - ((windowHeight - heightOfAreaToShow*scale)/2) + this.project.scene_height/2;
       }
-      setTimeout(function(){window.scrollTo(scrollX, scrollY)}, 100);     
     } else {
-      let scrollX: number = (minX * scale) + this.project.scene_width/2;
-      let scrollY: number = (minY * scale) + this.project.scene_height/2;
-      window.scrollTo(scrollX, scrollY);
+      this.scrollX = (minX * scale) + this.project.scene_width/2;
+      this.scrollY = (minY * scale) + this.project.scene_height/2;
     }
+    this.scrollEnabled = true;
+  }
+
+  public centerCanvas() {
+    window.scrollTo(this.scrollX, this.scrollY);
+    this.scrollEnabled = false;
   }
 
   public centerView() {
