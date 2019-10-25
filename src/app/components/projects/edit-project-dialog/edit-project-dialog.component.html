@@ -1,42 +1,60 @@
 <h1 mat-dialog-title>Edit project</h1>
 
-<form [formGroup]="formGroup">
-    <mat-form-field class="form-field">
-        <input matInput formControlName="projectName" placeholder="Project name" type="text">
-    </mat-form-field>
-
-    <mat-form-field class="form-field">
-        <input matInput formControlName="width" placeholder="Scene width (px)" type="number">
-    </mat-form-field>
-
-    <mat-form-field class="form-field">
-        <input matInput formControlName="height" placeholder="Scene height (px)" type="number">
-    </mat-form-field>
-
-    <mat-form-field class="form-field">
-        <input matInput formControlName="nodeGridSize" placeholder="Node grid size" type="number">
-    </mat-form-field>
-
-    <mat-form-field class="form-field">
-        <input matInput formControlName="drawingGridSize" placeholder="Drawing grid size" type="number">
-    </mat-form-field>
-</form>
-
-<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_open">
-    Open this project in the background when GNS3 server starts
-</mat-checkbox>
-
-<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_start">
-    Start all nodes when this project is opened
-</mat-checkbox>
-
-<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="!project.auto_close">
-    Leave this project running in the background after closing
-</mat-checkbox>
-
-<mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.show_interface_labels">
-    Show interface labels at start
-</mat-checkbox>
+<div class="modal-form-container">
+    <mat-tab-group>
+        <mat-tab label="General">
+            <form [formGroup]="formGroup">
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="projectName" placeholder="Project name" type="text">
+                </mat-form-field>
+            
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="width" placeholder="Scene width (px)" type="number">
+                </mat-form-field>
+            
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="height" placeholder="Scene height (px)" type="number">
+                </mat-form-field>
+            
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="nodeGridSize" placeholder="Node grid size" type="number">
+                </mat-form-field>
+            
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="drawingGridSize" placeholder="Drawing grid size" type="number">
+                </mat-form-field>
+            </form>
+            
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_open">
+                Open this project in the background when GNS3 server starts
+            </mat-checkbox>
+            
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_start">
+                Start all nodes when this project is opened
+            </mat-checkbox>
+            
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="!project.auto_close">
+                Leave this project running in the background after closing
+            </mat-checkbox>
+            
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.show_interface_labels">
+                Show interface labels at start
+            </mat-checkbox>
+        </mat-tab>
+        <mat-tab label="Global variables">
+            <form [formGroup]="variableformGroup">
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="name" placeholder="Name" type="text">
+                </mat-form-field>
+            
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="value" placeholder="Value" type="number">
+                </mat-form-field>
+            </form>
+            
+        </mat-tab>
+    </mat-tab-group>
+</div>
 
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()" color="accent">Cancel</button>

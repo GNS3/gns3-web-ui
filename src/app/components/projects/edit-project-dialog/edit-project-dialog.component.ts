@@ -2,7 +2,7 @@ import { Component, OnInit, Injectable } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
+import { Project, ProjectVariable } from '../../../models/project';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ProjectService } from '../../../services/project.service';
@@ -16,6 +16,8 @@ export class EditProjectDialogComponent implements OnInit {
   server: Server;
   project: Project;
   formGroup: FormGroup;
+  variableFormGroup: FormGroup;
+  projectVariables: ProjectVariable[];
 
   constructor(
     public dialogRef: MatDialogRef<EditProjectDialogComponent>,
@@ -30,6 +32,11 @@ export class EditProjectDialogComponent implements OnInit {
       height: new FormControl('', [Validators.required, nonNegativeValidator.get]),
       nodeGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get]),
       drawingGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get])
+    });
+
+    this.variableFormGroup = this.formBuilder.group({
+      name: new FormControl('', [Validators.required]),
+      value: new FormControl('', [Validators.required])
     });
   }
 
