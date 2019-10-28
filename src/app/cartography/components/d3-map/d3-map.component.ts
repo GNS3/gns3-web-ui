@@ -33,6 +33,7 @@ import { ToolsService } from '../../../services/tools.service';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
 import { MapScaleService } from '../../../services/mapScale.service';
 import { Project } from '../../../models/project';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 
 @Component({
   selector: 'app-d3-map',
@@ -75,7 +76,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     protected movingToolWidget: MovingTool,
     public graphLayout: GraphLayout,
     private toolsService: ToolsService,
-    private mapScaleService: MapScaleService
+    private mapScaleService: MapScaleService,
+    private mapSettingsService: MapSettingsService
   ) {
     this.parentNativeElement = element.nativeElement;
   }
@@ -193,6 +195,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor.activateTextEditingForDrawings();
     this.textEditor.activateTextEditingForNodeLabels();
+    this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 
   @HostListener('window:resize', ['$event'])

@@ -14,6 +14,7 @@ export class MapSettingsService {
 
     private mapWidth: number;
     private mapHeight: number;
+    public mapRenderedEmitter = new EventEmitter<boolean>();
 
     constructor() {
         this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
