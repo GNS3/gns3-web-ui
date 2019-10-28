@@ -697,7 +697,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   editProject() {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
-      width: '500px',
+      width: '600px',
       autoFocus: false
     });
     let instance = dialogRef.componentInstance;
