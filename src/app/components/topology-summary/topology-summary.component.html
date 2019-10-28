@@ -3,7 +3,7 @@
     (document:mousemove)="dragWidget($event)"
     (document:mouseup)="toggleDragging(false)">
 </div>
-<div 
+<div
     class="summaryWrapper" 
     (mousedown)="toggleDragging(true)"
     *ngIf="projectsStatistics" 
