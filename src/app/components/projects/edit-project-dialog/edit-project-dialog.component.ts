@@ -19,6 +19,9 @@ export class EditProjectDialogComponent implements OnInit {
   variableFormGroup: FormGroup;
   projectVariables: ProjectVariable[];
 
+  displayedColumns: string[] = ['name', 'value', 'actions']; 
+  variables: ProjectVariable[] = [];
+
   constructor(
     public dialogRef: MatDialogRef<EditProjectDialogComponent>,
     private formBuilder: FormBuilder,
@@ -46,6 +49,23 @@ export class EditProjectDialogComponent implements OnInit {
     this.formGroup.controls['height'].setValue(this.project.scene_height);
     this.formGroup.controls['nodeGridSize'].setValue(this.project.grid_size);
     this.formGroup.controls['drawingGridSize'].setValue(this.project.drawing_grid_size);
+    this.project.variables.forEach(n => this.variables.push(n));
+  }
+
+  addVariable() {
+    if (this.variableFormGroup.valid) {
+      let variable: ProjectVariable = {
+        name: this.variableFormGroup.get('name').value,
+        value: this.variableFormGroup.get('value').value
+      };
+      this.variables = this.variables.concat([variable]);
+    } else {
+      this.toasterService.error(`Fill all required fields with correct values.`);
+    }
+  }
+
+  deleteVariable(variable: ProjectVariable) {
+    this.variables = this.variables.filter(elem => elem!== variable);
   }
 
   onNoClick() {
@@ -54,18 +74,19 @@ export class EditProjectDialogComponent implements OnInit {
 
   onYesClick() {
     if (this.formGroup.valid) {
-        this.project.name = this.formGroup.get('projectName').value;
-        this.project.scene_width = this.formGroup.get('width').value;
-        this.project.scene_height = this.formGroup.get('height').value;
-        this.project.drawing_grid_size = this.formGroup.get('drawingGridSize').value;
-        this.project.grid_size = this.formGroup.get('nodeGridSize').value;
+      this.project.name = this.formGroup.get('projectName').value;
+      this.project.scene_width = this.formGroup.get('width').value;
+      this.project.scene_height = this.formGroup.get('height').value;
+      this.project.drawing_grid_size = this.formGroup.get('drawingGridSize').value;
+      this.project.grid_size = this.formGroup.get('nodeGridSize').value;
+      this.project.variables = this.variables;
 
-        this.projectService.update(this.server, this.project).subscribe((project: Project) => {
-            this.toasterService.success(`Project ${project.name} updated.`);
-            this.onNoClick();
-        })
+      this.projectService.update(this.server, this.project).subscribe((project: Project) => {
+          this.toasterService.success(`Project ${project.name} updated.`);
+          this.onNoClick();
+      })
     } else {
-        this.toasterService.error(`Fill all required fields with correct values.`);
+      this.toasterService.error(`Fill all required fields with correct values.`);
     }
   }
 }
