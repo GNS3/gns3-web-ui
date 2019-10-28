@@ -49,6 +49,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.subscriptions.push(
             this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
                 this.nodes = nodes;
+                this.nodes.forEach(n => {
+                    if (n.console_host === '0.0.0.0') {
+                        n.console_host = this.server.host;
+                    }
+                });
                 if (this.sortingOrder === 'asc') {
                     this.filteredNodes = nodes.sort(this.compareAsc);
                 } else {
