@@ -1,11 +1,18 @@
-<div 
+<div
+    *ngIf="isDraggingEnabled"
+    (document:mousemove)="dragWidget($event)"
+    (document:mouseup)="toggleDragging(false)">
+</div>
+<div
     class="summaryWrapper" 
+    (mousedown)="toggleDragging(true)"
     *ngIf="projectsStatistics" 
     [ngStyle]="style" 
     mwlResizable
     [validateResize]="validate"
     [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
     [enableGhostResize]="true"
+    (resizeStart)="toggleDragging(false)"
     (resizeEnd)="onResizeEnd($event)">
     <div class="summaryHeader">
         <button class="titleButton" [ngClass]="{ marked: isTopologyVisible }" (click)="toogleTopologyVisibility(true)" mat-button>Map topology</button>

@@ -4,8 +4,8 @@ import { Subject } from 'rxjs';
 @Injectable()
 export class MapSettingsService {
     public isMapLocked = new Subject<boolean>();
-    public isTopologySummaryVisible: boolean = false;
-    public isLogConsoleVisible: boolean = false;
+    public isTopologySummaryVisible: boolean = true;
+    public isLogConsoleVisible: boolean = true;
     public isLayerNumberVisible: boolean = false;
     public interfaceLabels: Map<string, boolean> = new Map<string, boolean>();
     public mapRenderedEmitter = new EventEmitter<boolean>();
