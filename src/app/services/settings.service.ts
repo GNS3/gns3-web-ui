@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { PersistenceService, StorageType } from 'angular-persistence';
 import { BehaviorSubject } from 'rxjs';
 
@@ -7,6 +7,7 @@ export interface Settings {
   experimental_features: boolean;
   angular_map: boolean;
   console_command: string;
+  is_light_theme_enabled: boolean
 }
 
 @Injectable()
@@ -15,10 +16,12 @@ export class SettingsService {
     crash_reports: true,
     experimental_features: false,
     angular_map: false,
-    console_command: undefined
+    console_command: undefined,
+    is_light_theme_enabled: false
   };
 
   private settingsSubject: BehaviorSubject<Settings>;
+  public settingsChanges: EventEmitter<Settings> = new EventEmitter();
 
   constructor(private persistenceService: PersistenceService) {
     this.settingsSubject = new BehaviorSubject<Settings>(this.getAll());
@@ -55,6 +58,7 @@ export class SettingsService {
     Object.keys(settings).forEach(key => {
       this.set(key, settings[key]);
     });
+    this.settingsChanges.emit(settings);
   }
 
   isExperimentalEnabled(): boolean {

@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { ToasterService } from '../../services/toaster.service';
 import { ProgressService } from '../../common/progress/progress.service';
 import { version } from './../../version';
+import { SettingsService } from '../../services/settings.service';
 
 
 @Component({
@@ -17,7 +18,8 @@ import { version } from './../../version';
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
   public uiVersion = version;
-
+  private settingsSubscription: Subscription;
+  settings = { ...SettingsService.DEFAULTS };
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
@@ -29,10 +31,15 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private serverManagement: ServerManagementService,
     private toasterService: ToasterService,
-    private progressService: ProgressService
+    private progressService: ProgressService,
+    private settingsService: SettingsService
   ) {}
 
   ngOnInit() {
+    this.settings = this.settingsService.getAll();
+    this.settingsSubscription = this.settingsService.settingsChanges.subscribe((settings) => {
+      this.settings = settings;
+    });
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     

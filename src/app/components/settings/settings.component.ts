@@ -10,6 +10,7 @@ import { ConsoleService } from '../../services/settings/console.service';
 })
 export class SettingsComponent implements OnInit {
   settings = { ...SettingsService.DEFAULTS };
+  viewSettings = { ...SettingsService.DEFAULTS };
   consoleCommand: string;
 
   constructor(
@@ -18,12 +19,18 @@ export class SettingsComponent implements OnInit {
     private consoleService: ConsoleService) {}
 
   ngOnInit() {
-    this.settings = this.settingsService.getAll();
     this.consoleCommand = this.consoleService.command;
+    this.getSettings();
   }
 
   save() {
     this.settingsService.setAll(this.settings);
+    this.getSettings();
     this.toaster.success('Settings have been saved.');
+  }
+
+  getSettings() {
+    this.settings = this.settingsService.getAll();
+    this.viewSettings = this.settingsService.getAll();
   }
 }

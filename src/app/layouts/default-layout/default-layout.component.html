@@ -30,10 +30,17 @@
   </mat-toolbar>
 </header>
 
-<main class="mat-app-background"><router-outlet></router-outlet></main>
+<main 
+  class="mat-app-background"
+  [ngStyle]="{'background-color':settings.is_light_theme_enabled ? '#ced7db' : '#263238' }">
+  <router-outlet></router-outlet>
+</main>
 
 <app-progress></app-progress>
 
-<footer class="footer mat-app-background">
+<footer 
+  class="footer mat-app-background"
+  [ngStyle]="{'background-color':settings.is_light_theme_enabled ? '#ced7db' : '#263238' }"
+  [ngStyle]="{'font-weight':'300','color':settings.is_light_theme_enabled ? '#263238' : '#ced7db' }">
   GNS3 Web UI &copy; 2019 - v{{ uiVersion }}
 </footer>

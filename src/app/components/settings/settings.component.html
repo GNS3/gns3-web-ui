@@ -1,5 +1,7 @@
-<div class="content">
-  <div class="default-header"><h1>Settings</h1></div>
+<div 
+  class="content" 
+  [ngStyle]="{'background-color':viewSettings.is_light_theme_enabled ? '#ced7db' : '#263238' }">
+  <div class="default-header"><h1 [ngStyle]="{'font-weight':'300','color':viewSettings.is_light_theme_enabled ? '#263238' : '#ced7db' }">Settings</h1></div>
   <div class="default-content">
     <div class="container mat-elevation-z8">
       <mat-accordion>
@@ -12,6 +14,12 @@
           <div>
             <mat-checkbox [(ngModel)]="settings.crash_reports"
               >Send anonymous crash reports</mat-checkbox
+            >
+          </div>
+
+          <div>
+            <mat-checkbox [(ngModel)]="settings.is_light_theme_enabled"
+              >Use light theme</mat-checkbox
             >
           </div>
 
