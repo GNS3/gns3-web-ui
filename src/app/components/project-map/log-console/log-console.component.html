@@ -1,11 +1,17 @@
+<div
+    *ngIf="isDraggingEnabled"
+    (document:mousemove)="dragWidget($event)"
+    (document:mouseup)="toggleDragging(false)">   
+</div>
 <div 
-    mwlDraggable
     class="consoleWrapper"
+    (mousedown)="toggleDragging(true)"
     [ngStyle]="style" 
     mwlResizable
     [validateResize]="validate"
     [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
     [enableGhostResize]="true"
+    (resizeStart)="toggleDragging(false)"
     (resizeEnd)="onResizeEnd($event)">
     <div class="consoleHeader">
         <div class="consoleFiltering">
