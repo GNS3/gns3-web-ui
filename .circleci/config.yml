@@ -9,9 +9,14 @@ jobs:
       - checkout
 
       - run:
+        name: Update brew
+        command: |
+          brew update
+
+      - run:
           name: Install nodejs
           command: |
-            sudo port install nodejs-devel
+            brew upgrade node
 
       - run:
           name: Set timezone and check current datetime
