@@ -29,3 +29,21 @@ Bug Fixes
 - Input validation in styles editor
 - Fix for saving map as image
 - Removing errors with uncorrect subscriptions
+
+Previous version
+
+What's New
+- Editing interface labels on double click
+- Support for keyboard shortcuts
+- Menu extended with option to delete currently opened project, export & import project
+- Possibility to save current state of project
+- Ability to duplicate project from projects page
+- Node information dialog available from context menu
+- Topology summary widget on map view
+- Improvements in dialog styles
+
+Bug Fixes
+- Removing issues with opening console
+- Context menu now is correctly placed
+- Text validation in dialogs
+- Removing errors with creating WebSockets
