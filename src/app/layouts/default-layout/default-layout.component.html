@@ -32,7 +32,7 @@
 
 <main 
   class="mat-app-background"
-  [ngStyle]="{'background-color':settings.is_light_theme_enabled ? '#ced7db' : '#263238' }">
+  [ngStyle]="{'height':'-webkit-fill-available','background-color':settings.is_light_theme_enabled ? '#ced7db' : '#263238' }">
   <router-outlet></router-outlet>
 </main>
 
@@ -40,7 +40,8 @@
 
 <footer 
   class="footer mat-app-background"
-  [ngStyle]="{'background-color':settings.is_light_theme_enabled ? '#ced7db' : '#263238' }"
-  [ngStyle]="{'font-weight':'300','color':settings.is_light_theme_enabled ? '#263238' : '#ced7db' }">
-  GNS3 Web UI &copy; 2019 - v{{ uiVersion }}
+  [ngStyle]="{'background-color':settings.is_light_theme_enabled ? '#ced7db' : '#263238' }">
+  <h6 [ngStyle]="{'font-weight':'300','color':settings.is_light_theme_enabled ? '#263238' : '#ced7db' }">
+    GNS3 Web UI &copy; 2019 - v{{ uiVersion }}
+  </h6>
 </footer>

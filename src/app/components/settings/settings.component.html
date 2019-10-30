@@ -4,8 +4,11 @@
   <div class="default-header"><h1 [ngStyle]="{'font-weight':'300','color':viewSettings.is_light_theme_enabled ? '#263238' : '#ced7db' }">Settings</h1></div>
   <div class="default-content">
     <div class="container mat-elevation-z8">
-      <mat-accordion>
-        <mat-expansion-panel [expanded]="true">
+      <mat-accordion [ngStyle]="{'background-color':viewSettings.is_light_theme_enabled ? '#ced7db' : '#263238' }">
+        <mat-expansion-panel 
+        [expanded]="true" 
+        [ngStyle]="{'background-color':viewSettings.is_light_theme_enabled ? '#ced7db' : '#263238' }"
+        [ngStyle]="{'font-weight':'300','color':viewSettings.is_light_theme_enabled ? '#263238' : '#ced7db' }">
           <mat-expansion-panel-header>
             <mat-panel-title> Local settings </mat-panel-title>
             <mat-panel-description> Customize your local settings </mat-panel-description>
@@ -36,7 +39,10 @@
           </div> -->
         </mat-expansion-panel>
 
-        <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel 
+        [expanded]="false" 
+        [ngStyle]="{'background-color':viewSettings.is_light_theme_enabled ? '#ced7db' : '#263238' }"
+        [ngStyle]="{'font-weight':'300','color':viewSettings.is_light_theme_enabled ? '#263238' : '#ced7db' }">
           <mat-expansion-panel-header>
             <mat-panel-title> Console settings </mat-panel-title>
             <mat-panel-description> Customize console settings </mat-panel-description>
