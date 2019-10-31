@@ -15,6 +15,11 @@
             >
           </div>
 
+          <div>
+            <button mat-raised-button color="primary" (click)="onSetTheme('dark-theme')">Dark</button>
+            <button mat-raised-button color="primary" (click)="onSetTheme('light-theme')">Light</button>
+          </div>
+
           <!-- <div>
             <mat-checkbox [(ngModel)]="settings.experimental_features"
               >Enable experimental features (WARNING: IT CAN BREAK YOU LABS!)</mat-checkbox
