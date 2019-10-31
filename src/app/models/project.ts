@@ -16,4 +16,10 @@ export class Project {
   show_layers: boolean;
   show_grid: boolean;
   snap_to_grid: boolean;
+  variables: ProjectVariable[];
+}
+
+export class ProjectVariable {
+  name: string;
+  value: string;
 }

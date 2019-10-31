@@ -36,7 +36,8 @@ export class MockedProjectService {
       show_interface_labels: false,
       show_layers: false,
       show_grid: false,
-      snap_to_grid: false
+      snap_to_grid: false,
+      variables: []
     }
   ];
 

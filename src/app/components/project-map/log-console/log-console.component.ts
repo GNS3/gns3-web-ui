@@ -48,6 +48,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     public style: object = {};
     public styleInside: object = { height: `120px` };
 
+    isDraggingEnabled: boolean = false;
+
     constructor(
         private projectWebServiceHandler: ProjectWebServiceHandler,
         private nodeService: NodeService,
@@ -112,6 +114,40 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 message: message
             });
         });
+
+        this.style = { bottom: '20px', left: '20px', width: '600px', height: '180px'};
+    }
+
+    toggleDragging(value: boolean) {
+        this.isDraggingEnabled = value;
+    }
+
+    dragWidget(event) {
+        let x: number = Number(event.movementX);
+        let y: number = Number(event.movementY);
+
+        let width: number = Number(this.style['width'].split('px')[0]);
+        let height: number = Number(this.style['height'].split('px')[0]);
+        let left: number = Number(this.style['left'].split('px')[0]) + x;
+        if (this.style['top']) {
+            let top: number = Number(this.style['top'].split('px')[0]) + y;
+            this.style = {
+                position: 'fixed',
+                left: `${left}px`,
+                top: `${top}px`,
+                width: `${width}px`,
+                height: `${height}px`
+            };
+        } else {
+            let bottom: number = Number(this.style['bottom'].split('px')[0]) - y;
+            this.style = {
+                position: 'fixed',
+                left: `${left}px`,
+                bottom: `${bottom}px`,
+                width: `${width}px`,
+                height: `${height}px`
+            };
+        }
     }
 
     ngAfterViewInit() {

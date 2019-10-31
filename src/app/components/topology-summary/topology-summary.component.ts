@@ -23,8 +23,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
     @Output() closeTopologySummary = new EventEmitter<boolean>();
 
-    public style: object = {};
-    public styleInside: object = { height: `180px` };
+    public style = { };
+    public styleInside = { height: `180px` };
     private subscriptions: Subscription[] = [];
     projectsStatistics: ProjectStatistics;
     nodes: Node[] = [];
@@ -38,6 +38,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     computes: Compute[] = [];
     isTopologyVisible: boolean = true;
 
+    isDraggingEnabled: boolean = false;
+
     constructor(
         private nodesDataSource: NodesDataSource,
         private projectService: ProjectService,
@@ -49,6 +51,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.subscriptions.push(
             this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
                 this.nodes = nodes;
+                this.nodes.forEach(n => {
+                    if (n.console_host === '0.0.0.0') {
+                        n.console_host = this.server.host;
+                    }
+                });
                 if (this.sortingOrder === 'asc') {
                     this.filteredNodes = nodes.sort(this.compareAsc);
                 } else {
@@ -64,6 +71,40 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.computeService.getComputes(this.server).subscribe((computes) => {
             this.computes = computes;
         });
+
+        this.style = { top: '20px', right: '20px', width: '300px', height: '400px'};
+    }
+
+    toggleDragging(value: boolean) {
+        this.isDraggingEnabled = value;
+    }
+
+    dragWidget(event) {
+        let x: number = Number(event.movementX);
+        let y: number = Number(event.movementY);
+
+        let width: number = Number(this.style['width'].split('px')[0]);
+        let height: number = Number(this.style['height'].split('px')[0]);
+        let top: number = Number(this.style['top'].split('px')[0]) + y;
+        if (this.style['left']) {
+            let left: number = Number(this.style['left'].split('px')[0]) + x;
+            this.style = {
+                position: 'fixed',
+                left: `${left}px`,
+                top: `${top}px`,
+                width: `${width}px`,
+                height: `${height}px`
+            };
+        } else {
+            let right: number = Number(this.style['right'].split('px')[0]) - x;
+            this.style = {
+                position: 'fixed',
+                right: `${right}px`,
+                top: `${top}px`,
+                width: `${width}px`,
+                height: `${height}px`
+            };
+        }
     }
 
     validate(event: ResizeEvent): boolean {
