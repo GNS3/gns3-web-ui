@@ -23,12 +23,12 @@ export class InterfaceStatusWidget implements Widget {
 
         if (link_path.node().getTotalLength() > 2 * 45 + 10) {
           statuses = [
-            new LinkStatus(start_point.x, start_point.y, l.source.status),
-            new LinkStatus(end_point.x, end_point.y, l.target.status)
+            new LinkStatus(start_point.x, start_point.y, (l.capturing && l.suspend) ? 'suspended' : l.source.status),
+            new LinkStatus(end_point.x, end_point.y, (l.capturing && l.suspend) ? 'suspended' : l.target.status)
           ];
         }
       }
-
+/////////////////////////////////////////////
       const status_started = link_group
         .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
@@ -44,7 +44,7 @@ export class InterfaceStatusWidget implements Widget {
         .attr('fill', '#2ecc71');
 
       status_started.exit().remove();
-
+/////////////////////////////////////////////
       const status_stopped = link_group
         .selectAll<SVGRectElement, LinkStatus>('rect.status_stopped')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'stopped'));
@@ -63,6 +63,22 @@ export class InterfaceStatusWidget implements Widget {
         .attr('fill', 'red');
 
       status_stopped.exit().remove();
+/////////////////////////////////////////////
+      const status_suspended = link_group
+        .selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended')
+        .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'suspended'));
+
+      const status_suspended_enter = status_suspended.enter().append<SVGCircleElement>('circle');
+
+      status_suspended
+        .merge(status_suspended_enter)
+        .attr('class', 'status_suspended')
+        .attr('cx', (ls: LinkStatus) => ls.x)
+        .attr('cy', (ls: LinkStatus) => ls.y)
+        .attr('r', 6)
+        .attr('fill', '#FFFF00');
+
+      status_suspended.exit().remove();
     });
   }
 }
