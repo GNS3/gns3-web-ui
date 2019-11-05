@@ -9,9 +9,9 @@
       [server]="server"
       [node]="nodes[0]"
     ></app-config-node-action>
-    <app-start-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-start-node-action>
-    <app-suspend-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-suspend-node-action>
-    <app-stop-node-action *ngIf="nodes.length && labels.length===0" [server]="server" [nodes]="nodes"></app-stop-node-action>
+    <app-start-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-start-node-action>
+    <app-suspend-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-suspend-node-action>
+    <app-stop-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-stop-node-action>
     <app-reload-node-action
       *ngIf="nodes.length" [server]="server" [nodes]="nodes"
     ></app-reload-node-action>
@@ -68,19 +68,19 @@
       [node]="nodes[0]"
     ></app-import-config-action> -->
     <app-move-layer-up-action
-      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length) && labels.length===0"
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-up-action>
     <app-move-layer-down-action
-      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length) && labels.length===0"
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-move-layer-down-action>
     <app-bring-to-front-action
-      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length) && labels.length===0"
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
@@ -134,5 +134,15 @@
       [drawings]="drawings"
       [links]="links"
     ></app-delete-action>
+    <app-align-horizontally-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length>1"
+      [server]="server"
+      [nodes]="nodes"
+    ></app-align-horizontally-action>
+    <app-align-vertically-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length>1"
+      [server]="server"
+      [nodes]="nodes"
+    ></app-align-vertically-action>
   </mat-menu>
 </div>
