@@ -57,6 +57,7 @@ import { TracengPreferencesComponent } from './components/preferences/traceng/tr
 import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
 import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
 import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {
@@ -128,15 +129,15 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/iou/templates', component: IouTemplatesComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent },
-      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent }
+      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent },
+      {
+        path: '**',
+        component: PageNotFoundComponent
+      }
     ]
   },
   { 
     path: 'server/:server_id/project/:project_id', component: ProjectMapComponent,
-  },
-  {
-    path: '**',
-    redirectTo: 'servers'
   }
 ];
 
