@@ -245,6 +245,7 @@ import { ScreenshotDialogComponent } from './components/project-map/screenshot-d
 import { ResizableModule } from 'angular-resizable-element';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -412,7 +413,8 @@ if (environment.production) {
     StartCaptureOnStartedLinkActionComponent,
     LockActionComponent,
     NavigationDialogComponent,
-    ScreenshotDialogComponent
+    ScreenshotDialogComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
