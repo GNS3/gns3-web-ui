@@ -129,15 +129,15 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/iou/templates', component: IouTemplatesComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent },
-      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent },
-      {
-        path: '**',
-        component: PageNotFoundComponent
-      }
+      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent }
     ]
   },
   { 
     path: 'server/:server_id/project/:project_id', component: ProjectMapComponent,
+  },
+  {
+    path: '**',
+    component: PageNotFoundComponent
   }
 ];
 
