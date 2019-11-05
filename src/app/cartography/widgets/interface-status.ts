@@ -28,7 +28,7 @@ export class InterfaceStatusWidget implements Widget {
           ];
         }
       }
-/////////////////////////////////////////////
+
       const status_started = link_group
         .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
@@ -44,7 +44,7 @@ export class InterfaceStatusWidget implements Widget {
         .attr('fill', '#2ecc71');
 
       status_started.exit().remove();
-/////////////////////////////////////////////
+
       const status_stopped = link_group
         .selectAll<SVGRectElement, LinkStatus>('rect.status_stopped')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'stopped'));
@@ -63,7 +63,7 @@ export class InterfaceStatusWidget implements Widget {
         .attr('fill', 'red');
 
       status_stopped.exit().remove();
-/////////////////////////////////////////////
+
       const status_suspended = link_group
         .selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'suspended'));
