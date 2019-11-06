@@ -248,6 +248,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AlignHorizontallyActionComponent } from './components/project-map/context-menu/actions/align-horizontally/align-horizontally.component';
 import { AlignVerticallyActionComponent } from './components/project-map/context-menu/actions/align_vertically/align-vertically.component';
+import { ConfirmationBottomSheetComponent } from './components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -418,7 +419,8 @@ if (environment.production) {
     ScreenshotDialogComponent,
     PageNotFoundComponent,
     AlignHorizontallyActionComponent,
-    AlignVerticallyActionComponent
+    AlignVerticallyActionComponent,
+    ConfirmationBottomSheetComponent
   ],
   imports: [
     BrowserModule,
@@ -541,7 +543,8 @@ if (environment.production) {
     QemuImageCreatorComponent,
     ChooseNameDialogComponent,
     NavigationDialogComponent,
-    ScreenshotDialogComponent
+    ScreenshotDialogComponent,
+    ConfirmationBottomSheetComponent
   ],
   bootstrap: [AppComponent]
 })

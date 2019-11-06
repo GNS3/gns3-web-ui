@@ -18,6 +18,7 @@ import { ImportProjectDialogComponent } from './import-project-dialog/import-pro
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
+import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
 
 @Component({
   selector: 'app-projects',
@@ -80,8 +81,15 @@ export class ProjectsComponent implements OnInit {
   }
 
   delete(project: Project) {
-    this.projectService.delete(this.server, project.project_id).subscribe(() => {
-      this.projectDatabase.remove(project);
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to delete the project?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.projectService.delete(this.server, project.project_id).subscribe(() => {
+          this.refresh();
+        });
+      }
     });
   }
 
@@ -100,17 +108,17 @@ export class ProjectsComponent implements OnInit {
   }
 
   close(project: Project) {
-    this.progressService.activate();
-
-    this.projectService.close(this.server, project.project_id).subscribe(
-      () => {
-        this.refresh();
-      },
-      () => {},
-      () => {
-        this.progressService.deactivate();
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to close the project?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.projectService.close(this.server, project.project_id).subscribe(() => {
+          this.refresh();
+          this.progressService.deactivate();
+        });
       }
-    );
+    });
   }
 
   duplicate(project: Project) {

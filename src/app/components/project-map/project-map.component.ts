@@ -62,6 +62,7 @@ import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
+import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 
 
 @Component({
@@ -771,14 +772,28 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public closeProject() {
-    this.projectService.close(this.server, this.project.project_id).subscribe(() => {
-      this.router.navigate(['/server', this.server.id, 'projects']);
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to close the project?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.projectService.close(this.server, this.project.project_id).subscribe(() => {
+          this.router.navigate(['/server', this.server.id, 'projects']);
+        });
+      }
     });
   }
 
   public deleteProject() {
-    this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
-      this.router.navigate(['/server', this.server.id, 'projects']);
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to delete the project?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
+          this.router.navigate(['/server', this.server.id, 'projects']);
+        });
+      }
     });
   }
 
