@@ -86,8 +86,16 @@ export class NodeWidget implements Widget {
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
       .attr('xnode:href', (n: MapNode) => n.symbolUrl)
-      .attr('width', (n: MapNode) => n.width)
-      .attr('height', (n: MapNode) => n.height)
+      .attr('width', (n: MapNode) => {
+        if (n.width < 60) return 60
+        if (n.width > 80) return 80
+        return n.width
+      })
+      .attr('height', (n: MapNode) => {
+        if (n.height < 60) return 60
+        if (n.height > 80) return 80
+        return n.height
+      })
       .attr('x', (n: MapNode) => 0)
       .attr('y', (n: MapNode) => 0)
       .on('mouseover', function(this, n: MapNode) {
