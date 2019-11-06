@@ -218,6 +218,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
+        if (!this.server) return;
         nodes.forEach((node: Node) => {
           node.symbol_url = `http://${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
         });
@@ -767,6 +768,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         
     imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
     imageToUpload.src = window.URL.createObjectURL(file);
+  }
+
+  public closeProject() {
+    this.projectService.close(this.server, this.project.project_id).subscribe(() => {
+      this.router.navigate(['/server', this.server.id, 'projects']);
+    });
   }
 
   public deleteProject() {
