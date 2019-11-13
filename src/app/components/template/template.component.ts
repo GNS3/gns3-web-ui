@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
+import { TemplateListDialogComponent, NodeAddedEvent } from './template-list-dialog/template-list-dialog.component';
 
 import { Server } from '../../models/server';
 import { Template } from '../../models/template';
+import { Project } from '../../models/project';
 
 @Component({
   selector: 'app-template',
@@ -12,6 +13,7 @@ import { Template } from '../../models/template';
 })
 export class TemplateComponent implements OnInit {
   @Input() server: Server;
+  @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
 
   constructor(private dialog: MatDialog) {}
@@ -22,14 +24,15 @@ export class TemplateComponent implements OnInit {
     const dialogRef = this.dialog.open(TemplateListDialogComponent, {
       width: '600px',
       data: {
-        server: this.server
+        server: this.server,
+        project: this.project
       },
       autoFocus: false
     });
 
-    dialogRef.afterClosed().subscribe((template: Template) => {
-      if (template !== null) {
-        this.onNodeCreation.emit(template);
+    dialogRef.afterClosed().subscribe((nodeAddedEvent: NodeAddedEvent) => {
+      if (nodeAddedEvent !== null) {
+        this.onNodeCreation.emit(nodeAddedEvent);
       }
     });
   }

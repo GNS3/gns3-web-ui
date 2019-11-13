@@ -7,7 +7,6 @@
     <h6>Template</h6>
   </div>
   <mat-form-field class="form-field" floatPlaceholder="never">
-    <!-- <input matInput #filter placeholder="Filter templates by name" /> -->
     <input matInput
     placeholder="Search by name"
     [(ngModel)]="searchText"
@@ -30,21 +29,11 @@
         placeholder="Choose template"
         (selectionChange)="chooseTemplate($event)"
         [(ngModel)]="selectedTemplate">
-        <mat-option *ngFor="let template of templates" [value]="template.name">
+        <mat-option *ngFor="let template of filteredTemplates | templatefilter: searchText" [value]="template">
           {{template.name}}
         </mat-option>
       </mat-select>
   </mat-form-field>
-  <!-- <mat-table class="mat-table" #table [dataSource]="dataSource">
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <a (click)="addNode(row)" href="javascript:void(0);" class="table-link">{{ row.name }}</a>
-      </mat-cell>
-    </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-  </mat-table> -->
 
   <div class="title-container">
     <h6>Configuration</h6>

@@ -7,4 +7,5 @@ export class Template {
   name: string;
   node_type: string;
   symbol: string;
+  template_type: string;
 }

@@ -63,6 +63,7 @@ import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-lin
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 
 
 @Component({
@@ -406,14 +407,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(onInterfaceLabelContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
-
-  //here we should support adding multiple nodes on single click
-  onNodeCreation(template: Template) {
-    if(!template) {
+  
+  onNodeCreation(nodeAddedEvent: NodeAddedEvent) {
+    if(!nodeAddedEvent) {
       return;
     }
     
-    this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
+    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, 'local').subscribe(() => {
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
 
         nodes.filter((node) => node.label.style === null).forEach((node) => {

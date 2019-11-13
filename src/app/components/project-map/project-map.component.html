@@ -112,7 +112,7 @@
       </mat-menu>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <app-template [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-template>
+        <app-template [server]="server" [project]="project" (onNodeCreation)="onNodeCreation($event)"></app-template>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
