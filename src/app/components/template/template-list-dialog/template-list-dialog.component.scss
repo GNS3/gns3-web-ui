@@ -8,8 +8,8 @@
 }
 
 .mat-table {
-  overflow: auto;
-  max-height: 400px;
+  height: 200px;
+  overflow: scroll;
 }
 
 .mat-form-field {
@@ -17,9 +17,19 @@
   flex-grow: 1;
 }
 
+.form-field {
+  width: 100%;
+}
+
 div {
   scrollbar-color: darkgrey #263238;
   scrollbar-width: thin;
+}
+
+h6 {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  color: #0097a7;
 }
 
 mat-table {
@@ -36,6 +46,17 @@ mat-table {
 }
 
 ::-webkit-scrollbar-thumb {
-background-color: darkgrey;
-outline: 1px solid #263238;
+  background-color: darkgrey;
+  outline: 1px solid #263238;
+}
+
+.filterBox {
+  display: flex;
+  justify-content: space-between;
+}
+
+.title-container {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }

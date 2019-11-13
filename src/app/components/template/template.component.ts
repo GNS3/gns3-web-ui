@@ -21,7 +21,6 @@ export class TemplateComponent implements OnInit {
   listTemplatesModal() {
     const dialogRef = this.dialog.open(TemplateListDialogComponent, {
       width: '600px',
-      height: '560px',
       data: {
         server: this.server
       },

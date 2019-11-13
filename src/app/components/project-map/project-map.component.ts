@@ -407,6 +407,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapChangeDetectorRef.detectChanges();
   }
 
+  //here we should support adding multiple nodes on single click
   onNodeCreation(template: Template) {
     if(!template) {
       return;

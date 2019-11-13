@@ -1,22 +1,78 @@
+<div class="title-container">
+  <h1 mat-dialog-title>Add a node</h1>
+  <button mat-button class="top-button" color="accent" (click)="onNoClick()" routerLink="/server/{{server.id}}/preferences">Go to template preferences</button>
+</div>
 <div mat-dialog-content class="content">
-  <div class="header">
-    <mat-form-field floatPlaceholder="never">
-      <input matInput #filter placeholder="Filter templates" />
-    </mat-form-field>
+  <div class="title-container">
+    <h6>Template</h6>
   </div>
-
-  <mat-table #table [dataSource]="dataSource">
+  <mat-form-field class="form-field" floatPlaceholder="never">
+    <!-- <input matInput #filter placeholder="Filter templates by name" /> -->
+    <input matInput
+    placeholder="Search by name"
+    [(ngModel)]="searchText"
+    [ngModelOptions]="{standalone: true}">
+  </mat-form-field>
+  <mat-form-field class="form-field">
+      <mat-select 
+        [ngModelOptions]="{standalone: true}"  
+        placeholder="Filter templates by type"
+        (selectionChange)="filterTemplates($event)"
+        [(ngModel)]="selectedType">
+        <mat-option *ngFor="let type of templateTypes" [value]="type">
+          {{type}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+  <mat-form-field class="form-field">
+      <mat-select 
+        [ngModelOptions]="{standalone: true}"  
+        placeholder="Choose template"
+        (selectionChange)="chooseTemplate($event)"
+        [(ngModel)]="selectedTemplate">
+        <mat-option *ngFor="let template of templates" [value]="template.name">
+          {{template.name}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+  <!-- <mat-table class="mat-table" #table [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
       <mat-cell *matCellDef="let row">
         <a (click)="addNode(row)" href="javascript:void(0);" class="table-link">{{ row.name }}</a>
       </mat-cell>
     </ng-container>
-
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-  </mat-table>
+  </mat-table> -->
+
+  <div class="title-container">
+    <h6>Configuration</h6>
+  </div>
+  <form [formGroup]="configurationForm">
+    <mat-form-field class="form-field">
+      <input matInput formControlName="name" placeholder="Enter name (default is taken from template)" />
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput formControlName="numberOfNodes" placeholder="Enter number of nodes (default value is 1)" />
+    </mat-form-field>
+  </form>
+
+  <div class="title-container">
+    <h6>Position</h6>
+  </div>
+  <form [formGroup]="positionForm">
+    Left:&nbsp;
+    <mat-form-field>
+      <input matInput formControlName="left"/>
+    </mat-form-field>
+    Top:&nbsp;
+    <mat-form-field>
+      <input matInput formControlName="top"/>
+    </mat-form-field>
+  </form>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Close</button>
+  <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add</button>
 </div>

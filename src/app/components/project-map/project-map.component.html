@@ -112,6 +112,10 @@
       </mat-menu>
 
       <mat-toolbar-row *ngIf="!readonly">
+        <app-template [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-template>
+      </mat-toolbar-row>
+
+      <mat-toolbar-row *ngIf="!readonly">
         <button matTooltip="Add a link" mat-icon-button [color]="tools.draw_link ? 'primary' : 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
@@ -125,10 +129,6 @@
 
       <mat-toolbar-row *ngIf="!readonly">
         <app-snapshot-menu-item [server]="server" [project]="project"> </app-snapshot-menu-item>
-      </mat-toolbar-row>
-
-      <mat-toolbar-row *ngIf="!readonly">
-        <app-template [server]="server" (onNodeCreation)="onNodeCreation($event)"></app-template>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
@@ -160,9 +160,9 @@
 </div>
 
 <div id="zoom-buttons">
-  <button class="zoom-button" (click)="zoomIn()">+</button>
+  <button class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
   <button class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
-  <button class="zoom-button" (click)="zoomOut()">-</button>
+  <button class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
 </div>
 
 <app-progress></app-progress>
