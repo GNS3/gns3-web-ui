@@ -40,10 +40,10 @@
   </div>
   <form [formGroup]="configurationForm">
     <mat-form-field class="form-field">
-      <input matInput formControlName="name" placeholder="Enter name (default is taken from template)" />
+      <input type="text" matInput formControlName="name" placeholder="Enter name (default is taken from template)" />
     </mat-form-field>
     <mat-form-field class="form-field">
-      <input matInput formControlName="numberOfNodes" placeholder="Enter number of nodes (default value is 1)" />
+      <input type="number" matInput formControlName="numberOfNodes" placeholder="Enter number of nodes (default value is 1)" />
     </mat-form-field>
   </form>
 
@@ -53,11 +53,11 @@
   <form [formGroup]="positionForm">
     Left:&nbsp;
     <mat-form-field>
-      <input matInput formControlName="left"/>
+      <input matInput type="number" formControlName="left"/>
     </mat-form-field>
     Top:&nbsp;
     <mat-form-field>
-      <input matInput formControlName="top"/>
+      <input matInput type="number" formControlName="top"/>
     </mat-form-field>
   </form>
 </div>

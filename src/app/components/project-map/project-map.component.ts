@@ -407,13 +407,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.subscriptions.push(onInterfaceLabelContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
-  
+
   onNodeCreation(nodeAddedEvent: NodeAddedEvent) {
     if(!nodeAddedEvent) {
       return;
     }
-    
-    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, 'local').subscribe(() => {
+    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, 'local').subscribe((node: Node) => {
+      if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
+        node.name = nodeAddedEvent.name;
+        this.nodeService.updateNode(this.server, node).subscribe(()=>{});
+      }
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
 
         nodes.filter((node) => node.label.style === null).forEach((node) => {
@@ -422,6 +425,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         this.nodesDataSource.set(nodes);
+        nodeAddedEvent.numberOfNodes--;
+        if (nodeAddedEvent.numberOfNodes > 0) {
+          nodeAddedEvent.x = nodeAddedEvent.x + 50 < this.project.scene_width/2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
+          nodeAddedEvent.y = nodeAddedEvent.y + 50 < this.project.scene_height/2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
+          this.onNodeCreation(nodeAddedEvent);
+        }
       });
     });
   }

@@ -70,7 +70,7 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   onAddClick(): void {
-    if (!this.selectedTemplate) {
+    if (!this.selectedTemplate || this.filteredTemplates.length === 0) {
       this.toasterService.error('Please firstly choose template.');
     } else if (!this.positionForm.valid || !this.configurationForm.valid) {
       this.toasterService.error('Please fill all required fields.');
