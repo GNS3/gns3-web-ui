@@ -28,7 +28,7 @@ export class AdbutlerComponent implements OnInit {
           this.htmlCode = response['placements'].placement_1.body;
           this.ad.nativeElement.insertAdjacentHTML('beforeend', this.htmlCode);
         },
-        error => this.toasterService.error(error)
+        error => {}
       );
   }
 }
