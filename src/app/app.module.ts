@@ -249,6 +249,7 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
 import { AlignHorizontallyActionComponent } from './components/project-map/context-menu/actions/align-horizontally/align-horizontally.component';
 import { AlignVerticallyActionComponent } from './components/project-map/context-menu/actions/align_vertically/align-vertically.component';
 import { ConfirmationBottomSheetComponent } from './components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { NotificationService } from './services/notification.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -504,7 +505,8 @@ if (environment.production) {
     InfoService,
     ComputeService,
     TracengService,
-    PacketCaptureService
+    PacketCaptureService,
+    NotificationService
   ],
   entryComponents: [
     AddServerDialogComponent,
