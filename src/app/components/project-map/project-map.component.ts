@@ -165,7 +165,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .pipe(
           mergeMap((server: Server) => {
             this.server = server;
-            this.setUpWS();
             return this.projectService.get(server, paramMap.get('project_id')).pipe(
               map(project => {
                 return project;

@@ -19,6 +19,7 @@ import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-b
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-projects',
@@ -44,7 +45,8 @@ export class ProjectsComponent implements OnInit {
     private progressService: ProgressService,
     public dialog: MatDialog,
     private router: Router,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private toasterService: ToasterService
   ) {}
 
   ngOnInit() {
@@ -100,7 +102,11 @@ export class ProjectsComponent implements OnInit {
       () => {
         this.refresh();
       },
-      () => {},
+      () => {
+        this.refresh();
+        this.progressService.deactivate();
+        this.toasterService.error('Project was deleted.');
+      },
       () => {
         this.progressService.deactivate();
       }
