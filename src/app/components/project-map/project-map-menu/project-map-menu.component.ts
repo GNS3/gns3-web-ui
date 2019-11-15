@@ -11,6 +11,7 @@ import downloadSvg from 'svg-crowbar';
 import { ElectronService } from 'ngx-electron';
 import { MatDialog } from '@angular/material';
 import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
+import { saveAsPng, saveAsJpeg } from 'save-html-as-image';
 
 
 @Component({
