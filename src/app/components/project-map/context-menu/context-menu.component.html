@@ -59,14 +59,14 @@
       [project]="project"
       [node]="nodes[0]"
     ></app-edit-config-action>
-    <app-export-config-action *ngIf="nodes.length===1 && nodes[0].node_type==='vpcs'"
+    <app-export-config-action *ngIf="nodes.length===1 && (nodes[0].node_type==='vpcs' || nodes[0].node_type==='iou' || nodes[0].node_type==='dynamips')"
       [server]="server"
       [node]="nodes[0]"
     ></app-export-config-action>
-    <!-- <app-import-config-action *ngIf="nodes.length===1"
+    <app-import-config-action *ngIf="nodes.length===1 && (nodes[0].node_type==='vpcs' || nodes[0].node_type==='iou' || nodes[0].node_type==='dynamips')"
       [server]="server"
       [node]="nodes[0]"
-    ></app-import-config-action> -->
+    ></app-import-config-action>
     <app-move-layer-up-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [server]="server"

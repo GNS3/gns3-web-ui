@@ -1,4 +1,10 @@
-<button mat-menu-item (click)="importConfig()">
+<input
+    type="file"
+    accept=".txt, .vpc"
+    class="non-visible"
+    #file
+    (change)="importConfig($event)"/>
+<button mat-menu-item (click)="file.click()">
     <mat-icon>call_received</mat-icon>
     <span>Import config</span>
 </button>
