@@ -249,6 +249,7 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
 import { AlignHorizontallyActionComponent } from './components/project-map/context-menu/actions/align-horizontally/align-horizontally.component';
 import { AlignVerticallyActionComponent } from './components/project-map/context-menu/actions/align_vertically/align-vertically.component';
 import { ConfirmationBottomSheetComponent } from './components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { TemplateFilter } from './filters/templateFilter.pipe';
 import { NotificationService } from './services/notification.service';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
@@ -365,6 +366,7 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
+    TemplateFilter,
     ProjectsFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
