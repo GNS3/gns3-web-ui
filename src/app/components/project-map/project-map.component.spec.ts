@@ -56,6 +56,7 @@ import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-sna
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
+import { NotificationService } from '../../services/notification.service';
 
 export class MockedProgressService {
   public activate() {}
@@ -298,7 +299,8 @@ describe('ProjectMapComponent', () => {
         { provide: MapLinksDataSource, useClass: LinksDataSource },
         { provide: MapDrawingsDataSource, useClass: MapDrawingsDataSource },
         { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource },
-        { provide: MapSettingsService, useClass: MapSettingsService }
+        { provide: MapSettingsService, useClass: MapSettingsService },
+        { provide: NotificationService }
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA]

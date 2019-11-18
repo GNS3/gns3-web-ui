@@ -250,6 +250,9 @@ import { AlignHorizontallyActionComponent } from './components/project-map/conte
 import { AlignVerticallyActionComponent } from './components/project-map/context-menu/actions/align_vertically/align-vertically.component';
 import { ConfirmationBottomSheetComponent } from './components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { TemplateFilter } from './filters/templateFilter.pipe';
+import { NotificationService } from './services/notification.service';
+import { DeviceDetectorModule } from 'ngx-device-detector';
+import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -422,7 +425,8 @@ if (environment.production) {
     PageNotFoundComponent,
     AlignHorizontallyActionComponent,
     AlignVerticallyActionComponent,
-    ConfirmationBottomSheetComponent
+    ConfirmationBottomSheetComponent,
+    ConfigDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -441,7 +445,8 @@ if (environment.production) {
     ResizableModule,
     DragAndDropModule,
     DragDropModule,
-    MATERIAL_IMPORTS
+    MATERIAL_IMPORTS,
+    DeviceDetectorModule.forRoot()
   ],
   providers: [
     SettingsService,
@@ -506,7 +511,8 @@ if (environment.production) {
     InfoService,
     ComputeService,
     TracengService,
-    PacketCaptureService
+    PacketCaptureService,
+    NotificationService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -546,7 +552,8 @@ if (environment.production) {
     ChooseNameDialogComponent,
     NavigationDialogComponent,
     ScreenshotDialogComponent,
-    ConfirmationBottomSheetComponent
+    ConfirmationBottomSheetComponent,
+    ConfigDialogComponent
   ],
   bootstrap: [AppComponent]
 })

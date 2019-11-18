@@ -64,6 +64,7 @@ import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
+import { NotificationService } from '../../services/notification.service';
 
 
 @Component({
@@ -79,6 +80,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
+  public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
@@ -147,7 +149,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapSettingsService: MapSettingsService,
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -312,23 +315,27 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks();
-        this.setUpWS(project);
+        this.setUpProjectWS(project);
 
         this.progressService.deactivate();
       });
     this.subscriptions.push(subscription);
   }
 
-  setUpWS(project: Project) {
-    this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
+  setUpProjectWS(project: Project) {
+    this.projectws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
-    this.ws.onmessage = (event: MessageEvent) => {
+    this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
-    this.ws.onerror = (event: MessageEvent) => {
+    this.projectws.onerror = (event: MessageEvent) => {
       this.toasterService.error('Connection to host lost.');
     };
+  }
+
+  setUpWS() {
+    this.ws = new WebSocket(this.notificationService.notificationsPath(this.server));
   }
 
   setUpMapCallbacks() {
@@ -812,8 +819,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
 
-    if (this.ws.OPEN) {
-      this.ws.close();
+    if (this.projectws) {
+      if (this.projectws.OPEN) this.projectws.close();
+    }
+    if (this.ws) {
+      if (this.ws.OPEN) this.ws.close();
     }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
