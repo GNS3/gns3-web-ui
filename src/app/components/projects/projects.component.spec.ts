@@ -22,6 +22,7 @@ import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { ToasterService } from '../../services/toaster.service';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -53,6 +54,7 @@ describe('ProjectsComponent', () => {
         { provide: ServerService, useClass: MockedServerService },
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService, useClass: MockedSettingsService },
+        { provide: ToasterService },
         ProgressService
       ],
       declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],
