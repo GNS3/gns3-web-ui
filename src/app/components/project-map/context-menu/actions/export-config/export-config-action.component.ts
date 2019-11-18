@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
 import { NodeService } from '../../../../../services/node.service';
 import { Server } from '../../../../../models/server';
+import { MatDialog } from '@angular/material';
+import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
     selector: 'app-export-config-action',
@@ -12,13 +14,33 @@ export class ExportConfigActionComponent {
     @Input() node: Node;
 
     constructor(
-        private nodeService: NodeService
+        private nodeService: NodeService,
+        private dialog: MatDialog
     ) {}
 
     exportConfig() {
-        this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
-            this.downloadByHtmlTag(config);
-        });
+        if (this.node.node_type === 'vpcs') {
+            this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
+                this.downloadByHtmlTag(config);
+            });
+        } else {
+            const dialogRef = this.dialog.open(ConfigDialogComponent, {
+                width: '500px',
+                autoFocus: false
+            });
+            let instance = dialogRef.componentInstance;
+            dialogRef.afterClosed().subscribe((configType: string) => {
+                if (configType === 'startup-config') {
+                    this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
+                        this.downloadByHtmlTag(config);
+                    });
+                } else if (configType === 'private-config') {
+                    this.nodeService.getPrivateConfiguration(this.server, this.node).subscribe((config: any) => {
+                        this.downloadByHtmlTag(config);
+                    });
+                }
+            });
+        }
     }
 
     private downloadByHtmlTag(config: string) {
