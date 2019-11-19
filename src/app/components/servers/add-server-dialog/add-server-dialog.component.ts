@@ -4,6 +4,7 @@ import { Server } from '../../../models/server';
 import { ElectronService } from 'ngx-electron';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ServerService } from '../../../services/server.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class AddServerDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<AddServerDialogComponent>,
     private electronService: ElectronService,
     private serverService: ServerService,
+    private toasterService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 
@@ -145,7 +147,21 @@ export class AddServerDialogComponent implements OnInit {
     }
 
     const server: Server = Object.assign({}, this.serverForm.value);
-    this.dialogRef.close(server);
+    this.serverService.checkServerVersion(server).subscribe(
+      (serverInfo) => {
+        if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
+          this.dialogRef.close(server);
+          this.toasterService.success(`Server ${server.name} added.`)
+        } else {
+          this.dialogRef.close();
+          this.toasterService.error(`Server version is not supported.`)
+        }
+      },
+      error => { 
+        this.dialogRef.close();
+        this.toasterService.error('Cannot connect to the server.')
+      }
+    );
   }
 
   onNoClick(): void {

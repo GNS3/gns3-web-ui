@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-
 import { IndexedDbService } from './indexed-db.service';
 import { Server } from '../models/server';
+import { Observable } from 'rxjs';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class ServerService {
   private tablename = 'servers';
   private ready: Promise<any>;
 
-  constructor(private indexedDbService: IndexedDbService) {
+  constructor(
+    private indexedDbService: IndexedDbService,
+    private httpServer: HttpServer
+  ) {
     this.ready = indexedDbService.get().openDatabase(1, evt => {
       evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
     });
@@ -57,6 +61,10 @@ export class ServerService {
 
   public getServerUrl(server: Server) {
     return `http://${server.host}:${server.port}/`;
+  }
+
+  public checkServerVersion(server: Server): Observable<any> {
+    return this.httpServer.get(server, '/version');
   }
 
   public getLocalServer(host: string, port: number) {
