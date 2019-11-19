@@ -39,7 +39,17 @@ export class ServersComponent implements OnInit, OnDestroy {
           server.status = 'running';
         }
       });
-      this.serverDatabase.addServers(servers);
+
+      servers.forEach((server) => {
+        this.serverService.checkServerVersion(server).subscribe(
+          (serverInfo) => {
+            if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
+              if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
+            }
+          },
+          error => {}
+          );
+      });
     });
 
     this.dataSource = new ServerDataSource(this.serverDatabase);
