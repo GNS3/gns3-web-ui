@@ -58,6 +58,7 @@ import { TracengTemplatesComponent } from './components/preferences/traceng/trac
 import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
 import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 
 const routes: Routes = [
   {
@@ -74,6 +75,7 @@ const routes: Routes = [
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
+      { path: 'server/:server_id/preferences/gns3vm', component: Gns3vmComponent },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent},
 
