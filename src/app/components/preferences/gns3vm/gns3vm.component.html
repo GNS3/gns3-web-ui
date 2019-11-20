@@ -1,0 +1,44 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">GNS3 VM preferences</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <mat-card class="matCard" *ngIf="gns3vm">
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="gns3vm.enable">
+                Enable the GNS3 VM
+            </mat-checkbox>
+            <mat-form-field class="select">
+                <mat-select [ngModelOptions]="{standalone: true}" placeholder="Virtualization engine" [(ngModel)]="gns3vm.engine">
+                    <mat-option *ngFor="let engine of vmEngines" [value]="engine.engine_id">
+                        {{engine.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="gns3vm.headless">
+                Run the VM in headless mode
+            </mat-checkbox>
+            <form [formGroup]="vmForm">
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="vmname" type="text" placeholder="VM name">
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="ram" type="number" placeholder="RAM">
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                    <input matInput formControlName="vcpus" type="number" placeholder="vCPUs">
+                </mat-form-field>
+            </form>
+            <mat-radio-group aria-label="Actions when closing GNS3" class="radio-selection">
+                <mat-radio-button value="1" (click)="setCloseAction('keep')" checked>keep the GNS3 VM running</mat-radio-button>
+                <mat-radio-button value="2" (click)="setCloseAction('suspend')">suspend the GNS3 VM</mat-radio-button>
+                <mat-radio-button value="3" (click)="setCloseAction('stop')">stop the GNS3 VM</mat-radio-button>
+            </mat-radio-group>
+        </mat-card>
+        <div class="buttons-bar">
+            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+            <button mat-raised-button color="primary" (click)="save()">Save</button>
+        </div>
+    </div>
+</div>
