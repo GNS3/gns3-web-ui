@@ -10,19 +10,23 @@
                 Enable the GNS3 VM
             </mat-checkbox>
             <mat-form-field class="select">
-                <mat-select [ngModelOptions]="{standalone: true}" placeholder="Virtualization engine" [(ngModel)]="gns3vm.engine">
+                <mat-select (selectionChange)="changeVmEngine($event)" [ngModelOptions]="{standalone: true}" placeholder="Virtualization engine" [(ngModel)]="gns3vm.engine">
                     <mat-option *ngFor="let engine of vmEngines" [value]="engine.engine_id">
                         {{engine.name}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="gns3vm.headless">
+            <mat-form-field class="select">
+                <mat-select [ngModelOptions]="{standalone: true}" placeholder="VM name" [(ngModel)]="gns3vm.vmname">
+                    <mat-option *ngFor="let vm of vms" [value]="vm.vmname">
+                        {{vm.vmname}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-checkbox *ngIf="gns3vm.engine === 'virtualbox' || gns3vm.engine === 'vmware'" [ngModelOptions]="{standalone: true}" [(ngModel)]="gns3vm.headless">
                 Run the VM in headless mode
             </mat-checkbox>
-            <form [formGroup]="vmForm">
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="vmname" type="text" placeholder="VM name">
-                </mat-form-field>
+            <form *ngIf="gns3vm.engine !== 'remote'" [formGroup]="vmForm">
                 <mat-form-field class="form-field">
                     <input matInput formControlName="ram" type="number" placeholder="RAM">
                 </mat-form-field>
@@ -30,10 +34,10 @@
                     <input matInput formControlName="vcpus" type="number" placeholder="vCPUs">
                 </mat-form-field>
             </form>
-            <mat-radio-group aria-label="Actions when closing GNS3" class="radio-selection">
-                <mat-radio-button value="1" (click)="setCloseAction('keep')" checked>keep the GNS3 VM running</mat-radio-button>
-                <mat-radio-button value="2" (click)="setCloseAction('suspend')">suspend the GNS3 VM</mat-radio-button>
-                <mat-radio-button value="3" (click)="setCloseAction('stop')">stop the GNS3 VM</mat-radio-button>
+            <mat-radio-group *ngIf="gns3vm.engine !== 'remote'" [(ngModel)]="gns3vm.when_exit"  aria-label="Actions when closing GNS3" class="radio-selection">
+                <mat-radio-button value="keep" (click)="setCloseAction('keep')">keep the GNS3 VM running</mat-radio-button>
+                <mat-radio-button value="suspend" (click)="setCloseAction('suspend')">suspend the GNS3 VM</mat-radio-button>
+                <mat-radio-button value="stop" (click)="setCloseAction('stop')">stop the GNS3 VM</mat-radio-button>
             </mat-radio-group>
         </mat-card>
         <div class="buttons-bar">

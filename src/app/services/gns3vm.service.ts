@@ -22,7 +22,7 @@ export class Gns3vmService {
         return this.httpServer.get<Gns3vmEngine[]>(server, '/gns3vm/engines') as Observable<Gns3vmEngine[]>;
     }
 
-    getVms(server: Server, engine: Gns3vmEngine): Observable<VM[]> {
-        return this.httpServer.get<VM[]>(server, `/gns3vm/engines/${engine.engine_id}/vms`)
+    getVms(server: Server, engine: string): Observable<VM[]> {
+        return this.httpServer.get<VM[]>(server, `/gns3vm/engines/${engine}/vms`)
     }
 }

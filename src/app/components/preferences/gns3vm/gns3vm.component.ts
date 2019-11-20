@@ -7,6 +7,7 @@ import { ServerService } from '../../../services/server.service';
 import { Gns3vmEngine } from '../../../models/gns3vm/gns3vmEngine';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { ToasterService } from '../../../services/toaster.service';
+import { VM } from '../../../models/gns3vm/vm';
 
 
 @Component({
@@ -18,6 +19,7 @@ export class Gns3vmComponent implements OnInit {
     public server: Server;
     public gns3vm: Gns3vm;
     public vmEngines: Gns3vmEngine[];
+    public vms: VM[] = [];
     public vmForm: FormGroup;
 
     constructor(
@@ -29,7 +31,6 @@ export class Gns3vmComponent implements OnInit {
         private toasterService: ToasterService
     ) {
         this.vmForm = this.formBuilder.group({
-            vmname: new FormControl(null, [Validators.required]),
             ram: new FormControl(null, [Validators.required]),
             vcpus: new FormControl(null, [Validators.required])
         });
@@ -41,11 +42,13 @@ export class Gns3vmComponent implements OnInit {
             this.server = server;
             this.gns3vmService.getGns3vm(this.server).subscribe((vm: Gns3vm) => {
                 this.gns3vm = vm;
-                this.vmForm.controls['vmname'].setValue(this.gns3vm.vmname);
                 this.vmForm.controls['ram'].setValue(this.gns3vm.ram);
                 this.vmForm.controls['vcpus'].setValue(this.gns3vm.vcpus);
                 this.gns3vmService.getGns3vmEngines(this.server).subscribe((vmEngines: Gns3vmEngine[]) => {
                     this.vmEngines = vmEngines;
+                });
+                this.gns3vmService.getVms(this.server, this.gns3vm.engine).subscribe((vms: VM[]) => {
+                    this.vms = vms;
                 });
             });
         });
@@ -59,15 +62,24 @@ export class Gns3vmComponent implements OnInit {
         this.gns3vm.when_exit = action;
     }
 
+    changeVmEngine(event) {
+        this.gns3vmService.getVms(this.server, event.value).subscribe(
+            (vms: VM[]) => {
+                this.vms = vms;
+            },
+            error => {}
+        );
+    }
+
     save() {
-        if (this.vmForm.valid) {
-            this.gns3vm.vmname = this.vmForm.get('vmname').value;
+        if ((this.vmForm.valid && this.gns3vm.vmname) || (this.gns3vm.engine==='remote' && this.gns3vm.vmname)) {
             this.gns3vm.ram = this.vmForm.get('ram').value;
             this.gns3vm.vcpus= this.vmForm.get('vcpus').value;
 
             this.gns3vmService.updateGns3vm(this.server, this.gns3vm).subscribe(() => {
                 this.toasterService.success('GNS3 VM updated.');
             });
+            this.goBack();
         } else {
             this.toasterService.error('Fill all required fields with correct values.');
         }
