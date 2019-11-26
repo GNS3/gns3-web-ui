@@ -11,7 +11,7 @@ $accent: mat-palette($mat-blue, A200, A100, A700);
 
 $theme: mat-light-theme($primary, $accent);
 
-$light-palette: mat-palette($mat-light-blue, 900, A100, A400);
+$light-palette: mat-palette($mat-blue, 900, A100, A400);
 $light-background: mat-light-theme($light-palette, $primary);
 
 $mat-light-theme-background: (
@@ -37,6 +37,13 @@ $theme: map-merge(
     background: $mat-light-theme-background
   )
 );
+
+@mixin mat-button-theme($theme) {
+  .mat-button, .mat-icon-button, .mat-stroked-button {
+    color: white;
+    background: transparent;
+  }
+}
 
 @include mat-core-theme($theme);
 @include mat-autocomplete-theme($theme);
