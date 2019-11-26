@@ -3,6 +3,7 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ElectronService } from 'ngx-electron';
 import { SettingsService } from './services/settings.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,8 @@ export class AppComponent implements OnInit {
     iconReg: MatIconRegistry,
     sanitizer: DomSanitizer,
     private settingsService: SettingsService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private themeService: ThemeService
   ) {
     iconReg.addSvgIcon('gns3', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
   }
@@ -25,5 +27,6 @@ export class AppComponent implements OnInit {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }
+    this.themeService.setDarkMode(false);
   }
 }
