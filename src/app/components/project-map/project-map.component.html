@@ -146,14 +146,14 @@
   </div>
 
   <div id="show-menu-wrapper" [ngClass]="{ shadowed: !isProjectMapMenuVisible }" *ngIf="!readonly">
-    <button class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon>keyboard_arrow_right</mat-icon></button>
+    <button class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon class="unmarked">keyboard_arrow_right</mat-icon></button>
   </div>
 
   <div id="menu-wrapper" [ngClass]="{ extended: isProjectMapMenuVisible }">
     <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
     <mat-divider class="divider" [vertical]="true"></mat-divider>
     <app-project-map-menu [server]="server" [project]="project"></app-project-map-menu>
-    <button class="arrow-button" mat-icon-button (click)="hideMenu()"><mat-icon>keyboard_arrow_left</mat-icon></button>
+    <button class="arrow-button" mat-icon-button (click)="hideMenu()"><mat-icon class="unmarked">keyboard_arrow_left</mat-icon></button>
   </div>
 
   <app-context-menu [project]="project" [server]="server"></app-context-menu>

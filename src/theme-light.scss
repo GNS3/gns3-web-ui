@@ -38,13 +38,6 @@ $theme: map-merge(
   )
 );
 
-@mixin mat-button-theme($theme) {
-  .mat-button, .mat-icon-button, .mat-stroked-button {
-    color: white;
-    background: transparent;
-  }
-}
-
 @include mat-core-theme($theme);
 @include mat-autocomplete-theme($theme);
 @include mat-button-theme($theme);

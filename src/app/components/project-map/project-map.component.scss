@@ -93,6 +93,14 @@ mat-divider.divider {
   color: gray;
 }
 
+.unmarked {
+  color: white!important;
+}
+
+.marked {
+  color: #0097a7!important;
+}
+
 #zoom-buttons {
   position: fixed;
   background: #263238;
