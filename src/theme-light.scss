@@ -11,24 +11,24 @@ $accent: mat-palette($mat-blue, A200, A100, A700);
 
 $theme: mat-light-theme($primary, $accent);
 
-$light-palette: mat-palette($mat-blue, 900, A100, A400);
+$light-palette: mat-palette($mat-light-blue, 900, A100, A400);
 $light-background: mat-light-theme($light-palette, $primary);
 
-$mat-dark-theme-background: (
-  // status-bar: black,
-  // app-bar: map_get($mat-blue-grey, 900),
-  // background: map_get($mat-blue-grey, 900),
-  // hover: rgba(white, 0.04),
-  // card: map_get($mat-blue-grey, 900),
-  // dialog: map_get($mat-blue-grey, 900),
-  // disabled-button: $white-12-opacity,
-  // raised-button: map-get($mat-grey, 800),
-  // focused-button: $white-6-opacity,
-  // selected-button: map_get($mat-grey, 900),
-  // selected-disabled-button: map_get($mat-grey, 800),
-  // disabled-button-toggle: black,
-  // unselected-chip: map_get($mat-grey, 700),
-  // disabled-list-option: black
+$mat-light-theme-background: (
+  status-bar: black,
+  app-bar: map_get($mat-blue, 900),
+  background: white,
+  hover: rgba(white, 0.04),
+  card: white,
+  dialog: white,
+  disabled-button: $white-12-opacity,
+  raised-button: white,
+  focused-button: $white-6-opacity,
+  selected-button: map_get($mat-blue, 900),
+  selected-disabled-button: map_get($mat-blue, 800),
+  disabled-button-toggle: black,
+  unselected-chip: map_get($mat-blue, 700),
+  disabled-list-option: black
 );
 
 $theme: map-merge(
