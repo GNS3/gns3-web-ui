@@ -1,22 +1,20 @@
-import { Injectable, RendererFactory2, Renderer2, Inject } from '@angular/core';
+import { Injectable, RendererFactory2, Renderer2, Inject, EventEmitter } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ThemeService {
-
   private _mainTheme$: BehaviorSubject<string> = new BehaviorSubject('theme-default');
   private _darkMode$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-
-  darkMode$: Observable<boolean> = this._darkMode$.asObservable();
-
   private _renderer: Renderer2;
   private head: HTMLElement;
   private themeLinks: HTMLElement[] = [];
-
+  darkMode$: Observable<boolean> = this._darkMode$.asObservable();
   theme$: Observable<[string, boolean]>;
+
+  public themeChanged = new EventEmitter<string>();
+  //this should taken from memory
+  public savedTheme: string = 'light';
 
   constructor(
     rendererFactory: RendererFactory2,
@@ -34,12 +32,23 @@ export class ThemeService {
     })
   }
 
+  getActualTheme() {
+    return this.savedTheme;
+  }
+
   setMainTheme(name: string) {
     this._mainTheme$.next(name);
   }
 
   setDarkMode(value: boolean) {
     this._darkMode$.next(value);
+    if (value) {
+      this.savedTheme = 'dark';
+      this.themeChanged.emit(this.savedTheme);
+    } else {
+      this.savedTheme = 'light';
+      this.themeChanged.emit(this.savedTheme);
+    }
   }
 
   private async loadCss(filename: string) {

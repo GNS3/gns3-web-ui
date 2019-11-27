@@ -5,6 +5,7 @@
 </div>
 <div 
     class="consoleWrapper"
+    [ngClass]="{lightTheme: isLightThemeEnabled}"
     (mousedown)="toggleDragging(true)"
     [ngStyle]="style" 
     mwlResizable

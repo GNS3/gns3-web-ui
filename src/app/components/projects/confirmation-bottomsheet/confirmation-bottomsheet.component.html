@@ -1,4 +1,4 @@
-<div class="dialogWrapper">
+<div class="dialogWrapper" [ngClass]="{lightTheme: isLightThemeEnabled}">
     <div class="title">{{message}}</div>
     <div>
         <button mat-button (click)="onNoClick()">No</button>

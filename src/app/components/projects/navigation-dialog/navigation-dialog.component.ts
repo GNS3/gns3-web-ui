@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatBottomSheetRef } from '@angular/material';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-navigation-dialog',
@@ -8,10 +9,16 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatBottomSheetRef } from '@angular/mater
 })
 export class NavigationDialogComponent implements OnInit {
     projectMessage: string = '';
+    isLightThemeEnabled: boolean = false;
 
-    constructor(private bottomSheetRef: MatBottomSheetRef<NavigationDialogComponent>) {}
+    constructor(
+        private bottomSheetRef: MatBottomSheetRef<NavigationDialogComponent>,
+        private themeService: ThemeService
+    ) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+    }
 
     onNoClick(): void {
         this.bottomSheetRef.dismiss(false);

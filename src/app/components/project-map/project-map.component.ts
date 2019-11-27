@@ -65,6 +65,7 @@ import { NavigationDialogComponent } from '../projects/navigation-dialog/navigat
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import { NotificationService } from '../../services/notification.service';
+import { ThemeService } from '../../services/theme.service';
 
 
 @Component({
@@ -102,6 +103,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private scrollX: number = 0;
   private scrollY: number = 0;
   private scrollEnabled: boolean = false;
+  public isLightThemeEnabled: boolean = false;
 
   @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
@@ -150,10 +152,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget,
     private bottomSheet: MatBottomSheet,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
+    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     this.settings = this.settingsService.getAll();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;

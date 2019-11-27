@@ -27,6 +27,6 @@ export class AppComponent implements OnInit {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }
-    this.themeService.setDarkMode(false);
+    // this.themeService.setDarkMode(false);
   }
 }
