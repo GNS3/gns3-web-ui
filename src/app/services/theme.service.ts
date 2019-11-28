@@ -41,12 +41,15 @@ export class ThemeService {
 
   setDarkMode(value: boolean) {
     this._darkMode$.next(value);
+    localStorage.removeItem('theme');
     if (value) {
       this.savedTheme = 'dark';
       this.themeChanged.emit(this.savedTheme);
+      localStorage.setItem('theme', 'dark');
     } else {
       this.savedTheme = 'light';
       this.themeChanged.emit(this.savedTheme);
+      localStorage.setItem('theme', 'light');
     }
   }
 

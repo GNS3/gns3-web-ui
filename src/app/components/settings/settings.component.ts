@@ -32,6 +32,5 @@ export class SettingsComponent implements OnInit {
 
   setDarkMode(value: boolean) {
     this.themeService.setDarkMode(value);
-    //this value should be saved and stored in local memory
   }
 }
