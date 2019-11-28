@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ConsoleService } from '../../services/settings/console.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-settings',
@@ -15,7 +16,9 @@ export class SettingsComponent implements OnInit {
   constructor(
     private settingsService: SettingsService,
     private toaster: ToasterService,
-    private consoleService: ConsoleService) {}
+    private consoleService: ConsoleService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
@@ -25,5 +28,9 @@ export class SettingsComponent implements OnInit {
   save() {
     this.settingsService.setAll(this.settings);
     this.toaster.success('Settings have been saved.');
+  }
+
+  setDarkMode(value: boolean) {
+    this.themeService.setDarkMode(value);
   }
 }

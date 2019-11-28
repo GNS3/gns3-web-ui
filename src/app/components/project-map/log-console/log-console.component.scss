@@ -11,8 +11,13 @@
     font-size: 12px;
 }
 
+.lightTheme {
+    background: white!important;
+    color: black;
+}
+
 .filterButton {
-    background: #263238;
+    background: transparent;
     color: white;
     border: none;
     margin-top: 0px;
@@ -54,7 +59,7 @@
 }
 
 .commandLine {
-    background-color: #263238;
+    background-color: transparent;
     color: white;
     border: none;
 }

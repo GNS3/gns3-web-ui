@@ -21,6 +21,16 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+img {
+  -webkit-filter: invert(1);
+  filter: invert(1);
+}
+
+.lightTheme {
+  background: white!important;
+  color: black!important;
+}
+
 #show-menu-wrapper {
   position: fixed;
   background: transparent;
@@ -66,7 +76,7 @@ g.node:hover {
     width: 40px;
     margin-right: 12px !important;
     margin-left: 12px !important;
-    background: #263238;
+    background: transparent;
     padding: 0;
     border: none;
     background-color: transparent;
@@ -93,18 +103,19 @@ mat-divider.divider {
   color: gray;
 }
 
-#zoom-buttons {
+.zoom-buttons {
   position: fixed;
   background: #263238;
   bottom: 20px;
   right: 20px;
   display: grid;
+  color: white;
 
   .zoom-button {
     outline: none;
     height: 40px;
     width: 40px;
-    background: #263238;
+    background: transparent;
     border: none;
     color: white;
     font-size: 1.25rem;
@@ -114,21 +125,6 @@ mat-divider.divider {
       margin-left: -6px;
     }
   }
-
-  .zoom-button-white {
-    outline: none;
-    height: 40px;
-    width: 40px;
-    color: #263238;
-    border: none;
-    background: white;
-    font-size: 1.25rem;
-    font-weight: bold;
-
-    mat-icon {
-      margin-left: -6px;
-    }
-  } 
 }
 
 @-moz-document url-prefix() {

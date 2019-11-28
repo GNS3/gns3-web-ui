@@ -13,6 +13,7 @@ import { LogEventsDataSource } from './log-events-datasource';
 import { HttpServer } from '../../../services/http-server.service';
 import { LogEvent } from '../../../models/logEvent';
 import { ResizeEvent } from 'angular-resizable-element';
+import { ThemeService } from '../../../services/theme.service';
 
 
 @Component({
@@ -49,16 +50,19 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     public styleInside: object = { height: `120px` };
 
     isDraggingEnabled: boolean = false;
+    public isLightThemeEnabled: boolean = false;
 
     constructor(
         private projectWebServiceHandler: ProjectWebServiceHandler,
         private nodeService: NodeService,
         private nodesDataSource: NodesDataSource,
         private logEventsDataSource: LogEventsDataSource,
-        private httpService: HttpServer
+        private httpService: HttpServer,
+        private themeService: ThemeService
     ) {}
     
     ngOnInit() {
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
         this.nodeSubscription = this.projectWebServiceHandler.nodeNotificationEmitter.subscribe((event) => {
             let node: Node = event.event as Node;
             let message: string = '';

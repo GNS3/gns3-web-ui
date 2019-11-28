@@ -5,6 +5,7 @@
 </div>
 <div 
     class="consoleWrapper"
+    [ngClass]="{lightTheme: isLightThemeEnabled}"
     (mousedown)="toggleDragging(true)"
     [ngStyle]="style" 
     mwlResizable
@@ -15,7 +16,7 @@
     (resizeEnd)="onResizeEnd($event)">
     <div class="consoleHeader">
         <div class="consoleFiltering">
-            <button class="filterButton" [matMenuTriggerFor]="filterMenu">
+            <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="filterButton" [matMenuTriggerFor]="filterMenu">
                 Apply filter
             </button>
             <mat-menu #filterMenu="matMenu" xPosition="after">
@@ -33,15 +34,16 @@
         </div>
     </div>
 
-    <div #console class="console" [ngStyle]="styleInside">
+    <div [ngClass]="{lightTheme: isLightThemeEnabled}" #console class="console" [ngStyle]="styleInside">
         <span class="console-item" *ngFor="let event of filteredEvents">
             {{event.message}} <br/>
         </span>
     </div>
 
-    <div class="consoleInput">
+    <div [ngClass]="{lightTheme: isLightThemeEnabled}" class="consoleInput">
         <mat-icon class="inputIcon">keyboard_arrow_right</mat-icon>
         <input
+            [ngClass]="{lightTheme: isLightThemeEnabled}"
             class="commandLine"
             autofocus
             (keydown)="onKeyDown($event)"

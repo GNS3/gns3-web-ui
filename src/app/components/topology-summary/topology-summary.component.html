@@ -8,6 +8,7 @@
     (mousedown)="toggleDragging(true)"
     *ngIf="projectsStatistics" 
     [ngStyle]="style" 
+    [ngClass]="{lightTheme: isLightThemeEnabled}"
     mwlResizable
     [validateResize]="validate"
     [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"

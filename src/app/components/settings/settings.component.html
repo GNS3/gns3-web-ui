@@ -42,6 +42,19 @@
           </div>
 
         </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Theme settings </mat-panel-title>
+            <mat-panel-description> Customize theme settings </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="theme-panel">
+            <button mat-raised-button (click)="setDarkMode(false)">Switch to light theme</button>
+            <button mat-raised-button (click)="setDarkMode(true)">Switch to dark theme</button>
+          </div>
+
+        </mat-expansion-panel>
       </mat-accordion>
     </div>
 

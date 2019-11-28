@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { timer, Observable, Subscription } from 'rxjs';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
     selector: 'app-notification-box',
@@ -22,11 +23,15 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     breakTime: number = 20;
     isEndless: boolean = false;
     numberOfViews: number = 1;
+    isLightThemeEnabled: boolean = false;
 
-    constructor(){}
+    constructor(
+        private themeService: ThemeService
+    ){}
 
     ngOnInit() {
         this.startTimer();
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     }
 
     startTimer() {

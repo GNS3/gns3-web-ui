@@ -5,7 +5,7 @@
     width: 40px;
     margin-right: 12px !important;
     margin-left: 12px !important;
-    background: #263238;
+    background: transparent;
     padding: 0;
     border: none;
     background-color: transparent;
@@ -21,4 +21,16 @@ mat-divider.divider {
 
 .non-visible {
     display: none;
+}
+
+.unmarked {
+    color: white!important;
+}
+
+.unmarkedLight {
+    color: black!important;
+}
+
+.marked {
+    color: #0097a7!important;
 }
