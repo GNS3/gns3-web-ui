@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
     private themeService: ThemeService
   ) {
     iconReg.addSvgIcon('gns3', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
+    iconReg.addSvgIcon('gns3black', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
   }
 
   ngOnInit(): void {

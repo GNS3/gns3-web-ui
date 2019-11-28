@@ -33,9 +33,13 @@
   ></app-experimental-map>
 
   <div class="project-toolbar">
-    <mat-toolbar color="primary" class="project-toolbar">
-      <mat-toolbar-row>
+    <mat-toolbar color="primary" class="project-toolbar" [ngClass]="{lightTheme: isLightThemeEnabled}">
+      <mat-toolbar-row *ngIf="!isLightThemeEnabled">
         <button matTooltip="Open menu" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
+      </mat-toolbar-row>
+
+      <mat-toolbar-row *ngIf="isLightThemeEnabled">
+        <button matTooltip="Open menu" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3black"></mat-icon></button>
       </mat-toolbar-row>
 
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">

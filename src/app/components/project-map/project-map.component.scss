@@ -21,8 +21,14 @@ g.node:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+img {
+  -webkit-filter: invert(1);
+  filter: invert(1);
+}
+
 .lightTheme {
-  background: #0d47a1!important;
+  background: white!important;
+  color: black!important;
 }
 
 #show-menu-wrapper {
@@ -98,7 +104,7 @@ mat-divider.divider {
 }
 
 .unmarked {
-  color: white!important;
+  color: black!important;
 }
 
 .marked {
@@ -111,6 +117,7 @@ mat-divider.divider {
   bottom: 20px;
   right: 20px;
   display: grid;
+  color: white;
 
   .zoom-button {
     outline: none;
@@ -118,7 +125,7 @@ mat-divider.divider {
     width: 40px;
     background: transparent;
     border: none;
-    color: white;
+    color: black;
     font-size: 1.25rem;
     font-weight: bold;
 

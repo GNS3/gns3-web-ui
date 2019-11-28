@@ -3,7 +3,7 @@
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('text')">
-    <mat-icon [ngClass]="{unmarked: !drawTools.isTextChosen, marked: drawTools.isTextChosen}">create</mat-icon>
+    <mat-icon [ngClass]="{unmarkedLight: !drawTools.isTextChosen && isLightThemeEnabled, marked: drawTools.isTextChosen}">create</mat-icon>
 </button>
 <input
     type="file"
@@ -16,23 +16,23 @@
     mat-icon-button
     class="menu-button"
     (click)="file.click()">
-    <mat-icon class="unmarked">image</mat-icon>
+    <mat-icon>image</mat-icon>
 </button>
 <button
     matTooltip="Draw a rectangle"
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('rectangle')">
-    <mat-icon [ngClass]="{unmarked: !drawTools.isRectangleChosen, marked: drawTools.isRectangleChosen}">crop_3_2</mat-icon>
+    <mat-icon [ngClass]="{unmarkedLight: !drawTools.isRectangleChosen && isLightThemeEnabled, marked: drawTools.isRectangleChosen}">crop_3_2</mat-icon>
 </button>
 <button
     matTooltip="Draw an ellipse"
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('ellipse')">
-    <mat-icon [ngClass]="{unmarked: !drawTools.isEllipseChosen, marked: drawTools.isEllipseChosen}">panorama_fish_eye</mat-icon>
+    <mat-icon [ngClass]="{unmarkedLight: !drawTools.isEllipseChosen && isLightThemeEnabled, marked: drawTools.isEllipseChosen}">panorama_fish_eye</mat-icon>
 </button>
-<button 
+<button *ngIf="!isLightThemeEnabled"
     matTooltip="Draw a line" 
     mat-icon-button class="menu-button" 
     (click)="addDrawing('line')">
@@ -46,12 +46,26 @@
         style="stroke:white;stroke-width:2"/>
     </svg>
 </button>
+<button *ngIf="isLightThemeEnabled"
+    matTooltip="Draw a line" 
+    mat-icon-button class="menu-button" 
+    (click)="addDrawing('line')">
+    <svg height="40" width="40">
+    <line
+        [ngClass]="{ selected: drawTools.isLineChosen }"
+        x1="30"
+        y1="10"
+        x2="10"
+        y2="30"
+        style="stroke:black;stroke-width:2"/>
+    </svg>
+</button>
 <button
     matTooltip="Lock or unlock all items"
     mat-icon-button
     class="menu-button"
     (click)="changeLockValue()">
-    <mat-icon [ngClass]="{unmarked: !isLocked, marked: isLocked}">lock</mat-icon>
+    <mat-icon [ngClass]="{unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked}">lock</mat-icon>
 </button>
 <button
     matTooltip="Take a screenshot"
@@ -59,7 +73,7 @@
     class="menu-button"
     (click)="takeScreenshot()"
     >
-    <mat-icon class="unmarked">photo_camera</mat-icon>
+    <mat-icon [ngClass]="{unmarkedLight: !isLocked && isLightThemeEnabled}">photo_camera</mat-icon>
 </button>
 <app-drawing-added
   [server]="server"
