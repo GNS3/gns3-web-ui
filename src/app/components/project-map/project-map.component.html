@@ -150,23 +150,23 @@
   </div>
 
   <div id="show-menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, shadowed: !isProjectMapMenuVisible }" *ngIf="!readonly">
-    <button class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon class="unmarked">keyboard_arrow_right</mat-icon></button>
+    <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon class="unmarked">keyboard_arrow_right</mat-icon></button>
   </div>
 
   <div id="menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, extended: isProjectMapMenuVisible }">
     <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
     <mat-divider class="divider" [vertical]="true"></mat-divider>
     <app-project-map-menu [server]="server" [project]="project"></app-project-map-menu>
-    <button class="arrow-button" mat-icon-button (click)="hideMenu()"><mat-icon class="unmarked">keyboard_arrow_left</mat-icon></button>
+    <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="arrow-button" mat-icon-button (click)="hideMenu()"><mat-icon class="unmarked">keyboard_arrow_left</mat-icon></button>
   </div>
 
   <app-context-menu [project]="project" [server]="server"></app-context-menu>
 </div>
 
 <div [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-buttons">
-  <button class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
-  <button class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
-  <button class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
+  <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
+  <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
+  <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
 </div>
 
 <app-progress></app-progress>

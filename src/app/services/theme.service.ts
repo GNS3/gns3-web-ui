@@ -13,8 +13,7 @@ export class ThemeService {
   theme$: Observable<[string, boolean]>;
 
   public themeChanged = new EventEmitter<string>();
-  //this should taken from memory
-  public savedTheme: string = 'light';
+  public savedTheme: string = 'dark';
 
   constructor(
     rendererFactory: RendererFactory2,

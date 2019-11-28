@@ -103,14 +103,6 @@ mat-divider.divider {
   color: gray;
 }
 
-.unmarked {
-  color: black!important;
-}
-
-.marked {
-  color: #0097a7!important;
-}
-
 .zoom-buttons {
   position: fixed;
   background: #263238;
@@ -125,7 +117,7 @@ mat-divider.divider {
     width: 40px;
     background: transparent;
     border: none;
-    color: black;
+    color: white;
     font-size: 1.25rem;
     font-weight: bold;
 
