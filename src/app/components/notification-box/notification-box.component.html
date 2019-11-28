@@ -1,8 +1,8 @@
-<div class="notification-box" *ngIf="isVisible">
+<div class="notification-box" [ngClass]="{hidden: !isVisible}">
     <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
     <div style="display: flex; height: 102px;">
-        <div class="content">
-            <app-adbutler theme="dark"></app-adbutler>
+        <div class="content" [ngClass]="{lightTheme: isLightThemeEnabled}">
+            <app-adbutler (onLoad)="onLoadingAdbutler($event)" theme="dark"></app-adbutler>
             <mat-icon (click)="closeNotification()" class="close-button">close</mat-icon>
         </div>
     </div>

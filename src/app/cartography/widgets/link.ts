@@ -40,7 +40,7 @@ export class LinkWidget implements Widget {
 
     link_body.select('.capture-icon').remove();
     link_body
-      .filter(l => { return l.capturing && !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)})
+      .filter(l => { return l.capturing && !l.suspend && !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)})
       .append<SVGGElement>('g')
       .on('contextmenu', (datum: MapLink) => {
         const evt = event;
@@ -56,7 +56,7 @@ export class LinkWidget implements Widget {
 
     link_body.select('.filter-capture-icon').remove();
     link_body
-      .filter(l => { return l.capturing && (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)})
+      .filter(l => { return l.capturing && !l.suspend && (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)})
       .append<SVGGElement>('g')
       .on('contextmenu', (datum: MapLink) => {
         const evt = event;
@@ -89,6 +89,22 @@ export class LinkWidget implements Widget {
         .attr('width', '48px')
         .attr('height', '48px')
         .attr("xlink:href", "assets/resources/images/filter.svg");
+
+    link_body.select('.pause-icon').remove();
+    link_body
+      .filter(l => { return l.capturing && l.suspend && !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)})
+      .append<SVGGElement>('g')
+      .on('contextmenu', (datum: MapLink) => {
+        const evt = event;
+        this.onContextMenu.emit(new LinkContextMenu(evt, datum));
+      })
+      .attr('class', 'pause-icon')
+      .attr('transform', link => { 
+        return `translate (${(link.source.x + link.target.x)/2 + 24}, ${(link.source.y + link.target.y)/2 + 24}) scale(0.5)`
+      })
+      .attr('viewBox', '0 0 20 20')
+        .append<SVGImageElement>('image')
+        .attr("xlink:href", "assets/resources/images/pause.svg");    
 
     this.serialLinkWidget.draw(link_body_merge);
     this.ethernetLinkWidget.draw(link_body_merge);

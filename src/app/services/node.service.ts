@@ -45,7 +45,7 @@ export class NodeService {
     return this.httpServer.post(server, `/projects/${project.project_id}/nodes/reload`, {});
   }
 
-  createFromTemplate(server: Server, project: Project, template: Template, x: number, y: number, compute_id: string) {
+  createFromTemplate(server: Server, project: Project, template: Template, x: number, y: number, compute_id: string): Observable<Node> {
     return this.httpServer.post(server, `/projects/${project.project_id}/templates/${template.template_id}`, {
       x: Math.round(x),
       y: Math.round(y),

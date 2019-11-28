@@ -3,6 +3,7 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ElectronService } from 'ngx-electron';
 import { SettingsService } from './services/settings.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -14,9 +15,11 @@ export class AppComponent implements OnInit {
     iconReg: MatIconRegistry,
     sanitizer: DomSanitizer,
     private settingsService: SettingsService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private themeService: ThemeService
   ) {
     iconReg.addSvgIcon('gns3', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
+    iconReg.addSvgIcon('gns3black', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
   }
 
   ngOnInit(): void {
@@ -24,6 +27,12 @@ export class AppComponent implements OnInit {
       this.settingsService.subscribe(settings => {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
+    }
+    let theme = localStorage.getItem('theme');
+    if (theme === 'light') {
+      this.themeService.setDarkMode(false);
+    } else {
+      this.themeService.setDarkMode(true);
     }
   }
 }

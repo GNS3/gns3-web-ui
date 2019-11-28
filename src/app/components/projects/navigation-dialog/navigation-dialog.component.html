@@ -1,4 +1,4 @@
-<div class="dialogWrapper">
+<div class="dialogWrapper" [ngClass]="{lightTheme: isLightThemeEnabled}">
     <div class="title"> Do you want to navigate to {{projectMessage}}?</div>
     <div>
         <button mat-button (click)="onNoClick()">No</button>

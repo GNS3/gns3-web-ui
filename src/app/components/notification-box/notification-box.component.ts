@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { timer, Observable, Subscription } from 'rxjs';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
     selector: 'app-notification-box',
@@ -14,6 +15,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     viewsCounter = 0;
     ticks: number = 1000;
     progress: number = 0;
+    isAdLoaded = false;
     isVisible = false;
     interval = 10;
 
@@ -21,11 +23,15 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     breakTime: number = 20;
     isEndless: boolean = false;
     numberOfViews: number = 1;
+    isLightThemeEnabled: boolean = false;
 
-    constructor(){}
+    constructor(
+        private themeService: ThemeService
+    ){}
 
     ngOnInit() {
         this.startTimer();
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     }
 
     startTimer() {
@@ -33,7 +39,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
 
         this.timerSubscription = this.timer.subscribe(() => {
             this.ticks++;
-            if (this.ticks > this.breakTime && !this.isVisible && navigator.onLine) {
+            if (this.ticks > this.breakTime && !this.isVisible && navigator.onLine && this.isAdLoaded) {
                 this.ticks = 0;
                 this.showNotification();
                 this.viewsCounter++;
@@ -46,11 +52,14 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
         });
     }
 
+    onLoadingAdbutler(event) {
+        this.isAdLoaded = event;
+    }
+
     showNotification() {
         this.viewTimer = timer(0, 100);
-        this.isVisible = true;
         this.progress = 0;
-
+        this.isVisible = true;
         this.viewTimerSubscription = this.viewTimer.subscribe(() => {
             this.progress += 1;
             if (this.progress > 100) {

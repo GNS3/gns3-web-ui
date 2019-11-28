@@ -245,6 +245,17 @@ import { ScreenshotDialogComponent } from './components/project-map/screenshot-d
 import { ResizableModule } from 'angular-resizable-element';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { AlignHorizontallyActionComponent } from './components/project-map/context-menu/actions/align-horizontally/align-horizontally.component';
+import { AlignVerticallyActionComponent } from './components/project-map/context-menu/actions/align_vertically/align-vertically.component';
+import { ConfirmationBottomSheetComponent } from './components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { TemplateFilter } from './filters/templateFilter.pipe';
+import { NotificationService } from './services/notification.service';
+import { DeviceDetectorModule } from 'ngx-device-detector';
+import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
+import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
+import { Gns3vmService } from './services/gns3vm.service';
+import { ThemeService } from './services/theme.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -358,6 +369,7 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
+    TemplateFilter,
     ProjectsFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
@@ -412,7 +424,13 @@ if (environment.production) {
     StartCaptureOnStartedLinkActionComponent,
     LockActionComponent,
     NavigationDialogComponent,
-    ScreenshotDialogComponent
+    ScreenshotDialogComponent,
+    PageNotFoundComponent,
+    AlignHorizontallyActionComponent,
+    AlignVerticallyActionComponent,
+    ConfirmationBottomSheetComponent,
+    ConfigDialogComponent,
+    Gns3vmComponent
   ],
   imports: [
     BrowserModule,
@@ -431,7 +449,8 @@ if (environment.production) {
     ResizableModule,
     DragAndDropModule,
     DragDropModule,
-    MATERIAL_IMPORTS
+    MATERIAL_IMPORTS,
+    DeviceDetectorModule.forRoot()
   ],
   providers: [
     SettingsService,
@@ -496,7 +515,10 @@ if (environment.production) {
     InfoService,
     ComputeService,
     TracengService,
-    PacketCaptureService
+    PacketCaptureService,
+    NotificationService,
+    Gns3vmService,
+    ThemeService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -535,7 +557,9 @@ if (environment.production) {
     QemuImageCreatorComponent,
     ChooseNameDialogComponent,
     NavigationDialogComponent,
-    ScreenshotDialogComponent
+    ScreenshotDialogComponent,
+    ConfirmationBottomSheetComponent,
+    ConfigDialogComponent
   ],
   bootstrap: [AppComponent]
 })

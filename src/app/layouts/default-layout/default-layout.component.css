@@ -21,7 +21,6 @@ app-default-layout {
   padding: 20px;
   margin: auto 0 0 0;
   /*background-color: #0097a7;*/
-  color: white;
 }
 
 .default-content {
@@ -45,7 +44,6 @@ header {
   margin: 0;
   font-size: 20px;
   padding: 28px 8px;
-  color: white;
 }
 
 .default-header {

@@ -11,6 +11,8 @@ import downloadSvg from 'svg-crowbar';
 import { ElectronService } from 'ngx-electron';
 import { MatDialog } from '@angular/material';
 import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
+import { saveAsPng, saveAsJpeg } from 'save-html-as-image';
+import { ThemeService } from '../../../services/theme.service';
 
 
 @Component({
@@ -30,16 +32,20 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         isTextChosen: false
     };
     public isLocked: boolean = false;
+    public isLightThemeEnabled: boolean = false;
 
     constructor(
         private toolsService: ToolsService,
         private mapSettingsService: MapSettingsService,
         private drawingService: DrawingService,
         private symbolService: SymbolService,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private themeService: ThemeService
     ) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+    }
 
     public takeScreenshot() {
         const dialogRef = this.dialog.open(ScreenshotDialogComponent, {

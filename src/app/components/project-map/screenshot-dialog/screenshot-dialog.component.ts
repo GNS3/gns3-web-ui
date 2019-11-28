@@ -3,6 +3,7 @@ import { MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ToasterService } from '../../../services/toaster.service';
 import { ElectronService } from 'ngx-electron';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 
 @Component({
@@ -19,13 +20,13 @@ export class ScreenshotDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private deviceService: DeviceDetectorService
   ) {
     this.nameForm = this.formBuilder.group({
       screenshotName: new FormControl(null, [Validators.required])
     });
-
-    this.isPngAvailable = this.electronService.isWindows;
+    this.isPngAvailable = this.electronService.isWindows || (this.deviceService.getDeviceInfo().os==='Windows');
   }
 
   ngOnInit() {}

@@ -63,6 +63,10 @@ import { MapDimensions } from '../../models/map-dimensions';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
+import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
+import { NotificationService } from '../../services/notification.service';
+import { ThemeService } from '../../services/theme.service';
 
 
 @Component({
@@ -78,6 +82,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbols: Symbol[] = [];
   public project: Project;
   public server: Server;
+  public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
@@ -99,6 +104,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private scrollX: number = 0;
   private scrollY: number = 0;
   private scrollEnabled: boolean = false;
+  public isLightThemeEnabled: boolean = false;
 
   @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
@@ -147,10 +153,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private mapSettingsService: MapSettingsService,
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private notificationService: NotificationService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
+    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     this.settings = this.settingsService.getAll();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
@@ -230,6 +239,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
+        if (!this.server) return;
         nodes.forEach((node: Node) => {
           node.symbol_url = `http://${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
         });
@@ -321,23 +331,27 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks();
-        this.setUpWS(project);
+        this.setUpProjectWS(project);
 
         this.progressService.deactivate();
       });
     this.subscriptions.push(subscription);
   }
 
-  setUpWS(project: Project) {
-    this.ws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
+  setUpProjectWS(project: Project) {
+    this.projectws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
 
-    this.ws.onmessage = (event: MessageEvent) => {
+    this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
-    this.ws.onerror = (event: MessageEvent) => {
+    this.projectws.onerror = (event: MessageEvent) => {
       this.toasterService.error('Connection to host lost.');
     };
+  }
+
+  setUpWS() {
+    this.ws = new WebSocket(this.notificationService.notificationsPath(this.server));
   }
 
   setUpMapCallbacks() {
@@ -417,12 +431,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapChangeDetectorRef.detectChanges();
   }
 
-  onNodeCreation(template: Template) {
-    if(!template) {
+  onNodeCreation(nodeAddedEvent: NodeAddedEvent) {
+    if(!nodeAddedEvent) {
       return;
     }
-    
-    this.nodeService.createFromTemplate(this.server, this.project, template, 0, 0, 'local').subscribe(() => {
+    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, 'local').subscribe((node: Node) => {
+      if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
+        node.name = nodeAddedEvent.name;
+        this.nodeService.updateNode(this.server, node).subscribe(()=>{});
+      }
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
 
         nodes.filter((node) => node.label.style === null).forEach((node) => {
@@ -431,6 +448,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         this.nodesDataSource.set(nodes);
+        nodeAddedEvent.numberOfNodes--;
+        if (nodeAddedEvent.numberOfNodes > 0) {
+          nodeAddedEvent.x = nodeAddedEvent.x + 50 < this.project.scene_width/2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
+          nodeAddedEvent.y = nodeAddedEvent.y + 50 < this.project.scene_height/2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
+          this.onNodeCreation(nodeAddedEvent);
+        }
       });
     });
   }
@@ -781,9 +804,29 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     imageToUpload.src = window.URL.createObjectURL(file);
   }
 
+  public closeProject() {
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to close the project?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.projectService.close(this.server, this.project.project_id).subscribe(() => {
+          this.router.navigate(['/server', this.server.id, 'projects']);
+        });
+      }
+    });
+  }
+
   public deleteProject() {
-    this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
-      this.router.navigate(['/server', this.server.id, 'projects']);
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to delete the project?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
+          this.router.navigate(['/server', this.server.id, 'projects']);
+        });
+      }
     });
   }
 
@@ -792,8 +835,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
 
-    if (this.ws.OPEN) {
-      this.ws.close();
+    if (this.projectws) {
+      if (this.projectws.OPEN) this.projectws.close();
+    }
+    if (this.ws) {
+      if (this.ws.OPEN) this.ws.close();
     }
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }

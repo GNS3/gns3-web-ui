@@ -10,6 +10,7 @@ import { Compute } from '../../models/compute';
 import { ComputeService } from '../../services/compute.service';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { ResizeEvent } from 'angular-resizable-element';
+import { ThemeService } from '../../services/theme.service';
 
 
 @Component({
@@ -36,18 +37,21 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     captureFilterEnabled: boolean = false;
     packetFilterEnabled: boolean = false;
     computes: Compute[] = [];
+    
     isTopologyVisible: boolean = true;
-
     isDraggingEnabled: boolean = false;
+    isLightThemeEnabled: boolean = false;
 
     constructor(
         private nodesDataSource: NodesDataSource,
         private projectService: ProjectService,
         private computeService: ComputeService,
-        private linksDataSource: LinksDataSource
+        private linksDataSource: LinksDataSource,
+        private themeService: ThemeService
     ) {}
 
     ngOnInit() {
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
         this.subscriptions.push(
             this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
                 this.nodes = nodes;
