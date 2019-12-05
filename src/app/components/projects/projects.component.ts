@@ -20,6 +20,8 @@ import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dial
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { ToasterService } from '../../services/toaster.service';
+import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
+import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-projects',
@@ -46,7 +48,8 @@ export class ProjectsComponent implements OnInit {
     public dialog: MatDialog,
     private router: Router,
     private bottomSheet: MatBottomSheet,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private electronService: ElectronService
   ) {}
 
   ngOnInit() {
@@ -69,6 +72,22 @@ export class ProjectsComponent implements OnInit {
       });
 
     this.settings = this.settingsService.getAll();
+
+    let gns3vmConfig = localStorage.getItem('gns3vmConfig');
+    if (this.electronService.isElectronApp && gns3vmConfig!=='configured') {
+      const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
+        width: '350px',
+        height: '120px',
+        autoFocus: false
+      });
+  
+      dialogRef.afterClosed().subscribe((answer: boolean) => {
+        if (answer) {
+          localStorage.setItem('gns3vmConfig', 'configured');
+          this.router.navigate(['/server', this.server.id, 'preferences', 'gns3vm']);
+        }
+      });
+    };
   }
 
   refresh() {

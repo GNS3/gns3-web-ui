@@ -256,6 +256,7 @@ import { ConfigDialogComponent } from './components/project-map/context-menu/dia
 import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 import { Gns3vmService } from './services/gns3vm.service';
 import { ThemeService } from './services/theme.service';
+import { ConfigureGns3VMDialogComponent } from './components/servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -430,7 +431,8 @@ if (environment.production) {
     AlignVerticallyActionComponent,
     ConfirmationBottomSheetComponent,
     ConfigDialogComponent,
-    Gns3vmComponent
+    Gns3vmComponent,
+    ConfigureGns3VMDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -540,6 +542,7 @@ if (environment.production) {
     InfoDialogComponent,
     ChangeSymbolDialogComponent,
     EditProjectDialogComponent,
+    ConfigureGns3VMDialogComponent,
     ConfiguratorDialogVpcsComponent,
     ConfiguratorDialogEthernetHubComponent,
     ConfiguratorDialogEthernetSwitchComponent,

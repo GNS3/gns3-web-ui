@@ -1,15 +1,15 @@
 import { Component, Inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-
 import { Observable, merge, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-
+import { Router } from '@angular/router';
 import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
 import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
 import { ServerManagementService } from '../../services/server-management.service';
+
 
 @Component({
   selector: 'app-server-list',
