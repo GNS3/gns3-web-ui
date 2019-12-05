@@ -2,9 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatDialogRef, MatDialogContainer, MatBottomSheetModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-
 import { Observable, of } from 'rxjs';
-
 import { ProjectsComponent } from './projects.component';
 import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
@@ -23,6 +21,8 @@ import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dial
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { ToasterService } from '../../services/toaster.service';
+import { ElectronService } from 'ngx-electron';
+import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 
 describe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -33,8 +33,20 @@ describe('ProjectsComponent', () => {
   let server: Server;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
+  let electronService;
 
   beforeEach(async(() => {
+    electronService = {
+      isElectronApp: true,
+      remote: {
+        require: (file) => {
+          return {
+            openConsole() {}
+          }
+        }
+      }
+    };
+
     TestBed.configureTestingModule({
       imports: [
         MatTableModule,
@@ -55,12 +67,13 @@ describe('ProjectsComponent', () => {
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService, useClass: MockedSettingsService },
         { provide: ToasterService },
+        { provide: ElectronService, useValue: electronService },
         ProgressService
       ],
-      declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],
+      declarations: [ProjectsComponent, ChooseNameDialogComponent, ConfigureGns3VMDialogComponent, ProjectsFilter],
       schemas: [NO_ERRORS_SCHEMA]
     })
-    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ChooseNameDialogComponent] } })
+    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ChooseNameDialogComponent, ConfigureGns3VMDialogComponent] } })
     .compileComponents();
 
     serverService = TestBed.get(ServerService);
