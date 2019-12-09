@@ -11,4 +11,9 @@ export class ComputeService {
     getComputes(server: Server): Observable<Compute[]> {
         return this.httpServer.get<Compute[]>(server, '/computes') as Observable<Compute[]>;
     }
+
+    postAppliance(server: Server, appliance): Observable<any>{
+        // test for one appliance
+        return this.httpServer.post<any>(server, `/computes/local/docker/images/chrome.gns3a`, appliance) as Observable<any>;
+    }
 }

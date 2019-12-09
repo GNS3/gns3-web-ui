@@ -66,6 +66,7 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
+import { ComputeService } from '../../services/compute.service';
 
 
 @Component({
@@ -153,7 +154,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private serialLinkWidget: SerialLinkWidget,
     private bottomSheet: MatBottomSheet,
     private notificationService: NotificationService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private computeService: ComputeService
   ) {}
 
   ngOnInit() {
@@ -816,6 +818,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  public uploadAppliance(event) {
+    let fileInput = event.target;
+    let file: File = fileInput.files[0];
+    let name: string = file.name;
+    let fileReader: FileReader = new FileReader();
+
+    fileReader.onloadend = () => {
+      let appliance = fileReader.result;
+      var obj = JSON.parse(appliance as string);
+      console.log(obj);
+      this.computeService.postAppliance(this.server, obj).subscribe(() => {
+        this.toasterService.success('Appliance imported.');
+      });
+    }
+    fileReader.readAsText(file);
   }
 
   public ngOnDestroy() {
