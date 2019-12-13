@@ -87,7 +87,7 @@
     "@angular/compiler-cli": "^8.2.11",
     "@angular/language-service": "^8.2.11",
     "@sentry/cli": "^1.48.0",
-    "@sentry/electron": "^0.17.4",
+    "@sentry/electron": "^1.1.0",
     "@types/jasmine": "^3.4.4",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^12.12.10",
