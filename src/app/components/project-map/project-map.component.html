@@ -75,16 +75,7 @@
           <mat-icon>call_received</mat-icon>
           <span>Import portable project</span>
         </button>
-        <input
-          type="file"
-          accept=".gns3appliance, .gns3a"
-          class="non-visible"
-          #file
-          (change)="uploadAppliance($event)"/>
-        <button mat-menu-item (click)="file.click()">
-          <mat-icon>insert_drive_file</mat-icon>
-          <span>Import appliance</span>
-        </button>
+        <app-import-appliance [server]="server" [project]="project" ></app-import-appliance>
         <button mat-menu-item (click)="closeProject()">
           <mat-icon>close</mat-icon>
           <span>Close project</span>

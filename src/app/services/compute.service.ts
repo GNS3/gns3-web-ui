@@ -16,4 +16,8 @@ export class ComputeService {
         // test for one appliance
         return this.httpServer.post<any>(server, `/computes/local/docker/images/chrome.gns3a`, appliance) as Observable<any>;
     }
+
+    getUploadPath(server: Server, project_name: string, filename: string) {
+        return `http://${server.host}:${server.port}/v2/compute/qemu/images/${filename}`;
+    }
 }

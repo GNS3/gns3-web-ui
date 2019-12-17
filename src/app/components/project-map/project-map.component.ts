@@ -820,23 +820,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
   }
 
-  public uploadAppliance(event) {
-    let fileInput = event.target;
-    let file: File = fileInput.files[0];
-    let name: string = file.name;
-    let fileReader: FileReader = new FileReader();
-
-    fileReader.onloadend = () => {
-      let appliance = fileReader.result;
-      var obj = JSON.parse(appliance as string);
-      console.log(obj);
-      this.computeService.postAppliance(this.server, obj).subscribe(() => {
-        this.toasterService.success('Appliance imported.');
-      });
-    }
-    fileReader.readAsText(file);
-  }
-
   public ngOnDestroy() {
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();

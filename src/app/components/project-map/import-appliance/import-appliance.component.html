@@ -1,0 +1,12 @@
+<input
+    type="file"
+    accept=".gns3appliance, .gns3a"
+    class="non-visible"
+    #file
+    (change)="uploadAppliance($event)"
+    ng2FileSelect
+    [uploader]="uploader"/>
+<button mat-menu-item (click)="file.click()">
+    <mat-icon>insert_drive_file</mat-icon>
+    <span>Import appliance</span>
+</button>
