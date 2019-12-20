@@ -5,6 +5,16 @@ import { ComputeService } from '../../../services/compute.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { ServerResponse } from '../../../models/serverResponse';
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
+import { Template } from '../../../models/template';
+import { DockerTemplate } from '../../../models/templates/docker-template';
+import { QemuTemplate } from '../../../models/templates/qemu-template';
+import { IouTemplate } from '../../../models/templates/iou-template';
+import { IosTemplate } from '../../../models/templates/ios-template';
+import { TemplateService } from '../../../services/template.service';
+import { DockerService } from '../../../services/docker.service';
+import { QemuService } from '../../../services/qemu.service';
+import { IouService } from '../../../services/iou.service';
+import { IosService } from '../../../services/ios.service';
 
 
 @Component({
@@ -19,52 +29,85 @@ export class ImportApplianceComponent implements OnInit {
 
     constructor(
         private computeService: ComputeService,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        private dockerService: DockerService,
+        private qemuService: QemuService,
+        private iouService: IouService,
+        private iosService: IosService
     ) {}
 
     ngOnInit() {
         this.uploader = new FileUploader({});
         this.uploader.onAfterAddingFile = file => {
-          file.withCredentials = false;
+            file.withCredentials = false;
         };
     
         this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-          let serverResponse: ServerResponse = JSON.parse(response);
-          let resultMessage = 'An error occured: ' + serverResponse.message;
-          this.toasterService.error(resultMessage);
+            this.toasterService.error('An error has occured');
         };
     
         this.uploader.onCompleteItem = (
-          item: FileItem,
-          response: string,
-          status: number,
-          headers: ParsedResponseHeaders
+            item: FileItem,
+            response: string,
+            status: number,
+            headers: ParsedResponseHeaders
         ) => {
-          this.toasterService.success('Appliance imported successfully');
+            
+            this.toasterService.success('Appliance imported successfully');
+            this.uploader.queue = [];
         };
     }
 
     public uploadAppliance(event) {
-        const url = this.computeService.getUploadPath(this.server, event.target.files[0].name);
-        this.uploader.queue.forEach(elem => (elem.url = url));
-        const itemToUpload = this.uploader.queue[0];
-        this.uploader.uploadItem(itemToUpload);
-    }
+        let file: File = event.target.files[0];
+        let name: string = file.name;
+        let fileReader: FileReader = new FileReader();
 
-    // public uploadAppliance(event) {
-    //     let fileInput = event.target;
-    //     let file: File = fileInput.files[0];
-    //     let name: string = file.name;
-    //     let fileReader: FileReader = new FileReader();
-    
-    //     fileReader.onloadend = () => {
-    //         let appliance = fileReader.result;
-    //         var obj = JSON.parse(appliance as string);
-    //         console.log(obj);
-    //         //   this.computeService.postAppliance(this.server, obj).subscribe(() => {
-    //         //     this.toasterService.success('Appliance imported.');
-    //         //   });
-    //     }
-    //     fileReader.readAsText(file);
-    // }
+        let template;
+        fileReader.onloadend = () => {
+            let appliance = JSON.parse(fileReader.result as string);
+            let emulator: string;
+            console.log(appliance);
+
+            if (appliance.qemu) {
+                template = new QemuTemplate();
+                template.template_type = 'qemu';
+            } else if (appliance.iou) {
+                template = new IouTemplate();
+                template.template_type = 'iou';
+            } else if (appliance.dynamips) {
+                template = new IosTemplate();
+                template.template_type = 'dynamips';
+            } else if (appliance.docker) {
+                template = new DockerTemplate();
+                template.template_type = 'docker';
+                template.adapters = appliance.docker.adapters;
+                template.console_type = appliance.docker.console_type;
+                template.image = appliance.docker.image;
+            } else {
+                this.toasterService.error("Template type not supported");
+                return;
+            }
+            template.name = appliance.name;
+            template.category = appliance.category;
+            template.builtin = false;
+            template.default_name_format = '{name}-{0}';
+
+            //to exchange
+            template.compute_id = "vm";
+
+            if (template.category === 'guest') {
+                template.symbol = `:/symbols/computer.svg`;
+            } else {
+                template.symbol = `:/symbols/${template.category}_guest.svg`;
+            }
+            console.log(template);
+
+            const url = this.computeService.getUploadPath(this.server, template.template_type, name);
+            this.uploader.queue.forEach(elem => (elem.url = url));
+            const itemToUpload = this.uploader.queue[0];
+            this.uploader.uploadItem(itemToUpload);
+        };
+        fileReader.readAsText(file);
+    }
 }
