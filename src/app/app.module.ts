@@ -257,6 +257,7 @@ import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.componen
 import { Gns3vmService } from './services/gns3vm.service';
 import { ThemeService } from './services/theme.service';
 import { ConfigureGns3VMDialogComponent } from './components/servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
+import { ImportApplianceComponent } from './components/project-map/import-appliance/import-appliance.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -432,7 +433,8 @@ if (environment.production) {
     ConfirmationBottomSheetComponent,
     ConfigDialogComponent,
     Gns3vmComponent,
-    ConfigureGns3VMDialogComponent
+    ConfigureGns3VMDialogComponent,
+    ImportApplianceComponent
   ],
   imports: [
     BrowserModule,

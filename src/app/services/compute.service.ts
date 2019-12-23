@@ -11,4 +11,8 @@ export class ComputeService {
     getComputes(server: Server): Observable<Compute[]> {
         return this.httpServer.get<Compute[]>(server, '/computes') as Observable<Compute[]>;
     }
+
+    getUploadPath(server: Server, emulator: string, filename: string) {
+        return `http://${server.host}:${server.port}/v2/${emulator}/images/${filename}`;
+    }
 }

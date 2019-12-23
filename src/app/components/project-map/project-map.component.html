@@ -75,6 +75,7 @@
           <mat-icon>call_received</mat-icon>
           <span>Import portable project</span>
         </button>
+        <app-import-appliance [server]="server" [project]="project" ></app-import-appliance>
         <button mat-menu-item (click)="closeProject()">
           <mat-icon>close</mat-icon>
           <span>Close project</span>
