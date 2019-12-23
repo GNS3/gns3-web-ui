@@ -26,6 +26,7 @@ export class ImportApplianceComponent implements OnInit {
     @Input('project') project: Project;
     @Input('server') server: Server;
     uploader: FileUploader;
+    template;
 
     constructor(
         private toasterService: ToasterService,
@@ -51,10 +52,21 @@ export class ImportApplianceComponent implements OnInit {
             status: number,
             headers: ParsedResponseHeaders
         ) => {
-            
-            this.toasterService.success('Appliance imported successfully');
-            this.uploader.queue = [];
+            if (this.template.template_type === 'qemu') {
+                this.qemuService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+            } else if (this.template.template_type === 'iou') {
+                this.iouService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+            } else if (this.template.template_type === 'dynamips') {
+                this.iosService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+            } else if (this.template.template_type === 'docker') {
+                this.dockerService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+            }
         };
+    }
+
+    private onUploadComplete() {
+        this.toasterService.success('Appliance imported successfully');
+        this.uploader.queue = [];
     }
 
     public uploadAppliance(event) {
@@ -131,6 +143,7 @@ export class ImportApplianceComponent implements OnInit {
             } else {
                 template.symbol = `:/symbols/${template.category}_guest.svg`;
             }
+            this.template = template;
 
             const url = this.getUploadPath(this.server, template.template_type, name);
             this.uploader.queue.forEach(elem => (elem.url = url));
@@ -140,7 +153,7 @@ export class ImportApplianceComponent implements OnInit {
         fileReader.readAsText(file);
     }
 
-    getUploadPath(server: Server, emulator: string, filename: string) {
+    private getUploadPath(server: Server, emulator: string, filename: string) {
         return `http://${server.host}:${server.port}/v2/${emulator}/images/${filename}`;
     }
 }
