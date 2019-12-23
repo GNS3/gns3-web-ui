@@ -66,7 +66,6 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
-import { ComputeService } from '../../services/compute.service';
 
 
 @Component({
@@ -154,8 +153,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private serialLinkWidget: SerialLinkWidget,
     private bottomSheet: MatBottomSheet,
     private notificationService: NotificationService,
-    private themeService: ThemeService,
-    private computeService: ComputeService
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
