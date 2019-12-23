@@ -3,15 +3,16 @@ version: 2
 jobs:
   build:
     macos:
-      xcode: "9.4.0"
+      xcode: "10.1.0"
 
     steps:
       - checkout
-      
+
       - run:
           name: Install nodejs
           command: |
             brew update
+            brew upgrade yarn
             brew upgrade node
 
       - run:
