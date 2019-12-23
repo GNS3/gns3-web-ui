@@ -3,5 +3,5 @@ cx_Freeze==5.1.1
 requests==2.21.0
 packaging==19.0
 appdirs==1.4.3
-psutil==5.5.1
+psutil==5.6.3
 jsonschema==2.6.0 # lock down jsonschema, 3.0 makes problems
