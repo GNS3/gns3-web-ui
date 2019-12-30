@@ -79,6 +79,10 @@ Run `yarn ng test` to execute the unit tests via [Karma](https://karma-runner.gi
 
 ## Releasing
 
+### Release naming convention
+
+Releases are named by the year and quarter when release is happening, e.g. January 2020 release is named 2020.1.X.
+
 ### Bumping releases
 
 We're using [version-bump-prompt](https://www.npmjs.com/package/version-bump-prompt) for increasing version.
