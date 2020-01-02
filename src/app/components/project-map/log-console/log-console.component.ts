@@ -25,7 +25,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() project: Project;
     @Input() server: Server;
     @Output() closeConsole =  new EventEmitter<boolean>();
-    @ViewChild('console', {static: false}) console: ElementRef;
+    @ViewChild('console') console: ElementRef;
     private nodeSubscription: Subscription;
     private linkSubscription: Subscription;
     private drawingSubscription: Subscription;

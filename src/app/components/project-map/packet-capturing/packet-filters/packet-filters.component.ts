@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Link } from '../../../../models/link';
 import { Server } from '../../../../models/server';
 import { Project } from '../../../../models/project';
-import { MatDialogRef, MatDialog } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { LinkService } from '../../../../services/link.service';
 import { FilterDescription } from '../../../../models/filter-description';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';

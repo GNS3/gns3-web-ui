@@ -27,7 +27,7 @@ import { Font } from '../../models/font';
   styleUrls: ['./text-editor.component.scss']
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
-  @ViewChild('temporaryTextElement', {static: false}) temporaryTextElement: ElementRef;
+  @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
   @Input('svg') svg: SVGSVGElement;
   @Input('server') server: Server;
 

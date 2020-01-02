@@ -53,7 +53,9 @@ import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ToasterService } from '../../services/toaster.service';
 import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
-import { MatDialog, MatBottomSheet, mixinColor } from '@angular/material';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { mixinColor } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
@@ -105,9 +107,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private scrollEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
 
-  @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
-  @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
-  @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
+  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
+  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private subscriptions: Subscription[] = [];
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
 import { Server } from '../../../../../models/server';
 

@@ -3,7 +3,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { NodeService } from '../../../../../services/node.service';
 import { Server } from '../../../../../models/server';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
@@ -14,7 +14,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
 export class ImportConfigActionComponent {
     @Input() server: Server;
     @Input() node: Node;
-    @ViewChild('fileInput', {static: false}) fileInput: ElementRef;
+    @ViewChild('fileInput') fileInput: ElementRef;
     configType: string;
 
     constructor(

@@ -15,7 +15,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
 export class VmwareTemplatesComponent implements OnInit {
     server: Server;
     vmwareTemplates: VmwareTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

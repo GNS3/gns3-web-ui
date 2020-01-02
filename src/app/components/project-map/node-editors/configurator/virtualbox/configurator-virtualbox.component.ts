@@ -4,7 +4,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { VirtualBoxConfigurationService } from '../../../../../services/virtual-box-configuration.service';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 
@@ -25,7 +25,7 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
 
-    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
+    @ViewChild("customAdapters") customAdapters: CustomAdaptersTableComponent;
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogVirtualBoxComponent>,

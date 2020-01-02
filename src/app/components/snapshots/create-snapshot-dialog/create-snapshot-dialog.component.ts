@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { Snapshot } from '../../../models/snapshot';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Server } from '../../../models/server';
 import { Project } from '../../../models/project';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';

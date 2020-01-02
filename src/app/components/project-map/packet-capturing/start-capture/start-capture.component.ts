@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Server } from '../../../../models/server';
 import { Link } from '../../../../models/link';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 import { LinkService } from '../../../../services/link.service';
 import { CapturingSettings } from '../../../../models/capturingSettings';
