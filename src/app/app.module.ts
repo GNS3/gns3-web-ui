@@ -258,6 +258,7 @@ import { Gns3vmService } from './services/gns3vm.service';
 import { ThemeService } from './services/theme.service';
 import { ConfigureGns3VMDialogComponent } from './components/servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ImportApplianceComponent } from './components/project-map/import-appliance/import-appliance.component';
+import { GoogleAnalyticsService } from './services/google-analytics.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -522,7 +523,8 @@ if (environment.production) {
     PacketCaptureService,
     NotificationService,
     Gns3vmService,
-    ThemeService
+    ThemeService,
+    GoogleAnalyticsService
   ],
   entryComponents: [
     AddServerDialogComponent,
