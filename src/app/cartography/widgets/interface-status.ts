@@ -22,10 +22,12 @@ export class InterfaceStatusWidget implements Widget {
         const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 45);
 
         if (link_path.node().getTotalLength() > 2 * 45 + 10) {
-          statuses = [
-            new LinkStatus(start_point.x, start_point.y, (l.capturing && l.suspend) ? 'suspended' : l.source.status),
-            new LinkStatus(end_point.x, end_point.y, (l.capturing && l.suspend) ? 'suspended' : l.target.status)
-          ];
+          if (l.source && l.target) {
+            statuses = [
+              new LinkStatus(start_point.x, start_point.y, (l.capturing && l.suspend) ? 'suspended' : l.source.status),
+              new LinkStatus(end_point.x, end_point.y, (l.capturing && l.suspend) ? 'suspended' : l.target.status)
+            ];
+          }
         }
       }
 
