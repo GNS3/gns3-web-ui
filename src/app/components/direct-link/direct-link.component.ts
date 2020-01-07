@@ -30,8 +30,16 @@ export class DirectLinkComponent implements OnInit {
 
     if (server) {
         this.router.navigate(['/server', server.id, 'project', projectId]);
-    } else {
-        this.toasterService.error('Server not found');
+    } else { 
+        let serverToAdd: Server = new Server();
+        serverToAdd.host = serverIp;
+        serverToAdd.port = serverPort;
+        serverToAdd.location = 'bundled';
+        serverToAdd.name = serverIp;
+
+        this.serverService.create(serverToAdd).then((addedServer: Server) => {
+            this.router.navigate(['/server', addedServer.id, 'project', projectId]);
+        });
     }
   }
 }
