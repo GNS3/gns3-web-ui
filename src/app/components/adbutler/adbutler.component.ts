@@ -24,9 +24,13 @@ export class AdbutlerComponent implements OnInit {
     this.httpClient
       .get('https://servedbyadbutler.com/adserve/;ID=165803;size=0x0;setID=371476;type=json;').subscribe(
         response => {
-          this.onLoad.emit(true);
-          this.htmlCode = response['placements'].placement_1.body;
-          this.ad.nativeElement.insertAdjacentHTML('beforeend', this.htmlCode);
+          if (response['placements']) {
+            this.onLoad.emit(true);
+            this.htmlCode = response['placements'].placement_1.body;
+            this.ad.nativeElement.insertAdjacentHTML('beforeend', this.htmlCode);
+          } else {
+            this.onLoad.emit(false);
+          }
         },
         error => {}
       );
