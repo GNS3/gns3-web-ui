@@ -49,7 +49,9 @@ export class EditProjectDialogComponent implements OnInit {
     this.formGroup.controls['height'].setValue(this.project.scene_height);
     this.formGroup.controls['nodeGridSize'].setValue(this.project.grid_size);
     this.formGroup.controls['drawingGridSize'].setValue(this.project.drawing_grid_size);
-    this.project.variables.forEach(n => this.variables.push(n));
+    if (this.project.variables) {
+      this.project.variables.forEach(n => this.variables.push(n));
+    }
   }
 
   addVariable() {
