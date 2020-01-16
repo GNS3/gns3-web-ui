@@ -259,6 +259,7 @@ import { ThemeService } from './services/theme.service';
 import { ConfigureGns3VMDialogComponent } from './components/servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ImportApplianceComponent } from './components/project-map/import-appliance/import-appliance.component';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
+import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -435,7 +436,8 @@ if (environment.production) {
     ConfigDialogComponent,
     Gns3vmComponent,
     ConfigureGns3VMDialogComponent,
-    ImportApplianceComponent
+    ImportApplianceComponent,
+    DirectLinkComponent
   ],
   imports: [
     BrowserModule,
