@@ -60,6 +60,7 @@ import { TracengTemplateDetailsComponent } from './components/preferences/tracen
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
+import { SystemStatusComponent } from './components/system-status/system-status.component';
 
 const routes: Routes = [
   {
@@ -74,6 +75,7 @@ const routes: Routes = [
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
+      { path: 'server/:server_id/systemstatus', component: SystemStatusComponent },
 
       { path: 'server/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent},
       { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent },

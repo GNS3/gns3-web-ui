@@ -1,0 +1,4 @@
+<div *ngFor='let statistics of computeStatistics'>
+    {{statistics.compute_name}}
+    <app-status-chart [computeStatistics]="statistics"></app-status-chart>
+</div>

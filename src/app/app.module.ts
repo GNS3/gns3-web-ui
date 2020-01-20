@@ -260,6 +260,10 @@ import { ConfigureGns3VMDialogComponent } from './components/servers/configure-g
 import { ImportApplianceComponent } from './components/project-map/import-appliance/import-appliance.component';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
+import { SystemStatusComponent } from './components/system-status/system-status.component';
+import { StatusInfoComponent } from './components/system-status/status-info/status-info.component';
+import { StatusChartComponent } from './components/system-status/status-chart/status-chart.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -437,7 +441,10 @@ if (environment.production) {
     Gns3vmComponent,
     ConfigureGns3VMDialogComponent,
     ImportApplianceComponent,
-    DirectLinkComponent
+    DirectLinkComponent,
+    SystemStatusComponent,
+    StatusInfoComponent,
+    StatusChartComponent
   ],
   imports: [
     BrowserModule,
@@ -457,7 +464,8 @@ if (environment.production) {
     DragAndDropModule,
     DragDropModule,
     MATERIAL_IMPORTS,
-    DeviceDetectorModule.forRoot()
+    DeviceDetectorModule.forRoot(),
+    NgCircleProgressModule.forRoot()
   ],
   providers: [
     SettingsService,
