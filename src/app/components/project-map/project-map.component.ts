@@ -423,7 +423,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if(!nodeAddedEvent) {
       return;
     }
-    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, 'local').subscribe((node: Node) => {
+    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, nodeAddedEvent.server).subscribe((node: Node) => {
       if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
         node.name = nodeAddedEvent.name;
         this.nodeService.updateNode(this.server, node).subscribe(()=>{});
