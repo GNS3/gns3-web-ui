@@ -27,6 +27,8 @@ export class TemplateListDialogComponent implements OnInit {
   selectedTemplate: Template;
   searchText: string = '';
 
+  nodeServers: string[] = ['local', 'vm']
+
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,
     private templateService: TemplateService,
@@ -82,6 +84,7 @@ export class TemplateListDialogComponent implements OnInit {
       } else {
         let event: NodeAddedEvent = {
           template: this.selectedTemplate,
+          server: this.selectedTemplate.compute_id,
           name: this.configurationForm.get('name').value,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
@@ -95,6 +98,7 @@ export class TemplateListDialogComponent implements OnInit {
 
 export interface NodeAddedEvent {
   template: Template,
+  server: string,
   name: string,
   numberOfNodes: number;
   x: number;
