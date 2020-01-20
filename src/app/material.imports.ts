@@ -22,7 +22,8 @@ import {
   MatGridListModule,
   MatTabsModule,
   MatTreeModule,
-  MatBottomSheetModule
+  MatBottomSheetModule,
+  MatChipsModule
 } from '@angular/material';
 
 export const MATERIAL_IMPORTS = [
@@ -49,5 +50,6 @@ export const MATERIAL_IMPORTS = [
   MatGridListModule,
   MatTabsModule,
   MatTreeModule,
-  MatBottomSheetModule
+  MatBottomSheetModule,
+  MatChipsModule
 ];

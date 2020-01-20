@@ -12,9 +12,7 @@ export class StatusChartComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit() {
-        // console.log('Memory total ', this.formatBytes(this.computeStatistics.statistics.memory_total));
-    }
+    ngOnInit() {}
 
     formatBytes(bytes, decimals = 2) {
         if (bytes === 0) return '0 Bytes';
