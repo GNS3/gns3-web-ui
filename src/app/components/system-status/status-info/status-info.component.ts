@@ -25,10 +25,19 @@ export class StatusInfoComponent implements OnInit {
 
     ngOnInit() {
         this.serverId = this.route.snapshot.paramMap.get("server_id");
+        this.getStatistics();
+    }
+
+    getStatistics() {
         this.serverService.get(Number(this.serverId)).then((server: Server) => {
             this.computeService.getStatistics(server).subscribe(
             (statistics: ComputeStatistics[]) => {
                 this.computeStatistics = statistics;
+                setTimeout(() => 
+                {
+                    this.getStatistics();
+                },
+                10000);
             }),
             error => {
                 this.toasterService.error('Required server version is 2.3')
