@@ -3,6 +3,7 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { Compute } from '../models/compute';
 import { Observable } from 'rxjs';
+import { ComputeStatistics } from '../models/computeStatistics';
 
 @Injectable()
 export class ComputeService {
@@ -14,5 +15,9 @@ export class ComputeService {
 
     getUploadPath(server: Server, emulator: string, filename: string) {
         return `http://${server.host}:${server.port}/v2/${emulator}/images/${filename}`;
+    }
+
+    getStatistics(server: Server): Observable<ComputeStatistics[]> {
+        return this.httpServer.get(server, `/statistics`)
     }
 }

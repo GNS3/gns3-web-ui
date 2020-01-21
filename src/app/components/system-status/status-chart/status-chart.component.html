@@ -1,0 +1,155 @@
+<mat-card>
+    <div class="wrapper">
+        <circle-progress
+            [percent]="computeStatistics.statistics.cpu_usage_percent"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="'CPU usage percent'"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+
+        <circle-progress
+            [percent]="computeStatistics.statistics.disk_usage_percent"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="'Disk usage percent'"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+
+        <circle-progress
+            [percent]="computeStatistics.statistics.memory_usage_percent"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="'Memory usage percent'"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+
+        <circle-progress
+            [percent]="computeStatistics.statistics.swap_usage_percent"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="'SWAP usage percent'"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+    </div>
+
+    <div class="wrapper">
+        <circle-progress
+            [percent]="computeStatistics.statistics.load_average_percent[0]"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="['Load average percent', '(last 1 minute)']"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+        
+        <circle-progress
+            [percent]="computeStatistics.statistics.load_average_percent[1]"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="['Load average percent', '(last 5 minutes)']"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+
+        <circle-progress
+            [percent]="computeStatistics.statistics.load_average_percent[2]"
+            [radius]="100"
+            [outerStrokeWidth]="8"
+            [innerStrokeWidth]="6"
+            [outerStrokeColor]="'#0097a7'"
+            [innerStrokeColor]="'#007380'"
+            [animation]="true"
+            [animationDuration]="300"
+            [unitsColor]="'#C0C0C0'"
+            [unitsFontSize]="20"
+            [titleColor]="'#C0C0C0'"
+            [titleFontSize]="30"
+            [subtitle]="['Load average percent', '(last 15 minutes)']"
+            [subtitleColor]="'#C0C0C0'"
+            [subtitleFontSize]="15"
+        ></circle-progress>
+    </div>
+
+    <div class="wrapper">
+        <mat-chip-list>
+            <mat-chip color="primary" selected>Memory total: {{formatBytes(computeStatistics.statistics.memory_total)}}</mat-chip>
+        </mat-chip-list>
+        <mat-chip-list>
+            <mat-chip color="primary" selected>Memory used: {{formatBytes(computeStatistics.statistics.memory_used)}}</mat-chip>
+        </mat-chip-list>
+        <mat-chip-list>
+            <mat-chip color="primary" selected>Memory free: {{formatBytes(computeStatistics.statistics.memory_free)}}</mat-chip>
+        </mat-chip-list>
+    </div>
+
+    <div class="wrapper">
+        <mat-chip-list>
+            <mat-chip color="primary" selected>Swap total: {{formatBytes(computeStatistics.statistics.swap_total)}}</mat-chip>
+        </mat-chip-list>
+        <mat-chip-list>
+            <mat-chip color="primary" selected>Swap used: {{formatBytes(computeStatistics.statistics.swap_used)}}</mat-chip>
+        </mat-chip-list>
+        <mat-chip-list>
+            <mat-chip color="primary" selected>Swap free: {{formatBytes(computeStatistics.statistics.swap_free)}}</mat-chip>
+        </mat-chip-list>
+    </div>
+</mat-card>

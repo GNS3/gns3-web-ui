@@ -147,6 +147,12 @@
           <mat-icon>center_focus_strong</mat-icon>
         </button>
       </mat-toolbar-row>
+
+      <mat-toolbar-row *ngIf="!readonly">
+        <button  matTooltip="Go to system status" mat-icon-button routerLink="/server/{{server.id}}/systemstatus">
+          <mat-icon>info</mat-icon>
+        </button>
+      </mat-toolbar-row>
     </mat-toolbar>
   </div>
 
