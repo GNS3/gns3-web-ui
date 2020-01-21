@@ -9,6 +9,8 @@ import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
 import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
 import { ServerManagementService } from '../../services/server-management.service';
+import { ElectronService } from 'ngx-electron';
+import { ChildProcessService } from 'ngx-childprocess';
 
 
 @Component({
@@ -20,16 +22,20 @@ export class ServersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
   serverStatusSubscription: Subscription;
+  isElectronApp: boolean = false;
 
   constructor(
     private dialog: MatDialog,
     private serverService: ServerService,
     private serverDatabase: ServerDatabase,
     private serverManagement: ServerManagementService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private electronService: ElectronService,
+    private childProcessService: ChildProcessService
   ) {}
 
   ngOnInit() {
+    this.isElectronApp = this.electronService.isElectronApp;
     const runningServersNames = this.serverManagement.getRunningServers();
 
     this.serverService.findAll().then((servers: Server[]) => {
@@ -78,6 +84,11 @@ export class ServersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
+  }
+
+  startLocalServer() {
+    const server = this.serverDatabase.data.find(n => n.location === 'bundled' || 'local');
+    this.startServer(server);
   }
 
   createModal() {

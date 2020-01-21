@@ -57,6 +57,9 @@
       </mat-table>
     </div>
 
-    <div class="buttons-bar"><button mat-raised-button color="primary" (click)="createModal()">Add server</button></div>
+    <div class="buttons-bar">
+      <button *ngIf="isElectronApp" mat-raised-button class="button" (click)="startLocalServer()">Start local server</button>
+      <button mat-raised-button class="button" color="primary" (click)="createModal()">Add server</button>
+    </div>
   </div>
 </div>
