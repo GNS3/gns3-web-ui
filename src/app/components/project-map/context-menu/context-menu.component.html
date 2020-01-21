@@ -25,6 +25,11 @@
       [server]="server"
       [node]="nodes[0]"
     ></app-console-device-action-browser>
+    <app-open-file-explorer-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length===1 && isElectronApp"
+      [server]="server"
+      [node]="nodes[0]"
+    ></app-open-file-explorer-action>
     <app-change-symbol-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
       [server]="server"

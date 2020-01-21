@@ -264,6 +264,7 @@ import { SystemStatusComponent } from './components/system-status/system-status.
 import { StatusInfoComponent } from './components/system-status/status-info/status-info.component';
 import { StatusChartComponent } from './components/system-status/status-chart/status-chart.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
+import { OpenFileExplorerActionComponent } from './components/project-map/context-menu/actions/open-file-explorer/open-file-explorer-action.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -444,7 +445,8 @@ if (environment.production) {
     DirectLinkComponent,
     SystemStatusComponent,
     StatusInfoComponent,
-    StatusChartComponent
+    StatusChartComponent,
+    OpenFileExplorerActionComponent
   ],
   imports: [
     BrowserModule,
