@@ -1,13 +1,23 @@
 import { ServersPage } from './helpers/server.po';
+import { TestHelper } from './helpers/common.po';
+import { element } from 'protractor';
 
-describe('gns3-web-ui App', () => {
+fdescribe('gns3-web-ui App', () => {
     let page: ServersPage;
+    let helper: TestHelper;
 
     beforeEach(() => {
         page = new ServersPage();
+        helper = new TestHelper();
     });
 
-    it('should be able to add server', async () => {
+    async function asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array);
+        }
+    };
+
+    it('user should have possibility to add server', async () => {
         // arrange
         page.maximizeWindow();
         await page.navigateToServersPage();
@@ -17,11 +27,24 @@ describe('gns3-web-ui App', () => {
 
         // assert
         expect(text).toBe("We've discovered GNS3 server on 127.0.0.1:3080, would you like to add to the list?");
+    });
 
-        // let firstRowOfServersTable = await page.checkServersTable();
+    it('user should see added server in the list', async () => {
+        // arrange
+        page.maximizeWindow();
+        await page.navigateToServersPage();
+        await page.clickAddServer();
+        helper.sleep(1000);
 
-        // console.log('answer ********************* ', firstRowOfServersTable);
+        // act
+        let firstRowOfServersTable = await page.checkServersTable();
+        let serverData = [];
+        await asyncForEach(firstRowOfServersTable, async element => {
+            serverData.push(await element.getText());
+        });
 
-        // expect(true).toBe(true);
+        // assert
+        expect(serverData).toContain('127.0.0.1');
+        expect(serverData).toContain('3080');
     });
 });

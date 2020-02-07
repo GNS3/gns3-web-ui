@@ -14,7 +14,12 @@ export class ServersPage {
         // return element(by.className('mat-card-content')[0]).getText();
     }
 
+    async clickAddServer() {
+        let buttons = await browser.driver.findElements(by.className('mat-button mat-button-base'));
+        await buttons[3].click();
+    }
+
     checkServersTable() {
-        return browser.driver.findElement(by.className('mat-cell cdk-column-id mat-column-id ng-star-inserted')).getText();
+        return browser.driver.findElements(by.css('mat-cell'));
     }
 }
