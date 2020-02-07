@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PlatformService } from './platform.service';
 import { ElectronService } from 'ngx-electron';
+import { PlatformService } from './platform.service';
 
 class ElectronServiceMock {
   process = {
@@ -28,7 +28,7 @@ describe('PlatformService', () => {
 
   beforeEach(() => {
     service = TestBed.get(PlatformService);
-  })
+  });
 
   it('should be created', () => {
     expect(service).toBeTruthy();

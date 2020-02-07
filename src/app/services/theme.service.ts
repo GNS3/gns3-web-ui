@@ -1,6 +1,6 @@
-import { Injectable, RendererFactory2, Renderer2, Inject, EventEmitter } from '@angular/core';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
+import { EventEmitter, Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -13,7 +13,7 @@ export class ThemeService {
   theme$: Observable<[string, boolean]>;
 
   public themeChanged = new EventEmitter<string>();
-  public savedTheme: string = 'dark';
+  public savedTheme = 'dark';
 
   constructor(
     rendererFactory: RendererFactory2,
@@ -26,9 +26,10 @@ export class ThemeService {
       const cssExt = '.css';
       const cssFilename = darkMode ? mainTheme + '-dark' + cssExt : mainTheme + cssExt;
       await this.loadCss(cssFilename);
-      if (this.themeLinks.length == 2)
+      if (this.themeLinks.length == 2) {
         this._renderer.removeChild(this.head, this.themeLinks.shift());
-    })
+      }
+    });
   }
 
   getActualTheme() {
@@ -62,6 +63,6 @@ export class ThemeService {
       this._renderer.setProperty(linkEl, 'onload', resolve);
       this._renderer.appendChild(this.head, linkEl);
       this.themeLinks = [...this.themeLinks, linkEl];
-    })
+    });
   }
 }

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Project } from '../models/project';
-import { Node } from '../cartography/models/node';
 import { Observable } from 'rxjs';
+import { Drawing } from '../cartography/models/drawing';
+import { Node } from '../cartography/models/node';
 import { Link } from '../models/link';
+import { Project } from '../models/project';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
-import { Drawing } from '../cartography/models/drawing';
 import { SettingsService } from './settings.service';
 
 @Injectable()
@@ -41,10 +41,10 @@ export class ProjectService {
   }
 
   add(server: Server, project_name: string, project_id: string): Observable<any> {
-    return this.httpServer.post<Project>(server, `/projects`, { name: project_name, project_id: project_id });
+    return this.httpServer.post<Project>(server, `/projects`, { name: project_name, project_id });
   }
 
-  update(server: Server, project: Project) : Observable<Project> {
+  update(server: Server, project: Project): Observable<Project> {
     return this.httpServer.put<Project>(server, `/projects/${project.project_id}`, {
       auto_close: project.auto_close,
       auto_open: project.auto_open,
@@ -71,7 +71,7 @@ export class ProjectService {
   }
 
   export(server: Server, project_id: string): Observable<any> {
-    return this.httpServer.get(server, `/projects/${project_id}/export`)
+    return this.httpServer.get(server, `/projects/${project_id}/export`);
   }
 
   getStatistics(server: Server, project_id: string): Observable<any> {

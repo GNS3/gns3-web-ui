@@ -1,24 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule, MatMenuModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
-import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { NodeService } from '../../../../../services/node.service';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { MockedDrawingService, MockedNodeService } from '../../../project-map.component.spec';
-import { Node } from '../../../../../cartography/models/node';
-import { Drawing } from '../../../../../cartography/models/drawing';
 import { of } from 'rxjs';
-import { DuplicateActionComponent } from './duplicate-action.component';
+import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Drawing } from '../../../../../cartography/models/drawing';
+import { Node } from '../../../../../cartography/models/node';
+import { DrawingService } from '../../../../../services/drawing.service';
+import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { MockedDrawingService, MockedNodeService } from '../../../project-map.component.spec';
+import { DuplicateActionComponent } from './duplicate-action.component';
 
 describe('DuplicateActionComponent', () => {
     let component: DuplicateActionComponent;
     let fixture: ComponentFixture<DuplicateActionComponent>;
-    let mockedNodeService: MockedNodeService = new MockedNodeService();
-    let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
-    let mockedToasterService = new MockedToasterService;
+    const mockedNodeService: MockedNodeService = new MockedNodeService();
+    const mockedDrawingService: MockedDrawingService = new MockedDrawingService();
+    const mockedToasterService = new MockedToasterService;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -45,7 +45,7 @@ describe('DuplicateActionComponent', () => {
     });
 
     it('should call duplicate action in drawing service', () => {
-        let drawing = { drawing_id: '1' } as Drawing;
+        const drawing = { drawing_id: '1' } as Drawing;
         component.drawings = [drawing];
         component.nodes = [];
         spyOn(mockedDrawingService, 'duplicate').and.returnValue(of());
@@ -56,7 +56,7 @@ describe('DuplicateActionComponent', () => {
     });
 
     it('should call duplicate action in node service', () => {
-        let node = { node_id: '1', status: 'stopped'} as Node;
+        const node = { node_id: '1', status: 'stopped'} as Node;
         component.nodes = [node];
         component.drawings = [];
         spyOn(mockedNodeService, 'duplicate').and.returnValue(of());
@@ -67,9 +67,9 @@ describe('DuplicateActionComponent', () => {
     });
 
     it('should call duplicate action in both services', () => {
-        let drawing = { drawing_id: '1' } as Drawing;
+        const drawing = { drawing_id: '1' } as Drawing;
         component.drawings = [drawing];
-        let node = { node_id: '1', status: 'stopped' } as Node;
+        const node = { node_id: '1', status: 'stopped' } as Node;
         component.nodes = [node];
         spyOn(mockedDrawingService, 'duplicate').and.returnValue(of());
         spyOn(mockedNodeService, 'duplicate').and.returnValue(of());

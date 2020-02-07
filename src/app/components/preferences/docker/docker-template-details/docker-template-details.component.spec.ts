@@ -1,22 +1,22 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import { Server } from '../../../../models/server';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
-import { DockerTemplateDetailsComponent } from './docker-template-details.component';
-import { DockerService } from '../../../../services/docker.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
+import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { DockerTemplateDetailsComponent } from './docker-template-details.component';
 
 export class MockedDockerService {
     public getTemplate(server: Server, template_id: string) {
@@ -32,10 +32,10 @@ describe('DockerTemplateDetailsComponent', () => {
     let component: DockerTemplateDetailsComponent;
     let fixture: ComponentFixture<DockerTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedDockerService = new MockedDockerService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedDockerService = new MockedDockerService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

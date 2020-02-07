@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Server } from '../models/server';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
+import { Server } from '../models/server';
 
 export interface ServerStateEvent {
   serverName: string;
@@ -17,7 +17,7 @@ export class ServerManagementService implements OnDestroy {
   constructor(
     private electronService: ElectronService
   ) {
-    if(this.electronService.isElectronApp) {
+    if (this.electronService.isElectronApp) {
       this.electronService.ipcRenderer.on(this.statusChannel, (event, data) => {
         this.serverStatusChanged.next(data);
       });
@@ -29,32 +29,32 @@ export class ServerManagementService implements OnDestroy {
   }
 
   async start(server: Server) {
-    var startingEvent : ServerStateEvent = {
+    const startingEvent: ServerStateEvent = {
       serverName: server.name,
       status: "starting",
       message: ''
     };
     this.serverStatusChanged.next(startingEvent);
-    return await this.electronService.remote.require('./local-server.js').startLocalServer(server);
+    return this.electronService.remote.require('./local-server.js').startLocalServer(server);
   }
 
   async stop(server: Server) {
-    return await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
+    return this.electronService.remote.require('./local-server.js').stopLocalServer(server);
   }
 
   async stopAll() {
-    return await this.electronService.remote.require('./local-server.js').stopAllLocalServers();
+    return this.electronService.remote.require('./local-server.js').stopAllLocalServers();
   }
 
   getRunningServers() {
-    if(this.electronService.isElectronApp) {
+    if (this.electronService.isElectronApp) {
       return this.electronService.remote.require('./local-server.js').getRunningServers();
     }
     return [];
   }
 
   ngOnDestroy() {
-    if(this.electronService.isElectronApp) {
+    if (this.electronService.isElectronApp) {
       this.electronService.ipcRenderer.removeAllListeners(this.statusChannel);
     }
   }

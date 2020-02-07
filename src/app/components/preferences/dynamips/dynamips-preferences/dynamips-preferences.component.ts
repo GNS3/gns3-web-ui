@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ActivatedRoute } from '@angular/router';
 import { Server } from '../../../../models/server';
+import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ServerService } from '../../../../services/server.service';
 
 

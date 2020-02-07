@@ -7,7 +7,7 @@ export class IouConfigurationService {
     }
 
     getCategories() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
             ["End devices", "end_device"],

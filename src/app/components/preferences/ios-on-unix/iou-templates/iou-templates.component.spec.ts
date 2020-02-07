@@ -1,18 +1,18 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Server } from '../../../../models/server';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplate } from '../../../../models/templates/iou-template';
-import { IouTemplatesComponent } from './iou-templates.component';
 import { IouService } from '../../../../services/iou.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { IouTemplatesComponent } from './iou-templates.component';
 
 export class MockedIouService {
     public getTemplates(server: Server) {
@@ -24,9 +24,9 @@ describe('IouTemplatesComponent', () => {
     let component: IouTemplatesComponent;
     let fixture: ComponentFixture<IouTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedIouService = new MockedIouService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedIouService = new MockedIouService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

@@ -1,6 +1,4 @@
-import { NodeComponent } from './components/experimental-map/node/node.component';
-import { LinkComponent } from './components/experimental-map/link/link.component';
-import { StatusComponent } from './components/experimental-map/status/status.component';
+import { DraggableComponent } from './components/experimental-map/draggable/draggable.component';
 import { DrawingComponent } from './components/experimental-map/drawing/drawing.component';
 import { EllipseComponent } from './components/experimental-map/drawing/drawings/ellipse/ellipse.component';
 import { ImageComponent } from './components/experimental-map/drawing/drawings/image/image.component';
@@ -8,8 +6,10 @@ import { LineComponent } from './components/experimental-map/drawing/drawings/li
 import { RectComponent } from './components/experimental-map/drawing/drawings/rect/rect.component';
 import { TextComponent } from './components/experimental-map/drawing/drawings/text/text.component';
 import { InterfaceLabelComponent } from './components/experimental-map/interface-label/interface-label.component';
-import { DraggableComponent } from './components/experimental-map/draggable/draggable.component';
+import { LinkComponent } from './components/experimental-map/link/link.component';
+import { NodeComponent } from './components/experimental-map/node/node.component';
 import { SelectionComponent } from './components/experimental-map/selection/selection.component';
+import { StatusComponent } from './components/experimental-map/status/status.component';
 
 export const ANGULAR_MAP_DECLARATIONS = [
   NodeComponent,

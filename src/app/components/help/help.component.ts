@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
 selector: 'app-help',
@@ -17,7 +17,7 @@ export class HelpComponent implements OnInit {
     ngOnInit() {
         this.httpClient.get(window.location.href + '/3rdpartylicenses.txt', {responseType: 'text'})
             .subscribe(data => {
-                this.thirdpartylicenses = data.replace(new RegExp('\n', 'g'), "<br />")
+                this.thirdpartylicenses = data.replace(new RegExp('\n', 'g'), "<br />");
             },
             error => {
                 if (error.status === 404) {
@@ -27,7 +27,7 @@ export class HelpComponent implements OnInit {
 
         this.httpClient.get('ReleaseNotes.txt', {responseType: 'text'})
             .subscribe(data => {
-                this.releasenotes = data.replace(new RegExp('\n', 'g'), "<br />")
+                this.releasenotes = data.replace(new RegExp('\n', 'g'), "<br />");
             });
     }
 }

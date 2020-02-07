@@ -1,19 +1,19 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { Layer } from '../models/layer';
-import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
-import { Draggable, DraggableDrag, DraggableStart, DraggableEnd } from '../events/draggable';
-import { DrawingWidget } from './drawing';
-import { drag, D3DragEvent } from 'd3-drag';
+import { D3DragEvent, drag } from 'd3-drag';
 import { event } from 'd3-selection';
-import { MapDrawing } from '../models/map/map-drawing';
+import { Draggable, DraggableDrag, DraggableEnd, DraggableStart } from '../events/draggable';
+import { ResizingEnd } from '../events/resizing';
+import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
+import { MapSettingsManager } from '../managers/map-settings-manager';
 import { Context } from '../models/context';
 import { EllipseElement } from '../models/drawings/ellipse-element';
-import { ResizingEnd } from '../events/resizing';
 import { LineElement } from '../models/drawings/line-element';
-import { MapSettingsManager } from '../managers/map-settings-manager';
+import { Layer } from '../models/layer';
+import { MapDrawing } from '../models/map/map-drawing';
+import { SVGSelection } from '../models/types';
+import { DrawingWidget } from './drawing';
+import { Widget } from './widget';
 
 @Injectable()
 export class DrawingsWidget implements Widget {
@@ -76,9 +76,9 @@ export class DrawingsWidget implements Widget {
     let dy: number;
     let topEdge: number;
     let bottomEdge: number;
-    let isReflectedVertical: boolean = false;
+    let isReflectedVertical = false;
     let startEvent;
-    let bottom = drag()
+    const bottom = drag()
       .on('start', (datum: MapDrawing) => {
         document.body.style.cursor = 'ns-resize';
         topEdge = datum.y;
@@ -148,7 +148,7 @@ export class DrawingsWidget implements Widget {
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
-    let top = drag()
+    const top = drag()
       .on('start', (datum: MapDrawing) => {
         y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
         bottomEdge = y + datum.element.height;
@@ -211,8 +211,8 @@ export class DrawingsWidget implements Widget {
     let dx: number;
     let rightEdge: number;
     let leftEdge: number;
-    let isReflectedHorizontal: boolean = false;
-    let right = drag()
+    let isReflectedHorizontal = false;
+    const right = drag()
       .on('start', (datum: MapDrawing) => {
         x = event.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
         leftEdge = x + datum.element.width;
@@ -270,7 +270,7 @@ export class DrawingsWidget implements Widget {
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
-    let left = drag()
+    const left = drag()
       .on('start', (datum: MapDrawing) => {
         document.body.style.cursor = 'ew-resize';
         rightEdge = datum.x;
@@ -327,7 +327,7 @@ export class DrawingsWidget implements Widget {
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
-    let circleMoveRight = drag()
+    const circleMoveRight = drag()
       .on('start', () => {
         document.body.style.cursor = 'move';
       })
@@ -344,7 +344,7 @@ export class DrawingsWidget implements Widget {
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
-    let circleMoveLeft = drag()
+    const circleMoveLeft = drag()
       .on('start', () => {
         document.body.style.cursor = 'move';
       })

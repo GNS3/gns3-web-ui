@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input, OnInit } from '@angular/core';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 
 @Component({
@@ -20,11 +20,11 @@ export class AlignVerticallyActionComponent implements OnInit {
   ngOnInit() {}
 
   alignVertically() {
-    let averageX: number = 0;
+    let averageX = 0;
     this.nodes.forEach((node) => {
         averageX += node.x;
     });
-    averageX = averageX/this.nodes.length;
+    averageX = averageX / this.nodes.length;
     
     this.nodes.forEach((node) => {
         node.x = averageX;

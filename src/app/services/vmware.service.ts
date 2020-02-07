@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
+import { Server } from '../models/server';
 import { VmwareTemplate } from '../models/templates/vmware-template';
 import { VmwareVm } from '../models/vmware/vmware-vm';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class VmwareService {
@@ -25,7 +25,7 @@ export class VmwareService {
         return this.httpServer.put<VmwareTemplate>(server, `/templates/${vmwareTemplate.template_id}`, vmwareTemplate) as Observable<VmwareTemplate>;
     }
 
-    getVirtualMachines(server: Server) : Observable<VmwareVm[]> {
+    getVirtualMachines(server: Server): Observable<VmwareVm[]> {
         return this.httpServer.get<VmwareVm[]>(server, '/compute/vmware/vms') as Observable<VmwareVm[]>;
     }
 }

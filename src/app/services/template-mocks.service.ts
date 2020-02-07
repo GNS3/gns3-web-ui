@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import { QemuTemplate } from '../models/templates/qemu-template';
-import { VpcsTemplate } from '../models/templates/vpcs-template';
 import { Observable, of } from 'rxjs';
-import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
-import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
+import { CustomAdapter } from '../models/qemu/qemu-custom-adapter';
 import { CloudTemplate } from '../models/templates/cloud-template';
+import { DockerTemplate } from '../models/templates/docker-template';
+import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
 import { IosTemplate } from '../models/templates/ios-template';
-import { VmwareTemplate } from '../models/templates/vmware-template';
-import { DockerTemplate } from '../models/templates/docker-template';
-import { CustomAdapter } from '../models/qemu/qemu-custom-adapter';
 import { IouTemplate } from '../models/templates/iou-template';
+import { QemuTemplate } from '../models/templates/qemu-template';
 import { TracengTemplate } from '../models/templates/traceng-template';
+import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
+import { VmwareTemplate } from '../models/templates/vmware-template';
+import { VpcsTemplate } from '../models/templates/vpcs-template';
 
 @Injectable()
 export class TemplateMocksService {
-    getTracengTemplate() : TracengTemplate {
-        let template: TracengTemplate = {
+    getTracengTemplate(): TracengTemplate {
+        const template: TracengTemplate = {
             builtin: false,
             category: 'guest',
             compute_id: 'local',
@@ -32,8 +32,8 @@ export class TemplateMocksService {
         return template;
     }
 
-    getQemuTemplate() : Observable<QemuTemplate> {
-        let template : QemuTemplate = {
+    getQemuTemplate(): Observable<QemuTemplate> {
+        const template: QemuTemplate = {
             adapter_type: 'e1000',
             adapters: 4,
             bios_image: '',
@@ -76,13 +76,13 @@ export class TemplateMocksService {
             template_id: '',
             template_type: 'qemu',
             usage: ''
-        }
+        };
         
         return of(template);
     }
 
-    getVpcsTemplate() : Observable<VpcsTemplate> {
-        let template: VpcsTemplate = {
+    getVpcsTemplate(): Observable<VpcsTemplate> {
+        const template: VpcsTemplate = {
             base_script_file: 'vpcs_base_config.txt',
             builtin: false,
             category: 'guest',
@@ -94,13 +94,13 @@ export class TemplateMocksService {
             symbol: ':/symbols/vpcs_guest.svg',
             template_id: '',
             template_type: 'vpcs'
-        }
+        };
 
         return of(template);
     }
 
-    getVirtualBoxTemplate() : Observable<VirtualBoxTemplate> {
-        let template: VirtualBoxTemplate = {
+    getVirtualBoxTemplate(): Observable<VirtualBoxTemplate> {
+        const template: VirtualBoxTemplate = {
             adapter_type: 'Intel PRO/1000 MT Desktop (82540EM)',
             adapters: 1,
             builtin: false,
@@ -124,13 +124,13 @@ export class TemplateMocksService {
             usage: '',
             use_any_adapter: false,
             vmname: ''
-        }
+        };
 
         return of(template);
     }
 
-    getCloudNodeTemplate() : Observable<CloudTemplate> {
-        let template = {
+    getCloudNodeTemplate(): Observable<CloudTemplate> {
+        const template = {
             builtin: false,
             category: 'guest',
             compute_id: 'local',
@@ -146,8 +146,8 @@ export class TemplateMocksService {
         return of(template);
     }
 
-    getEthernetHubTemplate() : Observable<EthernetHubTemplate> {
-        let template: EthernetHubTemplate = {
+    getEthernetHubTemplate(): Observable<EthernetHubTemplate> {
+        const template: EthernetHubTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'local',
@@ -157,13 +157,13 @@ export class TemplateMocksService {
             symbol: ':/symbols/hub.svg',
             template_id: '',
             template_type: 'ethernet_hub'
-        }
+        };
 
         return of(template);
     }
 
-    getEthernetSwitchTemplate() : Observable<EthernetSwitchTemplate> {
-        let template: EthernetSwitchTemplate = {
+    getEthernetSwitchTemplate(): Observable<EthernetSwitchTemplate> {
+        const template: EthernetSwitchTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'local',
@@ -174,13 +174,13 @@ export class TemplateMocksService {
             symbol: ':/symbols/ethernet_switch.svg',
             template_id: '',
             template_type: 'ethernet_switch'
-        }
+        };
 
         return of(template);
     }
 
-    getIosTemplate() : Observable<IosTemplate> {
-        let template: IosTemplate = {
+    getIosTemplate(): Observable<IosTemplate> {
+        const template: IosTemplate = {
             auto_delete_disks: true,
             builtin: false,
             category: 'router',
@@ -211,13 +211,13 @@ export class TemplateMocksService {
             template_id: '',
             template_type: 'dynamips',
             usage: ''
-        }
+        };
 
         return of(template);
     }
 
-    getVmwareTemplate() : Observable<VmwareTemplate> {
-        let template: VmwareTemplate = {
+    getVmwareTemplate(): Observable<VmwareTemplate> {
+        const template: VmwareTemplate = {
             adapter_type: 'e1000',
             adapters: 1,
             builtin: false,
@@ -245,8 +245,8 @@ export class TemplateMocksService {
         return of(template);
     }
 
-    getDockerTemplate() : Observable<DockerTemplate> {
-        let template: DockerTemplate = {
+    getDockerTemplate(): Observable<DockerTemplate> {
+        const template: DockerTemplate = {
             adapters: 1,
             builtin: false,
             category: 'guest',
@@ -272,8 +272,8 @@ export class TemplateMocksService {
         return of(template);
     }
 
-    getIouTemplate() : Observable<IouTemplate> {
-        let template: IouTemplate = {
+    getIouTemplate(): Observable<IouTemplate> {
+        const template: IouTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'vm',

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { IndexedDbService } from './indexed-db.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
+import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
+import { IndexedDbService } from './indexed-db.service';
 
 @Injectable()
 export class ServerService {

@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ServerManagementService } from './server-management.service';
 import { ElectronService } from 'ngx-electron';
 import { Server } from '../models/server';
+import { ServerManagementService } from './server-management.service';
 
 describe('ServerManagementService', () => {
   let electronService;
-  let callbacks
+  let callbacks;
   let removed;
   let server;
 
@@ -19,8 +19,8 @@ describe('ServerManagementService', () => {
       ipcRenderer: {
         on: (channel, callback) => {
           callbacks.push({
-            channel: channel,
-            callback: callback
+            channel,
+            callback
           });
         },
         removeAllListeners: (name) => {
@@ -36,11 +36,11 @@ describe('ServerManagementService', () => {
             stopLocalServer: (serv) => {
               server = serv;
             }
-          }
+          };
         }
       }
     };
-  })
+  });
   
   beforeEach(() => TestBed.configureTestingModule({
     providers: [

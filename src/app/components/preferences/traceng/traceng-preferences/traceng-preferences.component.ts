@@ -26,7 +26,7 @@ export class TracengPreferencesComponent implements OnInit {
         });
     }
 
-    restoreDefaults(){
+    restoreDefaults() {
         this.tracengExecutable = '';
     }
 }

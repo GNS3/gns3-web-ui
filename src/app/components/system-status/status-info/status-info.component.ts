@@ -1,9 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from '@angular/router';
-import { ComputeService } from '../../../services/compute.service';
 import { ComputeStatistics } from '../../../models/computeStatistics';
-import { ServerService } from '../../../services/server.service';
 import { Server } from '../../../models/server';
+import { ComputeService } from '../../../services/compute.service';
+import { ServerService } from '../../../services/server.service';
 import { ToasterService } from '../../../services/toaster.service';
 
 
@@ -13,7 +13,7 @@ import { ToasterService } from '../../../services/toaster.service';
     styleUrls: ['./status-info.component.scss']
 })
 export class StatusInfoComponent implements OnInit {
-    public serverId: string = "";
+    public serverId = "";
     public computeStatistics: ComputeStatistics[] = [];
 
     constructor(
@@ -33,15 +33,14 @@ export class StatusInfoComponent implements OnInit {
             this.computeService.getStatistics(server).subscribe(
             (statistics: ComputeStatistics[]) => {
                 this.computeStatistics = statistics;
-                setTimeout(() => 
-                {
+                setTimeout(() => {
                     this.getStatistics();
                 },
                 10000);
             }),
             error => {
-                this.toasterService.error('Required server version is 2.3')
-            }
+                this.toasterService.error('Required server version is 2.3');
+            };
         });
     }
 }

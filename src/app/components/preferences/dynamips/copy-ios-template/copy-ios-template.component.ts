@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
+import { Server } from '../../../../models/server';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosService } from '../../../../services/ios.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -16,7 +16,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 })
 export class CopyIosTemplateComponent implements OnInit {
     server: Server;
-    templateName: string = '';
+    templateName = '';
     iosTemplate: IosTemplate;
     formGroup: FormGroup;
     
@@ -42,7 +42,7 @@ export class CopyIosTemplateComponent implements OnInit {
             this.iosService.getTemplate(this.server, template_id).subscribe((iosTemplate: IosTemplate) => {
                 this.iosTemplate = iosTemplate;
                 this.templateName = `Copy of ${this.iosTemplate.name}`;
-            })
+            });
 
         });
     }

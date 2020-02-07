@@ -1,11 +1,11 @@
+import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ToasterService } from '../../services/toaster.service';
-import { MockedToasterService } from '../../services/toaster.service.spec';
-import { ToasterErrorHandler } from './toaster-error-handler';
-import { RavenErrorHandler } from './raven-error-handler';
 import { SettingsService } from '../../services/settings.service';
 import { MockedSettingsService } from '../../services/settings.service.spec';
-import { Injector } from '@angular/core';
+import { ToasterService } from '../../services/toaster.service';
+import { MockedToasterService } from '../../services/toaster.service.spec';
+import { RavenErrorHandler } from './raven-error-handler';
+import { ToasterErrorHandler } from './toaster-error-handler';
 
 class MockedToasterErrorHandler extends ToasterErrorHandler {
   handleError(err: any): void {

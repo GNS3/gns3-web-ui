@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { Server } from '../../../../models/server';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
+import { Server } from '../../../../models/server';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 

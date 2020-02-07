@@ -1,13 +1,13 @@
 import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Gns3vmService } from '../../../services/gns3vm.service';
 import { Gns3vm } from '../../../models/gns3vm/gns3vm';
-import { Server } from '../../../models/server';
-import { ServerService } from '../../../services/server.service';
 import { Gns3vmEngine } from '../../../models/gns3vm/gns3vmEngine';
-import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
 import { VM } from '../../../models/gns3vm/vm';
+import { Server } from '../../../models/server';
+import { Gns3vmService } from '../../../services/gns3vm.service';
+import { ServerService } from '../../../services/server.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 
 @Component({
@@ -72,9 +72,9 @@ export class Gns3vmComponent implements OnInit {
     }
 
     save() {
-        if ((this.vmForm.valid && this.gns3vm.vmname) || (this.gns3vm.engine==='remote' && this.gns3vm.vmname)) {
+        if ((this.vmForm.valid && this.gns3vm.vmname) || (this.gns3vm.engine === 'remote' && this.gns3vm.vmname)) {
             this.gns3vm.ram = this.vmForm.get('ram').value;
-            this.gns3vm.vcpus= this.vmForm.get('vcpus').value;
+            this.gns3vm.vcpus = this.vmForm.get('vcpus').value;
 
             this.gns3vmService.updateGns3vm(this.server, this.gns3vm).subscribe(() => {
                 this.toasterService.success('GNS3 VM updated.');

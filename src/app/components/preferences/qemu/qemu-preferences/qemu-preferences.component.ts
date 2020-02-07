@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
-import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Server } from '../../../../models/server';
 import { switchMap } from 'rxjs/operators';
+import { Server } from '../../../../models/server';
+import { QemuSettings } from '../../../../models/settings/qemu-settings';
+import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ServerService } from '../../../../services/server.service';
 import { ToasterService } from '../../../../services/toaster.service';
-import { QemuSettings } from '../../../../models/settings/qemu-settings';
 
 
 @Component({
@@ -35,8 +35,8 @@ export class QemuPreferencesComponent implements OnInit {
         });
     }
 
-    apply(){
-        if(!this.settings.enable_hardware_acceleration){
+    apply() {
+        if (!this.settings.enable_hardware_acceleration) {
             this.settings.require_hardware_acceleration = false;
         }
 
@@ -46,8 +46,8 @@ export class QemuPreferencesComponent implements OnInit {
         });
     }
 
-    restoreDefaults(){
-        let defaultSettings : QemuSettings = {
+    restoreDefaults() {
+        const defaultSettings: QemuSettings = {
             enable_hardware_acceleration: true,
             require_hardware_acceleration: true
         };

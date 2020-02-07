@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
+import { Component, Input, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
+import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
 
 
 @Component({
@@ -40,7 +40,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
             this.name = this.node.name;
             this.numberOfPorts = this.node.ports.length;
             this.getConfiguration();
-        })
+        });
     }
 
     getConfiguration() {
@@ -51,7 +51,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
     onSaveClick() {
         if (this.inputForm.valid) {
             this.node.properties.ports_mapping = [];
-            for(let i=0; i<this.numberOfPorts; i++){
+            for (let i = 0; i < this.numberOfPorts; i++) {
                 this.node.properties.ports_mapping.push({
                     name: `Ethernet${i}`,
                     port_number: i
@@ -63,7 +63,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
                 this.onCancelClick();
             });
         } else {
-            this.toasterService.error(`Fill all required fields.`)
+            this.toasterService.error(`Fill all required fields.`);
         }
     }
 

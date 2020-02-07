@@ -1,10 +1,10 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ServerService } from '../../services/server.service';
-import { Server } from '../../models/server';
 import { DOCUMENT } from '@angular/common';
 import { ProgressService } from '../../common/progress/progress.service';
+import { Server } from '../../models/server';
+import { ServerService } from '../../services/server.service';
 
 @Component({
   selector: 'app-bundled-server-finder',
@@ -20,8 +20,7 @@ export class BundledServerFinderComponent implements OnInit {
 
   ngOnInit() {
     this.progressService.activate();
-    setTimeout(() => 
-    {
+    setTimeout(() => {
       this.serverService.getLocalServer(
         this.document.location.hostname,
         parseInt(this.document.location.port, 10))

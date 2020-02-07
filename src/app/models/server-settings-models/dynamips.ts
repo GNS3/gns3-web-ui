@@ -3,5 +3,5 @@ export class Dynamips {
     dynamips_path: string;
     ghost_ios_support: string;
     mmap_support: string;
-    sparse_memory_support: string
+    sparse_memory_support: string;
 }

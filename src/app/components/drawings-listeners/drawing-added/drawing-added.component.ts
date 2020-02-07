@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
-import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
-import { Subscription } from 'rxjs';
-import { DrawingService } from '../../../services/drawing.service';
-import { Drawing } from '../../../cartography/models/drawing';
-import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { AddedDataEvent } from '../../../cartography/events/event-source';
+import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
+import { Drawing } from '../../../cartography/models/drawing';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
   selector: 'app-drawing-added',
@@ -45,8 +45,8 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
   }
 
   onDrawingSaved(evt: AddedDataEvent) {
-    let drawing = this.drawingsFactory.getDrawingMock(this.selectedDrawing);
-    let svgText = this.mapDrawingToSvgConverter.convert(drawing);
+    const drawing = this.drawingsFactory.getDrawingMock(this.selectedDrawing);
+    const svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
     this.drawingService
       .add(this.server, this.project.project_id, evt.x, evt.y, svgText)

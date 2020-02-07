@@ -1,13 +1,13 @@
 import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { Server } from '../../../../models/server';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
-import { DockerService } from '../../../../services/docker.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -19,7 +19,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
     server: Server;
     dockerTemplate: DockerTemplate;
 
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
 
     consoleTypes: string[] = [];
     consoleResolutions: string[] = [];
@@ -37,7 +37,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
         private configurationService: DockerConfigurationService,
         private formBuilder: FormBuilder,
         private router: Router
-    ){
+    ) {
         this.generalSettingsForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
             defaultName: new FormControl('', Validators.required),
@@ -46,7 +46,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
         });
     }
 
-    ngOnInit(){
+    ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get("server_id");
         const template_id = this.route.snapshot.paramMap.get("template_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
@@ -59,7 +59,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
         });
     }
 
-    getConfiguration(){
+    getConfiguration() {
         this.consoleTypes = this.configurationService.getConsoleTypes();
         this.categories = this.configurationService.getCategories();
         this.consoleResolutions = this.configurationService.getConsoleResolutions();
@@ -69,7 +69,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
         this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates']);
     }
 
-    onSave(){
+    onSave() {
         if (this.generalSettingsForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {

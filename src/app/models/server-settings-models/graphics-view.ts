@@ -13,5 +13,5 @@ export class GraphicsView {
     show_interface_labels_on_new_project: boolean;
     show_layers: boolean;
     snap_to_grid: boolean;
-    zoom: any
+    zoom: any;
 }

@@ -1,12 +1,12 @@
-import { Injectable, EventEmitter } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { Subject } from 'rxjs';
 
 @Injectable()
 export class MapSettingsService {
     public isMapLocked = new Subject<boolean>();
-    public isTopologySummaryVisible: boolean = true;
-    public isLogConsoleVisible: boolean = true;
-    public isLayerNumberVisible: boolean = false;
+    public isTopologySummaryVisible = true;
+    public isLogConsoleVisible = true;
+    public isLayerNumberVisible = false;
     public interfaceLabels: Map<string, boolean> = new Map<string, boolean>();
     public mapRenderedEmitter = new EventEmitter<boolean>();
 

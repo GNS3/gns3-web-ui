@@ -1,11 +1,11 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { mouse, select, event } from 'd3-selection';
+import { EventEmitter, Injectable } from '@angular/core';
+import { event, mouse, select } from 'd3-selection';
 import { Subject } from 'rxjs';
 
-import { SVGSelection } from '../models/types';
+import { SelectionEventSource } from '../events/selection-event-source';
 import { Context } from '../models/context';
 import { Rectangle } from '../models/rectangle';
-import { SelectionEventSource } from '../events/selection-event-source';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class SelectionTool {
@@ -22,7 +22,7 @@ export class SelectionTool {
     private selectionEventSource: SelectionEventSource
   ) {}
 
-  public disableContextMenu(){
+  public disableContextMenu() {
 
   }
 
@@ -100,9 +100,9 @@ export class SelectionTool {
   }
 
   private moveSelection(start, move) {
-    let x = start[0]/this.context.transformation.k;
-    let y = start[1]/this.context.transformation.k;
-    this.path.attr('d', this.rect(x, y, move[0]/this.context.transformation.k - x, move[1]/this.context.transformation.k - y));
+    const x = start[0] / this.context.transformation.k;
+    const y = start[1] / this.context.transformation.k;
+    this.path.attr('d', this.rect(x, y, move[0] / this.context.transformation.k - x, move[1] / this.context.transformation.k - y));
     this.selectedEvent(start, move);
   }
 

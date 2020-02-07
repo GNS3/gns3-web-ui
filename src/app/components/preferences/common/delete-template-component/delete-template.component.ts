@@ -1,9 +1,9 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { TemplateService } from '../../../../services/template.service';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { MatDialog } from '@angular/material';
-import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
-import { ToasterService } from '../../../../services/toaster.service';
 import { Server } from '../../../../models/server';
+import { TemplateService } from '../../../../services/template.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
     selector: 'app-delete-template',
@@ -25,7 +25,7 @@ export class DeleteTemplateComponent {
             width: '300px',
             height: '250px',
             data: {
-                templateName: templateName
+                templateName
             },
             autoFocus: false
         });
@@ -33,7 +33,7 @@ export class DeleteTemplateComponent {
         dialogRef.afterClosed().subscribe((answer: boolean) => {
             if (answer) {
                 this.templateService.deleteTemplate(this.server, templateId).subscribe((answer: boolean) => {
-                    if(answer) {
+                    if (answer) {
                         this.deleteEvent.emit(templateId);
                         this.toasterService.success(`Template ${templateName} deleted.`);
                     }

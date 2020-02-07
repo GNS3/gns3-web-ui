@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 
 import 'rxjs/add/operator/map';
 
+import { Server } from '../models/server';
 import { Version } from '../models/version';
 import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 
 @Injectable()
 export class VersionService {

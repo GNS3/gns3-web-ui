@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
+import { Server } from '../models/server';
 import { IosTemplate } from '../models/templates/ios-template';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class IosService {

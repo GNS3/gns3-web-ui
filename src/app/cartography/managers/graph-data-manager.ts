@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Node } from '../models/node';
-import { NodeToMapNodeConverter } from '../converters/map/node-to-map-node-converter';
-import { LinkToMapLinkConverter } from '../converters/map/link-to-map-link-converter';
-import { DrawingToMapDrawingConverter } from '../converters/map/drawing-to-map-drawing-converter';
-import { SymbolToMapSymbolConverter } from '../converters/map/symbol-to-map-symbol-converter';
-import { MapNode } from '../models/map/map-node';
-import { MapLink } from '../models/map/map-link';
 import { Link } from '../../models/link';
-import { Drawing } from '../models/drawing';
 import { Symbol } from '../../models/symbol';
-import { LayersManager } from './layers-manager';
+import { DrawingToMapDrawingConverter } from '../converters/map/drawing-to-map-drawing-converter';
+import { LinkToMapLinkConverter } from '../converters/map/link-to-map-link-converter';
+import { NodeToMapNodeConverter } from '../converters/map/node-to-map-node-converter';
+import { SymbolToMapSymbolConverter } from '../converters/map/symbol-to-map-symbol-converter';
 import {
-  MapNodesDataSource,
-  MapLinksDataSource,
   MapDrawingsDataSource,
+  MapLinksDataSource,
+  MapNodesDataSource,
   MapSymbolsDataSource
 } from '../datasources/map-datasource';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
+import { Drawing } from '../models/drawing';
+import { MapLink } from '../models/map/map-link';
+import { MapNode } from '../models/map/map-node';
+import { Node } from '../models/node';
+import { LayersManager } from './layers-manager';
 
 @Injectable()
 export class GraphDataManager {

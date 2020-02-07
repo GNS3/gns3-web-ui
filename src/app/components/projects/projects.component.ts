@@ -1,27 +1,27 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatBottomSheet, MatDialog, MatSort, MatSortable } from '@angular/material';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { MatSort, MatSortable, MatDialog, MatBottomSheet } from '@angular/material';
 
 import { DataSource } from '@angular/cdk/collections';
 
+import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs//operators';
-import { BehaviorSubject, Observable, merge } from 'rxjs';
 
-import { Project } from '../../models/project';
-import { ProjectService } from '../../services/project.service';
-import { Server } from '../../models/server';
-import { ServerService } from '../../services/server.service';
-import { SettingsService, Settings } from '../../services/settings.service';
 import { ProgressService } from '../../common/progress/progress.service';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
+import { ProjectService } from '../../services/project.service';
+import { ServerService } from '../../services/server.service';
+import { Settings, SettingsService } from '../../services/settings.service';
 
-import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
-import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
-import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
-import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ElectronService } from 'ngx-electron';
 import { ToasterService } from '../../services/toaster.service';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
-import { ElectronService } from 'ngx-electron';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
+import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 
 @Component({
   selector: 'app-projects',
@@ -35,7 +35,7 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['name', 'actions'];
   settings: Settings;
 
-  searchText: string = '';
+  searchText = '';
 
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
@@ -53,10 +53,10 @@ export class ProjectsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.sort.sort(<MatSortable>{
+    this.sort.sort({
       id: 'name',
       start: 'asc'
-    });
+    } as MatSortable);
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
 
     this.route.paramMap
@@ -73,8 +73,8 @@ export class ProjectsComponent implements OnInit {
 
     this.settings = this.settingsService.getAll();
 
-    let gns3vmConfig = localStorage.getItem('gns3vmConfig');
-    if (this.electronService.isElectronApp && gns3vmConfig!=='configured') {
+    const gns3vmConfig = localStorage.getItem('gns3vmConfig');
+    if (this.electronService.isElectronApp && gns3vmConfig !== 'configured') {
       const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
         width: '350px',
         height: '120px',
@@ -87,7 +87,7 @@ export class ProjectsComponent implements OnInit {
           this.router.navigate(['/server', this.server.id, 'preferences', 'gns3vm']);
         }
       });
-    };
+    }
   }
 
   refresh() {
@@ -103,7 +103,7 @@ export class ProjectsComponent implements OnInit {
 
   delete(project: Project) {
     this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    const bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
     bottomSheetRef.instance.message = 'Do you want to delete the project?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
@@ -134,7 +134,7 @@ export class ProjectsComponent implements OnInit {
 
   close(project: Project) {
     this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    const bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
     bottomSheetRef.instance.message = 'Do you want to close the project?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
@@ -151,7 +151,7 @@ export class ProjectsComponent implements OnInit {
       width: '400px',
       autoFocus: false
     });
-    let instance = dialogRef.componentInstance;
+    const instance = dialogRef.componentInstance;
     instance.server = this.server;
     instance.project = project;
     dialogRef.afterClosed().subscribe(() => {
@@ -164,17 +164,17 @@ export class ProjectsComponent implements OnInit {
       width: '400px',
       autoFocus: false
     });
-    let instance = dialogRef.componentInstance;
+    const instance = dialogRef.componentInstance;
     instance.server = this.server;
   }
 
   importProject() {
-    let uuid: string = '';
+    let uuid = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
       autoFocus: false
     });
-    let instance = dialogRef.componentInstance;
+    const instance = dialogRef.componentInstance;
     instance.server = this.server;
     const subscription = dialogRef.componentInstance.onImportProject.subscribe((projectId: string) => {
       uuid = projectId;
@@ -185,7 +185,7 @@ export class ProjectsComponent implements OnInit {
       subscription.unsubscribe();
       if (uuid) {
         this.bottomSheet.open(NavigationDialogComponent);
-        let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+        const bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
         bottomSheetRef.instance.projectMessage = 'imported project';
         
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {

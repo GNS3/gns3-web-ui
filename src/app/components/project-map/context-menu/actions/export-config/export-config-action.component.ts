@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Node } from '../../../../../cartography/models/node';
-import { NodeService } from '../../../../../services/node.service';
-import { Server } from '../../../../../models/server';
 import { MatDialog } from '@angular/material';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
+import { NodeService } from '../../../../../services/node.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
@@ -28,7 +28,7 @@ export class ExportConfigActionComponent {
                 width: '500px',
                 autoFocus: false
             });
-            let instance = dialogRef.componentInstance;
+            const instance = dialogRef.componentInstance;
             dialogRef.afterClosed().subscribe((configType: string) => {
                 if (configType === 'startup-config') {
                     this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
@@ -53,7 +53,7 @@ export class ExportConfigActionComponent {
             element.setAttribute('download', `${this.node.name}_startup.cfg`);
         }
 
-        var event = new MouseEvent("click");
+        const event = new MouseEvent("click");
         element.dispatchEvent(event);
     }
 }

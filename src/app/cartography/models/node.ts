@@ -1,6 +1,6 @@
-import { Label } from './label';
 import { Port } from '../../models/port';
 import { CustomAdapter } from '../../models/qemu/qemu-custom-adapter';
+import { Label } from './label';
 
 export class PortsMapping {
   name: string;

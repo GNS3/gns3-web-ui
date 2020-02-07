@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { GraphLayout } from './graph-layout';
 import { Layer } from '../models/layer';
+import { SVGSelection } from '../models/types';
+import { DrawingsWidget } from './drawings';
+import { GraphLayout } from './graph-layout';
 import { LinksWidget } from './links';
 import { NodesWidget } from './nodes';
-import { DrawingsWidget } from './drawings';
+import { Widget } from './widget';
 
 @Injectable()
 export class LayersWidget implements Widget {

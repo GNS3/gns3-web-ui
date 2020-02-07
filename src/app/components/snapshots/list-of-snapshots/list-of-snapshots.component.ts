@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { SnapshotService } from '../../../services/snapshot.service';
-import { ServerService } from '../../../services/server.service';
+import { Sort } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { Server } from '../../..//models/server';
-import { Snapshot } from '../../../models/snapshot';
-import { Sort } from '@angular/material';
-import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { Project } from '../../../models/project';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
+import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
+import { Project } from '../../../models/project';
+import { Snapshot } from '../../../models/snapshot';
+import { ServerService } from '../../../services/server.service';
+import { SnapshotService } from '../../../services/snapshot.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-list-of-snapshots',
@@ -31,7 +31,7 @@ export class ListOfSnapshotsComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        let serverId = this.route.snapshot.paramMap.get("server_id");
+        const serverId = this.route.snapshot.paramMap.get("server_id");
         this.projectId = this.route.snapshot.paramMap.get("project_id");
         this.serverService.get(parseInt(serverId, 10)).then((server: Server) => {
             this.server = server;
@@ -70,16 +70,16 @@ export class ListOfSnapshotsComponent implements OnInit {
     }
 
     sortData(sort: Sort) {
-        if (!sort.active || sort.direction === '') return;
+        if (!sort.active || sort.direction === '') { return; }
 
-        let snapshots = this.snapshots.slice();
+        const snapshots = this.snapshots.slice();
         this.snapshots = snapshots.sort((a, b) => {
             const isAsc = sort.direction === 'asc';
             if (sort.active === 'name') {
                 return compareNames(a.name, b.name, isAsc);
             } else if (sort.active === 'creationDate') {
                 return compareDates(+a.created_at, +b.created_at, !isAsc);
-            } else return 0;
+            } else { return 0; }
         });
     }
 }

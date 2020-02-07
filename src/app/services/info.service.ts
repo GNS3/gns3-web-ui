@@ -46,10 +46,10 @@ export class InfoService {
     }
 
     getInfoAboutPorts(ports: Port[]): string {
-        let response: string = `Ports: `
+        let response = `Ports: `;
         ports.forEach(port => {
             response += `link_type: ${port.link_type}, 
-                        name: ${port.name}; `
+                        name: ${port.name}; `;
         });
         response = response.substring(0, response.length - 2);
         return response;

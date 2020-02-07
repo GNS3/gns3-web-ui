@@ -1,10 +1,10 @@
-import { Component, OnInit, ElementRef, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { MapDrawing } from '../../models/map/map-drawing';
 import { ResizedDataEvent } from '../../events/event-source';
 import { ResizingEnd } from '../../events/resizing';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { DrawingsWidget } from '../../widgets/drawings';
 
 @Component({
   selector: 'app-drawing-resizing',

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../cartography/models/node';
-import { InfoService } from '../../../services/info.service';
 import { Server } from '../../../models/server';
+import { InfoService } from '../../../services/info.service';
 
 @Component({
     selector: 'app-info-dialog',
@@ -13,8 +13,8 @@ export class InfoDialogComponent implements OnInit {
     @Input() server: Server;
     @Input() node: Node;
     infoList: string[] = [];
-    usage: string = '';
-    commandLine: string = '';
+    usage = '';
+    commandLine = '';
 
     constructor(
         public dialogRef: MatDialogRef<InfoDialogComponent>,

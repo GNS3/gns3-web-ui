@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/change-symbol-dialog.component';
 
 @Component({
@@ -22,7 +22,7 @@ export class ChangeSymbolActionComponent implements OnInit {
         height: '500px',
         autoFocus: false
       });
-      let instance = dialogRef.componentInstance;
+      const instance = dialogRef.componentInstance;
       instance.server = this.server;
       instance.node = this.node;
   }

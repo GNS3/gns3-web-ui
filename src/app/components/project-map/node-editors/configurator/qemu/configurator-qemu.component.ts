@@ -1,16 +1,16 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
+import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
+import { QemuImage } from '../../../../../models/qemu/qemu-image';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef, MatDialog } from '@angular/material';
-import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import { QemuService } from '../../../../../services/qemu.service';
 import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
-import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
+import { QemuService } from '../../../../../services/qemu.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
-import { QemuImage } from '../../../../../models/qemu/qemu-image';
 
 
 @Component({
@@ -61,7 +61,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
-        })
+        });
 
         this.qemuService.getBinaries(this.server).subscribe((qemuBinaries: QemuBinary[]) => {
             this.binaries = qemuBinaries;
@@ -74,23 +74,23 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
     openQemuImageCreator() {
         this.dialogRefQemuImageCreator = this.dialog.open(QemuImageCreatorComponent, this.conf);
-        let instance = this.dialogRefQemuImageCreator.componentInstance;
+        const instance = this.dialogRefQemuImageCreator.componentInstance;
         instance.server = this.server;
     }
 
-    uploadCdromImageFile(event){
+    uploadCdromImageFile(event) {
         this.node.properties.cdrom_image = event.target.files[0].name;
     }
 
-    uploadInitrdFile(event){
+    uploadInitrdFile(event) {
         this.node.properties.initrd = event.target.files[0].name;
     }
 
-    uploadKernelImageFile(event){
+    uploadKernelImageFile(event) {
         this.node.properties.kernel_image = event.target.files[0].name;
     }
 
-    uploadBiosFile(event){
+    uploadBiosFile(event) {
         this.node.properties.bios_image = event.target.files[0].name;
     }
 
@@ -111,7 +111,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
                 this.node.custom_adapters.push({
                     adapter_number: n.adapter_number,
                     adapter_type: n.adapter_type
-                })
+                });
             });
 
             this.node.properties.adapters = this.node.custom_adapters.length;

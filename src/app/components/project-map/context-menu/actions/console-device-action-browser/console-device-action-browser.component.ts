@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { NodeService } from '../../../../../services/node.service';
 import { Server } from '../../../../../models/server';
+import { NodeService } from '../../../../../services/node.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 
 @Component({
@@ -33,7 +33,7 @@ export class ConsoleDeviceActionBrowserComponent {
                 location.assign(`gns3+telnet://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`);
             } else if (this.node.console_type === "vnc") {
                 location.assign(`gns3+vnc://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`);
-            } else if(this.node.console_type === "spice") {
+            } else if (this.node.console_type === "spice") {
                 location.assign(`gns3+spice://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`);
             } else {
                 this.toasterService.error("Supported console types: telnet, vnc, spice.");

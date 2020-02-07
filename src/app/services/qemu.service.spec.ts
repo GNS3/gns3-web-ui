@@ -1,12 +1,12 @@
-import { TestBed, inject } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { QemuService } from './qemu.service';
 import { QemuTemplate } from '../models/templates/qemu-template';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { QemuService } from './qemu.service';
+import { getTestServer } from './testing';
 
 describe('QemuService', () => {
     let httpClient: HttpClient;
@@ -35,7 +35,7 @@ describe('QemuService', () => {
     }));
 
     it('should update qemu template', inject([QemuService], (service: QemuService) => {
-        const template : QemuTemplate = {
+        const template: QemuTemplate = {
             adapter_type: 'e1000',
             adapters: 4,
             bios_image: '',
@@ -78,7 +78,7 @@ describe('QemuService', () => {
             template_id: '1',
             template_type: 'qemu',
             usage: ''
-        }
+        };
 
         service.saveTemplate(server, template).subscribe();
 
@@ -88,7 +88,7 @@ describe('QemuService', () => {
     }));
 
     it('should add qemu template', inject([QemuService], (service: QemuService) => {
-        const template : QemuTemplate = {
+        const template: QemuTemplate = {
             adapter_type: 'e1000',
             adapters: 4,
             bios_image: '',
@@ -131,7 +131,7 @@ describe('QemuService', () => {
             template_id: '',
             template_type: 'qemu',
             usage: ''
-        }
+        };
 
         service.addTemplate(server, template).subscribe();
 

@@ -1,9 +1,9 @@
-import { path } from 'd3-path';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Widget } from '../widget';
-import { SVGSelection } from '../../models/types';
-import { MapLink } from '../../models/map/map-link';
+import { path } from 'd3-path';
 import { LinkContextMenu } from '../../events/event-source';
+import { MapLink } from '../../models/map/map-link';
+import { SVGSelection } from '../../models/types';
+import { Widget } from '../widget';
 
 class EthernetLinkPath {
   constructor(public source: [number, number], public target: [number, number]) {}
@@ -34,7 +34,7 @@ class EthernetLinkPath {
       .append<SVGPathElement>('path')
       .attr('class', 'ethernet_link')
       .on('contextmenu', (datum) => {
-        let link: MapLink = datum as unknown as MapLink;
+        const link: MapLink = datum as unknown as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });
@@ -43,7 +43,7 @@ class EthernetLinkPath {
       .attr('stroke', '#000')
       .attr('stroke-width', '2')
       .on('contextmenu', (datum) => {
-        let link: MapLink = datum as unknown as MapLink;
+        const link: MapLink = datum as unknown as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });

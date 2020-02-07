@@ -6,15 +6,15 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class DateFilter implements PipeTransform {
     transform(timestamp: string): string {
-        let date = new Date(+timestamp*1000);
+        const date = new Date(+timestamp * 1000);
 
-        let hours = date.getHours();
-        let minutes = "0" + date.getMinutes();
-        let seconds = "0" + date.getSeconds();
+        const hours = date.getHours();
+        const minutes = "0" + date.getMinutes();
+        const seconds = "0" + date.getSeconds();
 
-        let year = date.getFullYear();
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
 
         return  hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + ' ' + day + '/' + month + '/' + year;
     } 

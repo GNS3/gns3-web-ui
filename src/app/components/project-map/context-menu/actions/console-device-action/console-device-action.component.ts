@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
-import { ElectronService } from 'ngx-electron';
+import { NodeService } from '../../../../../services/node.service';
 import { ServerService } from '../../../../../services/server.service';
 import { SettingsService } from '../../../../../services/settings.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { NodeService } from '../../../../../services/node.service';
 
 @Component({
   selector: 'app-console-device-action',
@@ -26,16 +26,16 @@ export class ConsoleDeviceActionComponent implements OnInit {
   ngOnInit() {}
 
   async console() {
-    let consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
+    const consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
     const startedNodes = this.nodes.filter(node => node.status === 'started');
 
-    if(startedNodes.length === 0) {
+    if (startedNodes.length === 0) {
       this.toasterService.error('Device needs to be started in order to console to it.');
       return;
     }
 
-    for(var node of this.nodes) {
-      if(node.status !== 'started') {
+    for (const node of this.nodes) {
+      if (node.status !== 'started') {
         continue;
       }
 
@@ -54,6 +54,6 @@ export class ConsoleDeviceActionComponent implements OnInit {
   }
 
   async openConsole(request) {
-    return await this.electronService.remote.require('./console-executor.js').openConsole(request);
+    return this.electronService.remote.require('./console-executor.js').openConsole(request);
   }
 }

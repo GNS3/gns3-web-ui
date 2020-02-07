@@ -1,11 +1,11 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Server } from '../../../models/server';
 import { Project, ProjectVariable } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
-import { ProjectService } from '../../../services/project.service';
 
 @Component({
   selector: 'app-edit-project-dialog',
@@ -56,7 +56,7 @@ export class EditProjectDialogComponent implements OnInit {
 
   addVariable() {
     if (this.variableFormGroup.valid) {
-      let variable: ProjectVariable = {
+      const variable: ProjectVariable = {
         name: this.variableFormGroup.get('name').value,
         value: this.variableFormGroup.get('value').value
       };
@@ -67,7 +67,7 @@ export class EditProjectDialogComponent implements OnInit {
   }
 
   deleteVariable(variable: ProjectVariable) {
-    this.variables = this.variables.filter(elem => elem!== variable);
+    this.variables = this.variables.filter(elem => elem !== variable);
   }
 
   onNoClick() {
@@ -86,7 +86,7 @@ export class EditProjectDialogComponent implements OnInit {
       this.projectService.update(this.server, this.project).subscribe((project: Project) => {
           this.toasterService.success(`Project ${project.name} updated.`);
           this.onNoClick();
-      })
+      });
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);
     }

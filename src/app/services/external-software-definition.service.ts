@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { PlatformService } from './platform.service';
 import { environment } from '../../environments/environment';
+import { PlatformService } from './platform.service';
 
 @Injectable()
 export class ExternalSoftwareDefinitionService {
@@ -10,17 +10,17 @@ export class ExternalSoftwareDefinitionService {
   ) { }
 
   get() {
-    if(this.platformService.isWindows()) {
+    if (this.platformService.isWindows()) {
       return this.getForWindows();
     }
-    if(this.platformService.isDarwin()) {
+    if (this.platformService.isDarwin()) {
       return this.getForDarwin();
     }
     return this.getForLinux();
   }
 
   getForWindows() {
-    let software = [{
+    const software = [{
         name: 'Wireshark',
         locations: [
           'C:\\Program Files\\Wireshark\\Wireshark.exe'
@@ -50,7 +50,7 @@ export class ExternalSoftwareDefinitionService {
       installer: false
     };
 
-    if(environment.solarputty_download_url) {
+    if (environment.solarputty_download_url) {
       solarPutty.resource = environment.solarputty_download_url;
       software.push(solarPutty);
     }

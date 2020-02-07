@@ -1,14 +1,14 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
-import { VirtualBoxVm } from '../../../../models/virtualBox/virtual-box-vm';
-import { ToasterService } from '../../../../services/toaster.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { v4 as uuid } from 'uuid';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Server } from '../../../../models/server';
+import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
+import { VirtualBoxVm } from '../../../../models/virtualBox/virtual-box-vm';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { VirtualBoxService } from '../../../../services/virtual-box.service';
 
 
 @Component({
@@ -48,7 +48,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
                 this.templateMocksService.getVirtualBoxTemplate().subscribe((template: VirtualBoxTemplate) => {
                     this.virtualBoxTemplate = template;
                 });
-            })
+            });
         });
     }
 

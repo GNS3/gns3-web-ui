@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
 import { Server } from '../../../../../models/server';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { PortsComponent } from '../../../common/ports/ports.component';
 
 
@@ -20,7 +20,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     server: Server;
     ethernetSwitchTemplate: EthernetSwitchTemplate;
     inputForm: FormGroup;
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
     categories = [];
     consoleTypes: string[] = [];
 
@@ -32,7 +32,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
         private formBuilder: FormBuilder,
         private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
         private router: Router
-    ){
+    ) {
         this.inputForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
             defaultName: new FormControl('', Validators.required),

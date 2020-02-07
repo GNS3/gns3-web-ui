@@ -1,23 +1,23 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatMenuModule, MatSelectModule, MatStepperModule, MatTableModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
+import { IouTemplate } from '../../../../models/templates/iou-template';
+import { IouConfigurationService } from '../../../../services/iou-configuration.service';
+import { IouService } from '../../../../services/iou.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IouTemplate } from '../../../../models/templates/iou-template';
 import { AddIouTemplateComponent } from './add-iou-template.component';
-import { IouService } from '../../../../services/iou.service';
-import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 
 export class MockedIouService {
     public addTemplate(server: Server, iouTemplate: IouTemplate) {
@@ -25,15 +25,15 @@ export class MockedIouService {
     }
 }
 
-//Tests disabled due to instability
+// Tests disabled due to instability
 xdescribe('AddIouTemplateComponent', () => {
     let component: AddIouTemplateComponent;
     let fixture: ComponentFixture<AddIouTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedIouService = new MockedIouService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedIouService = new MockedIouService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

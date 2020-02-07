@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 
 @Injectable()
-export class VirtualBoxConfigurationService{
+export class VirtualBoxConfigurationService {
     getConsoleTypes() {
         return ['telnet', 'none'];
     }
 
     getOnCloseoptions() {
-        let onCloseOptions = [["Power off the VM", "power_off"], 
+        const onCloseOptions = [["Power off the VM", "power_off"], 
             ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
             ["Save the VM state", "save_vm_state"]];
 
@@ -15,7 +15,7 @@ export class VirtualBoxConfigurationService{
     }
 
     getCategories() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "routers"],
             ["Switches", "switches"],
             ["End devices", "end_devices"],
@@ -25,7 +25,7 @@ export class VirtualBoxConfigurationService{
     }
 
     getNetworkTypes() {
-        let networkTypes = ["PCnet-PCI II (Am79C970A)",
+        const networkTypes = ["PCnet-PCI II (Am79C970A)",
             "PCNet-FAST III (Am79C973)",
             "Intel PRO/1000 MT Desktop (82540EM)",
             "Intel PRO/1000 T Server (82543GC)",

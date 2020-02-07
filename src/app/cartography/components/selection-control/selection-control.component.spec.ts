@@ -1,14 +1,14 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 
-import { SelectionControlComponent } from './selection-control.component';
-import { SelectionManager } from '../../managers/selection-manager';
+import { instance, mock, when } from 'ts-mockito';
 import { SelectionEventSource } from '../../events/selection-event-source';
-import { mock, when, instance } from 'ts-mockito';
-import { GraphDataManager } from '../../managers/graph-data-manager';
-import { MapNode } from '../../models/map/map-node';
-import { MapLink } from '../../models/map/map-link';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';
+import { GraphDataManager } from '../../managers/graph-data-manager';
+import { SelectionManager } from '../../managers/selection-manager';
+import { MapLink } from '../../models/map/map-link';
+import { MapNode } from '../../models/map/map-node';
 import { Rectangle } from '../../models/rectangle';
+import { SelectionControlComponent } from './selection-control.component';
 
 describe('SelectionControlComponent', () => {
   let component: SelectionControlComponent;

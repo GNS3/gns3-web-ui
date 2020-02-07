@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
 import { Gns3vm } from '../models/gns3vm/gns3vm';
 import { Gns3vmEngine } from '../models/gns3vm/gns3vmEngine';
 import { VM } from '../models/gns3vm/vm';
+import { Server } from '../models/server';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class Gns3vmService {
@@ -23,6 +23,6 @@ export class Gns3vmService {
     }
 
     getVms(server: Server, engine: string): Observable<VM[]> {
-        return this.httpServer.get<VM[]>(server, `/gns3vm/engines/${engine}/vms`)
+        return this.httpServer.get<VM[]>(server, `/gns3vm/engines/${engine}/vms`);
     }
 }

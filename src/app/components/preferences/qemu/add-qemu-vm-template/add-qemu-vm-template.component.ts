@@ -1,16 +1,16 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { QemuService } from '../../../../services/qemu.service';
+import { v4 as uuid } from 'uuid';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../models/qemu/qemu-image';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Server } from '../../../../models/server';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -24,10 +24,10 @@ export class AddQemuVmTemplateComponent implements OnInit {
     selectedBinary: QemuBinary;
     ramMemory: number;
     consoleTypes: string[] = [];
-    newImageSelected: boolean = false;;
+    newImageSelected = false;
     qemuImages: QemuImage[] = [];
     selectedImage: QemuImage;
-    chosenImage: string = '';
+    chosenImage = '';
     qemuTemplate: QemuTemplate;
 
     nameForm: FormGroup;
@@ -66,7 +66,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
             this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
                 this.qemuTemplate = qemuTemplate;
-            })
+            });
 
             this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
                 this.qemuBinaries = qemuBinaries;

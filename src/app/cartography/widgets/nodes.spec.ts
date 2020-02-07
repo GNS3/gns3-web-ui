@@ -1,8 +1,8 @@
-import { TestSVGCanvas } from '../testing';
-import { NodesWidget } from './nodes';
-import { NodeWidget } from './node';
 import { instance, mock } from 'ts-mockito';
 import { MapSettingsManager } from '../managers/map-settings-manager';
+import { TestSVGCanvas } from '../testing';
+import { NodeWidget } from './node';
+import { NodesWidget } from './nodes';
 
 describe('NodesWidget', () => {
   let svg: TestSVGCanvas;

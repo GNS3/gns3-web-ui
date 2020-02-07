@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
     styleUrls: ['./general-preferences.component.scss']
 })
 export class GeneralPreferencesComponent implements OnInit {
-    public serverId: string = "";
+    public serverId = "";
 
     constructor(
         private route: ActivatedRoute

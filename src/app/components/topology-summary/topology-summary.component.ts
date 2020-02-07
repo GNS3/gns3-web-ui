@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy, Input, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ResizeEvent } from 'angular-resizable-element';
+import { Subscription } from 'rxjs';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { Node } from '../../cartography/models/node';
-import { Subscription } from 'rxjs';
-import { ProjectService } from '../../services/project.service';
-import { ProjectStatistics } from '../../models/project-statistics';
 import { Compute } from '../../models/compute';
+import { Project } from '../../models/project';
+import { ProjectStatistics } from '../../models/project-statistics';
+import { Server } from '../../models/server';
 import { ComputeService } from '../../services/compute.service';
-import { LinksDataSource } from '../../cartography/datasources/links-datasource';
-import { ResizeEvent } from 'angular-resizable-element';
+import { ProjectService } from '../../services/project.service';
 import { ThemeService } from '../../services/theme.service';
 
 
@@ -30,17 +30,17 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     projectsStatistics: ProjectStatistics;
     nodes: Node[] = [];
     filteredNodes: Node[] = [];
-    sortingOrder: string = 'asc';
-    startedStatusFilterEnabled: boolean = false;
-    suspendedStatusFilterEnabled: boolean = false;
-    stoppedStatusFilterEnabled: boolean = false;
-    captureFilterEnabled: boolean = false;
-    packetFilterEnabled: boolean = false;
+    sortingOrder = 'asc';
+    startedStatusFilterEnabled = false;
+    suspendedStatusFilterEnabled = false;
+    stoppedStatusFilterEnabled = false;
+    captureFilterEnabled = false;
+    packetFilterEnabled = false;
     computes: Compute[] = [];
     
-    isTopologyVisible: boolean = true;
-    isDraggingEnabled: boolean = false;
-    isLightThemeEnabled: boolean = false;
+    isTopologyVisible = true;
+    isDraggingEnabled = false;
+    isLightThemeEnabled = false;
 
     constructor(
         private nodesDataSource: NodesDataSource,
@@ -84,14 +84,14 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     }
 
     dragWidget(event) {
-        let x: number = Number(event.movementX);
-        let y: number = Number(event.movementY);
+        const x: number = Number(event.movementX);
+        const y: number = Number(event.movementY);
 
-        let width: number = Number(this.style['width'].split('px')[0]);
-        let height: number = Number(this.style['height'].split('px')[0]);
-        let top: number = Number(this.style['top'].split('px')[0]) + y;
+        const width: number = Number(this.style['width'].split('px')[0]);
+        const height: number = Number(this.style['height'].split('px')[0]);
+        const top: number = Number(this.style['top'].split('px')[0]) + y;
         if (this.style['left']) {
-            let left: number = Number(this.style['left'].split('px')[0]) + x;
+            const left: number = Number(this.style['left'].split('px')[0]) + x;
             this.style = {
                 position: 'fixed',
                 left: `${left}px`,
@@ -100,7 +100,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
                 height: `${height}px`
             };
         } else {
-            let right: number = Number(this.style['right'].split('px')[0]) - x;
+            const right: number = Number(this.style['right'].split('px')[0]) - x;
             this.style = {
                 position: 'fixed',
                 right: `${right}px`,
@@ -142,12 +142,12 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     }
 
     compareAsc(first: Node, second: Node) {
-        if (first.name < second.name) return -1;
+        if (first.name < second.name) { return -1; }
         return 1;
     }
 
     compareDesc(first: Node, second: Node) {
-        if (first.name < second.name) return 1;
+        if (first.name < second.name) { return 1; }
         return -1;
     }
 
@@ -207,7 +207,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             nodes = this.checkCapturing(nodes);
         }
 
-        if(this.packetFilterEnabled) {
+        if (this.packetFilterEnabled) {
             nodes = this.checkPacketFilters(nodes);
         }
 
@@ -219,8 +219,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     }
 
     checkCapturing(nodes: Node[]): Node[] {
-        let links = this.linksDataSource.getItems();
-        let nodesWithCapturing: string[] = [];
+        const links = this.linksDataSource.getItems();
+        const nodesWithCapturing: string[] = [];
 
         links.forEach(link => {
             if (link.capturing) {
@@ -230,7 +230,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             }
         });
 
-        let filteredNodes: Node[] = [];
+        const filteredNodes: Node[] = [];
         nodes.forEach(node => {
             if (nodesWithCapturing.includes(node.node_id)) {
                 filteredNodes.push(node);
@@ -240,8 +240,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     }
 
     checkPacketFilters(nodes: Node[]): Node[] {
-        let links = this.linksDataSource.getItems();
-        let nodesWithPacketFilters: string[] = [];
+        const links = this.linksDataSource.getItems();
+        const nodesWithPacketFilters: string[] = [];
 
         links.forEach(link => {
             if (link.filters.bpf || link.filters.corrupt || link.filters.corrupt || link.filters.packet_loss || link.filters.frequency_drop) {
@@ -251,7 +251,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             }
         });
 
-        let filteredNodes: Node[] = [];
+        const filteredNodes: Node[] = [];
         nodes.forEach(node => {
             if (nodesWithPacketFilters.includes(node.node_id)) {
                 filteredNodes.push(node);

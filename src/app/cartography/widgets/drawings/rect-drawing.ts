@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { SVGSelection } from '../../models/types';
-import { RectElement } from '../../models/drawings/rect-element';
-import { DrawingShapeWidget } from './drawing-shape-widget';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { RectElement } from '../../models/drawings/rect-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { SVGSelection } from '../../models/types';
+import { DrawingShapeWidget } from './drawing-shape-widget';
 
 @Injectable()
 export class RectDrawingWidget implements DrawingShapeWidget {

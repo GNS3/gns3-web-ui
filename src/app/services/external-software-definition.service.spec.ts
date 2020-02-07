@@ -36,24 +36,24 @@ describe('ExternalSoftwareDefinitionService', () => {
 
   beforeEach(() => {
     service = TestBed.get(ExternalSoftwareDefinitionService);
-  })
+  });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
   it('should return list for windows', () => {
-    let software = service.getForWindows();
+    const software = service.getForWindows();
     expect(software.length).toEqual(1);
   });
 
   it('should return list for linux', () => {
-    let software = service.getForLinux();
+    const software = service.getForLinux();
     expect(software.length).toEqual(0);
   });
 
   it('should return list for darwin', () => {
-    let software = service.getForDarwin();
+    const software = service.getForDarwin();
     expect(software.length).toEqual(0);
   });
 
@@ -92,6 +92,6 @@ describe('ExternalSoftwareDefinitionService', () => {
       expect(linuxSpy).not.toHaveBeenCalled();
     });
 
-  })
+  });
 
 });

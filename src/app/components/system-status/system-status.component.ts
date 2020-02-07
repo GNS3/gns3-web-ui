@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
     styleUrls: ['./system-status.component.scss']
 })
 export class SystemStatusComponent implements OnInit {
-    public serverId: string = "";
+    public serverId = "";
 
     constructor(
         private route: ActivatedRoute

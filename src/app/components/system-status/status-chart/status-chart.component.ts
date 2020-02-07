@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { ComputeStatistics } from '../../../models/computeStatistics';
 
 
@@ -15,7 +15,7 @@ export class StatusChartComponent implements OnInit {
     ngOnInit() {}
 
     formatBytes(bytes, decimals = 2) {
-        if (bytes === 0) return '0 Bytes';
+        if (bytes === 0) { return '0 Bytes'; }
     
         const k = 1024;
         const dm = decimals < 0 ? 0 : decimals;

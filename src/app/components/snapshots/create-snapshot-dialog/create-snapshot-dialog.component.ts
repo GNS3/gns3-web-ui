@@ -1,13 +1,13 @@
 import { Component, Inject } from '@angular/core';
-import { Snapshot } from '../../../models/snapshot';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
-import { SnapshotService } from '../../../services/snapshot.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { Snapshot } from '../../../models/snapshot';
+import { SnapshotService } from '../../../services/snapshot.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 
 @Component({

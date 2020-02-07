@@ -1,12 +1,12 @@
-import { DrawingElementFactory } from './drawing-element-factory';
+import { Injectable } from '@angular/core';
 import { DrawingElement } from '../../models/drawings/drawing-element';
 import { LineElement } from '../../models/drawings/line-element';
-import { Injectable } from '@angular/core';
+import { DrawingElementFactory } from './drawing-element-factory';
 
 @Injectable()
 export class LineElementFactory implements DrawingElementFactory {
   getDrawingElement(): DrawingElement {
-    let lineElement = new LineElement();
+    const lineElement = new LineElement();
     lineElement.stroke = '#000000';
     lineElement.stroke_width = 2;
     lineElement.x1 = 0;

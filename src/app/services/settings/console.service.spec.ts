@@ -1,12 +1,12 @@
-import { ConsoleService } from './console.service';
 import { MockedSettingsService } from '../settings.service.spec';
+import { ConsoleService } from './console.service';
 
 describe('ConsoleService', () => {
   let service: ConsoleService;
   let settings: MockedSettingsService;
 
   beforeEach(() => {
-    let defaultConsoleService = {
+    const defaultConsoleService = {
       get: () => 'default'
     };
     settings = new MockedSettingsService();

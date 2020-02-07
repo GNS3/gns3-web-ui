@@ -1,13 +1,13 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { TracengService } from '../../../../services/traceng.service';
+import { Server } from '../../../../models/server';
 import { TracengTemplate } from '../../../../models/templates/traceng-template';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { TracengService } from '../../../../services/traceng.service';
 
 
 @Component({
@@ -17,9 +17,9 @@ import { TracengTemplate } from '../../../../models/templates/traceng-template';
 })
 export class AddTracengTemplateComponent implements OnInit {
     server: Server;
-    templateName: string = '';
-    ipAddress: string = '';
-    templateNameForm: FormGroup
+    templateName = '';
+    ipAddress = '';
+    templateNameForm: FormGroup;
     
     constructor(
         private route: ActivatedRoute,
@@ -51,7 +51,7 @@ export class AddTracengTemplateComponent implements OnInit {
         if (!this.templateNameForm.invalid) {
             this.templateName = this.templateNameForm.get('templateName').value;
             this.ipAddress = this.templateNameForm.get('ipAddress').value;
-            let tracengTemplate: TracengTemplate = this.templateMocksService.getTracengTemplate();
+            const tracengTemplate: TracengTemplate = this.templateMocksService.getTracengTemplate();
 
             tracengTemplate.template_id = uuid();
             tracengTemplate.name = this.templateName;

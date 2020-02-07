@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '../../../../../models/project';
 import { Server } from '../../../../../models/server';
 import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor/config-editor.component';
-import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-edit-config-action',
@@ -22,7 +22,7 @@ export class EditConfigActionComponent {
             height: '500px',
             autoFocus: false
         });
-        let instance = dialogRef.componentInstance;
+        const instance = dialogRef.componentInstance;
         instance.server = this.server;
         instance.project = this.project;
         instance.node = this.node;

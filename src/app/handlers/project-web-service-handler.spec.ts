@@ -2,13 +2,13 @@ import { inject, TestBed } from '@angular/core/testing';
 
 import { Subject } from 'rxjs';
 
-import { ProjectWebServiceHandler, WebServiceMessage } from './project-web-service-handler';
-import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
-import { LinksDataSource } from '../cartography/datasources/links-datasource';
 import { DrawingsDataSource } from '../cartography/datasources/drawings-datasource';
+import { LinksDataSource } from '../cartography/datasources/links-datasource';
+import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
+import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
 import { Link } from '../models/link';
-import { Drawing } from '../cartography/models/drawing';
+import { ProjectWebServiceHandler, WebServiceMessage } from './project-web-service-handler';
 
 describe('ProjectWebServiceHandler', () => {
   let ws: Subject<WebServiceMessage>;

@@ -1,14 +1,14 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { v4 as uuid } from 'uuid';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ProjectService } from '../../../services/project.service';
-import { v4 as uuid } from 'uuid';
-import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { ProjectNameValidator } from '../models/projectNameValidator';
 
 
 @Component({
@@ -48,15 +48,15 @@ export class SaveProjectDialogComponent implements OnInit {
     }
     this.projectService.list(this.server).subscribe((projects: Project[]) => {
       const projectName = this.projectNameForm.controls['projectName'].value;
-      let existingProject = projects.find(project => project.name === projectName);
+      const existingProject = projects.find(project => project.name === projectName);
 
       if (existingProject) {
         this.toasterService.error(`Project with this name already exists.`);
       } else if (this.nodesDataSource.getItems().filter(node => 
-        (node.status === 'started' && node.node_type==='vpcs') || 
-        (node.status === 'started' && node.node_type==='virtualbox') || 
-        (node.status === 'started' && node.node_type==='vmware')).length > 0) {
-        this.toasterService.error('Please stop all nodes in order to save project.')
+        (node.status === 'started' && node.node_type === 'vpcs') || 
+        (node.status === 'started' && node.node_type === 'virtualbox') || 
+        (node.status === 'started' && node.node_type === 'vmware')).length > 0) {
+        this.toasterService.error('Please stop all nodes in order to save project.');
       } else {
         this.addProject();
       }

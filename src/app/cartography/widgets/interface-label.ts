@@ -1,24 +1,19 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 
-import { SVGSelection } from '../models/types';
-import { CssFixer } from '../helpers/css-fixer';
 import { select } from 'd3-selection';
-import { MapLink } from '../models/map/map-link';
+import { Draggable } from '../events/draggable';
+import { InterfaceLabelContextMenu } from '../events/event-source';
+import { CssFixer } from '../helpers/css-fixer';
 import { FontFixer } from '../helpers/font-fixer';
+import { MapSettingsManager } from '../managers/map-settings-manager';
 import { SelectionManager } from '../managers/selection-manager';
+import { MapLink } from '../models/map/map-link';
 import { MapLinkNode } from '../models/map/map-link-node';
 import { MapNode } from '../models/map/map-node';
-import { Draggable } from '../events/draggable';
-import { MapSettingsManager } from '../managers/map-settings-manager';
-import { InterfaceLabelContextMenu } from '../events/event-source';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class InterfaceLabelWidget {
-  public onContextMenu = new EventEmitter<InterfaceLabelContextMenu>();
-  public draggable = new Draggable<SVGGElement, MapLinkNode>();
-
-  static SURROUNDING_TEXT_BORDER = 5;
-  private enabled = true;
 
   constructor(
     private cssFixer: CssFixer,
@@ -26,6 +21,11 @@ export class InterfaceLabelWidget {
     private selectionManager: SelectionManager,
     private mapSettings: MapSettingsManager
   ) {}
+
+  static SURROUNDING_TEXT_BORDER = 5;
+  public onContextMenu = new EventEmitter<InterfaceLabelContextMenu>();
+  public draggable = new Draggable<SVGGElement, MapLinkNode>();
+  private enabled = true;
 
   public setEnabled(enabled) {
     this.enabled = enabled;

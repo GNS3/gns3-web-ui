@@ -1,17 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule, MatDialog } from '@angular/material';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, NgModule } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Project } from '../../../models/project';
 import { ConfirmationDialogComponent } from './confirmation-dialog.component';
-import { OverlayContainer } from '@angular/cdk/overlay';
 
 describe('ConfirmationDialogComponent', () => {
   let dialog: MatDialog;
   let overlayContainerElement: HTMLElement;
 
   let noop: ComponentFixture<NoopComponent>;
-  let existingProject: Project = {
+  const existingProject: Project = {
     auto_close: false,
     auto_open: false,
     auto_start: false,
@@ -55,7 +55,7 @@ describe('ConfirmationDialogComponent', () => {
     existingProject.status = 'opened';
     const config = {
       data: {
-        existingProject: existingProject
+        existingProject
       }
     };
 
@@ -70,7 +70,7 @@ describe('ConfirmationDialogComponent', () => {
     existingProject.status = 'closed';
     const config = {
       data: {
-        existingProject: existingProject
+        existingProject
       }
     };
 
@@ -85,11 +85,11 @@ describe('ConfirmationDialogComponent', () => {
     existingProject.status = 'opened';
     const config = {
       data: {
-        existingProject: existingProject
+        existingProject
       }
     };
 
-    let dialogRef = dialog.open(ConfirmationDialogComponent, config);
+    const dialogRef = dialog.open(ConfirmationDialogComponent, config);
     noop.detectChanges();
     const button = overlayContainerElement.querySelector('button');
     spyOn(dialogRef.componentInstance.dialogRef, 'close');
@@ -102,11 +102,11 @@ describe('ConfirmationDialogComponent', () => {
     existingProject.status = 'closed';
     const config = {
       data: {
-        existingProject: existingProject
+        existingProject
       }
     };
 
-    let dialogRef = dialog.open(ConfirmationDialogComponent, config);
+    const dialogRef = dialog.open(ConfirmationDialogComponent, config);
     noop.detectChanges();
     const button: HTMLButtonElement = overlayContainerElement.querySelector('.confirmButton');
     spyOn(dialogRef.componentInstance.dialogRef, 'close');

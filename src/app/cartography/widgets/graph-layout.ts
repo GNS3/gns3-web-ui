@@ -1,13 +1,13 @@
+import { Injectable } from '@angular/core';
+import { LayersManager } from '../managers/layers-manager';
 import { Context } from '../models/context';
+import { SVGSelection } from '../models/types';
+import { MovingTool } from '../tools/moving-tool';
+import { SelectionTool } from '../tools/selection-tool';
+import { DrawingLineWidget } from './drawing-line';
+import { LayersWidget } from './layers';
 import { NodesWidget } from './nodes';
 import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { DrawingLineWidget } from './drawing-line';
-import { SelectionTool } from '../tools/selection-tool';
-import { MovingTool } from '../tools/moving-tool';
-import { LayersWidget } from './layers';
-import { LayersManager } from '../managers/layers-manager';
-import { Injectable } from '@angular/core';
 
 @Injectable()
 export class GraphLayout implements Widget {

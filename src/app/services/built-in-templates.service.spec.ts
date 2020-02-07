@@ -1,13 +1,13 @@
-import { TestBed, inject } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { BuiltInTemplatesService } from './built-in-templates.service';
 import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { BuiltInTemplatesService } from './built-in-templates.service';
+import { HttpServer } from './http-server.service';
+import { getTestServer } from './testing';
 
 describe('BuiltInTemplatesService', () => {
     let httpClient: HttpClient;
@@ -57,7 +57,7 @@ describe('BuiltInTemplatesService', () => {
     }));
 
     it('should update ethernet hub template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-        let ethernethubtemplate: EthernetHubTemplate = {
+        const ethernethubtemplate: EthernetHubTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'local',
@@ -67,7 +67,7 @@ describe('BuiltInTemplatesService', () => {
             symbol: ':/symbols/hub.svg',
             template_id: '2',
             template_type: 'ethernet_hub'
-        }
+        };
 
         service.saveTemplate(server, ethernethubtemplate).subscribe();
 
@@ -77,7 +77,7 @@ describe('BuiltInTemplatesService', () => {
     }));
 
     it('should update ethernet switch template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-        let ethernetswitchtemplate: EthernetHubTemplate = {
+        const ethernetswitchtemplate: EthernetHubTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'local',
@@ -87,7 +87,7 @@ describe('BuiltInTemplatesService', () => {
             symbol: ':/symbols/hub.svg',
             template_id: '3',
             template_type: 'ethernet_hub'
-        }
+        };
 
         service.saveTemplate(server, ethernetswitchtemplate).subscribe();
 
@@ -118,7 +118,7 @@ describe('BuiltInTemplatesService', () => {
     }));
 
     it('should add ethernet hub template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-        let ethernethubtemplate: EthernetHubTemplate = {
+        const ethernethubtemplate: EthernetHubTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'local',
@@ -128,7 +128,7 @@ describe('BuiltInTemplatesService', () => {
             symbol: ':/symbols/hub.svg',
             template_id: '2',
             template_type: 'ethernet_hub'
-        }
+        };
 
         service.addTemplate(server, ethernethubtemplate).subscribe();
 
@@ -138,7 +138,7 @@ describe('BuiltInTemplatesService', () => {
     }));
 
     it('should add ethernet switch template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-        let ethernetswitchtemplate: EthernetHubTemplate = {
+        const ethernetswitchtemplate: EthernetHubTemplate = {
             builtin: false,
             category: 'switch',
             compute_id: 'local',
@@ -148,7 +148,7 @@ describe('BuiltInTemplatesService', () => {
             symbol: ':/symbols/hub.svg',
             template_id: '3',
             template_type: 'ethernet_hub'
-        }
+        };
 
         service.addTemplate(server, ethernetswitchtemplate).subscribe();
 

@@ -1,12 +1,12 @@
-import { TestBed, inject } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { VmwareService } from './vmware.service';
 import { VmwareTemplate } from '../models/templates/vmware-template';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { getTestServer } from './testing';
+import { VmwareService } from './vmware.service';
 
 describe('VmwareService', () => {
     let httpClient: HttpClient;

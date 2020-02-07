@@ -1,22 +1,22 @@
-import { VpcsPreferencesComponent } from "./vpcs-preferences.component";
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Observable } from 'rxjs';
 import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { VpcsPreferencesComponent } from "./vpcs-preferences.component";
 
 describe('VpcsPreferencesComponent', () => {
     let component: VpcsPreferencesComponent;
     let fixture: ComponentFixture<VpcsPreferencesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

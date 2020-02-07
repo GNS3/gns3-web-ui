@@ -1,9 +1,9 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
-import { Node } from '../../../../../cartography/models/node';
-import { NodeService } from '../../../../../services/node.service';
-import { Server } from '../../../../../models/server';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
+import { NodeService } from '../../../../../services/node.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
@@ -29,7 +29,7 @@ export class ImportConfigActionComponent {
                 width: '500px',
                 autoFocus: false
             });
-            let instance = dialogRef.componentInstance;
+            const instance = dialogRef.componentInstance;
             dialogRef.afterClosed().subscribe((configType: string) => {
                 this.configType = configType;
                 this.fileInput.nativeElement.click();
@@ -41,11 +41,11 @@ export class ImportConfigActionComponent {
     }
 
     importConfig(event) {
-        let file: File = event.target.files[0];
-        let fileReader: FileReader = new FileReader();
+        const file: File = event.target.files[0];
+        const fileReader: FileReader = new FileReader();
         fileReader.onload = (e) => {
             let content: string | ArrayBuffer = fileReader.result;
-            if (typeof content !== 'string'){
+            if (typeof content !== 'string') {
                 content = content.toString();
             }
 

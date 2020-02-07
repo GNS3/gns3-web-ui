@@ -26,7 +26,7 @@ export class VpcsPreferencesComponent implements OnInit {
         });
     }
 
-    restoreDefaults(){
+    restoreDefaults() {
         this.vpcsExecutable = '';
     }
 }

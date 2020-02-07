@@ -1,6 +1,6 @@
-import { LinkStrategy } from './link-strategy';
 import { path } from 'd3-path';
 import { MapLink } from '../../../../models/map/map-link';
+import { LinkStrategy } from './link-strategy';
 
 export class EthernetLinkStrategy implements LinkStrategy {
   public d(link: MapLink): string {

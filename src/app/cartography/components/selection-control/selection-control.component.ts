@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectionEventSource } from '../../events/selection-event-source';
-import { GraphDataManager } from '../../managers/graph-data-manager';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';
+import { GraphDataManager } from '../../managers/graph-data-manager';
 import { SelectionManager } from '../../managers/selection-manager';
 import { Rectangle } from '../../models/rectangle';
 

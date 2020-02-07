@@ -1,9 +1,9 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from "@angular/core";
-import { HttpServer } from './http-server.service';
+import { Observable } from 'rxjs';
 import { Server } from '../models/server';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
-import { Observable } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class VpcsService {

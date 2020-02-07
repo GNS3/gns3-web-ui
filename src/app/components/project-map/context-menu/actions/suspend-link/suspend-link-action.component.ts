@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
 import { Link } from '../../../../../models/link';
+import { Server } from '../../../../../models/server';
 import { LinkService } from '../../../../../services/link.service';
 
 @Component({

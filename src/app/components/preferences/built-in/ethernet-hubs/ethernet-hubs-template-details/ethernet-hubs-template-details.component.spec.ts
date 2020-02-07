@@ -1,22 +1,22 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatTableModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatTableModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Server } from '../../../../../models/server';
+import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
 import { MockedServerService } from '../../../../../services/server.service.spec';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ServerService } from '../../../../../services/server.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { EthernetHubsTemplateDetailsComponent } from './ethernet-hubs-template-details.component';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 export class MockedBuiltInTemplatesService {
     public getTemplate(server: Server, template_id: string) {
@@ -32,10 +32,10 @@ describe('EthernetHubsTemplateDetailsComponent', () => {
     let component: EthernetHubsTemplateDetailsComponent;
     let fixture: ComponentFixture<EthernetHubsTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

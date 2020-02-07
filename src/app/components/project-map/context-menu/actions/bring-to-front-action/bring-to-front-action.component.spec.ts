@@ -1,25 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BringToFrontActionComponent } from './bring-to-front-action.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MockedDrawingService, MockedDrawingsDataSource, MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
-import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { NodeService } from '../../../../../services/node.service';
-import { Node } from '../../../../../cartography/models/node';
-import { of } from 'rxjs';
 import { ComponentFactoryResolver } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
+import { Node } from '../../../../../cartography/models/node';
+import { DrawingService } from '../../../../../services/drawing.service';
+import { NodeService } from '../../../../../services/node.service';
+import { MockedDrawingsDataSource, MockedDrawingService, MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
+import { BringToFrontActionComponent } from './bring-to-front-action.component';
 
 describe('BringToFrontActionComponent', () => {
   let component: BringToFrontActionComponent;
   let fixture: ComponentFixture<BringToFrontActionComponent>;
-  let drawingService = new MockedDrawingService();
-  let drawingsDataSource = new MockedDrawingsDataSource();
-  let nodeService  = new MockedNodeService();
-  let nodesDataSource = new MockedNodesDataSource();
+  const drawingService = new MockedDrawingService();
+  const drawingsDataSource = new MockedDrawingsDataSource();
+  const nodeService  = new MockedNodeService();
+  const nodesDataSource = new MockedNodesDataSource();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

@@ -1,14 +1,14 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
-import { LinkService } from './link.service';
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
-import { getTestServer } from './testing';
+import { Server } from '../models/server';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { LinkService } from './link.service';
+import { getTestServer } from './testing';
 
 describe('LinkService', () => {
   let httpClient: HttpClient;

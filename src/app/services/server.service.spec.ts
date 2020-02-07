@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ServerService } from './server.service';
-import { Server } from '../models/server';
-import { IndexedDbService } from './indexed-db.service';
+import { HttpClient } from '@angular/common/http';
 import { AngularIndexedDB } from 'angular2-indexeddb';
+import { Server } from '../models/server';
 import Spy = jasmine.Spy;
 import { HttpServer, ServerErrorHandler } from '../services/http-server.service';
-import { HttpClient } from '@angular/common/http';
+import { IndexedDbService } from './indexed-db.service';
+import { ServerService } from './server.service';
 
 export class MockedServerService {
   public servers: Server[] = [];
@@ -48,7 +48,7 @@ describe('ServerService', () => {
   let db: AngularIndexedDB;
   let service: ServerService;
   let openDatabaseSpy: Spy;
-  let httpServer = new HttpServer({} as HttpClient, {} as ServerErrorHandler);
+  const httpServer = new HttpServer({} as HttpClient, {} as ServerErrorHandler);
 
   beforeEach(() => {
     indexedDbService = new IndexedDbService();
@@ -76,7 +76,7 @@ describe('ServerService', () => {
     const evnt = {
       currentTarget: {
         result: {
-          createObjectStore: function() {}
+          createObjectStore() {}
         }
       }
     };

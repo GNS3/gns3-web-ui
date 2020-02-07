@@ -1,12 +1,12 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
+import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
 import { Server } from '../../../../../models/server';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
 
 
 @Component({
@@ -39,7 +39,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
             this.node = node;
             this.name = this.node.name;
             this.getConfiguration();
-        })
+        });
     }
 
     getConfiguration() {

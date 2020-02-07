@@ -13,11 +13,11 @@ export class RecentlyOpenedProjectService {
         this.projectId = projectId;
     }
 
-    getServerId() : string {
+    getServerId(): string {
         return this.serverId;
     }
 
-    getProjectId() : string {
+    getProjectId(): string {
         return this.projectId;
     }
 }

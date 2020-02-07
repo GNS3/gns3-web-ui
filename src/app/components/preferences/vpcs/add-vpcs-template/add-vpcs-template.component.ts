@@ -1,13 +1,13 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { VpcsService } from '../../../../services/vpcs.service';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
+import { Server } from '../../../../models/server';
+import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
+import { ServerService } from '../../../../services/server.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ToasterService } from '../../../../services/toaster.service';
+import { VpcsService } from '../../../../services/vpcs.service';
 
 
 @Component({
@@ -17,8 +17,8 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 })
 export class AddVpcsTemplateComponent implements OnInit {
     server: Server;
-    templateName: string = '';
-    templateNameForm: FormGroup
+    templateName = '';
+    templateNameForm: FormGroup;
     
     constructor(
         private route: ActivatedRoute,

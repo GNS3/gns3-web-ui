@@ -1,19 +1,19 @@
-import { TopologySummaryComponent } from "./topology-summary.component";
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { ProjectService } from '../../services/project.service';
-import { MockedProjectService } from '../../services/project.service.spec';
-import { MatTableModule, MatTooltipModule, MatIconModule, MatSortModule, MatDialogModule } from '@angular/material';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule, MatIconModule, MatSortModule, MatTableModule, MatTooltipModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { MockedNodesDataSource, MockedLinksDataSource } from '../project-map/project-map.component.spec';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { Project } from '../../models/project';
 import { Node } from '../../cartography/models/node';
+import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { ComputeService } from '../../services/compute.service';
-import { LinksDataSource } from '../../cartography/datasources/links-datasource';
+import { ProjectService } from '../../services/project.service';
+import { MockedProjectService } from '../../services/project.service.spec';
+import { MockedLinksDataSource, MockedNodesDataSource } from '../project-map/project-map.component.spec';
+import { TopologySummaryComponent } from "./topology-summary.component";
 
 export class MockedComputeService {
     getComputes(server: Server) {
@@ -24,10 +24,10 @@ export class MockedComputeService {
 describe('TopologySummaryComponent', () => {
     let component: TopologySummaryComponent;
     let fixture: ComponentFixture<TopologySummaryComponent>;
-    let mockedProjectService: MockedProjectService = new MockedProjectService();
-    let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
-    let mockedComputeService: MockedComputeService = new MockedComputeService();
-    let mockedLinksDataSource: MockedLinksDataSource = new MockedLinksDataSource();
+    const mockedProjectService: MockedProjectService = new MockedProjectService();
+    const mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
+    const mockedComputeService: MockedComputeService = new MockedComputeService();
+    const mockedLinksDataSource: MockedLinksDataSource = new MockedLinksDataSource();
   
     beforeEach(async(() => {
         TestBed.configureTestingModule({

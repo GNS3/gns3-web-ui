@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
+import { QemuImg } from '../../../../../../models/qemu/qemu-img';
 import { Server } from '../../../../../../models/server';
 import { NodeService } from '../../../../../../services/node.service';
-import { ToasterService } from '../../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
 import { QemuService } from '../../../../../../services/qemu.service';
-import { QemuImg } from '../../../../../../models/qemu/qemu-img';
+import { ToasterService } from '../../../../../../services/toaster.service';
 
 
 @Component({
@@ -74,7 +74,7 @@ export class QemuImageCreatorComponent implements OnInit {
         }
     ];
     lazyRefcountsOptions: string[] = ['off', 'on'];
-    refcountBitsOptions: number[] = [1,2,4,8,16,32,64];
+    refcountBitsOptions: number[] = [1, 2, 4, 8, 16, 32, 64];
     zeroedGrainOptions: string[] = ['on', 'off'];
     inputForm: FormGroup;
 
@@ -106,7 +106,7 @@ export class QemuImageCreatorComponent implements OnInit {
                 this.dialogRef.close();
             });
         } else {
-            this.toasterService.error('Fill all required fields.')
+            this.toasterService.error('Fill all required fields.');
         }
     }
 

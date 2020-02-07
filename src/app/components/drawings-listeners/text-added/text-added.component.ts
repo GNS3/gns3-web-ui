@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { DrawingService } from '../../../services/drawing.service';
+import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { TextAddedDataEvent } from '../../../cartography/events/event-source';
 import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
-import { TextElement } from '../../../cartography/models/drawings/text-element';
-import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
-import { Drawing } from '../../../cartography/models/drawing';
 import { Context } from '../../../cartography/models/context';
+import { Drawing } from '../../../cartography/models/drawing';
+import { TextElement } from '../../../cartography/models/drawings/text-element';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
   selector: 'app-text-added',
@@ -37,16 +37,16 @@ export class TextAddedComponent implements OnInit, OnDestroy {
   }
 
   onTextAdded(evt: TextAddedDataEvent) {
-    let drawing = this.drawingsFactory.getDrawingMock('text');
+    const drawing = this.drawingsFactory.getDrawingMock('text');
     (drawing.element as TextElement).text = evt.savedText;
-    let svgText = this.mapDrawingToSvgConverter.convert(drawing);
+    const svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
     this.drawingService
       .add(
         this.server,
         this.project.project_id,
-        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x))/this.context.transformation.k,
-        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y))/this.context.transformation.k,
+        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) / this.context.transformation.k,
+        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y)) / this.context.transformation.k,
         svgText
       )
       .subscribe((serverDrawing: Drawing) => {

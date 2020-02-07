@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, AfterViewInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({

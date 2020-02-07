@@ -1,12 +1,12 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
+import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
 import { VirtualBoxConfigurationService } from '../../../../../services/virtual-box-configuration.service';
-import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 
 
 @Component({
@@ -45,7 +45,7 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
-        })
+        });
     }
 
     getConfiguration() {
@@ -61,7 +61,7 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
                 this.node.custom_adapters.push({
                     adapter_number: n.adapter_number,
                     adapter_type: n.adapter_type
-                })
+                });
             });
 
             this.node.properties.adapters = this.node.custom_adapters.length;

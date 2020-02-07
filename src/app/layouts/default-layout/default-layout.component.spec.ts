@@ -1,16 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DefaultLayoutComponent } from './default-layout.component';
-import { ElectronService } from 'ngx-electron';
-import { MatIconModule, MatMenuModule, MatToolbarModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatIconModule, MatMenuModule, MatProgressSpinnerModule, MatToolbarModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ElectronService } from 'ngx-electron';
+import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ServerManagementService, ServerStateEvent } from '../../services/server-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
-import { Subject } from 'rxjs';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { DefaultLayoutComponent } from './default-layout.component';
 
 
 class ElectronServiceMock {
@@ -26,7 +26,7 @@ describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
-  let serverManagementService = new MockedServerManagementService();
+  const serverManagementService = new MockedServerManagementService();
 
   beforeEach(async(() => {
     electronServiceMock = new ElectronServiceMock();

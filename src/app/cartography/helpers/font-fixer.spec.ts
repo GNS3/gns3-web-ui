@@ -1,5 +1,5 @@
-import { FontFixer } from './font-fixer';
 import { Font } from '../models/font';
+import { FontFixer } from './font-fixer';
 
 describe('FontFixer', () => {
   let fixer: FontFixer;

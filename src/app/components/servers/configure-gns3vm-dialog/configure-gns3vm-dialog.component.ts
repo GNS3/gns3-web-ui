@@ -7,7 +7,7 @@ import { MatDialogRef} from '@angular/material';
   styleUrls: ['configure-gns3vm-dialog.component.scss']
 })
 export class ConfigureGns3VMDialogComponent implements OnInit {
-  public message: string = 'Do you want to configure GNS3 VM?';
+  public message = 'Do you want to configure GNS3 VM?';
   constructor(public dialogRef: MatDialogRef<ConfigureGns3VMDialogComponent>) {}
 
   ngOnInit() {}

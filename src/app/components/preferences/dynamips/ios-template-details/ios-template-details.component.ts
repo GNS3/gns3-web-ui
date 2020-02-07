@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosService } from '../../../../services/ios.service';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
+import { IosService } from '../../../../services/ios.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     server: Server;
     iosTemplate: IosTemplate;
 
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
 
     networkAdaptersForTemplate: string[] = [];
     platforms: string[] = [];
@@ -97,25 +97,25 @@ export class IosTemplateDetailsComponent implements OnInit {
     }
 
     fillAdaptersData() {
-        if (this.iosTemplate.slot0) this.networkAdaptersForTemplate[0] = this.iosTemplate.slot0;
-        if (this.iosTemplate.slot1) this.networkAdaptersForTemplate[1] = this.iosTemplate.slot1;
-        if (this.iosTemplate.slot2) this.networkAdaptersForTemplate[2] = this.iosTemplate.slot2;
-        if (this.iosTemplate.slot3) this.networkAdaptersForTemplate[3] = this.iosTemplate.slot3;
-        if (this.iosTemplate.slot4) this.networkAdaptersForTemplate[4] = this.iosTemplate.slot4;
-        if (this.iosTemplate.slot5) this.networkAdaptersForTemplate[5] = this.iosTemplate.slot5;
-        if (this.iosTemplate.slot6) this.networkAdaptersForTemplate[6] = this.iosTemplate.slot6;
-        if (this.iosTemplate.slot7) this.networkAdaptersForTemplate[7] = this.iosTemplate.slot7;
+        if (this.iosTemplate.slot0) { this.networkAdaptersForTemplate[0] = this.iosTemplate.slot0; }
+        if (this.iosTemplate.slot1) { this.networkAdaptersForTemplate[1] = this.iosTemplate.slot1; }
+        if (this.iosTemplate.slot2) { this.networkAdaptersForTemplate[2] = this.iosTemplate.slot2; }
+        if (this.iosTemplate.slot3) { this.networkAdaptersForTemplate[3] = this.iosTemplate.slot3; }
+        if (this.iosTemplate.slot4) { this.networkAdaptersForTemplate[4] = this.iosTemplate.slot4; }
+        if (this.iosTemplate.slot5) { this.networkAdaptersForTemplate[5] = this.iosTemplate.slot5; }
+        if (this.iosTemplate.slot6) { this.networkAdaptersForTemplate[6] = this.iosTemplate.slot6; }
+        if (this.iosTemplate.slot7) { this.networkAdaptersForTemplate[7] = this.iosTemplate.slot7; }
     }
 
     completeAdaptersData() {
-        if (this.networkAdaptersForTemplate[0]) this.iosTemplate.slot0 = this.networkAdaptersForTemplate[0];
-        if (this.networkAdaptersForTemplate[1]) this.iosTemplate.slot1 = this.networkAdaptersForTemplate[1];
-        if (this.networkAdaptersForTemplate[2]) this.iosTemplate.slot2 = this.networkAdaptersForTemplate[2];
-        if (this.networkAdaptersForTemplate[3]) this.iosTemplate.slot3 = this.networkAdaptersForTemplate[3];
-        if (this.networkAdaptersForTemplate[4]) this.iosTemplate.slot4 = this.networkAdaptersForTemplate[4];
-        if (this.networkAdaptersForTemplate[5]) this.iosTemplate.slot5 = this.networkAdaptersForTemplate[5];
-        if (this.networkAdaptersForTemplate[6]) this.iosTemplate.slot6 = this.networkAdaptersForTemplate[6];
-        if (this.networkAdaptersForTemplate[7]) this.iosTemplate.slot7 = this.networkAdaptersForTemplate[7];
+        if (this.networkAdaptersForTemplate[0]) { this.iosTemplate.slot0 = this.networkAdaptersForTemplate[0]; }
+        if (this.networkAdaptersForTemplate[1]) { this.iosTemplate.slot1 = this.networkAdaptersForTemplate[1]; }
+        if (this.networkAdaptersForTemplate[2]) { this.iosTemplate.slot2 = this.networkAdaptersForTemplate[2]; }
+        if (this.networkAdaptersForTemplate[3]) { this.iosTemplate.slot3 = this.networkAdaptersForTemplate[3]; }
+        if (this.networkAdaptersForTemplate[4]) { this.iosTemplate.slot4 = this.networkAdaptersForTemplate[4]; }
+        if (this.networkAdaptersForTemplate[5]) { this.iosTemplate.slot5 = this.networkAdaptersForTemplate[5]; }
+        if (this.networkAdaptersForTemplate[6]) { this.iosTemplate.slot6 = this.networkAdaptersForTemplate[6]; }
+        if (this.networkAdaptersForTemplate[7]) { this.iosTemplate.slot7 = this.networkAdaptersForTemplate[7]; }
     }
 
     onSave() {

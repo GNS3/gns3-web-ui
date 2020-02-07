@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { Server } from '../../../../models/server';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
+import { Server } from '../../../../models/server';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
+import { ServerService } from '../../../../services/server.service';
 import { VmwareService } from '../../../../services/vmware.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 

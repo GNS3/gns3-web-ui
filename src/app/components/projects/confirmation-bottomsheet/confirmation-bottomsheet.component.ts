@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatBottomSheetRef } from '@angular/material';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatBottomSheetRef, MatDialogRef } from '@angular/material';
 import { ThemeService } from '../../../services/theme.service';
 
 @Component({
@@ -8,8 +8,8 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['confirmation-bottomsheet.component.scss']
 })
 export class ConfirmationBottomSheetComponent implements OnInit {
-    message: string = '';
-    isLightThemeEnabled: boolean = false;
+    message = '';
+    isLightThemeEnabled = false;
 
     constructor(
         private bottomSheetRef: MatBottomSheetRef<ConfirmationBottomSheetComponent>,

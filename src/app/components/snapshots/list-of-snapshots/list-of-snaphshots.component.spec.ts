@@ -1,22 +1,22 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ListOfSnapshotsComponent } from './list-of-snapshots.component';
-import { MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, Sort } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { SnapshotService } from '../../../services/snapshot.service';
-import { DateFilter } from '../../../filters/dateFilter.pipe';
-import { of } from 'rxjs';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule, MatDialogModule, MatIconModule, MatMenuModule, MatTableModule, MatToolbarModule, Sort } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../services/server.service';
-import { MockedServerService } from '../../../services/server.service.spec';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { DateFilter } from '../../../filters/dateFilter.pipe';
+import { NameFilter } from '../../../filters/nameFilter.pipe';
 import { Server } from '../../../models/server';
 import { Snapshot } from '../../../models/snapshot';
+import { ServerService } from '../../../services/server.service';
+import { MockedServerService } from '../../../services/server.service.spec';
+import { SnapshotService } from '../../../services/snapshot.service';
+import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { NameFilter } from '../../../filters/nameFilter.pipe';
+import { ListOfSnapshotsComponent } from './list-of-snapshots.component';
 
 export class MockedActivatedRoute {
     get() {
@@ -55,10 +55,10 @@ export class MockedSnapshotService {
 describe('ListOfSnapshotsComponent', () => {
     let component: ListOfSnapshotsComponent;
     let fixture: ComponentFixture<ListOfSnapshotsComponent>;
-    let activatedRoute = new MockedActivatedRoute().get();
-    let mockedServerService = new MockedServerService();
-    let mockedSnapshotService = new MockedSnapshotService();
-    let mockedToasterService = new MockedToasterService();
+    const activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService();
+    const mockedSnapshotService = new MockedSnapshotService();
+    const mockedToasterService = new MockedToasterService();
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -98,7 +98,7 @@ describe('ListOfSnapshotsComponent', () => {
     });
 
     it('should call snapshot service to delete snapshot', () => {
-        let snapshot: Snapshot = {
+        const snapshot: Snapshot = {
             snapshot_id: 1,
             name: 'snapshot1',
             created_at: '111111',
@@ -126,7 +126,7 @@ describe('ListOfSnapshotsComponent', () => {
                 project_id: 1
             }
         ];
-        let sort: Sort = {
+        const sort: Sort = {
             active: 'name',
             direction: 'asc'
         };

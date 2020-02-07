@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
+import { Server } from '../../../../models/server';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -16,7 +16,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 })
 export class CopyDockerTemplateComponent implements OnInit {
     server: Server;
-    templateName: string = '';
+    templateName = '';
     dockerTemplate: DockerTemplate;
     templateNameForm: FormGroup;
     
@@ -42,7 +42,7 @@ export class CopyDockerTemplateComponent implements OnInit {
             this.dockerService.getTemplate(this.server, template_id).subscribe((dockerTemplate: DockerTemplate) => {
                 this.dockerTemplate = dockerTemplate;
                 this.templateName = `Copy of ${this.dockerTemplate.name}`;
-            })
+            });
 
         });
     }

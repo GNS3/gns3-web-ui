@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 
-import { Converter } from '../converter';
+import { CssFixer } from '../../helpers/css-fixer';
+import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
+import { FontFixer } from '../../helpers/font-fixer';
 import { MapNode } from '../../models/map/map-node';
 import { Node } from '../../models/node';
+import { Converter } from '../converter';
 import { LabelToMapLabelConverter } from './label-to-map-label-converter';
 import { PortToMapPortConverter } from './port-to-map-port-converter';
-import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
-import { CssFixer } from '../../helpers/css-fixer';
-import { FontFixer } from '../../helpers/font-fixer';
 
 @Injectable()
 export class NodeToMapNodeConverter implements Converter<Node, MapNode> {

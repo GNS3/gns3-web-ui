@@ -1,24 +1,24 @@
-import { NodeLabelDraggedComponent } from './node-label-dragged.component';
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../../services/node.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { CssFixer } from '../../../cartography/helpers/css-fixer';
-import { FontFixer } from '../../../cartography/helpers/font-fixer';
 import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
-import { MockedNodeService, MockedNodesDataSource } from '../../project-map/project-map.component.spec';
-import { DraggedDataEvent } from '../../../cartography/events/event-source';
+import { FontFixer } from '../../../cartography/helpers/font-fixer';
 import { MapLabel } from '../../../cartography/models/map/map-label';
-import { Observable } from 'rxjs';
+import { NodeService } from '../../../services/node.service';
+import { MockedNodesDataSource, MockedNodeService } from '../../project-map/project-map.component.spec';
+import { NodeLabelDraggedComponent } from './node-label-dragged.component';
 
 describe('NodeLabelDraggedComponent', () => {
   let component: NodeLabelDraggedComponent;
   let fixture: ComponentFixture<NodeLabelDraggedComponent>;
-  let mockedNodesDataSource = new MockedNodesDataSource();
-  let mockedNodeService = new MockedNodeService();
-  let mockedNodesEventSource = new NodesEventSource();
-  let mapLabelToLabelConverter = new MapLabelToLabelConverter(
+  const mockedNodesDataSource = new MockedNodesDataSource();
+  const mockedNodeService = new MockedNodeService();
+  const mockedNodesEventSource = new NodesEventSource();
+  const mapLabelToLabelConverter = new MapLabelToLabelConverter(
     new FontBBoxCalculator(),
     new CssFixer(),
     new FontFixer()

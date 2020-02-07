@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 
-import { Symbol } from '../models/symbol';
 import { Server } from '../models/server';
+import { Symbol } from '../models/symbol';
 import { HttpServer } from './http-server.service';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class SymbolService {
   }
 
   add(server: Server, symbolName: string, symbol: string) {
-    return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol)
+    return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol);
   }
 
   load(server: Server): Observable<Symbol[]> {

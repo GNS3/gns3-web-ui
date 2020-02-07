@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatBottomSheetRef } from '@angular/material';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatBottomSheetRef, MatDialogRef } from '@angular/material';
 import { ThemeService } from '../../../services/theme.service';
 
 @Component({
@@ -8,8 +8,8 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['navigation-dialog.component.scss']
 })
 export class NavigationDialogComponent implements OnInit {
-    projectMessage: string = '';
-    isLightThemeEnabled: boolean = false;
+    projectMessage = '';
+    isLightThemeEnabled = false;
 
     constructor(
         private bottomSheetRef: MatBottomSheetRef<NavigationDialogComponent>,

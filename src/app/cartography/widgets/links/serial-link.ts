@@ -1,10 +1,10 @@
 import { path } from 'd3-path';
 
-import { Widget } from '../widget';
-import { SVGSelection } from '../../models/types';
-import { MapLink } from '../../models/map/map-link';
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { LinkContextMenu } from '../../events/event-source';
+import { MapLink } from '../../models/map/map-link';
+import { SVGSelection } from '../../models/types';
+import { Widget } from '../widget';
 
 class SerialLinkPath {
   constructor(
@@ -63,7 +63,7 @@ class SerialLinkPath {
       .append<SVGPathElement>('path')
       .attr('class', 'serial_link')
       .on('contextmenu', (datum) => {
-        let link: MapLink = datum as unknown as MapLink;
+        const link: MapLink = datum as unknown as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });

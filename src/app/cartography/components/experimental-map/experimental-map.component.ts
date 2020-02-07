@@ -1,4 +1,6 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -7,23 +9,21 @@ import {
   OnDestroy,
   OnInit,
   SimpleChange,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   ViewChild
 } from '@angular/core';
 
-import { GraphLayout } from '../../widgets/graph-layout';
-import { Context } from '../../models/context';
-import { Size } from '../../models/size';
 import { Subscription } from 'rxjs';
-import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
-import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
-import { Drawing } from '../../models/drawing';
 import { Symbol } from '../../../models/symbol';
+import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { LayersManager } from '../../managers/layers-manager';
+import { Context } from '../../models/context';
+import { Drawing } from '../../models/drawing';
+import { Node } from '../../models/node';
+import { Size } from '../../models/size';
+import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
+import { GraphLayout } from '../../widgets/graph-layout';
 
 @Component({
   selector: 'app-experimental-map',

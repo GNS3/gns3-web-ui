@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
-import { Node } from '../../../../../cartography/models/node';
 
 @Component({
   selector: 'app-suspend-node-action',
@@ -18,7 +18,7 @@ export class SuspendNodeActionComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes) {
-    if(changes.nodes) {
+    if (changes.nodes) {
       this.isNodeWithStartedStatus = false;
       this.nodes.forEach((node) => {
         if (node.status === 'started') {

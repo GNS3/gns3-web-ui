@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
+import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
 import { Template } from '../models/template';
-import { Observable } from 'rxjs';
 import { QemuTemplate } from '../models/templates/qemu-template';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class TemplateService {
@@ -19,6 +19,6 @@ export class TemplateService {
     return this.httpServer.delete(server, `/templates/${templateId}`, { observe: 'body' }).map(response => {
         return true;
     })
-    .catch((response) => { return Observable.throw(false)});
+    .catch((response) => Observable.throw(false));
   }
 }

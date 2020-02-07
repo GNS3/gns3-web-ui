@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
-import { Server } from '../../../../../models/server';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
+import { Server } from '../../../../../models/server';
+import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 
 @Component({
@@ -18,13 +18,13 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     server: Server;
     cloudNodeTemplate: CloudTemplate;
 
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
 
     categories = [];
     consoleTypes: string[] = [];
 
-    tapInterface: string = '';
-    ethernetInterface: string = '';
+    tapInterface = '';
+    ethernetInterface = '';
     ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
     portsMappingEthernet: PortsMappingEntity[] = [];
     portsMappingTap: PortsMappingEntity[] = [];

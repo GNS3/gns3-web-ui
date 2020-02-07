@@ -1,22 +1,22 @@
-import { DrawingResizedComponent } from './drawing-resized.component';
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { DrawingService } from '../../../services/drawing.service';
-import { MockedDrawingService, MockedDrawingsDataSource } from '../../project-map/project-map.component.spec';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
+import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { ResizedDataEvent } from '../../../cartography/events/event-source';
-import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { DrawingElement } from '../../../cartography/models/drawings/drawing-element';
-import { Observable } from 'rxjs';
+import { MapDrawing } from '../../../cartography/models/map/map-drawing';
+import { DrawingService } from '../../../services/drawing.service';
+import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
+import { DrawingResizedComponent } from './drawing-resized.component';
 
 describe('DrawingResizedComponent', () => {
   let component: DrawingResizedComponent;
   let fixture: ComponentFixture<DrawingResizedComponent>;
-  let mockedDrawingService = new MockedDrawingService();
-  let mockedDrawingsDataSource = new MockedDrawingsDataSource();
-  let mockedDrawingsEventSource = new DrawingsEventSource();
-  let mockedMapDrawingToSvgConverter = new MapDrawingToSvgConverter();
+  const mockedDrawingService = new MockedDrawingService();
+  const mockedDrawingsDataSource = new MockedDrawingsDataSource();
+  const mockedDrawingsEventSource = new DrawingsEventSource();
+  const mockedMapDrawingToSvgConverter = new MapDrawingToSvgConverter();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

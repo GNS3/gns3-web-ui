@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { Server } from '../../../../models/server';
+import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
+import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 
@@ -19,15 +19,15 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
     server: Server;
     virtualBoxTemplate: VirtualBoxTemplate;
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
     consoleTypes: string[] = [];
     onCloseOptions = [];
     categories = [];
     networkTypes = [];
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
-    isConfiguratorOpened: boolean = false;
+    isConfiguratorOpened = false;
     generalSettingsForm: FormGroup;
-    networkForm: FormGroup
+    networkForm: FormGroup;
 
     @ViewChild("customAdaptersConfigurator", {static: false}) 
         customAdaptersConfigurator: CustomAdaptersComponent;
@@ -69,7 +69,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         });
     }
 
-    getConfiguration(){
+    getConfiguration() {
         this.consoleTypes = this.virtualBoxConfigurationService.getConsoleTypes();
         this.onCloseOptions = this.virtualBoxConfigurationService.getOnCloseoptions();
         this.categories = this.virtualBoxConfigurationService.getCategories();
@@ -92,16 +92,16 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         }
     }
 
-    saveCustomAdapters(adapters: CustomAdapter[]){
+    saveCustomAdapters(adapters: CustomAdapter[]) {
         this.setCustomAdaptersConfiguratorState(false);
         this.virtualBoxTemplate.custom_adapters = adapters;
     }
 
     fillCustomAdapters() {
-        let copyOfAdapters = this.virtualBoxTemplate.custom_adapters ? this.virtualBoxTemplate.custom_adapters : [];
+        const copyOfAdapters = this.virtualBoxTemplate.custom_adapters ? this.virtualBoxTemplate.custom_adapters : [];
         this.virtualBoxTemplate.custom_adapters = [];
 
-        for(let i=0; i<this.virtualBoxTemplate.adapters; i++){
+        for (let i = 0; i < this.virtualBoxTemplate.adapters; i++) {
             if (copyOfAdapters[i]) {
                 this.virtualBoxTemplate.custom_adapters.push(copyOfAdapters[i]);
             } else {

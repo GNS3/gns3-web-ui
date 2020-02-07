@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
 import { Link } from '../../../../../models/link';
 import { Project } from '../../../../../models/project';
+import { Server } from '../../../../../models/server';
 import { PacketCaptureService } from '../../../../../services/packet-capture.service';
 
 @Component({
@@ -18,7 +18,7 @@ export class StartCaptureOnStartedLinkActionComponent {
   ) {}
 
   startCapture() {
-    var splittedFileName = this.link.capture_file_name.split('.');
+    const splittedFileName = this.link.capture_file_name.split('.');
     this.packetCaptureService.startCapture(this.server, this.project, this.link, splittedFileName[0]);
   }
 }

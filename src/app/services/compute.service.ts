@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
-import { Compute } from '../models/compute';
 import { Observable } from 'rxjs';
+import { Compute } from '../models/compute';
 import { ComputeStatistics } from '../models/computeStatistics';
+import { Server } from '../models/server';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class ComputeService {
@@ -18,6 +18,6 @@ export class ComputeService {
     }
 
     getStatistics(server: Server): Observable<ComputeStatistics[]> {
-        return this.httpServer.get(server, `/statistics`)
+        return this.httpServer.get(server, `/statistics`);
     }
 }

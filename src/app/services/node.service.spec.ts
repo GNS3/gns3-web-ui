@@ -1,16 +1,16 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
-import { Node } from '../cartography/models/node';
-import { getTestServer } from './testing';
-import { NodeService } from './node.service';
-import { Template } from '../models/template';
-import { Project } from '../models/project';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Label } from '../cartography/models/label';
+import { Node } from '../cartography/models/node';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
+import { Template } from '../models/template';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { NodeService } from './node.service';
+import { getTestServer } from './testing';
 
 describe('NodeService', () => {
   let httpClient: HttpClient;
@@ -64,7 +64,7 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({});
   }));
 
-  it('should suspend node', inject([NodeService], (service:NodeService) => {
+  it('should suspend node', inject([NodeService], (service: NodeService) => {
     const node = new Node();
     node.project_id = 'myproject';
     node.node_id = 'id';
@@ -76,7 +76,7 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({});
   }));
 
-  it('should reload node', inject([NodeService], (service:NodeService) => {
+  it('should reload node', inject([NodeService], (service: NodeService) => {
     const node = new Node();
     node.project_id = 'myproject';
     node.node_id = 'id';
@@ -89,7 +89,7 @@ describe('NodeService', () => {
   }));
 
   it('should start all nodes', inject([NodeService], (service: NodeService) => {
-    let project = {
+    const project = {
       project_id: '1'
     } as Project;
 
@@ -101,7 +101,7 @@ describe('NodeService', () => {
   }));
 
   it('should stop all nodes', inject([NodeService], (service: NodeService) => {
-    let project = {
+    const project = {
       project_id: '1'
     } as Project;
 
@@ -113,7 +113,7 @@ describe('NodeService', () => {
   }));
 
   it('should suspend all nodes', inject([NodeService], (service: NodeService) => {
-    let project = {
+    const project = {
       project_id: '1'
     } as Project;
 
@@ -125,7 +125,7 @@ describe('NodeService', () => {
   }));
 
   it('should reload all nodes', inject([NodeService], (service: NodeService) => {
-    let project = {
+    const project = {
       project_id: '1'
     } as Project;
 
@@ -154,7 +154,7 @@ describe('NodeService', () => {
   }));
 
   it('should updatePosition of node', inject([NodeService], (service: NodeService) => {
-    let project = {
+    const project = {
       project_id: '1'
     } as Project;
     const node = new Node();
@@ -172,7 +172,7 @@ describe('NodeService', () => {
   }));
 
   it('should updatePosition of node and round to integer', inject([NodeService], (service: NodeService) => {
-    let project = {
+    const project = {
       project_id: '1'
     } as Project;
     const node = new Node();

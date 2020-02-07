@@ -1,13 +1,13 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { Server } from '../../../../models/server';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -18,9 +18,9 @@ import { IouService } from '../../../../services/iou.service';
 export class AddIouTemplateComponent implements OnInit {
     server: Server;
     iouTemplate: IouTemplate;
-    isGns3VmChosen: boolean = false;
-    isRemoteComputerChosen: boolean = false;
-    newImageSelected: boolean = false;
+    isGns3VmChosen = false;
+    isRemoteComputerChosen = false;
+    newImageSelected = false;
     types: string[] = ['L2 image', 'L3 image'];
     selectedType: string;
     iouImages: string[] = [];
@@ -55,7 +55,7 @@ export class AddIouTemplateComponent implements OnInit {
 
             this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
                 this.iouTemplate = iouTemplate;
-            })
+            });
         });
     }
 

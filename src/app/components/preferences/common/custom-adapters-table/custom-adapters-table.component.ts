@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 
 
@@ -15,14 +15,14 @@ export class CustomAdaptersTableComponent {
     public numberOfAdapters: number;
 
     onAdd() {
-        let adapter: CustomAdapter = {
+        const adapter: CustomAdapter = {
             adapter_number: this.adapters.length,
             adapter_type: this.networkTypes[0]
-        }
+        };
         this.adapters = this.adapters.concat([adapter]);
     }
 
     delete(adapter: CustomAdapter) {
-        this.adapters = this.adapters.filter(elem => elem!== adapter);
+        this.adapters = this.adapters.filter(elem => elem !== adapter);
     }
 }

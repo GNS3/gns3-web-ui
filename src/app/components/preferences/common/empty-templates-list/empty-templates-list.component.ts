@@ -8,9 +8,9 @@ import { Component, Input } from "@angular/core";
 })
 export class EmptyTemplatesListComponent {
     @Input() textMessage: string;
-    emptyTemplatesListMessage: string = 'Empty templates list';
+    emptyTemplatesListMessage = 'Empty templates list';
 
-    constructor(){
+    constructor() {
         if (this.textMessage) {
             this.emptyTemplatesListMessage = this.textMessage;
         }

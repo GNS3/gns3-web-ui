@@ -1,8 +1,8 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
+import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-show-node-action',
@@ -10,7 +10,7 @@ import { Server } from '../../../../../models/server';
 })
 export class ShowNodeActionComponent {
   @Input() node: Node;
-  @Input() server: Server
+  @Input() server: Server;
 
   constructor(private dialog: MatDialog) {}
 
@@ -19,7 +19,7 @@ export class ShowNodeActionComponent {
         width: '600px',
         autoFocus: false
     });
-    let instance = dialogRef.componentInstance;
+    const instance = dialogRef.componentInstance;
     instance.node = this.node;
     instance.server = this.server;
   }

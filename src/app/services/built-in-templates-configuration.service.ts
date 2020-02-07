@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 @Injectable()
 export class BuiltInTemplatesConfigurationService {
     getCategoriesForCloudNodes() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
             ["End devices", "end_device"],
@@ -17,7 +17,7 @@ export class BuiltInTemplatesConfigurationService {
     }
 
     getCategoriesForEthernetHubs() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
             ["End devices", "end_device"],
@@ -27,7 +27,7 @@ export class BuiltInTemplatesConfigurationService {
     }
 
     getCategoriesForEthernetSwitches() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
             ["End devices", "end_device"],

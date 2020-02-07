@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Link } from '../../../../../models/link';
 import { MatDialog } from '@angular/material';
-import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
+import { Link } from '../../../../../models/link';
 import { Project } from '../../../../../models/project';
+import { Server } from '../../../../../models/server';
+import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({
   selector: 'app-start-capture-action',
@@ -21,7 +21,7 @@ export class StartCaptureActionComponent {
         width: '400px',
         autoFocus: false
     });
-    let instance = dialogRef.componentInstance;
+    const instance = dialogRef.componentInstance;
     instance.server = this.server;
     instance.project = this.project;
     instance.link = this.link;

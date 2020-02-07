@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { Server } from '../../../../../models/server';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { Server } from '../../../../../models/server';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 

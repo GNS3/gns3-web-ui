@@ -7,8 +7,8 @@ import { Template } from '../models/template';
 })
 export class TemplateFilter implements PipeTransform {
     transform(items: Template[], searchText: string): any[] {
-        if(!items) return [];
-        if(!searchText) return items;
+        if (!items) { return []; }
+        if (!searchText) { return items; }
         
         searchText = searchText.toLowerCase();
             return items.filter( item => {

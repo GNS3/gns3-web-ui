@@ -1,24 +1,20 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
+import { select } from 'd3-selection';
+import { Draggable } from '../events/draggable';
+import { LabelContextMenu } from '../events/event-source';
 import { CssFixer } from '../helpers/css-fixer';
 import { FontFixer } from '../helpers/font-fixer';
-import { select } from 'd3-selection';
-import { MapNode } from '../models/map/map-node';
-import { SelectionManager } from '../managers/selection-manager';
-import { Draggable } from '../events/draggable';
-import { MapLabel } from '../models/map/map-label';
 import { MapSettingsManager } from '../managers/map-settings-manager';
-import { LabelContextMenu } from '../events/event-source';
+import { SelectionManager } from '../managers/selection-manager';
 import { TextElement } from '../models/drawings/text-element';
+import { MapLabel } from '../models/map/map-label';
+import { MapNode } from '../models/map/map-node';
+import { SVGSelection } from '../models/types';
+import { Widget } from './widget';
 
 @Injectable()
 export class LabelWidget implements Widget {
-  public onContextMenu = new EventEmitter<LabelContextMenu>();
-  public draggable = new Draggable<SVGGElement, MapLabel>();
-
-  static NODE_LABEL_MARGIN = 3;
 
   constructor(
     private cssFixer: CssFixer,
@@ -26,6 +22,10 @@ export class LabelWidget implements Widget {
     private selectionManager: SelectionManager,
     private mapSettings: MapSettingsManager
   ) {}
+
+  static NODE_LABEL_MARGIN = 3;
+  public onContextMenu = new EventEmitter<LabelContextMenu>();
+  public draggable = new Draggable<SVGGElement, MapLabel>();
 
   public redrawLabel(view: SVGSelection, label: MapLabel) {
     this.drawLabel(this.selectLabel(view, label));
@@ -93,7 +93,7 @@ export class LabelWidget implements Widget {
     label_body_merge
       .select<SVGRectElement>('rect.label_selection')
       .attr('visibility', (l: MapLabel) => {
-        return (this.selectionManager.isSelected(l) ? 'visible' : 'hidden')
+        return (this.selectionManager.isSelected(l) ? 'visible' : 'hidden');
       })
       .attr('stroke', 'black')
       .attr('stroke-dasharray', '3,3')

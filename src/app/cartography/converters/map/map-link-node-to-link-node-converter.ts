@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { Converter } from '../converter';
-import { MapLinkNode } from '../../models/map/map-link-node';
-import { MapLabelToLabelConverter } from './map-label-to-label-converter';
 import { LinkNode } from '../../../models/link-node';
+import { MapLinkNode } from '../../models/map/map-link-node';
+import { Converter } from '../converter';
+import { MapLabelToLabelConverter } from './map-label-to-label-converter';
 
 @Injectable()
 export class MapLinkNodeToLinkNodeConverter implements Converter<MapLinkNode, LinkNode> {

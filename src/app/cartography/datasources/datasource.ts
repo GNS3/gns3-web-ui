@@ -23,7 +23,7 @@ export abstract class DataSource<T> {
     data.forEach(item => {
       const index = this.findIndex(item);
       if (index >= 0) {
-        const updated = Object.assign(this.data[index], item);
+        const updated = {...this.data[index], ...item};
         this.data[index] = updated;
       } else {
         this.data.push(item);
@@ -48,7 +48,7 @@ export abstract class DataSource<T> {
   public update(item: T) {
     const index = this.findIndex(item);
     if (index >= 0) {
-      const updated = Object.assign(this.data[index], item);
+      const updated = {...this.data[index], ...item};
       this.data[index] = updated;
       this.dataChange.next(this.data);
       this.itemUpdated.next(updated);

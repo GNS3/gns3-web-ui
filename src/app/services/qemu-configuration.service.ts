@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class QemuConfigurationService {
-    getConsoleTypes(){
+    getConsoleTypes() {
         return ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
     }
 
@@ -33,7 +33,7 @@ export class QemuConfigurationService {
         //     ["virtio-net-pci", "Paravirtualized Network I/O"],
         //     ["vmxnet3", "VMWare Paravirtualized Ethernet v3"]];
 
-        let networkTypes = ["e1000", "Intel Gigabit Ethernet",
+        const networkTypes = ["e1000", "Intel Gigabit Ethernet",
             "i82550",
             "i82551",
             "i82557a",
@@ -58,7 +58,7 @@ export class QemuConfigurationService {
     }
 
     getBootPriorities() {
-        let bootPriorities = [["HDD", "c"],
+        const bootPriorities = [["HDD", "c"],
             ["CD/DVD-ROM", "d"], 
             ["Network", "n"], 
             ["HDD or Network", "cn"], 
@@ -68,7 +68,7 @@ export class QemuConfigurationService {
     }
 
     getOnCloseOptions() {
-        let onCloseOptions = [["Power off the VM", "power_off"], 
+        const onCloseOptions = [["Power off the VM", "power_off"], 
             ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
             ["Save the VM state", "save_vm_state"]];
 
@@ -76,7 +76,7 @@ export class QemuConfigurationService {
     }
 
     getCategories() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "routers"],
             ["Switches", "switches"],
             ["End devices", "end_devices"],
@@ -86,7 +86,7 @@ export class QemuConfigurationService {
     }
 
     getPriorities() {
-        let priorities = ["realtime",
+        const priorities = ["realtime",
             "very high",
             "high",
             "normal",

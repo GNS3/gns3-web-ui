@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { InstalledSoftwareService } from '../../services/installed-software.service';
 import { DataSource } from '@angular/cdk/table';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { InstalledSoftwareService } from '../../services/installed-software.service';
 
 @Component({
   selector: 'app-installed-software',
@@ -47,7 +47,7 @@ export class InstalledSoftwareDataSource extends DataSource<any> {
   disconnect() {}
 
   refresh() {
-    let installedSoftware = this.installedSoftwareService.list();
+    const installedSoftware = this.installedSoftwareService.list();
     installedSoftware.push({
       type: 'adbutler'
     });

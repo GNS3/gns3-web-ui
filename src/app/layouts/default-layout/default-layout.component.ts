@@ -1,10 +1,10 @@
+import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { Component, OnInit, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
-import { ServerManagementService } from '../../services/server-management.service';
 import { Subscription } from 'rxjs';
-import { ToasterService } from '../../services/toaster.service';
 import { ProgressService } from '../../common/progress/progress.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { ServerManagementService } from '../../services/server-management.service';
+import { ToasterService } from '../../services/toaster.service';
 import { version } from './../../version';
 
 
@@ -21,8 +21,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
-  recentlyOpenedServerId : string;
-  recentlyOpenedProjectId : string;
+  recentlyOpenedServerId: string;
+  recentlyOpenedProjectId: string;
 
   constructor(
     private electronService: ElectronService,
@@ -40,11 +40,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // attach to notification stream when any of running local servers experienced issues
     this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
-      if(serverStatus.status === 'errored') {
+      if (serverStatus.status === 'errored') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
-      if(serverStatus.status === 'stderr') {
+      if (serverStatus.status === 'stderr') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
@@ -56,10 +56,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   async onBeforeUnload($event) {
-    if(!this.shouldStopServersOnClosing) {
+    if (!this.shouldStopServersOnClosing) {
       return;
     }
-    $event.preventDefault()
+    $event.preventDefault();
     $event.returnValue = false;
     this.progressService.activate();
     await this.serverManagement.stopAll();

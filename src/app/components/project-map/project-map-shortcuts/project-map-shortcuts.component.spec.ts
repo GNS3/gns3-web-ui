@@ -1,31 +1,31 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { inject } from '@angular/core/testing';
 
-import { mock, instance, capture, when, anything } from 'ts-mockito';
-import { HotkeyModule, HotkeysService, Hotkey } from 'angular2-hotkeys';
+import { Hotkey, HotkeyModule, HotkeysService } from 'angular2-hotkeys';
 import { of } from 'rxjs';
+import { anything, capture, instance, mock, when } from 'ts-mockito';
 
-import { ProjectMapShortcutsComponent } from './project-map-shortcuts.component';
-import { ToasterService } from '../../../services/toaster.service';
-import { NodeService } from '../../../services/node.service';
-import { HttpServer } from '../../../services/http-server.service';
+import { mapTo } from 'rxjs/internal/operators';
+import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
+import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
+import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
+import { CssFixer } from '../../../cartography/helpers/css-fixer';
+import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
+import { FontFixer } from '../../../cartography/helpers/font-fixer';
 import { SelectionManager } from '../../../cartography/managers/selection-manager';
-import { Server } from '../../../models/server';
+import { MapNode } from '../../../cartography/models/map/map-node';
+import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { HttpServer } from '../../../services/http-server.service';
+import { NodeService } from '../../../services/node.service';
 import { ProjectService } from '../../../services/project.service';
 import { MockedProjectService } from '../../../services/project.service.spec';
 import { SettingsService } from '../../../services/settings.service';
+import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { mapTo } from 'rxjs/internal/operators';
-import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
-import { MapNode } from '../../../cartography/models/map/map-node';
-import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
-import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
-import { Node } from '../../../cartography/models/node';
-import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
-import { CssFixer } from '../../../cartography/helpers/css-fixer';
-import { FontFixer } from '../../../cartography/helpers/font-fixer';
+import { ProjectMapShortcutsComponent } from './project-map-shortcuts.component';
 
 describe('ProjectMapShortcutsComponent', () => {
   let component: ProjectMapShortcutsComponent;

@@ -1,12 +1,12 @@
 import { Component, Input } from "@angular/core";
+import { ElectronService } from 'ngx-electron';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { NodeService } from '../../../services/node.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { ElectronService } from 'ngx-electron';
-import { SettingsService } from '../../../services/settings.service';
 import { ServerService } from '../../../services/server.service';
+import { SettingsService } from '../../../services/settings.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
     selector: 'app-nodes-menu',
@@ -28,10 +28,10 @@ export class NodesMenuComponent {
 
     async startConsoleForAllNodes() {
         if (this.electronService.isElectronApp) {
-            let consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
+            const consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
 
-            let nodes = this.nodesDataSource.getItems();
-            for(var node of nodes) {
+            const nodes = this.nodesDataSource.getItems();
+            for (const node of nodes) {
                 const request = {
                     command: consoleCommand,
                     type: node.console_type,

@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { TemplateListDialogComponent, NodeAddedEvent } from './template-list-dialog/template-list-dialog.component';
+import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 
+import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { Template } from '../../models/template';
-import { Project } from '../../models/project';
 
 @Component({
   selector: 'app-template',

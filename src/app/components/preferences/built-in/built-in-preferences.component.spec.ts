@@ -1,9 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatIconModule, MatToolbarModule, MatMenuModule } from '@angular/material';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockedActivatedRoute } from '../preferences.component.spec';
 import { BuiltInPreferencesComponent } from './built-in-preferences.component';
@@ -11,7 +11,7 @@ import { BuiltInPreferencesComponent } from './built-in-preferences.component';
 describe('BuiltInPreferencesComponent', () => {
     let component: BuiltInPreferencesComponent;
     let fixture: ComponentFixture<BuiltInPreferencesComponent>;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const activatedRoute = new MockedActivatedRoute().get();
   
     beforeEach(async(() => {
       TestBed.configureTestingModule({

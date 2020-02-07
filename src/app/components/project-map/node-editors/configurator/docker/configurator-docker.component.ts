@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
-import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
 
 
 @Component({
@@ -38,7 +38,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
-        })
+        });
     }
 
     getConfiguration() {

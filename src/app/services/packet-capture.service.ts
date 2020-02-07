@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { Server } from '../models/server';
-import { Project } from '../models/project';
 import { Link } from '../models/link';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
 
 @Injectable()
 export class PacketCaptureService {

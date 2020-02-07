@@ -1,22 +1,22 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatTableModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { Observable, of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatTableModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Observable, of } from 'rxjs';
+import { Server } from '../../../../models/server';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { VirtualBoxTemplateDetailsComponent } from './virtual-box-template-details.component';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
+import { VirtualBoxTemplateDetailsComponent } from './virtual-box-template-details.component';
 
 export class MockedVirtualBoxService {
     public getTemplate(server: Server, template_id: string) {
@@ -32,10 +32,10 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
     let component: VirtualBoxTemplateDetailsComponent;
     let fixture: ComponentFixture<VirtualBoxTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVirtualBoxService = new MockedVirtualBoxService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedVirtualBoxService = new MockedVirtualBoxService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

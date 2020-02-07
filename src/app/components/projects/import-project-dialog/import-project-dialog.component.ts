@@ -1,13 +1,13 @@
-import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
-import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
-import { Server } from '../../../models/server';
+import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ProjectService } from '../../../services/project.service';
 import { Project } from '../../../models/project';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { Server } from '../../../models/server';
 import { ServerResponse } from '../../../models/serverResponse';
+import { ProjectService } from '../../../services/project.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
@@ -19,13 +19,13 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
   server: Server;
-  isImportEnabled: boolean = false;
-  isFinishEnabled: boolean = false;
-  isDeleteVisible: boolean = false;
-  resultMessage: string = 'The project is being imported... Please wait';
+  isImportEnabled = false;
+  isFinishEnabled = false;
+  isDeleteVisible = false;
+  resultMessage = 'The project is being imported... Please wait';
   projectNameForm: FormGroup;
-  submitted: boolean = false;
-  isFirstStepCompleted: boolean = false;
+  submitted = false;
+  isFirstStepCompleted = false;
   uuid: string;
   onImportProject = new EventEmitter<string>();
 
@@ -49,7 +49,7 @@ export class ImportProjectDialogComponent implements OnInit {
     };
 
     this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-      let serverResponse: ServerResponse = JSON.parse(response);
+      const serverResponse: ServerResponse = JSON.parse(response);
       this.resultMessage = 'An error occured: ' + serverResponse.message;
       this.isFinishEnabled = true;
     };
@@ -82,7 +82,7 @@ export class ImportProjectDialogComponent implements OnInit {
     } else {
       this.projectService.list(this.server).subscribe((projects: Project[]) => {
         const projectName = this.projectNameForm.controls['projectName'].value;
-        let existingProject = projects.find(project => project.name === projectName);
+        const existingProject = projects.find(project => project.name === projectName);
 
         if (existingProject) {
           this.openConfirmationDialog(existingProject);
@@ -108,7 +108,7 @@ export class ImportProjectDialogComponent implements OnInit {
       width: '300px',
       height: '150px',
       data: {
-        existingProject: existingProject
+        existingProject
       },
       autoFocus: false
     });

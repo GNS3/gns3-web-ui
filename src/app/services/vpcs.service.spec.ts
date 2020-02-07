@@ -1,12 +1,12 @@
-import { TestBed, inject } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { VpcsService } from './vpcs.service';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { getTestServer } from './testing';
+import { VpcsService } from './vpcs.service';
 
 describe('VpcsService', () => {
     let httpClient: HttpClient;
@@ -47,7 +47,7 @@ describe('VpcsService', () => {
             symbol: ':/symbols/vpcs_guest.svg',
             template_id: '1',
             template_type: 'vpcs'
-        }
+        };
 
         service.saveTemplate(server, template).subscribe();
 
@@ -69,7 +69,7 @@ describe('VpcsService', () => {
             symbol: ':/symbols/vpcs_guest.svg',
             template_id: '',
             template_type: 'vpcs'
-        }
+        };
 
         service.addTemplate(server, template).subscribe();
 

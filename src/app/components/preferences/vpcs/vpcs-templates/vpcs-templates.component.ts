@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { Server } from '../../../../models/server';
 import { ActivatedRoute } from '@angular/router';
+import { Server } from '../../../../models/server';
+import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { ServerService } from '../../../../services/server.service';
 import { VpcsService } from '../../../../services/vpcs.service';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({

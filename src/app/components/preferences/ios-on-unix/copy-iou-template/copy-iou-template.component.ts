@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
+import { Server } from '../../../../models/server';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 
 @Component({
@@ -16,7 +16,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 })
 export class CopyIouTemplateComponent implements OnInit {
     server: Server;
-    templateName: string = '';
+    templateName = '';
     iouTemplate: IouTemplate;
     templateNameForm: FormGroup;
     
@@ -42,7 +42,7 @@ export class CopyIouTemplateComponent implements OnInit {
             this.qemuService.getTemplate(this.server, template_id).subscribe((iouTemplate: IouTemplate) => {
                 this.iouTemplate = iouTemplate;
                 this.templateName = `Copy of ${this.iouTemplate.name}`;
-            })
+            });
 
         });
     }

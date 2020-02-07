@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Server } from '../../../../models/server';
-import { Link } from '../../../../models/link';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material';
-import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
-import { LinkService } from '../../../../services/link.service';
-import { CapturingSettings } from '../../../../models/capturingSettings';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToasterService } from '../../../../services/toaster.service';
-import { LinkNode } from '../../../../models/link-node';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
-import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { CapturingSettings } from '../../../../models/capturingSettings';
+import { Link } from '../../../../models/link';
+import { LinkNode } from '../../../../models/link-node';
 import { Project } from '../../../../models/project';
+import { Server } from '../../../../models/server';
+import { LinkService } from '../../../../services/link.service';
+import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 
 @Component({
     selector: 'app-start-capture',
@@ -63,8 +63,8 @@ export class StartCaptureDialogComponent implements OnInit {
     onYesClick() {
         let isAnyRunningDevice = false;
         this.link.nodes.forEach((linkNode: LinkNode) => {
-            let node = this.nodesDataSource.get(linkNode.node_id);
-            if (node.status === 'started') isAnyRunningDevice = true;
+            const node = this.nodesDataSource.get(linkNode.node_id);
+            if (node.status === 'started') { isAnyRunningDevice = true; }
         });
 
         if (!isAnyRunningDevice) {
@@ -72,7 +72,7 @@ export class StartCaptureDialogComponent implements OnInit {
         } else if (this.inputForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {
-            let captureSettings: CapturingSettings = {
+            const captureSettings: CapturingSettings = {
                 capture_file_name: this.inputForm.get('fileName').value,
                 data_link_type: this.inputForm.get('linkType').value
             };

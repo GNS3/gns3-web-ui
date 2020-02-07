@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
-import { SymbolService } from '../../../../services/symbol.service';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Server } from '../../../../models/server';
 import { Symbol } from '../../../../models/symbol';
+import { SymbolService } from '../../../../services/symbol.service';
 
 
 @Component({
@@ -16,8 +16,8 @@ export class SymbolsComponent implements OnInit {
     
     symbols: Symbol[] = [];
     filteredSymbols: Symbol[] = [];
-    isSelected: string = '';
-    searchText: string = '';
+    isSelected = '';
+    searchText = '';
 
     constructor(
         private symbolService: SymbolService
@@ -55,25 +55,25 @@ export class SymbolsComponent implements OnInit {
     }
 
     private readSymbolFile(symbolInput) {
-        let file: File = symbolInput.files[0];
-        let fileName = symbolInput.files[0].name;
-        let fileReader: FileReader = new FileReader();
-        let imageToUpload = new Image();
+        const file: File = symbolInput.files[0];
+        const fileName = symbolInput.files[0].name;
+        const fileReader: FileReader = new FileReader();
+        const imageToUpload = new Image();
     
         fileReader.onloadend = () => {
-            let image = fileReader.result;
-            let svg = this.createSvgFileForImage(image, imageToUpload);
+            const image = fileReader.result;
+            const svg = this.createSvgFileForImage(image, imageToUpload);
             this.symbolService.add(this.server, fileName, svg).subscribe(() => {
                 this.loadSymbols();
             });
-        }
+        };
             
-        imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
+        imageToUpload.onload = () => { fileReader.readAsDataURL(file); };
         imageToUpload.src = window.URL.createObjectURL(file);
     }
 
     private createSvgFileForImage(image: string|ArrayBuffer, imageToUpload: HTMLImageElement) {
         return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\" 
-                width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`
+                width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`;
     }
 }

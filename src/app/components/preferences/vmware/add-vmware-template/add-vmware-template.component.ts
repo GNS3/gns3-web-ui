@@ -1,14 +1,14 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { v4 as uuid } from 'uuid';
-import { VmwareVm } from '../../../../models/vmware/vmware-vm';
+import { Server } from '../../../../models/server';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
+import { VmwareVm } from '../../../../models/vmware/vmware-vm';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { VmwareService } from '../../../../services/vmware.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
 
 @Component({
@@ -48,7 +48,7 @@ export class AddVmwareTemplateComponent implements OnInit {
                 this.templateMocksService.getVmwareTemplate().subscribe((template: VmwareTemplate) => {
                     this.vmwareTemplate = template;
                 });
-            })
+            });
         });
     }
 

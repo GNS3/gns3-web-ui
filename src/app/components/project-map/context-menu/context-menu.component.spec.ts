@@ -1,15 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ContextMenuComponent } from './context-menu.component';
-import { BrowserModule } from '@angular/platform-browser';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProjectService } from '../../../services/project.service';
-import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material';
+import { BrowserModule } from '@angular/platform-browser';
+import { ElectronService } from 'ngx-electron';
 import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Server } from '../../../models/server';
-import { ElectronService } from 'ngx-electron';
+import { ProjectService } from '../../../services/project.service';
+import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
+import { ContextMenuComponent } from './context-menu.component';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -49,9 +49,9 @@ describe('ContextMenuComponent', () => {
 
   it('should reset capabilities while opening menu for drawing', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;
-    let drawing = {} as Drawing;
+    const drawing = {} as Drawing;
     drawing.element = new RectElement();
-    var spy = spyOn<any>(component, 'resetCapabilities');
+    const spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
     component.openMenuForDrawing(drawing, 0, 0);
 
@@ -60,9 +60,9 @@ describe('ContextMenuComponent', () => {
 
   it('should set correct flag while drawing is text element', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;
-    let drawing = {} as Drawing;
+    const drawing = {} as Drawing;
     drawing.element = new TextElement();
-    var spy = spyOn<any>(component, 'resetCapabilities');
+    const spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
     component.openMenuForDrawing(drawing, 0, 0);
 
@@ -71,7 +71,7 @@ describe('ContextMenuComponent', () => {
 
   it('should reset capabilities while opening menu for list of elements', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;
-    var spy = spyOn<any>(component, 'resetCapabilities');
+    const spy = spyOn<any>(component, 'resetCapabilities');
     spyOn(component, 'setPosition').and.callFake(() => {});
     component.openMenuForListOfElements([], [], [], [], 0, 0);
 

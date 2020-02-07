@@ -1,16 +1,16 @@
-import { Component, Inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Observable, merge, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { Router } from '@angular/router';
-import { Server } from '../../models/server';
-import { ServerService } from '../../services/server.service';
-import { ServerDatabase } from '../../services/server.database';
-import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
-import { ServerManagementService } from '../../services/server-management.service';
-import { ElectronService } from 'ngx-electron';
 import { ChildProcessService } from 'ngx-childprocess';
+import { ElectronService } from 'ngx-electron';
+import { merge, Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Server } from '../../models/server';
+import { ServerManagementService } from '../../services/server-management.service';
+import { ServerDatabase } from '../../services/server.database';
+import { ServerService } from '../../services/server.service';
+import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
 
 
 @Component({
@@ -22,7 +22,7 @@ export class ServersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
   serverStatusSubscription: Subscription;
-  isElectronApp: boolean = false;
+  isElectronApp = false;
 
   constructor(
     private dialog: MatDialog,
@@ -41,7 +41,7 @@ export class ServersComponent implements OnInit, OnDestroy {
     this.serverService.findAll().then((servers: Server[]) => {
       servers.forEach((server) => {
         const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
-        if(serverIndex >= 0) {
+        if (serverIndex >= 0) {
           server.status = 'running';
         }
       });
@@ -49,8 +49,8 @@ export class ServersComponent implements OnInit, OnDestroy {
       servers.forEach((server) => {
         this.serverService.checkServerVersion(server).subscribe(
           (serverInfo) => {
-            if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
-              if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
+            if ((serverInfo.version.split('.')[1] >= 2) && (serverInfo.version.split('.')[0] >= 2)) {
+              if (!this.serverDatabase.find(server.name)) { this.serverDatabase.addServer(server); }
             }
           },
           error => {}
@@ -62,19 +62,19 @@ export class ServersComponent implements OnInit, OnDestroy {
 
     this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
       const server = this.serverDatabase.find(serverStatus.serverName);
-      if(!server) {
+      if (!server) {
         return;
       }
-      if(serverStatus.status === 'starting') {
+      if (serverStatus.status === 'starting') {
         server.status = 'starting';
       }
-      if(serverStatus.status === 'stopped') {
+      if (serverStatus.status === 'stopped') {
         server.status = 'stopped';
       }
-      if(serverStatus.status === 'errored') {
+      if (serverStatus.status === 'errored') {
         server.status = 'stopped';
       }
-      if(serverStatus.status === 'started') {
+      if (serverStatus.status === 'started') {
         server.status = 'running';
       }
       this.serverDatabase.update(server);
@@ -107,8 +107,8 @@ export class ServersComponent implements OnInit, OnDestroy {
   }
 
   getServerStatus(server: Server) {
-    if(server.location === 'local') {
-      if(server.status === undefined) {
+    if (server.location === 'local') {
+      if (server.status === undefined) {
         return 'stopped';
       }
       return server.status;

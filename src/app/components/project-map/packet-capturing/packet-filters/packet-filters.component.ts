@@ -1,20 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { Link } from '../../../../models/link';
-import { Server } from '../../../../models/server';
-import { Project } from '../../../../models/project';
-import { MatDialogRef, MatDialog } from '@angular/material';
-import { LinkService } from '../../../../services/link.service';
-import { FilterDescription } from '../../../../models/filter-description';
-import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
-import { Message } from '../../../../models/message';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { Filter } from '../../../../models/filter';
+import { FilterDescription } from '../../../../models/filter-description';
+import { Link } from '../../../../models/link';
+import { Message } from '../../../../models/message';
+import { Project } from '../../../../models/project';
+import { Server } from '../../../../models/server';
+import { LinkService } from '../../../../services/link.service';
+import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
 @Component({
     selector: 'app-packet-filters',
     templateUrl: './packet-filters.component.html',
     styleUrls: ['./packet-filters.component.scss']
 })
-export class PacketFiltersDialogComponent implements OnInit{
+export class PacketFiltersDialogComponent implements OnInit {
     server: Server;
     project: Project;
     link: Link;
@@ -27,7 +27,7 @@ export class PacketFiltersDialogComponent implements OnInit{
         private dialog: MatDialog
     ) {}
 
-    ngOnInit(){
+    ngOnInit() {
         this.linkService.getLink(this.server, this.link.project_id, this.link.link_id).subscribe((link: Link) => {
             this.link = link;
             this.filters = {
@@ -82,9 +82,9 @@ export class PacketFiltersDialogComponent implements OnInit{
             width: '500px',
             autoFocus: false
         });
-        let instance = dialogRef.componentInstance;
+        const instance = dialogRef.componentInstance;
         instance.title = 'Help for filters';
-        let messages: Message[] = [];
+        const messages: Message[] = [];
         this.availableFilters.forEach((filter: FilterDescription) => {
             messages.push({
                 name: filter.name,

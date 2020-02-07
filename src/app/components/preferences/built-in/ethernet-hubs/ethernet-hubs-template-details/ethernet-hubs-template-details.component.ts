@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
 import { Server } from '../../../../../models/server';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 
 @Component({
@@ -19,7 +19,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     ethernetHubTemplate: EthernetHubTemplate;
     numberOfPorts: number;
     inputForm: FormGroup;
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
 
     categories = [];
 
@@ -62,7 +62,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
             this.toasterService.error(`Fill all required fields`);
         } else {
             this.ethernetHubTemplate.ports_mapping = [];
-            for(let i=0; i<this.numberOfPorts; i++){
+            for (let i = 0; i < this.numberOfPorts; i++) {
                 this.ethernetHubTemplate.ports_mapping.push({
                     name: `Ethernet${i}`,
                     port_number: i

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
-import { ElectronService } from 'ngx-electron';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { ElectronService } from 'ngx-electron';
+import { ToasterService } from '../../../services/toaster.service';
 
 
 @Component({
@@ -14,7 +14,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 export class ScreenshotDialogComponent implements OnInit {
   nameForm: FormGroup;
   isPngAvailable: boolean;
-  filetype: string = 'svg';
+  filetype = 'svg';
 
   constructor(
     public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
@@ -26,7 +26,7 @@ export class ScreenshotDialogComponent implements OnInit {
     this.nameForm = this.formBuilder.group({
       screenshotName: new FormControl(null, [Validators.required])
     });
-    this.isPngAvailable = this.electronService.isWindows || (this.deviceService.getDeviceInfo().os==='Windows');
+    this.isPngAvailable = this.electronService.isWindows || (this.deviceService.getDeviceInfo().os === 'Windows');
   }
 
   ngOnInit() {}
@@ -40,7 +40,7 @@ export class ScreenshotDialogComponent implements OnInit {
         return;
     }
 
-    let screenshotProperties: Screenshot = {
+    const screenshotProperties: Screenshot = {
         name: this.nameForm.get('screenshotName').value,
         filetype: this.filetype
     };

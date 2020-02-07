@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { TracengService } from '../../../../services/traceng.service';
 import { TracengTemplate } from '../../../../models/templates/traceng-template';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { TracengService } from '../../../../services/traceng.service';
 
 
 @Component({
@@ -17,7 +17,7 @@ export class TracengTemplateDetailsComponent implements OnInit {
     server: Server;
     tracengTemplate: TracengTemplate;
     inputForm: FormGroup;
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
 
     constructor(
         private route: ActivatedRoute,

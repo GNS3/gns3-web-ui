@@ -67,7 +67,7 @@ export class IosConfigurationService {
             "c3745": 256,
             "c7200": 512
         };
-    };
+    }
 
     getAvailablePlatforms() {
         return ["c1700", "c2600", "c2691", "c3725", "c3745", "c3600", "c7200"];

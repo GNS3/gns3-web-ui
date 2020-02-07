@@ -1,62 +1,62 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProjectMapComponent } from './project-map.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatBottomSheetModule } from '@angular/material';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ServerService } from '../../services/server.service';
-import { ProjectService } from '../../services/project.service';
-import { SettingsService } from '../../services/settings.service';
-import { NodeService } from '../../services/node.service';
-import { LinkService } from '../../services/link.service';
-import { DrawingService } from '../../services/drawing.service';
-import { ProgressService } from '../../common/progress/progress.service';
-import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
-import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
-import { NodeWidget } from '../../cartography/widgets/node';
-import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
-import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
-import { LinksDataSource } from '../../cartography/datasources/links-datasource';
-import { DrawingsDataSource } from '../../cartography/datasources/drawings-datasource';
 import { CommonModule } from '@angular/common';
-import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MatBottomSheetModule, MatCheckboxModule, MatDialogModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MockedSettingsService } from '../../services/settings.service.spec';
-import { MockedServerService } from '../../services/server.service.spec';
-import { MockedProjectService } from '../../services/project.service.spec';
+import { BehaviorSubject, of } from 'rxjs';
 import { Observable } from 'rxjs/Rx';
-import { Drawing } from '../../cartography/models/drawing';
+import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
-import { of, BehaviorSubject } from 'rxjs';
-import { Server } from '../../models/server';
-import { Node } from '../../cartography/models/node';
-import { ToolsService } from '../../services/tools.service';
-import { DrawingsWidget } from '../../cartography/widgets/drawings';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
-import { SelectionManager } from '../../cartography/managers/selection-manager';
-import { SelectionTool } from '../../cartography/tools/selection-tool';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
-import { Link } from '../../models/link';
-import { Project } from '../../models/project';
-import { MovingEventSource } from '../../cartography/events/moving-event-source';
-import { CapturingSettings } from '../../models/capturingSettings';
-import { LinkWidget } from '../../cartography/widgets/link';
-import { MapScaleService } from '../../services/mapScale.service';
-import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
-import { LabelWidget } from '../../cartography/widgets/label';
-import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
-import { MapSettingsService } from '../../services/mapsettings.service';
-import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
-import { MockedToasterService } from '../../services/toaster.service.spec';
-import { ToasterService } from '../../services/toaster.service';
-import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
-import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
+import { DrawingsDataSource } from '../../cartography/datasources/drawings-datasource';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
+import { MapDrawingsDataSource, MapLinksDataSource, MapNodesDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
+import { SelectionManager } from '../../cartography/managers/selection-manager';
+import { Drawing } from '../../cartography/models/drawing';
+import { Node } from '../../cartography/models/node';
+import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
+import { SelectionTool } from '../../cartography/tools/selection-tool';
+import { DrawingsWidget } from '../../cartography/widgets/drawings';
+import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
+import { LabelWidget } from '../../cartography/widgets/label';
+import { LinkWidget } from '../../cartography/widgets/link';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
+import { NodeWidget } from '../../cartography/widgets/node';
+import { ProgressService } from '../../common/progress/progress.service';
+import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
+import { CapturingSettings } from '../../models/capturingSettings';
+import { Link } from '../../models/link';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
+import { DrawingService } from '../../services/drawing.service';
+import { LinkService } from '../../services/link.service';
+import { MapScaleService } from '../../services/mapScale.service';
+import { MapSettingsService } from '../../services/mapsettings.service';
+import { NodeService } from '../../services/node.service';
 import { NotificationService } from '../../services/notification.service';
+import { ProjectService } from '../../services/project.service';
+import { MockedProjectService } from '../../services/project.service.spec';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { ServerService } from '../../services/server.service';
+import { MockedServerService } from '../../services/server.service.spec';
+import { SettingsService } from '../../services/settings.service';
+import { MockedSettingsService } from '../../services/settings.service.spec';
+import { ToasterService } from '../../services/toaster.service';
+import { MockedToasterService } from '../../services/toaster.service.spec';
+import { ToolsService } from '../../services/tools.service';
+import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
+import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
+import { ProjectMapComponent } from './project-map.component';
 
 export class MockedProgressService {
   public activate() {}
@@ -173,7 +173,7 @@ export class MockedLinkService {
     return of({});
   }
 
-  deleteLink(_server: Server, link: Link){
+  deleteLink(_server: Server, link: Link) {
     return of({});
   }
 
@@ -241,13 +241,13 @@ export class MockedLinksDataSource {
 describe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
-  let drawingService = new MockedDrawingService();
-  let drawingsDataSource = new MockedDrawingsDataSource();
-  let nodesDataSource = new MockedNodesDataSource();
-  let linksDataSource = new MockedLinksDataSource();
-  let mockedToasterService = new MockedToasterService();
+  const drawingService = new MockedDrawingService();
+  const drawingsDataSource = new MockedDrawingsDataSource();
+  const nodesDataSource = new MockedNodesDataSource();
+  const linksDataSource = new MockedLinksDataSource();
+  const mockedToasterService = new MockedToasterService();
   let nodeCreatedLabelStylesFixer;
-  let mockedRouter = new MockedActivatedRoute;
+  const mockedRouter = new MockedActivatedRoute;
 
   beforeEach(async(() => {
     nodeCreatedLabelStylesFixer = {
@@ -311,7 +311,7 @@ describe('ProjectMapComponent', () => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
     component.projectMapMenuComponent = { 
-      resetDrawToolChoice(){}
+      resetDrawToolChoice() {}
     } as ProjectMapMenuComponent;
 
     component.ws = {
@@ -328,7 +328,7 @@ describe('ProjectMapComponent', () => {
   });
 
   it('should hide draw tools when hide menu is called', () => {
-    var dummyElement = document.createElement('map');
+    const dummyElement = document.createElement('map');
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
       return [dummyElement];
     });

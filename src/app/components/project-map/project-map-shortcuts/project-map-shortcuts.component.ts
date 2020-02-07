@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { HotkeysService, Hotkey } from 'angular2-hotkeys';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 
-import { SelectionManager } from '../../../cartography/managers/selection-manager';
-import { NodeService } from '../../../services/node.service';
-import { Server } from '../../../models/server';
-import { ToasterService } from '../../../services/toaster.service';
-import { Project } from '../../../models/project';
-import { ProjectService } from '../../../services/project.service';
-import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
+import { SelectionManager } from '../../../cartography/managers/selection-manager';
+import { MapNode } from '../../../cartography/models/map/map-node';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { NodeService } from '../../../services/node.service';
+import { ProjectService } from '../../../services/project.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-project-map-shortcuts',

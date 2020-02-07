@@ -1,13 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConsoleComponent } from './console.component';
-import { MatFormFieldModule, MatCardModule, MatInputModule } from '@angular/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
 import { ConsoleService } from '../../../services/settings/console.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
+import { ConsoleComponent } from './console.component';
 
 
 describe('ConsoleComponent', () => {
@@ -53,7 +53,7 @@ describe('ConsoleComponent', () => {
   it('should set default command', () => {
     component.ngOnInit();
     expect(component.consoleForm.value.command).toEqual('command');
-  })
+  });
 
   it('should go back', () => {
     component.goBack();

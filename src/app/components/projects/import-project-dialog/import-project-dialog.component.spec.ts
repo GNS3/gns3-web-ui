@@ -1,26 +1,26 @@
+import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImportProjectDialogComponent } from './import-project-dialog.component';
-import { Server } from '../../../models/server';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
-  MatInputModule,
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+  MatFormFieldModule,
   MatIconModule,
+  MatInputModule,
   MatSortModule,
   MatTableModule,
-  MatTooltipModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA
+  MatTooltipModule
 } from '@angular/material';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { FileUploadModule, FileSelectDirective, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { ProjectService } from '../../../services/project.service';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { FileItem, FileSelectDirective, FileUploadModule, ParsedResponseHeaders } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
+import { ImportProjectDialogComponent } from './import-project-dialog.component';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -139,7 +139,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should call uploading item with correct arguments', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    const fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
     fileSelectDirective.uploader.queue.push(fileItem);
     spyOn(fileSelectDirective.uploader, 'uploadItem');
 
@@ -149,7 +149,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should handle file change event', () => {
-    let input = fixture.debugElement.query(By.css('input[type=file]')).nativeElement;
+    const input = fixture.debugElement.query(By.css('input[type=file]')).nativeElement;
     spyOn(component, 'uploadProjectFile');
 
     input.dispatchEvent(new Event('change'));
@@ -178,7 +178,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should navigate to progress view after clicking import', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    const fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
     fileSelectDirective.uploader.queue.push(fileItem);
 
     component.onImportClick();
@@ -218,9 +218,9 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should show delete button after selecting project', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    const fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
     fileSelectDirective.uploader.queue.push(fileItem);
-    let event = {
+    const event = {
       target: {
         files: [{ name: 'uploadedFile' }]
       }
@@ -231,9 +231,9 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should hide delete button after deselecting project', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    const fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
     fileSelectDirective.uploader.queue.push(fileItem);
-    let event = {
+    const event = {
       target: {
         files: [{ name: 'uploadedFile' }]
       }

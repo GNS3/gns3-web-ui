@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }
-    let theme = localStorage.getItem('theme');
+    const theme = localStorage.getItem('theme');
     if (theme === 'light') {
       this.themeService.setDarkMode(false);
     } else {

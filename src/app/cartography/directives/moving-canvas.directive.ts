@@ -1,8 +1,8 @@
-import { HostListener, ElementRef, Renderer, Directive, Input, OnInit, OnDestroy } from '@angular/core'
+import { Directive, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer } from '@angular/core';
+import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
-import { select } from 'd3-selection';
 
 @Directive({
     selector: '[movingCanvas]',
@@ -11,7 +11,7 @@ export class MovingCanvasDirective implements OnInit, OnDestroy {
     private mouseupListener: Function;
     private mousemoveListener: Function;
     private movingModeState: Subscription;
-    private activated: boolean = false;
+    private activated = false;
     
     constructor(
         private element: ElementRef,
@@ -22,7 +22,7 @@ export class MovingCanvasDirective implements OnInit, OnDestroy {
     ngOnInit() {
         this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
             this.activated = event;
-            if (!event) this.removelisteners();
+            if (!event) { this.removelisteners(); }
         });
     }
 

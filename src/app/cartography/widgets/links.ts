@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 import { Layer } from '../models/layer';
-import { LinkWidget } from './link';
 import { MapLink } from '../models/map/map-link';
+import { SVGSelection } from '../models/types';
+import { LinkWidget } from './link';
+import { Widget } from './widget';
 
 @Injectable()
 export class LinksWidget implements Widget {

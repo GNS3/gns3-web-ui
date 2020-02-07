@@ -2,12 +2,12 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class VpcsConfigurationService {
-    getConsoleTypes(){
+    getConsoleTypes() {
         return ['telnet', 'none'];
     }
 
-    getCategories(){
-        let categories = [["Default", "guest"],
+    getCategories() {
+        const categories = [["Default", "guest"],
             ["Routers", "routers"],
             ["Switches", "switches"],
             ["End devices", "end_devices"],

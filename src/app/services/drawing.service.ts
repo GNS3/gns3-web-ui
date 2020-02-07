@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Drawing } from '../cartography/models/drawing';
 import { Observable } from 'rxjs';
+import { Drawing } from '../cartography/models/drawing';
 
 import 'rxjs/add/operator/map';
+import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
+import { Project } from '../models/project';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
-import { Project } from '../models/project';
-import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 
 @Injectable()
 export class DrawingService {
@@ -17,7 +17,7 @@ export class DrawingService {
 
   add(server: Server, project_id: string, x: number, y: number, svg: string) {
     return this.httpServer.post<Drawing>(server, `/projects/${project_id}/drawings`, {
-      svg: svg,
+      svg,
       x: Math.round(x),
       y: Math.round(y),
       z: 1
@@ -41,11 +41,11 @@ export class DrawingService {
     if (project.snap_to_grid) {
       drawing.element = this.svgToDrawingConverter.convert(drawing.svg);
 
-      xPosition = Math.round((xPosition + drawing.element.width/2) / project.drawing_grid_size) * project.drawing_grid_size;
-      yPosition = Math.round((yPosition + drawing.element.width/2) / project.drawing_grid_size) * project.drawing_grid_size;
+      xPosition = Math.round((xPosition + drawing.element.width / 2) / project.drawing_grid_size) * project.drawing_grid_size;
+      yPosition = Math.round((yPosition + drawing.element.width / 2) / project.drawing_grid_size) * project.drawing_grid_size;
 
-      xPosition = Math.round(xPosition - drawing.element.width/2);
-      yPosition = Math.round(yPosition - drawing.element.height/2);
+      xPosition = Math.round(xPosition - drawing.element.width / 2);
+      yPosition = Math.round(yPosition - drawing.element.height / 2);
     }
 
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
@@ -56,7 +56,7 @@ export class DrawingService {
 
   updateSizeAndPosition(server: Server, drawing: Drawing, x: number, y: number, svg: string): Observable<Drawing> {
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
-      svg: svg,
+      svg,
       x: Math.round(x),
       y: Math.round(y)
     });
@@ -64,7 +64,7 @@ export class DrawingService {
 
   updateText(server: Server, drawing: Drawing, svg: string): Observable<Drawing> {
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
-      svg: svg,
+      svg,
       x: Math.round(drawing.x),
       y: Math.round(drawing.y),
       z: drawing.z

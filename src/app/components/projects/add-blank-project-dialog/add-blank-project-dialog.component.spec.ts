@@ -1,21 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
-import { Server } from '../../../models/server';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
-  MatDialogModule,
-  MatInputModule,
-  MatFormFieldModule,
-  MatDialogRef,
   MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+  MatFormFieldModule,
+  MatInputModule,
   MatSnackBarModule
 } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ProjectService } from '../../../services/project.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Router } from '@angular/router';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
-import { Router } from '@angular/router';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
+import { ToasterService } from '../../../services/toaster.service';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -49,7 +49,7 @@ export class MockedProjectService {
     return of(this.projects.pop);
   }
 
-  isReadOnly(project: Project){
+  isReadOnly(project: Project) {
     return false;
   }
 }
@@ -58,13 +58,13 @@ describe('AddBlankProjectDialogComponent', () => {
   let component: AddBlankProjectDialogComponent;
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
   let server: Server;
-  let router = {
+  const router = {
     navigate: jasmine.createSpy('navigate')
   };
-  let toaster = {
+  const toaster = {
     success: jasmine.createSpy('success')
   };
-  let dialogRef = {
+  const dialogRef = {
     close: jasmine.createSpy('close')
   };
 

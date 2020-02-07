@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
+import { Component, Input, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
+import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
 
 
 @Component({
@@ -37,7 +37,7 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
-        })
+        });
     }
 
     getConfiguration() {

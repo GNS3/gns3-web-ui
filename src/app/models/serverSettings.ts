@@ -4,9 +4,9 @@ import { Dynamips } from './server-settings-models/dynamips';
 import { GraphicsView } from './server-settings-models/graphics-view';
 import { IOU } from './server-settings-models/iou';
 import { Qemu } from './server-settings-models/qemu';
+import { VirtualBox } from './server-settings-models/virtual-box';
 import { VMware } from './server-settings-models/vmware';
 import { VPCS } from './server-settings-models/vpcs';
-import { VirtualBox } from './server-settings-models/virtual-box';
 
 export class ServerSettings {
     Builtin: Builtin;
@@ -18,5 +18,5 @@ export class ServerSettings {
     VMware: VMware;
     VPCS: VPCS;
     VirtualBox:  VirtualBox;
-    modification_uuid: string
+    modification_uuid: string;
 }

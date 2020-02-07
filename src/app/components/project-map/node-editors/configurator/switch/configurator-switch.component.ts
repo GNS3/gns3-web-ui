@@ -1,10 +1,10 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
 
 
 @Component({
@@ -23,12 +23,12 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     nodeMappings = new Map<string, string>();
     nodeMappingsDataSource: NodeMapping[] = [];
     dataSource = [];
-    displayedColumns = ['portIn', 'portOut', 'actions']
+    displayedColumns = ['portIn', 'portOut', 'actions'];
 
-    sourcePort: string = '';
-    sourceDlci: string = '';
-    destinationPort: string = '';
-    destinationDlci: string = '';
+    sourcePort = '';
+    sourceDlci = '';
+    destinationPort = '';
+    destinationDlci = '';
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
@@ -53,7 +53,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
             this.node = node;
             this.name = node.name;
 
-            let mappings = node.properties.mappings;
+            const mappings = node.properties.mappings;
             Object.keys(mappings).forEach(key => {
                 this.nodeMappings.set(key, mappings[key]);
             });
@@ -73,7 +73,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 
     add() {
         if (this.inputForm.valid) {
-            let nodeMapping: NodeMapping = {
+            const nodeMapping: NodeMapping = {
                 portIn: `${this.sourcePort}:${this.sourceDlci}`,
                 portOut: `${this.destinationPort}:${this.destinationDlci}`
             };
@@ -97,8 +97,8 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     }
 
     strMapToObj(strMap) {
-        let obj = Object.create(null);
-        for (let [k,v] of strMap) {
+        const obj = Object.create(null);
+        for (const [k, v] of strMap) {
           obj[k] = v;
         }
         return obj;
@@ -111,7 +111,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
                 this.nodeMappings.set(elem.portIn, elem.portOut);
             });
 
-            this.node.properties.mappings = Array.from(this.nodeMappings).reduce((obj, [key, value]) => (Object.assign(obj, { [key]: value })), {});
+            this.node.properties.mappings = Array.from(this.nodeMappings).reduce((obj, [key, value]) => ({...obj,  [key]: value}), {});
 
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
                 this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -128,6 +128,6 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 }
 
 export interface NodeMapping {
-    portIn: string,
-    portOut: string
+    portIn: string;
+    portOut: string;
 }

@@ -1,12 +1,12 @@
 import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VpcsService } from '../../../../services/vpcs.service';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
+import { VpcsService } from '../../../../services/vpcs.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     server: Server;
     vpcsTemplate: VpcsTemplate;
     inputForm: FormGroup;
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
     consoleTypes: string[] = [];
     categories = [];
 

@@ -1,15 +1,15 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material';
 import { Node } from '../../../../../cartography/models/node';
+import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
+import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
+import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
 import { Server } from '../../../../../models/server';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
-import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
-import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
 
 
 @Component({
@@ -34,8 +34,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
-    tapInterface: string = '';
-    ethernetInterface: string = '';
+    tapInterface = '';
+    ethernetInterface = '';
     ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
 
     @ViewChild("udpTunnels", {static: false}) udpTunnels: UdpTunnelsComponent;
@@ -66,7 +66,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
             
             this.portsMappingUdp = this.node.properties.ports_mapping
                 .filter((elem) => elem.type === 'udp');
-        })
+        });
     }
 
     getConfiguration() {

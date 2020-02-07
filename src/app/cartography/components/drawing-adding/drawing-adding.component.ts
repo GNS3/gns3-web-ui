@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Context } from '../../models/context';
+import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
-import { Subscription } from 'rxjs';
+import { Context } from '../../models/context';
 
 @Component({
   selector: 'app-drawing-adding',
@@ -24,9 +24,9 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
   }
 
   activate() {
-    let listener = (event: MouseEvent) => {
-      let x = (event.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x))/this.context.transformation.k;
-      let y = (event.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y))/this.context.transformation.k;
+    const listener = (event: MouseEvent) => {
+      const x = (event.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) / this.context.transformation.k;
+      const y = (event.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y)) / this.context.transformation.k;
 
       this.drawingsEventSource.pointToAddSelected.emit(new AddedDataEvent(x, y));
       this.deactivate();

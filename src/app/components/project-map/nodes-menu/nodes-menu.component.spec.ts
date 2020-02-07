@@ -1,25 +1,25 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { NodesMenuComponent } from './nodes-menu.component';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
-import { MatButtonModule, MatIconModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NodeService } from '../../../services/node.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonModule, MatIconModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ElectronService } from 'ngx-electron';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { NodeService } from '../../../services/node.service';
 import { ServerService } from '../../../services/server.service';
 import { SettingsService } from '../../../services/settings.service';
-import { ElectronService } from 'ngx-electron';
+import { ToasterService } from '../../../services/toaster.service';
+import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
+import { NodesMenuComponent } from './nodes-menu.component';
 
 describe('NodesMenuComponent', () => {
     let component: NodesMenuComponent;
     let fixture: ComponentFixture<NodesMenuComponent>;
-    let mockedToasterService: MockedToasterService = new MockedToasterService();
-    let mockedNodeService: MockedNodeService = new MockedNodeService();
-    let mockedNodesDataSource: MockedNodesDataSource =  new MockedNodesDataSource();
+    const mockedToasterService: MockedToasterService = new MockedToasterService();
+    const mockedNodeService: MockedNodeService = new MockedNodeService();
+    const mockedNodesDataSource: MockedNodesDataSource =  new MockedNodesDataSource();
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

@@ -1,8 +1,8 @@
 import { TextElement } from '../models/drawings/text-element';
 import { MapDrawing } from '../models/map/map-drawing';
+import { MapLabel } from '../models/map/map-label';
 import { MapLink } from '../models/map/map-link';
 import { MapLinkNode } from '../models/map/map-link-node';
-import { MapLabel } from '../models/map/map-label';
 
 export class DataEventSource<T> {
   constructor(public datum: T, public dx: number, public dy: number) {}

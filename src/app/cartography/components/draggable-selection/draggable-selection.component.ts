@@ -1,23 +1,23 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Subscription, merge } from 'rxjs';
-import { NodesWidget } from '../../widgets/nodes';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { LinksWidget } from '../../widgets/links';
-import { SelectionManager } from '../../managers/selection-manager';
-import { NodesEventSource } from '../../events/nodes-event-source';
-import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { GraphDataManager } from '../../managers/graph-data-manager';
-import { DraggableStart, DraggableDrag, DraggableEnd } from '../../events/draggable';
-import { MapNode } from '../../models/map/map-node';
-import { MapDrawing } from '../../models/map/map-drawing';
-import { DraggedDataEvent } from '../../events/event-source';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { select } from 'd3-selection';
-import { MapLabel } from '../../models/map/map-label';
-import { LabelWidget } from '../../widgets/label';
-import { InterfaceLabelWidget } from '../../widgets/interface-label';
-import { MapLinkNode } from '../../models/map/map-link-node';
-import { LinksEventSource } from '../../events/links-event-source';
+import { merge, Subscription } from 'rxjs';
 import { MapSettingsService } from '../../../services/mapsettings.service';
+import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
+import { DrawingsEventSource } from '../../events/drawings-event-source';
+import { DraggedDataEvent } from '../../events/event-source';
+import { LinksEventSource } from '../../events/links-event-source';
+import { NodesEventSource } from '../../events/nodes-event-source';
+import { GraphDataManager } from '../../managers/graph-data-manager';
+import { SelectionManager } from '../../managers/selection-manager';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { MapLabel } from '../../models/map/map-label';
+import { MapLinkNode } from '../../models/map/map-link-node';
+import { MapNode } from '../../models/map/map-node';
+import { DrawingsWidget } from '../../widgets/drawings';
+import { InterfaceLabelWidget } from '../../widgets/interface-label';
+import { LabelWidget } from '../../widgets/label';
+import { LinksWidget } from '../../widgets/links';
+import { NodesWidget } from '../../widgets/nodes';
 
 @Component({
   selector: 'app-draggable-selection',
@@ -29,7 +29,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
   private drag: Subscription;
   private end: Subscription;
   private mapSettingsSubscription: Subscription;
-  private isMapLocked: boolean = false;
+  private isMapLocked = false;
 
   @Input('svg') svg: SVGSVGElement;
 
@@ -95,7 +95,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
       if (!this.isMapLocked) {
         const selected = this.selectionManager.getSelected();
         // update nodes
-        let mapNodes = selected.filter(item => item instanceof MapNode);
+        const mapNodes = selected.filter(item => item instanceof MapNode);
         const lockedNodes = mapNodes.filter((item: MapNode) => item.locked);
         const selectedNodes = mapNodes.filter((item: MapNode) => !item.locked);
         selectedNodes.forEach((node: MapNode) => {
@@ -118,7 +118,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         });
 
         // update drawings
-        let mapDrawings = selected.filter(item => item instanceof MapDrawing);
+        const mapDrawings = selected.filter(item => item instanceof MapDrawing);
         const selectedDrawings = mapDrawings.filter((item: MapDrawing) => !item.locked);
         selectedDrawings.forEach((drawing: MapDrawing) => {
           drawing.x += evt.dx;
@@ -127,7 +127,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         });
 
         // update labels
-        let mapLabels = selected.filter(item => item instanceof MapLabel);
+        const mapLabels = selected.filter(item => item instanceof MapLabel);
         const selectedLabels = mapLabels.filter((item: MapLabel) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLabels.forEach((label: MapLabel) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
@@ -142,7 +142,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
         });
 
         // update interface labels
-        let mapLinkNodes = selected.filter(item => item instanceof MapLinkNode);
+        const mapLinkNodes = selected.filter(item => item instanceof MapLinkNode);
         const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLinkNodes.forEach((interfaceLabel: MapLinkNode) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === interfaceLabel.nodeId).length > 0;
@@ -176,20 +176,20 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
       if (!this.isMapLocked) {
         const selected = this.selectionManager.getSelected();
 
-        let mapNodes = selected.filter(item => item instanceof MapNode);
+        const mapNodes = selected.filter(item => item instanceof MapNode);
         const lockedNodes = mapNodes.filter((item: MapNode) => item.locked);
         const selectedNodes = mapNodes.filter((item: MapNode) => !item.locked);
         selectedNodes.forEach((item: MapNode) => {
           this.nodesEventSource.dragged.emit(new DraggedDataEvent<MapNode>(item, evt.dx, evt.dy));
         });
 
-        let mapDrawings = selected.filter(item => item instanceof MapDrawing);
+        const mapDrawings = selected.filter(item => item instanceof MapDrawing);
         const selectedDrawings = mapDrawings.filter((item: MapDrawing) => !item.locked);
         selectedDrawings.forEach((item: MapDrawing) => {
           this.drawingsEventSource.dragged.emit(new DraggedDataEvent<MapDrawing>(item, evt.dx, evt.dy));
         });
 
-        let mapLabels = selected.filter(item => item instanceof MapLabel);
+        const mapLabels = selected.filter(item => item instanceof MapLabel);
         const selectedLabels = mapLabels.filter((item: MapLabel) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLabels.forEach((label: MapLabel) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
@@ -200,8 +200,8 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
           this.nodesEventSource.labelDragged.emit(new DraggedDataEvent<MapLabel>(label, evt.dx, evt.dy));
         });
 
-        let mapLinkNodes = selected.filter(item => item instanceof MapLinkNode);
-        const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0)
+        const mapLinkNodes = selected.filter(item => item instanceof MapLinkNode);
+        const selectedLinkNodes = mapLinkNodes.filter((item: MapLinkNode) => lockedNodes.filter((node) => node.id === item.nodeId).length === 0);
         selectedLinkNodes.forEach((label: MapLinkNode) => {
           const isParentNodeSelected = selectedNodes.filter(node => node.id === label.nodeId).length > 0;
           if (isParentNodeSelected) {

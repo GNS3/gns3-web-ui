@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { Converter } from '../converter';
-import { MapDrawing } from '../../models/map/map-drawing';
-import { RectElement } from '../../models/drawings/rect-element';
 import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { LineElement } from '../../models/drawings/line-element';
+import { RectElement } from '../../models/drawings/rect-element';
 import { TextElement } from '../../models/drawings/text-element';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { Converter } from '../converter';
 
 @Injectable()
 export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
@@ -36,7 +36,7 @@ export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
       }\" font-size=\"${mapDrawing.element.font_size}\" font-weight=\"${mapDrawing.element.font_weight}\">${
         mapDrawing.element.text
       }</text>`;
-    } else return '';
+    } else { return ''; }
 
     return `<svg height=\"${mapDrawing.element.height}\" width=\"${mapDrawing.element.width}\">${elem}</svg>`;
   }

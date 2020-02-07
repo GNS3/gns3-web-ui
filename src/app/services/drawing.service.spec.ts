@@ -1,22 +1,22 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
-import { Drawing } from '../cartography/models/drawing';
-import { getTestServer } from './testing';
-import { DrawingService } from './drawing.service';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { Project } from '../models/project';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
+import { Drawing } from '../cartography/models/drawing';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { DrawingService } from './drawing.service';
+import { HttpServer } from './http-server.service';
+import { getTestServer } from './testing';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let server: Server;
-  let project: Project = new Project();
+  const project: Project = new Project();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -72,7 +72,7 @@ describe('DrawingService', () => {
     const drawing = new Drawing();
     drawing.project_id = 'myproject';
     drawing.drawing_id = 'id';
-    let svgSample = '<svg><test></svg>';
+    const svgSample = '<svg><test></svg>';
 
     service.updateSizeAndPosition(server, drawing, 100, 100, svgSample).subscribe();
 
@@ -91,7 +91,7 @@ describe('DrawingService', () => {
       const drawing = new Drawing();
       drawing.project_id = 'myproject';
       drawing.drawing_id = 'id';
-      let svgSample = '<svg><test></svg>';
+      const svgSample = '<svg><test></svg>';
 
       service.updateSizeAndPosition(server, drawing, 100.1, 100.6, svgSample).subscribe();
 

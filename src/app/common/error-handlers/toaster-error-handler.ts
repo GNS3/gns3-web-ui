@@ -1,5 +1,5 @@
-import { RavenErrorHandler } from './raven-error-handler';
 import { ToasterService } from '../../services/toaster.service';
+import { RavenErrorHandler } from './raven-error-handler';
 
 export class ToasterErrorHandler extends RavenErrorHandler {
   handleError(err: any): void {

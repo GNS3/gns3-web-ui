@@ -1,23 +1,23 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { AddVmwareTemplateComponent } from './add-vmware-template.component';
-import { VmwareService } from '../../../../services/vmware.service';
-import { VmwareVm } from '../../../../models/vmware/vmware-vm';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import { Server } from '../../../../models/server';
+import { VmwareTemplate } from '../../../../models/templates/vmware-template';
+import { VmwareVm } from '../../../../models/vmware/vmware-vm';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { VmwareService } from '../../../../services/vmware.service';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { AddVmwareTemplateComponent } from './add-vmware-template.component';
 
 export class MockedVmwareService {
     public addTemplate(server: Server, vmwareTemplate: VmwareTemplate) {
@@ -33,10 +33,10 @@ describe('AddVmwareTemplateComponent', () => {
     let component: AddVmwareTemplateComponent;
     let fixture: ComponentFixture<AddVmwareTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVmwareService = new MockedVmwareService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedVmwareService = new MockedVmwareService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -77,7 +77,7 @@ describe('AddVmwareTemplateComponent', () => {
 
     it('should call save template', () => {
         spyOn(mockedVmwareService, 'addTemplate').and.returnValue(of({} as VmwareTemplate));
-        let template: VmwareVm = {
+        const template: VmwareVm = {
             vmname: 'test',
             vmx_path: ''
         };

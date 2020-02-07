@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 
 import { select } from 'd3-selection';
 
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
 import { LinkStatus } from '../models/link-status';
 import { MapLink } from '../models/map/map-link';
+import { SVGSelection } from '../models/types';
+import { Widget } from './widget';
 
 @Injectable()
 export class InterfaceStatusWidget implements Widget {

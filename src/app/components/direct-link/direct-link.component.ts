@@ -1,8 +1,8 @@
-import { Component, OnInit, ElementRef, ViewChild, ViewEncapsulation, Input, Output, EventEmitter } from '@angular/core';
-import { ServerService } from '../../services/server.service';
-import { ServerDatabase } from '../../services/server.database';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Server } from '../../models/server';
+import { ServerDatabase } from '../../services/server.database';
+import { ServerService } from '../../services/server.service';
 import { ToasterService } from '../../services/toaster.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class DirectLinkComponent implements OnInit {
     if (server) {
         this.router.navigate(['/server', server.id, 'project', projectId]);
     } else { 
-        let serverToAdd: Server = new Server();
+        const serverToAdd: Server = new Server();
         serverToAdd.host = serverIp;
         serverToAdd.port = serverPort;
         serverToAdd.location = 'bundled';

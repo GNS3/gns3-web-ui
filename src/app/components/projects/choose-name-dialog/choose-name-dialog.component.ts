@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
+import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ProjectService } from '../../../services/project.service';
-import { Project } from '../../../models/project';
 
 
 @Component({
@@ -12,7 +12,7 @@ import { Project } from '../../../models/project';
 })
 export class ChooseNameDialogComponent implements OnInit {
     @Input() server: Server;
-    @Input() project: Project
+    @Input() project: Project;
     name: string;
 
     constructor(

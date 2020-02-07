@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
+import { Node } from '../../../cartography/models/node';
 import { Message } from '../../../models/message';
 import { Server } from '../../../models/server';
-import { Node } from '../../../cartography/models/node';
 import { Symbol } from '../../../models/symbol';
 import { NodeService } from '../../../services/node.service';
 
@@ -35,7 +35,7 @@ export class ChangeSymbolDialogComponent implements OnInit {
 
     onSelectClick() {
         this.nodeService.updateSymbol(this.server, this.node, this.symbol).subscribe(() => {
-            this.onCloseClick()
+            this.onCloseClick();
         });
     }
 }

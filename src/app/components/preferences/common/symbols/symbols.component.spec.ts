@@ -1,14 +1,14 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatIconModule, MatToolbarModule, MatMenuModule } from '@angular/material';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SymbolsComponent } from './symbols.component';
-import { SymbolService } from '../../../../services/symbol.service';
 import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { SearchFilter } from '../../../../filters/searchFilter.pipe';
+import { SymbolService } from '../../../../services/symbol.service';
+import { SymbolsComponent } from './symbols.component';
 
 export class MockedSymbolService {
     public list() {
@@ -16,14 +16,14 @@ export class MockedSymbolService {
     }
 
     public raw() {
-      return of('<svg></svg>')
+      return of('<svg></svg>');
     }
 }
 
 describe('Symbols component', () => {
     let component: SymbolsComponent;
     let fixture: ComponentFixture<SymbolsComponent>;
-    let mockedSymbolsService = new MockedSymbolService;
+    const mockedSymbolsService = new MockedSymbolService;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

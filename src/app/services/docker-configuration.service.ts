@@ -7,7 +7,7 @@ export class DockerConfigurationService {
     }
 
     getCategories() {
-        let categories = [["Default", "guest"],
+        const categories = [["Default", "guest"],
             ["Routers", "routers"],
             ["Switches", "switches"],
             ["End devices", "end_devices"],
@@ -17,7 +17,7 @@ export class DockerConfigurationService {
     }
 
     getConsoleResolutions() {
-        let consoleResolutions = [
+        const consoleResolutions = [
             '1920x1080',
             '1366x768',
             '1280x1024',

@@ -1,20 +1,20 @@
+import { TemplatePortalDirective } from '@angular/cdk/portal';
 import { Component, Input, OnInit } from "@angular/core";
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
-import { ToasterService } from '../../../services/toaster.service';
 import { ServerResponse } from '../../../models/serverResponse';
-import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Template } from '../../../models/template';
 import { DockerTemplate } from '../../../models/templates/docker-template';
-import { QemuTemplate } from '../../../models/templates/qemu-template';
-import { IouTemplate } from '../../../models/templates/iou-template';
 import { IosTemplate } from '../../../models/templates/ios-template';
-import { TemplateService } from '../../../services/template.service';
+import { IouTemplate } from '../../../models/templates/iou-template';
+import { QemuTemplate } from '../../../models/templates/qemu-template';
 import { DockerService } from '../../../services/docker.service';
-import { QemuService } from '../../../services/qemu.service';
-import { IouService } from '../../../services/iou.service';
 import { IosService } from '../../../services/ios.service';
-import { TemplatePortalDirective } from '@angular/cdk/portal';
+import { IouService } from '../../../services/iou.service';
+import { QemuService } from '../../../services/qemu.service';
+import { TemplateService } from '../../../services/template.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 
 @Component({
@@ -70,13 +70,13 @@ export class ImportApplianceComponent implements OnInit {
     }
 
     public uploadAppliance(event) {
-        let file: File = event.target.files[0];
-        let name: string = file.name;
-        let fileReader: FileReader = new FileReader();
+        const file: File = event.target.files[0];
+        const name: string = file.name;
+        const fileReader: FileReader = new FileReader();
 
         let template;
         fileReader.onloadend = () => {
-            let appliance = JSON.parse(fileReader.result as string);
+            const appliance = JSON.parse(fileReader.result as string);
             let emulator: string;
 
             if (appliance.qemu) {

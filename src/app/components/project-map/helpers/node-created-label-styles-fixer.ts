@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Node } from '../../../cartography/models/node';
 import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
+import { Node } from '../../../cartography/models/node';
 
 @Injectable()
 export class NodeCreatedLabelStylesFixer {

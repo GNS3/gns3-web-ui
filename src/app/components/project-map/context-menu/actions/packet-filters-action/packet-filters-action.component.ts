@@ -1,8 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { Link } from '../../../../../models/link';
-import { Server } from '../../../../../models/server';
-import { Project } from '../../../../../models/project';
 import { MatDialog } from '@angular/material';
+import { Link } from '../../../../../models/link';
+import { Project } from '../../../../../models/project';
+import { Server } from '../../../../../models/server';
 import { PacketFiltersDialogComponent } from '../../../packet-capturing/packet-filters/packet-filters.component';
 
 @Component({
@@ -22,7 +22,7 @@ export class PacketFiltersActionComponent {
             height: '400px',
             autoFocus: false
         });
-        let instance = dialogRef.componentInstance;
+        const instance = dialogRef.componentInstance;
         instance.server = this.server;
         instance.project = this.project;
         instance.link = this.link;

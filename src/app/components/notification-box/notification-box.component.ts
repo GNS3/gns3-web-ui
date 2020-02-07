@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { timer, Observable, Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subscription, timer } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
@@ -13,21 +13,21 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     timerSubscription: Subscription;
     viewTimerSubscription: Subscription;
     viewsCounter = 0;
-    ticks: number = 1000;
-    progress: number = 0;
+    ticks = 1000;
+    progress = 0;
     isAdLoaded = false;
     isVisible = false;
     interval = 10;
 
-    delayTime: number = 5000;
-    breakTime: number = 20;
-    isEndless: boolean = false;
-    numberOfViews: number = 1;
-    isLightThemeEnabled: boolean = false;
+    delayTime = 5000;
+    breakTime = 20;
+    isEndless = false;
+    numberOfViews = 1;
+    isLightThemeEnabled = false;
 
     constructor(
         private themeService: ThemeService
-    ){}
+    ) {}
 
     ngOnInit() {
         this.startTimer();
@@ -43,7 +43,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
                 this.ticks = 0;
                 this.showNotification();
                 this.viewsCounter++;
-                if (!this.isEndless){
+                if (!this.isEndless) {
                     if (this.viewsCounter === this.numberOfViews) {
                         this.timerSubscription.unsubscribe();
                     }

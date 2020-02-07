@@ -1,21 +1,21 @@
-import { ComponentFixture, TestBed, async, tick, fakeAsync } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Context } from '../models/context';
-import { MovingEventSource } from '../events/moving-event-source';
-import { MovingCanvasDirective } from './moving-canvas.directive';
 import { Component } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MovingEventSource } from '../events/moving-event-source';
+import { Context } from '../models/context';
+import { MovingCanvasDirective } from './moving-canvas.directive';
 
 @Component({
     template: `<svg #svg class="map" preserveAspectRatio="none" movingCanvas><g class="canvas" transform="translate(0, 0) scale(1)"></g></svg>`
 })
 class DummyComponent {
-    constructor(){}
+    constructor() {}
 }
 
 describe('MovingCanvasDirective', () => {
     let component: DummyComponent;
     let fixture: ComponentFixture<DummyComponent>;
-    let movingEventSource = new MovingEventSource();
+    const movingEventSource = new MovingEventSource();
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -41,8 +41,8 @@ describe('MovingCanvasDirective', () => {
     it('should move canvas if moving mode is activated', fakeAsync(() => {
         movingEventSource.movingModeState.emit(true);
         const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
-        let xMovement: number = 200;
-        let yMovement: number = 200;
+        const xMovement = 200;
+        const yMovement = 200;
 
         canvas.dispatchEvent(new MouseEvent('mousedown', {
             bubbles: true,
@@ -90,8 +90,8 @@ describe('MovingCanvasDirective', () => {
     it('should not move canvas after mouseup event', fakeAsync(() => {
         movingEventSource.movingModeState.emit(true);
         const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
-        let xMovement: number = 200;
-        let yMovement: number = 200;
+        const xMovement = 200;
+        const yMovement = 200;
 
         canvas.dispatchEvent(new MouseEvent('mousedown', {
             bubbles: true,
@@ -133,8 +133,8 @@ describe('MovingCanvasDirective', () => {
     it('should not move canvas after deactivation of moving mode', fakeAsync(() => {
         movingEventSource.movingModeState.emit(true);
         const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
-        let xMovement: number = 200;
-        let yMovement: number = 200;
+        const xMovement = 200;
+        const yMovement = 200;
 
         canvas.dispatchEvent(new MouseEvent('mousedown', {
             bubbles: true,

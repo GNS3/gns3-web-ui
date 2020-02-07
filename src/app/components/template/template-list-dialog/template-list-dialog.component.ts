@@ -1,14 +1,14 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { DataSource } from '@angular/cdk/collections';
-import { Observable, BehaviorSubject, fromEvent, merge } from 'rxjs';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { BehaviorSubject, fromEvent, merge, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { Server } from '../../../models/server';
-import { TemplateService } from '../../../services/template.service';
-import { Template } from '../../../models/template';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
 import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { Template } from '../../../models/template';
+import { TemplateService } from '../../../services/template.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-template-list-dialog',
@@ -25,9 +25,9 @@ export class TemplateListDialogComponent implements OnInit {
   templates: Template[];
   filteredTemplates: Template[];
   selectedTemplate: Template;
-  searchText: string = '';
+  searchText = '';
 
-  nodeServers: string[] = ['local', 'vm']
+  nodeServers: string[] = ['local', 'vm'];
 
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,
@@ -60,7 +60,7 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   filterTemplates(event) {
-    let temporaryTemplates = this.templates.filter( item => {
+    const temporaryTemplates = this.templates.filter( item => {
       return item.name.toLowerCase().includes(this.searchText.toLowerCase());
     });
     this.filteredTemplates = temporaryTemplates.filter(t => t.template_type === event.value.toString());
@@ -77,18 +77,18 @@ export class TemplateListDialogComponent implements OnInit {
     } else if (!this.positionForm.valid || !this.configurationForm.valid) {
       this.toasterService.error('Please fill all required fields.');
     } else {
-      let x: number = this.positionForm.get('left').value;
-      let y: number = this.positionForm.get('top').value;
-      if (x>(this.project.scene_width/2) || x<-(this.project.scene_width/2) || y>(this.project.scene_height/2) || y<-(this.project.scene_height)) {
-        this.toasterService.error('Please set correct position values.')
+      const x: number = this.positionForm.get('left').value;
+      const y: number = this.positionForm.get('top').value;
+      if (x > (this.project.scene_width / 2) || x < -(this.project.scene_width / 2) || y > (this.project.scene_height / 2) || y < -(this.project.scene_height)) {
+        this.toasterService.error('Please set correct position values.');
       } else {
-        let event: NodeAddedEvent = {
+        const event: NodeAddedEvent = {
           template: this.selectedTemplate,
           server: this.selectedTemplate.compute_id,
           name: this.configurationForm.get('name').value,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
-          x: x,
-          y: y
+          x,
+          y
         };
         this.dialogRef.close(event);
       }
@@ -97,9 +97,9 @@ export class TemplateListDialogComponent implements OnInit {
 }
 
 export interface NodeAddedEvent {
-  template: Template,
-  server: string,
-  name: string,
+  template: Template;
+  server: string;
+  name: string;
   numberOfNodes: number;
   x: number;
   y: number;

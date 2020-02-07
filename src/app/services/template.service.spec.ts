@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
-import { TemplateService } from './template.service';
 import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { TemplateService } from './template.service';
 
 describe('TemplateService', () => {
   let httpClient: HttpClient;

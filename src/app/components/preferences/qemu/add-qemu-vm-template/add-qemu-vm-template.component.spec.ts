@@ -1,23 +1,23 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatMenuModule, MatSelectModule, MatStepperModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
+import { QemuTemplate } from '../../../../models/templates/qemu-template';
+import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
-import { QemuService } from '../../../../services/qemu.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 
 export class MockedQemuService {
     public addTemplate(server: Server, qemuTemplate: QemuTemplate) {
@@ -33,16 +33,16 @@ export class MockedQemuService {
     }
 }
 
-//Tests disabled due to instability
+// Tests disabled due to instability
 xdescribe('AddQemuVmTemplateComponent', () => {
     let component: AddQemuVmTemplateComponent;
     let fixture: ComponentFixture<AddQemuVmTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedQemuService = new MockedQemuService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    let router = {
+    const mockedServerService = new MockedServerService;
+    const mockedQemuService = new MockedQemuService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
+    const router = {
         navigate: jasmine.createSpy('navigate')
     };
     

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { Server } from '../../../../models/server';
 
 
@@ -12,7 +12,7 @@ export class SymbolsMenuComponent {
     @Input() symbol: string;
     @Output() symbolChangedEmitter = new EventEmitter<string>();
     
-    chosenSymbol: string = '';
+    chosenSymbol = '';
 
     symbolChanged(chosenSymbol: string) {
         this.chosenSymbol = chosenSymbol;

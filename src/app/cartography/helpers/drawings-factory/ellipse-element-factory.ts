@@ -1,12 +1,12 @@
-import { DrawingElementFactory } from './drawing-element-factory';
+import { Injectable } from '@angular/core';
 import { DrawingElement } from '../../models/drawings/drawing-element';
 import { EllipseElement } from '../../models/drawings/ellipse-element';
-import { Injectable } from '@angular/core';
+import { DrawingElementFactory } from './drawing-element-factory';
 
 @Injectable()
 export class EllipseElementFactory implements DrawingElementFactory {
   getDrawingElement(): DrawingElement {
-    let ellipseElement = new EllipseElement();
+    const ellipseElement = new EllipseElement();
     ellipseElement.fill = '#ffffff';
     ellipseElement.fill_opacity = 1.0;
     ellipseElement.stroke = '#000000';

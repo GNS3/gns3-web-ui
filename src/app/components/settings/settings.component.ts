@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingsService } from '../../services/settings.service';
-import { ToasterService } from '../../services/toaster.service';
 import { ConsoleService } from '../../services/settings/console.service';
 import { ThemeService } from '../../services/theme.service';
+import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-settings',

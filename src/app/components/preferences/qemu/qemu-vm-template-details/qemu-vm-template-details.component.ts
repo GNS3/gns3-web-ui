@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewChildren, ViewChild, QueryList } from "@angular/core";
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { QemuService } from '../../../../services/qemu.service';
+import { QemuBinary } from '../../../../models/qemu/qemu-binary';
+import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { Server } from '../../../../models/server';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import { ToasterService } from '../../../../services/toaster.service';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 
@@ -20,7 +20,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
 export class QemuVmTemplateDetailsComponent implements OnInit {
     server: Server;
     qemuTemplate: QemuTemplate;
-    isSymbolSelectionOpened: boolean = false;
+    isSymbolSelectionOpened = false;
     consoleTypes: string[] = [];
     diskInterfaces: string[] = [];
     networkTypes = [];
@@ -29,8 +29,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     categories = [];
     priorities: string[] = [];
     binaries: QemuBinary[] = [];
-    activateCpuThrottling: boolean = true;
-    isConfiguratorOpened: boolean = false;
+    activateCpuThrottling = true;
+    isConfiguratorOpened = false;
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     generalSettingsForm: FormGroup;
 
@@ -45,7 +45,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         private configurationService: QemuConfigurationService,
         private formBuilder: FormBuilder,
         private router: Router
-    ){
+    ) {
         this.generalSettingsForm = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
             defaultName: new FormControl('', Validators.required),
@@ -53,7 +53,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         });
     }
 
-    ngOnInit(){
+    ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get("server_id");
         const template_id = this.route.snapshot.paramMap.get("template_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
@@ -71,7 +71,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         });
     }
 
-    getConfiguration(){
+    getConfiguration() {
         this.consoleTypes = this.configurationService.getConsoleTypes();
         this.diskInterfaces = this.configurationService.getDiskInterfaces();
         this.networkTypes = this.configurationService.getNetworkTypes();
@@ -81,19 +81,19 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.priorities = this.configurationService.getPriorities();
     }
 
-    uploadCdromImageFile(event){
+    uploadCdromImageFile(event) {
         this.qemuTemplate.cdrom_image = event.target.files[0].name;
     }
 
-    uploadInitrdFile(event){
+    uploadInitrdFile(event) {
         this.qemuTemplate.initrd = event.target.files[0].name;
     }
 
-    uploadKernelImageFile(event){
+    uploadKernelImageFile(event) {
         this.qemuTemplate.kernel_image = event.target.files[0].name;
     }
 
-    uploadBiosFile(event){
+    uploadBiosFile(event) {
         this.qemuTemplate.bios_image = event.target.files[0].name;
     }
 
@@ -113,16 +113,16 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         }
     }
 
-    saveCustomAdapters(adapters: CustomAdapter[]){
+    saveCustomAdapters(adapters: CustomAdapter[]) {
         this.setCustomAdaptersConfiguratorState(false);
         this.qemuTemplate.custom_adapters = adapters;
     }
 
     fillCustomAdapters() {
-        let copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
+        const copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
         this.qemuTemplate.custom_adapters = [];
 
-        for(let i=0; i<this.qemuTemplate.adapters; i++){
+        for (let i = 0; i < this.qemuTemplate.adapters; i++) {
             if (copyOfAdapters[i]) {
                 this.qemuTemplate.custom_adapters.push(copyOfAdapters[i]);
             } else {
@@ -138,11 +138,11 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
     }
 
-    onSave(){
+    onSave() {
         if (this.generalSettingsForm.invalid) {
             this.toasterService.error(`Fill all required fields`);
         } else {
-            if (!this.activateCpuThrottling){
+            if (!this.activateCpuThrottling) {
                 this.qemuTemplate.cpu_throttling = 0;
             }
             this.fillCustomAdapters();

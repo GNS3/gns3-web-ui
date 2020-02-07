@@ -1,11 +1,11 @@
-import { instance, mock, when, verify } from 'ts-mockito';
+import { instance, mock, verify, when } from 'ts-mockito';
 
-import { TestSVGCanvas } from '../testing';
-import { LayersWidget } from './layers';
 import { Layer } from '../models/layer';
+import { TestSVGCanvas } from '../testing';
+import { DrawingsWidget } from './drawings';
+import { LayersWidget } from './layers';
 import { LinksWidget } from './links';
 import { NodesWidget } from './nodes';
-import { DrawingsWidget } from './drawings';
 
 describe('LayersWidget', () => {
   let svg: TestSVGCanvas;

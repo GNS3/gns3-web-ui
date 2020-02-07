@@ -1,25 +1,25 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule, MatStepperModule, MatRadioModule, MatCommonModule } from '@angular/material';
+import { CdkStep, STEP_STATE, STEPPER_GLOBAL_OPTIONS, StepperOrientation } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Route } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AbstractControlDirective, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule, MatCheckboxModule, MatCommonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatMenuModule, MatRadioModule, MatSelectModule, MatStepperModule, MatTableModule, MatToolbarModule } from '@angular/material';
+import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, Route } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
+import { DockerTemplate } from '../../../../models/templates/docker-template';
+import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
+import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { FormsModule, ReactiveFormsModule, AbstractControlDirective, FormControl } from '@angular/forms';
-import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { AddDockerTemplateComponent } from './add-docker-template.component';
-import { DockerService } from '../../../../services/docker.service';
-import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
-import { StepperOrientation, STEPPER_GLOBAL_OPTIONS, STEP_STATE, CdkStep } from '@angular/cdk/stepper';
-import { By } from '@angular/platform-browser';
 
 export class MockedDockerService {
     public addTemplate(server: Server, dockerTemplate: DockerTemplate) {
@@ -27,15 +27,15 @@ export class MockedDockerService {
     }
 }
 
-//Tests disabled due to instability
+// Tests disabled due to instability
 xdescribe('AddDockerTemplateComponent', () => {
     let component: AddDockerTemplateComponent;
     let fixture: ComponentFixture<AddDockerTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedDockerService = new MockedDockerService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedDockerService = new MockedDockerService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -86,7 +86,7 @@ xdescribe('AddDockerTemplateComponent', () => {
     it('should open first step at start', async(() => {
         fixture.detectChanges();
         fixture.whenStable().then(() => {
-            let stepperComponent = fixture.debugElement
+            const stepperComponent = fixture.debugElement
                 .query(By.css('mat-vertical-stepper')).componentInstance;
 
             expect(stepperComponent.selectedIndex).toBe(0);
@@ -96,7 +96,7 @@ xdescribe('AddDockerTemplateComponent', () => {
     it('should display correct label at start', async(() => {
         fixture.detectChanges();
         fixture.whenStable().then(() => {
-            let selectedLabel = fixture.nativeElement
+            const selectedLabel = fixture.nativeElement
                 .querySelector('[aria-selected="true"]');
 
             expect(selectedLabel.textContent).toMatch('Server type');
@@ -106,7 +106,7 @@ xdescribe('AddDockerTemplateComponent', () => {
     it('should not call add template when required fields are empty', async(() => {
         fixture.detectChanges();
         fixture.whenStable().then(() => {
-            let addButton = fixture.debugElement.nativeElement
+            const addButton = fixture.debugElement.nativeElement
                 .querySelector('.add-button');
             spyOn(mockedDockerService, 'addTemplate').and.returnValue(of({} as DockerTemplate));
             
@@ -123,7 +123,7 @@ xdescribe('AddDockerTemplateComponent', () => {
     it('should call add template when required fields are filled', async(() => {
         fixture.detectChanges();
         fixture.whenStable().then(() => {
-            let stepperComponent = fixture.debugElement
+            const stepperComponent = fixture.debugElement
                 .query(By.css('mat-vertical-stepper')).componentInstance;
             stepperComponent.selectedIndex = 1;
             component.newImageSelected = true;
@@ -135,7 +135,7 @@ xdescribe('AddDockerTemplateComponent', () => {
 
                 expect(selectedLabel.textContent).toMatch('Docker Virtual Machine');
 
-                let filenameInput = fixture.debugElement.nativeElement
+                const filenameInput = fixture.debugElement.nativeElement
                     .querySelector('.filename');
                 filenameInput.value = 'sample filename';
                 filenameInput.dispatchEvent(new Event('input'));
@@ -154,7 +154,7 @@ xdescribe('AddDockerTemplateComponent', () => {
 
                         expect(selectedLabel.textContent).toMatch('Container name');
 
-                        let templatenameInput = fixture.debugElement.nativeElement
+                        const templatenameInput = fixture.debugElement.nativeElement
                             .querySelector('.templatename');
                         templatenameInput.value = 'sample templatename';
                         templatenameInput.dispatchEvent(new Event('input'));
@@ -173,7 +173,7 @@ xdescribe('AddDockerTemplateComponent', () => {
 
                                 expect(selectedLabel.textContent).toMatch('Network adapters');
 
-                                let networkadapterInput = fixture.debugElement.nativeElement
+                                const networkadapterInput = fixture.debugElement.nativeElement
                                     .querySelector('.networkadapter');
                                 networkadapterInput.value = 2;
                                 networkadapterInput.dispatchEvent(new Event('input'));
@@ -185,7 +185,7 @@ xdescribe('AddDockerTemplateComponent', () => {
                                     expect(component.containerNameForm.invalid).toBe(false);
                                     expect(component.networkAdaptersForm.invalid).toBe(false);
 
-                                    let addButton = fixture.debugElement.nativeElement
+                                    const addButton = fixture.debugElement.nativeElement
                                         .querySelector('.add-button');
                                     spyOn(mockedDockerService, 'addTemplate').and.returnValue(of({} as DockerTemplate));
                                     

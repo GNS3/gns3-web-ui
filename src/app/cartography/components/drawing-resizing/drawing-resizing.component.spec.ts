@@ -1,12 +1,12 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DrawingResizingComponent } from './drawing-resizing.component';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EventEmitter } from '@angular/core';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { ResizingEnd } from '../../events/resizing';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { DrawingsWidget } from '../../widgets/drawings';
+import { DrawingResizingComponent } from './drawing-resizing.component';
 
 export class DrawingWidgetMock {
   resizingFinished = new EventEmitter<ResizingEnd<MapDrawing>>();
@@ -28,8 +28,8 @@ export class DrawingWidgetMock {
 describe('DrawingResizingComponent', () => {
   let component: DrawingResizingComponent;
   let fixture: ComponentFixture<DrawingResizingComponent>;
-  let drawingsWidgetMock = new DrawingWidgetMock();
-  let drawingsEventSource = new DrawingsEventSource();
+  const drawingsWidgetMock = new DrawingWidgetMock();
+  const drawingsEventSource = new DrawingsEventSource();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

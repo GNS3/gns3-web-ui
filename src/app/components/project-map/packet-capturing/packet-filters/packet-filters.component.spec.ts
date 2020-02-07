@@ -1,21 +1,21 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatCheckboxModule, MatDialogModule, MatDialogRef, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { Link } from '../../../../models/link';
 import { LinkService } from '../../../../services/link.service';
 import { MockedLinkService } from '../../project-map.component.spec';
-import { Link } from '../../../../models/link';
-import { of } from 'rxjs';
 import { PacketFiltersDialogComponent } from './packet-filters.component';
 
 describe('PacketFiltersDialogComponent', () => {
     let component: PacketFiltersDialogComponent;
     let fixture: ComponentFixture<PacketFiltersDialogComponent>;
 
-    let mockedLinkService = new MockedLinkService;
-    let dialogRef = {
+    const mockedLinkService = new MockedLinkService;
+    const dialogRef = {
         close: jasmine.createSpy('close')
     };
     

@@ -1,13 +1,13 @@
 import { Component, OnInit } from "@angular/core";
-import { Server } from '../../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
-import { ToasterService } from '../../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../../services/template-mocks.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { Server } from '../../../../../models/server';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
+import { TemplateMocksService } from '../../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 
 @Component({
@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 })
 export class EthernetHubsAddTemplateComponent implements OnInit {
     server: Server;
-    templateName: string = '';
+    templateName = '';
     formGroup: FormGroup;
     
     constructor(
@@ -57,7 +57,7 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
             ethernetHubTemplate.template_id = uuid();
             ethernetHubTemplate.name = this.formGroup.get('templateName').value;
 
-            for(let i=0; i<this.formGroup.get('numberOfPorts').value; i++){
+            for (let i = 0; i < this.formGroup.get('numberOfPorts').value; i++) {
                 ethernetHubTemplate.ports_mapping.push({
                     name: `Ethernet${i}`,
                     port_number: i

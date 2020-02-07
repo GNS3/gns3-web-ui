@@ -1,22 +1,22 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
-import { Server } from '../../../../models/server';
-import { VpcsService } from '../../../../services/vpcs.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCheckboxModule, MatIconModule, MatMenuModule, MatToolbarModule } from '@angular/material';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import { Server } from '../../../../models/server';
+import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { VpcsService } from '../../../../services/vpcs.service';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
 
 export class MockedVpcsService {
     public addTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
@@ -28,10 +28,10 @@ describe('AddVpcsTemplateComponent', () => {
     let component: AddVpcsTemplateComponent;
     let fixture: ComponentFixture<AddVpcsTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVpcsService = new MockedVpcsService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
+    const mockedServerService = new MockedServerService;
+    const mockedVpcsService = new MockedVpcsService;
+    const mockedToasterService = new MockedToasterService;
+    const activatedRoute = new MockedActivatedRoute().get();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({

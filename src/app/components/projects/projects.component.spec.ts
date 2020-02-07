@@ -1,28 +1,28 @@
+import { OverlayRef } from '@angular/cdk/overlay';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatSortModule, MatTableModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatDialogRef, MatDialogContainer, MatBottomSheetModule } from '@angular/material';
-import { RouterTestingModule } from '@angular/router/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatBottomSheetModule, MatDialogContainer, MatDialogModule, MatDialogRef, MatFormFieldModule, MatIconModule, MatInputModule, MatSortModule, MatTableModule, MatTooltipModule } from '@angular/material';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ElectronService } from 'ngx-electron';
 import { Observable, of } from 'rxjs';
-import { ProjectsComponent } from './projects.component';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from '../../services/server.service.spec';
+import { ProgressService } from '../../common/progress/progress.service';
+import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
+import { ServerService } from '../../services/server.service';
+import { MockedServerService } from '../../services/server.service.spec';
 import { SettingsService } from '../../services/settings.service';
-import { MockedSettingsService } from '../../services/settings.service.spec';
-import { ProgressService } from '../../common/progress/progress.service';
-import { Server } from '../../models/server';
 import { Settings } from '../../services/settings.service';
-import { Project } from '../../models/project';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
-import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
-import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { MockedSettingsService } from '../../services/settings.service.spec';
 import { ToasterService } from '../../services/toaster.service';
-import { ElectronService } from 'ngx-electron';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { ProjectsComponent } from './projects.component';
 
 xdescribe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -32,7 +32,7 @@ xdescribe('ProjectsComponent', () => {
   let serverService: ServerService;
   let server: Server;
   let progressService: ProgressService;
-  let mockedProjectService: MockedProjectService = new MockedProjectService();
+  const mockedProjectService: MockedProjectService = new MockedProjectService();
   let electronService;
 
   beforeEach(async(() => {
@@ -42,7 +42,7 @@ xdescribe('ProjectsComponent', () => {
         require: (file) => {
           return {
             openConsole() {}
-          }
+          };
         }
       }
     };
@@ -106,7 +106,7 @@ xdescribe('ProjectsComponent', () => {
 
   it('should remove item after delete action', () => {
     spyOn(mockedProjectService, 'delete').and.returnValue(of());
-    let project = new Project();
+    const project = new Project();
     project.project_id = '1';
 
     component.delete(project);

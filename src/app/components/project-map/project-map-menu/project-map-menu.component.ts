@@ -1,18 +1,18 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { select } from 'd3-selection';
+import { ElectronService } from 'ngx-electron';
+import { saveAsJpeg, saveAsPng } from 'save-html-as-image';
+import * as svg from 'save-svg-as-png';
+import downloadSvg from 'svg-crowbar';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
-import { ToolsService } from '../../../services/tools.service';
-import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
-import * as svg from 'save-svg-as-png';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { SymbolService } from '../../../services/symbol.service';
-import { select } from 'd3-selection';
-import downloadSvg from 'svg-crowbar';
-import { ElectronService } from 'ngx-electron';
-import { MatDialog } from '@angular/material';
-import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
-import { saveAsPng, saveAsJpeg } from 'save-html-as-image';
 import { ThemeService } from '../../../services/theme.service';
+import { ToolsService } from '../../../services/tools.service';
+import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
 
 
 @Component({
@@ -31,8 +31,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         isLineChosen: false,
         isTextChosen: false
     };
-    public isLocked: boolean = false;
-    public isLightThemeEnabled: boolean = false;
+    public isLocked = false;
+    public isLightThemeEnabled = false;
 
     constructor(
         private toolsService: ToolsService,
@@ -53,33 +53,33 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
             autoFocus: false
         });
         dialogRef.afterClosed().subscribe((result: Screenshot) => {
-            if (result) this.saveImage(result);
+            if (result) { this.saveImage(result); }
         });
     }
 
     private async saveImage(screenshotProperties: Screenshot) {
         if (screenshotProperties.filetype === 'png') {
-            let splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
+            const splittedSvg = document.getElementsByTagName("svg")[0].outerHTML.split('image');
             let i = 1;
 
             while (i < splittedSvg.length) {
-                let splittedImage = splittedSvg[i].split("\"");
-                let splittedUrl = splittedImage[1].split("/");
+                const splittedImage = splittedSvg[i].split("\"");
+                const splittedUrl = splittedImage[1].split("/");
 
-                let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
-                let splittedElement = elem.split('-->');
+                const elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise(); 
+                const splittedElement = elem.split('-->');
                 splittedSvg[i] = splittedElement[1].substring(2);
                 i += 2;
             }
-            let svgString = splittedSvg.join();
+            const svgString = splittedSvg.join();
 
-            let placeholder = document.createElement('div');
+            const placeholder = document.createElement('div');
             placeholder.innerHTML = svgString;
-            let element = placeholder.firstChild;
+            const element = placeholder.firstChild;
 
             svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
         } else {
-            var svg_el = select("svg")
+            const svg_el = select("svg")
             .attr("version", 1.1)
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .node();
@@ -142,23 +142,23 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     }
     
     private readImageFile(fileInput) {
-        let file: File = fileInput.files[0];
-        let fileReader: FileReader = new FileReader();
-        let imageToUpload = new Image();
+        const file: File = fileInput.files[0];
+        const fileReader: FileReader = new FileReader();
+        const imageToUpload = new Image();
     
         fileReader.onloadend = () => {
-            let image = fileReader.result;
-            let svg = this.createSvgFileForImage(image, imageToUpload);
-            this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width/2), -(imageToUpload.height/2), svg).subscribe(() => {});
-        }
+            const image = fileReader.result;
+            const svg = this.createSvgFileForImage(image, imageToUpload);
+            this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg).subscribe(() => {});
+        };
             
-        imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
+        imageToUpload.onload = () => { fileReader.readAsDataURL(file); };
         imageToUpload.src = window.URL.createObjectURL(file);
     }
 
     private createSvgFileForImage(image: string|ArrayBuffer, imageToUpload: HTMLImageElement) {
         return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\" 
-                width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`
+                width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`;
     }
 
     ngOnDestroy() {}

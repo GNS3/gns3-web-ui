@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 
-import { Widget } from './widget';
+import { MapSettingsService } from '../../services/mapsettings.service';
+import { SelectionManager } from '../managers/selection-manager';
+import { EllipseElement } from '../models/drawings/ellipse-element';
+import { LineElement } from '../models/drawings/line-element';
+import { RectElement } from '../models/drawings/rect-element';
+import { MapDrawing } from '../models/map/map-drawing';
 import { SVGSelection } from '../models/types';
 import { DrawingShapeWidget } from './drawings/drawing-shape-widget';
-import { TextDrawingWidget } from './drawings/text-drawing';
-import { ImageDrawingWidget } from './drawings/image-drawing';
-import { RectDrawingWidget } from './drawings/rect-drawing';
-import { LineDrawingWidget } from './drawings/line-drawing';
 import { EllipseDrawingWidget } from './drawings/ellipse-drawing';
-import { MapDrawing } from '../models/map/map-drawing';
-import { SelectionManager } from '../managers/selection-manager';
-import { LineElement } from '../models/drawings/line-element';
-import { EllipseElement } from '../models/drawings/ellipse-element';
-import { RectElement } from '../models/drawings/rect-element';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { ImageDrawingWidget } from './drawings/image-drawing';
+import { LineDrawingWidget } from './drawings/line-drawing';
+import { RectDrawingWidget } from './drawings/rect-drawing';
+import { TextDrawingWidget } from './drawings/text-drawing';
+import { Widget } from './widget';
 
 @Injectable()
 export class DrawingWidget implements Widget {
@@ -61,8 +61,8 @@ export class DrawingWidget implements Widget {
         .attr('class', 'layer_label_wrapper')
         .attr('width', '26')
         .attr('height', '26')
-        .attr('x', n => n.element ? n.element.width/2 - 13 : 0)
-        .attr('y', n => n.element ? n.element.height/2 - 13 : 0)
+        .attr('x', n => n.element ? n.element.width / 2 - 13 : 0)
+        .attr('y', n => n.element ? n.element.height / 2 - 13 : 0)
         .attr('fill', 'red');
     }
 
@@ -74,11 +74,9 @@ export class DrawingWidget implements Widget {
         .attr('class', 'layer_label')
         .text((elem) => elem.z)
         .attr('x', function(n) {
-          if(n.z >= 100 ) return n.element ? n.element.width/2 - 13 : 0
-          else if(n.z >= 10 ) return n.element ? n.element.width/2 - 9 : 0
-          else return n.element.width/2 - 5
+          if (n.z >= 100 ) { return n.element ? n.element.width / 2 - 13 : 0; } else if (n.z >= 10 ) { return n.element ? n.element.width / 2 - 9 : 0; } else { return n.element.width / 2 - 5; }
         })
-        .attr('y', n => n.element ? n.element.height/2 + 5 : 0)
+        .attr('y', n => n.element ? n.element.height / 2 + 5 : 0)
         .attr('style', () => {
           const styles: string[] = [];
           styles.push(`font-family: "Noto Sans"`);

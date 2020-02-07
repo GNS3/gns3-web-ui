@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Server } from '../../../../models/server';
 import { switchMap } from 'rxjs/operators';
+import { Server } from '../../../../models/server';
 import { ServerService } from '../../../../services/server.service';
 
 
@@ -26,7 +26,7 @@ export class VirtualBoxPreferencesComponent implements OnInit {
         });
     }
 
-    restoreDefaults(){
+    restoreDefaults() {
         this.vboxManagePath = '';
     }
 }

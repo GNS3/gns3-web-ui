@@ -3,5 +3,5 @@ export class Qemu {
     enable_kvm: boolean;
     require_hardware_acceleration: boolean;
     require_kvm: boolean;
-    vms: any[]
+    vms: any[];
 }

@@ -1,34 +1,34 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Server } from '../../../../models/server';
+import { FormsModule } from '@angular/forms';
 import {
-  MatDialogModule,
-  MatFormFieldModule,
-  MatDialogRef,
   MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+  MatFormFieldModule,
   MatSnackBarModule,
   MatTabsModule
 } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ToasterService } from '../../../../services/toaster.service';
 import { of } from 'rxjs/internal/observable/of';
-import { ConfigEditorDialogComponent } from './config-editor.component';
-import { NodeService } from '../../../../services/node.service';
-import { FormsModule } from '@angular/forms';
-import { MockedNodeService } from '../../project-map.component.spec';
 import { Node } from '../../../../cartography/models/node';
+import { Server } from '../../../../models/server';
+import { NodeService } from '../../../../services/node.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedNodeService } from '../../project-map.component.spec';
+import { ConfigEditorDialogComponent } from './config-editor.component';
 
 describe('ConfigEditorDialogComponent', () => {
   let component: ConfigEditorDialogComponent;
   let fixture: ComponentFixture<ConfigEditorDialogComponent>;
   let server: Server;
   let node: Node;
-  let toaster = {
+  const toaster = {
     success: jasmine.createSpy('success')
   };
-  let dialogRef = {
+  const dialogRef = {
     close: jasmine.createSpy('close')
   };
-  let mockedNodeService: MockedNodeService = new MockedNodeService();
+  const mockedNodeService: MockedNodeService = new MockedNodeService();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

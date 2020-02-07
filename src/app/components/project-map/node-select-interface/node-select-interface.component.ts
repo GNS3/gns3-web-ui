@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, View
 import { MatMenuTrigger } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
-import { Port } from '../../../models/port';
 import { Link } from '../../../models/link';
 import { LinkNode } from '../../../models/link-node';
+import { Port } from '../../../models/port';
 
 @Component({
   selector: 'app-node-select-interface',
@@ -45,10 +45,10 @@ export class NodeSelectInterfaceComponent implements OnInit {
   }
 
   public filterNodePorts() {
-    let linkNodes: LinkNode[] = [];
+    const linkNodes: LinkNode[] = [];
     this.links.forEach((link: Link) => {
       link.nodes.forEach((linkNode: LinkNode) => {
-        if(linkNode.node_id === this.node.node_id) {
+        if (linkNode.node_id === this.node.node_id) {
           linkNodes.push(linkNode);
         }
       });
@@ -56,7 +56,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
 
     this.availablePorts = [];
     this.node.ports.forEach((port: Port) => {
-      if(linkNodes.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0){
+      if (linkNodes.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0) {
         this.availablePorts.push(port);
       }
     });
@@ -65,7 +65,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   public chooseInterface(port: Port) {
     this.onChooseInterface.emit({
       node: this.node,
-      port: port
+      port
     });
   }
 }

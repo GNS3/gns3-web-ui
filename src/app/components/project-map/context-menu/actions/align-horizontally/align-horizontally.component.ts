@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input, OnInit } from '@angular/core';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 
 @Component({
@@ -20,11 +20,11 @@ export class AlignHorizontallyActionComponent implements OnInit {
   ngOnInit() {}
 
   alignHorizontally() {
-    let averageY: number = 0;
+    let averageY = 0;
     this.nodes.forEach((node) => {
         averageY += node.y;
     });
-    averageY = averageY/this.nodes.length;
+    averageY = averageY / this.nodes.length;
     
     this.nodes.forEach((node) => {
         node.y = averageY;
