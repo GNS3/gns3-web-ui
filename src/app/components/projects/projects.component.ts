@@ -41,7 +41,6 @@ export class ProjectsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
     private projectService: ProjectService,
     private settingsService: SettingsService,
     private progressService: ProgressService,
@@ -53,24 +52,13 @@ export class ProjectsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.server = this.route.snapshot.data['server'];
+    this.refresh();
     this.sort.sort(<MatSortable>{
       id: 'name',
       start: 'asc'
     });
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
-
-    this.route.paramMap
-      .pipe(
-        switchMap((params: ParamMap) => {
-          const server_id = params.get('server_id');
-          return this.serverService.get(parseInt(server_id, 10));
-        })
-      )
-      .subscribe((server: Server) => {
-        this.server = server;
-        this.refresh();
-      });
-
     this.settings = this.settingsService.getAll();
 
     let gns3vmConfig = localStorage.getItem('gns3vmConfig');
