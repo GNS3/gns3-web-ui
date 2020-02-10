@@ -83,7 +83,11 @@ const routes: Routes = [
       { path: 'server/:server_id/systemstatus', component: SystemStatusComponent },
 
       { path: 'server/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent},
-      { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent },
+      { 
+        path: 'server/:server_id/project/:project_id/snapshots', 
+        component: ListOfSnapshotsComponent,
+        resolve: { server : ServerResolve }
+      },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       { path: 'server/:server_id/preferences/gns3vm', component: Gns3vmComponent },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
