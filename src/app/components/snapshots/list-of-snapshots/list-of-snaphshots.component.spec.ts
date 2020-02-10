@@ -17,6 +17,7 @@ import { Server } from '../../../models/server';
 import { Snapshot } from '../../../models/snapshot';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
 import { NameFilter } from '../../../filters/nameFilter.pipe';
+import { ServerResolve } from '../../../resolvers/server-resolve';
 
 export class MockedActivatedRoute {
     get() {
@@ -32,6 +33,9 @@ export class MockedActivatedRoute {
                     get(name: string): string {
                         return '1';
                     }
+                },
+                data: {
+                    'server': new Server() 
                 }
             },
         };
@@ -56,17 +60,25 @@ describe('ListOfSnapshotsComponent', () => {
     let component: ListOfSnapshotsComponent;
     let fixture: ComponentFixture<ListOfSnapshotsComponent>;
     let activatedRoute = new MockedActivatedRoute().get();
-    let mockedServerService = new MockedServerService();
     let mockedSnapshotService = new MockedSnapshotService();
     let mockedToasterService = new MockedToasterService();
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports:  [MatDialogModule, MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+            imports:  [MatDialogModule, 
+                MatTableModule, 
+                MatIconModule, 
+                MatToolbarModule, 
+                MatMenuModule, 
+                MatCheckboxModule, 
+                CommonModule, 
+                NoopAnimationsModule, 
+                RouterTestingModule.withRoutes([
+                    { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent, resolve: {server: ServerResolve} }
+                ])],
             providers: [
                 { provide: SnapshotService, useValue: mockedSnapshotService },
                 { provide: ActivatedRoute, useValue: activatedRoute },
-                { provide: ServerService, useValue: mockedServerService },
                 { provide: ProgressDialogService, useClass: ProgressDialogService },
                 { provide: ToasterService, useValue: mockedToasterService }
             ],
