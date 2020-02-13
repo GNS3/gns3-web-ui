@@ -47,6 +47,24 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     }
 
+    getCssClassForIcon(type: string) {
+        if (type === 'text') {
+            return {
+                'unmarkedLight': !this.drawTools.isTextChosen && this.isLightThemeEnabled, 
+                'marked': this.drawTools.isTextChosen
+            };
+        } else if (type === 'rectangle') {
+            return {
+                'unmarkedLight': !this.drawTools.isRectangleChosen && this.isLightThemeEnabled, 
+                'marked': this.drawTools.isRectangleChosen
+            };
+        }
+        return {
+            'unmarkedLight': !this.drawTools.isEllipseChosen && this.isLightThemeEnabled, 
+            'marked': this.drawTools.isEllipseChosen
+        };
+    }
+
     public takeScreenshot() {
         const dialogRef = this.dialog.open(ScreenshotDialogComponent, {
             width: '400px',

@@ -3,7 +3,7 @@
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('text')">
-    <mat-icon [ngClass]="{unmarkedLight: !drawTools.isTextChosen && isLightThemeEnabled, marked: drawTools.isTextChosen}">create</mat-icon>
+    <mat-icon [ngClass]="getCssClassForIcon('text')">create</mat-icon>
 </button>
 <input
     type="file"
@@ -23,14 +23,14 @@
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('rectangle')">
-    <mat-icon [ngClass]="{unmarkedLight: !drawTools.isRectangleChosen && isLightThemeEnabled, marked: drawTools.isRectangleChosen}">crop_3_2</mat-icon>
+    <mat-icon [ngClass]="getCssClassForIcon('rectangle')">crop_3_2</mat-icon>
 </button>
 <button
     matTooltip="Draw an ellipse"
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('ellipse')">
-    <mat-icon [ngClass]="{unmarkedLight: !drawTools.isEllipseChosen && isLightThemeEnabled, marked: drawTools.isEllipseChosen}">panorama_fish_eye</mat-icon>
+    <mat-icon [ngClass]="getCssClassForIcon('ellipse')">panorama_fish_eye</mat-icon>
 </button>
 <button *ngIf="!isLightThemeEnabled"
     matTooltip="Draw a line" 
