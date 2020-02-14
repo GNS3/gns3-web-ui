@@ -109,7 +109,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
 
-  private subscriptions: Subscription[] = [];
+  private projectMapSubscription: Subscription =  new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -210,22 +210,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         );
     });
 
-    this.subscriptions.push(routeSub);
+    this.projectMapSubscription.add(routeSub);
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
         if (this.scrollEnabled) this.centerCanvas();
       })
     );
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         this.mapChangeDetectorRef.detectChanges();
       })
     );
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
         nodes.forEach((node: Node) => {
@@ -237,21 +237,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })
     );
 
-    this.subscriptions.push(this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
+    this.projectMapSubscription.add(this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
       this.showMessage({
           type: 'error',
           message: message
       });
     }));
 
-    this.subscriptions.push(this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+    this.projectMapSubscription.add(this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
         this.showMessage({
             type: 'warning',
             message: message
@@ -323,7 +323,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         this.progressService.deactivate();
       });
-    this.subscriptions.push(subscription);
+      this.projectMapSubscription.add(subscription);
   }
 
   setUpProjectWS(project: Project) {
@@ -408,14 +408,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
     });
 
-    this.subscriptions.push(onLinkContextMenu);
-    this.subscriptions.push(onEthernetLinkContextMenu);
-    this.subscriptions.push(onSerialLinkContextMenu);
-    this.subscriptions.push(onNodeContextMenu);
-    this.subscriptions.push(onDrawingContextMenu);
-    this.subscriptions.push(onContextMenu);
-    this.subscriptions.push(onLabelContextMenu);
-    this.subscriptions.push(onInterfaceLabelContextMenu);
+    this.projectMapSubscription.add(onLinkContextMenu);
+    this.projectMapSubscription.add(onEthernetLinkContextMenu);
+    this.projectMapSubscription.add(onSerialLinkContextMenu);
+    this.projectMapSubscription.add(onNodeContextMenu);
+    this.projectMapSubscription.add(onDrawingContextMenu);
+    this.projectMapSubscription.add(onContextMenu);
+    this.projectMapSubscription.add(onLabelContextMenu);
+    this.projectMapSubscription.add(onInterfaceLabelContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -829,7 +829,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (this.ws) {
       if (this.ws.OPEN) this.ws.close();
     }
-    this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
+    this.projectMapSubscription.unsubscribe();
   }
 }
 
