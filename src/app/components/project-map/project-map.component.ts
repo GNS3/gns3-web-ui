@@ -66,6 +66,7 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -153,7 +154,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private serialLinkWidget: SerialLinkWidget,
     private bottomSheet: MatBottomSheet,
     private notificationService: NotificationService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private title: Title
   ) {}
 
   ngOnInit() {
@@ -178,6 +180,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
+            this.title.setTitle(this.project.name);
 
             if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
               this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
@@ -819,6 +822,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.title.setTitle('GNS3 Web UI');
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
     this.linksDataSource.clear();

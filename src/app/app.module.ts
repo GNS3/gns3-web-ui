@@ -1,5 +1,5 @@
 import * as Raven from 'raven-js';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -538,7 +538,8 @@ if (environment.production) {
     NotificationService,
     Gns3vmService,
     ThemeService,
-    GoogleAnalyticsService
+    GoogleAnalyticsService,
+    Title
   ],
   entryComponents: [
     AddServerDialogComponent,
