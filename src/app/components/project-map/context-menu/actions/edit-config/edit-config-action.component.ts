@@ -20,7 +20,8 @@ export class EditConfigActionComponent {
         const dialogRef = this.dialog.open(ConfigEditorDialogComponent, {
             width: '600px',
             height: '500px',
-            autoFocus: false
+            autoFocus: false,
+            disableClose: true
         });
         let instance = dialogRef.componentInstance;
         instance.server = this.server;

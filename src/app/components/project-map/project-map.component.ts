@@ -702,7 +702,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addNewProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -711,7 +712,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   saveProject() {
     const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -721,7 +723,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   editProject() {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       width: '600px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -732,7 +735,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

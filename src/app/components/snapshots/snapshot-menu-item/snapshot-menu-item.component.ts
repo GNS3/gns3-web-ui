@@ -35,7 +35,8 @@ export class SnapshotMenuItemComponent implements OnInit {
         server: this.server,
         project: this.project
       },
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe(snapshot => {
