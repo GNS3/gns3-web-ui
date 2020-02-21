@@ -9208,10 +9208,10 @@ supports-color@^6.1.0:
   dependencies:
     has-flag "^3.0.0"
 
-svg-crowbar@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/svg-crowbar/-/svg-crowbar-0.2.4.tgz#4b7efb377cefed563505650030ee9a1b55ff8331"
-  integrity sha512-3zVrUJi4zOi6Q4m0RCWQoSxHLurPaYsf0nyYIdIBaY9n0EM2EHyuYBWB6aaRcrU3+4y32FvQBBwg1lRPAnG2Cg==
+svg-crowbar@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/svg-crowbar/-/svg-crowbar-0.3.0.tgz#c730a0b115452c5233a4e34c0de4ac0d348a5461"
+  integrity sha512-ajy00P2NinPffXckBy9ylAJE4x95vnsRRtsjDtAMg0MmkoxhtV/gmHZoq6dAxVekS8zfGBarzxWTU+v51lyCBw==
 
 symbol-observable@1.2.0:
   version "1.2.0"
