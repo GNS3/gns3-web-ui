@@ -9,6 +9,7 @@ import { Template } from '../../../models/template';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToasterService } from '../../../services/toaster.service';
 import { Project } from '../../../models/project';
+import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 
 @Component({
   selector: 'app-template-list-dialog',
@@ -34,13 +35,14 @@ export class TemplateListDialogComponent implements OnInit {
     private templateService: TemplateService,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private nonNegativeValidator: NonNegativeValidator,
   ) {
     this.server = data['server'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
       name: new FormControl('new node', Validators.required),
-      numberOfNodes: new FormControl(1, Validators.required)
+      numberOfNodes: new FormControl(1, [Validators.required, nonNegativeValidator.get])
     });
     this.positionForm = this.formBuilder.group({
       top: new FormControl(0, Validators.required),
