@@ -123,12 +123,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/cdk@^8.2.3":
-  version "8.2.3"
-  resolved "https://registry.npmjs.org/@angular/cdk/-/cdk-8.2.3.tgz#16b96ffa935cbf5a646757ecaf2b19c434678f72"
-  integrity sha512-ZwO5Sn720RA2YvBqud0JAHkZXjmjxM0yNzCO8RVtRE9i8Gl26Wk0j0nQeJkVm4zwv2QO8MwbKUKGTMt8evsokA==
-  dependencies:
-    tslib "^1.7.1"
+"@angular/cdk@^9.1.0":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-9.1.0.tgz#da88568aed9efc39b160a0ac18cfca25f4961441"
+  integrity sha512-qKpAudJx9z0MD+ADptS0OZViJBTA49+JCKym0hPQUkcB9Po4Al6gu6oZ1VSXV5Ln3T84z9aAw/AhUGP/YCFNSQ==
   optionalDependencies:
     parse5 "^5.0.0"
 
@@ -214,12 +212,10 @@
   resolved "https://registry.npmjs.org/@angular/language-service/-/language-service-8.2.14.tgz#e18b27a6841577ce489ad31540150da5a444ca37"
   integrity sha512-7EhN9JJbAJcH2xCa+rIOmekjiEuB0qwPdHuD5qn/wwMfRzMZo+Db4hHbR9KHrLH6H82PTwYKye/LLpDaZqoHOA==
 
-"@angular/material@^8.2.3":
-  version "8.2.3"
-  resolved "https://registry.npmjs.org/@angular/material/-/material-8.2.3.tgz#16543e4e06a3fde2651a25cfe126e88e714ae105"
-  integrity sha512-SOczkIaqes+r+9XF/UUiokidfFKBpHkOPIaFK857sFD0FBNPvPEpOr5oHKCG3feERRwAFqHS7Wo2ohVEWypb5A==
-  dependencies:
-    tslib "^1.7.1"
+"@angular/material@^9.1.0":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-9.1.0.tgz#550cbf7f6a9ce679b77435278faebfc4f2a3b2ed"
+  integrity sha512-KjA1ARoZ1vBg4jUH1y39muynxAFvkD8QZFGKH8Nh4zXW5pOP/7NyjokxXsNx5qSBCq/6ac2xBxCrCYJN7HmoDw==
 
 "@angular/platform-browser-dynamic@^8.2.11":
   version "8.2.14"
@@ -9459,7 +9455,7 @@ ts-node@~8.4.1:
     source-map-support "^0.5.6"
     yn "^3.0.0"
 
-tslib@1.10.0, tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@1.10.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.10.0"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
