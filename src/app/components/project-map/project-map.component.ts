@@ -424,10 +424,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
     this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, nodeAddedEvent.server).subscribe((node: Node) => {
-      if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
-        node.name = nodeAddedEvent.name;
-        this.nodeService.updateNode(this.server, node).subscribe(()=>{});
-      }
+      // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
+      //   node.name = nodeAddedEvent.name;
+      //   this.nodeService.updateNode(this.server, node).subscribe(()=>{});
+      // }
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
 
         nodes.filter((node) => node.label.style === null).forEach((node) => {
