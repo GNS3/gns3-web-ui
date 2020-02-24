@@ -580,7 +580,8 @@ if (environment.production) {
     NavigationDialogComponent,
     ScreenshotDialogComponent,
     ConfirmationBottomSheetComponent,
-    ConfigDialogComponent
+    ConfigDialogComponent,
+    AdbutlerComponent
   ],
   bootstrap: [AppComponent]
 })
