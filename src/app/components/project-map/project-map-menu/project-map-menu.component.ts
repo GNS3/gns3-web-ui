@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ToolsService } from '../../../services/tools.service';
@@ -14,11 +14,11 @@ import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/scre
 import { saveAsPng, saveAsJpeg } from 'save-html-as-image';
 import { ThemeService } from '../../../services/theme.service';
 
-
 @Component({
     selector: 'app-project-map-menu',
     templateUrl: './project-map-menu.component.html',
-    styleUrls: ['./project-map-menu.component.scss']
+    styleUrls: ['./project-map-menu.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     @Input() project: Project;
