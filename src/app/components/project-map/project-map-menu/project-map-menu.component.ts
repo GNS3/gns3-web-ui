@@ -68,7 +68,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     public takeScreenshot() {
         const dialogRef = this.dialog.open(ScreenshotDialogComponent, {
             width: '400px',
-            autoFocus: false
+            autoFocus: false,
+            disableClose: true
         });
         dialogRef.afterClosed().subscribe((result: Screenshot) => {
             if (result) this.saveImage(result);

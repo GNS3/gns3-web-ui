@@ -20,7 +20,8 @@ export class PacketFiltersActionComponent {
         const dialogRef = this.dialog.open(PacketFiltersDialogComponent, {
             width: '900px',
             height: '400px',
-            autoFocus: false
+            autoFocus: false,
+            disableClose: true
         });
         let instance = dialogRef.componentInstance;
         instance.server = this.server;

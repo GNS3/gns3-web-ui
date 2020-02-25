@@ -27,7 +27,8 @@ export class TemplateComponent implements OnInit {
         server: this.server,
         project: this.project
       },
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe((nodeAddedEvent: NodeAddedEvent) => {
