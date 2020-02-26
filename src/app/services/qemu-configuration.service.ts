@@ -7,7 +7,7 @@ export class QemuConfigurationService {
     }
 
     getDiskInterfaces() {
-        return ['ide', 'sata', 'scsi', 'sd', 'mtd', 'floppy', 'pflash', 'virtio', 'none'];
+        return ['ide', 'sata', 'scsi', 'sd', 'mtd', 'floppy', 'pflash', 'virtio', 'nvme', 'none'];
     }
 
     getNetworkTypes() {
@@ -33,7 +33,12 @@ export class QemuConfigurationService {
         //     ["virtio-net-pci", "Paravirtualized Network I/O"],
         //     ["vmxnet3", "VMWare Paravirtualized Ethernet v3"]];
 
-        let networkTypes = ["e1000", "Intel Gigabit Ethernet",
+        let networkTypes = ["e1000",
+            "e1000-82544gc",
+            "e1000-82545em",
+            "e1000e",
+            "rocker",
+            "Intel Gigabit Ethernet",
             "i82550",
             "i82551",
             "i82557a",

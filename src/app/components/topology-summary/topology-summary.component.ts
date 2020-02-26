@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, AfterViewInit, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
@@ -16,7 +16,8 @@ import { ThemeService } from '../../services/theme.service';
 @Component({
     selector: 'app-topology-summary',
     templateUrl: './topology-summary.component.html',
-    styleUrls: ['./topology-summary.component.scss']
+    styleUrls: ['./topology-summary.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
     @Input() server: Server;

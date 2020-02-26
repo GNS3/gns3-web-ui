@@ -11,13 +11,12 @@ import { ToasterService } from '../../services/toaster.service';
 })
 export class AdbutlerComponent implements OnInit {
   @ViewChild('ad', {static: false}) ad: ElementRef;
-  @Input() theme: string;
-  @Output() onLoad = new EventEmitter();
+  theme: string;
+  onLoad = new EventEmitter();
   htmlCode: string;
 
   constructor(
-    private httpClient: HttpClient,
-    private toasterService: ToasterService
+    private httpClient: HttpClient
   ) {}
 
   ngOnInit() {
