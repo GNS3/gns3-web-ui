@@ -2,7 +2,7 @@ import { ServersPage } from './helpers/server.po';
 import { TestHelper } from './helpers/common.po';
 import { element } from 'protractor';
 
-fdescribe('gns3-web-ui App', () => {
+describe('Servers page', () => {
     let page: ServersPage;
     let helper: TestHelper;
 
@@ -10,12 +10,6 @@ fdescribe('gns3-web-ui App', () => {
         page = new ServersPage();
         helper = new TestHelper();
     });
-
-    async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array);
-        }
-    };
 
     it('user should have possibility to add server', async () => {
         // arrange
@@ -39,7 +33,7 @@ fdescribe('gns3-web-ui App', () => {
         // act
         let firstRowOfServersTable = await page.checkServersTable();
         let serverData = [];
-        await asyncForEach(firstRowOfServersTable, async element => {
+        await helper.asyncForEach(firstRowOfServersTable, async element => {
             serverData.push(await element.getText());
         });
 
