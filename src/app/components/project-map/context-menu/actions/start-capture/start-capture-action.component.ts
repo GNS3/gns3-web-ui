@@ -19,7 +19,8 @@ export class StartCaptureActionComponent {
   startCapture() {
     const dialogRef = this.dialog.open(StartCaptureDialogComponent, {
         width: '400px',
-        autoFocus: false
+        autoFocus: false,
+        disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

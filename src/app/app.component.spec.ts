@@ -8,6 +8,7 @@ import { PersistenceService } from 'angular-persistence';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import createSpyObj = jasmine.createSpyObj;
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ProgressService } from './common/progress/progress.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -19,7 +20,7 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [RouterTestingModule, MatIconModule, NgxElectronModule],
-      providers: [SettingsService, PersistenceService],
+      providers: [SettingsService, PersistenceService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
