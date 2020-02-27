@@ -11,7 +11,7 @@ describe('Servers page', () => {
         helper = new TestHelper();
     });
 
-    it('user should have possibility to add server', async () => {
+    xit('user should have possibility to add server', async () => {
         // arrange
         page.maximizeWindow();
         await page.navigateToServersPage();

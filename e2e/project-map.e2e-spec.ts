@@ -4,7 +4,7 @@ import { element } from 'protractor';
 import { ProjectsPage } from './helpers/project.po';
 import { ProjectMapPage } from './helpers/project-map.po';
 
-fdescribe('Project map page', () => {
+describe('Project map page', () => {
     let serversPage: ServersPage;
     let projectsPage: ProjectsPage;
     let projectMapPage: ProjectMapPage;
@@ -26,7 +26,7 @@ fdescribe('Project map page', () => {
         helper.sleep(2000);
     });
 
-    fit('user should have possibility to add nodes to map', async () => {
+    it('user should have possibility to add nodes to map', async () => {
         // arrange
         projectMapPage.openAddProjectDialog();
         helper.sleep(2000);

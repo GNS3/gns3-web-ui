@@ -17,8 +17,11 @@ export class ServersPage {
     }
 
     async clickAddServer() {
-        let buttons = await browser.driver.findElements(by.className('mat-button mat-button-base'));
-        await buttons[3].click();
+        let serversTable = await this.checkServersTable();
+        if (serversTable.length === 0) {
+            let buttons = await browser.driver.findElements(by.className('mat-button mat-button-base'));
+            await buttons[3].click();   
+        }
     }
 
     checkServersTable() {
