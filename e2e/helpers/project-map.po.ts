@@ -39,7 +39,8 @@ export class ProjectMapPage {
     }
 
     async verifyIfNodeWithLabelExists(labelToFind: string) {
-        let nodeLabel = await browser.driver.findElement(by.css('#map > g > g.layer > g.nodes > g:nth-child(1) > g > g > g > text'));
+        this.helper.sleep(5000);
+        let nodeLabel = await browser.driver.findElement(by.css('#map > g > g.layer > g.nodes > g > g > g > g > text'));
         let selectedNode;
         let textFromNodeLabel = await nodeLabel.getText();
         if (textFromNodeLabel == labelToFind) selectedNode = nodeLabel;
