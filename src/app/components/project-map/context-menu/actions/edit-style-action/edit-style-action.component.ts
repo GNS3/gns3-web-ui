@@ -25,7 +25,8 @@ export class EditStyleActionComponent implements OnChanges {
   editStyle() {
     const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
       width: '800px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { NodeService } from '../../../services/node.service';
@@ -11,7 +11,8 @@ import { ServerService } from '../../../services/server.service';
 @Component({
     selector: 'app-nodes-menu',
     templateUrl: './nodes-menu.component.html',
-    styleUrls: ['./nodes-menu.component.scss']
+    styleUrls: ['./nodes-menu.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NodesMenuComponent {
     @Input('project') project: Project;

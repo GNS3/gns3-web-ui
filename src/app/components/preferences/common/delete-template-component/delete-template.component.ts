@@ -27,7 +27,8 @@ export class DeleteTemplateComponent {
             data: {
                 templateName: templateName
             },
-            autoFocus: false
+            autoFocus: false,
+            disableClose: true
         });
       
         dialogRef.afterClosed().subscribe((answer: boolean) => {

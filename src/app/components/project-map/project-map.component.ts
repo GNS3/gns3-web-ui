@@ -66,6 +66,7 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -109,7 +110,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
 
-  private subscriptions: Subscription[] = [];
+  private projectMapSubscription: Subscription =  new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -153,7 +154,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private serialLinkWidget: SerialLinkWidget,
     private bottomSheet: MatBottomSheet,
     private notificationService: NotificationService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private title: Title
   ) {}
 
   ngOnInit() {
@@ -178,6 +180,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
+            this.title.setTitle(this.project.name);
 
             if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
               this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
@@ -210,22 +213,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         );
     });
 
-    this.subscriptions.push(routeSub);
+    this.projectMapSubscription.add(routeSub);
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
         if (this.scrollEnabled) this.centerCanvas();
       })
     );
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         this.mapChangeDetectorRef.detectChanges();
       })
     );
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
         nodes.forEach((node: Node) => {
@@ -237,21 +240,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(
+    this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })
     );
 
-    this.subscriptions.push(this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
+    this.projectMapSubscription.add(this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
       this.showMessage({
           type: 'error',
           message: message
       });
     }));
 
-    this.subscriptions.push(this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+    this.projectMapSubscription.add(this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
         this.showMessage({
             type: 'warning',
             message: message
@@ -323,7 +326,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         this.progressService.deactivate();
       });
-    this.subscriptions.push(subscription);
+      this.projectMapSubscription.add(subscription);
   }
 
   setUpProjectWS(project: Project) {
@@ -408,14 +411,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
     });
 
-    this.subscriptions.push(onLinkContextMenu);
-    this.subscriptions.push(onEthernetLinkContextMenu);
-    this.subscriptions.push(onSerialLinkContextMenu);
-    this.subscriptions.push(onNodeContextMenu);
-    this.subscriptions.push(onDrawingContextMenu);
-    this.subscriptions.push(onContextMenu);
-    this.subscriptions.push(onLabelContextMenu);
-    this.subscriptions.push(onInterfaceLabelContextMenu);
+    this.projectMapSubscription.add(onLinkContextMenu);
+    this.projectMapSubscription.add(onEthernetLinkContextMenu);
+    this.projectMapSubscription.add(onSerialLinkContextMenu);
+    this.projectMapSubscription.add(onNodeContextMenu);
+    this.projectMapSubscription.add(onDrawingContextMenu);
+    this.projectMapSubscription.add(onContextMenu);
+    this.projectMapSubscription.add(onLabelContextMenu);
+    this.projectMapSubscription.add(onInterfaceLabelContextMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -424,10 +427,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
     this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, nodeAddedEvent.server).subscribe((node: Node) => {
-      if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
-        node.name = nodeAddedEvent.name;
-        this.nodeService.updateNode(this.server, node).subscribe(()=>{});
-      }
+      // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
+      //   node.name = nodeAddedEvent.name;
+      //   this.nodeService.updateNode(this.server, node).subscribe(()=>{});
+      // }
       this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
 
         nodes.filter((node) => node.label.style === null).forEach((node) => {
@@ -702,7 +705,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   addNewProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -711,7 +715,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   saveProject() {
     const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -721,7 +726,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   editProject() {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       width: '600px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -732,7 +738,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -819,6 +826,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.title.setTitle('GNS3 Web UI');
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
@@ -829,7 +837,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (this.ws) {
       if (this.ws.OPEN) this.ws.close();
     }
-    this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
+    this.projectMapSubscription.unsubscribe();
   }
 }
 
