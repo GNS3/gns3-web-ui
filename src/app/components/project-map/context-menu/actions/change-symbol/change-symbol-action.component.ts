@@ -20,7 +20,8 @@ export class ChangeSymbolActionComponent implements OnInit {
     const dialogRef = this.dialog.open(ChangeSymbolDialogComponent, {
         width: '1000px',
         height: '500px',
-        autoFocus: false
+        autoFocus: false,
+        disableClose: true
       });
       let instance = dialogRef.componentInstance;
       instance.server = this.server;

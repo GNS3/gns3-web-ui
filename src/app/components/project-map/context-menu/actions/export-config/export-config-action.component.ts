@@ -26,7 +26,8 @@ export class ExportConfigActionComponent {
         } else {
             const dialogRef = this.dialog.open(ConfigDialogComponent, {
                 width: '500px',
-                autoFocus: false
+                autoFocus: false,
+                disableClose: true
             });
             let instance = dialogRef.componentInstance;
             dialogRef.afterClosed().subscribe((configType: string) => {
