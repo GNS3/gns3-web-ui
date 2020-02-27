@@ -9,6 +9,7 @@ import { Template } from '../../../models/template';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToasterService } from '../../../services/toaster.service';
 import { Project } from '../../../models/project';
+import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 
 @Component({
   selector: 'app-template-list-dialog',
@@ -34,13 +35,14 @@ export class TemplateListDialogComponent implements OnInit {
     private templateService: TemplateService,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private nonNegativeValidator: NonNegativeValidator,
   ) {
     this.server = data['server'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
-      name: new FormControl('new node', Validators.required),
-      numberOfNodes: new FormControl(1, Validators.required)
+      // name: new FormControl('new node', Validators.required),
+      numberOfNodes: new FormControl(1, [Validators.required, nonNegativeValidator.get])
     });
     this.positionForm = this.formBuilder.group({
       top: new FormControl(0, Validators.required),
@@ -68,13 +70,13 @@ export class TemplateListDialogComponent implements OnInit {
 
   chooseTemplate(event) {
     this.selectedTemplate = event.value;
-    this.configurationForm.controls['name'].setValue(this.selectedTemplate.default_name_format);
+    // this.configurationForm.controls['name'].setValue(this.selectedTemplate.default_name_format);
   }
 
   onAddClick(): void {
     if (!this.selectedTemplate || this.filteredTemplates.length === 0) {
       this.toasterService.error('Please firstly choose template.');
-    } else if (!this.positionForm.valid || !this.configurationForm.valid) {
+    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedTemplate.compute_id) {
       this.toasterService.error('Please fill all required fields.');
     } else {
       let x: number = this.positionForm.get('left').value;
@@ -85,7 +87,7 @@ export class TemplateListDialogComponent implements OnInit {
         let event: NodeAddedEvent = {
           template: this.selectedTemplate,
           server: this.selectedTemplate.compute_id,
-          name: this.configurationForm.get('name').value,
+          // name: this.configurationForm.get('name').value,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
           y: y
@@ -99,7 +101,7 @@ export class TemplateListDialogComponent implements OnInit {
 export interface NodeAddedEvent {
   template: Template,
   server: string,
-  name: string,
+  name?: string,
   numberOfNodes: number;
   x: number;
   y: number;

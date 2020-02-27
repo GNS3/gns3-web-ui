@@ -80,7 +80,8 @@ export class PacketFiltersDialogComponent implements OnInit{
     onHelpClick() {
         const dialogRef = this.dialog.open(HelpDialogComponent, {
             width: '500px',
-            autoFocus: false
+            autoFocus: false,
+            disableClose: true
         });
         let instance = dialogRef.componentInstance;
         instance.title = 'Help for filters';

@@ -46,6 +46,13 @@ export class NodeService {
   }
 
   createFromTemplate(server: Server, project: Project, template: Template, x: number, y: number, compute_id: string): Observable<Node> {
+    if (!compute_id) {
+      return this.httpServer.post(server, `/projects/${project.project_id}/templates/${template.template_id}`, {
+        x: Math.round(x),
+        y: Math.round(y),
+        compute_id: 'local'
+      });
+    } 
     return this.httpServer.post(server, `/projects/${project.project_id}/templates/${template.template_id}`, {
       x: Math.round(x),
       y: Math.round(y),
