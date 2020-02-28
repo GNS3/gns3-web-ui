@@ -61,6 +61,7 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
 import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { SystemStatusComponent } from './components/system-status/system-status.component';
+import { ServerResolve } from './resolvers/server-resolve';
 import { ProjectMapGuard } from './guards/project-map-guard';
 
 const routes: Routes = [
@@ -71,7 +72,11 @@ const routes: Routes = [
       { path: '', redirectTo: 'servers', pathMatch: 'full' },
       { path: 'servers', component: ServersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
-      { path: 'server/:server_id/projects', component: ProjectsComponent },
+      { 
+        path: 'server/:server_id/projects', 
+        component: ProjectsComponent,
+        resolve: { server : ServerResolve }
+      },
       { path: 'help', component: HelpComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
@@ -79,7 +84,11 @@ const routes: Routes = [
       { path: 'server/:server_id/systemstatus', component: SystemStatusComponent },
 
       { path: 'server/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent},
-      { path: 'server/:server_id/project/:project_id/snapshots', component: ListOfSnapshotsComponent },
+      { 
+        path: 'server/:server_id/project/:project_id/snapshots', 
+        component: ListOfSnapshotsComponent,
+        resolve: { server : ServerResolve }
+      },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       { path: 'server/:server_id/preferences/gns3vm', component: Gns3vmComponent },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
