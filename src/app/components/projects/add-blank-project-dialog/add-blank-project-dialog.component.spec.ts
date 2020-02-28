@@ -16,6 +16,7 @@ import { ToasterService } from '../../../services/toaster.service';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
 import { Router } from '@angular/router';
+import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -98,7 +99,6 @@ describe('AddBlankProjectDialogComponent', () => {
     fixture = TestBed.createComponent(AddBlankProjectDialogComponent);
     component = fixture.componentInstance;
     component.server = server;
-    component.projectNameForm.controls['projectName'].setValue('ValidName');
     fixture.detectChanges();
   });
 
@@ -109,6 +109,7 @@ describe('AddBlankProjectDialogComponent', () => {
 
   it('should call adding project when name is valid', () => {
     spyOn(component, 'addProject');
+    component.projectNameForm.controls['projectName'].setValue('ValidName');
 
     component.onAddClick();
 
