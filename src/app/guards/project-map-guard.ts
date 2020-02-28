@@ -6,12 +6,14 @@ import { ProjectService } from '../services/project.service';
 import { Server } from '../models/server';
 import { ServerService } from '../services/server.service';
 import { switchMap, map } from 'rxjs/operators';
+import { ToasterService } from '../services/toaster.service';
 
 @Injectable()
 export class ProjectMapGuard implements CanActivate {
     constructor(
         private projectService: ProjectService, 
-        private serverService: ServerService
+        private serverService: ServerService,
+        private toasterService: ToasterService
     ) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
@@ -20,7 +22,12 @@ export class ProjectMapGuard implements CanActivate {
 
         return from(this.serverService.get(parseInt(server_id, 10))).pipe(
             switchMap(response => this.projectService.list(response as Server)),
-            map(response => (response.find(n => n.project_id === project_id) ? true : false))
+            map(response => {
+                let projectToOpen = response.find(n => n.project_id === project_id);
+                if (projectToOpen) return true;
+                this.toasterService.error('Project could not be opened');
+                return false;
+            })
         )
     }
 }
