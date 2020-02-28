@@ -35,7 +35,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
     private conf = {
         autoFocus: false,
-        width: '800px'
+        width: '800px',
+        disableClose: true
     };
     dialogRefQemuImageCreator;
 

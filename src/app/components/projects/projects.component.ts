@@ -80,7 +80,8 @@ export class ProjectsComponent implements OnInit {
       const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
         width: '350px',
         height: '120px',
-        autoFocus: false
+        autoFocus: false,
+        disableClose: true
       });
   
       dialogRef.afterClosed().subscribe((answer: boolean) => {
@@ -151,7 +152,8 @@ export class ProjectsComponent implements OnInit {
   duplicate(project: Project) {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -164,7 +166,8 @@ export class ProjectsComponent implements OnInit {
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -174,7 +177,8 @@ export class ProjectsComponent implements OnInit {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
 import { timer, Observable, Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
+import { AdbutlerComponent } from '../adbutler/adbutler.component';
 
 @Component({
     selector: 'app-notification-box',
@@ -8,6 +9,8 @@ import { ThemeService } from '../../services/theme.service';
     styleUrls: ['./notification-box.component.scss']
 })
 export class NotificationBoxComponent implements OnInit, OnDestroy {
+    @ViewChild('dynamicComponentContainer', {read: ViewContainerRef, static: false}) dynamicComponentContainer;
+
     timer: Observable<number>;
     viewTimer: Observable<number>;
     timerSubscription: Subscription;
@@ -26,12 +29,28 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     isLightThemeEnabled: boolean = false;
 
     constructor(
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private viewContainerRef: ViewContainerRef
     ){}
 
     ngOnInit() {
         this.startTimer();
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+    }
+
+    ngAfterViewInit() {
+        this.createDynamicAdComponent();
+    }
+
+    createDynamicAdComponent() : void {
+        const factory = this.componentFactoryResolver.resolveComponentFactory(AdbutlerComponent);
+        const componentRef = this.dynamicComponentContainer.createComponent(factory);
+        componentRef.instance.theme = this.themeService.getActualTheme() === 'light';
+        componentRef.instance.onLoad.subscribe(event => {
+            this.onLoadingAdbutler(event);
+        })
+        componentRef.changeDetectorRef.detectChanges();
     }
 
     startTimer() {
