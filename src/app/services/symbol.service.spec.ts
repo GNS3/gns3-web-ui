@@ -8,6 +8,7 @@ import { getTestServer } from './testing';
 import { SymbolService } from './symbol.service';
 import { Symbol } from '../models/symbol';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { of } from 'rxjs';
 
 describe('SymbolService', () => {
   let httpClient: HttpClient;
@@ -50,20 +51,11 @@ describe('SymbolService', () => {
   }));
 
   it('should load symbols', inject([SymbolService], (service: SymbolService) => {
-    service.load(server).subscribe();
+    spyOn(service, 'load').and.returnValue(of([]));
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols');
+    service.list(server).subscribe();
 
-    req.flush([{ symbol_id: 'myid' }]);
-
-    const raw = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols/myid/raw');
-    raw.flush('myraw');
-
-    service.symbols.subscribe(symbols => {
-      expect(symbols.length).toEqual(1);
-      expect(symbols[0].symbol_id).toEqual('myid');
-      expect(symbols[0].raw).toEqual('myraw');
-    });
+    expect(service.load).toHaveBeenCalled();
   }));
 
   it('should get symbols', inject([SymbolService], (service: SymbolService) => {

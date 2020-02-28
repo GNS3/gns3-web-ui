@@ -67,7 +67,7 @@ export class InfoService {
             node.node_type ===  "iou") {
             return 'Command line information is not supported for this type of node.';
         } else {
-            if (node.status === 'started') {
+            if (node.command_line) {
                 return node.command_line;
             } else {
                 return 'Please start the node in order to get the command line information.';
