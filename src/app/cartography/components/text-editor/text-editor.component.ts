@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, Input, EventEmitter, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, Input, EventEmitter, OnDestroy, Renderer2, NgZone } from '@angular/core';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { TextAddedDataEvent, TextEditedDataEvent } from '../../events/event-source';
 import { ToolsService } from '../../../services/tools.service';
@@ -55,7 +55,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     private linksDataSource: LinksDataSource,
     private nodesDataSource: NodesDataSource,
     private selectionManager: SelectionManager,
-    private fontFixer: FontFixer
+    private fontFixer: FontFixer,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -63,8 +64,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       isActive ? this.activateTextAdding() : this.deactivateTextAdding();
     });
 
-    this.activateTextEditingForDrawings();
-    this.activateTextEditingForNodeLabels();
+    this.ngZone.runOutsideAngular(this.activateTextEditingForDrawings.bind(this));
+    this.ngZone.runOutsideAngular(this.activateTextEditingForNodeLabels.bind(this));
   }
 
   activateTextAdding() {
