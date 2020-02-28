@@ -61,6 +61,8 @@ export class ProjectsComponent implements OnInit {
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
     this.settings = this.settingsService.getAll();
 
+    this.projectService.projectListSubject.subscribe(() => this.refresh());
+
     let gns3vmConfig = localStorage.getItem('gns3vmConfig');
     if (this.electronService.isElectronApp && gns3vmConfig!=='configured') {
       const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
