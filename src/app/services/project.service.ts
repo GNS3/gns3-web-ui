@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Project } from '../models/project';
 import { Node } from '../cartography/models/node';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Link } from '../models/link';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
@@ -10,7 +10,13 @@ import { SettingsService } from './settings.service';
 
 @Injectable()
 export class ProjectService {
+  public projectListSubject = new Subject<boolean>();
+
   constructor(private httpServer: HttpServer, private settingsService: SettingsService) {}
+
+  projectListUpdated() {
+    this.projectListSubject.next(true);
+  }
 
   get(server: Server, project_id: string) {
     return this.httpServer.get<Project>(server, `/projects/${project_id}`);
