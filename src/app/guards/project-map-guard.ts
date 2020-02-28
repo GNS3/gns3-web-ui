@@ -25,7 +25,9 @@ export class ProjectMapGuard implements CanActivate {
             map(response => {
                 let projectToOpen = response.find(n => n.project_id === project_id);
                 if (projectToOpen) return true;
+                
                 this.toasterService.error('Project could not be opened');
+                this.projectService.projectListUpdated();
                 return false;
             })
         )
