@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -14,6 +13,7 @@ import { MockedServerSettingsService } from '../../../../services/server-setting
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { DynamipsPreferencesComponent } from './dynamips-preferences.component';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 describe('DynamipsPreferencesComponent', () => {
     let component: DynamipsPreferencesComponent;
@@ -26,7 +26,7 @@ describe('DynamipsPreferencesComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [HttpClientModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [HttpClientModule, MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute

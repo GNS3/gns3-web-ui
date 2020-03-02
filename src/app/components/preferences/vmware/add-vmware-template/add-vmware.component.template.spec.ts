@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,6 +17,7 @@ import { AddVmwareTemplateComponent } from './add-vmware-template.component';
 import { VmwareService } from '../../../../services/vmware.service';
 import { VmwareVm } from '../../../../models/vmware/vmware-vm';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedVmwareService {
     public addTemplate(server: Server, vmwareTemplate: VmwareTemplate) {
@@ -43,10 +43,7 @@ describe('AddVmwareTemplateComponent', () => {
             imports: [
                 FormsModule, 
                 ReactiveFormsModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
+                MATERIAL_IMPORTS,
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/vmware/templates', component: AddVmwareTemplateComponent}])

@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,6 +16,7 @@ import { BuiltInTemplatesService } from '../../../../../services/built-in-templa
 import { ToasterService } from '../../../../../services/toaster.service';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MATERIAL_IMPORTS } from '../../../../../material.imports';
 
 export class MockedBuiltInTemplatesService {
     public addTemplate(server: Server, cloudTemplate: CloudTemplate) {
@@ -38,10 +38,7 @@ describe('CloudNodesAddTemplateComponent', () => {
             imports: [
                 FormsModule, 
                 ReactiveFormsModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
+                MATERIAL_IMPORTS,
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/builtin/cloud-nodes', component: CloudNodesAddTemplateComponent}])

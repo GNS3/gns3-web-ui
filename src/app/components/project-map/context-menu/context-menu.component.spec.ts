@@ -4,12 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ProjectService } from '../../../services/project.service';
 import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material';
 import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Server } from '../../../models/server';
 import { ElectronService } from 'ngx-electron';
+import { MATERIAL_IMPORTS } from '../../../material.imports';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
@@ -21,7 +21,7 @@ describe('ContextMenuComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatMenuModule, BrowserModule],
+      imports: [MATERIAL_IMPORTS, BrowserModule],
       providers: [
         { provide: ChangeDetectorRef }, 
         { provide: ProjectService, useClass: MockedProjectService },

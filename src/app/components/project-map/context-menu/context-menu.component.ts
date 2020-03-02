@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
 import { Server } from '../../../models/server';
@@ -11,6 +10,7 @@ import { Label } from '../../../cartography/models/label';
 import { Link } from '../../../models/link';
 import { ElectronService } from 'ngx-electron';
 import { LinkNode } from '../../../models/link-node';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 
 @Component({

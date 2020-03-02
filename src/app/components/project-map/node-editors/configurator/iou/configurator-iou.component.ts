@@ -4,8 +4,8 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
 import { IouConfigurationService } from '../../../../../services/iou-configuration.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

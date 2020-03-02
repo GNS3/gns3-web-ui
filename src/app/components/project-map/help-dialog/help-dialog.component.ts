@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
 import { Message } from '../../../models/message';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-help-dialog',

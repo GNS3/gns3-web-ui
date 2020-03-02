@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
 import { NodeService } from '../../../../../services/node.service';
 import { Server } from '../../../../../models/server';
-import { MatDialog } from '@angular/material';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-export-config-action',

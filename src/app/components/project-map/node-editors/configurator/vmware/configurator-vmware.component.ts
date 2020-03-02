@@ -4,9 +4,9 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { VmwareConfigurationService } from '../../../../../services/vmware-configuration.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

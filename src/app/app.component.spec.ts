@@ -2,7 +2,7 @@ import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
-import { MatIconModule } from '@angular/material';
+import * as material from './index';
 import { SettingsService } from './services/settings.service';
 import { PersistenceService } from 'angular-persistence';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
@@ -19,7 +19,7 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [RouterTestingModule, MatIconModule, NgxElectronModule],
+      imports: [RouterTestingModule, material.MatIconModule, NgxElectronModule],
       providers: [SettingsService, PersistenceService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatIconModule, MatToolbarModule, MatMenuModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -9,6 +8,7 @@ import { SymbolsComponent } from './symbols.component';
 import { SymbolService } from '../../../../services/symbol.service';
 import { HttpClientModule } from '@angular/common/http';
 import { SearchFilter } from '../../../../filters/searchFilter.pipe';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedSymbolService {
     public list() {
@@ -27,7 +27,7 @@ describe('Symbols component', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports:  [HttpClientModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports:  [HttpClientModule, MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: SymbolService,  useValue: mockedSymbolsService

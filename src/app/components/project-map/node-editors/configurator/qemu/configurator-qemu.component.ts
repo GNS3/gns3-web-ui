@@ -4,13 +4,13 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef, MatDialog } from '@angular/material';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { QemuService } from '../../../../../services/qemu.service';
 import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
 import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 import { QemuImage } from '../../../../../models/qemu/qemu-image';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

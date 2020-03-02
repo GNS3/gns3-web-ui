@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +8,7 @@ import { MockedServerService } from '../../../../services/server.service.spec';
 import { ServerService } from '../../../../services/server.service';
 import { VirtualBoxPreferencesComponent } from './virtual-box-preferences.component';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 describe('VirtualBoxPreferencesComponent', () => {
     let component: VirtualBoxPreferencesComponent;
@@ -19,7 +19,7 @@ describe('VirtualBoxPreferencesComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute

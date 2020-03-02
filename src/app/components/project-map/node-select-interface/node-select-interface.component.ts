@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
 import { Port } from '../../../models/port';
 import { Link } from '../../../models/link';
 import { LinkNode } from '../../../models/link-node';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-node-select-interface',

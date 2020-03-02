@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Server } from '../../../../../models/server';
-import { MatDialog } from '@angular/material';
 import { Project } from '../../../../../models/project';
 import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
 import { ImageElement } from '../../../../../cartography/models/drawings/image-element';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-style-action',

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import * as material from '../../../index';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ToasterService } from '../../../services/toaster.service';
 import { ElectronService } from 'ngx-electron';
@@ -17,7 +17,7 @@ export class ScreenshotDialogComponent implements OnInit {
   filetype: string = 'svg';
 
   constructor(
-    public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
+    public dialogRef: material.MatDialogRef<ScreenshotDialogComponent>,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
     private electronService: ElectronService,

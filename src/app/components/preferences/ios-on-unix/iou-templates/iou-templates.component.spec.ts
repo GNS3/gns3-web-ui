@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,6 +12,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouTemplatesComponent } from './iou-templates.component';
 import { IouService } from '../../../../services/iou.service';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedIouService {
     public getTemplates(server: Server) {
@@ -30,7 +30,7 @@ describe('IouTemplatesComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               { provide: ActivatedRoute,  useValue: activatedRoute },
               { provide: ServerService, useValue: mockedServerService },

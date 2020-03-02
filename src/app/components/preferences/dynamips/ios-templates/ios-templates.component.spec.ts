@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,6 +12,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosTemplatesComponent } from './ios-templates.component';
 import { IosService } from '../../../../services/ios.service';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedIosService {
     public getTemplates(server: Server) {
@@ -30,7 +30,7 @@ describe('IosTemplatesComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute

@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,6 +16,7 @@ import { TemplateMocksService } from '../../../../../services/template-mocks.ser
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { EthernetHubsAddTemplateComponent } from './ethernet-hubs-add-template.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MATERIAL_IMPORTS } from '../../../../../material.imports';
 
 export class MockedBuiltInTemplatesService {
     public addTemplate(server: Server, ethernetHubTemplate: EthernetHubTemplate) {
@@ -38,10 +38,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
             imports: [
                 FormsModule, 
                 ReactiveFormsModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
+                MATERIAL_IMPORTS,
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/builtin/ethernet-hubs', component: EthernetHubsAddTemplateComponent}])

@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,6 +17,7 @@ import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 import { QemuService } from '../../../../services/qemu.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedQemuService {
     public addTemplate(server: Server, qemuTemplate: QemuTemplate) {
@@ -49,17 +49,9 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
           imports: [
-                MatStepperModule, 
+                MATERIAL_IMPORTS,
                 FormsModule, 
                 ReactiveFormsModule, 
-                MatSelectModule, 
-                MatAutocompleteModule, 
-                MatIconModule, 
-                MatFormFieldModule, 
-                MatInputModule,
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/qemu/templates', component: AddQemuVmTemplateComponent}])

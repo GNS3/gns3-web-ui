@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule, MatStepperModule, MatRadioModule, MatCommonModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -20,6 +19,7 @@ import { DockerService } from '../../../../services/docker.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { StepperOrientation, STEPPER_GLOBAL_OPTIONS, STEP_STATE, CdkStep } from '@angular/cdk/stepper';
 import { By } from '@angular/platform-browser';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedDockerService {
     public addTemplate(server: Server, dockerTemplate: DockerTemplate) {
@@ -40,21 +40,9 @@ xdescribe('AddDockerTemplateComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [
-                MatStepperModule,
-                MatAutocompleteModule,
-                MatCommonModule,
-                MatRadioModule, 
+                MATERIAL_IMPORTS,
                 FormsModule, 
-                MatTableModule, 
-                MatAutocompleteModule, 
-                MatFormFieldModule, 
-                MatInputModule, 
                 ReactiveFormsModule, 
-                MatSelectModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/docker/templates', component: AddDockerTemplateComponent}])

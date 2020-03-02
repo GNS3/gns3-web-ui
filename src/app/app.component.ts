@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatIconRegistry } from '@angular/material';
+import * as material from './index';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ElectronService } from 'ngx-electron';
 import { SettingsService } from './services/settings.service';
@@ -14,7 +14,7 @@ import { ProgressService } from './common/progress/progress.service';
 })
 export class AppComponent implements OnInit {
   constructor(
-    iconReg: MatIconRegistry,
+    iconReg: material.MatIconRegistry,
     sanitizer: DomSanitizer,
     private settingsService: SettingsService,
     private electronService: ElectronService,

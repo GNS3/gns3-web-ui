@@ -3,9 +3,9 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { Server } from '../../../../../../models/server';
 import { NodeService } from '../../../../../../services/node.service';
 import { ToasterService } from '../../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
 import { QemuService } from '../../../../../../services/qemu.service';
 import { QemuImg } from '../../../../../../models/qemu/qemu-img';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

@@ -1,7 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectMapComponent } from './project-map.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatBottomSheetModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';
@@ -57,6 +56,7 @@ import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbo
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NotificationService } from '../../services/notification.service';
+import { MATERIAL_IMPORTS } from '../../material.imports';
 
 export class MockedProgressService {
   public activate() {}
@@ -255,7 +255,7 @@ describe('ProjectMapComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatBottomSheetModule, MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+      imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule],
       providers: [
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },

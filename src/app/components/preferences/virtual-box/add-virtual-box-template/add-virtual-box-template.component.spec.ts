@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,6 +16,7 @@ import { AddVirtualBoxTemplateComponent } from './add-virtual-box-template.compo
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedVirtualBoxService {
     public addTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate) {
@@ -42,10 +42,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
             imports: [
                 FormsModule, 
                 ReactiveFormsModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
+                MATERIAL_IMPORTS,
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/virtualbox/templates', component: AddVirtualBoxTemplateComponent}])

@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,6 +17,7 @@ import { AddIosTemplateComponent } from './add-ios-template.component';
 import { IosService } from '../../../../services/ios.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedIosService {
     public addTemplate(server: Server, iosTemplate: IosTemplate) {
@@ -38,18 +38,9 @@ xdescribe('AddIosTemplateComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [
-                MatStepperModule, 
+                MATERIAL_IMPORTS,
                 FormsModule, 
-                MatTableModule, 
-                MatAutocompleteModule, 
-                MatFormFieldModule, 
-                MatInputModule, 
                 ReactiveFormsModule, 
-                MatSelectModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/dynamips/templates', component: AddIosTemplateComponent}])

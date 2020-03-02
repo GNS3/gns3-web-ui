@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BringToFrontActionComponent } from './bring-to-front-action.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MockedDrawingService, MockedDrawingsDataSource, MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
@@ -12,6 +11,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { of } from 'rxjs';
 import { ComponentFactoryResolver } from '@angular/core';
 import { Drawing } from '../../../../../cartography/models/drawing';
+import { MATERIAL_IMPORTS } from '../../../../../material.imports';
 
 describe('BringToFrontActionComponent', () => {
   let component: BringToFrontActionComponent;
@@ -23,7 +23,7 @@ describe('BringToFrontActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-        imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+        imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule],
         providers: [
             { provide: DrawingService, useValue: drawingService },
             { provide: DrawingsDataSource, useValue: drawingsDataSource },

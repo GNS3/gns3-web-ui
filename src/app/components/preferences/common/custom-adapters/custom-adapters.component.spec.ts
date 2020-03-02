@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatIconModule, MatToolbarModule, MatMenuModule, MatTableModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CustomAdaptersComponent } from './custom-adapters.component';
 import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 describe('Custom adapters component', () => {
     let component: CustomAdaptersComponent;
@@ -12,7 +12,7 @@ describe('Custom adapters component', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-        imports:  [MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+        imports:  [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule],
         declarations: [
             CustomAdaptersComponent
         ],

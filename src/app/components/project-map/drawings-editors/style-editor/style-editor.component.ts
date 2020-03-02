@@ -2,7 +2,6 @@ import { Component, OnInit, Injectable } from '@angular/core';
 import { Server } from '../../../../models/server';
 import { Project } from '../../../../models/project';
 import { Drawing } from '../../../../cartography/models/drawing';
-import { MatDialogRef } from '@angular/material';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingService } from '../../../../services/drawing.service';
@@ -14,6 +13,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { ToasterService } from '../../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
 import { RotationValidator } from '../../../../validators/rotation-validator';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-style-editor',

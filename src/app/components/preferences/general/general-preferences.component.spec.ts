@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatIconModule, MatToolbarModule, MatMenuModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,6 +6,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GeneralPreferencesComponent } from './general-preferences.component';
 import { MockedActivatedRoute } from '../preferences.component.spec';
+import { MATERIAL_IMPORTS } from '../../../material.imports';
 
 describe('GeneralPreferencesComponent', () => {
     let component: GeneralPreferencesComponent;
@@ -15,7 +15,7 @@ describe('GeneralPreferencesComponent', () => {
   
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+        imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
         providers: [
             {
                 provide: ActivatedRoute,  useValue: activatedRoute

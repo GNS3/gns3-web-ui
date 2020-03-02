@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatInputModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatSelectModule, MatFormFieldModule, MatAutocompleteModule, MatTableModule, MatStepperModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,6 +17,7 @@ import { IouTemplate } from '../../../../models/templates/iou-template';
 import { AddIouTemplateComponent } from './add-iou-template.component';
 import { IouService } from '../../../../services/iou.service';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedIouService {
     public addTemplate(server: Server, iouTemplate: IouTemplate) {
@@ -38,18 +38,9 @@ xdescribe('AddIouTemplateComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [
-                MatStepperModule, 
+                MATERIAL_IMPORTS,
                 FormsModule, 
-                MatTableModule, 
-                MatAutocompleteModule, 
-                MatFormFieldModule, 
-                MatInputModule, 
                 ReactiveFormsModule, 
-                MatSelectModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/iou/templates', component: AddIouTemplateComponent}])

@@ -55,5 +55,6 @@ export const MATERIAL_IMPORTS = [
   MatTabsModule,
   MatTreeModule,
   MatBottomSheetModule,
-  MatChipsModule
+  MatChipsModule,
+  MatSidenavModule
 ];

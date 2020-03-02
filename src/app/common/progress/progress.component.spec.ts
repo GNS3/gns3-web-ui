@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ProgressComponent } from './progress.component';
-import { MatIconModule, MatProgressSpinnerModule } from '@angular/material';
 import { ProgressService } from './progress.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 export class MockedRouter {
   events: BehaviorSubject<boolean>;

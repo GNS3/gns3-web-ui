@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,6 +16,7 @@ import { MockedToasterService } from '../../../../services/toaster.service.spec'
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedVpcsService {
     public addTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
@@ -38,10 +38,7 @@ describe('AddVpcsTemplateComponent', () => {
             imports: [
                 FormsModule, 
                 ReactiveFormsModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
+                MATERIAL_IMPORTS,
                 CommonModule, 
                 NoopAnimationsModule, 
                 RouterTestingModule.withRoutes([{path: 'server/1/preferences/vpcs/templates', component: AddVpcsTemplateComponent}])

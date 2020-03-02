@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
 import { Message } from '../../../models/message';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Symbol } from '../../../models/symbol';
 import { NodeService } from '../../../services/node.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-change-symbol-dialog',

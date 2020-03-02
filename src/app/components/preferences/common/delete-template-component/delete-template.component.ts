@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { TemplateService } from '../../../../services/template.service';
-import { MatDialog } from '@angular/material';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { ToasterService } from '../../../../services/toaster.service';
 import { Server } from '../../../../models/server';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-delete-template',

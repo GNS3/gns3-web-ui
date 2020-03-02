@@ -1,5 +1,4 @@
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatTableModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,6 +16,7 @@ import { VirtualBoxTemplateDetailsComponent } from './virtual-box-template-detai
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 export class MockedVirtualBoxService {
     public getTemplate(server: Server, template_id: string) {
@@ -39,7 +39,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatTableModule , MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [FormsModule, ReactiveFormsModule, MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute

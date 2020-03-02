@@ -1,6 +1,5 @@
 import { VpcsPreferencesComponent } from "./vpcs-preferences.component";
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -10,6 +9,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MockedServerService } from '../../../../services/server.service.spec';
 import { ServerService } from '../../../../services/server.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 describe('VpcsPreferencesComponent', () => {
     let component: VpcsPreferencesComponent;
@@ -20,7 +20,7 @@ describe('VpcsPreferencesComponent', () => {
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
+          imports: [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
           providers: [
               {
                   provide: ActivatedRoute,  useValue: activatedRoute

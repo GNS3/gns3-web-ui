@@ -69,10 +69,9 @@ import { ServerDiscoveryComponent } from './components/servers/server-discovery/
 import { ServerDatabase } from './services/server.database';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
 import { SnapshotMenuItemComponent } from './components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
-import { MATERIAL_IMPORTS } from './material.imports';
+import {MATERIAL_IMPORTS} from './material.imports';
 import { DrawingService } from './services/drawing.service';
 import { ProjectNameValidator } from './components/projects/models/projectNameValidator';
-import { MatSidenavModule } from '@angular/material';
 import { NodeSelectInterfaceComponent } from './components/project-map/node-select-interface/node-select-interface.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
 
@@ -464,7 +463,6 @@ if (environment.production) {
     PersistenceModule,
     NgxElectronModule,
     FileUploadModule,
-    MatSidenavModule,
     ResizableModule,
     DragAndDropModule,
     DragDropModule,
