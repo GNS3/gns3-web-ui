@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 
 import { Symbol } from '../models/symbol';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
+import { shareReplay } from 'rxjs/operators';
+
+const CACHE_SIZE = 1;
 
 @Injectable()
 export class SymbolService {
   public symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
+  private cache: Observable<Symbol[]>;
 
   constructor(private httpServer: HttpServer) {}
 
@@ -16,25 +20,22 @@ export class SymbolService {
   }
 
   add(server: Server, symbolName: string, symbol: string) {
+    this.cache = null;
     return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol)
   }
 
   load(server: Server): Observable<Symbol[]> {
-    const subscription = this.list(server).subscribe((symbols: Symbol[]) => {
-      const streams = symbols.map(symbol => this.raw(server, symbol.symbol_id));
-      forkJoin(streams).subscribe(results => {
-        symbols.forEach((symbol: Symbol, i: number) => {
-          symbol.raw = results[i];
-        });
-        this.symbols.next(symbols);
-        subscription.unsubscribe();
-      });
-    });
-    return this.symbols.asObservable();
+    return this.httpServer.get<Symbol[]>(server, '/symbols');
   }
 
   list(server: Server) {
-    return this.httpServer.get<Symbol[]>(server, '/symbols');
+    if(!this.cache) {
+      this.cache = this.load(server).pipe(
+        shareReplay(CACHE_SIZE)
+      );
+    }
+
+    return this.cache;
   }
 
   raw(server: Server, symbol_id: string) {

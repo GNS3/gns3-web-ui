@@ -41,7 +41,6 @@ export class ProjectsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
     private projectService: ProjectService,
     private settingsService: SettingsService,
     private progressService: ProgressService,
@@ -53,32 +52,24 @@ export class ProjectsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.server = this.route.snapshot.data['server'];
+    this.refresh();
     this.sort.sort(<MatSortable>{
       id: 'name',
       start: 'asc'
     });
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
-
-    this.route.paramMap
-      .pipe(
-        switchMap((params: ParamMap) => {
-          const server_id = params.get('server_id');
-          return this.serverService.get(parseInt(server_id, 10));
-        })
-      )
-      .subscribe((server: Server) => {
-        this.server = server;
-        this.refresh();
-      });
-
     this.settings = this.settingsService.getAll();
+
+    this.projectService.projectListSubject.subscribe(() => this.refresh());
 
     let gns3vmConfig = localStorage.getItem('gns3vmConfig');
     if (this.electronService.isElectronApp && gns3vmConfig!=='configured') {
       const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
         width: '350px',
         height: '120px',
-        autoFocus: false
+        autoFocus: false,
+        disableClose: true
       });
   
       dialogRef.afterClosed().subscribe((answer: boolean) => {
@@ -149,7 +140,8 @@ export class ProjectsComponent implements OnInit {
   duplicate(project: Project) {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -162,7 +154,8 @@ export class ProjectsComponent implements OnInit {
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -172,7 +165,8 @@ export class ProjectsComponent implements OnInit {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

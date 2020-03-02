@@ -9,6 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
+import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
 
 
 @Component({
@@ -31,13 +32,13 @@ export class AddBlankProjectDialogComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
     private projectNameValidator: ProjectNameValidator
-  ) {
+  ) {}
+
+  ngOnInit() {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new FormControl(null, [Validators.required, projectNameValidator.get])
+      projectName: new FormControl(null, [Validators.required, this.projectNameValidator.get], [projectNameAsyncValidator(this.server, this.projectService)])
     });
   }
-
-  ngOnInit() {}
 
   get form() {
     return this.projectNameForm.controls;
@@ -87,7 +88,8 @@ export class AddBlankProjectDialogComponent implements OnInit {
       data: {
         existingProject: existingProject
       },
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {

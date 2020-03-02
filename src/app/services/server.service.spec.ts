@@ -97,16 +97,6 @@ describe('ServerService', () => {
       record.name = 'test';
     });
 
-    it('should get an object', done => {
-      spyOn(db, 'getByKey').and.returnValue(Promise.resolve([record]));
-
-      service.get(1).then(result => {
-        expect(db.getByKey).toHaveBeenCalledWith('servers', 1);
-        expect(result).toEqual([record]);
-        done();
-      });
-    });
-
     it('should create an object', done => {
       const created = new Server();
       created.id = 22;

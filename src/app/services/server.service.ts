@@ -18,8 +18,8 @@ export class ServerService {
     });
   }
 
-  public get(id: number) {
-    return this.onReady(() => this.indexedDbService.get().getByKey(this.tablename, id));
+  public get(id: number): Promise<Server> {
+    return this.onReady(() => this.indexedDbService.get().getByKey(this.tablename, id)) as Promise<Server>;
   }
 
   public create(server: Server) {

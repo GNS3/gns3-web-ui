@@ -23,20 +23,16 @@ export class ListOfSnapshotsComponent implements OnInit {
     searchText: string;
 
     constructor(
-        private snapshotService: SnapshotService,
-        private serverService: ServerService,
         private route: ActivatedRoute,
+        private snapshotService: SnapshotService,
         private progressDialogService: ProgressDialogService,
         private toaster: ToasterService
     ) {}
 
     ngOnInit() {
-        let serverId = this.route.snapshot.paramMap.get("server_id");
         this.projectId = this.route.snapshot.paramMap.get("project_id");
-        this.serverService.get(parseInt(serverId, 10)).then((server: Server) => {
-            this.server = server;
-            this.getSnapshots();
-        });
+        this.server = this.route.snapshot.data['server'];
+        this.getSnapshots();
     }
 
     getSnapshots() {

@@ -1,5 +1,5 @@
 import * as Raven from 'raven-js';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -266,6 +266,8 @@ import { StatusChartComponent } from './components/system-status/status-chart/st
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { OpenFileExplorerActionComponent } from './components/project-map/context-menu/actions/open-file-explorer/open-file-explorer-action.component';
 import { NgxChildProcessModule } from 'ngx-childprocess';
+import { ServerResolve } from './resolvers/server-resolve';
+import { ProjectMapGuard } from './guards/project-map-guard';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -538,7 +540,10 @@ if (environment.production) {
     NotificationService,
     Gns3vmService,
     ThemeService,
-    GoogleAnalyticsService
+    GoogleAnalyticsService,
+    ServerResolve,
+    ProjectMapGuard,
+    Title
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -580,7 +585,8 @@ if (environment.production) {
     NavigationDialogComponent,
     ScreenshotDialogComponent,
     ConfirmationBottomSheetComponent,
-    ConfigDialogComponent
+    ConfigDialogComponent,
+    AdbutlerComponent
   ],
   bootstrap: [AppComponent]
 })
