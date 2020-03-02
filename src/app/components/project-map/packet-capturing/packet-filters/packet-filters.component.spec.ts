@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -9,6 +8,11 @@ import { MockedLinkService } from '../../project-map.component.spec';
 import { Link } from '../../../../models/link';
 import { of } from 'rxjs';
 import { PacketFiltersDialogComponent } from './packet-filters.component';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 describe('PacketFiltersDialogComponent', () => {
     let component: PacketFiltersDialogComponent;

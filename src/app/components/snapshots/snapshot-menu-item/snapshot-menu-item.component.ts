@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
 
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 import { SnapshotService } from '../../../services/snapshot.service';
@@ -9,6 +8,7 @@ import { ProgressDialogComponent } from '../../../common/progress-dialog/progres
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { Snapshot } from '../../../models/snapshot';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-snapshot-menu-item',

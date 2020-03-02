@@ -1,6 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
@@ -10,6 +9,7 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 
 
 @Component({

@@ -1,6 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
@@ -9,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

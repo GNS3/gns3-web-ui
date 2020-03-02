@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule } from '@angular/material';
 import { ElectronService } from 'ngx-electron';
 
 import { ConsoleDeviceActionComponent } from './console-device-action.component';
@@ -13,6 +12,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { MockedNodeService } from '../../../project-map.component.spec';
 import { NodeService } from '../../../../../services/node.service';
+import { MATERIAL_IMPORTS } from '../../../../../material.imports';
 
 
 describe('ConsoleDeviceActionComponent', () => {
@@ -54,7 +54,7 @@ describe('ConsoleDeviceActionComponent', () => {
         { provide: NodeService, useValue: mockedNodeService }
       ],
       imports: [
-        MatIconModule
+        MATERIAL_IMPORTS
       ],
       declarations: [ ConsoleDeviceActionComponent ]
     })

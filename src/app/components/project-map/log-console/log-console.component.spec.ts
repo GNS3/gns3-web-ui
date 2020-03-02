@@ -1,7 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { NO_ERRORS_SCHEMA, EventEmitter, inject } from '@angular/core';
-import { MatMenuModule } from '@angular/material';
 import { Server } from '../../../models/server';
 import { LogConsoleComponent } from './log-console.component';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
@@ -13,6 +12,7 @@ import { LogEventsDataSource } from './log-events-datasource';
 import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
+import { MATERIAL_IMPORTS } from '../../../material.imports';
 
 export class MockedProjectWebServiceHandler {
     public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
@@ -35,7 +35,7 @@ describe('LogConsoleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MatMenuModule, BrowserModule],
+      imports: [HttpClientTestingModule, MATERIAL_IMPORTS, BrowserModule],
       providers: [
         { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler }, 
         { provide: NodeService, useValue: mockedNodeService },

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Server } from '../../../../models/server';
 import { Link } from '../../../../models/link';
-import { MatDialogRef } from '@angular/material';
 import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 import { LinkService } from '../../../../services/link.service';
 import { CapturingSettings } from '../../../../models/capturingSettings';
@@ -11,6 +10,7 @@ import { LinkNode } from '../../../../models/link-node';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
 import { Project } from '../../../../models/project';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-start-capture',

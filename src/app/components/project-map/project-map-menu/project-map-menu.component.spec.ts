@@ -2,7 +2,6 @@ import { ProjectMapMenuComponent } from "./project-map-menu.component";
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { MockedDrawingService } from '../project-map.component.spec';
 import { MapSettingsService } from '../../../services/mapsettings.service';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingService } from '../../../services/drawing.service';
@@ -13,6 +12,11 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { SymbolService } from '../../../services/symbol.service';
 import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
 import { ElectronService } from 'ngx-electron';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 describe('ProjectMapMenuComponent', () => {
     let component: ProjectMapMenuComponent;

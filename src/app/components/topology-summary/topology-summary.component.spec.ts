@@ -2,7 +2,6 @@ import { TopologySummaryComponent } from "./topology-summary.component";
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
-import { MatTableModule, MatTooltipModule, MatIconModule, MatSortModule, MatDialogModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
@@ -14,6 +13,11 @@ import { Node } from '../../cartography/models/node';
 import { Server } from '../../models/server';
 import { ComputeService } from '../../services/compute.service';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
+import { MatDialogModule } from '@angular/material/dialog';
 
 export class MockedComputeService {
     getComputes(server: Server) {

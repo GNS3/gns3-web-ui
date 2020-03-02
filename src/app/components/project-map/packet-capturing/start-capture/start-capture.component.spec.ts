@@ -1,7 +1,6 @@
 import { StartCaptureDialogComponent } from "./start-capture.component";
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -13,6 +12,11 @@ import { Link } from '../../../../models/link';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 describe('StartCaptureDialogComponent', () => {
     let component: StartCaptureDialogComponent;

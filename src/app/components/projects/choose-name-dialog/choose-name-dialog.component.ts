@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
 import { Server } from '../../../models/server';
 import { ProjectService } from '../../../services/project.service';
 import { Project } from '../../../models/project';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

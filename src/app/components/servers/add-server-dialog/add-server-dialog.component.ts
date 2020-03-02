@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Server } from '../../../models/server';
 import { ElectronService } from 'ngx-electron';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ServerService } from '../../../services/server.service';
 import { ToasterService } from '../../../services/toaster.service';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 
 @Component({

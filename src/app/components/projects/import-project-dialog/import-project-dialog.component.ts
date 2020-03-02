@@ -1,5 +1,4 @@
 import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { v4 as uuid } from 'uuid';
@@ -9,6 +8,7 @@ import { Project } from '../../../models/project';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ServerResponse } from '../../../models/serverResponse';
 import { ProjectNameValidator } from '../models/projectNameValidator';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-import-project-dialog',

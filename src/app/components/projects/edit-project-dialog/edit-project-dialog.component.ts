@@ -1,11 +1,11 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Server } from '../../../models/server';
 import { Project, ProjectVariable } from '../../../models/project';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ProjectService } from '../../../services/project.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-project-dialog',

@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule, MatDialog } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Component, NgModule } from '@angular/core';
 import { Project } from '../../../models/project';
 import { ConfirmationDialogComponent } from './confirmation-dialog.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 describe('ConfirmationDialogComponent', () => {
   let dialog: MatDialog;

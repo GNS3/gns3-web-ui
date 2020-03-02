@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NodesMenuComponent } from './nodes-menu.component';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
 import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
-import { MatButtonModule, MatIconModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -13,6 +12,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 import { ServerService } from '../../../services/server.service';
 import { SettingsService } from '../../../services/settings.service';
 import { ElectronService } from 'ngx-electron';
+import { MATERIAL_IMPORTS } from '../../../material.imports';
 
 describe('NodesMenuComponent', () => {
     let component: NodesMenuComponent;
@@ -23,7 +23,7 @@ describe('NodesMenuComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports:  [MatButtonModule, MatIconModule, CommonModule, NoopAnimationsModule],
+            imports:  [MATERIAL_IMPORTS, CommonModule, NoopAnimationsModule],
             providers: [
                 { provide: NodeService, useValue: mockedNodeService },
                 { provide: ToasterService, useValue: mockedToasterService },

@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteActionComponent } from './delete-action.component';
-import { MatIconModule, MatMenuModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
@@ -13,6 +12,7 @@ import { of } from 'rxjs';
 import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
 import { LinkService } from '../../../../../services/link.service';
 import { Link } from '../../../../../models/link';
+import { MATERIAL_IMPORTS } from '../../../../../material.imports';
 
 describe('DeleteActionComponent', () => {
     let component: DeleteActionComponent;
@@ -23,7 +23,7 @@ describe('DeleteActionComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
+            imports: [MATERIAL_IMPORTS, NoopAnimationsModule],
             providers: [
                 { provide: NodesDataSource,  useClass: NodesDataSource },
                 { provide: DrawingsDataSource, useClass: DrawingsDataSource },

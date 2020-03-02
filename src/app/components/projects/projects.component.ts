@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { MatSort, MatSortable, MatDialog, MatBottomSheet } from '@angular/material';
 
 import { DataSource } from '@angular/cdk/collections';
 
@@ -22,6 +21,9 @@ import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/con
 import { ToasterService } from '../../services/toaster.service';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ElectronService } from 'ngx-electron';
+import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'app-projects',

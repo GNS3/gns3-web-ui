@@ -1,5 +1,4 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatCardModule, MatDividerModule } from '@angular/material';
 
 import { Observable } from 'rxjs/Rx';
 
@@ -11,6 +10,8 @@ import { Server } from '../../../models/server';
 import { ServerService } from '../../../services/server.service';
 import { MockedServerService } from '../../../services/server.service.spec';
 import { ServerDatabase } from '../../../services/server.database';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 
 describe('ServerDiscoveryComponent', () => {
   let component: ServerDiscoveryComponent;

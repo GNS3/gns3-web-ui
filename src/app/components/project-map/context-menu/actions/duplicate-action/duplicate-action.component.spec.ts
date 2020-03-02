@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule, MatMenuModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
@@ -12,6 +11,7 @@ import { of } from 'rxjs';
 import { DuplicateActionComponent } from './duplicate-action.component';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { MATERIAL_IMPORTS } from '../../../../../material.imports';
 
 describe('DuplicateActionComponent', () => {
     let component: DuplicateActionComponent;
@@ -22,7 +22,7 @@ describe('DuplicateActionComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
+            imports: [MATERIAL_IMPORTS, NoopAnimationsModule],
             providers: [
                 { provide: NodesDataSource,  useClass: NodesDataSource },
                 { provide: DrawingsDataSource, useClass: DrawingsDataSource },

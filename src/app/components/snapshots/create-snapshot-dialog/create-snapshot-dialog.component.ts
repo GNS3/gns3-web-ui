@@ -1,6 +1,5 @@
 import { Component, Inject } from '@angular/core';
 import { Snapshot } from '../../../models/snapshot';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Server } from '../../../models/server';
 import { Project } from '../../../models/project';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -8,6 +7,7 @@ import { ToasterService } from '../../../services/toaster.service';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 
 @Component({

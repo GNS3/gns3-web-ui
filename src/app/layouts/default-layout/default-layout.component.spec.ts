@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DefaultLayoutComponent } from './default-layout.component';
 import { ElectronService } from 'ngx-electron';
-import { MatIconModule, MatMenuModule, MatToolbarModule, MatProgressSpinnerModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -11,6 +10,10 @@ import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { Subject } from 'rxjs';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 class ElectronServiceMock {

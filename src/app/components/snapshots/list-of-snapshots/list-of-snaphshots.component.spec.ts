@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ListOfSnapshotsComponent } from './list-of-snapshots.component';
-import { MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, Sort } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,6 +17,13 @@ import { Snapshot } from '../../../models/snapshot';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
 import { NameFilter } from '../../../filters/nameFilter.pipe';
 import { ServerResolve } from '../../../resolvers/server-resolve';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Sort } from '@angular/material/sort';
 
 export class MockedActivatedRoute {
     get() {

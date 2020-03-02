@@ -1,5 +1,4 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, BehaviorSubject, fromEvent, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -10,6 +9,7 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 import { ToasterService } from '../../../services/toaster.service';
 import { Project } from '../../../models/project';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-template-list-dialog',
