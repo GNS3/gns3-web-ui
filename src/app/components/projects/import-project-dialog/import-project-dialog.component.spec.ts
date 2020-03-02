@@ -1,17 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
 import { Server } from '../../../models/server';
-import {
-  MatInputModule,
-  MatIconModule,
-  MatSortModule,
-  MatTableModule,
-  MatTooltipModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA
-} from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FileUploadModule, FileSelectDirective, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -21,6 +10,14 @@ import { By } from '@angular/platform-browser';
 import { ProjectService } from '../../../services/project.service';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MATERIAL_IMPORTS } from '../../../material.imports';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -65,10 +62,14 @@ describe('ImportProjectDialogComponent', () => {
   let server: Server;
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
+  let dialogRef = {
+    close: jasmine.createSpy('close')
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
+        MATERIAL_IMPORTS,
         MatTableModule,
         MatTooltipModule,
         MatIconModule,
@@ -83,8 +84,8 @@ describe('ImportProjectDialogComponent', () => {
         RouterTestingModule.withRoutes([])
       ],
       providers: [
-        { provide: MatDialogRef },
-        { provide: MAT_DIALOG_DATA },
+        { provide: MatDialogRef, useValue: dialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService }
       ],
       declarations: [ImportProjectDialogComponent]

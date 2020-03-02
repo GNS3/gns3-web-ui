@@ -8,12 +8,13 @@ import { getTestServer } from './testing';
 import { VersionService } from './version.service';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { Observable } from 'rxjs/Rx';
+import { of } from 'rxjs';
 
 export class MockedVersionService {
   public response: Observable<any>;
 
-  public get(server: Server) {
-    return this.response;
+  public get(server: Server): Observable<any> {
+    return of(server);
   }
 }
 

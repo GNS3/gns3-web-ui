@@ -1,13 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Server } from '../../../../models/server';
-import {
-  MatDialogModule,
-  MatFormFieldModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatSnackBarModule,
-  MatTabsModule
-} from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ToasterService } from '../../../../services/toaster.service';
 import { of } from 'rxjs/internal/observable/of';
@@ -16,6 +8,11 @@ import { NodeService } from '../../../../services/node.service';
 import { FormsModule } from '@angular/forms';
 import { MockedNodeService } from '../../project-map.component.spec';
 import { Node } from '../../../../cartography/models/node';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MATERIAL_IMPORTS } from '../../../../material.imports';
 
 describe('ConfigEditorDialogComponent', () => {
   let component: ConfigEditorDialogComponent;
@@ -33,6 +30,7 @@ describe('ConfigEditorDialogComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
+        MATERIAL_IMPORTS,
         MatDialogModule,
         MatFormFieldModule,
         NoopAnimationsModule,
@@ -42,7 +40,6 @@ describe('ConfigEditorDialogComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
-        { provide: MAT_DIALOG_DATA },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: ToasterService, useValue: toaster }
       ],

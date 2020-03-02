@@ -10,6 +10,7 @@ import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Server } from '../../../models/server';
 import { ElectronService } from 'ngx-electron';
 import { MATERIAL_IMPORTS } from '../../../material.imports';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;

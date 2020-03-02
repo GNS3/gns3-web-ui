@@ -2,14 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
 import { Server } from '../../../models/server';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import {
-  MatDialogModule,
-  MatInputModule,
-  MatFormFieldModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatSnackBarModule
-} from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -17,6 +9,11 @@ import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
 import { Router } from '@angular/router';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MATERIAL_IMPORTS } from '../../../material.imports';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -78,11 +75,11 @@ describe('AddBlankProjectDialogComponent', () => {
         NoopAnimationsModule,
         FormsModule,
         ReactiveFormsModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MATERIAL_IMPORTS
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
-        { provide: MAT_DIALOG_DATA },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ToasterService, useValue: toaster },
         { provide: Router, useValue: router }
