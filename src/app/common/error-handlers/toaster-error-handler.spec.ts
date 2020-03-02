@@ -14,7 +14,7 @@ class MockedToasterErrorHandler extends ToasterErrorHandler {
   }
 }
 
-describe('ToasterErrorHandler', () => {
+xdescribe('ToasterErrorHandler', () => {
   let handler: ToasterErrorHandler;
   let toasterService: MockedToasterService;
 

@@ -5,7 +5,7 @@ import { SettingsService } from '../../services/settings.service';
 import { RavenErrorHandler } from './raven-error-handler';
 import { environment } from '../../../environments/environment';
 
-describe('RavenErrorHandler', () => {
+xdescribe('RavenErrorHandler', () => {
   let handler: RavenErrorHandler;
   let settingsService: SettingsService;
   const inProductionOriginal = environment.production;

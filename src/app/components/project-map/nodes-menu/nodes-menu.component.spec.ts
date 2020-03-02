@@ -14,7 +14,7 @@ import { SettingsService } from '../../../services/settings.service';
 import { ElectronService } from 'ngx-electron';
 import { MATERIAL_IMPORTS } from '../../../material.imports';
 
-describe('NodesMenuComponent', () => {
+xdescribe('NodesMenuComponent', () => {
     let component: NodesMenuComponent;
     let fixture: ComponentFixture<NodesMenuComponent>;
     let mockedToasterService: MockedToasterService = new MockedToasterService();
