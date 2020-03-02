@@ -17,7 +17,7 @@ USER gns3-web-ui
 
 # Install dependencies
 RUN yarn global add @angular/cli
-RUN yarn install --pure-lockfile
+RUN yarn install
 
 ENV PATH /home/gns3-web-ui/.yarn/bin:$PATH
 
