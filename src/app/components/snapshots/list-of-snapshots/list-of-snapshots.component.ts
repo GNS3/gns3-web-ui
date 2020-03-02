@@ -4,11 +4,11 @@ import { ServerService } from '../../../services/server.service';
 import { ActivatedRoute } from '@angular/router';
 import { Server } from '../../..//models/server';
 import { Snapshot } from '../../../models/snapshot';
-import { Sort } from '@angular/material';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { Project } from '../../../models/project';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
+import { Sort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-list-of-snapshots',

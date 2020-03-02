@@ -1,4 +1,4 @@
-import { HostListener, ElementRef, Renderer, Directive, Input, OnInit, OnDestroy } from '@angular/core'
+import { HostListener, ElementRef, Renderer2, Directive, Input, OnInit, OnDestroy } from '@angular/core'
 import { Subscription } from 'rxjs';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
