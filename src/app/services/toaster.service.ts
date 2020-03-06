@@ -4,21 +4,21 @@ import { MatSnackBar } from '@angular/material';
 @Injectable()
 export class ToasterService {
   snackBarConfigForSuccess = {
-    duration: 2000,
+    duration: 4000,
     panelClass: ['snackabar-success'],
     MatSnackBarHorizontalPosition: 'center',
     MatSnackBarVerticalPosition: 'bottom'
   };
 
   snackBarConfigForWarning = {
-    duration: 2000,
+    duration: 4000,
     panelClass: ['snackabar-warning'],
     MatSnackBarHorizontalPosition: 'center',
     MatSnackBarVerticalPosition: 'bottom'
   };
 
   snackBarConfigForError = {
-    duration: 2000,
+    duration: 4000,
     panelClass: ['snackabar-error'],
     MatSnackBarHorizontalPosition: 'center',
     MatSnackBarVerticalPosition: 'bottom'
