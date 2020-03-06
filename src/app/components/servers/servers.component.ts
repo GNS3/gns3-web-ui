@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatBottomSheet } from '@angular/material';
 import { Observable, merge, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.
 import { ServerManagementService } from '../../services/server-management.service';
 import { ElectronService } from 'ngx-electron';
 import { ChildProcessService } from 'ngx-childprocess';
+import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 
 
 @Component({
@@ -31,7 +32,8 @@ export class ServersComponent implements OnInit, OnDestroy {
     private serverManagement: ServerManagementService,
     private changeDetector: ChangeDetectorRef,
     private electronService: ElectronService,
-    private childProcessService: ChildProcessService
+    private childProcessService: ChildProcessService,
+    private bottomSheet: MatBottomSheet,
   ) {}
 
   ngOnInit() {
@@ -117,8 +119,15 @@ export class ServersComponent implements OnInit, OnDestroy {
   }
 
   deleteServer(server: Server) {
-    this.serverService.delete(server).then(() => {
-      this.serverDatabase.remove(server);
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to delete the server?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.serverService.delete(server).then(() => {
+          this.serverDatabase.remove(server);
+        }); 
+      }
     });
   }
 
