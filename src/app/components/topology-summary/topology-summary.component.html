@@ -23,26 +23,23 @@
     <div [ngClass]="{ notvisible: !isTopologyVisible }">
         <mat-divider class="divider"></mat-divider>
         <div class="summaryFilters">
-            Filter by status <br/>
-            <div class="filterBox">
-                <mat-checkbox (change)="applyStatusFilter($event.checked, 'started')">started</mat-checkbox>
-                <mat-checkbox (change)="applyStatusFilter($event.checked, 'suspended')">suspended</mat-checkbox>
-                <mat-checkbox (change)="applyStatusFilter($event.checked, 'stopped')">stopped</mat-checkbox>
-            </div>
-            Show devices with <br/>
-            <div class="filterBox">
-                <mat-checkbox (change)="applyCaptureFilter($event.checked, 'capture')">active capture(s)</mat-checkbox>
-                <mat-checkbox (change)="applyCaptureFilter($event.checked, 'packet')">active packet filters</mat-checkbox>
-            </div>
+            <mat-select placeholder="Filter nodes" multiple>
+                <mat-optgroup label="Status filter">
+                  <mat-option value="started" (onSelectionChange)="applyStatusFilter('started')">started</mat-option>
+                  <mat-option value="suspended" (onSelectionChange)="applyStatusFilter('suspended')">suspended</mat-option>
+                  <mat-option value="stopped" (onSelectionChange)="applyStatusFilter('stopped')">stopped</mat-option>
+                </mat-optgroup>
+                <mat-optgroup label="Capture filter">
+                  <mat-option value="capture" (onSelectionChange)="applyCaptureFilter('capture')">active capture(s)</mat-option>
+                  <mat-option value="packet" (onSelectionChange)="applyCaptureFilter('packet')">active packet captures</mat-option>
+                </mat-optgroup>
+            </mat-select>
         </div>
         <div class="summarySorting">
-            Sorting <br/>
-            <div class="radio-group-wrapper">
-                <mat-radio-group class="radio-group" aria-label="Sorting">
-                    <mat-radio-button value="1" (click)="setSortingOrder('asc')" checked>By name ascending</mat-radio-button>
-                    <mat-radio-button value="2" (click)="setSortingOrder('desc')">By name descending</mat-radio-button>
-                </mat-radio-group>
-            </div>
+            <mat-select (selectionChange)="setSortingOrder()" placeholder="Sorting" [(value)]="sortingOrder">
+                <mat-option value="asc">sort by name ascending</mat-option>
+                <mat-option value="desc">sort by name descending</mat-option>
+            </mat-select>
         </div>
         <mat-divider class="divider"></mat-divider>
         <div

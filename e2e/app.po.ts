@@ -6,7 +6,7 @@ export class Gns3WebUiPage {
   }
 
   getTitleText() {
-    return browser.getTitle();
+    return browser.driver.getTitle();
   }
 
   getParagraphText() {
