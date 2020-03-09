@@ -10,7 +10,7 @@
       ng2FileSelect
       [uploader]="uploader"
     />
-    <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Choose file</button>
+    <button mat-raised-button color="primary" (click)="file.click()" matTooltip="Import your .gns3p or .gns3project file" class="file-button">Choose file</button>
     <mat-form-field [ngClass]="{ empty: !isDeleteVisible }" class="file-name-form-field">
       <input
         matInput
