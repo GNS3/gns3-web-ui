@@ -26,12 +26,12 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     @Output() closeTopologySummary = new EventEmitter<boolean>();
 
     public style = { };
-    public styleInside = { height: `180px` };
+    public styleInside = { height: `280px` };
     private subscriptions: Subscription[] = [];
     projectsStatistics: ProjectStatistics;
     nodes: Node[] = [];
     filteredNodes: Node[] = [];
-    sortingOrder: string = 'asc';
+    public sortingOrder: string = 'asc';
     startedStatusFilterEnabled: boolean = false;
     suspendedStatusFilterEnabled: boolean = false;
     stoppedStatusFilterEnabled: boolean = false;
@@ -134,7 +134,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         };
 
         this.styleInside = {
-            height: `${event.rectangle.height - 220}px`
+            height: `${event.rectangle.height - 120}px`
         };
     }
 
@@ -156,8 +156,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
     }
 
-    setSortingOrder(order: string) {
-        this.sortingOrder = order;
+    setSortingOrder() {
         if (this.sortingOrder === 'asc') {
             this.filteredNodes = this.filteredNodes.sort(this.compareAsc);
         } else {
@@ -165,22 +164,22 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         }   
     }
 
-    applyStatusFilter(value: boolean, filter: string) {
+    applyStatusFilter(filter: string) {
         if (filter === 'started') {
-            this.startedStatusFilterEnabled = value;
+            this.startedStatusFilterEnabled = !this.startedStatusFilterEnabled;
         } else if (filter === 'stopped') {
-            this.stoppedStatusFilterEnabled = value;
+            this.stoppedStatusFilterEnabled = !this.stoppedStatusFilterEnabled;
         } else if (filter === 'suspended') {
-            this.suspendedStatusFilterEnabled = value;
+            this.suspendedStatusFilterEnabled = !this.suspendedStatusFilterEnabled;
         }
         this.applyFilters();
     }
 
-    applyCaptureFilter(value: boolean, filter: string) {
+    applyCaptureFilter(filter: string) {
         if (filter === 'capture') {
-            this.captureFilterEnabled = value;
+            this.captureFilterEnabled = !this.captureFilterEnabled;
         } else if (filter === 'packet') {
-            this.packetFilterEnabled = value;
+            this.packetFilterEnabled = !this.packetFilterEnabled;
         }
         this.applyFilters();
     }
