@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { ToasterService } from '../../services/toaster.service';
 import { ProgressService } from '../../common/progress/progress.service';
 import { version } from './../../version';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private serverManagement: ServerManagementService,
     private toasterService: ToasterService,
-    private progressService: ProgressService
+    private progressService: ProgressService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -52,6 +54,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop servers only when in Electron
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
+  }
+
+  backToProject() {
+    this.router.navigate(['/server', this.recentlyOpenedServerId, 'project', this.recentlyOpenedProjectId])
+      .catch(error => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 
   @HostListener('window:beforeunload', ['$event'])
