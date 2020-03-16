@@ -26,15 +26,20 @@ export class BringToFrontActionComponent implements OnInit {
   ngOnInit() {}
 
   bringToFront() {
+    let maxZValueForNodes = Math.max(...this.nodes.map(n => n.z));
+    let maxZValueForDrawings = Math.max(...this.drawings.map(n => n.z));
+    let maxZValue = Math.max(maxZValueForNodes, maxZValueForDrawings);
+    if (maxZValue < 100) maxZValue++;
+
     this.nodes.forEach((node) => {
-      node.z = 100;
+      node.z = maxZValue;
       this.nodesDataSource.update(node);
 
       this.nodeService.update(this.server, node).subscribe((node: Node) => {});
     });
 
     this.drawings.forEach((drawing) => {
-      drawing.z = 100;
+      drawing.z = maxZValue;
       this.drawingsDataSource.update(drawing);
 
       this.drawingService.update(this.server, drawing).subscribe((drawing: Drawing) => {});
