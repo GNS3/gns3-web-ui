@@ -18,7 +18,7 @@ export class ToasterService {
   };
 
   snackBarConfigForError = {
-    duration: 4000,
+    duration: 10000,
     panelClass: ['snackabar-error'],
     MatSnackBarHorizontalPosition: 'center',
     MatSnackBarVerticalPosition: 'bottom'
