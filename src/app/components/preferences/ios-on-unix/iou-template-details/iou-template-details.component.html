@@ -71,9 +71,11 @@
                 </mat-checkbox>
                 <mat-form-field class="form-field" *ngIf="!defaultSettings">
                     <input matInput type="number" [(ngModel)]="iouTemplate.ram" placeholder="RAM size">
+                    <span matSuffix>MB</span>
                 </mat-form-field>
                 <mat-form-field class="form-field" *ngIf="!defaultSettings">
                     <input matInput type="number" [(ngModel)]="iouTemplate.nvram" placeholder="NVRAM size">
+                    <span matSuffix>MB</span>
                 </mat-form-field>
             </mat-expansion-panel>
             <mat-expansion-panel>

@@ -23,9 +23,11 @@
                         </mat-checkbox><br/>
                         <mat-form-field class="form-field">
                             <input matInput type="number" [(ngModel)]="node.properties.ram" placeholder="RAM size">
+                            <span matSuffix>MB</span>
                         </mat-form-field>
                         <mat-form-field class="form-field">
                             <input matInput type="number" [(ngModel)]="node.properties.nvram" placeholder="NVRAM size">
+                            <span matSuffix>MB</span>
                         </mat-form-field>
                     </mat-tab>
 

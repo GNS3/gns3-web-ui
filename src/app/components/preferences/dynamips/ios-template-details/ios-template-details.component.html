@@ -62,9 +62,11 @@
                 <form [formGroup]="memoryForm">
                     <mat-form-field class="form-field">
                         <input matInput type="number" formControlName="ram" [(ngModel)]="iosTemplate.ram" placeholder="RAM size">
+                        <span matSuffix>MB</span>
                     </mat-form-field>
                     <mat-form-field class="form-field">
                         <input matInput type="number" formControlName="nvram" [(ngModel)]="iosTemplate.nvram" placeholder="NVRAM size">
+                        <span matSuffix>MB</span>
                     </mat-form-field>
                     <mat-form-field class="form-field">
                         <input matInput type="number" formControlName="iomemory" [(ngModel)]="iosTemplate.iomem" placeholder="I/O memory">

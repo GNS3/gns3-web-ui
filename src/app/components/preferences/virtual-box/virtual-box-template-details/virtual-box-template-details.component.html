@@ -42,6 +42,7 @@
                     </mat-checkbox>
                     <mat-form-field class="form-field">
                         <input matInput formControlName="ram" type="number" [(ngModel)]="virtualBoxTemplate.ram" placeholder="RAM">
+                        <span matSuffix>MB</span>
                     </mat-form-field>
                     <mat-form-field class="form-field">
                         <mat-select [ngModelOptions]="{standalone: true}" placeholder="On close" [(ngModel)]="virtualBoxTemplate.on_close">

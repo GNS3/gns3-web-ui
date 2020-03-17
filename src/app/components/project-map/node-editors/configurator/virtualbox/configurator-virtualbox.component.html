@@ -22,6 +22,7 @@
                             </mat-checkbox>
                             <mat-form-field class="form-field">
                                 <input matInput formControlName="ram" type="number" [(ngModel)]="node.properties.ram" placeholder="RAM">
+                                <span matSuffix>MB</span>
                             </mat-form-field>
                             <mat-form-field class="form-field">
                                 <mat-select [ngModelOptions]="{standalone: true}" placeholder="On close" [(ngModel)]="node.properties.on_close">
