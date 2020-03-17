@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { Node } from '../../../../../cartography/models/node';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
   selector: 'app-start-node-action',
@@ -12,7 +13,10 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
 
-  constructor(private nodeService: NodeService) {}
+  constructor(
+    private nodeService: NodeService,
+    private toasterService: ToasterService
+  ) {}
 
   ngOnInit() {
   }
@@ -30,7 +34,12 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
 
   startNodes() {
     this.nodes.forEach((node) => {
-      this.nodeService.start(this.server, node).subscribe((n: Node) => {});
+      this.nodeService.start(this.server, node).subscribe(
+        (n: Node) => {},
+        error => {
+          this.toasterService.error(error.error.message)
+        }
+      );
     });
   }
 }

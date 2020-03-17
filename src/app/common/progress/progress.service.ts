@@ -20,8 +20,8 @@ export class ProgressService {
 
   constructor() {}
 
-  public setError(error: Error) {
-    this.state.next(new State(false, error));
+  public setError(error) {
+    this.state.next(new State(false, error.error));
   }
 
   public clear() {
