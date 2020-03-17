@@ -28,6 +28,8 @@
 .image {
     width: 65px;
     height: 65px;   
+    filter: invert(0);
+    --webkit-filter: invert(0)!important;
 }
 
 .imageSelected {
