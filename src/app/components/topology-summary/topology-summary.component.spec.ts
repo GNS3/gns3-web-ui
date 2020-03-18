@@ -68,7 +68,7 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped' } as Node
         ];
 
-        component.applyStatusFilter(true, 'started');
+        component.applyStatusFilter('started');
 
         expect(component.filteredNodes.length).toBe(1);
         expect(component.filteredNodes[0].status).toBe('started');
@@ -80,7 +80,7 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped' } as Node
         ];
 
-        component.applyStatusFilter(true, 'stopped');
+        component.applyStatusFilter('stopped');
 
         expect(component.filteredNodes.length).toBe(1);
         expect(component.filteredNodes[0].status).toBe('stopped');
@@ -92,7 +92,7 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped' } as Node
         ];
 
-        component.applyStatusFilter(true, 'suspended');
+        component.applyStatusFilter('suspended');
 
         expect(component.filteredNodes.length).toBe(0);
     });
@@ -103,9 +103,9 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped' } as Node
         ];
 
-        component.applyStatusFilter(true, 'suspended');
-        component.applyStatusFilter(true, 'started');
-        component.applyStatusFilter(true, 'stopped');
+        component.applyStatusFilter('suspended');
+        component.applyStatusFilter('started');
+        component.applyStatusFilter('stopped');
 
         expect(component.filteredNodes.length).toBe(2);
     });
@@ -116,18 +116,18 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped' } as Node
         ];
 
-        component.applyStatusFilter(true, 'suspended');
-        component.applyStatusFilter(true, 'started');
-        component.applyStatusFilter(true, 'stopped');
+        component.applyStatusFilter('suspended');
+        component.applyStatusFilter('started');
+        component.applyStatusFilter('stopped');
 
         expect(component.filteredNodes.length).toBe(2);
 
-        component.applyStatusFilter(false, 'stopped');
+        component.applyStatusFilter('stopped');
 
         expect(component.filteredNodes.length).toBe(1);
 
-        component.applyStatusFilter(false, 'suspended');
-        component.applyStatusFilter(false, 'started');
+        component.applyStatusFilter('suspended');
+        component.applyStatusFilter('started');
 
         expect(component.filteredNodes.length).toBe(2);
     });
@@ -138,9 +138,10 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped', name: 'B' } as Node,
             { status: 'stopped', name: 'D' } as Node,
         ];
+        component.sortingOrder = 'asc';
 
         component.applyFilters();
-        component.setSortingOrder('asc');
+        component.setSortingOrder();
 
         expect(component.filteredNodes[0].name).toBe('A');
     });
@@ -151,9 +152,10 @@ describe('TopologySummaryComponent', () => {
             { status: 'stopped', name: 'B' } as Node,
             { status: 'stopped', name: 'D' } as Node,
         ];
+        component.sortingOrder = 'desc';
 
-        component.applyStatusFilter(true, 'stopped');
-        component.setSortingOrder('desc');
+        component.applyStatusFilter('stopped');
+        component.setSortingOrder();
 
         expect(component.filteredNodes[0].name).toBe('D');
     });
