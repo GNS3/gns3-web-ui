@@ -5,4 +5,5 @@ export class Port {
   name: string;
   port_number: number;
   short_name: string;
+  available?: boolean;
 }

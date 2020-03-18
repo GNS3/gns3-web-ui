@@ -20,7 +20,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   protected topPosition;
   protected leftPosition;
   public node: Node;
-  public availablePorts: Port[];
+  public ports: Port[];
 
   constructor(
     private sanitizer: DomSanitizer, 
@@ -54,11 +54,14 @@ export class NodeSelectInterfaceComponent implements OnInit {
       });
     });
 
-    this.availablePorts = [];
+    this.ports = [];
     this.node.ports.forEach((port: Port) => {
-      if(linkNodes.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0){
-        this.availablePorts.push(port);
+      if (linkNodes.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0) {
+        port.available = true;
+      } else {
+        port.available = false;
       }
+      this.ports.push(port);
     });
   }
 
