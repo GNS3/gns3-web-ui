@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class ProgressComponent implements OnInit, OnDestroy {
   visible = false;
-  error: Error;
+  error: any;
   routerSubscription: Subscription;
 
   constructor(private progressService: ProgressService, private router: Router) {}

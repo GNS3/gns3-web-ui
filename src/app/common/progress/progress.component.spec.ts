@@ -58,9 +58,9 @@ describe('ProgressComponent', () => {
   });
 
   it('should set error state when error defined', () => {
-    const error = new Error('test');
+    const error = {error: 'test'};
     progressService.setError(error);
-    expect(component.error).toEqual(error);
+    expect(component.error).toEqual(error.error);
   });
 
   it('should clear error when changes route', () => {

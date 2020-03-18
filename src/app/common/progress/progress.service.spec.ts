@@ -30,9 +30,9 @@ describe('ProgressService', () => {
   });
 
   it('should propagate event on error', () => {
-    const error = new Error();
+    const error = {error: 'Error'};
     progressService.setError(error);
-    expect(progressService.state.next).toHaveBeenCalledWith(new State(false, error));
+    expect(progressService.state.next).toHaveBeenCalledWith(new State(false, error.error));
   });
 
   it('should clear an error', () => {

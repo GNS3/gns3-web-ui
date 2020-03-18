@@ -4,10 +4,10 @@ import { BehaviorSubject } from 'rxjs';
 
 export class State {
   public visible: boolean;
-  public error: Error;
+  public error: any;
   public clear: boolean;
 
-  constructor(visible: boolean, error?: Error, clear: boolean = false) {
+  constructor(visible: boolean, error?: any, clear: boolean = false) {
     this.visible = visible;
     this.error = error;
     this.clear = clear;
