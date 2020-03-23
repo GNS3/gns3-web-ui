@@ -1,0 +1,44 @@
+<div
+    *ngIf="isDraggingEnabled"
+    (document:mousemove)="dragWidget($event)"
+    (document:mouseup)="toggleDragging(false)">   
+</div>
+<div 
+    class="consoleWrapper"
+    [ngClass]="{lightTheme: isLightThemeEnabled}"
+    (mousedown)="toggleDragging(true)"
+    [ngStyle]="style" 
+    mwlResizable
+    [validateResize]="validate"
+    [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
+    [enableGhostResize]="true"
+    (resizeStart)="toggleDragging(false)"
+    (resizeEnd)="onResizeEnd($event)">
+
+    <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <div class="col" style="margin-left: 20px;">GNS3 console</div>
+                <button *ngIf="tab !== 'GNS3 console'" style="color:white" mat-icon-button (click)="removeTab(index)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </ng-template>
+
+            place for log console
+        </mat-tab>
+
+        <mat-tab *ngFor="let node of nodes; let index = index" [label]="tab">
+            <ng-template mat-tab-label>
+                <div class="col" style="margin-left: 20px;">{{node.name}}</div>
+                <button style="color:white" mat-icon-button (click)="removeTab(index)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </ng-template>
+
+            <div>
+                <app-web-console [server]="server" [node]="node"></app-web-console>
+            </div>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

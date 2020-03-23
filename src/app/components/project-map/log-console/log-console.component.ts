@@ -14,6 +14,7 @@ import { HttpServer } from '../../../services/http-server.service';
 import { LogEvent } from '../../../models/logEvent';
 import { ResizeEvent } from 'angular-resizable-element';
 import { ThemeService } from '../../../services/theme.service';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
@@ -22,10 +23,12 @@ import { ThemeService } from '../../../services/theme.service';
     styleUrls: ['./log-console.component.scss']
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-    @Input() project: Project;
     @Input() server: Server;
+    @Input() project: Project;
     @Output() closeConsole =  new EventEmitter<boolean>();
+
     @ViewChild('console', {static: false}) console: ElementRef;
+
     private nodeSubscription: Subscription;
     private linkSubscription: Subscription;
     private drawingSubscription: Subscription;
@@ -60,6 +63,21 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         private httpService: HttpServer,
         private themeService: ThemeService
     ) {}
+
+    tabs = ['GNS3 console', 'PC2'];
+    selected = new FormControl(0);
+
+    addTab(selectAfterAdding: boolean) {
+        this.tabs.push('New');
+
+        if (selectAfterAdding) {
+        this.selected.setValue(this.tabs.length - 1);
+        }
+    }
+
+    removeTab(index: number) {
+        this.tabs.splice(index, 1);
+    }
     
     ngOnInit() {
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
@@ -155,7 +173,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        // this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
     ngOnDestroy() {
@@ -294,13 +312,13 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     showMessage(event: LogEvent) {
-        this.logEventsDataSource.add(event);
-        this.filteredEvents = this.getFilteredEvents();
-        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        // this.logEventsDataSource.add(event);
+        // this.filteredEvents = this.getFilteredEvents();
+        // this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
 
-        setTimeout( () => { 
-            this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
-        }, 100 );
+        // setTimeout( () => { 
+        //     this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        // }, 100 );
     }
 
     getFilteredEvents(): LogEvent[] {

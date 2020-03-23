@@ -14,7 +14,24 @@
     [enableGhostResize]="true"
     (resizeStart)="toggleDragging(false)"
     (resizeEnd)="onResizeEnd($event)">
-    <div class="consoleHeader">
+
+    <mat-tab-group [selectedIndex]="selected.value"
+               (selectedIndexChange)="selected.setValue($event)">
+    <mat-tab *ngFor="let tab of tabs; let index = index" [label]="tab">
+        <ng-template mat-tab-label>
+            <div class="col" style="margin-left: 20px;">{{tab}}</div>
+            <button *ngIf="tab !== 'GNS3 console'" style="color:white" mat-icon-button (click)="removeTab(index)">
+                <mat-icon>close</mat-icon>
+            </button>
+        </ng-template>
+
+        <div *ngIf="tab !== 'GNS3 console'">
+            <app-web-console [server]="server" [node]="node"></app-web-console>
+        </div>
+    </mat-tab>
+    </mat-tab-group>
+
+    <!-- <div class="consoleHeader">
         <div class="consoleFiltering">
             <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="filterButton" [matMenuTriggerFor]="filterMenu">
                 Apply filter
@@ -49,5 +66,5 @@
             (keydown)="onKeyDown($event)"
             type="text"
             [(ngModel)]="command"/>
-    </div>
+    </div> -->
 </div>
