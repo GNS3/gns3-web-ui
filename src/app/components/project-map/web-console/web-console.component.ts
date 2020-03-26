@@ -1,12 +1,15 @@
-import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { Node } from '../../../cartography/models/node';
+import { FitAddon } from 'xterm-addon-fit';
+import { NodeConsoleService } from '../../../services/nodeConsole.service';
 
 
 @Component({
+    encapsulation: ViewEncapsulation.None,
     selector: 'app-web-console',
     templateUrl: './web-console.component.html',
     styleUrls: ['../../../../../node_modules/xterm/css/xterm.css']
@@ -15,22 +18,35 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     @Input() server: Server;
     @Input() project: Project;
     @Input() node: Node;
+    public term: Terminal;
+    @ViewChild('terminal', {static: false}) terminal: ElementRef;
 
-    constructor() {}
+    constructor(
+        private consoleService: NodeConsoleService
+    ) {}
     
     ngOnInit() {}
 
     ngAfterViewInit() {
-        const term = new Terminal();
+        this.term = new Terminal();
         setTimeout(() => {
-            term.open(document.getElementById('terminal'));
-            term.write('\x1B[1;3;31mxterm.js\x1B[0m $ ')
-    
+            this.term.open(this.terminal.nativeElement);
             const socket = new WebSocket(this.getUrl());
+
+            socket.onerror = ((event) => {
+                this.term.write('Connection lost');
+            });
+            socket.onclose = ((event) => {
+                this.consoleService.closeConsoleForNode(this.node);
+            });
+
             const attachAddon = new AttachAddon(socket);
-            term.loadAddon(attachAddon);
-    
-            console.log('Console is running...');
+            this.term.loadAddon(attachAddon);
+            this.term.setOption('cursorBlink', true);
+
+            const fitAddon = new FitAddon();
+            this.term.loadAddon(fitAddon);
+            fitAddon.activate(this.term);
         }, 1000);
     }
 

@@ -6,6 +6,7 @@ import { ResizeEvent } from 'angular-resizable-element';
 import { ThemeService } from '../../../services/theme.service';
 import { FormControl } from '@angular/forms';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { Node } from '../../../cartography/models/node';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { NodeConsoleService } from '../../../services/nodeConsole.service';
     templateUrl: './console-wrapper.component.html',
     styleUrls: ['./console-wrapper.component.scss']
 })
-export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ConsoleWrapperComponent implements OnInit {
     @Input() server: Server;
     @Input() project: Project;
     @Output() closeConsole =  new EventEmitter<boolean>();
@@ -37,18 +38,17 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     
     ngOnInit() {
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
-        this.style = { bottom: '20px', left: '20px', width: '600px', height: '180px'}; // style properties
+        this.style = { bottom: '20px', left: '20px', width: '720px', height: '456px'};
 
         this.consoleService.nodeConsoleTrigger.subscribe((node) => {
             this.addTab(node, true);
         });
-    }
 
-    ngAfterViewInit() {
-        // this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        this.consoleService.closeNodeConsoleTrigger.subscribe((node) => {
+            let index = this.nodes.findIndex(n => n.node_id === node.node_id)
+            this.removeTab(index);
+        });
     }
-
-    ngOnDestroy() {}
 
     addTab(node: Node, selectAfterAdding: boolean) {
         this.nodes.push(node);
