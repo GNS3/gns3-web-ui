@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 export class NodeConsoleService {
   public nodeConsoleTrigger = new EventEmitter<Node>();
   public closeNodeConsoleTrigger = new Subject<Node>();
+  public consoleResized = new Subject<boolean>();
 
   constructor() {}
 
@@ -14,6 +15,10 @@ export class NodeConsoleService {
   }
 
   closeConsoleForNode(node: Node) {
-    this.closeNodeConsoleTrigger.next(node)
+    this.closeNodeConsoleTrigger.next(node);
+  }
+
+  resizeTerminal() {
+    this.consoleResized.next(true);
   }
 }

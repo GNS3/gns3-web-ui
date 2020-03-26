@@ -9,7 +9,7 @@ import { NodeConsoleService } from '../../../services/nodeConsole.service';
 
 
 @Component({
-    encapsulation: ViewEncapsulation.None,
+    encapsulation: ViewEncapsulation.ShadowDom,
     selector: 'app-web-console',
     templateUrl: './web-console.component.html',
     styleUrls: ['../../../../../node_modules/xterm/css/xterm.css']
@@ -18,17 +18,23 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     @Input() server: Server;
     @Input() project: Project;
     @Input() node: Node;
-    public term: Terminal;
+
+    public term: Terminal = new Terminal();
+    public fitAddon: FitAddon = new FitAddon();
+
     @ViewChild('terminal', {static: false}) terminal: ElementRef;
 
     constructor(
         private consoleService: NodeConsoleService
     ) {}
     
-    ngOnInit() {}
+    ngOnInit() {
+        this.consoleService.consoleResized.subscribe(ev => {
+            this.fitAddon.fit();
+        });
+    }
 
     ngAfterViewInit() {
-        this.term = new Terminal();
         setTimeout(() => {
             this.term.open(this.terminal.nativeElement);
             const socket = new WebSocket(this.getUrl());
@@ -44,9 +50,10 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
             this.term.loadAddon(attachAddon);
             this.term.setOption('cursorBlink', true);
 
-            const fitAddon = new FitAddon();
-            this.term.loadAddon(fitAddon);
-            fitAddon.activate(this.term);
+            this.term.loadAddon(this.fitAddon);
+            this.fitAddon.activate(this.term);
+
+            this.term.focus();
         }, 1000);
     }
 
