@@ -35,26 +35,23 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        setTimeout(() => {
-            this.term.open(this.terminal.nativeElement);
-            const socket = new WebSocket(this.getUrl());
+        this.term.open(this.terminal.nativeElement);
+        const socket = new WebSocket(this.getUrl());
 
-            socket.onerror = ((event) => {
-                this.term.write('Connection lost');
-            });
-            socket.onclose = ((event) => {
-                this.consoleService.closeConsoleForNode(this.node);
-            });
+        socket.onerror = ((event) => {
+            this.term.write('Connection lost');
+        });
+        socket.onclose = ((event) => {
+            this.consoleService.closeConsoleForNode(this.node);
+        });
 
-            const attachAddon = new AttachAddon(socket);
-            this.term.loadAddon(attachAddon);
-            this.term.setOption('cursorBlink', true);
+        const attachAddon = new AttachAddon(socket);
+        this.term.loadAddon(attachAddon);
+        this.term.setOption('cursorBlink', true);
 
-            this.term.loadAddon(this.fitAddon);
-            this.fitAddon.activate(this.term);
-
-            this.term.focus();
-        }, 1000);
+        this.term.loadAddon(this.fitAddon);
+        this.fitAddon.activate(this.term);
+        this.term.focus();
     }
 
     getUrl() {
