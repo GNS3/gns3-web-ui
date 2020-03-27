@@ -9,7 +9,7 @@ import { NodeConsoleService } from '../../../services/nodeConsole.service';
 
 
 @Component({
-    encapsulation: ViewEncapsulation.ShadowDom,
+    encapsulation: ViewEncapsulation.None,
     selector: 'app-web-console',
     templateUrl: './web-console.component.html',
     styleUrls: ['../../../../../node_modules/xterm/css/xterm.css']

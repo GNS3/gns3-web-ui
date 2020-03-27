@@ -23,8 +23,6 @@
                     <mat-icon>close</mat-icon>
                 </button>
             </ng-template>
-
-            place for log console component
         </mat-tab>
 
         <mat-tab *ngFor="let node of nodes; let index = index" [label]="tab">
@@ -35,10 +33,16 @@
                 </button>
             </ng-template>
 
-            <div>
-                <app-web-console [server]="server" [node]="node"></app-web-console>
-            </div>
+            <!-- <ng-template matTabContent>
+                <div>
+                    <app-web-console [server]="server" [node]="node"></app-web-console>
+                </div>
+            </ng-template> -->
         </mat-tab>
 
     </mat-tab-group>
+
+    <div *ngFor="let node of nodes; let index = index">
+        <app-web-console [hidden]="!(selected.value===(index+1))" [server]="server" [node]="nodes[index]"></app-web-console>
+    </div>
 </div>
