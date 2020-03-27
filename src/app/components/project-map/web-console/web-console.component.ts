@@ -48,7 +48,6 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
         const attachAddon = new AttachAddon(socket);
         this.term.loadAddon(attachAddon);
         this.term.setOption('cursorBlink', true);
-
         this.term.loadAddon(this.fitAddon);
         this.fitAddon.activate(this.term);
         this.term.focus();

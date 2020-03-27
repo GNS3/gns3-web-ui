@@ -19,9 +19,6 @@
         <mat-tab>
             <ng-template mat-tab-label>
                 <div class="col" style="margin-left: 20px;">GNS3 console</div>
-                <button *ngIf="tab !== 'GNS3 console'" style="color:white" mat-icon-button (click)="removeTab(index)">
-                    <mat-icon>close</mat-icon>
-                </button>
             </ng-template>
         </mat-tab>
 
@@ -32,15 +29,11 @@
                     <mat-icon>close</mat-icon>
                 </button>
             </ng-template>
-
-            <!-- <ng-template matTabContent>
-                <div>
-                    <app-web-console [server]="server" [node]="node"></app-web-console>
-                </div>
-            </ng-template> -->
         </mat-tab>
 
     </mat-tab-group>
+
+    <app-log-console [hidden]="!(selected.value===0)" [server]="server" [project]="project" (closeConsole)='toggleShowConsole($event)'></app-log-console>
 
     <div *ngFor="let node of nodes; let index = index">
         <app-web-console [hidden]="!(selected.value===(index+1))" [server]="server" [node]="nodes[index]"></app-web-console>
