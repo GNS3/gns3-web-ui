@@ -26,7 +26,6 @@ import { FormControl } from '@angular/forms';
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() server: Server;
     @Input() project: Project;
-    @Output() closeConsole =  new EventEmitter<boolean>();
 
     @ViewChild('console', {static: false}) console: ElementRef;
 
@@ -322,9 +321,5 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             x: ${drawing.x}, 
             y: ${drawing.y}, 
             z: ${drawing.z}`;
-    }
-
-    close() {
-        this.closeConsole.emit(false);
     }
 }
