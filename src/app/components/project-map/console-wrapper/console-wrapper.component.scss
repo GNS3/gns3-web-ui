@@ -33,12 +33,15 @@
 
 .consoleHeader {
     width: 100%;
-    height: 30px;
     font-size: 12px;
     overflow: hidden;
     display: flex;
     padding: 2px;
     justify-content: space-between;
+}
+
+.tabs {
+    width: 675px;
 }
 
 .console {
