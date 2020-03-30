@@ -51,6 +51,14 @@
           <mat-icon>developer_board</mat-icon>
           <span>Go to servers</span>
         </button>
+        <button mat-menu-item routerLink="/server/{{server.id}}/preferences">
+          <mat-icon>settings_applications</mat-icon>
+          <span>Go to preferences</span>
+        </button>
+        <button mat-menu-item routerLink="/server/{{server.id}}/systemstatus">
+          <mat-icon>info</mat-icon>
+          <span>Go to system status</span>
+        </button>
         <button mat-menu-item (click)="addNewProject()">
           <mat-icon>add</mat-icon>
           <span>Add new blank project</span>
@@ -133,12 +141,6 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button  matTooltip="Go to preferences" mat-icon-button routerLink="/server/{{server.id}}/preferences">
-          <mat-icon>settings_applications</mat-icon>
-        </button>
-      </mat-toolbar-row>
-
-      <mat-toolbar-row *ngIf="!readonly">
         <button  matTooltip="Fit in view" mat-icon-button (click)="fitInView()">
           <mat-icon>fullscreen</mat-icon>
         </button>
@@ -147,12 +149,6 @@
       <mat-toolbar-row *ngIf="!readonly">
         <button  matTooltip="Center view" mat-icon-button (click)="centerView()">
           <mat-icon>center_focus_strong</mat-icon>
-        </button>
-      </mat-toolbar-row>
-
-      <mat-toolbar-row *ngIf="!readonly">
-        <button  matTooltip="Go to system status" mat-icon-button routerLink="/server/{{server.id}}/systemstatus">
-          <mat-icon>info</mat-icon>
         </button>
       </mat-toolbar-row>
     </mat-toolbar>
@@ -191,7 +187,7 @@
 <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
 <app-text-edited [server]="server"></app-text-edited>
 <div [ngClass]="{ visible: !isConsoleVisible }">
-  <app-log-console [server]="server" [project]="project" (closeConsole)='toggleShowConsole($event)'></app-log-console>
+  <app-console-wrapper *ngIf="project" [server]="server" [project]="project" (closeConsole)='toggleShowConsole($event)'></app-console-wrapper>
 </div>
 <div [ngClass]="{ visible: !isTopologySummaryVisible }">
   <app-topology-summary *ngIf="project" [server]="server" [project]="project" (closeTopologySummary)='toggleShowTopologySummary($event)'></app-topology-summary>

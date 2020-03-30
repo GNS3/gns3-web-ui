@@ -268,6 +268,10 @@ import { OpenFileExplorerActionComponent } from './components/project-map/contex
 import { NgxChildProcessModule } from 'ngx-childprocess';
 import { ServerResolve } from './resolvers/server-resolve';
 import { ProjectMapGuard } from './guards/project-map-guard';
+import { HttpConsoleActionComponent } from './components/project-map/context-menu/actions/http-console/http-console-action.component';
+import { WebConsoleComponent } from './components/project-map/web-console/web-console.component';
+import { ConsoleWrapperComponent } from './components/project-map/console-wrapper/console-wrapper.component';
+import { NodeConsoleService } from './services/nodeConsole.service';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -449,7 +453,10 @@ if (environment.production) {
     SystemStatusComponent,
     StatusInfoComponent,
     StatusChartComponent,
-    OpenFileExplorerActionComponent
+    OpenFileExplorerActionComponent,
+    HttpConsoleActionComponent,
+    WebConsoleComponent,
+    ConsoleWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -541,6 +548,7 @@ if (environment.production) {
     Gns3vmService,
     ThemeService,
     GoogleAnalyticsService,
+    NodeConsoleService,
     ServerResolve,
     ProjectMapGuard,
     Title

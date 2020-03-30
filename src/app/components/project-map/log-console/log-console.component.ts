@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, ViewChild, ElementRef, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProjectWebServiceHandler } from '../../../handlers/project-web-service-handler';
 import { NodeService } from '../../../services/node.service';
@@ -14,18 +14,21 @@ import { HttpServer } from '../../../services/http-server.service';
 import { LogEvent } from '../../../models/logEvent';
 import { ResizeEvent } from 'angular-resizable-element';
 import { ThemeService } from '../../../services/theme.service';
+import { FormControl } from '@angular/forms';
 
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-log-console',
     templateUrl: './log-console.component.html',
     styleUrls: ['./log-console.component.scss']
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-    @Input() project: Project;
     @Input() server: Server;
-    @Output() closeConsole =  new EventEmitter<boolean>();
+    @Input() project: Project;
+
     @ViewChild('console', {static: false}) console: ElementRef;
+
     private nodeSubscription: Subscription;
     private linkSubscription: Subscription;
     private drawingSubscription: Subscription;
@@ -33,11 +36,11 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private errorSubscription: Subscription;
     private warningSubscription: Subscription;
     private infoSubscription: Subscription;
-    command: string = '';
 
-    filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'server requests'];
-    selectedFilter: string = 'all';
-    filteredEvents: LogEvent[] = [];
+    public command: string = '';
+    public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'server requests'];
+    public selectedFilter: string = 'all';
+    public filteredEvents: LogEvent[] = [];
 
     private regexStart: RegExp = /^start (.*?)$/;
     private regexStop: RegExp = /^stop (.*?)$/;
@@ -47,10 +50,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private regexConsole: RegExp = /^console (.*?)$/;
 
     public style: object = {};
-    public styleInside: object = { height: `120px` };
-
-    isDraggingEnabled: boolean = false;
+    public isDraggingEnabled: boolean = false;
     public isLightThemeEnabled: boolean = false;
+    public selected = new FormControl(0);
 
     constructor(
         private projectWebServiceHandler: ProjectWebServiceHandler,
@@ -58,11 +60,14 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         private nodesDataSource: NodesDataSource,
         private logEventsDataSource: LogEventsDataSource,
         private httpService: HttpServer,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private cd: ChangeDetectorRef
     ) {}
     
     ngOnInit() {
-        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false
+        this.style = { bottom: '20px', left: '20px', width: '720px', height: '340px'};
+
         this.nodeSubscription = this.projectWebServiceHandler.nodeNotificationEmitter.subscribe((event) => {
             let node: Node = event.event as Node;
             let message: string = '';
@@ -118,40 +123,6 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 message: message
             });
         });
-
-        this.style = { bottom: '20px', left: '20px', width: '600px', height: '180px'};
-    }
-
-    toggleDragging(value: boolean) {
-        this.isDraggingEnabled = value;
-    }
-
-    dragWidget(event) {
-        let x: number = Number(event.movementX);
-        let y: number = Number(event.movementY);
-
-        let width: number = Number(this.style['width'].split('px')[0]);
-        let height: number = Number(this.style['height'].split('px')[0]);
-        let left: number = Number(this.style['left'].split('px')[0]) + x;
-        if (this.style['top']) {
-            let top: number = Number(this.style['top'].split('px')[0]) + y;
-            this.style = {
-                position: 'fixed',
-                left: `${left}px`,
-                top: `${top}px`,
-                width: `${width}px`,
-                height: `${height}px`
-            };
-        } else {
-            let bottom: number = Number(this.style['bottom'].split('px')[0]) - y;
-            this.style = {
-                position: 'fixed',
-                left: `${left}px`,
-                bottom: `${bottom}px`,
-                width: `${width}px`,
-                height: `${height}px`
-            };
-        }
     }
 
     ngAfterViewInit() {
@@ -168,36 +139,10 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.infoSubscription.unsubscribe();
     }
 
-    validate(event: ResizeEvent): boolean {
-        if (
-            event.rectangle.width &&
-            event.rectangle.height &&
-            (event.rectangle.width < 600 ||
-            event.rectangle.height < 180)
-        ) {
-            return false;
-        }
-        return true;
-    }
-
-    onResizeEnd(event: ResizeEvent): void {
-        this.style = {
-            position: 'fixed',
-            left: `${event.rectangle.left}px`,
-            top: `${event.rectangle.top}px`,
-            width: `${event.rectangle.width}px`,
-            height: `${event.rectangle.height}px`
-        };
-
-        this.styleInside = {
-            height: `${event.rectangle.height - 60}px`,
-            width: `${event.rectangle.width}px`
-        };
-    }
-
     applyFilter(filter: string) {
         this.selectedFilter = filter;
         this.filteredEvents = this.getFilteredEvents();
+        this.cd.detectChanges();
     }
 
     onKeyDown(event) {
@@ -279,6 +224,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             this.showCommand(`Unknown syntax: ${this.command}`);
         }
         this.command = '';
+        this.cd.detectChanges();
     }
 
     clearConsole() {
@@ -301,6 +247,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout( () => { 
             this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
         }, 100 );
+        this.cd.detectChanges();
     }
 
     getFilteredEvents(): LogEvent[] {
@@ -374,9 +321,5 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             x: ${drawing.x}, 
             y: ${drawing.y}, 
             z: ${drawing.z}`;
-    }
-
-    close() {
-        this.closeConsole.emit(false);
     }
 }

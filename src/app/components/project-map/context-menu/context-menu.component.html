@@ -15,6 +15,11 @@
     <app-reload-node-action
       *ngIf="nodes.length" [server]="server" [nodes]="nodes"
     ></app-reload-node-action>
+    <app-http-console-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length"
+      [server]="server"
+      [nodes]="nodes"
+    ></app-http-console-action>
     <app-console-device-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
       [server]="server"
