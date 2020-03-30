@@ -3,6 +3,7 @@
     (document:mousemove)="dragWidget($event)"
     (document:mouseup)="toggleDragging(false)">   
 </div>
+<!-- Option with resizing
 <div 
     class="consoleWrapper"
     [ngClass]="{lightTheme: isLightThemeEnabled}"
@@ -13,7 +14,12 @@
     [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
     [enableGhostResize]="true"
     (resizeStart)="toggleDragging(false)"
-    (resizeEnd)="onResizeEnd($event)">
+    (resizeEnd)="onResizeEnd($event)"> -->
+<div 
+    class="consoleWrapper"
+    [ngClass]="{lightTheme: isLightThemeEnabled}"
+    (mousedown)="toggleDragging(true)"
+    [ngStyle]="style">
 
     <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
         <mat-tab>

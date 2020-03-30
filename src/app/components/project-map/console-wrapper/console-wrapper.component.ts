@@ -98,8 +98,8 @@ export class ConsoleWrapperComponent implements OnInit {
         if (
             event.rectangle.width &&
             event.rectangle.height &&
-            (event.rectangle.width < 600 ||
-            event.rectangle.height < 180)
+            (event.rectangle.width < 720 ||
+            event.rectangle.height < 456)
         ) {
             return false;
         }
