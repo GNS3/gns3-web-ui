@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, ComponentFactoryResolver, ViewContainerRe
 import { timer, Observable, Subscription } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
 import { AdbutlerComponent } from '../adbutler/adbutler.component';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-notification-box',
@@ -31,11 +33,12 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     constructor(
         private themeService: ThemeService,
         private componentFactoryResolver: ComponentFactoryResolver,
-        private viewContainerRef: ViewContainerRef
-    ){}
+        private viewContainerRef: ViewContainerRef,
+        private location: Location
+    ) {}
 
     ngOnInit() {
-        this.startTimer();
+        if (!this.location.path().includes('nodes')) this.startTimer();
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     }
 

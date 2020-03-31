@@ -63,6 +63,7 @@ import { DirectLinkComponent } from './components/direct-link/direct-link.compon
 import { SystemStatusComponent } from './components/system-status/system-status.component';
 import { ServerResolve } from './resolvers/server-resolve';
 import { ProjectMapGuard } from './guards/project-map-guard';
+import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 
 const routes: Routes = [
   {
@@ -152,6 +153,11 @@ const routes: Routes = [
   { 
     path: 'server/:server_id/project/:project_id', 
     component: ProjectMapComponent,
+    canActivate: [ProjectMapGuard]
+  },
+  { 
+    path: 'server/:server_id/project/:project_id/nodes/:node_id', 
+    component: WebConsoleFullWindowComponent,
     canActivate: [ProjectMapGuard]
   },
   {

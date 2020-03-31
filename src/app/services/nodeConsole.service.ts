@@ -6,7 +6,13 @@ import { Subject } from 'rxjs';
 export class NodeConsoleService {
   public nodeConsoleTrigger = new EventEmitter<Node>();
   public closeNodeConsoleTrigger = new Subject<Node>();
-  public consoleResized = new Subject<boolean>();
+  public consoleResized = new Subject<ConsoleResizedEvent>();
+
+  public readonly defaultConsoleWidth = 720;
+  public readonly defaultConsoleHeight = 408;
+
+  public readonly defaultNumberOfColumns = 80;
+  public readonly defaultNumberOfRows = 24;
 
   constructor() {}
 
@@ -18,7 +24,20 @@ export class NodeConsoleService {
     this.closeNodeConsoleTrigger.next(node);
   }
 
-  resizeTerminal() {
-    this.consoleResized.next(true);
+  resizeTerminal(event: ConsoleResizedEvent) {
+    this.consoleResized.next(event);
   }
+
+  getLineWidth() {
+    return this.defaultConsoleWidth / this.defaultNumberOfColumns;
+  }
+
+  getLineHeight() {
+    return this.defaultConsoleHeight / this.defaultNumberOfRows;
+  }
+}
+
+export interface ConsoleResizedEvent {
+  numberOfColumns: number,
+  numberOfRows: number
 }

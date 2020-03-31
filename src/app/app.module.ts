@@ -272,6 +272,8 @@ import { HttpConsoleActionComponent } from './components/project-map/context-men
 import { WebConsoleComponent } from './components/project-map/web-console/web-console.component';
 import { ConsoleWrapperComponent } from './components/project-map/console-wrapper/console-wrapper.component';
 import { NodeConsoleService } from './services/nodeConsole.service';
+import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
+import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -456,7 +458,9 @@ if (environment.production) {
     OpenFileExplorerActionComponent,
     HttpConsoleActionComponent,
     WebConsoleComponent,
-    ConsoleWrapperComponent
+    ConsoleWrapperComponent,
+    HttpConsoleNewTabActionComponent,
+    WebConsoleFullWindowComponent
   ],
   imports: [
     BrowserModule,

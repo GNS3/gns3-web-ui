@@ -20,6 +20,11 @@
       [server]="server"
       [nodes]="nodes"
     ></app-http-console-action>
+    <app-http-console-new-tab-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length"
+      [server]="server"
+      [nodes]="nodes"
+    ></app-http-console-new-tab-action>
     <app-console-device-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
       [server]="server"

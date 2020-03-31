@@ -119,8 +119,6 @@ export class ConsoleWrapperComponent implements OnInit {
             height: `${event.rectangle.height - 60}px`,
             width: `${event.rectangle.width}px`
         };
-
-        this.consoleService.resizeTerminal();
     }
 
     close() {
