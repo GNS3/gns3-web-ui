@@ -14,7 +14,7 @@ import { ServerService } from '../../services/server.service';
     encapsulation: ViewEncapsulation.None,
     selector: 'app-web-console-full-window',
     templateUrl: './web-console-full-window.component.html',
-    styleUrls: ['../../../../../node_modules/xterm/css/xterm.css']
+    styleUrls: ['../../../../node_modules/xterm/css/xterm.css']
 })
 export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
     private serverId: string;
