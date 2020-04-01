@@ -24,7 +24,7 @@ export class ScreenshotDialogComponent implements OnInit {
     private deviceService: DeviceDetectorService
   ) {
     this.nameForm = this.formBuilder.group({
-      screenshotName: new FormControl(null, [Validators.required])
+      screenshotName: new FormControl(`screenshot-${Date.now()}`, [Validators.required])
     });
     this.isPngAvailable = this.electronService.isWindows || (this.deviceService.getDeviceInfo().os==='Windows');
   }
