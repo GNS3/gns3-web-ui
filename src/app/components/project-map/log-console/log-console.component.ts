@@ -15,6 +15,7 @@ import { LogEvent } from '../../../models/logEvent';
 import { ResizeEvent } from 'angular-resizable-element';
 import { ThemeService } from '../../../services/theme.service';
 import { FormControl } from '@angular/forms';
+import { version } from '../../../version';
 
 
 @Component({
@@ -29,6 +30,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild('console', {static: false}) console: ElementRef;
 
+    private version = version;
     private nodeSubscription: Subscription;
     private linkSubscription: Subscription;
     private drawingSubscription: Subscription;
@@ -155,7 +157,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.command === 'help' || this.command === '') {
             this.showCommand("Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.")
         } else if (this.command === 'version') {
-            this.showCommand("Current version: 2019.2.0");
+            this.showCommand("Current version: " + this.version);
         } else if (this.command === 'start all') {
             this.showCommand("Starting all nodes...");
             this.nodeService.startAll(this.server, this.project).subscribe(() => {
