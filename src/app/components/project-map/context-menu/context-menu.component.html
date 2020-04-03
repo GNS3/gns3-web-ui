@@ -16,12 +16,12 @@
       *ngIf="nodes.length" [server]="server" [nodes]="nodes"
     ></app-reload-node-action>
     <app-http-console-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
       [server]="server"
       [nodes]="nodes"
     ></app-http-console-action>
     <app-http-console-new-tab-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
       [server]="server"
       [nodes]="nodes"
     ></app-http-console-new-tab-action>
