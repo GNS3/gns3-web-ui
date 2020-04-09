@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { ProjectMapComponent } from '../components/project-map/project-map.component';
 import { Observable, pipe, timer, from } from 'rxjs';
 import { ProjectService } from '../services/project.service';
@@ -13,7 +13,8 @@ export class ProjectMapGuard implements CanActivate {
     constructor(
         private projectService: ProjectService, 
         private serverService: ServerService,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        private router: Router
     ) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
@@ -21,7 +22,10 @@ export class ProjectMapGuard implements CanActivate {
         const project_id = route.paramMap.get("project_id");
 
         return from(this.serverService.get(parseInt(server_id, 10))).pipe(
-            switchMap(response => this.projectService.list(response as Server)),
+            switchMap(response => { 
+                if (!response) this.router.navigate(['/servers']);
+                return this.projectService.list(response as Server)
+            }),
             map(response => {
                 let projectToOpen = response.find(n => n.project_id === project_id);
                 if (projectToOpen) return true;
