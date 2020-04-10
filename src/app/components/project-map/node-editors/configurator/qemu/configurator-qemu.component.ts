@@ -99,7 +99,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.consoleTypes = this.qemuConfigurationService.getConsoleTypes();
         this.onCloseOptions = this.qemuConfigurationService.getOnCloseOptions();
         this.qemuConfigurationService.getNetworkTypes().forEach(n => {
-            this.networkTypes.push(n[0]);
+            this.networkTypes.push(n);
         });
         this.bootPriorities = this.qemuConfigurationService.getBootPriorities();
         this.diskInterfaces = this.qemuConfigurationService.getDiskInterfaces();
