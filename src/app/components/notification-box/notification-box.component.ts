@@ -39,7 +39,9 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         let adbutler = localStorage.getItem('adbutler');
-        if (!this.location.path().includes('nodes') && !(adbutler == 'true')) this.startTimer();
+        var today = new Date().toISOString().substring(0, 10);
+
+        if (!this.location.path().includes('nodes') && !(adbutler == today)) this.startTimer();
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     }
 
@@ -80,7 +82,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     }
 
     showNotification() {
-        localStorage.setItem('adbutler', 'true');
+        localStorage.setItem('adbutler', new Date().toISOString().substring(0, 10));
         
         this.viewTimer = timer(0, 100);
         this.progress = 0;
