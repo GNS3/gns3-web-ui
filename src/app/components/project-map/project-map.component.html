@@ -169,9 +169,9 @@
 </div>
 
 <div [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-buttons">
-  <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
-  <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
-  <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
+  <button matTooltip="Zoom in" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
+  <button matTooltip="Reset zoom" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
+  <button matTooltip="Zoom out" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
 </div>
 
 <app-progress></app-progress>
