@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 export class MapSettingsService {
     public isMapLocked = new Subject<boolean>();
     public isTopologySummaryVisible: boolean = true;
-    public isLogConsoleVisible: boolean = true;
+    public isLogConsoleVisible: boolean = false;
     public isLayerNumberVisible: boolean = false;
     public interfaceLabels: Map<string, boolean> = new Map<string, boolean>();
     public mapRenderedEmitter = new EventEmitter<boolean>();
