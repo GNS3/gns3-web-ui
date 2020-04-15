@@ -21,6 +21,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
 
     public term: Terminal = new Terminal();
     public fitAddon: FitAddon = new FitAddon();
+    private copiedText: string = '';
 
     @ViewChild('terminal', {static: false}) terminal: ElementRef;
 
@@ -51,6 +52,15 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
         this.term.loadAddon(this.fitAddon);
         this.fitAddon.activate(this.term);
         this.term.focus();
+
+        this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
+            if (key.code === 'KeyC' || key.code === 'KeyV'){
+                if (key.ctrlKey) {
+                    return false;
+               }
+            }
+            return true;
+        });
     }
 
     getUrl() {
