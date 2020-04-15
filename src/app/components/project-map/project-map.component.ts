@@ -514,28 +514,45 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let drawingMinY = borderedDrawings.sort((n,m) => n.top - m.top)[0];
     let drawingMaxY = borderedDrawings.sort((n,m) => n.bottom - m.bottom)[borderedDrawings.length - 1];
 
-    if (nodeMinX.left < drawingMinX.left) {
+    if (drawingMinX && nodeMinX) {
+      if (nodeMinX.left < drawingMinX.left) {
+        minX = nodeMinX.left;
+      } else {
+        minX = drawingMinX.left;
+      }
+  
+      if (nodeMaxX.right > drawingMaxX.right) {
+        maxX = nodeMaxX.right;
+      } else {
+        maxX = drawingMaxX.right;
+      }
+  
+      if (nodeMinY.top < drawingMinY.top) {
+        minY = nodeMinY.top;
+      } else {
+        minY = drawingMinY.top;
+      }
+  
+      if (nodeMaxY.bottom > drawingMaxY.bottom) {
+        maxY = nodeMaxY.bottom;
+      } else {
+        maxY = drawingMaxY.bottom;
+      }
+    } else if (nodeMinX && !drawingMinX) {
       minX = nodeMinX.left;
-    } else {
-      minX = drawingMinX.left;
-    }
-
-    if (nodeMaxX.right > drawingMaxX.right) {
       maxX = nodeMaxX.right;
-    } else {
-      maxX = drawingMaxX.right;
-    }
-
-    if (nodeMinY.top < drawingMinY.top) {
       minY = nodeMinY.top;
-    } else {
-      minY = drawingMinY.top;
-    }
-
-    if (nodeMaxY.bottom > drawingMaxY.bottom) {
       maxY = nodeMaxY.bottom;
-    } else {
+    } else if (drawingMinX && !nodeMinX) {
+      minX = drawingMinX.left;
+      maxX = drawingMaxX.right;
+      minY = drawingMinY.top;
       maxY = drawingMaxY.bottom;
+    } else {
+      minX = 0;
+      maxX = 0;
+      minY = 0;
+      maxY = 0;
     }
 
     let margin: number = 20;
