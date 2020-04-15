@@ -61,6 +61,15 @@ export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
         this.fitAddon.fit();
         this.term.focus();
 
+        this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
+            if (key.code === 'KeyC' || key.code === 'KeyV'){
+                if (key.ctrlKey) {
+                    return false;
+               }
+            }
+            return true;
+        });
+
         let numberOfColumns = Math.round(window.innerWidth / this.consoleService.getLineWidth());
         let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());
         this.term.resize(numberOfColumns, numberOfRows);
