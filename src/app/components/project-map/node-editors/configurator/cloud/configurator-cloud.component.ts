@@ -73,6 +73,17 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
         this.consoleTypes = this.builtInTemplatesConfigurationService.getConsoleTypesForCloudNodes();
     }
 
+    onAddEthernetInterface() {
+        if (this.ethernetInterface) {
+            this.portsMappingEthernet.push({
+                interface: this.ethernetInterface,
+                name: this.ethernetInterface,
+                port_number: 0,
+                type: "ethernet"
+            });
+        }
+    }
+
     onAddTapInterface() {
         if (this.tapInterface) {
             this.portsMappingTap.push({
