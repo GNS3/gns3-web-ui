@@ -31,7 +31,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
     ) {
         this.formGroup = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
-            numberOfPorts: new FormControl('', Validators.required)
+            numberOfPorts: new FormControl(8, Validators.required)
         });
     }
 
