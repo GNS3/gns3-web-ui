@@ -28,7 +28,7 @@ export class TemplateListDialogComponent implements OnInit {
   selectedTemplate: Template;
   searchText: string = '';
 
-  nodeServers: string[] = ['local', 'vm']
+  nodeServers: string[] = ['local', 'vm'];
 
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,
@@ -70,6 +70,9 @@ export class TemplateListDialogComponent implements OnInit {
 
   chooseTemplate(event) {
     this.selectedTemplate = event.value;
+    if (this.selectedTemplate.template_type === 'cloud' || this.selectedTemplate.template_type === 'ethernet_hub' || this.selectedTemplate.template_type === 'ethernet_switch') {
+      this.selectedTemplate.compute_id = 'local';
+    }
     // this.configurationForm.controls['name'].setValue(this.selectedTemplate.default_name_format);
   }
 

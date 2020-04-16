@@ -49,7 +49,7 @@
   <mat-select 
     *ngIf="selectedTemplate"
     placeholder="Choose server for node" 
-    [(ngModel)]="selectedTemplate.compute_id">
+    [(value)]="selectedTemplate.compute_id">
       <mat-option *ngFor="let type of nodeServers" [value]="type">
           {{type}}
       </mat-option>
