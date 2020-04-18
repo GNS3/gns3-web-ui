@@ -27,7 +27,7 @@
     <div class="wrapper">
         <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
             <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
-                <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" src="http://127.0.0.1:3080/v2/symbols/{{symbol.symbol_id}}/raw"/>
+                <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" [src]="getImageSourceForTemplate(symbol.symbol_id)"/>
             </button>
         </div>
     </div>

@@ -76,4 +76,8 @@ export class SymbolsComponent implements OnInit {
         return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\" 
                 width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`
     }
+
+    getImageSourceForTemplate(symbol: string) {
+        return `http://${this.server.host}:${this.server.port}/v2/symbols/${symbol}/raw`;
+    }
 }
