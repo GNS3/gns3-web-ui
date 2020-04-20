@@ -1,0 +1,41 @@
+// ::ng-deep .menu {
+//     scrollbar-color: darkgrey #263238!important;
+//     scrollbar-width: thin!important;
+// }
+
+.menu {
+    height: 200px;
+    overflow-y: scroll;
+    scrollbar-color: darkgrey #263238;
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+    width: 0.5em;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid #263238;
+}
+
+.form-field {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.image {
+    width: 65px;
+    height: 65px;   
+    filter: invert(0);
+    --webkit-filter: invert(0)!important;
+}
+
+.templateIcon {
+    height: 80px!important;
+}
