@@ -110,7 +110,7 @@
     "license-checker": "^25.0.1",
     "node-sass": "^4.12.0",
     "popper.js": "^1.16.0",
-    "prettier": "^1.18.2",
+    "prettier": "^2.0.5",
     "protractor": "~5.4.2",
     "replace": "^1.1.1",
     "ts-mockito": "^2.5.0",
