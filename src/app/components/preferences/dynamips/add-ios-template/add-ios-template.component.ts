@@ -9,7 +9,9 @@ import { IosService } from '../../../../services/ios.service';
 import { v4 as uuid } from 'uuid';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
-
+import { IosImage } from '../../../../models/images/ios-image';
+import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
+import { ServerResponse } from '../../../../models/serverResponse';
 
 @Component({
     selector: 'app-add-ios-template',
@@ -28,6 +30,7 @@ export class AddIosTemplateComponent implements OnInit {
     networkAdaptersForTemplate: string[] = [];
     networkModulesForTemplate: string[] = [];
 
+    iosImages: IosImage[] = [];
     platforms: string[] = [];
     platformsWithEtherSwitchRouterOption = {};
     platformsWithChassis = {};
@@ -39,6 +42,7 @@ export class AddIosTemplateComponent implements OnInit {
     networkModules = {};
 
     ciscoUrl: string = "https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp";
+    uploader: FileUploader;
 
     constructor(
         private route: ActivatedRoute,
@@ -67,10 +71,31 @@ export class AddIosTemplateComponent implements OnInit {
         });
     }
 
-    ngOnInit(){
+    ngOnInit() {
+        this.uploader = new FileUploader({});
+        this.uploader.onAfterAddingFile = file => {
+            file.withCredentials = false;
+        };
+        this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+            console.log(response);
+            this.toasterService.error('An error occured: ' + response);
+        };
+        this.uploader.onSuccessItem = (
+            item: FileItem,
+            response: string,
+            status: number,
+            headers: ParsedResponseHeaders
+        ) => {
+            this.toasterService.success('Image uploaded');
+        };
+
         const server_id = this.route.snapshot.paramMap.get("server_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
+
+            this.iosService.getImages(this.server).subscribe((images: IosImage[]) => {
+                this.iosImages = images;
+            });
 
             this.templateMocksService.getIosTemplate().subscribe((iosTemplate: IosTemplate) => {
                 this.iosTemplate = iosTemplate;
@@ -85,6 +110,18 @@ export class AddIosTemplateComponent implements OnInit {
                 this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
             });
         });
+    }
+
+    addImage(event): void {
+        let name = event.target.files[0].name.split('-')[0];
+        this.iosNameForm.controls['templateName'].setValue(name);
+        let fileName = event.target.files[0].name;
+
+        const url = this.iosService.getImagePath(fileName);
+        this.uploader.queue.forEach(elem => (elem.url = url));
+
+        const itemToUpload = this.uploader.queue[0];
+        this.uploader.uploadItem(itemToUpload);
     }
 
     addTemplate() {

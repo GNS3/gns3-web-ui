@@ -3,10 +3,19 @@ import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { Observable } from 'rxjs';
 import { IosTemplate } from '../models/templates/ios-template';
+import { IosImage } from '../models/images/ios-image';
 
 @Injectable()
 export class IosService {
     constructor(private httpServer: HttpServer) {}
+
+    getImages(server: Server): Observable<IosImage[]> {
+        return this.httpServer.get<IosImage[]>(server, '/compute/dynamips/images') as Observable<IosImage[]>;
+    } 
+
+    getImagePath(filename: string): string {
+        return `/compute/dynamips/images/${filename}`;
+    }
 
     getTemplates(server: Server): Observable<IosTemplate[]> {
         return this.httpServer.get<IosTemplate[]>(server, '/templates') as Observable<IosTemplate[]>;
