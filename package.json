@@ -94,7 +94,7 @@
     "@sentry/electron": "^0.17.4",
     "@types/jasmine": "^3.4.4",
     "@types/jasminewd2": "^2.0.8",
-    "@types/node": "^12.12.10",
+    "@types/node": "^13.13.2",
     "codelyzer": "^5.1.2",
     "electron": "7.1.2",
     "electron-builder": "21.2.0",
