@@ -86,6 +86,7 @@ export class AddIosTemplateComponent implements OnInit {
             status: number,
             headers: ParsedResponseHeaders
         ) => {
+            this.getImages();
             this.toasterService.success('Image uploaded');
         };
 
@@ -93,9 +94,7 @@ export class AddIosTemplateComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
-            this.iosService.getImages(this.server).subscribe((images: IosImage[]) => {
-                this.iosImages = images;
-            });
+            this.getImages();
 
             this.templateMocksService.getIosTemplate().subscribe((iosTemplate: IosTemplate) => {
                 this.iosTemplate = iosTemplate;
@@ -112,12 +111,18 @@ export class AddIosTemplateComponent implements OnInit {
         });
     }
 
+    getImages() {
+        this.iosService.getImages(this.server).subscribe((images: IosImage[]) => {
+            this.iosImages = images;
+        });
+    }
+
     addImage(event): void {
         let name = event.target.files[0].name.split('-')[0];
         this.iosNameForm.controls['templateName'].setValue(name);
         let fileName = event.target.files[0].name;
 
-        const url = this.iosService.getImagePath(fileName);
+        const url = this.iosService.getImagePath(this.server, fileName);
         this.uploader.queue.forEach(elem => (elem.url = url));
 
         const itemToUpload = this.uploader.queue[0];
