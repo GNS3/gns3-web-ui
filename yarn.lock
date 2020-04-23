@@ -9208,10 +9208,10 @@ supports-color@^6.1.0:
   dependencies:
     has-flag "^3.0.0"
 
-svg-crowbar@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/svg-crowbar/-/svg-crowbar-0.2.4.tgz#4b7efb377cefed563505650030ee9a1b55ff8331"
-  integrity sha512-3zVrUJi4zOi6Q4m0RCWQoSxHLurPaYsf0nyYIdIBaY9n0EM2EHyuYBWB6aaRcrU3+4y32FvQBBwg1lRPAnG2Cg==
+svg-crowbar@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/svg-crowbar/-/svg-crowbar-0.5.0.tgz#f9e4ad176aabd62001fa48f8a8aa6881cf6fce3f"
+  integrity sha512-ay18ytYIX39gduz+iMiMtdDsUPMsoCyssDNjespvqyY+s74trcKbUjNirrAhniOUdTrqeJlvi9097y0nKSYPMA==
 
 symbol-observable@1.2.0:
   version "1.2.0"
@@ -10124,11 +10124,6 @@ xtend@^4.0.0, xtend@~4.0.1:
   resolved "https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
-xterm@^4.1.0:
-  version "4.3.0"
-  resolved "https://registry.npmjs.org/xterm/-/xterm-4.3.0.tgz#9a302efefe75172d4f7ea3afc20f9bd983f05027"
-  integrity sha512-6dnrC4nxgnRKQzIWwC5HA0mnT9/rpDPZflUIr24gdcdSMTKM1QQcor4qQ/xz4Zerz6AIL/CuuBPypFfzsB63dQ==
-
 xterm-addon-attach@^0.5.0:
   version "0.5.0"
   resolved "https://registry.npmjs.org/xterm-addon-attach/-/xterm-addon-attach-0.5.0.tgz#e35cde4ae493ecace7d07e52ff2b9714e3c43068"
@@ -10138,6 +10133,11 @@ xterm-addon-fit@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/xterm-addon-fit/-/xterm-addon-fit-0.3.0.tgz#341710741027de9d648a9f84415a01ddfdbbe715"
   integrity sha512-kvkiqHVrnMXgyCH9Xn0BOBJ7XaWC/4BgpSWQy3SueqximgW630t/QOankgqkvk11iTOCwWdAY9DTyQBXUMN3lw==
+
+xterm@^4.1.0:
+  version "4.3.0"
+  resolved "https://registry.npmjs.org/xterm/-/xterm-4.3.0.tgz#9a302efefe75172d4f7ea3afc20f9bd983f05027"
+  integrity sha512-6dnrC4nxgnRKQzIWwC5HA0mnT9/rpDPZflUIr24gdcdSMTKM1QQcor4qQ/xz4Zerz6AIL/CuuBPypFfzsB63dQ==
 
 y18n@^3.2.1:
   version "3.2.1"
