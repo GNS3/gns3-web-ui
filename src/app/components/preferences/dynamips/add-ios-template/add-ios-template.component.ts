@@ -77,7 +77,6 @@ export class AddIosTemplateComponent implements OnInit {
             file.withCredentials = false;
         };
         this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-            console.log(response);
             this.toasterService.error('An error occured: ' + response);
         };
         this.uploader.onSuccessItem = (
@@ -180,7 +179,7 @@ export class AddIosTemplateComponent implements OnInit {
     }
 
     completeModulesData() {
-        if(Object.keys(this.networkModules[this.iosTemplate.platform])){
+        if (Object.keys(this.networkModules[this.iosTemplate.platform])){
             for(let i=0; i<Object.keys(this.networkModules[this.iosTemplate.platform]).length; i++){
                 if(!this.networkModulesForTemplate[i]) this.networkModulesForTemplate[i] = '';
             }
@@ -193,6 +192,16 @@ export class AddIosTemplateComponent implements OnInit {
 
     goBack() {
         this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
+    }
+
+    onImageChosen() {
+        let name: string = this.iosImageForm.get("imageName").value.split('-')[0];
+        this.iosNameForm.controls['templateName'].setValue(name);
+
+        if (this.platforms.includes(name.split('-')[0])) {
+            this.iosNameForm.controls['platform'].setValue(name);
+            this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[name]);
+        }
     }
 
     onPlatformChosen() {

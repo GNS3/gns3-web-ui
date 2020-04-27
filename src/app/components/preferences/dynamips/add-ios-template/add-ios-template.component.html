@@ -21,6 +21,7 @@
                         <mat-form-field class="form-field">
                             <mat-select 
                                 placeholder="Image" 
+                                (selectionChange)="onImageChosen($event)"
                                 formControlName="imageName">
                                 <mat-option *ngFor="let image of iosImages" [value]="image.filename">
                                     {{image.filename}}
