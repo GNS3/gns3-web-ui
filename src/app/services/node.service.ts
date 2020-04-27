@@ -13,6 +13,10 @@ import { Label } from '../cartography/models/label';
 export class NodeService {
   constructor(private httpServer: HttpServer) {}
 
+  getNodeById(server: Server, projectId: string, nodeId: string) {
+    return this.httpServer.get(server, `/projects/${projectId}/nodes/${nodeId}`);
+  }
+
   start(server: Server, node: Node) {
     return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/start`, {});
   }
@@ -138,7 +142,7 @@ export class NodeService {
   }
 
   getNode(server: Server, node: Node) {
-    return this.httpServer.get(server, `/projects/${node.project_id}/nodes/${node.node_id}`)
+    return this.httpServer.get(server, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
 
   getDefaultCommand(): string {

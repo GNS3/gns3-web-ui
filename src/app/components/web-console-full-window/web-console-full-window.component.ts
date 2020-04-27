@@ -8,6 +8,8 @@ import { FitAddon } from 'xterm-addon-fit';
 import { NodeConsoleService } from '../../services/nodeConsole.service';
 import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../services/server.service';
+import { Title } from '@angular/platform-browser';
+import { NodeService } from '../../services/node.service';
 
 
 @Component({
@@ -21,6 +23,9 @@ export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
     private projectId: string;
     private nodeId: string;
 
+    private server: Server;
+    private node: Node;
+
     public term: Terminal = new Terminal();
     public fitAddon: FitAddon = new FitAddon();
 
@@ -29,7 +34,9 @@ export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
     constructor(
         private consoleService: NodeConsoleService,
         private serverService: ServerService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private title: Title,
+        private nodeService: NodeService
     ) {}
     
     ngOnInit() {
@@ -40,6 +47,14 @@ export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
         this.consoleService.consoleResized.subscribe(ev => {
             this.fitAddon.fit();
         });
+
+        this.serverService.get(+this.serverId).then((server: Server) => {
+            this.server = server;
+            this.nodeService.getNodeById(this.server, this.projectId, this.nodeId).subscribe((node: Node) => {
+                this.node = node;
+                this.title.setTitle(this.node.name);
+            });
+        })
     }
 
     async ngAfterViewInit() {
@@ -76,7 +91,6 @@ export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
     }
 
     async getUrl() {
-        let server: Server = await this.serverService.get(+this.serverId);
-        return `ws://${server.host}:${server.port}/v2/projects/${this.projectId}/nodes/${this.nodeId}/console/ws`
+        return `ws://${this.server.host}:${this.server.port}/v2/projects/${this.projectId}/nodes/${this.nodeId}/console/ws`
     }
 }
