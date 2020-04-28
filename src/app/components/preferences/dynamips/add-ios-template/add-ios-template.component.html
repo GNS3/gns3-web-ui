@@ -109,14 +109,14 @@
                     </div>
                 </mat-step>
                 <mat-step label="WIC modules">
-                    <div *ngIf="iosTemplate.platform && networkModules[iosTemplate.platform]">
+                    <div *ngIf="iosNameForm.get('platform').value">
                         <div *ngFor="let index of [0,1,2,3]">
                             <mat-select 
                                 placeholder="WIC {{index}}" 
                                 [(ngModel)]="networkModulesForTemplate[index]"
                                 [ngModelOptions]="{standalone: true}"
-                                *ngIf="networkModules[iosTemplate.platform][index]">
-                                <mat-option *ngFor="let option of networkModules[iosTemplate.platform][index]" [value]="option">
+                                *ngIf="networkModules[iosNameForm.get('platform').value][index]">
+                                <mat-option *ngFor="let option of networkModules[iosNameForm.get('platform').value][index]" [value]="option">
                                     {{option}}
                                 </mat-option>
                             </mat-select> 
