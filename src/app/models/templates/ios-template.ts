@@ -2,7 +2,7 @@ export class IosTemplate {
     auto_delete_disks: boolean;
     builtin: boolean;
     category: string;
-    chassis: string;
+    chassis?: string;
     compute_id: string;
     console_auto_start: boolean;
     console_type: string;
@@ -14,7 +14,7 @@ export class IosTemplate {
     idlepc: string;
     idlesleep: number;
     image: string;
-    iomem: number;
+    iomem?: number;
     mac_addr: string;
     mmap: boolean;
     name: string;

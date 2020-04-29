@@ -48,12 +48,12 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <mat-form-field class="form-field" *ngIf="chassis[iosTemplate.platform]">
+                        <mat-form-field class="form-field" *ngIf="chassis[iosNameForm.get('platform').value]">
                             <mat-select 
                                 placeholder="Chassis" 
                                 (selectionChange)="onChassisChosen($event)"
                                 formControlName="chassis">
-                                <mat-option *ngFor="let chassis of chassis[iosTemplate.platform]" [value]="chassis">
+                                <mat-option *ngFor="let chassis of chassis[iosNameForm.get('platform').value]" [value]="chassis">
                                     {{chassis}}
                                 </mat-option>
                             </mat-select>
@@ -71,7 +71,7 @@
                             <input 
                                 matInput type="number" 
                                 formControlName="memory"
-                                value="defaultRam[iosTemplate.platform]"
+                                value="defaultRam[iosNameForm.get('platform').value]"
                                 placeholder="Default RAM"/>
                             <span matSuffix>MB</span>
                         </mat-form-field>
@@ -81,27 +81,27 @@
                     </form>
                 </mat-step>
                 <mat-step label="Network adapters">
-                    <div *ngIf="iosTemplate.chassis && chassis[iosTemplate.platform]">
+                    <div *ngIf="chassis[iosNameForm.get('platform').value]">
                         <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
                             <mat-select 
                                 placeholder="Slot {{index}}" 
                                 [(ngModel)]="networkAdaptersForTemplate[index]"
                                 [ngModelOptions]="{standalone: true}"
-                                *ngIf="networkAdapters[iosTemplate.chassis][index]">
-                                <mat-option *ngFor="let option of networkAdapters[iosTemplate.chassis][index]" [value]="option">
+                                *ngIf="networkAdapters[iosNameForm.get('chassis').value] && networkAdapters[iosNameForm.get('chassis').value][index]">
+                                <mat-option *ngFor="let option of networkAdapters[iosNameForm.get('chassis').value][index]" [value]="option">
                                     {{option}}
                                 </mat-option>
                             </mat-select> 
                         </div>
                     </div>
-                    <div *ngIf="iosTemplate.platform && !chassis[iosTemplate.platform]">
+                    <div *ngIf="chassis[iosNameForm.get('platform').value]">
                         <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
                             <mat-select 
                                 placeholder="Slot {{index}}" 
                                 [(ngModel)]="networkAdaptersForTemplate[index]"
                                 [ngModelOptions]="{standalone: true}"
-                                *ngIf="networkAdaptersForPlatform[iosTemplate.platform][index]">
-                                <mat-option *ngFor="let option of networkAdaptersForPlatform[iosTemplate.platform][index]" [value]="option">
+                                *ngIf="networkAdaptersForPlatform[iosNameForm.get('platform').value] && networkAdaptersForPlatform[iosNameForm.get('platform').value][index]">
+                                <mat-option *ngFor="let option of networkAdaptersForPlatform[iosNameForm.get('platform').value][index]" [value]="option">
                                     {{option}}
                                 </mat-option>
                             </mat-select> 
@@ -115,7 +115,7 @@
                                 placeholder="WIC {{index}}" 
                                 [(ngModel)]="networkModulesForTemplate[index]"
                                 [ngModelOptions]="{standalone: true}"
-                                *ngIf="networkModules[iosNameForm.get('platform').value][index]">
+                                *ngIf="networkModules[iosNameForm.get('platform').value] && networkModules[iosNameForm.get('platform').value][index]">
                                 <mat-option *ngFor="let option of networkModules[iosNameForm.get('platform').value][index]" [value]="option">
                                     {{option}}
                                 </mat-option>
