@@ -200,6 +200,7 @@ export class AddIosTemplateComponent implements OnInit {
 
         if (this.platforms.includes(name.split('-')[0])) {
             this.iosNameForm.controls['platform'].setValue(name);
+            this.iosNameForm.controls['chassis'].setValue('');
             this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[name]);
         }
     }
