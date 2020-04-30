@@ -24,6 +24,9 @@ export class TemplateComponent implements OnInit {
   templateTypes: string[] = ['all', 'cloud', 'ethernet_hub', 'ethernet_switch', 'docker', 'dynamips', 'vpcs', 'traceng', 'virtualbox', 'vmware', 'iou', 'qemu'];
   selectedType: string;
 
+  movementX: number;
+  movementY: number;
+
   constructor(
     private dialog: MatDialog,
     private templateService: TemplateService,
@@ -49,18 +52,21 @@ export class TemplateComponent implements OnInit {
     }
   }
 
-  dragEnd(ev, template) {
-    console.log('Element was dragged', ev);
-    console.log('Template', template);
-    console.log((event as MouseEvent).clientX, (event as MouseEvent).clientY);
+  dragStart(ev) {
+    let elemRect = (event.target as HTMLElement).getBoundingClientRect();
 
+    this.movementY = elemRect.top - (event as MouseEvent).clientY;
+    this.movementX = elemRect.left - (event as MouseEvent).clientX;
+  }
+
+  dragEnd(ev, template) {
     let scale = this.scaleService.getScale();
     let nodeAddedEvent: NodeAddedEvent = {
       template: template,
       server: 'local',
       numberOfNodes: 1,
-      x: ((event as MouseEvent).clientX - this.project.scene_width/2 + window.scrollX) * scale, //template.width
-      y: ((event as MouseEvent).clientY - this.project.scene_height/2 + window.scrollY) * scale
+      x: ((event as MouseEvent).clientX - this.project.scene_width/2 + window.scrollX + this.movementX) * scale, //template.width
+      y: ((event as MouseEvent).clientY - this.project.scene_height/2 + window.scrollY + this.movementY) * scale
     };
     this.onNodeCreation.emit(nodeAddedEvent);
   }

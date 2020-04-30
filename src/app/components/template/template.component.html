@@ -32,7 +32,7 @@
         <mat-list>
             <mat-list-item *ngFor="let template of filteredTemplates" class="templateIcon">
                 <span>
-                    <span mwlDraggable (dragEnd)="dragEnd($event, template)">
+                    <span mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, template)">
                         <img class="image" [src]="getImageSourceForTemplate(template)"/>
                     </span>
                     {{template.name}}
