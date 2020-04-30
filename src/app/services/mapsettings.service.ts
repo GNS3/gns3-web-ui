@@ -8,6 +8,7 @@ export class MapSettingsService {
     public isLogConsoleVisible: boolean = false;
     public isLayerNumberVisible: boolean = false;
     public interfaceLabels: Map<string, boolean> = new Map<string, boolean>();
+    public logConsoleSubject = new Subject<boolean>();
     public mapRenderedEmitter = new EventEmitter<boolean>();
 
     constructor() {

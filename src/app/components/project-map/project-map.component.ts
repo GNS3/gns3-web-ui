@@ -163,6 +163,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.settings = this.settingsService.getAll();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
+    this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
 
     this.progressService.activate();
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {

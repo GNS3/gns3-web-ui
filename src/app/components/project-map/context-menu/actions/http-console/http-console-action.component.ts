@@ -3,6 +3,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeConsoleService } from '../../../../../services/nodeConsole.service';
 import { ToasterService } from '../../../../../services/toaster.service';
+import { MapSettingsService } from '../../../../../services/mapsettings.service';
 
 
 @Component({
@@ -15,7 +16,8 @@ export class HttpConsoleActionComponent implements OnInit {
 
   constructor(
     private consoleService: NodeConsoleService,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private mapSettingsService: MapSettingsService
   ) { }
 
   ngOnInit() {}
@@ -23,6 +25,7 @@ export class HttpConsoleActionComponent implements OnInit {
   openConsole() {
     this.nodes.forEach(n => {
       if (n.status === 'started') {
+        this.mapSettingsService.logConsoleSubject.next(true);
         this.consoleService.openConsoleForNode(n);
       } else {
         this.toasterService.error('To open console please start the node');
