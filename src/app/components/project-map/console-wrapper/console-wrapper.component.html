@@ -40,14 +40,20 @@
     
         </mat-tab-group>
 
+        <button *ngIf="!isMinimized" style="color:white" mat-icon-button (click)="minimize(true)">
+            <mat-icon>remove</mat-icon>
+        </button>
+        <button *ngIf="isMinimized" style="color:white" mat-icon-button (click)="minimize(false)">
+            <mat-icon>remove</mat-icon>
+        </button>
         <button style="color:white" mat-icon-button (click)="close()">
             <mat-icon>close</mat-icon>
         </button>
     </div>
 
-    <app-log-console [hidden]="!(selected.value===0)" [server]="server" [project]="project"></app-log-console>
+    <app-log-console [hidden]="!(selected.value===0) || isMinimized" [server]="server" [project]="project"></app-log-console>
 
-    <div *ngFor="let node of nodes; let index = index">
+    <div [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
         <app-web-console [hidden]="!(selected.value===(index+1))" [server]="server" [node]="nodes[index]"></app-web-console>
     </div>
 </div>

@@ -28,6 +28,8 @@ export class ConsoleWrapperComponent implements OnInit {
     public isDraggingEnabled: boolean = false;
     public isLightThemeEnabled: boolean = false;
 
+    public isMinimized: boolean = false;
+
     constructor(
         private consoleService: NodeConsoleService,
         private themeService: ThemeService
@@ -38,7 +40,7 @@ export class ConsoleWrapperComponent implements OnInit {
     
     ngOnInit() {
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
-        this.style = { bottom: '20px', left: '20px', width: '720px', height: '456px'};
+        this.style = { bottom: '20px', left: '20px', width: '720px', height: '460px'};
 
         this.consoleService.nodeConsoleTrigger.subscribe((node) => {
             this.addTab(node, true);
@@ -50,7 +52,17 @@ export class ConsoleWrapperComponent implements OnInit {
         });
     }
 
+    minimize(value: boolean) {
+        this.isMinimized = value;
+        if (!value) {
+            this.style = { bottom: '20px', left: '20px', width: '720px', height: '460px'};
+        } else {
+            this.style = { bottom: '20px', left: '20px', width: '720px', height: '56px'};
+        }
+    }
+
     addTab(node: Node, selectAfterAdding: boolean) {
+        this.minimize(false);
         this.nodes.push(node);
 
         if (selectAfterAdding) {
@@ -99,7 +111,7 @@ export class ConsoleWrapperComponent implements OnInit {
             event.rectangle.width &&
             event.rectangle.height &&
             (event.rectangle.width < 720 ||
-            event.rectangle.height < 456)
+            event.rectangle.height < 460)
         ) {
             return false;
         }
