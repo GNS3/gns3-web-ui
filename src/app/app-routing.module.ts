@@ -64,6 +64,7 @@ import { SystemStatusComponent } from './components/system-status/system-status.
 import { ServerResolve } from './resolvers/server-resolve';
 import { ProjectMapGuard } from './guards/project-map-guard';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
+import { ConsoleGuard } from './guards/console-guard';
 
 const routes: Routes = [
   {
@@ -153,7 +154,8 @@ const routes: Routes = [
   { 
     path: 'server/:server_id/project/:project_id', 
     component: ProjectMapComponent,
-    canActivate: [ProjectMapGuard]
+    canActivate: [ProjectMapGuard],
+    canDeactivate: [ConsoleGuard]
   },
   { 
     path: 'server/:server_id/project/:project_id/nodes/:node_id', 

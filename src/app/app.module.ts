@@ -274,6 +274,7 @@ import { ConsoleWrapperComponent } from './components/project-map/console-wrappe
 import { NodeConsoleService } from './services/nodeConsole.service';
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
+import { ConsoleGuard } from './guards/console-guard';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -555,6 +556,7 @@ if (environment.production) {
     NodeConsoleService,
     ServerResolve,
     ProjectMapGuard,
+    ConsoleGuard,
     Title
   ],
   entryComponents: [

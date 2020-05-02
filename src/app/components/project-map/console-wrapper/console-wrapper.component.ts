@@ -68,10 +68,13 @@ export class ConsoleWrapperComponent implements OnInit {
         if (selectAfterAdding) {
             this.selected.setValue(this.nodes.length);
         }
+
+        this.consoleService.openConsoles++;
     }
 
     removeTab(index: number) {
         this.nodes.splice(index, 1);
+        this.consoleService.openConsoles--;
     }
 
     toggleDragging(value: boolean) {

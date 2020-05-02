@@ -7,6 +7,7 @@ export class NodeConsoleService {
   public nodeConsoleTrigger = new EventEmitter<Node>();
   public closeNodeConsoleTrigger = new Subject<Node>();
   public consoleResized = new Subject<ConsoleResizedEvent>();
+  public openConsoles: number = 0;
 
   public readonly defaultConsoleWidth = 720;
   public readonly defaultConsoleHeight = 408;
