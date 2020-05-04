@@ -77,8 +77,8 @@ export class TemplateComponent implements OnInit {
         template: template,
         server: 'local',
         numberOfNodes: 1,
-        x: this.startX + ev.x - this.project.scene_width/2 - (width/2) + window.scrollX ,
-        y: this.startY + ev.y - this.project.scene_height/2 + window.scrollY
+        x: (this.startX + ev.x - this.project.scene_width/2 - (width/2)) * scale + window.scrollX ,
+        y: (this.startY + ev.y - this.project.scene_height/2) * scale + window.scrollY
       };
       this.onNodeCreation.emit(nodeAddedEvent);
     });
