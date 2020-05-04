@@ -20,7 +20,7 @@ What's New
 Bug Fixes
 - Fix for console icons
 - Fix for creating ethernet switches and hubs
-- Fix for opening cosnole from context menu
+- Fix for opening console from context menu
 - Qemu configurator now works properly
 - Fixes in snap to grid option
 - Symbols preview now works correctly
