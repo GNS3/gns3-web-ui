@@ -7,6 +7,7 @@ import { Template } from '../../models/template';
 import { Project } from '../../models/project';
 import { TemplateService } from '../../services/template.service';
 import { MapScaleService } from '../../services/mapScale.service';
+import { SymbolService } from '../../services/symbol.service';
 
 @Component({
   selector: 'app-template',
@@ -27,10 +28,14 @@ export class TemplateComponent implements OnInit {
   movementX: number;
   movementY: number;
 
+  startX: number;
+  startY: number;
+
   constructor(
     private dialog: MatDialog,
     private templateService: TemplateService,
-    private scaleService: MapScaleService
+    private scaleService: MapScaleService,
+    private symbolService: SymbolService
   ) {}
 
   ngOnInit() {
@@ -38,6 +43,7 @@ export class TemplateComponent implements OnInit {
       this.filteredTemplates = listOfTemplates;
       this.templates = listOfTemplates;
     });
+    this.symbolService.list(this.server);
   }
 
   filterTemplates(event) {
@@ -55,20 +61,27 @@ export class TemplateComponent implements OnInit {
   dragStart(ev) {
     let elemRect = (event.target as HTMLElement).getBoundingClientRect();
 
+    this.startX = (event as MouseEvent).clientX;
+    this.startY = (event as MouseEvent).clientY;
+
     this.movementY = elemRect.top - (event as MouseEvent).clientY;
     this.movementX = elemRect.left - (event as MouseEvent).clientX;
   }
 
-  dragEnd(ev, template) {
-    let scale = this.scaleService.getScale();
-    let nodeAddedEvent: NodeAddedEvent = {
-      template: template,
-      server: 'local',
-      numberOfNodes: 1,
-      x: ((event as MouseEvent).clientX - this.project.scene_width/2 + window.scrollX + this.movementX) * scale, //template.width
-      y: ((event as MouseEvent).clientY - this.project.scene_height/2 + window.scrollY + this.movementY) * scale
-    };
-    this.onNodeCreation.emit(nodeAddedEvent);
+  dragEnd(ev, template: Template) {
+    this.symbolService.raw(this.server, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
+      let width = +symbolSvg.split("width=\"")[1].split("\"")[0];
+      let scale = this.scaleService.getScale();
+
+      let nodeAddedEvent: NodeAddedEvent = {
+        template: template,
+        server: 'local',
+        numberOfNodes: 1,
+        x: this.startX + ev.x - this.project.scene_width/2 - (width/2) + window.scrollX ,
+        y: this.startY + ev.y - this.project.scene_height/2 + window.scrollY
+      };
+      this.onNodeCreation.emit(nodeAddedEvent);
+    });
   }
 
   openDialog() {
