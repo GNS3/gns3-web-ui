@@ -180,6 +180,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
+            this.projectService.open(this.server, this.project.project_id);
             this.title.setTitle(this.project.name);
 
             if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {

@@ -1,10 +1,10 @@
-// ::ng-deep .menu {
-//     scrollbar-color: darkgrey #263238!important;
-//     scrollbar-width: thin!important;
-// }
+::ng-deep .mat-menu-panel {
+    max-width: 400px;
+    max-height: 400px;
+}
 
 .menu {
-    height: 200px;
+    width: 100%;
     overflow-y: scroll;
     scrollbar-color: darkgrey #263238;
     scrollbar-width: thin;
@@ -36,6 +36,20 @@
     --webkit-filter: invert(0)!important;
 }
 
+.templateList {
+    width: 100%;
+}
+
+.templateRow {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.templateText {
+    text-overflow: ellipsis;
+}
+
 .templateIcon {
-    height: 80px!important;
+    width: 80px!important;
+    padding: 10px;
 }

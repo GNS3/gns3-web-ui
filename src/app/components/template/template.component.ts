@@ -70,7 +70,7 @@ export class TemplateComponent implements OnInit {
 
   dragEnd(ev, template: Template) {
     this.symbolService.raw(this.server, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
-      let width = +symbolSvg.split("width=\"")[1].split("\"")[0];
+      let width = +symbolSvg.split("width=\"")[1].split("\"")[0] ? +symbolSvg.split("width=\"")[1].split("\"")[0] : 0;
       let scale = this.scaleService.getScale();
 
       let nodeAddedEvent: NodeAddedEvent = {
