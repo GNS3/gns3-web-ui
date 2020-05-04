@@ -1,1 +1,63 @@
-<button class="addNode" matTooltip="Add a node" mat-icon-button (click)="listTemplatesModal()"><mat-icon>add_to_queue</mat-icon></button>
+<button class="addNode" matTooltip="Add a node" mat-icon-button [matMenuTriggerFor]="mainMenu">
+    <mat-icon>add_to_queue</mat-icon>
+</button>
+
+<mat-menu #mainMenu="matMenu">
+    <button mat-menu-item (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+        <span>Open dialog to configure</span>
+    </button>
+
+    <mat-form-field (click)="$event.stopPropagation()" class="form-field" floatPlaceholder="never">
+        <input 
+            matInput
+            placeholder="Search by name"
+            (keyup)="filterTemplates($event)"
+            [(ngModel)]="searchText"
+            [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+    <mat-form-field (click)="$event.stopPropagation()" class="form-field">
+        <mat-select 
+            [ngModelOptions]="{standalone: true}"  
+            placeholder="Filter templates by type"
+            (selectionChange)="filterTemplates($event)"
+            [(ngModel)]="selectedType">
+            <mat-option *ngFor="let type of templateTypes" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div class="menu">
+        <div class="templateList">
+            <mat-list-item *ngFor="let template of filteredTemplates;let i = index">
+                <span *ngIf="i%4===0" class="templateRow">
+                    <span class="templateIcon">
+                        <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, templates[i])">
+                            <img class="image" [src]="getImageSourceForTemplate(templates[i])"/>
+                        </div>
+                        <div class="templateText">{{templates[i].name}}</div>
+                    </span>
+                    <span *ngIf="templates[i+1]" class="templateIcon">
+                        <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, templates[i+1])">
+                            <img class="image" [src]="getImageSourceForTemplate(templates[i+1])"/>
+                        </div>
+                        <div class="templateText">{{templates[i+1].name}}</div>
+                    </span>
+                    <span *ngIf="templates[i+2]" class="templateIcon">
+                        <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, templates[i+2])">
+                            <img class="image" [src]="getImageSourceForTemplate(templates[i+2])"/>
+                        </div>
+                        <div class="templateText">{{templates[i+2].name}}</div>
+                    </span>
+                    <span *ngIf="templates[i+3]" class="templateIcon">
+                        <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, templates[i+3])">
+                            <img class="image" [src]="getImageSourceForTemplate(templates[i+3])"/>
+                        </div>
+                        <div class="templateText">{{templates[i+3].name}}</div>
+                    </span>
+                </span>
+            </mat-list-item>
+        </div>
+    </div>
+</mat-menu>

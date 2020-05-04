@@ -19,6 +19,10 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
   }
 
+  getByFilename(symbol_filename: string) {
+    return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
+  }
+
   add(server: Server, symbolName: string, symbol: string) {
     this.cache = null;
     return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol)
