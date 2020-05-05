@@ -103,6 +103,6 @@ export class TemplateComponent implements OnInit {
   }
 
   getImageSourceForTemplate(template: Template) {
-    return `http://${this.server.host}:${this.server.port}/v2${template.symbol.substring(1)}/raw`;
+    return `http://${this.server.host}:${this.server.port}/v2/symbols/${template.symbol}/raw`;
   }
 }
