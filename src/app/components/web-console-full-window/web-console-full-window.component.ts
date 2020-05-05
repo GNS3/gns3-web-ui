@@ -18,7 +18,7 @@ import { NodeService } from '../../services/node.service';
     templateUrl: './web-console-full-window.component.html',
     styleUrls: ['../../../../node_modules/xterm/css/xterm.css']
 })
-export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
+export class WebConsoleFullWindowComponent implements OnInit {
     private serverId: string;
     private projectId: string;
     private nodeId: string;
@@ -53,44 +53,47 @@ export class WebConsoleFullWindowComponent implements OnInit, AfterViewInit {
             this.nodeService.getNodeById(this.server, this.projectId, this.nodeId).subscribe((node: Node) => {
                 this.node = node;
                 this.title.setTitle(this.node.name);
+                this.openTerminal();
             });
         })
     }
 
-    async ngAfterViewInit() {
-        this.term.open(this.terminal.nativeElement);
-        const socket = new WebSocket(await this.getUrl());
-
-        socket.onerror = ((event) => {
-            this.term.write("Connection lost" + "\r\n");
-        });
-        socket.onclose = ((event) => {
-            this.term.write("Connection closed" + "\r\n");
-        });
-
-        const attachAddon = new AttachAddon(socket);
-        this.term.loadAddon(attachAddon);
-        this.term.setOption('cursorBlink', true);
-        this.term.loadAddon(this.fitAddon);
-        this.fitAddon.activate(this.term);
-        this.fitAddon.fit();
-        this.term.focus();
-
-        this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
-            if (key.code === 'KeyC' || key.code === 'KeyV'){
-                if (key.ctrlKey) {
-                    return false;
-               }
-            }
-            return true;
-        });
-
-        let numberOfColumns = Math.round(window.innerWidth / this.consoleService.getLineWidth());
-        let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());
-        this.term.resize(numberOfColumns, numberOfRows);
+    openTerminal() {
+        setTimeout(() => { 
+            this.term.open(this.terminal.nativeElement);
+            const socket = new WebSocket(this.getUrl());
+    
+            socket.onerror = ((event) => {
+                this.term.write("Connection lost" + "\r\n");
+            });
+            socket.onclose = ((event) => {
+                this.term.write("Connection closed" + "\r\n");
+            });
+    
+            const attachAddon = new AttachAddon(socket);
+            this.term.loadAddon(attachAddon);
+            this.term.setOption('cursorBlink', true);
+            this.term.loadAddon(this.fitAddon);
+            this.fitAddon.activate(this.term);
+            this.fitAddon.fit();
+            this.term.focus();
+    
+            this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
+                if (key.code === 'KeyC' || key.code === 'KeyV'){
+                    if (key.ctrlKey) {
+                        return false;
+                   }
+                }
+                return true;
+            });
+    
+            let numberOfColumns = Math.round(window.innerWidth / this.consoleService.getLineWidth());
+            let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());
+            this.term.resize(numberOfColumns, numberOfRows);
+        }, 0 );
     }
 
-    async getUrl() {
+    getUrl() {
         return `ws://${this.server.host}:${this.server.port}/v2/projects/${this.projectId}/nodes/${this.nodeId}/console/ws`
     }
 }
