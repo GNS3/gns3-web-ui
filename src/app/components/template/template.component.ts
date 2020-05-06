@@ -51,7 +51,7 @@ export class TemplateComponent implements OnInit {
       return item.name.toLowerCase().includes(this.searchText.toLowerCase());
     });
 
-    if (this.selectedType === 'all') {
+    if (this.selectedType === 'all' || !this.selectedType) {
       this.filteredTemplates = temporaryTemplates;
     } else  {
       this.filteredTemplates = temporaryTemplates.filter(t => t.template_type === this.selectedType);
