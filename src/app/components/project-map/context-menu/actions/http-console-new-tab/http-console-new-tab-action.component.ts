@@ -23,7 +23,9 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
   openConsole() {
     this.nodes.forEach(n => {
       if (n.status === 'started') {
-        window.open(`${this.router.url}/nodes/${n.node_id}`);
+        let url = this.router.url.split('/');
+        let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`
+        window.open(urlString);
       } else {
         this.toasterService.error('To open console please start the node');
       }
