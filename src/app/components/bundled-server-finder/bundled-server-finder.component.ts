@@ -22,9 +22,12 @@ export class BundledServerFinderComponent implements OnInit {
     this.progressService.activate();
     setTimeout(() => 
     {
+      let port = parseInt(this.document.location.port, 10) ? parseInt(this.document.location.port, 10) : 80;
+
       this.serverService.getLocalServer(
         this.document.location.hostname,
-        parseInt(this.document.location.port, 10))
+        port
+        )
       .then((server: Server) => {
         this.progressService.deactivate();
         this.router.navigate(['/server', server.id, 'projects']);
