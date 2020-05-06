@@ -134,6 +134,7 @@ export class AddIosTemplateComponent implements OnInit {
             this.iosTemplate.image = this.iosImageForm.get("imageName").value;
             this.iosTemplate.name = this.iosNameForm.get('templateName').value;
             this.iosTemplate.platform = this.iosNameForm.get('platform').value;
+
             if (this.chassis[this.iosNameForm.get('platform').value]) this.iosTemplate.chassis = this.iosNameForm.get('chassis').value;
             this.iosTemplate.ram = this.iosMemoryForm.get('memory').value;
 
@@ -155,14 +156,14 @@ export class AddIosTemplateComponent implements OnInit {
 
     completeAdaptersData() {
         if (this.chassis[this.iosTemplate.platform]) {
-            if(Object.keys(this.networkAdapters[this.iosTemplate.platform])){
-                for(let i=0; i<Object.keys(this.networkAdapters[this.iosTemplate.platform]).length; i++){
+            if(Object.keys(this.networkAdapters[this.iosTemplate.chassis])){
+                for(let i=0; i<Object.keys(this.networkAdapters[this.iosTemplate.chassis]).length; i++){
                     if(!this.networkAdaptersForTemplate[i]) this.networkAdaptersForTemplate[i] = '';
                 }
             }
         } else {
-            if(Object.keys(this.networkAdaptersForPlatform[this.iosTemplate.platform])){
-                for(let i=0; i<Object.keys(this.networkAdaptersForPlatform[this.iosTemplate.platform]).length; i++){
+            if(Object.keys(this.networkAdaptersForPlatform[this.iosTemplate.chassis])){
+                for(let i=0; i<Object.keys(this.networkAdaptersForPlatform[this.iosTemplate.chassis]).length; i++){
                     if(!this.networkAdaptersForTemplate[i]) this.networkAdaptersForTemplate[i] = '';
                 }
             }
