@@ -20,7 +20,6 @@ export class NodeSelectInterfaceComponent implements OnInit {
   protected topPosition;
   protected leftPosition;
   public node: Node;
-  public availablePorts: Port[];
   public ports: Port[];
 
   constructor(
@@ -49,16 +48,26 @@ export class NodeSelectInterfaceComponent implements OnInit {
     let linkNodes: LinkNode[] = [];
     this.links.forEach((link: Link) => {
       link.nodes.forEach((linkNode: LinkNode) => {
-        if(linkNode.node_id === this.node.node_id) {
+        if (linkNode.node_id === this.node.node_id) {
           linkNodes.push(linkNode);
         }
       });
     });
-    this.availablePorts = [];
+
+    this.ports = [];
     this.node.ports.forEach((port: Port) => {
-      if(linkNodes.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0){
-        this.availablePorts.push(port);
+      let linkNodesOnTheSameAdapter = linkNodes.filter((linkNode: LinkNode) => linkNode.adapter_number === port.adapter_number);
+      if (linkNodesOnTheSameAdapter.length === 0) {
+        port.available = true;
+      } else {
+        if (linkNodesOnTheSameAdapter.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0) {
+          port.available = true;
+        } else {
+          port.available = false;
+        }
       }
+
+      this.ports.push(port);
     });
   }
 
