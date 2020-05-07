@@ -21,6 +21,7 @@ export class Gns3vmComponent implements OnInit {
     public vmEngines: Gns3vmEngine[];
     public vms: VM[] = [];
     public vmForm: FormGroup;
+    public port: number;
 
     constructor(
         private route: ActivatedRoute,
@@ -44,6 +45,7 @@ export class Gns3vmComponent implements OnInit {
                 this.gns3vm = vm;
                 this.vmForm.controls['ram'].setValue(this.gns3vm.ram);
                 this.vmForm.controls['vcpus'].setValue(this.gns3vm.vcpus);
+                if (this.gns3vm.port) this.port = this.gns3vm.port;
                 this.gns3vmService.getGns3vmEngines(this.server).subscribe((vmEngines: Gns3vmEngine[]) => {
                     this.vmEngines = vmEngines;
                 });
@@ -75,6 +77,7 @@ export class Gns3vmComponent implements OnInit {
         if ((this.vmForm.valid && this.gns3vm.vmname) || (this.gns3vm.engine==='remote' && this.gns3vm.vmname)) {
             this.gns3vm.ram = this.vmForm.get('ram').value;
             this.gns3vm.vcpus= this.vmForm.get('vcpus').value;
+            if (this.port) this.gns3vm.port = this.port;
 
             this.gns3vmService.updateGns3vm(this.server, this.gns3vm).subscribe(() => {
                 this.toasterService.success('GNS3 VM updated.');

@@ -27,6 +27,9 @@
                 Run the VM in headless mode
             </mat-checkbox>
             <form *ngIf="gns3vm.engine !== 'remote'" [formGroup]="vmForm">
+                <mat-form-field *ngIf="gns3vm.engine === 'virtualbox' || gns3vm.engine === 'vmware'" class="form-field">
+                    <input matInput type="number" placeholder="Port">
+                </mat-form-field>
                 <mat-form-field class="form-field">
                     <input matInput formControlName="ram" type="number" placeholder="RAM">
                     <span matSuffix>MB</span>
