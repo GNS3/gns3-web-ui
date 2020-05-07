@@ -91,6 +91,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public notificationsVisibility: boolean = false;
   public layersVisibility: boolean = false;
   public gridVisibility: boolean = false;
+  public toolbarVisibility: boolean = true;
 
   tools = {
     selection: true,
@@ -292,6 +293,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       let allLinks: Indexed[] = this.mapLinksDataSource.getItems();
       let allSymbols: Indexed[] = this.mapSymbolsDataSource.getItems();
       this.selectionManager.setSelected(allNodes.concat(allDrawings).concat(allLinks).concat(allSymbols));
+    });
+
+    Mousetrap.bind('ctrl+h', (event: Event) => {
+      event.preventDefault();
+      this.toolbarVisibility = !this.toolbarVisibility;
     });
 
     Mousetrap.bind('ctrl+shift+a', (event: Event) => {

@@ -32,7 +32,7 @@
     [readonly]="inReadOnlyMode"
   ></app-experimental-map>
 
-  <div class="project-toolbar">
+  <div *ngIf="toolbarVisibility" class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar" [ngClass]="{lightTheme: isLightThemeEnabled}">
       <mat-toolbar-row *ngIf="!isLightThemeEnabled">
         <button matTooltip="Open menu" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
@@ -163,11 +163,11 @@
     </mat-toolbar>
   </div>
 
-  <div id="show-menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, shadowed: !isProjectMapMenuVisible }" *ngIf="!readonly">
+  <div *ngIf="toolbarVisibility" id="show-menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, shadowed: !isProjectMapMenuVisible }">
     <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon class="unmarked">keyboard_arrow_right</mat-icon></button>
   </div>
 
-  <div id="menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, extended: isProjectMapMenuVisible }">
+  <div *ngIf="toolbarVisibility" id="menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, extended: isProjectMapMenuVisible }">
     <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
     <mat-divider class="divider" [vertical]="true"></mat-divider>
     <app-project-map-menu [server]="server" [project]="project"></app-project-map-menu>
