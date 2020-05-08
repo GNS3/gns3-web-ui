@@ -12,6 +12,8 @@ import { IosConfigurationService } from '../../../../services/ios-configuration.
 import { IosImage } from '../../../../models/images/ios-image';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { ServerResponse } from '../../../../models/serverResponse';
+import { ComputeService } from '../../../../services/compute.service';
+import { Compute } from '../../../../models/compute';
 
 @Component({
     selector: 'app-add-ios-template',
@@ -44,6 +46,10 @@ export class AddIosTemplateComponent implements OnInit {
     ciscoUrl: string = "https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp";
     uploader: FileUploader;
 
+    isGns3VmAvailable: boolean = false;
+    isGns3VmChosen: boolean = false;
+    isLocalComputerChosen: boolean = true;
+
     constructor(
         private route: ActivatedRoute,
         private serverService: ServerService,
@@ -52,7 +58,8 @@ export class AddIosTemplateComponent implements OnInit {
         private formBuilder: FormBuilder,
         private router: Router,
         private templateMocksService: TemplateMocksService,
-        private iosConfigurationService: IosConfigurationService
+        private iosConfigurationService: IosConfigurationService,
+        private computeService: ComputeService
     ) {
         this.iosTemplate = new IosTemplate();
 
@@ -107,7 +114,21 @@ export class AddIosTemplateComponent implements OnInit {
                 this.chassis = this.iosConfigurationService.getChassis();
                 this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
             });
+
+            this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
+                if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
+            });
         });
+    }
+
+    setServerType(serverType: string) {
+        if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
+            this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
+        } else {
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
+        }
     }
 
     getImages() {
@@ -145,6 +166,8 @@ export class AddIosTemplateComponent implements OnInit {
 
             if (this.networkAdaptersForTemplate.length>0) this.completeAdaptersData();
             if (this.networkModulesForTemplate.length>0) this.completeModulesData();
+
+            this.iosTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
                 this.goBack();

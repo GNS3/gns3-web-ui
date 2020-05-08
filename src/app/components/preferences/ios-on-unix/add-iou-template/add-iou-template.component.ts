@@ -8,6 +8,8 @@ import { v4 as uuid } from 'uuid';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
+import { ComputeService } from '../../../../services/compute.service';
+import { Compute } from '../../../../models/compute';
 
 
 @Component({
@@ -18,7 +20,6 @@ import { IouService } from '../../../../services/iou.service';
 export class AddIouTemplateComponent implements OnInit {
     server: Server;
     iouTemplate: IouTemplate;
-    isGns3VmChosen: boolean = false;
     isRemoteComputerChosen: boolean = false;
     newImageSelected: boolean = false;
     types: string[] = ['L2 image', 'L3 image'];
@@ -27,6 +28,10 @@ export class AddIouTemplateComponent implements OnInit {
 
     templateNameForm: FormGroup;
     imageForm: FormGroup;
+
+    isGns3VmAvailable: boolean = false;
+    isGns3VmChosen: boolean = false;
+    isLocalComputerChosen: boolean = true;
     
     constructor(
         private route: ActivatedRoute,
@@ -35,7 +40,8 @@ export class AddIouTemplateComponent implements OnInit {
         private toasterService: ToasterService,
         private router: Router,
         private formBuilder: FormBuilder,
-        private templateMocksService: TemplateMocksService
+        private templateMocksService: TemplateMocksService,
+        private computeService: ComputeService
     ) {
         this.iouTemplate = new IouTemplate();
 
@@ -56,14 +62,20 @@ export class AddIouTemplateComponent implements OnInit {
             this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
                 this.iouTemplate = iouTemplate;
             })
+
+            this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
+                if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
+            });
         });
     }
 
     setServerType(serverType: string) {
-        if (serverType === 'gns3 vm') {
+        if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
             this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
         } else {
-            this.isRemoteComputerChosen = true;
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
         }
     }
 
@@ -84,6 +96,7 @@ export class AddIouTemplateComponent implements OnInit {
             this.iouTemplate.template_id = uuid();
             this.iouTemplate.name = this.templateNameForm.get("templateName").value;
             this.iouTemplate.path = this.imageForm.get("imageName").value;
+            this.iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
                 this.goBack();

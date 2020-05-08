@@ -7,6 +7,13 @@
     <div class="default-content" *ngIf="iosTemplate">
         <div class="container mat-elevation-z8">
             <mat-vertical-stepper [linear]="true">
+                <mat-step label="Server type">
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this IOS router on your local computer</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run this IOS router on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </mat-step>
+
                 <mat-step label="IOS image">
                     <input
                         type="file"

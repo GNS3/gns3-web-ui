@@ -7,6 +7,13 @@
     <div class="default-content">
         <div class="container mat-elevation-z8">
             <mat-vertical-stepper [linear]="true">
+                <mat-step label="Server type">
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this QEMU VM on your local computer</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run this QEMU VM on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </mat-step>
+
                 <mat-step label="QEMU VM Name">
                     <form [formGroup]="nameForm">
                         <mat-form-field class="form-field">

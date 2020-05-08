@@ -8,6 +8,8 @@ import { TemplateMocksService } from '../../../../../services/template-mocks.ser
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ComputeService } from '../../../../../services/compute.service';
+import { Compute } from '../../../../../models/compute';
 
 
 @Component({
@@ -19,6 +21,10 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
     server: Server;
     templateName: string = '';
     formGroup: FormGroup;
+
+    isGns3VmAvailable: boolean = false;
+    isGns3VmChosen: boolean = false;
+    isLocalComputerChosen: boolean = true;
     
     constructor(
         private route: ActivatedRoute,
@@ -27,7 +33,8 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
         private router: Router,
         private toasterService: ToasterService,
         private templateMocksService: TemplateMocksService,
-        private formBuilder: FormBuilder 
+        private formBuilder: FormBuilder,
+        private computeService: ComputeService
     ) {
         this.formGroup = this.formBuilder.group({
             templateName: new FormControl('', Validators.required),
@@ -39,7 +46,21 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
         const server_id = this.route.snapshot.paramMap.get("server_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
+
+            this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
+                if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
+            });
         });
+    }
+
+    setServerType(serverType: string) {
+        if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
+            this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
+        } else {
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
+        }
     }
 
     goBack() {
@@ -56,6 +77,7 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
 
             ethernetHubTemplate.template_id = uuid();
             ethernetHubTemplate.name = this.formGroup.get('templateName').value;
+            ethernetHubTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             for(let i=0; i<this.formGroup.get('numberOfPorts').value; i++){
                 ethernetHubTemplate.ports_mapping.push({

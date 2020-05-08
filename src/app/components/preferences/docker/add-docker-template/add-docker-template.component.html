@@ -10,7 +10,8 @@
                 <mat-step label="Server type">
                     <mat-radio-group class="radio-group">
                         <!-- <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this Docker container on a remote computer</mat-radio-button> -->
-                        <mat-radio-button class="radio-button" value="2" (click)="setServerType('gns3 vm')" checked>Run this Docker container on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this Docker container on your local computer</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run this Docker container on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </mat-step>
                 <mat-step label="Docker Virtual Machine">

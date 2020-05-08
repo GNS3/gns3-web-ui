@@ -11,6 +11,8 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { v4 as uuid } from 'uuid';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { ComputeService } from '../../../../services/compute.service';
+import { Compute } from '../../../../models/compute';
 
 
 @Component({
@@ -33,6 +35,10 @@ export class AddQemuVmTemplateComponent implements OnInit {
     nameForm: FormGroup;
     memoryForm: FormGroup;
     diskForm: FormGroup;
+
+    isGns3VmAvailable: boolean = false;
+    isGns3VmChosen: boolean = false;
+    isLocalComputerChosen: boolean = true;
     
     constructor(
         private route: ActivatedRoute,
@@ -42,7 +48,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
         private router: Router,
         private formBuilder: FormBuilder,
         private templateMocksService: TemplateMocksService,
-        private configurationService: QemuConfigurationService
+        private configurationService: QemuConfigurationService,
+        private computeService: ComputeService
     ) {
         this.qemuTemplate = new QemuTemplate();
 
@@ -77,7 +84,21 @@ export class AddQemuVmTemplateComponent implements OnInit {
             });
 
             this.consoleTypes = this.configurationService.getConsoleTypes();
+
+            this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
+                if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
+            });
         });
+    }
+
+    setServerType(serverType: string) {
+        if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
+            this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
+        } else {
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
+        }
     }
 
     setDiskImage(value: string) {
@@ -103,6 +124,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
             }
             this.qemuTemplate.template_id = uuid();
             this.qemuTemplate.name = this.nameForm.get("templateName").value;
+            this.qemuTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
                 this.goBack();
