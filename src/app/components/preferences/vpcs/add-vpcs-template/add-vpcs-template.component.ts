@@ -8,6 +8,8 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ComputeService } from '../../../../services/compute.service';
+import { Compute } from '../../../../models/compute';
 
 
 @Component({
@@ -19,6 +21,10 @@ export class AddVpcsTemplateComponent implements OnInit {
     server: Server;
     templateName: string = '';
     templateNameForm: FormGroup
+
+    isGns3VmAvailable: boolean = false;
+    isGns3VmChosen: boolean = false;
+    isLocalComputerChosen: boolean = true;
     
     constructor(
         private route: ActivatedRoute,
@@ -27,7 +33,8 @@ export class AddVpcsTemplateComponent implements OnInit {
         private router: Router,
         private toasterService: ToasterService,
         private templateMocksService: TemplateMocksService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private computeService: ComputeService
     ) {
         this.templateNameForm = this.formBuilder.group({
             templateName: new FormControl(null, [Validators.required])
@@ -38,7 +45,21 @@ export class AddVpcsTemplateComponent implements OnInit {
         const server_id = this.route.snapshot.paramMap.get("server_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
+
+            this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
+                if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
+            });
         });
+    }
+
+    setServerType(serverType: string) {
+        if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
+            this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
+        } else {
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
+        }
     }
 
     goBack() {
@@ -57,6 +78,7 @@ export class AddVpcsTemplateComponent implements OnInit {
 
             vpcsTemplate.template_id = uuid(),
             vpcsTemplate.name = this.templateName,
+            vpcsTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.vpcsService.addTemplate(this.server, vpcsTemplate).subscribe(() => {
                 this.goBack();

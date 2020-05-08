@@ -10,6 +10,8 @@ import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { DockerImage } from '../../../../models/docker/docker-image';
+import { ComputeService } from '../../../../services/compute.service';
+import { Compute } from '../../../../models/compute';
 
 
 @Component({
@@ -21,7 +23,6 @@ export class AddDockerTemplateComponent implements OnInit {
     server: Server;
     dockerTemplate: DockerTemplate;
     consoleTypes: string[] = [];
-    isGns3VmChosen: boolean = false;
     isRemoteComputerChosen: boolean = false;
     dockerImages: DockerImage[] = [];
     newImageSelected: boolean = false;
@@ -29,6 +30,10 @@ export class AddDockerTemplateComponent implements OnInit {
     virtualMachineForm: FormGroup;
     containerNameForm: FormGroup;
     networkAdaptersForm: FormGroup;
+
+    isGns3VmAvailable: boolean = false;
+    isGns3VmChosen: boolean = false;
+    isLocalComputerChosen: boolean = true;
     
     constructor(
         private route: ActivatedRoute,
@@ -38,7 +43,8 @@ export class AddDockerTemplateComponent implements OnInit {
         private router: Router,
         private formBuilder: FormBuilder,
         private templateMocksService: TemplateMocksService,
-        private configurationService: DockerConfigurationService
+        private configurationService: DockerConfigurationService,
+        private computeService: ComputeService
     ) {
         this.dockerTemplate = new DockerTemplate();
 
@@ -65,14 +71,20 @@ export class AddDockerTemplateComponent implements OnInit {
             this.templateMocksService.getDockerTemplate().subscribe((dockerTemplate: DockerTemplate) => {
                 this.dockerTemplate = dockerTemplate;
             })
+
+            this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
+                if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
+            });
         });
     }
 
     setServerType(serverType: string) {
-        if (serverType === 'gns3 vm') {
+        if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
             this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
         } else {
-            this.isRemoteComputerChosen = true;
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
         }
     }
 
@@ -90,6 +102,7 @@ export class AddDockerTemplateComponent implements OnInit {
             this.dockerTemplate.image = this.virtualMachineForm.get('filename').value;
             this.dockerTemplate.name = this.containerNameForm.get('templateName').value;
             this.dockerTemplate.adapters = this.networkAdaptersForm.get('adapters').value;
+            this.dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
                 this.goBack();
