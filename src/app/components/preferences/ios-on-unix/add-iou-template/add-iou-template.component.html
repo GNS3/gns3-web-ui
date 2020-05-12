@@ -41,8 +41,8 @@
                                 placeholder="IOU image" 
                                 [(ngModel)]="iouTemplate.path"
                                 [ngModelOptions]="{standalone: true}">
-                                <mat-option *ngFor="let image of iouImages" [value]="image">
-                                    {{image}}
+                                <mat-option *ngFor="let image of iouImages" [value]="image.path">
+                                    {{image.path}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>

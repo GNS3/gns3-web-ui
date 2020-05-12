@@ -21,6 +21,10 @@ export class IouService {
         return this.httpServer.get<IouImage[]>(server, '/compute/iou/images') as Observable<IouImage[]>;
     }
 
+    getImagePath(server: Server, filename: string): string {
+        return `http://${server.host}:${server.port}/v2/compute/iou/images/${filename}`;
+    }
+
     addTemplate(server: Server, iouTemplate: any): Observable<any> {
         return this.httpServer.post<IouTemplate>(server, `/templates`, iouTemplate) as Observable<IouTemplate>;
     }
