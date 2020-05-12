@@ -146,6 +146,8 @@ export class AddIosTemplateComponent implements OnInit {
         this.uploader.queue.forEach(elem => (elem.url = url));
 
         const itemToUpload = this.uploader.queue[0];
+        (itemToUpload as any).options.disableMultipart = true;
+
         this.uploader.uploadItem(itemToUpload);
     }
 
