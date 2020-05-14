@@ -11,7 +11,7 @@ import { IouService } from '../../../../services/iou.service';
 import { ComputeService } from '../../../../services/compute.service';
 import { Compute } from '../../../../models/compute';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
-import { IouImage } from 'src/app/models/iou/iou-image';
+import { IouImage } from '../../models/iou/iou-image';
 
 
 @Component({
@@ -113,9 +113,8 @@ export class AddIouTemplateComponent implements OnInit {
     uploadImageFile(event): void {
         let name = event.target.files[0].name;
         this.imageForm.controls['imageName'].setValue(name);
-        let fileName = event.target.files[0].name;
 
-        const url = this.iouService.getImagePath(this.server, fileName);
+        const url = this.iouService.getImagePath(this.server, name);
         this.uploader.queue.forEach(elem => (elem.url = url));
 
         const itemToUpload = this.uploader.queue[0];
