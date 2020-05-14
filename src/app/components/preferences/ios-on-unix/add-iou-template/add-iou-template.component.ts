@@ -11,7 +11,7 @@ import { IouService } from '../../../../services/iou.service';
 import { ComputeService } from '../../../../services/compute.service';
 import { Compute } from '../../../../models/compute';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
-import { IouImage } from '../../models/iou/iou-image';
+import { IouImage } from '../../../../models/iou/iou-image';
 
 
 @Component({
