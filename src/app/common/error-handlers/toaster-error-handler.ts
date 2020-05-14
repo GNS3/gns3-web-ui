@@ -6,10 +6,12 @@ export class ToasterErrorHandler extends RavenErrorHandler {
     super.handleError(err);
 
     const toasterService = this.injector.get(ToasterService);
-    if (err.error.message) {
+    if (err.error && err.error.message) {
       toasterService.error(err.error.message);
-    } else {
+    } else if (err.message) {
       toasterService.error(err.message);
+    } else if (err.error) {
+      toasterService.error(err.error);
     }
   }
 }
