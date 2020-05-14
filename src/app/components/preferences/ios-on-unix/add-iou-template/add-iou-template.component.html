@@ -53,7 +53,8 @@
                                 #file
                                 class="nonvisible"
                                 (change)="uploadImageFile($event)"
-                                ngDefaultControl/>
+                                ng2FileSelect
+                                [uploader]="uploader"/>
                             <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
                             <mat-form-field class="file-name-form-field">
                                 <input
