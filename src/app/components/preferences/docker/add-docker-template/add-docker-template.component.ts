@@ -75,6 +75,10 @@ export class AddDockerTemplateComponent implements OnInit {
             this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
                 if (computes.filter(compute => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
             });
+
+            this.dockerService.getImages(server).subscribe((images) => {
+                this.dockerImages = images;
+            });
         });
     }
 
