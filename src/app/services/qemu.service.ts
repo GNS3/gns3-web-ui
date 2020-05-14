@@ -19,6 +19,10 @@ export class QemuService {
         return this.httpServer.get<QemuTemplate>(server, `/templates/${template_id}`) as Observable<QemuTemplate>;
     } 
 
+    getImagePath(server: Server, filename: string): string {
+        return `http://${server.host}:${server.port}/v2/compute/qemu/images/${filename}`;
+    }
+
     getBinaries(server: Server): Observable<QemuBinary[]> {
         return this.httpServer.get<QemuBinary[]>(server, '/computes/local/qemu/binaries') as Observable<QemuBinary[]>;
     }

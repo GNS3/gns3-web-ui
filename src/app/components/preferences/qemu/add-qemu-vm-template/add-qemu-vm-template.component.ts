@@ -13,6 +13,7 @@ import { TemplateMocksService } from '../../../../services/template-mocks.servic
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { ComputeService } from '../../../../services/compute.service';
 import { Compute } from '../../../../models/compute';
+import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     selectedImage: QemuImage;
     chosenImage: string = '';
     qemuTemplate: QemuTemplate;
+    uploader: FileUploader;
 
     nameForm: FormGroup;
     memoryForm: FormGroup;
@@ -67,6 +69,25 @@ export class AddQemuVmTemplateComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.uploader = new FileUploader({});
+        this.uploader.onAfterAddingFile = file => {
+            file.withCredentials = false;
+        };
+        this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+            this.toasterService.error('An error occured: ' + response);
+        };
+        this.uploader.onSuccessItem = (
+            item: FileItem,
+            response: string,
+            status: number,
+            headers: ParsedResponseHeaders
+        ) => {
+            this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+                this.qemuImages = qemuImages;
+            });
+            this.toasterService.success('Image uploaded');
+        };
+        
         const server_id = this.route.snapshot.paramMap.get("server_id");
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
@@ -106,7 +127,16 @@ export class AddQemuVmTemplateComponent implements OnInit {
     }
 
     uploadImageFile(event) {
-        this.chosenImage = event.target.files[0].name;
+        let name = event.target.files[0].name;
+        this.diskForm.controls['fileName'].setValue(name);
+
+        const url = this.qemuService.getImagePath(this.server, name);
+        this.uploader.queue.forEach(elem => (elem.url = url));
+
+        const itemToUpload = this.uploader.queue[0];
+        if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+
+        this.uploader.uploadItem(itemToUpload);
     }
 
     goBack() {
@@ -118,7 +148,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
             this.qemuTemplate.ram = this.memoryForm.get("ramMemory").value;
             this.qemuTemplate.qemu_path = this.selectedBinary.path;
             if (this.newImageSelected) {
-                this.qemuTemplate.hda_disk_image =  this.chosenImage;
+                this.qemuTemplate.hda_disk_image =  this.diskForm.get("fileName").value;
             } else {
                 this.qemuTemplate.hda_disk_image = this.selectedImage.path;
             }
