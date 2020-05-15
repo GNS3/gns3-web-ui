@@ -26,7 +26,7 @@
                             [ngModelOptions]="{standalone: true}" 
                             [(ngModel)]="selectedImage">
                             <mat-option *ngFor="let image of dockerImages" [value]="image">
-                                {{image.filename}}
+                                {{image.image}}
                             </mat-option>
                         </mat-select>
                         <div *ngIf="newImageSelected">

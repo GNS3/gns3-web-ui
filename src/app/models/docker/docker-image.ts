@@ -1,3 +1,3 @@
 export class DockerImage {
-    filename: string;
+    image: string;
 }
