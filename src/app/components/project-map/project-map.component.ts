@@ -67,6 +67,7 @@ import { NodeAddedEvent } from '../template/template-list-dialog/template-list-d
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
 import { Title } from '@angular/platform-browser';
+import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 
 
 @Component({
@@ -848,6 +849,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  public addNewTemplate() {
+    const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
+      width: '1000px',
+      height: '500px',
+      autoFocus: false,
+      disableClose: true
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.project = this.project;
   }
 
   public ngOnDestroy() {

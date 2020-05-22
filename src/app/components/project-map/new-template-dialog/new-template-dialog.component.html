@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>Add new template</h1>
+
+<mat-horizontal-stepper [linear]="false" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+        <ng-template matStepLabel>Please select how you want to create new template</ng-template>
+
+        <mat-radio-group class="radio-group" aria-label="Sorting">
+            <mat-radio-button value="1" (click)="setFiletype('svg')" checked>SVG</mat-radio-button>
+            <mat-radio-button [disabled]="!isPngAvailable" value="2" (click)="setFiletype('png')">PNG</mat-radio-button>
+        </mat-radio-group>
+
+        <div>
+            <button mat-button matStepperNext>Next</button>
+        </div>
+    </mat-step>
+
+    <mat-step [stepControl]="secondFormGroup">
+        <ng-template matStepLabel>Appliances from server</ng-template>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>Done</ng-template>
+
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="stepper.reset()">Reset</button>
+      </div>
+    </mat-step>
+</mat-horizontal-stepper>

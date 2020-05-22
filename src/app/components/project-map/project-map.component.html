@@ -59,6 +59,10 @@
           <mat-icon>info</mat-icon>
           <span>Go to system status</span>
         </button>
+        <button mat-menu-item (click)="addNewTemplate()">
+          <mat-icon>control_point</mat-icon>
+          <span>New template</span>
+        </button>
         <app-import-appliance [server]="server" [project]="project"></app-import-appliance>
         <button mat-menu-item [matMenuTriggerFor]="projectMenu">
           <mat-icon>settings</mat-icon>
