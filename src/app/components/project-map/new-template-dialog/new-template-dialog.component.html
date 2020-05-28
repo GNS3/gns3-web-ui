@@ -18,9 +18,17 @@
         <ng-template matStepLabel>{{actionTitle}}</ng-template>
 
         <mat-card>
-            <mat-form-field class="filter-field">
-                <input matInput [(ngModel)]="searchText" placeholder="Filter">
-            </mat-form-field>
+            <div class="tableHeader">
+                <mat-form-field class="filter-field">
+                    <input matInput [(ngModel)]="searchText" placeholder="Filter">
+                </mat-form-field>
+    
+                <mat-select (selectionChange)="filterAppliances($event)" [ngModelOptions]="{standalone: true}" placeholder="Category" [(ngModel)]="category">
+                    <mat-option *ngFor="let category of categories" [value]="category">
+                        {{category}}
+                    </mat-option>
+                </mat-select>
+            </div>
 
             <mat-table 
                 class="mat-table" 

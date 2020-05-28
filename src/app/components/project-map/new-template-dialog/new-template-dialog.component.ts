@@ -19,9 +19,11 @@ export class NewTemplateDialogComponent implements OnInit {
     public actionTitle: string = 'Install appliance from server';
 
     public searchText: string = '';
+    public allAppliances: Appliance[] = [];
     public appliances: Appliance[] = [];
 
-    public categories: string[] = ['router', 'multilayer_switch', 'guest', 'firewall'];
+    public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
+    public category: string = 'all categories';
     public displayedColumns: string[] = ['name', 'emulator', 'vendor'];
 
     constructor(
@@ -39,7 +41,20 @@ export class NewTemplateDialogComponent implements OnInit {
                 if (appliance.iou) appliance.emulator = 'Iou';
                 if (appliance.qemu) appliance.emulator = 'Qemu';
             });
+            this.allAppliances = appliances;
         });
+    }
+
+    filterAppliances(event) {
+        let temporaryAppliances = this.allAppliances.filter(item => {
+          return item.name.toLowerCase().includes(this.searchText.toLowerCase());
+        });
+    
+        if (this.category === 'all categories' || !this.category) {
+          this.appliances = temporaryAppliances;
+        } else  {
+          this.appliances = temporaryAppliances.filter(t => t.category === this.category);
+        }
     }
 
     setAction(action: string) {
