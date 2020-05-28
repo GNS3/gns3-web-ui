@@ -4,9 +4,9 @@
     <mat-step [stepControl]="firstFormGroup">
         <ng-template matStepLabel>Please select how you want to create new template</ng-template>
 
-        <mat-radio-group class="radio-group" aria-label="Sorting">
-            <mat-radio-button value="1" (click)="setFiletype('svg')" checked>SVG</mat-radio-button>
-            <mat-radio-button [disabled]="!isPngAvailable" value="2" (click)="setFiletype('png')">PNG</mat-radio-button>
+        <mat-radio-group class="radio-group">
+            <mat-radio-button class="radio-button" value="1" (click)="setAction('install')" checked>Install new appliance from the GNS server</mat-radio-button><br/>
+            <mat-radio-button class="radio-button" value="2" (click)="setAction('import')">Import an appliance file</mat-radio-button>
         </mat-radio-group>
 
         <div>
@@ -15,7 +15,51 @@
     </mat-step>
 
     <mat-step [stepControl]="secondFormGroup">
-        <ng-template matStepLabel>Appliances from server</ng-template>
+        <ng-template matStepLabel>{{actionTitle}}</ng-template>
+
+        <mat-card>
+            <mat-form-field class="filter-field">
+                <input matInput [(ngModel)]="searchText" placeholder="Filter">
+            </mat-form-field>
+
+            <mat-table 
+                class="mat-table" 
+                #table 
+                matSort 
+                (matSortChange)= "sortData($event)" 
+                [dataSource]="appliances | namefilter: searchText">
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="emulator">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Emulator </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.emulator}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="vendor">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Vendor </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.vendor_name}} </mat-cell>
+                </ng-container>
+        
+                <!-- <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+                    <mat-cell *matCellDef="let row" style="text-align: right">
+                        <button mat-icon-button matTooltip="Restore snapshot" (click)="restoreSnapshot(row)">
+                            <mat-icon aria-label="Restore snapshot">restore</mat-icon>
+                        </button>
+                        
+                        <button mat-icon-button matTooltip="Delete snapshot" (click)="deleteSnapshot(row)">
+                            <mat-icon aria-label="Delete snapshot">delete</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container> -->
+        
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            </mat-table>
+        </mat-card>
     </mat-step>
 
     <mat-step>

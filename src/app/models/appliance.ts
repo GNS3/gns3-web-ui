@@ -17,6 +17,29 @@ export interface Qemu {
     ram: number;
 }
 
+export interface Docker {
+    adapters: number;
+    console_type: string;
+    image: string;
+}
+
+export interface Dynamips {
+    chassis: string;
+    nvram: number;
+    platform: string;
+    ram: number;
+    slot0: string;
+    startup_config: string;
+}
+
+export interface Iou {
+    ethernet_adapters: number;
+    nvram: number;
+    ram: number;
+    serial_adapters: number;
+    startup_config: string;
+}
+
 export interface Images {
     hda_disk_image: string;
 }
@@ -27,6 +50,7 @@ export interface Version {
 }
 
 export interface Appliance {
+    availability: string;
     builtin: boolean;
     category: string;
     description: string;
@@ -39,7 +63,6 @@ export interface Appliance {
     port_name_format: string;
     product_name: string;
     product_url: string;
-    qemu: Qemu;
     registry_version: number;
     status: string;
     symbol: string;
@@ -47,4 +70,11 @@ export interface Appliance {
     vendor_name: string;
     vendor_url: string;
     versions: Version[];
+
+    docker: Docker;
+    dynamips: Dynamips;
+    iou: Iou;
+    qemu: Qemu;
+
+    emulator?: string;
 }

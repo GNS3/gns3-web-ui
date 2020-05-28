@@ -854,7 +854,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public addNewTemplate() {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
       width: '1000px',
-      height: '500px',
+      maxHeight: '500px',
       autoFocus: false,
       disableClose: true
     });

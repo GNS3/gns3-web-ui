@@ -7,7 +7,7 @@ import { ComputeStatistics } from '../models/computeStatistics';
 import { Appliance } from '../models/appliance';
 
 @Injectable()
-export class ComputeService {
+export class ApplianceService {
     constructor(private httpServer: HttpServer) {}
 
     getAppliances(server: Server): Observable<Appliance[]> {
