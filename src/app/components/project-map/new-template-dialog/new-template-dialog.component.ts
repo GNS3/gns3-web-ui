@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef, Sort } from '@angular/material';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
@@ -51,7 +51,29 @@ export class NewTemplateDialogComponent implements OnInit {
         }
     }
 
+    sortData(sort: Sort) {
+        if (!sort.active || sort.direction === '') return;
+
+        let appliances = this.appliances.slice();
+        this.appliances = appliances.sort((a, b) => {
+            const isAsc = sort.direction === 'asc';
+            if (sort.active === 'name') {
+                return compareNames(a.name, b.name, isAsc);
+            } else if (sort.active === 'emulator') {
+                return compareNames(a.emulator, b.emulator, isAsc);
+            } else if (sort.active === 'vendor') {
+                return compareNames(a.vendor_name, b.vendor_name, isAsc);
+            } else return 0;
+        });
+    }
+
     onCloseClick() {
         this.dialogRef.close();
     }
+}
+
+function compareNames(a: string, b: string, isAsc: boolean) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
