@@ -57,7 +57,7 @@ export class AddDockerTemplateComponent implements OnInit {
         });
 
         this.networkAdaptersForm = this.formBuilder.group({
-            adapters: new FormControl('', Validators.required)
+            adapters: new FormControl('1', Validators.required)
         });
     }
 

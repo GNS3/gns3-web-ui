@@ -60,7 +60,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
         });
 
         this.memoryForm = this.formBuilder.group({
-            ramMemory: new FormControl('', Validators.required)
+            ramMemory: new FormControl('256', Validators.required)
         });
 
         this.diskForm = this.formBuilder.group({
@@ -98,6 +98,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
             this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
                 this.qemuBinaries = qemuBinaries;
+                if (this.qemuBinaries[0]) this.selectedBinary = this.qemuBinaries[0];
             });
 
             this.qemuService.getImages(server).subscribe((qemuImages: QemuImage[]) => {
