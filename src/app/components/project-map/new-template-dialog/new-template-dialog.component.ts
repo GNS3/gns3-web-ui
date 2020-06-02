@@ -1,19 +1,31 @@
-import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
-import { MatDialogRef, Sort } from '@angular/material';
+import { Component, Input, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { MatDialogRef, Sort, MatTableDataSource, MatPaginator } from '@angular/material';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
 import { ApplianceService } from '../../../services/appliances.service';
 import { Appliance } from '../../../models/appliance';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
     selector: 'app-new-template-dialog',
     templateUrl: './new-template-dialog.component.html',
-    styleUrls: ['./new-template-dialog.component.scss']
+    styleUrls: ['./new-template-dialog.component.scss'],
+    animations: [
+        trigger('detailExpand', [
+          state('collapsed', style({ height: '0px', minHeight: '0', visibility: 'hidden' })),
+          state('expanded', style({ height: '*', visibility: 'visible' })),
+          transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
+    ],
 })
 export class NewTemplateDialogComponent implements OnInit {
     @Input() server: Server;
     @Input() project: Project;
+
+    uploader: FileUploader;
 
     public action: string = 'install';
     public actionTitle: string = 'Install appliance from server';
@@ -26,10 +38,15 @@ export class NewTemplateDialogComponent implements OnInit {
     public category: string = 'all categories';
     public displayedColumns: string[] = ['name', 'emulator', 'vendor'];
 
+    public dataSource: MatTableDataSource<Appliance>;
+
+    @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+
     constructor(
         public dialogRef: MatDialogRef<NewTemplateDialogComponent>,
         private applianceService: ApplianceService,
-        private changeDetector: ChangeDetectorRef
+        private changeDetector: ChangeDetectorRef,
+        private toasterService: ToasterService
     ) {}
 
     ngOnInit() {
@@ -42,7 +59,49 @@ export class NewTemplateDialogComponent implements OnInit {
                 if (appliance.qemu) appliance.emulator = 'Qemu';
             });
             this.allAppliances = appliances;
+            this.dataSource = new MatTableDataSource(this.allAppliances);
+            this.dataSource.paginator = this.paginator;
         });
+
+        this.uploader =  new FileUploader({});
+        this.uploader.onAfterAddingFile = file => {
+            file.withCredentials = false;
+        };
+    
+        this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+            this.toasterService.error('An error has occured');
+        };
+        
+        this.uploader.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+            this.toasterService.success('Appliance imported succesfully');
+        };
+    }
+
+    addAppliance(event): void {
+        let name = event.target.files[0].name.split('-')[0];
+        let fileName = event.target.files[0].name;
+        let file = event.target.files[0];
+        let fileReader: FileReader = new FileReader();
+        let emulator;
+
+        fileReader.onloadend = () => {
+            let appliance = JSON.parse(fileReader.result as string);
+
+            if (appliance.docker) emulator = 'docker';
+            if (appliance.dynamips) emulator = 'dynamips';
+            if (appliance.iou) emulator = 'iou';
+            if (appliance.qemu) emulator = 'qemu';
+
+            const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
+            this.uploader.queue.forEach(elem => (elem.url = url));
+    
+            const itemToUpload = this.uploader.queue[0];
+            (itemToUpload as any).options.disableMultipart = true;
+    
+            this.uploader.uploadItem(itemToUpload);
+        };
+
+        fileReader.readAsText(file);
     }
 
     filterAppliances(event) {
@@ -55,6 +114,9 @@ export class NewTemplateDialogComponent implements OnInit {
         } else  {
           this.appliances = temporaryAppliances.filter(t => t.category === this.category);
         }
+
+        this.dataSource = new MatTableDataSource(this.appliances);
+        this.dataSource.paginator = this.paginator;
     }
 
     setAction(action: string) {

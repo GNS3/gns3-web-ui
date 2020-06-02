@@ -277,6 +277,7 @@ import { WebConsoleFullWindowComponent } from './components/web-console-full-win
 import { ConsoleGuard } from './guards/console-guard';
 import { NewTemplateDialogComponent } from './components/project-map/new-template-dialog/new-template-dialog.component';
 import { ApplianceService } from './services/appliances.service';
+import { DataSourceFilter } from './filters/dataSourceFilter';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -390,6 +391,7 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
+    DataSourceFilter,
     TemplateFilter,
     ProjectsFilter,
     ListOfSnapshotsComponent,
