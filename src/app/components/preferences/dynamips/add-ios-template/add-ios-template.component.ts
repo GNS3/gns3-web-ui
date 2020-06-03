@@ -225,13 +225,23 @@ export class AddIosTemplateComponent implements OnInit {
         let name: string = this.iosImageForm.get("imageName").value.split('-')[0];
         this.iosNameForm.controls['templateName'].setValue(name);
 
-        if (this.platforms.includes(name.split('-')[0])) {
+        if (name === 'c3620' || name === 'c3640' || name === 'c3660') {
+            this.iosNameForm.controls['platform'].setValue('c3600');
+            this.selectedPlatform = 'c3600';
+        } else {
             this.iosNameForm.controls['platform'].setValue(name);
             this.selectedPlatform = name;
-
-            this.iosNameForm.controls['chassis'].setValue('');
-            this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[name]);
         }
+
+        if (name === 'c1700') {
+            this.iosNameForm.controls['chassis'].setValue('1720');
+        } else if (name === 'c2600') {
+            this.iosNameForm.controls['chassis'].setValue('2610');
+        } else {
+            this.iosNameForm.controls['chassis'].setValue('');
+        }
+
+        this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[name]);
     }
 
     onPlatformChosen() {
