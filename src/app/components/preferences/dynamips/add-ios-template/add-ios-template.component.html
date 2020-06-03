@@ -88,7 +88,7 @@
                     </form>
                 </mat-step>
                 <mat-step label="Network adapters">
-                    <div *ngIf="chassis[iosNameForm.get('platform').value]">
+                    <!-- <div *ngIf="chassis[iosNameForm.get('platform').value]">
                         <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
                             <mat-select
                                 placeholder="Slot {{index}}"
@@ -100,8 +100,8 @@
                                 </mat-option>
                             </mat-select>
                         </div>
-                    </div>
-                    <div *ngIf="chassis[iosNameForm.get('platform').value]">
+                    </div> -->
+                    <div *ngIf="selectedPlatform">
                         <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
                             <mat-select
                                 placeholder="Slot {{index}}"

@@ -28,6 +28,7 @@ export class AddIosTemplateComponent implements OnInit {
     iosImageForm: FormGroup;
     iosNameForm: FormGroup;
     iosMemoryForm: FormGroup;
+    selectedPlatform: string;
 
     networkAdaptersForTemplate: string[] = [];
     networkModulesForTemplate: string[] = [];
@@ -187,8 +188,8 @@ export class AddIosTemplateComponent implements OnInit {
                 }
             }
         } else {
-            if(Object.keys(this.networkAdaptersForPlatform[this.iosTemplate.chassis])){
-                for(let i=0; i<Object.keys(this.networkAdaptersForPlatform[this.iosTemplate.chassis]).length; i++){
+            if(this.networkAdaptersForPlatform[this.iosNameForm.get('platform').value]){
+                for(let i=0; i<Object.keys(this.networkAdaptersForPlatform[this.iosNameForm.get('platform').value]).length; i++){
                     if(!this.networkAdaptersForTemplate[i]) this.networkAdaptersForTemplate[i] = '';
                 }
             }
@@ -226,6 +227,8 @@ export class AddIosTemplateComponent implements OnInit {
 
         if (this.platforms.includes(name.split('-')[0])) {
             this.iosNameForm.controls['platform'].setValue(name);
+            this.selectedPlatform = name;
+
             this.iosNameForm.controls['chassis'].setValue('');
             this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[name]);
         }

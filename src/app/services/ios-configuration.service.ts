@@ -216,6 +216,33 @@ export class IosConfigurationService {
     }
 
     getNetworkAdaptersForPlatform() {
+        let networkAdaptersForPlatform = {};
+        networkAdaptersForPlatform["c2691"] = {
+            0: ["GT96100-FE"],
+            1: this.c3700_nms
+        };
+        networkAdaptersForPlatform["c3725"] = {
+            0: ["GT96100-FE"],
+            1:  this.c3700_nms,
+            2:  this.c3700_nms
+        };
+        networkAdaptersForPlatform["c3745"] = {
+            0: ["GT96100-FE"],
+            1: this.c3700_nms,
+            2: this.c3700_nms,
+            3: this.c3700_nms,
+            4: this.c3700_nms
+        };
+        networkAdaptersForPlatform["c7200"] = {
+            0: this.c7200_io,
+            1: this.c7200_pas,
+            2: this.c7200_pas,
+            3: this.c7200_pas,
+            4: this.c7200_pas,
+            5: this.c7200_pas,
+            6: this.c7200_pas
+        };
+
         return {
             "c2691": {
                 0: ["GT96100-FE"],
