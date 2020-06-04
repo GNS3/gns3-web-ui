@@ -67,6 +67,7 @@ import { NodeAddedEvent } from '../template/template-list-dialog/template-list-d
 import { NotificationService } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
 import { Title } from '@angular/platform-browser';
+import { NodeConsoleService } from '../../services/nodeConsole.service';
 
 
 @Component({
@@ -156,7 +157,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private bottomSheet: MatBottomSheet,
     private notificationService: NotificationService,
     private themeService: ThemeService,
-    private title: Title
+    private title: Title,
+    private nodeConsoleService: NodeConsoleService
   ) {}
 
   ngOnInit() {
@@ -851,7 +853,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');
+
     this.drawingsDataSource.clear();
     this.nodesDataSource.clear();
     this.linksDataSource.clear();
