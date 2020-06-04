@@ -1,34 +1,32 @@
-<mat-card>
-    <div class="menu">
-        <mat-radio-group aria-label="Select an option" class="radio-selection">
-            <mat-radio-button value="1" (click)="setFilter('all')" checked>All symbols</mat-radio-button>
-            <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
-            <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
-        </mat-radio-group>
-        <input
-            type="file"
-            accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
-            class="non-visible"
-            #file
-            (change)="uploadSymbolFile($event)"/>
-        <button mat-button (click)="file.click()">
-            <mat-icon>add</mat-icon>
-            Add symbol
+<div class="menu">
+    <mat-radio-group aria-label="Select an option" class="radio-selection">
+        <mat-radio-button value="1" (click)="setFilter('all')" checked>All symbols</mat-radio-button>
+        <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
+        <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
+    </mat-radio-group>
+    <input
+        type="file"
+        accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
+        class="non-visible"
+        #file
+        (change)="uploadSymbolFile($event)"/>
+    <button mat-button (click)="file.click()">
+        <mat-icon>add</mat-icon>
+        Add symbol
+    </button>
+</div>
+<form>
+    <mat-form-field class="example-full-width">
+        <input matInput
+            placeholder="Search by filename"
+            [(ngModel)]="searchText"
+            [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+</form>
+<div class="wrapper">
+    <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
+        <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
+            <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" [src]="getImageSourceForTemplate(symbol.symbol_id)"/>
         </button>
     </div>
-    <form>
-        <mat-form-field class="example-full-width">
-            <input matInput
-                placeholder="Search by filename"
-                [(ngModel)]="searchText"
-                [ngModelOptions]="{standalone: true}">
-        </mat-form-field>
-    </form>
-    <div class="wrapper">
-        <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
-            <button [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }" class="button" (click)="setSelected(symbol.symbol_id)">
-                <img [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }" class="image" [src]="getImageSourceForTemplate(symbol.symbol_id)"/>
-            </button>
-        </div>
-    </div>
-</mat-card>
+</div>
