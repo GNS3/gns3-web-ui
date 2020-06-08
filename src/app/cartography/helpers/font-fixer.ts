@@ -30,7 +30,7 @@ export class FontFixer {
     let isByIdentifier = true;
 
     ast.children.forEach(child => {
-      if (child.property === 'font-family') {
+      if (child.property === 'font-family' && child.value && child.value.children) {
         child.value.children.forEach(value => {
           if (value.type === 'Identifier') {
             fontFamilyPointer = value;
@@ -41,7 +41,7 @@ export class FontFixer {
           }
         });
       }
-      if (child.property === 'font-size') {
+      if (child.property === 'font-size' && child.value && child.value.children) {
         child.value.children.forEach(value => {
           if (value.type === 'Dimension') {
             fontSizePointer = value;

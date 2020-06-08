@@ -18,21 +18,21 @@ export class StylesToFontConverter implements Converter<string, Font> {
     });
 
     ast.children.forEach(child => {
-      if (child.property === 'font-size') {
+      if (child.property === 'font-size' && child.value && child.value.children) {
         child.value.children.forEach(value => {
           if (value.type === 'Dimension') {
             font.font_size = parseInt(value.value);
           }
         });
       }
-      if (child.property === 'font-family') {
+      if (child.property === 'font-family' && child.value && child.value.children) {
         child.value.children.forEach(value => {
           if (value.type === 'Identifier') {
             font.font_family = value.name;
           }
         });
       }
-      if (child.property === 'font-weight') {
+      if (child.property === 'font-weight' && child.value && child.value.children) {
         child.value.children.forEach(value => {
           if (value.type === 'Identifier') {
             font.font_weight = value.name;

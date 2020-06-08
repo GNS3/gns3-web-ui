@@ -11,7 +11,7 @@ export class CssFixer {
 
     // fixes font-size when unit (pt|px) is not defined
     ast.children.forEach(child => {
-      if (child.property === 'font-size') {
+      if (child.property === 'font-size' && child.value && child.value.children) {
         child.value.children.forEach(value => {
           if (value.type === 'Number') {
             const fontSize = value.value.toString();
