@@ -275,6 +275,8 @@ import { NodeConsoleService } from './services/nodeConsole.service';
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 import { ConsoleGuard } from './guards/console-guard';
+import { ChangeHostnameActionComponent } from './components/project-map/context-menu/actions/change-hostname/change-hostname-action.component';
+import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -461,7 +463,9 @@ if (environment.production) {
     WebConsoleComponent,
     ConsoleWrapperComponent,
     HttpConsoleNewTabActionComponent,
-    WebConsoleFullWindowComponent
+    WebConsoleFullWindowComponent,
+    ChangeHostnameActionComponent,
+    ChangeHostnameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -600,7 +604,8 @@ if (environment.production) {
     ScreenshotDialogComponent,
     ConfirmationBottomSheetComponent,
     ConfigDialogComponent,
-    AdbutlerComponent
+    AdbutlerComponent,
+    ChangeHostnameDialogComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -40,6 +40,11 @@
       [server]="server"
       [node]="nodes[0]"
     ></app-open-file-explorer-action>
+    <app-change-hostname-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
+      [server]="server"
+      [node]="nodes[0]"
+    ></app-change-hostname-action>
     <app-change-symbol-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
       [server]="server"
