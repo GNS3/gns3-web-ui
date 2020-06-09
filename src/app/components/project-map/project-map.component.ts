@@ -436,6 +436,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if(!nodeAddedEvent) {
       return;
     }
+
+    this.progressService.activate();
     this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, nodeAddedEvent.server).subscribe((node: Node) => {
       // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
       //   node.name = nodeAddedEvent.name;
@@ -454,6 +456,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           nodeAddedEvent.x = nodeAddedEvent.x + 50 < this.project.scene_width/2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
           nodeAddedEvent.y = nodeAddedEvent.y + 50 < this.project.scene_height/2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
           this.onNodeCreation(nodeAddedEvent);
+        } else {
+          this.progressService.deactivate();
         }
       });
     });
