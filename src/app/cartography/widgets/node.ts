@@ -88,12 +88,12 @@ export class NodeWidget implements Widget {
       .attr('xnode:href', (n: MapNode) => n.symbolUrl)
       .attr('width', (n: MapNode) => {
         if (!n.width) return 60;
-        if (n.width > 200) return 200;
+        if (n.width > 64) return 64;
         return n.width;
       })
       .attr('height', (n: MapNode) => {
         if (!n.height) return 60;
-        if (n.height > 200) return 200;
+        if (n.height > 64) return 64;
         return n.height;
       })
       .attr('x', (n: MapNode) => 0)
