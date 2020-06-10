@@ -7,14 +7,14 @@
     <div class="default-content">
         <div class="container mat-elevation-z8">
             <mat-vertical-stepper [linear]="true">
-                <mat-step label="Server type">
+                <mat-step label="Server type" [completed]="isGns3VmChosen  || isLocalComputerChosen">
                     <mat-radio-group class="radio-group">
                         <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this QEMU VM locally</mat-radio-button>
                         <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run this QEMU VM on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </mat-step>
 
-                <mat-step label="QEMU VM Name">
+                <mat-step label="QEMU VM Name" [completed]="nameForm.get('templateName').value">
                     <form [formGroup]="nameForm">
                         <mat-form-field class="form-field">
                             <input
@@ -25,7 +25,8 @@
                         </mat-form-field><br/>
                     </form>
                 </mat-step>
-                <mat-step label="QEMU binary and memory">
+
+                <mat-step label="QEMU binary and memory" [completed]="memoryForm.get('ramMemory').value && selectedBinary">
                     <form [formGroup]="memoryForm">
                         <mat-form-field class="form-field">
                             <mat-select
@@ -42,12 +43,13 @@
                             matInput type="number"
                             placeholder="RAM"
                             formControlName="ramMemory"
-                            ngDefaultContro/>
+                            ngDefaultControl/>
                             <span matSuffix>MB</span>
                         </mat-form-field>
                     </form>
                 </mat-step>
-                <mat-step label="Console type">
+
+                <mat-step label="Console type" [completed]="qemuTemplate.console_type">
                     <mat-form-field class="form-field">
                         <mat-select
                             placeholder="Console type"
@@ -59,6 +61,7 @@
                         </mat-select>
                     </mat-form-field>
                 </mat-step>
+
                 <mat-step label="Disk image">
                     <form [formGroup]="diskForm">
                         <mat-radio-group class="radio-group">

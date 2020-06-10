@@ -56,7 +56,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.qemuTemplate = new QemuTemplate();
 
         this.nameForm = this.formBuilder.group({
-            templateName: new FormControl('', Validators.required)
+            templateName: new FormControl(null, Validators.required)
         });
 
         this.memoryForm = this.formBuilder.group({
