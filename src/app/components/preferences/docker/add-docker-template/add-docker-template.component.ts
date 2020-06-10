@@ -112,7 +112,7 @@ export class AddDockerTemplateComponent implements OnInit {
             }
 
             this.dockerTemplate.name = this.containerNameForm.get('templateName').value;
-            this.dockerTemplate.adapters = this.networkAdaptersForm.get('adapters').value;
+            this.dockerTemplate.adapters = +this.networkAdaptersForm.get('adapters').value;
             this.dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
