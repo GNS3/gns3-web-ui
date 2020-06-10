@@ -7,14 +7,15 @@
     <div class="default-content">
         <div class="container mat-elevation-z8">
             <mat-vertical-stepper [linear]="true">
-                <mat-step label="Server type">
+                <mat-step label="Server type" [completed]="isGns3VmChosen || isLocalComputerChosen">
                     <mat-radio-group class="radio-group">
                         <!-- <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this Docker container on a remote computer</mat-radio-button> -->
                         <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this Docker container locally</mat-radio-button>
                         <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run this Docker container on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </mat-step>
-                <mat-step label="Docker Virtual Machine">
+
+                <mat-step label="Docker Virtual Machine" [completed]="selectedImage || virtualMachineForm.get('filename').value">
                     <form [formGroup]="virtualMachineForm">
                         <mat-radio-group class="radio-group">
                             <mat-radio-button class="radio-button" value="1" (click)="setDiskImage('existingImage')" checked>Existing image</mat-radio-button>
@@ -41,7 +42,8 @@
                         </div>
                     </form>
                 </mat-step>
-                <mat-step label="Container name">
+
+                <mat-step label="Container name" [completed]="containerNameForm.get('templateName').value">
                     <form [formGroup]="containerNameForm">
                         <mat-form-field class="form-field">
                             <input
@@ -53,7 +55,8 @@
                         </mat-form-field>
                     </form>
                 </mat-step>
-                <mat-step label="Network adapters">
+
+                <mat-step label="Network adapters" [completed]="networkAdaptersForm.get('adapters').value">
                     <form [formGroup]="networkAdaptersForm">
                         <mat-form-field class="form-field">
                             <input
@@ -65,7 +68,8 @@
                         </mat-form-field>
                     </form>
                 </mat-step>
-                <mat-step label="Start command">
+
+                <mat-step label="Start command" [completed]="dockerTemplate.start_command">
                     <mat-form-field class="form-field">
                         <input
                             matInput
@@ -74,7 +78,8 @@
                             placeholder="Start command"/>
                     </mat-form-field>
                 </mat-step>
-                <mat-step label="Console type">
+
+                <mat-step label="Console type" [completed]="dockerTemplate.console_type">
                     <mat-select
                         placeholder="Console type"
                         [ngModelOptions]="{standalone: true}"
@@ -84,6 +89,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-step>
+
                 <mat-step label="Environment">
                     <mat-form-field class="form-field">
                         <textarea matInput type="text" [(ngModel)]="dockerTemplate.environment"></textarea>

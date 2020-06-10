@@ -50,11 +50,11 @@ export class AddDockerTemplateComponent implements OnInit {
         this.dockerTemplate = new DockerTemplate();
 
         this.virtualMachineForm = this.formBuilder.group({
-            filename: new FormControl('', Validators.required)
+            filename: new FormControl(null, Validators.required)
         });
 
         this.containerNameForm = this.formBuilder.group({
-            templateName: new FormControl('', Validators.required)
+            templateName: new FormControl(null, Validators.required)
         });
 
         this.networkAdaptersForm = this.formBuilder.group({
