@@ -229,7 +229,7 @@ export class TemplateMocksService {
             headless: false,
             linked_clone: false,
             name: '',
-            on_close: 'power-off',
+            on_close: 'power_off',
             port_name_format: 'Ethernet{0}',
             port_segment_size: 0,
             symbol: ':/symbols/vmware_guest.svg',
