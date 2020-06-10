@@ -49,7 +49,7 @@ export class AddIouTemplateComponent implements OnInit {
         this.iouTemplate = new IouTemplate();
 
         this.templateNameForm = this.formBuilder.group({
-            templateName: new FormControl('', Validators.required)
+            templateName: new FormControl(null, Validators.required)
         });
 
         this.imageForm = this.formBuilder.group({
