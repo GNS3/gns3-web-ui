@@ -48,8 +48,6 @@ export class AddServerDialogComponent implements OnInit {
 
   
   async getDefaultLocation() {
-    console.log('get default location');
-
     const localServers = await this.numberOfLocalServers();
     if(this.electronService.isElectronApp && localServers === 0) {
       return 'local';
@@ -58,9 +56,7 @@ export class AddServerDialogComponent implements OnInit {
   }
 
   async numberOfLocalServers() {
-    console.log('calling find all');
     const servers = await this.serverService.findAll();
-    console.log('servers from add server dialog....');
 
     return servers.filter((server) => server.location === 'local').length;
   }
@@ -88,9 +84,7 @@ export class AddServerDialogComponent implements OnInit {
   }
 
   async ngOnInit() {
-    console.log('Start.... ');
     this.locations = await this.getLocations();
-    console.log('Locations: ', this.locations);
 
     const defaultLocalServerPath = await this.getDefaultLocalServerPath();
     const defaultUbridgePath = await this.getDefaultUbridgePath();
@@ -141,7 +135,6 @@ export class AddServerDialogComponent implements OnInit {
       })
     });
 
-    console.log('????');
     const defaultLocation = await this.getDefaultLocation();
     this.serverForm.get('location').setValue(defaultLocation);
     this.serverForm.get('host').setValue(this.getDefaultHost());

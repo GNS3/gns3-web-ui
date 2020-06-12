@@ -23,7 +23,6 @@ export class ServerService {
         evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
       });
     }).catch(() => {
-      console.log('in incognito mode');
       this.isIncognitoMode = true;
     }).finally(() => {
       this.serviceInitialized.emit(true);
@@ -39,7 +38,6 @@ export class ServerService {
       return promise;
     }
 
-    console.log('pfffff get');
     return this.onReady(() => this.indexedDbService.get().getByKey(this.tablename, id)) as Promise<Server>;
   }
 
@@ -55,7 +53,6 @@ export class ServerService {
       return promise;
     }
 
-    console.log('pfffff create');
     return this.onReady(() => {
       const promise = new Promise((resolve, reject) => {
         this.indexedDbService
@@ -81,7 +78,6 @@ export class ServerService {
       return promise;
     }
 
-    console.log('pfffff update');
     return this.onReady(() => {
       const promise = new Promise((resolve, reject) => {
         this.indexedDbService
@@ -103,13 +99,11 @@ export class ServerService {
           let server: Server = JSON.parse(localStorage.getItem(n));
           servers.push(server);
         });
-        console.log('pfffff find all iin');
         resolve(servers);
       });
       return promise;
     }
 
-    console.log('pfffff find all');
     return this.onReady(() => this.indexedDbService.get().getAll(this.tablename)) as Promise<Server[]>;
   }
 
@@ -124,7 +118,6 @@ export class ServerService {
       return promise;
     }
 
-    console.log('pfffff delete');
     return this.onReady(() => this.indexedDbService.get().delete(this.tablename, server.id));
   }
 
@@ -163,8 +156,6 @@ export class ServerService {
   }
 
   protected onReady(query) {
-    console.log('pfffff');
-
     const promise = new Promise((resolve, reject) => {
       this.ready.then(
         () => {
