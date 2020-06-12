@@ -40,24 +40,28 @@ export class ServersComponent implements OnInit, OnDestroy {
     this.isElectronApp = this.electronService.isElectronApp;
     const runningServersNames = this.serverManagement.getRunningServers();
 
-    this.serverService.findAll().then((servers: Server[]) => {
-      servers.forEach((server) => {
-        const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
-        if(serverIndex >= 0) {
-          server.status = 'running';
-        }
-      });
-
-      servers.forEach((server) => {
-        this.serverService.checkServerVersion(server).subscribe(
-          (serverInfo) => {
-            if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
-              if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
+    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+      if (value) {
+        this.serverService.findAll().then((servers: Server[]) => {
+          servers.forEach((server) => {
+            const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
+            if(serverIndex >= 0) {
+              server.status = 'running';
             }
-          },
-          error => {}
-          );
-      });
+          });
+
+          servers.forEach((server) => {
+            this.serverService.checkServerVersion(server).subscribe(
+              (serverInfo) => {
+                if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
+                  if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
+                }
+              },
+              error => {}
+              );
+          });
+        });
+      }
     });
 
     this.dataSource = new ServerDataSource(this.serverDatabase);

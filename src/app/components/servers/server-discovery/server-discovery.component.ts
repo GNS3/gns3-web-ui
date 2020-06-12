@@ -32,7 +32,11 @@ export class ServerDiscoveryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.discoverFirstAvailableServer();
+    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+      if (value) {
+        this.discoverFirstAvailableServer();
+      }
+    });
   }
 
   discoverFirstAvailableServer() {
