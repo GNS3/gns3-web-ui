@@ -42,6 +42,8 @@ export class ServerService {
     if (this.isIncognitoMode) {
       server.id = this.serverIdsInIncognitoMode.length + 1;
       localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
+      this.serverIdsInIncognitoMode.push(`server-${server.id}`);
+
       let promise = new Promise<Server>(resolve => {
         return server;
       });
@@ -64,6 +66,9 @@ export class ServerService {
 
   public update(server: Server) {
     if (this.isIncognitoMode) {
+      localStorage.removeItem(`server-${server.id}`);
+      localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
+
       let promise = new Promise<Server>(resolve => {
         return [];
       });
@@ -86,7 +91,13 @@ export class ServerService {
   public findAll() {
     if (this.isIncognitoMode) {
       let promise = new Promise<Server[]>(resolve => {
-        return [];
+        let servers: Server[] = [];
+        this.serverIdsInIncognitoMode.forEach(n => {
+          let server: Server = JSON.parse(localStorage.getItem(n));
+          servers.push(server);
+        });
+
+        return servers;
       });
       return promise;
     }
@@ -96,8 +107,11 @@ export class ServerService {
 
   public delete(server: Server) {
     if (this.isIncognitoMode) {
+      localStorage.removeItem(`server-${server.id}`);
+      this.serverIdsInIncognitoMode = this.serverIdsInIncognitoMode.filter(n => n !== `server-${server.id}`);
+
       let promise = new Promise(resolve => {
-        return [];
+        return server.id;
       });
       return promise;
     }
@@ -114,13 +128,6 @@ export class ServerService {
   }
 
   public getLocalServer(host: string, port: number) {
-    if (this.isIncognitoMode) {
-      let promise = new Promise(resolve => {
-        return [];
-      });
-      return promise;
-    }
-
     const promise = new Promise((resolve, reject) => {
       this.findAll().then((servers: Server[]) => {
         const local = servers.find(server => server.location === 'bundled');
