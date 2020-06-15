@@ -36,7 +36,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
     public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
     public category: string = 'all categories';
-    public displayedColumns: string[] = ['name', 'emulator', 'vendor'];
+    public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
 
     public dataSource: MatTableDataSource<Appliance>;
 
@@ -146,6 +146,14 @@ export class NewTemplateDialogComponent implements OnInit {
 
     onCloseClick() {
         this.dialogRef.close();
+    }
+
+    install(object: any) {
+        console.log(object);
+    }
+
+    showInfo(object: any) {
+        console.log(object);
     }
 }
 
