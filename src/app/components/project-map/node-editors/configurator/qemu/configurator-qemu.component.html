@@ -155,6 +155,9 @@
                         <br/><mat-checkbox [(ngModel)]="node.properties.legacy_networking">
                             Use the legacy networking mode
                         </mat-checkbox>
+                        <br/><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
+                            Replicate network connection state
+                        </mat-checkbox>
                         <app-custom-adapters-table 
                             #customAdapters
                             [networkTypes]="networkTypes" 

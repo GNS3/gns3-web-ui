@@ -278,6 +278,8 @@ import { ConsoleGuard } from './guards/console-guard';
 import { NewTemplateDialogComponent } from './components/project-map/new-template-dialog/new-template-dialog.component';
 import { ApplianceService } from './services/appliances.service';
 import { DataSourceFilter } from './filters/dataSourceFilter';
+import { ChangeHostnameActionComponent } from './components/project-map/context-menu/actions/change-hostname/change-hostname-action.component';
+import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -466,7 +468,9 @@ if (environment.production) {
     ConsoleWrapperComponent,
     HttpConsoleNewTabActionComponent,
     WebConsoleFullWindowComponent,
-    NewTemplateDialogComponent
+    NewTemplateDialogComponent,
+    ChangeHostnameActionComponent,
+    ChangeHostnameDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -607,7 +611,8 @@ if (environment.production) {
     ConfirmationBottomSheetComponent,
     ConfigDialogComponent,
     AdbutlerComponent,
-    NewTemplateDialogComponent
+    NewTemplateDialogComponent,
+    ChangeHostnameDialogComponent
   ],
   bootstrap: [AppComponent]
 })

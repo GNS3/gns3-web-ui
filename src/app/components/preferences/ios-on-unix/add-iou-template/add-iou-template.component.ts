@@ -49,7 +49,7 @@ export class AddIouTemplateComponent implements OnInit {
         this.iouTemplate = new IouTemplate();
 
         this.templateNameForm = this.formBuilder.group({
-            templateName: new FormControl('', Validators.required)
+            templateName: new FormControl(null, Validators.required)
         });
 
         this.imageForm = this.formBuilder.group({
@@ -133,6 +133,14 @@ export class AddIouTemplateComponent implements OnInit {
             this.iouTemplate.name = this.templateNameForm.get("templateName").value;
             if (this.newImageSelected) this.iouTemplate.path = this.imageForm.get("imageName").value;
             this.iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+            
+            if (this.selectedType === 'L2 image') {
+                this.iouTemplate.ethernet_adapters = 4;
+                this.iouTemplate.serial_adapters = 0;
+            } else if (this.selectedType === 'L3 image') {
+                this.iouTemplate.ethernet_adapters = 2;
+                this.iouTemplate.serial_adapters = 2;
+            }
 
             this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
                 this.goBack();

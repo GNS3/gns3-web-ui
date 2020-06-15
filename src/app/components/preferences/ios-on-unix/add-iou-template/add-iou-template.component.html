@@ -7,19 +7,21 @@
     <div class="default-content">
         <div class="container mat-elevation-z8">
             <mat-vertical-stepper [linear]="true">
-                <mat-step label="Server type">
+                <mat-step label="Server type" [completed]="isGns3VmChosen || isLocalComputerChosen">
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this IOU device on your local computer</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run this IOU device locally</mat-radio-button>
                         <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run this IOU device on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </mat-step>
-                <mat-step label="Name">
+
+                <mat-step label="Name" [completed]="templateNameForm.get('templateName').value">
                     <form [formGroup]="templateNameForm">
                         <mat-form-field class="form-field">
                             <input matInput placeholder="Name" type="text" formControlName="templateName"/>
                         </mat-form-field>
                     </form>
                 </mat-step>
+
                 <mat-step label="Image">
                     <form [formGroup]="imageForm">
                         <mat-radio-group class="radio-group">
@@ -27,8 +29,8 @@
                             <mat-radio-button class="radio-button" value="2" (click)="setDiskImage('newImage')">New image</mat-radio-button>
                         </mat-radio-group>
                         <mat-form-field class="form-field">
-                            <mat-select 
-                                placeholder="Type" 
+                            <mat-select
+                                placeholder="Type"
                                 [(ngModel)]="selectedType"
                                 [ngModelOptions]="{standalone: true}">
                                 <mat-option *ngFor="let type of types" [value]="type">
@@ -37,8 +39,8 @@
                             </mat-select>
                         </mat-form-field>
                         <mat-form-field class="form-field" *ngIf="!newImageSelected">
-                            <mat-select 
-                                placeholder="IOU image" 
+                            <mat-select
+                                placeholder="IOU image"
                                 [(ngModel)]="iouTemplate.path"
                                 [ngModelOptions]="{standalone: true}">
                                 <mat-option *ngFor="let image of iouImages" [value]="image.path">

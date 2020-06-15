@@ -1,28 +1,58 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { IndexedDbService } from './indexed-db.service';
 import { Server } from '../models/server';
 import { Observable } from 'rxjs';
 import { HttpServer } from './http-server.service';
+import { ToasterService } from './toaster.service';
 
 @Injectable()
 export class ServerService {
   private tablename = 'servers';
   private ready: Promise<any>;
+  private isIncognitoMode: boolean = false;
+  private serverIdsInIncognitoMode: string[] = [];
+  public serviceInitialized: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     private indexedDbService: IndexedDbService,
-    private httpServer: HttpServer
+    private httpServer: HttpServer,
+    private toasterService: ToasterService
   ) {
-    this.ready = indexedDbService.get().openDatabase(1, evt => {
-      evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+    this.indexedDbService.get().openDatabase(1).then(() => {
+      this.ready = indexedDbService.get().openDatabase(1, evt => {
+        evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+      });
+    }).catch(() => {
+      this.isIncognitoMode = true;
+    }).finally(() => {
+      this.serviceInitialized.emit(true);
     });
   }
 
   public get(id: number): Promise<Server> {
+    if (this.isIncognitoMode) {
+      let server: Server = JSON.parse(localStorage.getItem(`server-${id}`));
+      let promise = new Promise<Server>(resolve => {
+        resolve(server);
+      });
+      return promise;
+    }
+
     return this.onReady(() => this.indexedDbService.get().getByKey(this.tablename, id)) as Promise<Server>;
   }
 
   public create(server: Server) {
+    if (this.isIncognitoMode) {
+      server.id = this.serverIdsInIncognitoMode.length + 1;
+      localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
+      this.serverIdsInIncognitoMode.push(`server-${server.id}`);
+
+      let promise = new Promise<Server>(resolve => {
+        resolve(server);
+      });
+      return promise;
+    }
+
     return this.onReady(() => {
       const promise = new Promise((resolve, reject) => {
         this.indexedDbService
@@ -38,6 +68,16 @@ export class ServerService {
   }
 
   public update(server: Server) {
+    if (this.isIncognitoMode) {
+      localStorage.removeItem(`server-${server.id}`);
+      localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
+
+      let promise = new Promise<Server>(resolve => {
+        resolve(server);
+      });
+      return promise;
+    }
+
     return this.onReady(() => {
       const promise = new Promise((resolve, reject) => {
         this.indexedDbService
@@ -52,10 +92,32 @@ export class ServerService {
   }
 
   public findAll() {
+    if (this.isIncognitoMode) {
+      let promise = new Promise<Server[]>(resolve => {
+        let servers: Server[] = [];
+        this.serverIdsInIncognitoMode.forEach(n => {
+          let server: Server = JSON.parse(localStorage.getItem(n));
+          servers.push(server);
+        });
+        resolve(servers);
+      });
+      return promise;
+    }
+
     return this.onReady(() => this.indexedDbService.get().getAll(this.tablename)) as Promise<Server[]>;
   }
 
   public delete(server: Server) {
+    if (this.isIncognitoMode) {
+      localStorage.removeItem(`server-${server.id}`);
+      this.serverIdsInIncognitoMode = this.serverIdsInIncognitoMode.filter(n => n !== `server-${server.id}`);
+
+      let promise = new Promise(resolve => {
+        resolve(server.id);
+      });
+      return promise;
+    }
+
     return this.onReady(() => this.indexedDbService.get().delete(this.tablename, server.id));
   }
 

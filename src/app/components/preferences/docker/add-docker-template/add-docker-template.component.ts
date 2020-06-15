@@ -25,6 +25,7 @@ export class AddDockerTemplateComponent implements OnInit {
     consoleTypes: string[] = [];
     isRemoteComputerChosen: boolean = false;
     dockerImages: DockerImage[] = [];
+    selectedImage: DockerImage;
     newImageSelected: boolean = false;
 
     virtualMachineForm: FormGroup;
@@ -49,15 +50,15 @@ export class AddDockerTemplateComponent implements OnInit {
         this.dockerTemplate = new DockerTemplate();
 
         this.virtualMachineForm = this.formBuilder.group({
-            filename: new FormControl('', Validators.required)
+            filename: new FormControl(null, Validators.required)
         });
 
         this.containerNameForm = this.formBuilder.group({
-            templateName: new FormControl('', Validators.required)
+            templateName: new FormControl(null, Validators.required)
         });
 
         this.networkAdaptersForm = this.formBuilder.group({
-            adapters: new FormControl('', Validators.required)
+            adapters: new FormControl('1', Validators.required)
         });
     }
 
@@ -101,11 +102,17 @@ export class AddDockerTemplateComponent implements OnInit {
     }
 
     addTemplate() {
-        if ((!this.virtualMachineForm.invalid || !this.newImageSelected) && !this.containerNameForm.invalid && !this.networkAdaptersForm.invalid) {
+        if ((!this.virtualMachineForm.invalid || (!this.newImageSelected && this.selectedImage)) && !this.containerNameForm.invalid && !this.networkAdaptersForm.invalid) {
             this.dockerTemplate.template_id = uuid();
-            this.dockerTemplate.image = this.virtualMachineForm.get('filename').value;
+
+            if (this.newImageSelected) {
+                this.dockerTemplate.image = this.virtualMachineForm.get('filename').value;
+            } else {
+                this.dockerTemplate.image = this.selectedImage.image;
+            }
+
             this.dockerTemplate.name = this.containerNameForm.get('templateName').value;
-            this.dockerTemplate.adapters = this.networkAdaptersForm.get('adapters').value;
+            this.dockerTemplate.adapters = +this.networkAdaptersForm.get('adapters').value;
             this.dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
 
             this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {

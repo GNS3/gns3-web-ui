@@ -7,10 +7,10 @@
     <div class="default-content">
         <mat-card class="matCard">
             <mat-radio-group class="radio-group">
-                <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run the Ethernet switch on your local computer</mat-radio-button>
+                <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked>Run the Ethernet switch locally</mat-radio-button>
                 <mat-radio-button [disabled]="!isGns3VmAvailable" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Run the Ethernet switch on the GNS3 VM</mat-radio-button>
             </mat-radio-group>
-            
+
             <form [formGroup]="formGroup">
                 <mat-form-field class="form-field">
                     <input formControlName="templateName" matInput type="text" placeholder="Template name">

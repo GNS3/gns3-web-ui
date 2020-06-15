@@ -4,7 +4,8 @@ import { ToasterService } from '../../services/toaster.service';
 export class ToasterErrorHandler extends RavenErrorHandler {
   handleError(err: any): void {
     super.handleError(err);
-
+    if (!err) return;
+    
     const toasterService = this.injector.get(ToasterService);
     if (err.error && err.error.message) {
       toasterService.error(err.error.message);
