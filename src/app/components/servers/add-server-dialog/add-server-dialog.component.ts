@@ -57,6 +57,7 @@ export class AddServerDialogComponent implements OnInit {
 
   async numberOfLocalServers() {
     const servers = await this.serverService.findAll();
+
     return servers.filter((server) => server.location === 'local').length;
   }
 
