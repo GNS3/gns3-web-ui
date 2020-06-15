@@ -15,6 +15,6 @@ export class ApplianceService {
     }
 
     getUploadPath(server: Server, emulator: string, filename: string) {
-        return `http://${server.host}:${server.port}/v2/${emulator}/images/${filename}`;
+        return `http://${server.host}:${server.port}/v2/compute/${emulator}/images/${filename}`;
     }
 }
