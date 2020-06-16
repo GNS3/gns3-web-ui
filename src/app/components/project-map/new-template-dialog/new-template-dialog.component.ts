@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { MatDialogRef, Sort, MatTableDataSource, MatPaginator } from '@angular/material';
+import { MatDialogRef, Sort, MatTableDataSource, MatPaginator, MatDialog } from '@angular/material';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
@@ -8,6 +8,7 @@ import { Appliance } from '../../../models/appliance';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { ToasterService } from '../../../services/toaster.service';
+import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -46,7 +47,8 @@ export class NewTemplateDialogComponent implements OnInit {
         public dialogRef: MatDialogRef<NewTemplateDialogComponent>,
         private applianceService: ApplianceService,
         private changeDetector: ChangeDetectorRef,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        public dialog: MatDialog
     ) {}
 
     ngOnInit() {
@@ -154,6 +156,11 @@ export class NewTemplateDialogComponent implements OnInit {
 
     showInfo(object: any) {
         console.log(object);
+        
+        this.dialog.open(ApplianceInfoDialogComponent, {
+            width: '250px',
+            data: {info: 'info'}
+        });
     }
 }
 

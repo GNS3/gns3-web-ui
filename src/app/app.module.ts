@@ -280,6 +280,7 @@ import { ApplianceService } from './services/appliances.service';
 import { DataSourceFilter } from './filters/dataSourceFilter';
 import { ChangeHostnameActionComponent } from './components/project-map/context-menu/actions/change-hostname/change-hostname-action.component';
 import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
+import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -470,7 +471,8 @@ if (environment.production) {
     WebConsoleFullWindowComponent,
     NewTemplateDialogComponent,
     ChangeHostnameActionComponent,
-    ChangeHostnameDialogComponent
+    ChangeHostnameDialogComponent,
+    ApplianceInfoDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -612,7 +614,8 @@ if (environment.production) {
     ConfigDialogComponent,
     AdbutlerComponent,
     NewTemplateDialogComponent,
-    ChangeHostnameDialogComponent
+    ChangeHostnameDialogComponent,
+    ApplianceInfoDialogComponent
   ],
   bootstrap: [AppComponent]
 })
