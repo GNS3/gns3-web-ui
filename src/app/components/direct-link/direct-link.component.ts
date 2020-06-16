@@ -21,29 +21,35 @@ export class DirectLinkComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    if (this.serverService.isServiceInitialized) this.getServers();
+
+    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+      if (value) {
+        this.getServers();
+      }
+    });
+  }
+
+  private async getServers() {
     const serverIp = this.route.snapshot.paramMap.get('server_ip');
     const serverPort = +this.route.snapshot.paramMap.get('server_port');
     const projectId = this.route.snapshot.paramMap.get('project_id');
 
-    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
-      if (value) {
-        const servers = await this.serverService.findAll();
-        const server = servers.filter(server => server.host === serverIp && server.port === serverPort)[0];
-    
-        if (server) {
-            this.router.navigate(['/server', server.id, 'project', projectId]);
-        } else { 
-            let serverToAdd: Server = new Server();
-            serverToAdd.host = serverIp;
-            serverToAdd.port = serverPort;
-            serverToAdd.location = 'bundled';
-            serverToAdd.name = serverIp;
-    
-            this.serverService.create(serverToAdd).then((addedServer: Server) => {
-                this.router.navigate(['/server', addedServer.id, 'project', projectId]);
-            });
-        }
-      }
-    });
+    const servers = await this.serverService.findAll();
+    const server = servers.filter(server => server.host === serverIp && server.port === serverPort)[0];
+
+    if (server) {
+        this.router.navigate(['/server', server.id, 'project', projectId]);
+    } else { 
+        let serverToAdd: Server = new Server();
+        serverToAdd.host = serverIp;
+        serverToAdd.port = serverPort;
+        serverToAdd.location = 'bundled';
+        serverToAdd.name = serverIp;
+
+        this.serverService.create(serverToAdd).then((addedServer: Server) => {
+            this.router.navigate(['/server', addedServer.id, 'project', projectId]);
+        });
+    }
   }
 }

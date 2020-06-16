@@ -17,23 +17,28 @@ export class ProjectMapGuard implements CanActivate {
         private router: Router
     ) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
         const server_id = route.paramMap.get("server_id");
         const project_id = route.paramMap.get("project_id");
 
-        return from(this.serverService.get(parseInt(server_id, 10))).pipe(
-            switchMap(response => { 
-                if (!response) this.router.navigate(['/servers']);
-                return this.projectService.list(response as Server)
-            }),
-            map(response => {
-                let projectToOpen = response.find(n => n.project_id === project_id);
-                if (projectToOpen) return true;
+        // return from(this.serverService.tryToCreateDb()).pipe(
+        //     switchMap(response => {
+        //         return this.serverService.get(parseInt(server_id, 10));
+        //     }),
+        //     switchMap(response => { 
+        //         if (!response) this.router.navigate(['/servers']);
+        //         return this.projectService.list(response as Server)
+        //     }),
+        //     map(response => {
+        //         let projectToOpen = response.find(n => n.project_id === project_id);
+        //         if (projectToOpen) return true;
                 
-                this.toasterService.error('Project could not be opened');
-                this.projectService.projectListUpdated();
-                return false;
-            })
-        )
+        //         this.toasterService.error('Project could not be opened');
+        //         this.projectService.projectListUpdated();
+        //         return false;
+        //     })
+        // )
+
+        return true;
     }
 }
