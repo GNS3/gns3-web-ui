@@ -70,7 +70,7 @@ export class NodeService {
 
     if (project.snap_to_grid) {
       xPosition = Math.round((xPosition + node.width/2) / project.grid_size) * project.grid_size;
-      yPosition = Math.round((yPosition + node.width/2) / project.grid_size) * project.grid_size;
+      yPosition = Math.round((yPosition + node.height/2) / project.grid_size) * project.grid_size;
 
       xPosition = Math.round(xPosition - node.width/2);
       yPosition = Math.round(yPosition - node.height/2);
