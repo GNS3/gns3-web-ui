@@ -267,7 +267,6 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { OpenFileExplorerActionComponent } from './components/project-map/context-menu/actions/open-file-explorer/open-file-explorer-action.component';
 import { NgxChildProcessModule } from 'ngx-childprocess';
 import { ServerResolve } from './resolvers/server-resolve';
-import { ProjectMapGuard } from './guards/project-map-guard';
 import { HttpConsoleActionComponent } from './components/project-map/context-menu/actions/http-console/http-console-action.component';
 import { WebConsoleComponent } from './components/project-map/web-console/web-console.component';
 import { ConsoleWrapperComponent } from './components/project-map/console-wrapper/console-wrapper.component';
@@ -559,7 +558,6 @@ if (environment.production) {
     GoogleAnalyticsService,
     NodeConsoleService,
     ServerResolve,
-    ProjectMapGuard,
     ConsoleGuard,
     Title
   ],
