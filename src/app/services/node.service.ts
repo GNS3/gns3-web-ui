@@ -72,8 +72,8 @@ export class NodeService {
       xPosition = Math.round((xPosition + node.width/2) / project.grid_size) * project.grid_size;
       yPosition = Math.round((yPosition + node.height/2) / project.grid_size) * project.grid_size;
 
-      xPosition = Math.round(xPosition - node.width/2);
-      yPosition = Math.round(yPosition - node.height/2);
+      xPosition = Math.round(xPosition - node.width/2) - ((project.scene_width - (Math.floor(project.scene_width / project.grid_size) * project.grid_size)) / 2);
+      yPosition = Math.round(yPosition - node.height/2) - ((project.scene_height - (Math.floor(project.scene_height / project.grid_size) * project.grid_size)) / 2);
     }
 
     return this.httpServer.put<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}`, {
