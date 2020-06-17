@@ -64,6 +64,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   };
   public gridVisibility: number = 0;
 
+  public nodeGridX: number = 0;
+  public nodeGridY: number = 0;
+  public drawingGridX: number = 0;
+  public drawingGridY: number = 0;
+
   constructor(
     private graphDataManager: GraphDataManager,
     public context: Context,
@@ -189,6 +194,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private redraw() {
+    this.updateGrid();
+
     this.graphDataManager.setNodes(this.nodes);
     this.graphDataManager.setLinks(this.links);
     this.graphDataManager.setDrawings(this.drawings);
@@ -196,6 +203,14 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.textEditor.activateTextEditingForDrawings();
     this.textEditor.activateTextEditingForNodeLabels();
     this.mapSettingsService.mapRenderedEmitter.emit(true);
+  }
+
+  updateGrid() {
+    this.nodeGridX = (this.project.scene_width/2 - (Math.floor(this.project.scene_width/2 / this.project.grid_size) * this.project.grid_size));
+    this.nodeGridY = (this.project.scene_height/2 - (Math.floor(this.project.scene_height/2 / this.project.grid_size) * this.project.grid_size));
+
+    this.drawingGridX = (this.project.scene_width/2 - (Math.floor(this.project.scene_width/2 / this.project.drawing_grid_size) * this.project.drawing_grid_size));
+    this.drawingGridY = (this.project.scene_height/2 - (Math.floor(this.project.scene_height/2 / this.project.drawing_grid_size) * this.project.drawing_grid_size));
   }
 
   @HostListener('window:resize', ['$event'])

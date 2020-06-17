@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../services/server.service';
 import { Title } from '@angular/platform-browser';
 import { NodeService } from '../../services/node.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
     private serverId: string;
     private projectId: string;
     private nodeId: string;
-
+    private subscriptions: Subscription = new Subscription();
     private server: Server;
     private node: Node;
 
@@ -40,6 +41,18 @@ export class WebConsoleFullWindowComponent implements OnInit {
     ) {}
     
     ngOnInit() {
+        if (this.serverService.isServiceInitialized) {
+            this.getData();
+        } else {
+            this.subscriptions.add(
+              this.serverService.serviceInitialized.subscribe((val) => {
+                if (val) this.getData();
+              })
+            );
+        }
+    }
+
+    getData() {
         this.serverId = this.route.snapshot.paramMap.get("server_id");
         this.projectId = this.route.snapshot.paramMap.get("project_id");
         this.nodeId = this.route.snapshot.paramMap.get("node_id");
@@ -55,7 +68,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
                 this.title.setTitle(this.node.name);
                 this.openTerminal();
             });
-        })
+        });
     }
 
     openTerminal() {

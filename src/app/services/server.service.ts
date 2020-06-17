@@ -1,9 +1,8 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { IndexedDbService } from './indexed-db.service';
 import { Server } from '../models/server';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { HttpServer } from './http-server.service';
-import { ToasterService } from './toaster.service';
 
 @Injectable()
 export class ServerService {
@@ -11,22 +10,39 @@ export class ServerService {
   private ready: Promise<any>;
   private isIncognitoMode: boolean = false;
   private serverIdsInIncognitoMode: string[] = [];
-  public serviceInitialized: EventEmitter<boolean> = new EventEmitter<boolean>();
+  public serviceInitialized: Subject<boolean> = new Subject<boolean>();
+  public isServiceInitialized: boolean;
 
   constructor(
     private indexedDbService: IndexedDbService,
-    private httpServer: HttpServer,
-    private toasterService: ToasterService
+    private httpServer: HttpServer
   ) {
-    this.indexedDbService.get().openDatabase(1).then(() => {
-      this.ready = indexedDbService.get().openDatabase(1, evt => {
-        evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+    this.ready = this.indexedDbService.get().openDatabase(1,  evt => {
+      evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+    }).then(() => {
+      this.indexedDbService.get().getAll(this.tablename)
+      .then(() => {})
+      .catch(() => {
+        this.isIncognitoMode = true;
       });
     }).catch(() => {
       this.isIncognitoMode = true;
     }).finally(() => {
-      this.serviceInitialized.emit(true);
+      this.isServiceInitialized = true;
+      this.serviceInitialized.next(true);
     });
+  }
+
+  public tryToCreateDb() {
+    let promise = new Promise(resolve => {
+      this.indexedDbService.get().openDatabase(1,  evt => {
+        evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+      }).then(() => {
+      }).catch(() => {
+        this.isIncognitoMode = true;
+      });
+    });
+    return promise;
   }
 
   public get(id: number): Promise<Server> {

@@ -35,32 +35,39 @@ export class ServersComponent implements OnInit, OnDestroy {
     private childProcessService: ChildProcessService,
     private bottomSheet: MatBottomSheet,
   ) {}
+  
+  getServers() {
+    const runningServersNames = this.serverManagement.getRunningServers();
+
+    this.serverService.findAll().then((servers: Server[]) => {
+      servers.forEach((server) => {
+        const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
+        if(serverIndex >= 0) {
+          server.status = 'running';
+        }
+      });
+
+      servers.forEach((server) => {
+        this.serverService.checkServerVersion(server).subscribe(
+          (serverInfo) => {
+            if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
+              if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
+            }
+          },
+          error => {}
+          );
+      });
+    });
+  }
 
   ngOnInit() {
     this.isElectronApp = this.electronService.isElectronApp;
-    const runningServersNames = this.serverManagement.getRunningServers();
+
+    if (this.serverService.isServiceInitialized) this.getServers();
 
     this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
-        this.serverService.findAll().then((servers: Server[]) => {
-          servers.forEach((server) => {
-            const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
-            if(serverIndex >= 0) {
-              server.status = 'running';
-            }
-          });
-
-          servers.forEach((server) => {
-            this.serverService.checkServerVersion(server).subscribe(
-              (serverInfo) => {
-                if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
-                  if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
-                }
-              },
-              error => {}
-              );
-          });
-        });
+        this.getServers();
       }
     });
 

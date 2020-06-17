@@ -170,56 +170,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
 
     this.progressService.activate();
-    const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const server_id = parseInt(paramMap.get('server_id'), 10);
 
-      from(this.serverService.get(server_id))
-        .pipe(
-          mergeMap((server: Server) => {
-            this.server = server;
-            return this.projectService.get(server, paramMap.get('project_id')).pipe(
-              map(project => {
-                return project;
-              })
-            );
-          }),
-          mergeMap((project: Project) => {
-            this.project = project;
-            this.projectService.open(this.server, this.project.project_id);
-            this.title.setTitle(this.project.name);
-
-            if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
-              this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
-            } else {
-              this.isInterfaceLabelVisible = this.project.show_interface_labels;
-            }
-            
-            this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
-            this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
-
-            if (this.project.status === 'opened') {
-              return new Observable<Project>(observer => {
-                observer.next(this.project);
-              });
-            } else {
-              return this.projectService.open(this.server, this.project.project_id);
-            }
-          })
-        )
-        .subscribe(
-          (project: Project) => {
-            this.onProjectLoad(project);
-          },
-          error => {
-            this.progressService.setError(error);
-          },
-          () => {
-            this.progressService.deactivate();
-          }
-        );
-    });
-
-    this.projectMapSubscription.add(routeSub);
+    if (this.serverService.isServiceInitialized) {
+      this.getData();
+    } else {
+      this.projectMapSubscription.add(
+        this.serverService.serviceInitialized.subscribe((val) => {
+          if (val) this.getData();
+        })
+      );
+    }
 
     this.projectMapSubscription.add(
       this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
@@ -271,6 +231,63 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
     this.addKeyboardListeners();
+  }
+
+  getData() {
+    const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      const server_id = parseInt(paramMap.get('server_id'), 10);
+
+      from(this.serverService.get(server_id))
+        .pipe(
+          mergeMap((server: Server) => {
+            if (!server ) this.router.navigate(['/servers']);
+
+            this.server = server;
+            return this.projectService.get(server, paramMap.get('project_id')).pipe(
+              map(project => {
+                return project;
+              })
+            );
+          }),
+          mergeMap((project: Project) => {
+            this.project = project;
+            if (!project ) this.router.navigate(['/servers']);
+
+            this.projectService.open(this.server, this.project.project_id);
+            this.title.setTitle(this.project.name);
+
+            if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
+              this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
+            } else {
+              this.isInterfaceLabelVisible = this.project.show_interface_labels;
+            }
+            
+            this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
+            this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
+
+            if (this.project.status === 'opened') {
+              return new Observable<Project>(observer => {
+                observer.next(this.project);
+              });
+            } else {
+              return this.projectService.open(this.server, this.project.project_id);
+            }
+          })
+        )
+        .subscribe(
+          (project: Project) => {
+            this.onProjectLoad(project);
+          },
+          error => {
+            this.progressService.setError(error);
+          },
+          () => {
+            this.progressService.deactivate();
+          }
+        );
+    });
+
+    this.projectMapSubscription.add(routeSub);
   }
 
   addKeyboardListeners() {

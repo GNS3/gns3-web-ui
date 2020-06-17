@@ -53,6 +53,8 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.server = this.route.snapshot.data['server'];
+    if(!this.server) this.router.navigate(['/servers']);
+
     this.refresh();
     this.sort.sort(<MatSortable>{
       id: 'name',

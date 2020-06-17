@@ -62,7 +62,6 @@ import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.componen
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { SystemStatusComponent } from './components/system-status/system-status.component';
 import { ServerResolve } from './resolvers/server-resolve';
-import { ProjectMapGuard } from './guards/project-map-guard';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 import { ConsoleGuard } from './guards/console-guard';
 
@@ -154,13 +153,11 @@ const routes: Routes = [
   { 
     path: 'server/:server_id/project/:project_id', 
     component: ProjectMapComponent,
-    canActivate: [ProjectMapGuard],
     canDeactivate: [ConsoleGuard]
   },
   { 
     path: 'server/:server_id/project/:project_id/nodes/:node_id', 
-    component: WebConsoleFullWindowComponent,
-    canActivate: [ProjectMapGuard]
+    component: WebConsoleFullWindowComponent
   },
   {
     path: '**',
