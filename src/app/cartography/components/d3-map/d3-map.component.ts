@@ -66,6 +66,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   public nodeGridX: number = 0;
   public nodeGridY: number = 0;
+  public drawingGridX: number = 0;
+  public drawingGridY: number = 0;
 
   constructor(
     private graphDataManager: GraphDataManager,
@@ -206,6 +208,9 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   updateGrid() {
     this.nodeGridX = (this.project.scene_width/2 - (Math.floor(this.project.scene_width/2 / this.project.grid_size) * this.project.grid_size));
     this.nodeGridY = (this.project.scene_height/2 - (Math.floor(this.project.scene_height/2 / this.project.grid_size) * this.project.grid_size));
+
+    this.drawingGridX = (this.project.scene_width/2 - (Math.floor(this.project.scene_width/2 / this.project.drawing_grid_size) * this.project.drawing_grid_size));
+    this.drawingGridY = (this.project.scene_height/2 - (Math.floor(this.project.scene_height/2 / this.project.drawing_grid_size) * this.project.drawing_grid_size));
   }
 
   @HostListener('window:resize', ['$event'])
