@@ -4,7 +4,7 @@ import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
 import { ApplianceService } from '../../../services/appliances.service';
-import { Appliance } from '../../../models/appliance';
+import { Appliance, Image } from '../../../models/appliance';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { ToasterService } from '../../../services/toaster.service';
@@ -29,6 +29,7 @@ export class NewTemplateDialogComponent implements OnInit {
     @Input() project: Project;
 
     uploader: FileUploader;
+    uploaderImage: FileUploader;
 
     public action: string = 'install';
     public actionTitle: string = 'Install appliance from server';
@@ -93,6 +94,19 @@ export class NewTemplateDialogComponent implements OnInit {
         
         this.uploader.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.success('Appliance imported succesfully');
+        };
+
+        this.uploaderImage =  new FileUploader({});
+        this.uploaderImage.onAfterAddingFile = file => {
+            file.withCredentials = false;
+        };
+    
+        this.uploaderImage.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+            this.toasterService.error('An error has occured');
+        };
+        
+        this.uploaderImage.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+            this.toasterService.success('Image imported succesfully');
         };
     }
 
@@ -190,6 +204,37 @@ export class NewTemplateDialogComponent implements OnInit {
             data: {appliance: object}
         });
         dialogRef.componentInstance.appliance = object;
+    }
+
+    importImage(event) {
+        let name = event.target.files[0].name.split('-')[0];
+        let fileName = event.target.files[0].name;
+        let file = event.target.files[0];
+        let fileReader: FileReader = new FileReader();
+        let emulator;
+
+        fileReader.onloadend = () => {
+            let appliance = JSON.parse(fileReader.result as string);
+
+            if (appliance.docker) emulator = 'docker';
+            if (appliance.dynamips) emulator = 'dynamips';
+            if (appliance.iou) emulator = 'iou';
+            if (appliance.qemu) emulator = 'qemu';
+
+            const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
+            this.uploader.queue.forEach(elem => (elem.url = url));
+    
+            const itemToUpload = this.uploader.queue[0];
+            (itemToUpload as any).options.disableMultipart = true;
+    
+            this.uploader.uploadItem(itemToUpload);
+        };
+
+        fileReader.readAsText(file);
+    }
+
+    downloadImage(image: Image) {
+        window.open(image.download_url);
     }
 
     create() {

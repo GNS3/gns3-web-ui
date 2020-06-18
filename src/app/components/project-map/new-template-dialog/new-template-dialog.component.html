@@ -142,7 +142,14 @@
                             {{image.filename}}
                         </div>
                         <div>
-                            <button class="button" mat-raised-button (click)="importImage(image)">Import</button>
+                            <input
+                                type="file"
+                                class="non-visible"
+                                #file2
+                                (change)="importImage($event)"
+                                ng2FileSelect
+                                [uploader]="uploaderImage"/>
+                            <button class="button" mat-raised-button (click)="file2.click()">Import</button>
                             <button class="button" mat-raised-button color="primary" (click)="downloadImage(image)">Download</button>
                         </div>
                       </div>
