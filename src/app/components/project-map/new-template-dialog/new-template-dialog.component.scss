@@ -37,3 +37,26 @@
 .element-row.expanded {
     border-bottom-color: transparent;
 }
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.button {
+    margin-left: 10px;
+}
+
+.create-button {
+    width: 100%;
+}
+
+.radio-button {
+    width: 50%;
+    padding-top: 20px;
+}
+
+.selection-group {
+    padding-bottom: 20px;
+}

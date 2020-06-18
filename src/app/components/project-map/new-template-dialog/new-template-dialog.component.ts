@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { MatDialogRef, Sort, MatTableDataSource, MatPaginator, MatDialog } from '@angular/material';
+import { MatDialogRef, Sort, MatTableDataSource, MatPaginator, MatDialog, MatStepper, MatSelectionList, MatSelectionListChange } from '@angular/material';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
@@ -9,6 +9,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { ToasterService } from '../../../services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
+import { QemuBinary } from '../../../models/qemu/qemu-binary';
+import { QemuService } from '../../../services/qemu.service';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -30,10 +32,19 @@ export class NewTemplateDialogComponent implements OnInit {
 
     public action: string = 'install';
     public actionTitle: string = 'Install appliance from server';
+    public secondActionTitle: string = 'Appliance settings';
 
     public searchText: string = '';
     public allAppliances: Appliance[] = [];
     public appliances: Appliance[] = [];
+    public applianceToInstall: Appliance;
+    public selectedImages: any[];
+
+    private isGns3VmChosen = true;
+    private isLocalComputerChosen = false;
+
+    public qemuBinaries: QemuBinary[] = [];
+    public selectedBinary: QemuBinary;
 
     public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
     public category: string = 'all categories';
@@ -42,12 +53,14 @@ export class NewTemplateDialogComponent implements OnInit {
     public dataSource: MatTableDataSource<Appliance>;
 
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+    @ViewChild('stepper', {static: true}) stepper: MatStepper;
 
     constructor(
         public dialogRef: MatDialogRef<NewTemplateDialogComponent>,
         private applianceService: ApplianceService,
         private changeDetector: ChangeDetectorRef,
         private toasterService: ToasterService,
+        private qemuService: QemuService,
         public dialog: MatDialog
     ) {}
 
@@ -63,6 +76,10 @@ export class NewTemplateDialogComponent implements OnInit {
             this.allAppliances = appliances;
             this.dataSource = new MatTableDataSource(this.allAppliances);
             this.dataSource.paginator = this.paginator;
+        });
+
+        this.qemuService.getBinaries(this.server).subscribe((binaries) => {
+            this.qemuBinaries = binaries;
         });
 
         this.uploader =  new FileUploader({});
@@ -130,6 +147,16 @@ export class NewTemplateDialogComponent implements OnInit {
         }
     }
 
+    setServerType(serverType: string) {
+        if (serverType === 'gns3 vm') {
+            this.isGns3VmChosen = true;
+            this.isLocalComputerChosen = false;
+        } else {
+            this.isGns3VmChosen = false;
+            this.isLocalComputerChosen = true;
+        }
+    }
+
     sortData(sort: Sort) {
         if (!sort.active || sort.direction === '') return;
 
@@ -150,16 +177,23 @@ export class NewTemplateDialogComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    install(object: any) {
-        console.log(object);
+    install(object: Appliance) {
+        this.applianceToInstall = object;
+        setTimeout(() => {
+            this.stepper.next();
+        }, 100);
     }
 
-    showInfo(object: any) {
+    showInfo(object: Appliance) {
         let dialogRef = this.dialog.open(ApplianceInfoDialogComponent, {
             width: '250px',
             data: {appliance: object}
         });
         dialogRef.componentInstance.appliance = object;
+    }
+
+    create() {
+
     }
 }
 
