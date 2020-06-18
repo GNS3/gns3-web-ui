@@ -274,8 +274,12 @@ import { NodeConsoleService } from './services/nodeConsole.service';
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 import { ConsoleGuard } from './guards/console-guard';
+import { NewTemplateDialogComponent } from './components/project-map/new-template-dialog/new-template-dialog.component';
+import { ApplianceService } from './services/appliances.service';
+import { DataSourceFilter } from './filters/dataSourceFilter';
 import { ChangeHostnameActionComponent } from './components/project-map/context-menu/actions/change-hostname/change-hostname-action.component';
 import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
+import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 
 if (environment.production) {
   Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
@@ -389,6 +393,7 @@ if (environment.production) {
     SearchFilter,
     DateFilter,
     NameFilter,
+    DataSourceFilter,
     TemplateFilter,
     ProjectsFilter,
     ListOfSnapshotsComponent,
@@ -463,8 +468,10 @@ if (environment.production) {
     ConsoleWrapperComponent,
     HttpConsoleNewTabActionComponent,
     WebConsoleFullWindowComponent,
+    NewTemplateDialogComponent,
     ChangeHostnameActionComponent,
-    ChangeHostnameDialogComponent
+    ChangeHostnameDialogComponent,
+    ApplianceInfoDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -559,7 +566,8 @@ if (environment.production) {
     NodeConsoleService,
     ServerResolve,
     ConsoleGuard,
-    Title
+    Title,
+    ApplianceService
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -603,7 +611,9 @@ if (environment.production) {
     ConfirmationBottomSheetComponent,
     ConfigDialogComponent,
     AdbutlerComponent,
-    ChangeHostnameDialogComponent
+    NewTemplateDialogComponent,
+    ChangeHostnameDialogComponent,
+    ApplianceInfoDialogComponent
   ],
   bootstrap: [AppComponent]
 })

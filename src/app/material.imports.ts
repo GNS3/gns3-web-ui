@@ -23,10 +23,12 @@ import {
   MatTabsModule,
   MatTreeModule,
   MatBottomSheetModule,
-  MatChipsModule
+  MatChipsModule,
+  MatPaginatorModule
 } from '@angular/material';
 
 export const MATERIAL_IMPORTS = [
+  MatPaginatorModule,
   MatButtonModule,
   MatMenuModule,
   MatCardModule,
