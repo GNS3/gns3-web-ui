@@ -14,6 +14,10 @@ export class ApplianceService {
         return this.httpServer.get<Appliance[]>(server, '/appliances') as Observable<Appliance[]>;
     }
 
+    getAppliance(server: Server, url): Observable<Appliance> {
+        return this.httpServer.get<Appliance>(server, url) as Observable<Appliance>;
+    }
+
     getUploadPath(server: Server, emulator: string, filename: string) {
         return `http://${server.host}:${server.port}/v2/compute/${emulator}/images/${filename}`;
     }

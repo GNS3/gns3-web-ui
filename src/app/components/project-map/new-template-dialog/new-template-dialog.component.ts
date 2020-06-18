@@ -94,6 +94,7 @@ export class NewTemplateDialogComponent implements OnInit {
         
         this.uploader.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.success('Appliance imported succesfully');
+            this.getAppliance(item.url);
         };
 
         this.uploaderImage =  new FileUploader({});
@@ -108,6 +109,16 @@ export class NewTemplateDialogComponent implements OnInit {
         this.uploaderImage.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.success('Image imported succesfully');
         };
+
+        this.getAppliance('http://127.0.0.1:3080/v2/compute/qemu/images/firefox.gns3a');
+    }
+
+    getAppliance(url: string) {
+        let str = url.split('/v2');
+        let appliancePath = str[str.length-1];
+        this.applianceService.getAppliance(this.server, appliancePath).subscribe((appliance: Appliance) => {
+            this.applianceToInstall = appliance;
+        });
     }
 
     addAppliance(event): void {

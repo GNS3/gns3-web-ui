@@ -113,7 +113,7 @@
     <mat-step *ngIf="applianceToInstall">
         <ng-template matStepLabel>{{secondActionTitle}}</ng-template>
 
-        <mat-card [hidden]="!(action==='install')">
+        <mat-card [hidden]="!applianceToInstall">
             <div>
                 Server type<br/>
                 <mat-radio-group class="radio-group">
