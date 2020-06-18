@@ -155,12 +155,11 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     showInfo(object: any) {
-        console.log(object);
-        
-        this.dialog.open(ApplianceInfoDialogComponent, {
+        let dialogRef = this.dialog.open(ApplianceInfoDialogComponent, {
             width: '250px',
-            data: {info: 'info'}
+            data: {appliance: object}
         });
+        dialogRef.componentInstance.appliance = object;
     }
 }
 

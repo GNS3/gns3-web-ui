@@ -1,8 +1,22 @@
 <div class="title-container">
-    <h1 mat-dialog-title>appliance name</h1>
+    <h1 mat-dialog-title>{{appliance.name}}</h1>
 </div>
 <div mat-dialog-content>
-    {{data.info}}
+    <div>
+        Vendor: {{appliance.vendor_name}}
+    </div>
+    <div>
+        Status: {{appliance.status}}
+    </div>
+    <div>
+        Maintainer: {{appliance.maintainer}}
+    </div>
+    <div *ngIf="appliance.qemu">
+        Adapters: {{appliance.qemu.adapters}}
+    </div>
+    <div *ngIf="appliance.qemu">
+        Console type: {{appliance.qemu.console_type}}
+    </div>
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Close</button>
