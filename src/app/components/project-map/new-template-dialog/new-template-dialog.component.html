@@ -150,15 +150,13 @@
                                 ng2FileSelect
                                 [uploader]="uploaderImage"/>
                             <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                            <button class="button" mat-raised-button color="primary" (click)="downloadImage(image)">Download</button>
+                            <button class="button" mat-raised-button (click)="downloadImage(image)">Download</button>
+                            <button class="button" mat-raised-button color="primary" (click)="create(image)">Create</button>
                         </div>
                       </div>
                     </mat-list-item>
                 </mat-list>
             </div>
-            <button class="create-button" mat-raised-button color="primary" (click)="create()">
-                Create
-            </button>
         </mat-card>
 
         <div>
