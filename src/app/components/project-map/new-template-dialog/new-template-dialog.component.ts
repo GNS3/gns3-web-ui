@@ -109,8 +109,6 @@ export class NewTemplateDialogComponent implements OnInit {
         this.uploaderImage.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.success('Image imported succesfully');
         };
-
-        this.getAppliance('http://127.0.0.1:3080/v2/compute/qemu/images/firefox.gns3a');
     }
 
     getAppliance(url: string) {
@@ -118,6 +116,9 @@ export class NewTemplateDialogComponent implements OnInit {
         let appliancePath = str[str.length-1];
         this.applianceService.getAppliance(this.server, appliancePath).subscribe((appliance: Appliance) => {
             this.applianceToInstall = appliance;
+            setTimeout(() => {
+                this.stepper.next();
+            }, 100);
         });
     }
 
@@ -225,20 +226,15 @@ export class NewTemplateDialogComponent implements OnInit {
         let emulator;
 
         fileReader.onloadend = () => {
-            let appliance = JSON.parse(fileReader.result as string);
-
-            if (appliance.docker) emulator = 'docker';
-            if (appliance.dynamips) emulator = 'dynamips';
-            if (appliance.iou) emulator = 'iou';
-            if (appliance.qemu) emulator = 'qemu';
+            if (this.applianceToInstall.qemu) emulator = 'qemu';
 
             const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
-            this.uploader.queue.forEach(elem => (elem.url = url));
+            this.uploaderImage.queue.forEach(elem => (elem.url = url));
     
-            const itemToUpload = this.uploader.queue[0];
+            const itemToUpload = this.uploaderImage.queue[0];
             (itemToUpload as any).options.disableMultipart = true;
     
-            this.uploader.uploadItem(itemToUpload);
+            this.uploaderImage.uploadItem(itemToUpload);
         };
 
         fileReader.readAsText(file);
