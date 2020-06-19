@@ -11,6 +11,8 @@ import { ToasterService } from '../../../services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
 import { QemuBinary } from '../../../models/qemu/qemu-binary';
 import { QemuService } from '../../../services/qemu.service';
+import { QemuTemplate } from '../../../models/templates/qemu-template';
+import { v4 as uuid } from 'uuid';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -244,8 +246,30 @@ export class NewTemplateDialogComponent implements OnInit {
         window.open(image.download_url);
     }
 
-    create() {
+    create(image: Image) {
+        let qemuTemplate: QemuTemplate = new QemuTemplate();
+        qemuTemplate.name = this.applianceToInstall.name;
+        qemuTemplate.ram = this.applianceToInstall.qemu.ram;
+        qemuTemplate.adapters = this.applianceToInstall.qemu.adapters;
+        qemuTemplate.adapter_type = this.applianceToInstall.qemu.adapter_type;
+        qemuTemplate.boot_priority = this.applianceToInstall.qemu.boot_priority;
+        qemuTemplate.console_type =  this.applianceToInstall.qemu.console_type;
+        qemuTemplate.hda_disk_interface = this.applianceToInstall.qemu.hda_disk_interface;
+        qemuTemplate.builtin = this.applianceToInstall.builtin;
+        qemuTemplate.category = this.applianceToInstall.category;
+        qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
+        qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
+        qemuTemplate.symbol = this.applianceToInstall.symbol;
+        qemuTemplate.qemu_path = this.selectedBinary.path;
+        qemuTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+        qemuTemplate.template_id = uuid();
+        qemuTemplate.hda_disk_image = image.filename;
+        qemuTemplate.template_type = 'qemu';
 
+        this.qemuService.addTemplate(this.server, qemuTemplate).subscribe(() => {
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+        });
     }
 }
 
