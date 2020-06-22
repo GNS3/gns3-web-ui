@@ -332,6 +332,10 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     createQemuTemplate(image: Image) {
+        if (!this.selectedBinary) {
+            this.toasterService.error('Please select QEMU binary first');
+            return;
+        }
         let qemuTemplate: QemuTemplate = new QemuTemplate();
         qemuTemplate.name = this.applianceToInstall.name;
         qemuTemplate.ram = this.applianceToInstall.qemu.ram;
