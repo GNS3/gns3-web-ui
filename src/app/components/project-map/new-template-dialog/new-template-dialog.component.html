@@ -209,7 +209,36 @@
             </div>
 
             <div *ngIf="applianceToInstall.iou">
-
+                <div>
+                    Server type<br/>
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div>
+                    Install required files
+                    <mat-list>
+                        <mat-list-item *ngFor="let image of applianceToInstall.images">
+                          <div class="list-item">
+                            <div>
+                                {{image.filename}}
+                            </div>
+                            <div>
+                                <input
+                                    type="file"
+                                    class="non-visible"
+                                    #file2
+                                    (change)="importImage($event)"
+                                    ng2FileSelect
+                                    [uploader]="uploaderImage"/>
+                                <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                                <button class="button" mat-raised-button color="primary" (click)="createIouTemplate(image)">Create</button>
+                            </div>
+                          </div>
+                        </mat-list-item>
+                    </mat-list>
+                </div>
             </div>
         </mat-card>
 

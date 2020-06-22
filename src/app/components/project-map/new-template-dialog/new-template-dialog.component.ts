@@ -18,6 +18,7 @@ import { DockerService } from '../../../services/docker.service';
 import { IosTemplate } from '../../../models/templates/ios-template';
 import { IosService } from '../../../services/ios.service';
 import { IouService } from '../../../services/iou.service';
+import { IouTemplate } from '../../../models/templates/iou-template';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -238,6 +239,7 @@ export class NewTemplateDialogComponent implements OnInit {
         fileReader.onloadend = () => {
             if (this.applianceToInstall.qemu) emulator = 'qemu';
             if (this.applianceToInstall.dynamips) emulator = 'dynamips';
+            if (this.applianceToInstall.iou) emulator = 'iou';
 
             const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
             this.uploaderImage.queue.forEach(elem => (elem.url = url));
@@ -255,8 +257,27 @@ export class NewTemplateDialogComponent implements OnInit {
         window.open(image.download_url);
     }
 
-    createIouTemplate () {
-        
+    createIouTemplate (image: Image) {
+        let iouTemplate: IouTemplate = new IouTemplate();
+        iouTemplate.name = this.applianceToInstall.name;
+        iouTemplate.nvram = this.applianceToInstall.iou.nvram;
+        iouTemplate.ram = this.applianceToInstall.iou.ram;
+        iouTemplate.ethernet_adapters = this.applianceToInstall.iou.ethernet_adapters;
+        iouTemplate.serial_adapters = this.applianceToInstall.iou.serial_adapters;
+        iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
+        iouTemplate.builtin = this.applianceToInstall.builtin;
+        iouTemplate.category = this.applianceToInstall.category;
+        iouTemplate.default_name_format = this.applianceToInstall.port_name_format;
+        iouTemplate.symbol = this.applianceToInstall.symbol;
+        iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+        iouTemplate.template_id = uuid();
+        iouTemplate.path = image.filename;
+        iouTemplate.template_type = 'iou';
+
+        this.iouService.addTemplate(this.server, iouTemplate).subscribe(() => {
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+        });
     }
 
     createIosTemplate(image: Image) {
@@ -286,7 +307,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
         this.iosService.addTemplate(this.server, iosTemplate).subscribe(() => {
             this.toasterService.success('Template added');
-            this.dialogRef.close()
+            this.dialogRef.close();
         });
     }
 
