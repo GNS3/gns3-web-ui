@@ -13,6 +13,8 @@ import { QemuBinary } from '../../../models/qemu/qemu-binary';
 import { QemuService } from '../../../services/qemu.service';
 import { QemuTemplate } from '../../../models/templates/qemu-template';
 import { v4 as uuid } from 'uuid';
+import { DockerTemplate } from '../../../models/templates/docker-template';
+import { DockerService } from '../../../services/docker.service';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -64,6 +66,7 @@ export class NewTemplateDialogComponent implements OnInit {
         private changeDetector: ChangeDetectorRef,
         private toasterService: ToasterService,
         private qemuService: QemuService,
+        private dockerService: DockerService,
         public dialog: MatDialog
     ) {}
 
@@ -246,7 +249,27 @@ export class NewTemplateDialogComponent implements OnInit {
         window.open(image.download_url);
     }
 
-    create(image: Image) {
+    createDockerTemplate() {
+        let dockerTemplate: DockerTemplate = new DockerTemplate();
+        dockerTemplate.name = this.applianceToInstall.name;
+        dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
+        dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
+        dockerTemplate.builtin = this.applianceToInstall.builtin;
+        dockerTemplate.category = this.applianceToInstall.category;
+        dockerTemplate.default_name_format = this.applianceToInstall.port_name_format;
+        dockerTemplate.symbol = this.applianceToInstall.symbol;
+        dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+        dockerTemplate.template_id = uuid();
+        dockerTemplate.image = this.applianceToInstall.docker.image;
+        dockerTemplate.template_type = 'docker';
+
+        this.dockerService.addTemplate(this.server, dockerTemplate).subscribe(() => {
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+        });
+    }
+
+    createQemuTemplate(image: Image) {
         let qemuTemplate: QemuTemplate = new QemuTemplate();
         qemuTemplate.name = this.applianceToInstall.name;
         qemuTemplate.ram = this.applianceToInstall.qemu.ram;

@@ -113,49 +113,66 @@
     <mat-step *ngIf="applianceToInstall">
         <ng-template matStepLabel>{{secondActionTitle}}</ng-template>
 
+        <mat-card [hidden]="applianceToInstall">
+            Please select appliance to install first
+        </mat-card>
+
         <mat-card [hidden]="!applianceToInstall">
-            <div>
-                Server type<br/>
-                <mat-radio-group class="radio-group">
-                    <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                    <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
-                </mat-radio-group>
+            <div *ngIf="applianceToInstall.qemu">
+                <div>
+                    Server type<br/>
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div>
+                    Qemu binary<br/>
+                    <mat-select
+                        class="selection-group"
+                        placeholder="Qemu binary"
+                        [(ngModel)]="selectedBinary"
+                        [ngModelOptions]="{standalone: true}">
+                        <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
+                            {{binary.path}}
+                        </mat-option>
+                    </mat-select>
+                </div>
+                <div>
+                    Install required files
+                    <mat-list>
+                        <mat-list-item *ngFor="let image of applianceToInstall.images">
+                          <div class="list-item">
+                            <div>
+                                {{image.filename}}
+                            </div>
+                            <div>
+                                <input
+                                    type="file"
+                                    class="non-visible"
+                                    #file2
+                                    (change)="importImage($event)"
+                                    ng2FileSelect
+                                    [uploader]="uploaderImage"/>
+                                <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                                <button class="button" mat-raised-button (click)="downloadImage(image)">Download</button>
+                                <button class="button" mat-raised-button color="primary" (click)="createQemuTemplate(image)">Create</button>
+                            </div>
+                          </div>
+                        </mat-list-item>
+                    </mat-list>
+                </div>
             </div>
-            <div>
-                Qemu binary<br/>
-                <mat-select
-                    class="selection-group"
-                    placeholder="Qemu binary"
-                    [(ngModel)]="selectedBinary"
-                    [ngModelOptions]="{standalone: true}">
-                    <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
-                        {{binary.path}}
-                    </mat-option>
-                </mat-select>
-            </div>
-            <div>
-                Install required files
-                <mat-list>
-                    <mat-list-item *ngFor="let image of applianceToInstall.images">
-                      <div class="list-item">
-                        <div>
-                            {{image.filename}}
-                        </div>
-                        <div>
-                            <input
-                                type="file"
-                                class="non-visible"
-                                #file2
-                                (change)="importImage($event)"
-                                ng2FileSelect
-                                [uploader]="uploaderImage"/>
-                            <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                            <button class="button" mat-raised-button (click)="downloadImage(image)">Download</button>
-                            <button class="button" mat-raised-button color="primary" (click)="create(image)">Create</button>
-                        </div>
-                      </div>
-                    </mat-list-item>
-                </mat-list>
+
+            <div *ngIf="applianceToInstall.docker">
+                <div>
+                    Server type<br/>
+                    <mat-radio-group class="radio-group">
+                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">Create docker template</button>
             </div>
         </mat-card>
 
