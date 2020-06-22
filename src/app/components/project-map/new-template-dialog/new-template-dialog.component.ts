@@ -15,6 +15,9 @@ import { QemuTemplate } from '../../../models/templates/qemu-template';
 import { v4 as uuid } from 'uuid';
 import { DockerTemplate } from '../../../models/templates/docker-template';
 import { DockerService } from '../../../services/docker.service';
+import { IosTemplate } from '../../../models/templates/ios-template';
+import { IosService } from '../../../services/ios.service';
+import { IouService } from '../../../services/iou.service';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -67,6 +70,8 @@ export class NewTemplateDialogComponent implements OnInit {
         private toasterService: ToasterService,
         private qemuService: QemuService,
         private dockerService: DockerService,
+        private iosService: IosService,
+        private iouService: IouService,
         public dialog: MatDialog
     ) {}
 
@@ -232,6 +237,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
         fileReader.onloadend = () => {
             if (this.applianceToInstall.qemu) emulator = 'qemu';
+            if (this.applianceToInstall.dynamips) emulator = 'dynamips';
 
             const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
             this.uploaderImage.queue.forEach(elem => (elem.url = url));
@@ -247,6 +253,41 @@ export class NewTemplateDialogComponent implements OnInit {
 
     downloadImage(image: Image) {
         window.open(image.download_url);
+    }
+
+    createIouTemplate () {
+        
+    }
+
+    createIosTemplate(image: Image) {
+        let iosTemplate: IosTemplate = new IosTemplate();
+        iosTemplate.name = this.applianceToInstall.name;
+        iosTemplate.chassis = this.applianceToInstall.dynamips.chassis;
+        iosTemplate.nvram = this.applianceToInstall.dynamips.nvram;
+        iosTemplate.platform = this.applianceToInstall.dynamips.platform;
+        iosTemplate.ram = this.applianceToInstall.dynamips.ram;
+        iosTemplate.startup_config = this.applianceToInstall.dynamips.startup_config;
+        iosTemplate.slot0 = this.applianceToInstall.dynamips.slot0;
+        iosTemplate.slot1 = this.applianceToInstall.dynamips.slot1;
+        iosTemplate.slot2 = this.applianceToInstall.dynamips.slot2;
+        iosTemplate.slot3 = this.applianceToInstall.dynamips.slot3;
+        iosTemplate.slot4 = this.applianceToInstall.dynamips.slot4;
+        iosTemplate.slot5 = this.applianceToInstall.dynamips.slot5;
+        iosTemplate.slot6 = this.applianceToInstall.dynamips.slot6;
+        iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
+        iosTemplate.builtin = this.applianceToInstall.builtin;
+        iosTemplate.category = this.applianceToInstall.category;
+        iosTemplate.default_name_format = this.applianceToInstall.port_name_format;
+        iosTemplate.symbol = this.applianceToInstall.symbol;
+        iosTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+        iosTemplate.template_id = uuid();
+        iosTemplate.image = image.filename;
+        iosTemplate.template_type = 'dynamips';
+
+        this.iosService.addTemplate(this.server, iosTemplate).subscribe(() => {
+            this.toasterService.success('Template added');
+            this.dialogRef.close()
+        });
     }
 
     createDockerTemplate() {

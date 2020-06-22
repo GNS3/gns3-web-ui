@@ -29,6 +29,13 @@ export interface Dynamips {
     platform: string;
     ram: number;
     slot0: string;
+    slot1: string;
+    slot2: string;
+    slot3: string;
+    slot4: string;
+    slot5: string;
+    slot6: string;
+    slot7: string;
     startup_config: string;
 }
 
