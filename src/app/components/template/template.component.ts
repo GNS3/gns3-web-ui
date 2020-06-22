@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { TemplateListDialogComponent, NodeAddedEvent } from './template-list-dialog/template-list-dialog.component';
 
@@ -8,13 +8,14 @@ import { Project } from '../../models/project';
 import { TemplateService } from '../../services/template.service';
 import { MapScaleService } from '../../services/mapScale.service';
 import { SymbolService } from '../../services/symbol.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss']
 })
-export class TemplateComponent implements OnInit {
+export class TemplateComponent implements OnInit, OnDestroy {
   @Input() server: Server;
   @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
@@ -31,6 +32,8 @@ export class TemplateComponent implements OnInit {
   startX: number;
   startY: number;
 
+  private subscription: Subscription;
+
   constructor(
     private dialog: MatDialog,
     private templateService: TemplateService,
@@ -39,6 +42,10 @@ export class TemplateComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.subscription = this.templateService.newTemplateCreated.subscribe((template: Template) => {
+      this.templates.push(template);
+    });
+
     this.templateService.list(this.server).subscribe((listOfTemplates: Template[]) => {
       this.filteredTemplates = listOfTemplates;
       this.templates = listOfTemplates;
@@ -104,5 +111,9 @@ export class TemplateComponent implements OnInit {
 
   getImageSourceForTemplate(template: Template) {
     return `http://${this.server.host}:${this.server.port}/v2/symbols/${template.symbol}/raw`;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

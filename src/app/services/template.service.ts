@@ -4,11 +4,13 @@ import 'rxjs/add/operator/map';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { Template } from '../models/template';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { QemuTemplate } from '../models/templates/qemu-template';
 
 @Injectable()
 export class TemplateService {
+  public newTemplateCreated: Subject<Template> = new Subject<Template>();
+
   constructor(private httpServer: HttpServer) {}
 
   list(server: Server): Observable<Template[]> {

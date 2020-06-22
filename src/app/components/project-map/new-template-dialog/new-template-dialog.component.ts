@@ -19,6 +19,8 @@ import { IosTemplate } from '../../../models/templates/ios-template';
 import { IosService } from '../../../services/ios.service';
 import { IouService } from '../../../services/iou.service';
 import { IouTemplate } from '../../../models/templates/iou-template';
+import { TemplateService } from '../../../services/template.service';
+import { Template } from '../../../models/template';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -73,6 +75,7 @@ export class NewTemplateDialogComponent implements OnInit {
         private dockerService: DockerService,
         private iosService: IosService,
         private iouService: IouService,
+        private templateService: TemplateService,
         public dialog: MatDialog
     ) {}
 
@@ -274,7 +277,8 @@ export class NewTemplateDialogComponent implements OnInit {
         iouTemplate.path = image.filename;
         iouTemplate.template_type = 'iou';
 
-        this.iouService.addTemplate(this.server, iouTemplate).subscribe(() => {
+        this.iouService.addTemplate(this.server, iouTemplate).subscribe((template) => {
+            this.templateService.newTemplateCreated.next(template);
             this.toasterService.success('Template added');
             this.dialogRef.close();
         });
@@ -305,7 +309,8 @@ export class NewTemplateDialogComponent implements OnInit {
         iosTemplate.image = image.filename;
         iosTemplate.template_type = 'dynamips';
 
-        this.iosService.addTemplate(this.server, iosTemplate).subscribe(() => {
+        this.iosService.addTemplate(this.server, iosTemplate).subscribe((template) => {
+            this.templateService.newTemplateCreated.next(template as any as Template);
             this.toasterService.success('Template added');
             this.dialogRef.close();
         });
@@ -325,7 +330,8 @@ export class NewTemplateDialogComponent implements OnInit {
         dockerTemplate.image = this.applianceToInstall.docker.image;
         dockerTemplate.template_type = 'docker';
 
-        this.dockerService.addTemplate(this.server, dockerTemplate).subscribe(() => {
+        this.dockerService.addTemplate(this.server, dockerTemplate).subscribe((template) => {
+            this.templateService.newTemplateCreated.next(template as any as Template);
             this.toasterService.success('Template added');
             this.dialogRef.close();
         });
@@ -355,7 +361,8 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.hda_disk_image = image.filename;
         qemuTemplate.template_type = 'qemu';
 
-        this.qemuService.addTemplate(this.server, qemuTemplate).subscribe(() => {
+        this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
+            this.templateService.newTemplateCreated.next(template as any as Template);
             this.toasterService.success('Template added');
             this.dialogRef.close();
         });
