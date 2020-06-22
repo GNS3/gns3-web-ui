@@ -83,6 +83,11 @@ export class ProjectsComponent implements OnInit {
     };
   }
 
+  goToPreferences() {
+    this.router.navigate(['/server', this.server.id, 'preferences'])
+      .catch(error => this.toasterService.error('Cannot navigate to the preferences'));
+  }
+
   refresh() {
     this.projectService.list(this.server).subscribe(
       (projects: Project[]) => {
