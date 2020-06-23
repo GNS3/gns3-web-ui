@@ -147,6 +147,8 @@
                                 {{image.filename}}
                             </div>
                             <div>
+                                <span *ngIf="checkImage(image)"><mat-icon matTooltip="Ready to install">check</mat-icon></span>
+                                <span *ngIf="!checkImage(image)"><mat-icon matTooltip="Missing">close</mat-icon></span>
                                 <input
                                     type="file"
                                     class="non-visible"

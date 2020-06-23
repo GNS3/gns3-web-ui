@@ -63,6 +63,10 @@ export class NewTemplateDialogComponent implements OnInit {
 
     public dataSource: MatTableDataSource<Appliance>;
 
+    private qemuImages: Image[] = [];
+    private iosImages: Image[] = [];
+    private iouImages: Image[] = [];
+
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
     @ViewChild('stepper', {static: true}) stepper: MatStepper;
 
@@ -80,6 +84,18 @@ export class NewTemplateDialogComponent implements OnInit {
     ) {}
 
     ngOnInit() {
+        this.qemuService.getImages(this.server).subscribe((qemuImages) => {
+            this.qemuImages = qemuImages;
+        });
+
+        this.iosService.getImages(this.server).subscribe((iosImages) => {
+            this.iosImages = iosImages;
+        });
+
+        this.iouService.getImages(this.server).subscribe((iouImages) => {
+            this.iouImages = iouImages;
+        });
+
         this.applianceService.getAppliances(this.server).subscribe((appliances) => {
             this.appliances = appliances;
             this.appliances.forEach(appliance => {
@@ -254,6 +270,18 @@ export class NewTemplateDialogComponent implements OnInit {
         };
 
         fileReader.readAsText(file);
+    }
+
+    checkImage(image: Image): boolean {
+        if (this.applianceToInstall.qemu) {
+            if (this.qemuImages.filter(n => n.filename === image.filename).length > 0) return true;
+        } else if (this.applianceToInstall.dynamips) {
+            if (this.iosImages.filter(n => n.filename === image.filename).length > 0) return true;
+        } else if (this.applianceToInstall.iou) {
+            if (this.iouImages.filter(n => n.filename === image.filename).length > 0) return true;
+        }
+
+        return false;
     }
 
     downloadImage(image: Image) {

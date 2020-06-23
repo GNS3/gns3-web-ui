@@ -9,7 +9,7 @@ import { IosImage } from '../models/images/ios-image';
 export class IosService {
     constructor(private httpServer: HttpServer) {}
 
-    getImages(server: Server): Observable<IosImage[]> {
+    getImages(server: Server): Observable<any> {
         return this.httpServer.get<IosImage[]>(server, '/compute/dynamips/images') as Observable<IosImage[]>;
     } 
 

@@ -17,7 +17,7 @@ export class IouService {
         return this.httpServer.get<IouTemplate>(server, `/templates/${template_id}`) as Observable<IouTemplate>;
     }
 
-    getImages(server: Server): Observable<IouImage[]> {
+    getImages(server: Server): Observable<any> {
         return this.httpServer.get<IouImage[]>(server, '/compute/iou/images') as Observable<IouImage[]>;
     }
 
