@@ -37,7 +37,7 @@ export class StatusInfoComponent implements OnInit {
                 {
                     this.getStatistics();
                 },
-                10000);
+                20000);
             }),
             error => {
                 this.toasterService.error('Required server version is 2.3')
