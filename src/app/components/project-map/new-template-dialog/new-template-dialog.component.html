@@ -158,7 +158,7 @@
                                     [uploader]="uploaderImage"/>
                                 <button class="button" mat-raised-button (click)="file2.click()">Import</button>
                                 <button class="button" mat-raised-button (click)="downloadImage(image)">Download</button>
-                                <button class="button" mat-raised-button color="primary" (click)="createQemuTemplate(image)">Create</button>
+                                <button *ngIf="checkImage(image)" class="button" mat-raised-button color="primary" (click)="createQemuTemplate(image)">Create</button>
                             </div>
                           </div>
                         </mat-list-item>
