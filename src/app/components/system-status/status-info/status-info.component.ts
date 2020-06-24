@@ -15,6 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
 export class StatusInfoComponent implements OnInit {
     public serverId: string = "";
     public computeStatistics: ComputeStatistics[] = [];
+    public connectionFailed: boolean;
 
     constructor(
         private route: ActivatedRoute,
@@ -30,8 +31,7 @@ export class StatusInfoComponent implements OnInit {
 
     getStatistics() {
         this.serverService.get(Number(this.serverId)).then((server: Server) => {
-            this.computeService.getStatistics(server).subscribe(
-            (statistics: ComputeStatistics[]) => {
+            this.computeService.getStatistics(server).subscribe((statistics: ComputeStatistics[]) => {
                 this.computeStatistics = statistics;
                 setTimeout(() => 
                 {
@@ -40,7 +40,7 @@ export class StatusInfoComponent implements OnInit {
                 20000);
             }),
             error => {
-                this.toasterService.error('Required server version is 2.3')
+                this.connectionFailed = true;
             }
         });
     }
