@@ -1,4 +1,3 @@
-import { RavenErrorHandler } from './raven-error-handler';
 import { ToasterService } from '../../services/toaster.service';
 import { SentryErrorHandler } from './sentry-error-handler';
 

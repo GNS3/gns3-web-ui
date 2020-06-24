@@ -72,7 +72,6 @@
     "ngx-electron": "^2.1.1",
     "node-fetch": "^2.6.0",
     "notosans-fontface": "^1.1.0",
-    "raven-js": "^3.27.2",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.5.3",
     "save-html-as-image": "^1.2.0",

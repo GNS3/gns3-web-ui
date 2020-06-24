@@ -277,13 +277,11 @@ def build_command(arguments):
     ]
 
     excludes = [
-        "raven.deprecation",  # reported problem in raven package (6.4.0)
         "distutils",  # issue on macOS
         "tkinter",  # issue on Windows
     ]
 
     packages = [
-        "raven",
         "psutil",
         "asyncio",
         "packaging",  # needed for linux
