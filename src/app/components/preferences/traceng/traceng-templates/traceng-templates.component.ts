@@ -14,7 +14,7 @@ import { TracengService } from '../../../../services/traceng.service';
 export class TracengTemplatesComponent implements OnInit {
     server: Server;
     tracengTemplates: TracengTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

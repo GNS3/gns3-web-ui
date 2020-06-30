@@ -15,7 +15,7 @@ import { PortsComponent } from '../../../../../components/preferences/common/por
     styleUrls: ['../configurator.component.scss']
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
-    @ViewChild(PortsComponent, {static: false}) portsComponent: PortsComponent;
+    @ViewChild(PortsComponent) portsComponent: PortsComponent;
     server: Server;
     node: Node;
     name: string;

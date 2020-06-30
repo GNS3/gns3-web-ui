@@ -34,7 +34,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     generalSettingsForm: FormGroup;
 
-    @ViewChild("customAdaptersConfigurator", {static: false}) 
+    @ViewChild("customAdaptersConfigurator") 
         customAdaptersConfigurator: CustomAdaptersComponent;
 
     constructor(

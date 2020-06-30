@@ -13,7 +13,7 @@ export class TextComponent implements OnInit, DoCheck {
 
   @Input('app-text') text: TextElement;
 
-  @ViewChild('text', {static: false}) textRef: ElementRef;
+  @ViewChild('text') textRef: ElementRef;
 
   lines: string[] = [];
 

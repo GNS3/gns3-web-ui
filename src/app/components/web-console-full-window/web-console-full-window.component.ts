@@ -30,7 +30,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
     public term: Terminal = new Terminal();
     public fitAddon: FitAddon = new FitAddon();
 
-    @ViewChild('terminal', {static: false}) terminal: ElementRef;
+    @ViewChild('terminal') terminal: ElementRef;
 
     constructor(
         private consoleService: NodeConsoleService,

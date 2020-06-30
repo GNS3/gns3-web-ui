@@ -10,7 +10,7 @@ import { ToasterService } from '../../services/toaster.service';
   encapsulation: ViewEncapsulation.None
 })
 export class AdbutlerComponent implements OnInit {
-  @ViewChild('ad', {static: false}) ad: ElementRef;
+  @ViewChild('ad') ad: ElementRef;
   theme: string;
   onLoad = new EventEmitter();
   htmlCode: string;

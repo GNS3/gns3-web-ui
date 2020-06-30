@@ -15,7 +15,7 @@ import { IouService } from '../../../../services/iou.service';
 export class IouTemplatesComponent implements OnInit {
     server: Server;
     iouTemplates: IouTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

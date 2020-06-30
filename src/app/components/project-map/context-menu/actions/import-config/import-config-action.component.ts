@@ -14,7 +14,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
 export class ImportConfigActionComponent {
     @Input() server: Server;
     @Input() node: Node;
-    @ViewChild('fileInput', {static: false}) fileInput: ElementRef;
+    @ViewChild('fileInput') fileInput: ElementRef;
     configType: string;
 
     constructor(

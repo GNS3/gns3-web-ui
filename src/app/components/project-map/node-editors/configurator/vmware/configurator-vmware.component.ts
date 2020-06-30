@@ -25,7 +25,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
     displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
     networkTypes = [];
 
-    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
+    @ViewChild("customAdapters") customAdapters: CustomAdaptersTableComponent;
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogVmwareComponent>,

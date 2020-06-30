@@ -38,7 +38,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
     ethernetInterface: string = '';
     ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
 
-    @ViewChild("udpTunnels", {static: false}) udpTunnels: UdpTunnelsComponent;
+    @ViewChild("udpTunnels") udpTunnels: UdpTunnelsComponent;
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogCloudComponent>,

@@ -40,7 +40,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     };
     dialogRefQemuImageCreator;
 
-    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
+    @ViewChild("customAdapters") customAdapters: CustomAdaptersTableComponent;
 
     constructor(
         private dialog: MatDialog,

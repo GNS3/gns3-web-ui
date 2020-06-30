@@ -22,7 +22,7 @@ export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
   @Input() server: Server;
 
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenu: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
   topPosition;
   leftPosition;

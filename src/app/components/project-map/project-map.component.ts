@@ -109,9 +109,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private scrollEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
 
-  @ViewChild(ContextMenuComponent, {static: false}) contextMenu: ContextMenuComponent;
-  @ViewChild(D3MapComponent, {static: false}) mapChild: D3MapComponent;
-  @ViewChild(ProjectMapMenuComponent, {static: false}) projectMapMenuComponent: ProjectMapMenuComponent;
+  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
+  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
   private projectMapSubscription: Subscription =  new Subscription();
 

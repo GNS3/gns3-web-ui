@@ -11,6 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -27,13 +28,13 @@
               "node_modules/notosans-fontface/css/notosans-fontface.min.css",
               "src/styles.css",
               {
+                "inject": false,
                 "input": "src/theme.scss",
-                "lazy": true,
                 "bundleName": "theme-default-dark"
               },
               {
+                "inject": false,
                 "input": "src/theme-light.scss",
-                "lazy": true,
                 "bundleName": "theme-default"
               }
             ],
@@ -41,6 +42,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": {
@@ -62,6 +69,12 @@
               ]
             },
             "electronProd": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -79,6 +92,12 @@
               ]
             },
             "electronDev": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -87,6 +106,12 @@
               ]
             },
             "githubProd": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -198,10 +223,13 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "scss"
+      "style": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

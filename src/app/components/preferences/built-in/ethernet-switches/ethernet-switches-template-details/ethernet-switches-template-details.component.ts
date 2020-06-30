@@ -16,7 +16,7 @@ import { PortsComponent } from '../../../common/ports/ports.component';
     styleUrls: ['./ethernet-switches-template-details.component.scss', '../../../preferences.component.scss']
 })
 export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
-    @ViewChild(PortsComponent, {static: false}) portsComponent: PortsComponent;
+    @ViewChild(PortsComponent) portsComponent: PortsComponent;
     server: Server;
     ethernetSwitchTemplate: EthernetSwitchTemplate;
     inputForm: FormGroup;

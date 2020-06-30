@@ -15,7 +15,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   @Input() links: Link[];
   @Output() onChooseInterface = new EventEmitter<any>();
 
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenu: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
   protected topPosition;
   protected leftPosition;
