@@ -19,6 +19,6 @@ export class OpenFileExplorerActionComponent implements OnInit {
   ngOnInit() {}
 
   open() {
-    this.electronService.shell.openItem(this.node.node_directory);
+    this.electronService.shell.openPath(this.node.node_directory);
   }
 }
