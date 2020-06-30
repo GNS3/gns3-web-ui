@@ -39,7 +39,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^10.0.1",
-    "@angular/cdk": "^8.2.3",
+    "@angular/cdk": "^10.0.1",
     "@angular/common": "^10.0.1",
     "@angular/compiler": "^10.0.1",
     "@angular/core": "^10.0.1",
@@ -83,8 +83,8 @@
     "tslib": "^2.0.0",
     "typeface-roboto": "^0.0.75",
     "xterm": "^4.1.0",
-    "xterm-addon-attach": "^0.5.0",
-    "xterm-addon-fit": "^0.3.0",
+    "xterm-addon-attach": "^0.6.0",
+    "xterm-addon-fit": "^0.4.0",
     "yargs": "^15.3.1",
     "zone.js": "~0.10.3"
   },
