@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Add new template</h1>
 
 <mat-horizontal-stepper [linear]="false" #stepper>
-    <mat-step [stepControl]="firstFormGroup">
+    <mat-step>
         <ng-template matStepLabel>Please select how you want to create new template</ng-template>
 
         <mat-radio-group class="radio-group">
@@ -15,7 +15,7 @@
         </div>
     </mat-step>
 
-    <mat-step [stepControl]="secondFormGroup">
+    <mat-step>
         <ng-template matStepLabel>{{actionTitle}}</ng-template>
 
         <mat-card [hidden]="!(action==='install')">
