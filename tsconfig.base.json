@@ -11,6 +11,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es5",
+    "types": ["jasmine", "jest", "mocha", "node"],
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -26,5 +27,9 @@
   },
   "include": [
     "./src/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
   ]
 }
