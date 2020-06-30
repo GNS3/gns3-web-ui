@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
 import { Server } from '../../../models/server';

@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { Link } from '../../../../../models/link';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 import { Project } from '../../../../../models/project';
 

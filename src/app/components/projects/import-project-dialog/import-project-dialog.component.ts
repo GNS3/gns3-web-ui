@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { v4 as uuid } from 'uuid';

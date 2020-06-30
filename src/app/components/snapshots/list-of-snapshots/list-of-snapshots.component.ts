@@ -4,7 +4,7 @@ import { ServerService } from '../../../services/server.service';
 import { ActivatedRoute } from '@angular/router';
 import { Server } from '../../..//models/server';
 import { Snapshot } from '../../../models/snapshot';
-import { Sort } from '@angular/material';
+import { Sort } from '@angular/material/sort';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { Project } from '../../../models/project';

@@ -4,7 +4,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';

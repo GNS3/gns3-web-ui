@@ -4,7 +4,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
 

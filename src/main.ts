@@ -1,4 +1,4 @@
-import 'hammerjs';
+
 import { enableProdMode, ApplicationRef } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 

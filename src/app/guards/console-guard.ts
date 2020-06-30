@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { CanDeactivate } from '@angular/router';
 import { NodeConsoleService } from '../services/nodeConsole.service';
 import { Observable } from 'rxjs';
-import { MatBottomSheet } from '@angular/material';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ConfirmationBottomSheetComponent } from '../components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 
 export interface CanComponentDeactivate {

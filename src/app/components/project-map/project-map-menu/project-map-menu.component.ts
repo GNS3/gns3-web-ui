@@ -9,7 +9,7 @@ import { SymbolService } from '../../../services/symbol.service';
 import { select } from 'd3-selection';
 import downloadSvg from 'svg-crowbar';
 import { ElectronService } from 'ngx-electron';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
 import { saveAsPng, saveAsJpeg } from 'save-html-as-image';
 import { ThemeService } from '../../../services/theme.service';

@@ -1,5 +1,10 @@
 import { Component, Input, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { MatDialogRef, Sort, MatTableDataSource, MatPaginator, MatDialog, MatStepper, MatSelectionList, MatSelectionListChange } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
+import { MatPaginator } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { MatStepper } from '@angular/material/stepper';
+import { MatTableDataSource } from '@angular/material/table';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';

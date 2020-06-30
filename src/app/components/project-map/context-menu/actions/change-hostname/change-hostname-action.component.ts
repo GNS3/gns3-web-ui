@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { Node } from '../../../../../cartography/models/node';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/change-hostname-dialog.component';
 
 @Component({
