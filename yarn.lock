@@ -7518,10 +7518,10 @@ normalize-url@^4.1.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.0.tgz#453354087e6ca96957bd8f5baf753f5982142129"
   integrity sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ==
 
-notosans-fontface@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/notosans-fontface/-/notosans-fontface-1.2.1.tgz#ef4537db9a0472123a48e3a801bdef5cb987d078"
-  integrity sha512-SG+774wSPWYmqdFx+V3A+5p1mUXmvfCSwwoNt7gJJGMRM3YW16jUNkZvxs2hT4t1GZ3UILT86cdpT17pIyvFqQ==
+notosans-fontface@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/notosans-fontface/-/notosans-fontface-1.1.0.tgz#327fd8b54aa3249a44678605d912e31f1449b855"
+  integrity sha512-IhzFGcl0xdFhsDKdpzB4mBB6ScFxKVoK7JNA7eyZ3XCw4/1XV3ZZ2QUql9cGX9rNfQDZjgHLyTOZRkrkd/5YDw==
 
 npm-bundled@^1.0.1:
   version "1.1.1"
