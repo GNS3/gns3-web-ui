@@ -1,4 +1,3 @@
-import * as Raven from 'raven-js';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -64,7 +63,6 @@ import { ProgressService } from './common/progress/progress.service';
 import { version } from './version';
 import { ToasterErrorHandler } from './common/error-handlers/toaster-error-handler';
 import { environment } from '../environments/environment';
-import { RavenState } from './common/error-handlers/raven-state-communicator';
 import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
 import { ServerDatabase } from './services/server.database';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
@@ -280,15 +278,6 @@ import { DataSourceFilter } from './filters/dataSourceFilter';
 import { ChangeHostnameActionComponent } from './components/project-map/context-menu/actions/change-hostname/change-hostname-action.component';
 import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
-
-if (environment.production) {
-  Raven.config('https://b2b1cfd9b043491eb6b566fd8acee358@sentry.io/842726', {
-    shouldSendCallback: () => {
-      return RavenState.shouldSend;
-    },
-    release: version
-  }).install();
-}
 
 @NgModule({
   declarations: [

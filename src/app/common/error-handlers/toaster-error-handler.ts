@@ -1,7 +1,7 @@
-import { RavenErrorHandler } from './raven-error-handler';
 import { ToasterService } from '../../services/toaster.service';
+import { SentryErrorHandler } from './sentry-error-handler';
 
-export class ToasterErrorHandler extends RavenErrorHandler {
+export class ToasterErrorHandler extends SentryErrorHandler {
   handleError(err: any): void {
     super.handleError(err);
     if (!err) return;
