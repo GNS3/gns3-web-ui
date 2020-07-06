@@ -11,6 +11,22 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "rxjs",
+              "rxjs-compat",
+              "uuid",
+              "css-tree",
+              "save-svg-as-png",
+              "angular-draggable-droppable",
+              "angular2-hotkeys",
+              "dom-set",
+              "dom-plane",
+              "mousetrap",
+              "@mattlewis92/dom-autoscroller",
+              "rxjs/Rx",
+              "rxjs/add/operator/map",
+              "rxjs-compat/add/operator/map"
+            ],
             "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
