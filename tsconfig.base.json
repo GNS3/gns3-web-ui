@@ -1,0 +1,46 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es5",
+    "types": ["jasmine", "jest", "mocha", "node"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    // below is fix for angular-cli to support core-js >= 3.0
+    "paths": {
+      "core-js/es7/reflect": ["../node_modules/core-js/proposals/reflect-metadata"],
+      "core-js/es6/*": ["../node_modules/core-js/es/*"]
+    },
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+  },
+  "include": [
+    "./src/**/*",
+  ],
+  "exclude": [
+    "src/test.ts",
+    "src/app/cartography/testing.ts",
+    "src/app/cartography/tool.ts",
+    "src/app/cartography/widgets/drawings.backup.ts",
+    "src/app/converters/converter.ts",
+    "src/app/models/software.ts",
+    "src/app/services/testing.ts",
+    "src/app/testing/app-testing/app-testing.module.ts",
+    "src/environments/environment.electron.prod.ts",
+    "src/environments/environment.electron.ts",
+    "src/environments/environment.github.prod.ts",
+    "src/environments/environment.prod.ts",
+    "**/*.spec.ts"
+  ]
+}

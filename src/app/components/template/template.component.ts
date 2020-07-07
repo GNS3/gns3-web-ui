@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { TemplateListDialogComponent, NodeAddedEvent } from './template-list-dialog/template-list-dialog.component';
 
 import { Server } from '../../models/server';

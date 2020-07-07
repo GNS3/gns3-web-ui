@@ -4,7 +4,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef, MatDialog } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { QemuService } from '../../../../../services/qemu.service';
 import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
@@ -40,7 +40,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     };
     dialogRefQemuImageCreator;
 
-    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
+    @ViewChild("customAdapters") customAdapters: CustomAdaptersTableComponent;
 
     constructor(
         private dialog: MatDialog,

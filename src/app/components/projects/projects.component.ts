@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { MatSort, MatSortable, MatDialog, MatBottomSheet } from '@angular/material';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort, MatSortable } from '@angular/material/sort';
 
 import { DataSource } from '@angular/cdk/collections';
 

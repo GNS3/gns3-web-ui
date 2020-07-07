@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { Project } from '../../../../../models/project';
 import { Drawing } from '../../../../../cartography/models/drawing';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 import { Label } from '../../../../../cartography/models/label';
 import { Node } from '../../../../../cartography/models/node';

@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
     styleUrls: ['./notification-box.component.scss']
 })
 export class NotificationBoxComponent implements OnInit, OnDestroy {
-    @ViewChild('dynamicComponentContainer', {read: ViewContainerRef, static: false}) dynamicComponentContainer;
+    @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) dynamicComponentContainer;
 
     timer: Observable<number>;
     viewTimer: Observable<number>;

@@ -14,7 +14,7 @@ export class CustomAdaptersComponent {
     @Output() closeConfiguratorEmitter = new EventEmitter<boolean>();
     @Output() saveConfigurationEmitter =  new EventEmitter<CustomAdapter[]>();
 
-    @ViewChild("customAdapters", {static: false}) customAdapters: CustomAdaptersTableComponent;
+    @ViewChild("customAdapters") customAdapters: CustomAdaptersTableComponent;
 
     public adapters: CustomAdapter[];
     public numberOfAdapters: number;

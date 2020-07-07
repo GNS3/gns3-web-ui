@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 import { SnapshotService } from '../../../services/snapshot.service';

@@ -23,7 +23,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     public fitAddon: FitAddon = new FitAddon();
     private copiedText: string = '';
 
-    @ViewChild('terminal', {static: false}) terminal: ElementRef;
+    @ViewChild('terminal') terminal: ElementRef;
 
     constructor(
         private consoleService: NodeConsoleService

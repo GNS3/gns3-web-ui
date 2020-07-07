@@ -15,7 +15,7 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
 export class EthernetHubsTemplatesComponent implements OnInit {
     server: Server;
     ethernetHubsTemplates: EthernetHubTemplate[] = [];
-    @ViewChild(DeleteTemplateComponent, {static: false}) deleteComponent: DeleteTemplateComponent;
+    @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
     constructor(
         private route: ActivatedRoute,

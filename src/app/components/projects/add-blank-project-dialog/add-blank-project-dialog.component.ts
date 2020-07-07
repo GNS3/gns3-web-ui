@@ -1,6 +1,6 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';

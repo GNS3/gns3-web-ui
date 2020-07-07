@@ -1,6 +1,8 @@
 import { ToasterService } from '../../services/toaster.service';
+import { Injectable } from "@angular/core";
 import { SentryErrorHandler } from './sentry-error-handler';
 
+@Injectable()
 export class ToasterErrorHandler extends SentryErrorHandler {
   handleError(err: any): void {
     super.handleError(err);

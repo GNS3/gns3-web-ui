@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Message } from '../../../models/message';
 import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';

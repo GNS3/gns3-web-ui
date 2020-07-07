@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
 import { Port } from '../../../models/port';
@@ -15,7 +15,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   @Input() links: Link[];
   @Output() onChooseInterface = new EventEmitter<any>();
 
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenu: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
   protected topPosition;
   protected leftPosition;
