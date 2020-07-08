@@ -10,7 +10,7 @@ import { Drawing } from '../cartography/models/drawing';
 
 export class WebServiceMessage {
   action: string;
-  event: Node | Link | Drawing;
+  event: Node | Link | Drawing | any;
 }
 
 @Injectable()
@@ -67,13 +67,13 @@ export class ProjectWebServiceHandler {
       this.drawingNotificationEmitter.emit(message);
     }
     if (message.action === 'log.error') {
-      this.errorNotificationEmitter.emit(message.event);
+      this.errorNotificationEmitter.emit(message.event.message);
     }
     if (message.action === 'log.warning') {
-      this.warningNotificationEmitter.emit(message.event);
+      this.warningNotificationEmitter.emit(message.event.message);
     }
     if (message.action === 'log.info') {
-      this.infoNotificationEmitter.emit(message.event);
+      this.infoNotificationEmitter.emit(message.event.message);
     }
   }
 }
