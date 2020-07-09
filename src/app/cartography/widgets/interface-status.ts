@@ -34,47 +34,93 @@ export class InterfaceStatusWidget implements Widget {
       }
 
       // start----------------------------------------------
+      // const status_started = link_group
+      //   .selectAll<SVGGElement, LinkStatus>('g.status_started')
+      //   .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
+      // status_started.exit().remove();
+
+      // const status_started_enter = status_started.enter()
+      //   .append<SVGGElement>('g')
+      //   .attr('class', 'status_started');
+
+      // status_started_enter
+      //   .append<SVGRectElement>('rect')
+      //     .attr('width', 30)
+      //     .attr('height', 20)
+      //     .attr('x', (ls: LinkStatus) => ls.x)
+      //     .attr('y', (ls: LinkStatus) => ls.y)
+      //     .attr('rx', 8)
+      //     .attr('ry', 8)
+      //     .style('fill', 'white')
+      //     .attr('stroke', '#2ecc71')
+      //     .attr('stroke-width', 3);
+
+      // status_started_enter
+      //   .append<SVGTextElement>('text')
+      //     .text((ls: LinkStatus) => ls.port)
+      //     // .attr('width', 20)
+      //     // .attr('height', 10)
+      //     .attr('x', (ls: LinkStatus) => ls.x)
+      //     .attr('y', (ls: LinkStatus) => ls.y - 5)
+      //     .attr('fill', `black`);
+
+      // status_started
+      //   .merge(status_started_enter);
+
+      // status_started_enter.exit().remove();
+      // status_started.exit().remove();
+      // end----------------------------------------------
+
+
+
+
+
+      // start2
       const status_started = link_group
-        .selectAll<SVGGElement, LinkStatus>('g.status_started')
+        .selectAll<SVGRectElement, LinkStatus>('rect.status_started')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
 
-      const status_started_enter = status_started.enter().append<SVGGElement>('g');
-
-      status_started_enter.exit().remove();
-      status_started.exit().remove();
+      const status_started_enter = status_started.enter().append<SVGRectElement>('rect');
 
       status_started
-        .append<SVGGElement>('g')
         .merge(status_started_enter)
         .attr('class', 'status_started')
-        .append<SVGRectElement>('rect')
-          .attr('width', 30)
-          .attr('height', 20)
-          .attr('x', (ls: LinkStatus) => ls.x)
-          .attr('y', (ls: LinkStatus) => ls.y)
-          .attr('cx', 5)
-          .attr('cy', 5)
-          .style('fill', 'white')
-          .attr('stroke', '#2ecc71');
+        .attr('width', 30)
+        .attr('height', 20)
+        .attr('x', (ls: LinkStatus) => ls.x - 10)
+        .attr('y', (ls: LinkStatus) => ls.y - 10)
+        .attr('rx', 8)
+        .attr('ry', 8)
+        .style('fill', 'white')
+        .attr('stroke', '#2ecc71')
+        .attr('stroke-width', 3);
 
-      status_started_enter.exit().remove();
       status_started.exit().remove();
 
-      status_started
-        .append<SVGGElement>('g')
-        .merge(status_started_enter)
-        .attr('class', 'status_started')
-        .append<SVGTextElement>('text')
-          .text((ls: LinkStatus) => ls.port)
-          // .attr('width', 20)
-          // .attr('height', 10)
-          .attr('x', (ls: LinkStatus) => ls.x)
-          .attr('y', (ls: LinkStatus) => ls.y - 5)
-          .attr('fill', `black`);
 
-      status_started_enter.exit().remove();
-      status_started.exit().remove();
-      // end----------------------------------------------
+
+      const status_started_label = link_group
+        .selectAll<SVGTextElement, LinkStatus>('text.status_started_label')
+        .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
+
+      const status_started_label_enter = status_started_label.enter().append<SVGTextElement>('text');
+
+      status_started_label
+        .merge(status_started_label_enter)
+        .attr('class', 'status_started_label')
+        .text((ls: LinkStatus) => ls.port)
+        // .attr('width', 20)
+        // .attr('height', 10)
+        .attr('x', (ls: LinkStatus) => ls.x - 5)
+        .attr('y', (ls: LinkStatus) => ls.y + 5)
+        .attr('fill', `black`);
+
+      status_started_label.exit().remove();
+      // end2
+
+
+
+
 
       // const status_started = link_group
       //   .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
