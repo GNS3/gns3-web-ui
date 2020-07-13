@@ -258,11 +258,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.projectService.open(this.server, this.project.project_id);
             this.title.setTitle(this.project.name);
 
-            if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
-              this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
-            } else {
-              this.isInterfaceLabelVisible = this.project.show_interface_labels;
-            }
+            // old settings
+            // if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
+            //   this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
+            // } else {
+            //   this.isInterfaceLabelVisible = this.project.show_interface_labels;
+            // }
             
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
             this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
@@ -672,9 +673,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.toolsService.drawLinkToolActivation(this.tools.draw_link);
   }
 
-  public toggleShowInterfaceLabels(visible: boolean) {
-    this.isInterfaceLabelVisible = visible;
+  public toggleShowInterfaceLabels(enabled: boolean) {
+    this.isInterfaceLabelVisible = enabled;
     this.mapSettingsService.toggleShowInterfaceLabels(this.project.project_id, this.isInterfaceLabelVisible);
+
+    this.mapSettingsService.integrateLinkLabelsToLinks = false;
+    this.mapSettingsService.mapRenderedEmitter.emit(true);
+  }
+
+  public toggleIntegrateLinkLabelsToLinks(enabled: boolean) {
+    this.isInterfaceLabelVisible = false;
+    this.mapSettingsService.toggleShowInterfaceLabels(this.project.project_id, this.isInterfaceLabelVisible);
+
+    this.mapSettingsService.integrateLinkLabelsToLinks = enabled;
+    this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 
   public toggleShowConsole(visible: boolean) {
@@ -719,10 +731,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleSnapToGrid(enabled: boolean) {
     this.project.snap_to_grid = enabled;
-  }
-
-  public toggleIntegrateLinkLabelsToLinks(enabled: boolean) {
-    this.mapSettingsService.integrateLinkLabelsToLinks = enabled;
   }
 
   private showMessage(msg) {

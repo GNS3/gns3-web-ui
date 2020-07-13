@@ -109,8 +109,11 @@
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
+          <mat-checkbox [ngModel]="mapSettingsService.integrateLinkLabelsToLinks" (change)="toggleIntegrateLinkLabelsToLinks($event.checked)">
+            Integrate link labels to links
+          </mat-checkbox>
           <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
-            Show interface labels
+            Show interface labels separately
           </mat-checkbox><br/>
           <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
             Show console
@@ -130,9 +133,6 @@
           <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
             Snap to grid
           </mat-checkbox><br/>
-          <mat-checkbox [ngModel]="mapSettingsService.integrateLinkLabelsToLinks" (change)="toggleIntegrateLinkLabelsToLinks($event.checked)">
-            Integrate link labels to links
-          </mat-checkbox>
         </div>
       </mat-menu>
 
