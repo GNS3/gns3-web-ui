@@ -721,6 +721,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.project.snap_to_grid = enabled;
   }
 
+  public toggleIntegrateLinkLabelsToLinks(enabled: boolean) {
+    this.mapSettingsService.integrateLinkLabelsToLinks = enabled;
+  }
+
   private showMessage(msg) {
     if (this.notificationsVisibility) {
       if (msg.type === 'error') this.toasterService.error(msg.message);
