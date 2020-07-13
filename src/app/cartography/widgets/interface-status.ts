@@ -33,59 +33,14 @@ export class InterfaceStatusWidget implements Widget {
         }
       }
 
-      // start----------------------------------------------
-      // const status_started = link_group
-      //   .selectAll<SVGGElement, LinkStatus>('g.status_started')
-      //   .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
-      // status_started.exit().remove();
-
-      // const status_started_enter = status_started.enter()
-      //   .append<SVGGElement>('g')
-      //   .attr('class', 'status_started');
-
-      // status_started_enter
-      //   .append<SVGRectElement>('rect')
-      //     .attr('width', 30)
-      //     .attr('height', 20)
-      //     .attr('x', (ls: LinkStatus) => ls.x)
-      //     .attr('y', (ls: LinkStatus) => ls.y)
-      //     .attr('rx', 8)
-      //     .attr('ry', 8)
-      //     .style('fill', 'white')
-      //     .attr('stroke', '#2ecc71')
-      //     .attr('stroke-width', 3);
-
-      // status_started_enter
-      //   .append<SVGTextElement>('text')
-      //     .text((ls: LinkStatus) => ls.port)
-      //     // .attr('width', 20)
-      //     // .attr('height', 10)
-      //     .attr('x', (ls: LinkStatus) => ls.x)
-      //     .attr('y', (ls: LinkStatus) => ls.y - 5)
-      //     .attr('fill', `black`);
-
-      // status_started
-      //   .merge(status_started_enter);
-
-      // status_started_enter.exit().remove();
-      // status_started.exit().remove();
-      // end----------------------------------------------
-
-
-
-
-
-      // start2
       const status_started = link_group
         .selectAll<SVGRectElement, LinkStatus>('rect.status_started')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
-
       const status_started_enter = status_started.enter().append<SVGRectElement>('rect');
-
       status_started
         .merge(status_started_enter)
         .attr('class', 'status_started')
-        .attr('width', 30)
+        .attr('width', 40)
         .attr('height', 20)
         .attr('x', (ls: LinkStatus) => ls.x - 10)
         .attr('y', (ls: LinkStatus) => ls.y - 10)
@@ -94,33 +49,20 @@ export class InterfaceStatusWidget implements Widget {
         .style('fill', 'white')
         .attr('stroke', '#2ecc71')
         .attr('stroke-width', 3);
-
       status_started.exit().remove();
-
-
 
       const status_started_label = link_group
         .selectAll<SVGTextElement, LinkStatus>('text.status_started_label')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
-
       const status_started_label_enter = status_started_label.enter().append<SVGTextElement>('text');
-
       status_started_label
         .merge(status_started_label_enter)
         .attr('class', 'status_started_label')
         .text((ls: LinkStatus) => ls.port)
-        // .attr('width', 20)
-        // .attr('height', 10)
         .attr('x', (ls: LinkStatus) => ls.x - 5)
         .attr('y', (ls: LinkStatus) => ls.y + 5)
         .attr('fill', `black`);
-
       status_started_label.exit().remove();
-      // end2
-
-
-
-
 
       // const status_started = link_group
       //   .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
@@ -142,37 +84,99 @@ export class InterfaceStatusWidget implements Widget {
       const status_stopped = link_group
         .selectAll<SVGRectElement, LinkStatus>('rect.status_stopped')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'stopped'));
-
       const status_stopped_enter = status_stopped.enter().append<SVGRectElement>('rect');
-
-      const STOPPED_STATUS_RECT_WIDTH = 10;
-
       status_stopped
         .merge(status_stopped_enter)
         .attr('class', 'status_stopped')
-        .attr('x', (ls: LinkStatus) => ls.x - STOPPED_STATUS_RECT_WIDTH / 2)
-        .attr('y', (ls: LinkStatus) => ls.y - STOPPED_STATUS_RECT_WIDTH / 2)
-        .attr('width', STOPPED_STATUS_RECT_WIDTH)
-        .attr('height', STOPPED_STATUS_RECT_WIDTH)
-        .attr('fill', 'red');
-
+        .attr('width', 40)
+        .attr('height', 20)
+        .attr('x', (ls: LinkStatus) => ls.x - 10)
+        .attr('y', (ls: LinkStatus) => ls.y - 10)
+        .attr('rx', 8)
+        .attr('ry', 8)
+        .style('fill', 'white')
+        .attr('stroke', 'red')
+        .attr('stroke-width', 3);
       status_stopped.exit().remove();
 
+      const status_stopped_label = link_group
+        .selectAll<SVGTextElement, LinkStatus>('text.status_stopped_label')
+        .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'stopped'));
+      const status_stopped_label_enter = status_stopped_label.enter().append<SVGTextElement>('text');
+      status_stopped_label
+        .merge(status_stopped_label_enter)
+        .attr('class', 'status_stopped_label')
+        .text((ls: LinkStatus) => ls.port)
+        .attr('x', (ls: LinkStatus) => ls.x - 5)
+        .attr('y', (ls: LinkStatus) => ls.y + 5)
+        .attr('fill', `black`);
+      status_stopped_label.exit().remove();
+
+      // const status_stopped = link_group
+      //   .selectAll<SVGRectElement, LinkStatus>('rect.status_stopped')
+      //   .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'stopped'));
+
+      // const status_stopped_enter = status_stopped.enter().append<SVGRectElement>('rect');
+
+      // const STOPPED_STATUS_RECT_WIDTH = 10;
+
+      // status_stopped
+      //   .merge(status_stopped_enter)
+      //   .attr('class', 'status_stopped')
+      //   .attr('x', (ls: LinkStatus) => ls.x - STOPPED_STATUS_RECT_WIDTH / 2)
+      //   .attr('y', (ls: LinkStatus) => ls.y - STOPPED_STATUS_RECT_WIDTH / 2)
+      //   .attr('width', STOPPED_STATUS_RECT_WIDTH)
+      //   .attr('height', STOPPED_STATUS_RECT_WIDTH)
+      //   .attr('fill', 'red');
+
+      // status_stopped.exit().remove();
+
       const status_suspended = link_group
-        .selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended')
+        .selectAll<SVGRectElement, LinkStatus>('rect.status_suspended')
         .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'suspended'));
-
-      const status_suspended_enter = status_suspended.enter().append<SVGCircleElement>('circle');
-
+      const status_suspended_enter = status_suspended.enter().append<SVGRectElement>('rect');
       status_suspended
         .merge(status_suspended_enter)
         .attr('class', 'status_suspended')
-        .attr('cx', (ls: LinkStatus) => ls.x)
-        .attr('cy', (ls: LinkStatus) => ls.y)
-        .attr('r', 6)
-        .attr('fill', '#FFFF00');
-
+        .attr('width', 40)
+        .attr('height', 20)
+        .attr('x', (ls: LinkStatus) => ls.x - 10)
+        .attr('y', (ls: LinkStatus) => ls.y - 10)
+        .attr('rx', 8)
+        .attr('ry', 8)
+        .style('fill', 'white')
+        .attr('stroke', '#FFFF00')
+        .attr('stroke-width', 3);
       status_suspended.exit().remove();
+
+      const status_suspended_label = link_group
+        .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label')
+        .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'suspended'));
+      const status_suspended_label_enter = status_suspended_label.enter().append<SVGTextElement>('text');
+      status_suspended_label
+        .merge(status_suspended_label_enter)
+        .attr('class', 'status_suspended_label')
+        .text((ls: LinkStatus) => ls.port)
+        .attr('x', (ls: LinkStatus) => ls.x - 5)
+        .attr('y', (ls: LinkStatus) => ls.y + 5)
+        .attr('fill', `black`);
+      status_suspended_label.exit().remove();
+
+      // const status_suspended = link_group
+      //   .selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended')
+      //   .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'suspended'));
+
+      // const status_suspended_enter = status_suspended.enter().append<SVGCircleElement>('circle');
+
+      // status_suspended
+      //   .merge(status_suspended_enter)
+      //   .attr('class', 'status_suspended')
+      //   .attr('cx', (ls: LinkStatus) => ls.x)
+      //   .attr('cy', (ls: LinkStatus) => ls.y)
+      //   .attr('r', 6)
+      //   .attr('fill', '#FFFF00');
+
+      // status_suspended.exit().remove();
     });
   }
 }
