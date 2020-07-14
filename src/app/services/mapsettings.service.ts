@@ -11,6 +11,8 @@ export class MapSettingsService {
     public logConsoleSubject = new Subject<boolean>();
     public mapRenderedEmitter = new EventEmitter<boolean>();
 
+    public integrateLinkLabelsToLinks: boolean = true;
+
     constructor() {
         this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     }
