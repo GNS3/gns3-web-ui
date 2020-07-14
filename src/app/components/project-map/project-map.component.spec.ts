@@ -1,7 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectMapComponent } from './project-map.component';
-import { MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule, MatBottomSheetModule } from '@angular/material';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ServerService } from '../../services/server.service';
 import { ProjectService } from '../../services/project.service';

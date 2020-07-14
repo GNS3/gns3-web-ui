@@ -1,17 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
 import { Server } from '../../../models/server';
-import {
-  MatInputModule,
-  MatIconModule,
-  MatSortModule,
-  MatTableModule,
-  MatTooltipModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA
-} from '@angular/material';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FileUploadModule, FileSelectDirective, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
