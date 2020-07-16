@@ -30,7 +30,7 @@ export class InterfaceStatusWidget implements Widget {
         const start_point: SVGPoint = link_path.node().getPointAtLength(100);
         const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 100);
 
-        if (link_path.node().getTotalLength() > 2 * 45 + 10) {
+        if (link_path.node().getTotalLength() > 2 * 45 + 170) {
           if (l.source && l.target) {
             let sourcePort = l.nodes.find(node => node.nodeId === l.source.id).label.text;
             let destinationPort = l.nodes.find(node => node.nodeId === l.target.id).label.text;
@@ -70,7 +70,7 @@ export class InterfaceStatusWidget implements Widget {
         status_started
           .merge(status_started_enter)
           .attr('class', 'status_started')
-          .attr('width', 40)
+          .attr('width', 60)
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 10)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
@@ -100,7 +100,7 @@ export class InterfaceStatusWidget implements Widget {
         status_stopped
           .merge(status_stopped_enter)
           .attr('class', 'status_stopped')
-          .attr('width', 40)
+          .attr('width', 60)
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 10)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
@@ -130,7 +130,7 @@ export class InterfaceStatusWidget implements Widget {
         status_suspended
           .merge(status_suspended_enter)
           .attr('class', 'status_suspended')
-          .attr('width', 40)
+          .attr('width', 60)
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 10)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
