@@ -27,10 +27,10 @@ export class InterfaceStatusWidget implements Widget {
 
       let statuses = [];
       if (link_path.node()) {
-        const start_point: SVGPoint = link_path.node().getPointAtLength(100);
-        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 100);
+        const start_point: SVGPoint = link_path.node().getPointAtLength(80);
+        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 80);
 
-        if (link_path.node().getTotalLength() > 2 * 45 + 170) {
+        if (link_path.node().getTotalLength() > 2 * 45 + 130) {
           if (l.source && l.target) {
             let sourcePort = l.nodes.find(node => node.nodeId === l.source.id).label.text;
             let destinationPort = l.nodes.find(node => node.nodeId === l.target.id).label.text;
