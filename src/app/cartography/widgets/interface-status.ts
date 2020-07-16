@@ -88,7 +88,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_started_label_enter)
           .attr('class', 'status_started_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 5)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_started_label.exit().remove();
@@ -118,7 +118,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_stopped_label_enter)
           .attr('class', 'status_stopped_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 5)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_stopped_label.exit().remove();
@@ -148,7 +148,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_suspended_label_enter)
           .attr('class', 'status_suspended_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 5)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_suspended_label.exit().remove();
