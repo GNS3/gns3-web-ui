@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
 import { environment } from '../../environments/environment';
-declare var ga:Function;
+declare var gtag:Function;
 
 @Injectable()
 export class GoogleAnalyticsService {
@@ -11,8 +11,8 @@ export class GoogleAnalyticsService {
     if (!environment.production) return;
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        ga('set', 'page', event.url);
-        ga('send', 'pageview');
+        gtag('set', 'page', event.url);
+        gtag('send', 'pageview');
       }
     })
   }
