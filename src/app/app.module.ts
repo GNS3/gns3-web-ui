@@ -606,4 +606,6 @@ import { ApplianceInfoDialogComponent } from './components/project-map/new-templ
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(protected _googleAnalyticsService: GoogleAnalyticsService) { }
+}
