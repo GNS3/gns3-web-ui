@@ -29,6 +29,10 @@ export class ConsoleDeviceActionBrowserComponent {
         if (this.node.status !== "started") {
             this.toasterService.error("This node must be started before a console can be opened");
         } else {
+            if (this.node.console_host === '0.0.0.0' || this.node.console_host === '0:0:0:0:0:0:0:0' || this.node.console_host === '::') {
+                this.node.console_host = this.server.host;
+            }
+
             if (this.node.console_type === "telnet") {
                 location.assign(`gns3+telnet://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`);
             } else if (this.node.console_type === "vnc") {

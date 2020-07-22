@@ -57,7 +57,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
                 this.nodes = nodes;
                 this.nodes.forEach(n => {
-                    if (n.console_host === '0.0.0.0') {
+                    if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
                         n.console_host = this.server.host;
                     }
                 });
