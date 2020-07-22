@@ -181,7 +181,7 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
                         <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
