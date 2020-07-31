@@ -20,6 +20,22 @@ export class InterfaceStatusWidget implements Widget {
 
   public draw(view: SVGSelection) {
     const self = this;
+    let mapLinks: MapLink[] = [];
+
+    view.each(function(this: SVGGElement, l: MapLink) {
+      mapLinks.push(l);
+    });
+    mapLinks.forEach(mapLink => {
+      mapLinks.forEach(n => {
+        if (n.nodes[0].linkId !== mapLink.nodes[0].linkId){
+          if ((mapLink.nodes[0].nodeId === n.nodes[0].nodeId && mapLink.nodes[1].nodeId === n.nodes[1].nodeId) || 
+            (mapLink.nodes[0].nodeId === n.nodes[1].nodeId && mapLink.nodes[1].nodeId === n.nodes[0].nodeId) || 
+            (mapLink.nodes[1].nodeId === n.nodes[0].nodeId && mapLink.nodes[0].nodeId === n.nodes[1].nodeId)) {
+            mapLink.isMultiplied = true;
+          }
+        }
+      });
+    });
 
     view.each(function(this: SVGGElement, l: MapLink) {
       const link_group = select<SVGGElement, MapLink>(this);
@@ -62,7 +78,7 @@ export class InterfaceStatusWidget implements Widget {
       link_group
         .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
 
-      if (self.mapSettingsService.integrateLinkLabelsToLinks) {
+      if (self.mapSettingsService.integrateLinkLabelsToLinks && !l.isMultiplied) {
         const status_started = link_group
           .selectAll<SVGRectElement, LinkStatus>('rect.status_started')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));

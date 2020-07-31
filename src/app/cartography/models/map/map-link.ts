@@ -20,6 +20,7 @@ export class MapLink implements Indexed {
   target: MapNode; // this is not from server
 
   isSelected = false; // this is not from server
+  isMultiplied = false; // this is not from server
   x: number; // this is not from server
   y: number; // this is not from server
 }
