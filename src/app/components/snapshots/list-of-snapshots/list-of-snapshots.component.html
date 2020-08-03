@@ -28,11 +28,11 @@
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
                     <mat-cell *matCellDef="let row" style="text-align: right">
-                        <button mat-icon-button matTooltip="Restore snapshot" (click)="restoreSnapshot(row)">
+                        <button mat-icon-button matTooltip="Restore snapshot" matTooltipClass="custom-tooltip" (click)="restoreSnapshot(row)">
                             <mat-icon aria-label="Restore snapshot">restore</mat-icon>
                         </button>
                         
-                        <button mat-icon-button matTooltip="Delete snapshot" (click)="deleteSnapshot(row)">
+                        <button mat-icon-button matTooltip="Delete snapshot" matTooltipClass="custom-tooltip" (click)="deleteSnapshot(row)">
                             <mat-icon aria-label="Delete snapshot">delete</mat-icon>
                         </button>
                     </mat-cell>

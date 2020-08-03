@@ -56,11 +56,11 @@
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
                     <mat-cell *matCellDef="let row" style="text-align: right">
-                        <button mat-icon-button matTooltip="Install" (click)="install(row)">
+                        <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
                             <mat-icon aria-label="Install">archive</mat-icon>
                         </button>
                         
-                        <button mat-icon-button matTooltip="Show info" (click)="showInfo(row)">
+                        <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
                             <mat-icon aria-label="Show info">info</mat-icon>
                         </button>
                     </mat-cell>
@@ -147,8 +147,8 @@
                                 {{image.filename}}
                             </div>
                             <div>
-                                <span *ngIf="checkImage(image)"><mat-icon matTooltip="Ready to install">check</mat-icon></span>
-                                <span *ngIf="!checkImage(image)"><mat-icon matTooltip="Missing">close</mat-icon></span>
+                                <span *ngIf="checkImage(image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
+                                <span *ngIf="!checkImage(image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
                                 <input
                                     type="file"
                                     class="non-visible"

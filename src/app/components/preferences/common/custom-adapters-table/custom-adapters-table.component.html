@@ -23,7 +23,7 @@
     <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let element">
-            <button mat-icon-button matTooltip="Delete adapter" (click)="delete(element)">
+            <button mat-icon-button matTooltip="Delete adapter" matTooltipClass="custom-tooltip" (click)="delete(element)">
                 <mat-icon aria-label="Delete adapter">delete</mat-icon>
             </button>
         </td>
