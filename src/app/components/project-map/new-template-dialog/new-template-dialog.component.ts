@@ -26,6 +26,7 @@ import { IouService } from '../../../services/iou.service';
 import { IouTemplate } from '../../../models/templates/iou-template';
 import { TemplateService } from '../../../services/template.service';
 import { Template } from '../../../models/template';
+import { ComputeService } from '../../../services/compute.service';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -56,7 +57,10 @@ export class NewTemplateDialogComponent implements OnInit {
     public applianceToInstall: Appliance;
     public selectedImages: any[];
 
-    private isGns3VmChosen = true;
+    public isGns3VmAvailable = false;
+    public isLinuxPlatform = false;
+
+    private isGns3VmChosen = false;
     private isLocalComputerChosen = false;
 
     public qemuBinaries: QemuBinary[] = [];
@@ -85,10 +89,21 @@ export class NewTemplateDialogComponent implements OnInit {
         private iosService: IosService,
         private iouService: IouService,
         private templateService: TemplateService,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private computeService: ComputeService
     ) {}
 
     ngOnInit() {
+        this.computeService.getComputes(this.server).subscribe((computes) => {
+            computes.forEach(compute => {
+                if (compute.compute_id === 'vm') {
+                    this.isGns3VmAvailable = true;
+                    this.isGns3VmChosen = true;
+                }
+                if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
+            })
+        });
+
         this.qemuService.getImages(this.server).subscribe((qemuImages) => {
             this.qemuImages = qemuImages;
         });

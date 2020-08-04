@@ -113,17 +113,17 @@
     <mat-step *ngIf="applianceToInstall">
         <ng-template matStepLabel>{{secondActionTitle}}</ng-template>
 
-        <mat-card [hidden]="applianceToInstall">
-            Please select appliance to install first
+        <mat-card [hidden]="!(!isLinuxPlatform && !isGns3VmAvailable && !applianceToInstall.dynamips)">
+            Please configure GNS3 VM to install selected appliance
         </mat-card>
 
-        <mat-card [hidden]="!applianceToInstall">
+        <mat-card [hidden]="!(isLinuxPlatform || isGns3VmAvailable || applianceToInstall.dynamips)">
             <div *ngIf="applianceToInstall.qemu">
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div>
@@ -170,8 +170,8 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">Create docker template</button>
@@ -181,8 +181,8 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div>
@@ -214,8 +214,8 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div>
