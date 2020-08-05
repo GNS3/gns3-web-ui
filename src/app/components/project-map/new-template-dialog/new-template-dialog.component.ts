@@ -409,6 +409,11 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     createQemuTemplateFromVersion(version: Version) {
+        if (!this.checkImages(version)) {
+            this.toasterService.error('Please install required images first');
+            return;
+        }
+
         if (!this.selectedBinary) {
             this.toasterService.error('Please select QEMU binary first');
             return;
