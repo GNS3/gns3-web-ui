@@ -49,6 +49,7 @@ export interface Iou {
 
 export interface Images {
     hda_disk_image: string;
+    hdb_disk_image: string;
 }
 
 export interface Version {

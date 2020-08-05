@@ -139,30 +139,60 @@
                     </mat-select>
                 </div>
                 <div>
-                    Install required files
-                    <mat-list>
-                        <mat-list-item *ngFor="let image of applianceToInstall.images">
-                          <div class="list-item">
-                            <div>
-                                {{image.filename}}
+                    Install required files <br/>
+                    <div>
+                        <div *ngFor="let version of applianceToInstall.versions">
+                            <div class="list-item">
+                                <span>{{applianceToInstall.name}} version {{version.name}}</span>
+
+                                <div>
+                                    <button *ngIf="checkImages(version)" class="button" mat-raised-button color="primary" (click)="createQemuTemplateFromVersion(version)">Create</button>
+                                </div>
                             </div>
-                            <div>
-                                <span *ngIf="checkImage(image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
-                                <span *ngIf="!checkImage(image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
-                                <input
-                                    type="file"
-                                    class="non-visible"
-                                    #file2
-                                    (change)="importImage($event)"
-                                    ng2FileSelect
-                                    [uploader]="uploaderImage"/>
-                                <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                                <button class="button" mat-raised-button (click)="downloadImage(image)">Download</button>
-                                <button *ngIf="checkImage(image)" class="button" mat-raised-button color="primary" (click)="createQemuTemplate(image)">Create</button>
+
+                            <div class="list-item-inside" *ngIf="version.images.hda_disk_image">
+                                <span>
+                                    {{version.images.hda_disk_image}}
+                                </span>
+
+                                <div>
+                                    <span *ngIf="checkImageFromVersion(version.images.hda_disk_image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
+                                    <span *ngIf="!checkImageFromVersion(version.images.hda_disk_image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
+
+                                    <input
+                                        type="file"
+                                        class="non-visible"
+                                        #file2
+                                        (change)="importImage($event)"
+                                        ng2FileSelect
+                                        [uploader]="uploaderImage"/>
+                                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                                    <button class="button" mat-raised-button (click)="downloadImageFromVersion(version.images.hda_disk_image)">Download</button>
+                                </div>
                             </div>
-                          </div>
-                        </mat-list-item>
-                    </mat-list>
+
+                            <div class="list-item-inside" *ngIf="version.images.hdb_disk_image">
+                                <span>
+                                    {{version.images.hdb_disk_image}}
+                                </span>
+
+                                <div>
+                                    <span *ngIf="checkImageFromVersion(version.images.hdb_disk_image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
+                                    <span *ngIf="!checkImageFromVersion(version.images.hdb_disk_image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
+
+                                    <input
+                                        type="file"
+                                        class="non-visible"
+                                        #file2
+                                        (change)="importImage($event)"
+                                        ng2FileSelect
+                                        [uploader]="uploaderImage"/>
+                                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                                    <button class="button" mat-raised-button (click)="downloadImageFromVersion(version.images.hdb_disk_image)">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
