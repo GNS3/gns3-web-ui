@@ -426,6 +426,9 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.boot_priority = this.applianceToInstall.qemu.boot_priority;
         qemuTemplate.console_type =  this.applianceToInstall.qemu.console_type;
         qemuTemplate.hda_disk_interface = this.applianceToInstall.qemu.hda_disk_interface;
+        qemuTemplate.hdb_disk_interface = this.applianceToInstall.qemu.hdb_disk_interface;
+        qemuTemplate.hdc_disk_interface = this.applianceToInstall.qemu.hdc_disk_interface;
+        qemuTemplate.hdd_disk_interface = this.applianceToInstall.qemu.hdd_disk_interface;
         qemuTemplate.builtin = this.applianceToInstall.builtin;
         qemuTemplate.category = this.applianceToInstall.category;
         qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
@@ -437,6 +440,7 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.hda_disk_image = version.images.hda_disk_image;
         qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
         qemuTemplate.template_type = 'qemu';
+        qemuTemplate.usage = this.applianceToInstall.usage;
 
         this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
             this.templateService.newTemplateCreated.next(template as any as Template);
