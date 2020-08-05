@@ -13,6 +13,9 @@ export interface Qemu {
     boot_priority: string;
     console_type: string;
     hda_disk_interface: string;
+    hdb_disk_interface: string;
+    hdc_disk_interface: string;
+    hdd_disk_interface: string;
     kvm: string;
     ram: number;
 }
