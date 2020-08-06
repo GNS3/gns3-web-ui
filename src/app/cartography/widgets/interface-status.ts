@@ -78,7 +78,7 @@ export class InterfaceStatusWidget implements Widget {
       link_group
         .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
 
-      if (self.mapSettingsService.integrateLinkLabelsToLinks && !l.isMultiplied) {
+      if (self.mapSettingsService.showInterfaceLabels && self.mapSettingsService.integrateLinkLabelsToLinks && !l.isMultiplied) {
         const status_started = link_group
           .selectAll<SVGRectElement, LinkStatus>('rect.status_started')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
