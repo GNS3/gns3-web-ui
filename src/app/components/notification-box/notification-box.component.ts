@@ -65,6 +65,9 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
 
     startTimer() {
         this.timer = timer(this.delayTime, 1000);
+        setTimeout(() => {
+            this.showNotification();
+        }, 5000);
 
         this.timerSubscription = this.timer.subscribe(() => {
             this.ticks++;
