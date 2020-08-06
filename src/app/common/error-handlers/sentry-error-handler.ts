@@ -66,6 +66,6 @@ export class SentryErrorHandler implements ErrorHandler {
     }
     
     // Optionally show user dialog to provide details on what happened.
-    Sentry.showReportDialog({ eventId });
+    // Sentry.showReportDialog({ eventId });
   }
 }
