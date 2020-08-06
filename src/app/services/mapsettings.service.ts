@@ -11,10 +11,11 @@ export class MapSettingsService {
     public mapRenderedEmitter = new EventEmitter<boolean>();
 
     public showInterfaceLabels: boolean = true;
-    public integrateLinkLabelsToLinks: boolean = false;
+    public integrateLinkLabelsToLinks: boolean = true;
 
     constructor() {
         this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
+        if (localStorage.getItem('integrateLinkLabelsToLinks')) this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
     }
 
     changeMapLockValue(value: boolean) {
@@ -39,5 +40,11 @@ export class MapSettingsService {
 
     toggleIntegrateInterfaceLabels(value: boolean) {
         this.integrateLinkLabelsToLinks = value;
+        localStorage.removeItem('integrateLinkLabelsToLinks');
+        if (value) {
+            localStorage.setItem('integrateLinkLabelsToLinks', 'true');
+        } else {
+            localStorage.setItem('integrateLinkLabelsToLinks', 'false');
+        }
     }
 }
