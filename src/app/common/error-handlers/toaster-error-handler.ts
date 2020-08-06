@@ -5,7 +5,7 @@ import { SentryErrorHandler } from './sentry-error-handler';
 @Injectable()
 export class ToasterErrorHandler extends SentryErrorHandler {
   handleError(err: any): void {
-    if (err.error && err.error.status && err.error.status === 403) {} else {
+    if (err.error && err.error.status && !(err.error.status === 403)) {
       super.handleError(err);
     }
 
