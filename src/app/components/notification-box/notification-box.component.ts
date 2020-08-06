@@ -25,8 +25,9 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     interval = 10;
 
     delayTime: number = 5000;
-    breakTime: number = 20;
-    isEndless: boolean = false;
+    breakTime: number = 20 * 60;
+    isEndless: boolean = true;
+
     numberOfViews: number = 1;
     isLightThemeEnabled: boolean = false;
 
@@ -41,7 +42,10 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
         let adbutler = localStorage.getItem('adbutler');
         var today = new Date().toISOString().substring(0, 10);
 
-        if (!this.location.path().includes('nodes') && !(adbutler == today)) this.startTimer();
+        // to show ad once a day
+        // if (!this.location.path().includes('nodes') && !(adbutler == today)) this.startTimer();
+
+        if (!this.location.path().includes('nodes')) this.startTimer();
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
     }
 
@@ -82,7 +86,7 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     }
 
     showNotification() {
-        localStorage.setItem('adbutler', new Date().toISOString().substring(0, 10));
+        // localStorage.setItem('adbutler', new Date().toISOString().substring(0, 10));
         
         this.viewTimer = timer(0, 100);
         this.progress = 0;
