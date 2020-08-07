@@ -476,6 +476,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           this.progressService.deactivate();
         }
       });
+    },
+    error => {
+      this.toasterService.error(error.error.message);
+      this.progressService.deactivate();
     });
   }
 
