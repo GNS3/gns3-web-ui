@@ -92,6 +92,10 @@ export class LinkService {
     return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/stop_capture`, {});
   }
 
+  resetLink(server: Server, link: Link) {
+    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/reset`, {});
+  }
+
   streamPcap(server: Server, link: Link) {
     return this.httpServer.get(server, `/projects/${link.project_id}/links/${link.link_id}/pcap`)
   }

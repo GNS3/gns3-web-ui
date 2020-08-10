@@ -141,6 +141,11 @@
       [server]="server"
       [link]="links[0]"
     ></app-suspend-link-action>
+    <app-reset-link-action
+      *ngIf="!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
+      [server]="server"
+      [link]="links[0]"
+    ></app-reset-link-action>
     <app-lock-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length>0 || nodes.length>0)"
       [server]="server"
