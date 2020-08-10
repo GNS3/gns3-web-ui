@@ -77,6 +77,12 @@
                                 placeholder="Console HTTP path">
                         </mat-form-field>
                     </mat-tab>
+
+                    <mat-tab label="Usage">
+                        <mat-form-field class="form-field">
+                            <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+                        </mat-form-field>
+                    </mat-tab>
                 </mat-tab-group>
             </mat-card>
         </div>

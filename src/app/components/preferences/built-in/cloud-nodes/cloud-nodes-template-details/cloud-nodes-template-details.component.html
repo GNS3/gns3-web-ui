@@ -163,6 +163,16 @@
                 </mat-form-field>
                 <button mat-button class="form-field" (click)="onAddUdpInterface()">Add</button>
             </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Usage
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-form-field class="form-field">
+                    <textarea matInput type="text" [(ngModel)]="cloudNodeTemplate.usage"></textarea>
+                </mat-form-field>
+            </mat-expansion-panel>
         </mat-accordion>
         <div class="buttons-bar">
             <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>

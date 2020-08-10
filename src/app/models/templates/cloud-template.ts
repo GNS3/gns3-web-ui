@@ -14,4 +14,5 @@ export interface CloudTemplate {
     symbol: string;
     template_id: string;
     template_type: string;
+    usage: string;
 }
