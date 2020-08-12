@@ -29,7 +29,9 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     ) {
         this.generalSettingsForm = this.formBuilder.group({
             name: new FormControl('', Validators.required),
-            adapter: new FormControl('', Validators.required)
+            adapter: new FormControl('', Validators.required),
+            memory: new FormControl(''),
+            cpus: new FormControl('')
         });
     }
 
@@ -38,12 +40,11 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
-        })
+        });
     }
 
     getConfiguration() {
         this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
-
     }
 
     onSaveClick() {
