@@ -279,6 +279,8 @@ import { ChangeHostnameActionComponent } from './components/project-map/context-
 import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 import { ResetLinkActionComponent } from './components/project-map/context-menu/actions/reset-link/reset-link-action.component';
+import { ReadmeEditorComponent } from './components/projects/edit-project-dialog/readme-editor/readme-editor.component';
+import { MarkedDirective } from './directives/marked.directive';
 
 @NgModule({
   declarations: [
@@ -462,7 +464,9 @@ import { ResetLinkActionComponent } from './components/project-map/context-menu/
     NewTemplateDialogComponent,
     ChangeHostnameActionComponent,
     ChangeHostnameDialogComponent,
-    ApplianceInfoDialogComponent
+    ApplianceInfoDialogComponent,
+    ReadmeEditorComponent,
+    MarkedDirective
   ],
   imports: [
     BrowserModule,

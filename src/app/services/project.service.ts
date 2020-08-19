@@ -18,6 +18,14 @@ export class ProjectService {
     this.projectListSubject.next(true);
   }
 
+  getReadmeFile(server: Server, project_id: string) {
+    return this.httpServer.get<any>(server, `/projects/${project_id}/files/README.txt`);
+  }
+
+  postReadmeFile(server: Server, project_id: string, readme: string) {
+    return this.httpServer.post<any>(server, `/projects/${project_id}/files/README.txt`, readme);
+  }
+
   get(server: Server, project_id: string) {
     return this.httpServer.get<Project>(server, `/projects/${project_id}`);
   }

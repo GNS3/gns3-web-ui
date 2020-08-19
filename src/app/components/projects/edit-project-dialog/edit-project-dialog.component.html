@@ -41,6 +41,11 @@
                 Show interface labels at start
             </mat-checkbox>
         </mat-tab>
+
+        <mat-tab label="Readme" *ngIf="server && project">
+            <app-readme-editor #editor [server]="server" [project]="project"></app-readme-editor>
+        </mat-tab>
+
         <mat-tab label="Global variables">
             <form [formGroup]="variableFormGroup">
                 <mat-form-field class="form-field">
