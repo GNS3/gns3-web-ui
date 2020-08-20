@@ -880,7 +880,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public addNewTemplate() {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
       width: '1000px',
-      maxHeight: '500px',
+      maxHeight: '800px',
       autoFocus: false,
       disableClose: true
     });
