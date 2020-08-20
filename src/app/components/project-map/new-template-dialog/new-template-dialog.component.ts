@@ -27,6 +27,7 @@ import { IouTemplate } from '../../../models/templates/iou-template';
 import { TemplateService } from '../../../services/template.service';
 import { Template } from '../../../models/template';
 import { ComputeService } from '../../../services/compute.service';
+import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -321,8 +322,35 @@ export class NewTemplateDialogComponent implements OnInit {
         return false;
     }
 
+    openConfirmationDialog(message: string, link: string) {
+        const dialogRef = this.dialog.open(InformationDialogComponent, {
+            width: '400px',
+            height: '200px',
+            autoFocus: false,
+            disableClose: true
+        });
+        dialogRef.componentInstance.confirmationMessage = message;
+      
+        dialogRef.afterClosed().subscribe((answer: boolean) => {
+            if (answer) {
+              window.open(link);
+            }
+        });
+    }
+
     downloadImage(image: Image) {
-        window.open(image.download_url);
+        const directDownloadMessage: string = "Download will redirect you where the required file can be downloaded, you may have to be registered with the vendor in order to download the file.";
+        const compressionMessage: string = `The file is compressed with ${image.compression}, it must be uncompressed first.`;
+
+        if (image.direct_download_url) {
+            if (image.compression) {
+                this.openConfirmationDialog(compressionMessage, image.direct_download_url);
+            } else {
+                window.open(image.direct_download_url);
+            }
+        } else {
+            this.openConfirmationDialog(directDownloadMessage, image.download_url);
+        }
     }
 
     downloadImageFromVersion(image: string) {

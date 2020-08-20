@@ -1,4 +1,6 @@
 export interface Image {
+    compression? : string;
+    direct_download_url? : string;
     download_url: string;
     filename: string;
     filesize: any;

@@ -278,6 +278,7 @@ import { DataSourceFilter } from './filters/dataSourceFilter';
 import { ChangeHostnameActionComponent } from './components/project-map/context-menu/actions/change-hostname/change-hostname-action.component';
 import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
+import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 
 @NgModule({
   declarations: [
@@ -460,7 +461,8 @@ import { ApplianceInfoDialogComponent } from './components/project-map/new-templ
     NewTemplateDialogComponent,
     ChangeHostnameActionComponent,
     ChangeHostnameDialogComponent,
-    ApplianceInfoDialogComponent
+    ApplianceInfoDialogComponent,
+    InformationDialogComponent
   ],
   imports: [
     BrowserModule,
