@@ -89,8 +89,14 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('show-interface-labels')
   set showInterfaceLabels(value) {
-    this.settings.show_interface_labels = value;
-    this.interfaceLabelWidget.setEnabled(value);
+    if (value && !this.mapSettingsService.integrateLinkLabelsToLinks) {
+      this.settings.show_interface_labels = true;
+      this.interfaceLabelWidget.setEnabled(true);
+    } else {
+      this.settings.show_interface_labels = false;
+      this.interfaceLabelWidget.setEnabled(false);
+    }
+
     this.mapChangeDetectorRef.detectChanges();
   }
 

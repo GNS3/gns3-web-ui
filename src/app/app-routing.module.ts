@@ -159,6 +159,10 @@ const routes: Routes = [
     path: 'server/:server_id/project/:project_id/nodes/:node_id', 
     component: WebConsoleFullWindowComponent
   },
+  { 
+    path: 'static/web-ui/server/:server_id/project/:project_id/nodes/:node_id', 
+    component: WebConsoleFullWindowComponent
+  },
   {
     path: '**',
     component: PageNotFoundComponent

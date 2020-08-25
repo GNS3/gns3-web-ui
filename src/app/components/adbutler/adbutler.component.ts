@@ -23,7 +23,7 @@ export class AdbutlerComponent implements OnInit {
     this.httpClient
       .get('https://servedbyadbutler.com/adserve/;ID=165803;size=0x0;setID=371476;type=json;').subscribe(
         response => {
-          if (response && response['placements']) {
+          if (response && response['placements'] && response['placements'].placement_1 && response['placements'].placement_1.body) {
             this.onLoad.emit(true);
             this.htmlCode = response['placements'].placement_1.body;
             this.ad.nativeElement.insertAdjacentHTML('beforeend', this.htmlCode);

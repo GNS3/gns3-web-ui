@@ -56,11 +56,11 @@
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
                     <mat-cell *matCellDef="let row" style="text-align: right">
-                        <button mat-icon-button matTooltip="Install" (click)="install(row)">
+                        <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
                             <mat-icon aria-label="Install">archive</mat-icon>
                         </button>
                         
-                        <button mat-icon-button matTooltip="Show info" (click)="showInfo(row)">
+                        <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
                             <mat-icon aria-label="Show info">info</mat-icon>
                         </button>
                     </mat-cell>
@@ -113,17 +113,17 @@
     <mat-step *ngIf="applianceToInstall">
         <ng-template matStepLabel>{{secondActionTitle}}</ng-template>
 
-        <mat-card [hidden]="applianceToInstall">
-            Please select appliance to install first
+        <mat-card [hidden]="!(!isLinuxPlatform && !isGns3VmAvailable && !applianceToInstall.dynamips)">
+            Please configure GNS3 VM to install selected appliance
         </mat-card>
 
-        <mat-card [hidden]="!applianceToInstall">
+        <mat-card [hidden]="!(isLinuxPlatform || isGns3VmAvailable || applianceToInstall.dynamips)">
             <div *ngIf="applianceToInstall.qemu">
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div>
@@ -139,30 +139,60 @@
                     </mat-select>
                 </div>
                 <div>
-                    Install required files
-                    <mat-list>
-                        <mat-list-item *ngFor="let image of applianceToInstall.images">
-                          <div class="list-item">
-                            <div>
-                                {{image.filename}}
+                    Install required files <br/>
+                    <div>
+                        <div *ngFor="let version of applianceToInstall.versions">
+                            <div class="list-item">
+                                <span>{{applianceToInstall.name}} version {{version.name}}</span>
+
+                                <div>
+                                    <button class="button" mat-raised-button color="primary" (click)="createQemuTemplateFromVersion(version)">Create</button>
+                                </div>
                             </div>
-                            <div>
-                                <span *ngIf="checkImage(image)"><mat-icon matTooltip="Ready to install">check</mat-icon></span>
-                                <span *ngIf="!checkImage(image)"><mat-icon matTooltip="Missing">close</mat-icon></span>
-                                <input
-                                    type="file"
-                                    class="non-visible"
-                                    #file2
-                                    (change)="importImage($event)"
-                                    ng2FileSelect
-                                    [uploader]="uploaderImage"/>
-                                <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                                <button class="button" mat-raised-button (click)="downloadImage(image)">Download</button>
-                                <button *ngIf="checkImage(image)" class="button" mat-raised-button color="primary" (click)="createQemuTemplate(image)">Create</button>
+
+                            <div class="list-item-inside" *ngIf="version.images.hda_disk_image">
+                                <span>
+                                    {{version.images.hda_disk_image}}
+                                </span>
+
+                                <div>
+                                    <span *ngIf="checkImageFromVersion(version.images.hda_disk_image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
+                                    <span *ngIf="!checkImageFromVersion(version.images.hda_disk_image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
+
+                                    <input
+                                        type="file"
+                                        class="non-visible"
+                                        #file2
+                                        (change)="importImage($event)"
+                                        ng2FileSelect
+                                        [uploader]="uploaderImage"/>
+                                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                                    <button class="button" mat-raised-button (click)="downloadImageFromVersion(version.images.hda_disk_image)">Download</button>
+                                </div>
                             </div>
-                          </div>
-                        </mat-list-item>
-                    </mat-list>
+
+                            <div class="list-item-inside" *ngIf="version.images.hdb_disk_image">
+                                <span>
+                                    {{version.images.hdb_disk_image}}
+                                </span>
+
+                                <div>
+                                    <span *ngIf="checkImageFromVersion(version.images.hdb_disk_image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
+                                    <span *ngIf="!checkImageFromVersion(version.images.hdb_disk_image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
+
+                                    <input
+                                        type="file"
+                                        class="non-visible"
+                                        #file2
+                                        (change)="importImage($event)"
+                                        ng2FileSelect
+                                        [uploader]="uploaderImage"/>
+                                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                                    <button class="button" mat-raised-button (click)="downloadImageFromVersion(version.images.hdb_disk_image)">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -170,8 +200,8 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">Create docker template</button>
@@ -181,8 +211,8 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div>
@@ -214,8 +244,8 @@
                 <div>
                     Server type<br/>
                     <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="true" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button class="radio-button" value="2" checked (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
+                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
+                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
                     </mat-radio-group>
                 </div>
                 <div>

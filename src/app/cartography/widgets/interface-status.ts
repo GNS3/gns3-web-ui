@@ -20,6 +20,22 @@ export class InterfaceStatusWidget implements Widget {
 
   public draw(view: SVGSelection) {
     const self = this;
+    let mapLinks: MapLink[] = [];
+
+    view.each(function(this: SVGGElement, l: MapLink) {
+      mapLinks.push(l);
+    });
+    mapLinks.forEach(mapLink => {
+      mapLinks.forEach(n => {
+        if (n.nodes[0].linkId !== mapLink.nodes[0].linkId){
+          if ((mapLink.nodes[0].nodeId === n.nodes[0].nodeId && mapLink.nodes[1].nodeId === n.nodes[1].nodeId) || 
+            (mapLink.nodes[0].nodeId === n.nodes[1].nodeId && mapLink.nodes[1].nodeId === n.nodes[0].nodeId) || 
+            (mapLink.nodes[1].nodeId === n.nodes[0].nodeId && mapLink.nodes[0].nodeId === n.nodes[1].nodeId)) {
+            mapLink.isMultiplied = true;
+          }
+        }
+      });
+    });
 
     view.each(function(this: SVGGElement, l: MapLink) {
       const link_group = select<SVGGElement, MapLink>(this);
@@ -27,10 +43,10 @@ export class InterfaceStatusWidget implements Widget {
 
       let statuses = [];
       if (link_path.node()) {
-        const start_point: SVGPoint = link_path.node().getPointAtLength(100);
-        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 100);
+        const start_point: SVGPoint = link_path.node().getPointAtLength(80);
+        const end_point: SVGPoint = link_path.node().getPointAtLength(link_path.node().getTotalLength() - 80);
 
-        if (link_path.node().getTotalLength() > 2 * 45 + 10) {
+        if (link_path.node().getTotalLength() > 2 * 45 + 130) {
           if (l.source && l.target) {
             let sourcePort = l.nodes.find(node => node.nodeId === l.source.id).label.text;
             let destinationPort = l.nodes.find(node => node.nodeId === l.target.id).label.text;
@@ -62,7 +78,7 @@ export class InterfaceStatusWidget implements Widget {
       link_group
         .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
 
-      if (self.mapSettingsService.integrateLinkLabelsToLinks) {
+      if (self.mapSettingsService.showInterfaceLabels && self.mapSettingsService.integrateLinkLabelsToLinks && !l.isMultiplied) {
         const status_started = link_group
           .selectAll<SVGRectElement, LinkStatus>('rect.status_started')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
@@ -70,9 +86,11 @@ export class InterfaceStatusWidget implements Widget {
         status_started
           .merge(status_started_enter)
           .attr('class', 'status_started')
-          .attr('width', 40)
+          .attr('width', (ls: LinkStatus) => {
+            return (ls.port.length * 8) + 10;
+          })
           .attr('height', 20)
-          .attr('x', (ls: LinkStatus) => ls.x - 10)
+          .attr('x', (ls: LinkStatus) => ls.x - 30)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
           .attr('rx', 8)
           .attr('ry', 8)
@@ -88,7 +106,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_started_label_enter)
           .attr('class', 'status_started_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 5)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_started_label.exit().remove();
@@ -100,9 +118,11 @@ export class InterfaceStatusWidget implements Widget {
         status_stopped
           .merge(status_stopped_enter)
           .attr('class', 'status_stopped')
-          .attr('width', 40)
+          .attr('width', (ls: LinkStatus) => {
+            return (ls.port.length * 8) + 10;
+          })
           .attr('height', 20)
-          .attr('x', (ls: LinkStatus) => ls.x - 10)
+          .attr('x', (ls: LinkStatus) => ls.x - 30)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
           .attr('rx', 8)
           .attr('ry', 8)
@@ -118,7 +138,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_stopped_label_enter)
           .attr('class', 'status_stopped_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 5)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_stopped_label.exit().remove();
@@ -130,9 +150,11 @@ export class InterfaceStatusWidget implements Widget {
         status_suspended
           .merge(status_suspended_enter)
           .attr('class', 'status_suspended')
-          .attr('width', 40)
+          .attr('width', (ls: LinkStatus) => {
+            return (ls.port.length * 8) + 10;
+          })
           .attr('height', 20)
-          .attr('x', (ls: LinkStatus) => ls.x - 10)
+          .attr('x', (ls: LinkStatus) => ls.x - 30)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
           .attr('rx', 8)
           .attr('ry', 8)
@@ -148,7 +170,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_suspended_label_enter)
           .attr('class', 'status_suspended_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 5)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_suspended_label.exit().remove();

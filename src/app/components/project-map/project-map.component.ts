@@ -258,12 +258,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.projectService.open(this.server, this.project.project_id);
             this.title.setTitle(this.project.name);
 
-            // old settings
-            // if (this.mapSettingsService.interfaceLabels.has(project.project_id)) {
-            //   this.isInterfaceLabelVisible = this.mapSettingsService.interfaceLabels.get(project.project_id);
-            // } else {
-            //   this.isInterfaceLabelVisible = this.project.show_interface_labels;
-            // }
+            this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
             
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
             this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
@@ -481,6 +476,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           this.progressService.deactivate();
         }
       });
+    },
+    error => {
+      this.toasterService.error(error.error.message);
+      this.progressService.deactivate();
     });
   }
 
@@ -675,17 +674,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public toggleShowInterfaceLabels(enabled: boolean) {
     this.isInterfaceLabelVisible = enabled;
-    this.mapSettingsService.toggleShowInterfaceLabels(this.project.project_id, this.isInterfaceLabelVisible);
-
-    this.mapSettingsService.integrateLinkLabelsToLinks = false;
-    this.mapSettingsService.mapRenderedEmitter.emit(true);
-  }
-
-  public toggleIntegrateLinkLabelsToLinks(enabled: boolean) {
-    this.isInterfaceLabelVisible = false;
-    this.mapSettingsService.toggleShowInterfaceLabels(this.project.project_id, this.isInterfaceLabelVisible);
-
-    this.mapSettingsService.integrateLinkLabelsToLinks = enabled;
+    this.mapSettingsService.toggleShowInterfaceLabels(this.isInterfaceLabelVisible);
     this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 
@@ -891,7 +880,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public addNewTemplate() {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
       width: '1000px',
-      maxHeight: '500px',
+      maxHeight: '700px',
       autoFocus: false,
       disableClose: true
     });

@@ -33,11 +33,9 @@ export class DeleteTemplateComponent {
       
         dialogRef.afterClosed().subscribe((answer: boolean) => {
             if (answer) {
-                this.templateService.deleteTemplate(this.server, templateId).subscribe((answer: boolean) => {
-                    if(answer) {
-                        this.deleteEvent.emit(templateId);
-                        this.toasterService.success(`Template ${templateName} deleted.`);
-                    }
+                this.templateService.deleteTemplate(this.server, templateId).subscribe((answer) => {
+                    this.deleteEvent.emit(templateId);
+                    this.toasterService.success(`Template ${templateName} deleted.`);
                 });
             }
         });

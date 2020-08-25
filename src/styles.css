@@ -42,3 +42,8 @@ app-root {
 mat-menu-panel {
   min-height: 0px;
 }
+
+.custom-tooltip {
+  background-color: grey;
+  color: #ffffff;
+}

@@ -35,11 +35,11 @@
   <div *ngIf="toolbarVisibility" class="project-toolbar">
     <mat-toolbar color="primary" class="project-toolbar" [ngClass]="{lightTheme: isLightThemeEnabled}">
       <mat-toolbar-row *ngIf="!isLightThemeEnabled">
-        <button matTooltip="Open menu" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
+        <button matTooltip="Open menu" matTooltipClass="custom-tooltip" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="isLightThemeEnabled">
-        <button matTooltip="Open menu" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3black"></mat-icon></button>
+        <button matTooltip="Open menu" matTooltipClass="custom-tooltip" mat-icon-button [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3black"></mat-icon></button>
       </mat-toolbar-row>
 
       <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
@@ -109,11 +109,8 @@
 
       <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
         <div class="options-item">
-          <mat-checkbox [ngModel]="mapSettingsService.integrateLinkLabelsToLinks" (change)="toggleIntegrateLinkLabelsToLinks($event.checked)">
-            Integrate link labels to links
-          </mat-checkbox>
           <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
-            Show interface labels separately
+            Show interface labels
           </mat-checkbox><br/>
           <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
             Show console
@@ -141,13 +138,13 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button matTooltip="Add a link" mat-icon-button [color]="tools.draw_link ? 'primary' : 'basic'" (click)="toggleDrawLineMode()">
+        <button matTooltip="Add a link" matTooltipClass="custom-tooltip" mat-icon-button [color]="tools.draw_link ? 'primary' : 'basic'" (click)="toggleDrawLineMode()">
           <mat-icon>timeline</mat-icon>
         </button>
       </mat-toolbar-row>
 
       <mat-toolbar-row>
-        <button matTooltip="Enable/disable moving mode" mat-icon-button [color]="tools.moving ? 'primary' : 'basic'" (click)="toggleMovingMode()">
+        <button matTooltip="Enable/disable moving mode" matTooltipClass="custom-tooltip" mat-icon-button [color]="tools.moving ? 'primary' : 'basic'" (click)="toggleMovingMode()">
           <mat-icon>zoom_out_map</mat-icon>
         </button>
       </mat-toolbar-row>
@@ -157,13 +154,13 @@
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button  matTooltip="Fit in view" mat-icon-button (click)="fitInView()">
+        <button  matTooltip="Fit in view" matTooltipClass="custom-tooltip" mat-icon-button (click)="fitInView()">
           <mat-icon>fullscreen</mat-icon>
         </button>
       </mat-toolbar-row>
 
       <mat-toolbar-row *ngIf="!readonly">
-        <button  matTooltip="Center view" mat-icon-button (click)="centerView()">
+        <button  matTooltip="Center view" matTooltipClass="custom-tooltip" mat-icon-button (click)="centerView()">
           <mat-icon>center_focus_strong</mat-icon>
         </button>
       </mat-toolbar-row>
@@ -185,9 +182,9 @@
 </div>
 
 <div [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-buttons">
-  <button matTooltip="Zoom in" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
-  <button matTooltip="Reset zoom" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
-  <button matTooltip="Zoom out" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
+  <button matTooltip="Zoom in" matTooltipClass="custom-tooltip" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
+  <button matTooltip="Reset zoom" matTooltipClass="custom-tooltip" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="resetZoom()"><mat-icon>adjust</mat-icon></button>
+  <button matTooltip="Zoom out" matTooltipClass="custom-tooltip" [ngClass]="{lightTheme: isLightThemeEnabled}" class="zoom-button" (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
 </div>
 
 <app-progress></app-progress>

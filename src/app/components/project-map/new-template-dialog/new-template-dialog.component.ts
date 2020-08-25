@@ -9,7 +9,7 @@ import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
 import { ApplianceService } from '../../../services/appliances.service';
-import { Appliance, Image } from '../../../models/appliance';
+import { Appliance, Image, Version } from '../../../models/appliance';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { ToasterService } from '../../../services/toaster.service';
@@ -26,6 +26,8 @@ import { IouService } from '../../../services/iou.service';
 import { IouTemplate } from '../../../models/templates/iou-template';
 import { TemplateService } from '../../../services/template.service';
 import { Template } from '../../../models/template';
+import { ComputeService } from '../../../services/compute.service';
+import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -56,7 +58,10 @@ export class NewTemplateDialogComponent implements OnInit {
     public applianceToInstall: Appliance;
     public selectedImages: any[];
 
-    private isGns3VmChosen = true;
+    public isGns3VmAvailable = false;
+    public isLinuxPlatform = false;
+
+    private isGns3VmChosen = false;
     private isLocalComputerChosen = false;
 
     public qemuBinaries: QemuBinary[] = [];
@@ -85,10 +90,21 @@ export class NewTemplateDialogComponent implements OnInit {
         private iosService: IosService,
         private iouService: IouService,
         private templateService: TemplateService,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private computeService: ComputeService
     ) {}
 
     ngOnInit() {
+        this.computeService.getComputes(this.server).subscribe((computes) => {
+            computes.forEach(compute => {
+                if (compute.compute_id === 'vm') {
+                    this.isGns3VmAvailable = true;
+                    this.isGns3VmChosen = true;
+                }
+                if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
+            })
+        });
+
         this.qemuService.getImages(this.server).subscribe((qemuImages) => {
             this.qemuImages = qemuImages;
         });
@@ -289,8 +305,58 @@ export class NewTemplateDialogComponent implements OnInit {
         return false;
     }
 
+    checkImageFromVersion(image: string): boolean {
+        if (this.applianceToInstall.qemu) {
+            if (this.qemuImages.filter(n => n.filename === image).length > 0) return true;
+        } else if (this.applianceToInstall.dynamips) {
+            if (this.iosImages.filter(n => n.filename === image).length > 0) return true;
+        } else if (this.applianceToInstall.iou) {
+            if (this.iouImages.filter(n => n.filename === image).length > 0) return true;
+        }
+
+        return false;
+    }
+
+    checkImages(version: Version): boolean {
+        if (this.checkImageFromVersion(version.images.hda_disk_image) && this.checkImageFromVersion(version.images.hdb_disk_image)) return true;
+        return false;
+    }
+
+    openConfirmationDialog(message: string, link: string) {
+        const dialogRef = this.dialog.open(InformationDialogComponent, {
+            width: '400px',
+            height: '200px',
+            autoFocus: false,
+            disableClose: true
+        });
+        dialogRef.componentInstance.confirmationMessage = message;
+      
+        dialogRef.afterClosed().subscribe((answer: boolean) => {
+            if (answer) {
+              window.open(link);
+            }
+        });
+    }
+
     downloadImage(image: Image) {
-        window.open(image.download_url);
+        const directDownloadMessage: string = "Download will redirect you where the required file can be downloaded, you may have to be registered with the vendor in order to download the file.";
+        const compressionMessage: string = `The file is compressed with ${image.compression}, it must be uncompressed first.`;
+
+        if (image.direct_download_url) {
+            if (image.compression) {
+                this.openConfirmationDialog(compressionMessage, image.direct_download_url);
+            } else {
+                window.open(image.direct_download_url);
+            }
+        } else {
+            this.openConfirmationDialog(directDownloadMessage, image.download_url);
+        }
+    }
+
+    downloadImageFromVersion(image: string) {
+        this.applianceToInstall.images.forEach(n => {
+            if (n.filename === image) this.downloadImage(n);
+        });
     }
 
     createIouTemplate (image: Image) {
@@ -370,7 +436,12 @@ export class NewTemplateDialogComponent implements OnInit {
         });
     }
 
-    createQemuTemplate(image: Image) {
+    createQemuTemplateFromVersion(version: Version) {
+        if (!this.checkImages(version)) {
+            this.toasterService.error('Please install required images first');
+            return;
+        }
+
         if (!this.selectedBinary) {
             this.toasterService.error('Please select QEMU binary first');
             return;
@@ -383,6 +454,9 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.boot_priority = this.applianceToInstall.qemu.boot_priority;
         qemuTemplate.console_type =  this.applianceToInstall.qemu.console_type;
         qemuTemplate.hda_disk_interface = this.applianceToInstall.qemu.hda_disk_interface;
+        qemuTemplate.hdb_disk_interface = this.applianceToInstall.qemu.hdb_disk_interface;
+        qemuTemplate.hdc_disk_interface = this.applianceToInstall.qemu.hdc_disk_interface;
+        qemuTemplate.hdd_disk_interface = this.applianceToInstall.qemu.hdd_disk_interface;
         qemuTemplate.builtin = this.applianceToInstall.builtin;
         qemuTemplate.category = this.applianceToInstall.category;
         qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
@@ -391,8 +465,10 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.qemu_path = this.selectedBinary.path;
         qemuTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
         qemuTemplate.template_id = uuid();
-        qemuTemplate.hda_disk_image = image.filename;
+        qemuTemplate.hda_disk_image = version.images.hda_disk_image;
+        qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
         qemuTemplate.template_type = 'qemu';
+        qemuTemplate.usage = this.applianceToInstall.usage;
 
         this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
             this.templateService.newTemplateCreated.next(template as any as Template);

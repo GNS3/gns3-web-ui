@@ -1,5 +1,6 @@
 <button
     matTooltip="Add a note"
+    matTooltipClass="custom-tooltip"
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('text')">
@@ -13,6 +14,7 @@
     (change)="uploadImageFile($event)"/>
 <button
     matTooltip="Insert a picture"
+    matTooltipClass="custom-tooltip"
     mat-icon-button
     class="menu-button"
     (click)="file.click()">
@@ -20,6 +22,7 @@
 </button>
 <button
     matTooltip="Draw a rectangle"
+    matTooltipClass="custom-tooltip"
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('rectangle')">
@@ -27,6 +30,7 @@
 </button>
 <button
     matTooltip="Draw an ellipse"
+    matTooltipClass="custom-tooltip"
     mat-icon-button
     class="menu-button"
     (click)="addDrawing('ellipse')">
@@ -34,6 +38,7 @@
 </button>
 <button *ngIf="!isLightThemeEnabled"
     matTooltip="Draw a line" 
+    matTooltipClass="custom-tooltip"
     mat-icon-button class="menu-button" 
     (click)="addDrawing('line')">
     <svg height="40" width="40">
@@ -48,6 +53,7 @@
 </button>
 <button *ngIf="isLightThemeEnabled"
     matTooltip="Draw a line" 
+    matTooltipClass="custom-tooltip"
     mat-icon-button class="menu-button" 
     (click)="addDrawing('line')">
     <svg height="40" width="40">
@@ -62,6 +68,7 @@
 </button>
 <button
     matTooltip="Lock or unlock all items"
+    matTooltipClass="custom-tooltip"
     mat-icon-button
     class="menu-button"
     (click)="changeLockValue()">
@@ -69,6 +76,7 @@
 </button>
 <button
     matTooltip="Take a screenshot"
+    matTooltipClass="custom-tooltip"
     mat-icon-button
     class="menu-button"
     (click)="takeScreenshot()"
