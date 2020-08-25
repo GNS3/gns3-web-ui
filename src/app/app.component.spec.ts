@@ -2,7 +2,7 @@ import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from './app.component';
-import { MatIconModule } from '@angular/material';
+import { MatIconModule } from '@angular/material/icon';
 import { SettingsService } from './services/settings.service';
 import { PersistenceService } from 'angular-persistence';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';

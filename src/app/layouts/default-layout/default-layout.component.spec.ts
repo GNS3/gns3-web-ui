@@ -2,7 +2,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DefaultLayoutComponent } from './default-layout.component';
 import { ElectronService } from 'ngx-electron';
-import { MatIconModule, MatMenuModule, MatToolbarModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
