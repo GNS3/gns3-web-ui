@@ -38,7 +38,7 @@ describe('ConfigEditorDialogComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
-        { provide: MAT_DIALOG_DATA },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: ToasterService, useValue: toaster }
       ],
