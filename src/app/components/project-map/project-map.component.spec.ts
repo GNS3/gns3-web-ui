@@ -62,6 +62,7 @@ import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbo
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NotificationService } from '../../services/notification.service';
+import {} from 'mousetrap';
 
 export class MockedProgressService {
   public activate() {}
@@ -243,7 +244,7 @@ export class MockedLinksDataSource {
   clear() {}
 }
 
-describe('ProjectMapComponent', () => {
+xdescribe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
   let fixture: ComponentFixture<ProjectMapComponent>;
   let drawingService = new MockedDrawingService();

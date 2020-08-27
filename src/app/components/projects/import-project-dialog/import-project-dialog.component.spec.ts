@@ -62,6 +62,10 @@ describe('ImportProjectDialogComponent', () => {
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
 
+  let dialogRef = {
+    close: jasmine.createSpy('close')
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -79,8 +83,8 @@ describe('ImportProjectDialogComponent', () => {
         RouterTestingModule.withRoutes([])
       ],
       providers: [
-        { provide: MatDialogRef },
-        { provide: MAT_DIALOG_DATA },
+        { provide: MatDialogRef, useValue: dialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService }
       ],
       declarations: [ImportProjectDialogComponent]

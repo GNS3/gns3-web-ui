@@ -78,7 +78,7 @@ describe('AddBlankProjectDialogComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
-        { provide: MAT_DIALOG_DATA },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ToasterService, useValue: toaster },
         { provide: Router, useValue: router }

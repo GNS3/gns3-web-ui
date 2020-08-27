@@ -14,11 +14,16 @@ import { SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ConsoleService } from '../../services/settings/console.service';
+import { MapSettingsService } from '../../services/mapsettings.service';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
   let settingsService: SettingsService;
+  let mapSettingsService = {
+    integrateLinkLabelsToLinks: true,
+    toggleIntegrateInterfaceLabels(val: boolean) {}
+  };
   let consoleService;
 
   beforeEach(async(() => {
@@ -31,7 +36,8 @@ describe('SettingsComponent', () => {
       providers: [
         SettingsService,
         { provide: ToasterService, useClass: MockedToasterService },
-        { provide: ConsoleService, useValue: consoleService}
+        { provide: ConsoleService, useValue: consoleService },
+        { provide: MapSettingsService, useValue: mapSettingsService }
       ],
       declarations: [SettingsComponent]
     }).compileComponents();

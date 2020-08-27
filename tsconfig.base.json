@@ -26,21 +26,21 @@
     ],
   },
   "include": [
-    "./src/**/*",
+    "./src/**/*"
   ],
   "exclude": [
-    "src/test.ts",
+    //"src/test.ts",
     "src/app/cartography/testing.ts",
     "src/app/cartography/tool.ts",
     "src/app/cartography/widgets/drawings.backup.ts",
     "src/app/converters/converter.ts",
     "src/app/models/software.ts",
     "src/app/services/testing.ts",
-    "src/app/testing/app-testing/app-testing.module.ts",
+    // "src/app/testing/app-testing/app-testing.module.ts",
     "src/environments/environment.electron.prod.ts",
     "src/environments/environment.electron.ts",
     "src/environments/environment.github.prod.ts",
     "src/environments/environment.prod.ts",
-    "**/*.spec.ts"
+    // "**/*.spec.ts"
   ]
 }

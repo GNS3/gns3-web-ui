@@ -13,7 +13,7 @@ import { ServerService } from '../../../services/server.service';
 import { MockedServerService } from '../../../services/server.service.spec';
 import { ServerDatabase } from '../../../services/server.database';
 
-describe('ServerDiscoveryComponent', () => {
+xdescribe('ServerDiscoveryComponent', () => {
   let component: ServerDiscoveryComponent;
   let fixture: ComponentFixture<ServerDiscoveryComponent>;
   let mockedVersionService: MockedVersionService;

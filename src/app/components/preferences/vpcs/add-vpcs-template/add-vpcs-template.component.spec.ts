@@ -20,6 +20,13 @@ import { MockedToasterService } from '../../../../services/toaster.service.spec'
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ComputeService } from '../../../../services/compute.service';
+
+export class MockedComputeService {
+    getComputes(server: Server) {
+        return of([]);
+    }
+}
 
 export class MockedVpcsService {
     public addTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
@@ -35,6 +42,7 @@ describe('AddVpcsTemplateComponent', () => {
     let mockedVpcsService = new MockedVpcsService;
     let mockedToasterService = new MockedToasterService;
     let activatedRoute = new MockedActivatedRoute().get();
+    let mockedComputeService = new MockedComputeService();
     
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -54,6 +62,7 @@ describe('AddVpcsTemplateComponent', () => {
                 { provide: ServerService, useValue: mockedServerService },
                 { provide: VpcsService, useValue: mockedVpcsService },
                 { provide: ToasterService, useValue: mockedToasterService },
+                { provide: ComputeService, useValue: mockedComputeService },
                 { provide: TemplateMocksService, useClass: TemplateMocksService }
             ],
             declarations: [

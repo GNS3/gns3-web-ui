@@ -10,7 +10,7 @@
     "polyfills.ts"
   ],
   "include": [
-    "../src/**/*",
+    // "../src/**/*",
     "../node_modules/angular2-indexeddb/*"
   ]
 }
