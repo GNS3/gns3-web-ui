@@ -113,8 +113,8 @@ export class ConsoleWrapperComponent implements OnInit {
         if (
             event.rectangle.width &&
             event.rectangle.height &&
-            (event.rectangle.width < 720 ||
-            event.rectangle.height < 460)
+            (event.rectangle.width < 500 ||
+            event.rectangle.height < 100)
         ) {
             return false;
         }
@@ -134,6 +134,11 @@ export class ConsoleWrapperComponent implements OnInit {
             height: `${event.rectangle.height - 60}px`,
             width: `${event.rectangle.width}px`
         };
+
+        this.consoleService.consoleResized.next({
+            width: event.rectangle.width,
+            height: event.rectangle.height - 53
+        })
     }
 
     close() {

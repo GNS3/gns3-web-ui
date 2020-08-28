@@ -39,6 +39,6 @@ export class NodeConsoleService {
 }
 
 export interface ConsoleResizedEvent {
-  numberOfColumns: number,
-  numberOfRows: number
+  width: number,
+  height: number
 }

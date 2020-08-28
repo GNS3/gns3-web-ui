@@ -5,7 +5,7 @@
     left: 20px;
     height: 180px;
     width: 600px;
-    background: #263238;
+    background: #000000!important;
     color: white;
     overflow: hidden;
     font-size: 12px;
@@ -38,6 +38,7 @@
     display: flex;
     padding: 2px;
     justify-content: space-between;
+    background: #263238!important;
 }
 
 .tabs {
@@ -52,6 +53,10 @@
     color: #dbd5d5;
     scrollbar-color: darkgrey #263238;
     scrollbar-width: thin;
+}
+
+.xterm-console {
+    background: black;
 }
 
 .consoleInput {

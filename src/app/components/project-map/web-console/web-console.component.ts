@@ -31,7 +31,10 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     
     ngOnInit() {
         this.consoleService.consoleResized.subscribe(ev => {
-            this.fitAddon.fit();
+            let numberOfColumns = Math.floor(ev.width / 9);
+            let numberOfRows = Math.floor(ev.height / 17);
+
+            this.term.resize(numberOfColumns, numberOfRows);
         });
     }
 
@@ -61,6 +64,9 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
             }
             return true;
         });
+
+        // probably we need to take initial values of console wrapper and 
+        // this.term.resize(80, 1);
     }
 
     getUrl() {
