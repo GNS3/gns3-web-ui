@@ -24,11 +24,12 @@ export class ConsoleWrapperComponent implements OnInit {
 
     public style: object = {};
     public styleInside: object = { height: `120px` };
-
     public isDraggingEnabled: boolean = false;
     public isLightThemeEnabled: boolean = false;
-
     public isMinimized: boolean = false;
+
+    public resizedWidth: number = 720;
+    public resizedHeight: number = 480;
 
     constructor(
         private consoleService: NodeConsoleService,
@@ -55,9 +56,9 @@ export class ConsoleWrapperComponent implements OnInit {
     minimize(value: boolean) {
         this.isMinimized = value;
         if (!value) {
-            this.style = { bottom: '20px', left: '20px', width: '720px', height: '460px'};
+            this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px`}
         } else {
-            this.style = { bottom: '20px', left: '20px', width: '720px', height: '56px'};
+            this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px'};
         }
     }
 
@@ -138,7 +139,10 @@ export class ConsoleWrapperComponent implements OnInit {
         this.consoleService.consoleResized.next({
             width: event.rectangle.width,
             height: event.rectangle.height - 53
-        })
+        });
+
+        this.resizedWidth = event.rectangle.width;
+        this.resizedHeight = event.rectangle.height;
     }
 
     close() {

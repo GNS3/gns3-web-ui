@@ -34,8 +34,15 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
             let numberOfColumns = Math.floor(ev.width / 9);
             let numberOfRows = Math.floor(ev.height / 17);
 
+            this.consoleService.setNumberOfColumns(numberOfColumns);
+            this.consoleService.setNumberOfRows(numberOfRows);
+
             this.term.resize(numberOfColumns, numberOfRows);
         });
+
+        if (this.consoleService.getNumberOfColumns() && this.consoleService.getNumberOfRows()){
+            this.term.resize(this.consoleService.getNumberOfColumns(), this.consoleService.getNumberOfRows());
+        }
     }
 
     ngAfterViewInit() {
@@ -64,9 +71,6 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
             }
             return true;
         });
-
-        // probably we need to take initial values of console wrapper and 
-        // this.term.resize(80, 1);
     }
 
     getUrl() {
