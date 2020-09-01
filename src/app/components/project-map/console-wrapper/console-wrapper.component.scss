@@ -41,6 +41,21 @@
     background: #263238!important;
 }
 
+:host ::ng-deep .mat-tab-label {
+    height: 3rem !important;
+    min-width: 8rem !important;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active {
+    border-bottom: 2px solid #0097a7;
+    box-sizing: border-box;
+    font-weight: 1200;
+}
+
+:host ::ng-deep .mat-ink-bar {
+    display: none !important;
+}
+
 .tabs {
     width: 80%;
 }
