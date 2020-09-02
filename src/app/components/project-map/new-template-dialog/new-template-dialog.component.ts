@@ -359,6 +359,13 @@ export class NewTemplateDialogComponent implements OnInit {
         });
     }
 
+    getCategory() {
+        if (this.applianceToInstall.category === 'multilayer_switch') {
+            return 'switch';
+        }
+        return this.applianceToInstall.category;
+    }
+
     createIouTemplate (image: Image) {
         let iouTemplate: IouTemplate = new IouTemplate();
         iouTemplate.name = this.applianceToInstall.name;
@@ -368,7 +375,7 @@ export class NewTemplateDialogComponent implements OnInit {
         iouTemplate.serial_adapters = this.applianceToInstall.iou.serial_adapters;
         iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
         iouTemplate.builtin = this.applianceToInstall.builtin;
-        iouTemplate.category = this.applianceToInstall.category;
+        iouTemplate.category = this.getCategory();
         iouTemplate.default_name_format = this.applianceToInstall.port_name_format;
         iouTemplate.symbol = this.applianceToInstall.symbol;
         iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
@@ -400,7 +407,7 @@ export class NewTemplateDialogComponent implements OnInit {
         iosTemplate.slot6 = this.applianceToInstall.dynamips.slot6;
         iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
         iosTemplate.builtin = this.applianceToInstall.builtin;
-        iosTemplate.category = this.applianceToInstall.category;
+        iosTemplate.category = this.getCategory();
         iosTemplate.default_name_format = this.applianceToInstall.port_name_format;
         iosTemplate.symbol = this.applianceToInstall.symbol;
         iosTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
@@ -421,7 +428,7 @@ export class NewTemplateDialogComponent implements OnInit {
         dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
         dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
         dockerTemplate.builtin = this.applianceToInstall.builtin;
-        dockerTemplate.category = this.applianceToInstall.category;
+        dockerTemplate.category = this.getCategory();
         dockerTemplate.default_name_format = this.applianceToInstall.port_name_format;
         dockerTemplate.symbol = this.applianceToInstall.symbol;
         dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
@@ -458,7 +465,7 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.hdc_disk_interface = this.applianceToInstall.qemu.hdc_disk_interface;
         qemuTemplate.hdd_disk_interface = this.applianceToInstall.qemu.hdd_disk_interface;
         qemuTemplate.builtin = this.applianceToInstall.builtin;
-        qemuTemplate.category = this.applianceToInstall.category;
+        qemuTemplate.category = this.getCategory();
         qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
         qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
         qemuTemplate.symbol = this.applianceToInstall.symbol;
