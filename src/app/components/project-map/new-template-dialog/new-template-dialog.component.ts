@@ -28,6 +28,7 @@ import { TemplateService } from '../../../services/template.service';
 import { Template } from '../../../models/template';
 import { ComputeService } from '../../../services/compute.service';
 import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
+import { ProgressService } from '../../../common/progress/progress.service';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -91,7 +92,9 @@ export class NewTemplateDialogComponent implements OnInit {
         private iouService: IouService,
         private templateService: TemplateService,
         public dialog: MatDialog,
-        private computeService: ComputeService
+        private computeService: ComputeService,
+        private changeDetectorRef: ChangeDetectorRef,
+        private progressService: ProgressService
     ) {}
 
     ngOnInit() {
@@ -155,11 +158,28 @@ export class NewTemplateDialogComponent implements OnInit {
     
         this.uploaderImage.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.error('An error has occured');
+            this.progressService.deactivate();
         };
         
         this.uploaderImage.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.success('Image imported succesfully');
+            this.refreshImages();
+            this.progressService.deactivate();
         };
+    }
+
+    refreshImages() {
+        this.qemuService.getImages(this.server).subscribe((qemuImages) => {
+            this.qemuImages = qemuImages;
+        });
+
+        this.iosService.getImages(this.server).subscribe((iosImages) => {
+            this.iosImages = iosImages;
+        });
+
+        this.iouService.getImages(this.server).subscribe((iouImages) => {
+            this.iouImages = iouImages;
+        });
     }
 
     getAppliance(url: string) {
@@ -288,6 +308,7 @@ export class NewTemplateDialogComponent implements OnInit {
             (itemToUpload as any).options.disableMultipart = true;
     
             this.uploaderImage.uploadItem(itemToUpload);
+            this.progressService.activate();
         };
 
         fileReader.readAsText(file);
