@@ -139,7 +139,10 @@
                     </mat-select>
                 </div>
                 <div>
-                    Install required files <br/>
+                    Install required files 
+                    <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
+                        <mat-icon aria-label="Refresh list of images">refresh</mat-icon>
+                    </button><br/>
                     <div>
                         <div *ngFor="let version of applianceToInstall.versions">
                             <div class="list-item">
@@ -216,7 +219,10 @@
                     </mat-radio-group>
                 </div>
                 <div>
-                    Install required files
+                    Install required files 
+                    <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
+                        <mat-icon aria-label="Refresh list of images">refresh</mat-icon>
+                    </button><br/>
                     <mat-list>
                         <mat-list-item *ngFor="let image of applianceToInstall.images">
                           <div class="list-item">
@@ -249,7 +255,10 @@
                     </mat-radio-group>
                 </div>
                 <div>
-                    Install required files
+                    Install required files 
+                    <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
+                        <mat-icon aria-label="Refresh list of images">refresh</mat-icon>
+                    </button><br/>
                     <mat-list>
                         <mat-list-item *ngFor="let image of applianceToInstall.images">
                           <div class="list-item">
