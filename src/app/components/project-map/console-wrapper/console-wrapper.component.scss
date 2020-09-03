@@ -5,7 +5,7 @@
     left: 20px;
     height: 180px;
     width: 600px;
-    background: #263238;
+    background: #000000!important;
     color: white;
     overflow: hidden;
     font-size: 12px;
@@ -38,10 +38,26 @@
     display: flex;
     padding: 2px;
     justify-content: space-between;
+    background: #263238!important;
+}
+
+:host ::ng-deep .mat-tab-label {
+    height: 3rem !important;
+    min-width: 8rem !important;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active {
+    border-bottom: 2px solid #0097a7;
+    box-sizing: border-box;
+    font-weight: 1200;
+}
+
+:host ::ng-deep .mat-ink-bar {
+    display: none !important;
 }
 
 .tabs {
-    width: 630px;
+    width: 80%;
 }
 
 .console {
@@ -52,6 +68,10 @@
     color: #dbd5d5;
     scrollbar-color: darkgrey #263238;
     scrollbar-width: thin;
+}
+
+.xterm-console {
+    background: black;
 }
 
 .consoleInput {

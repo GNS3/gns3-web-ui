@@ -31,8 +31,18 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     
     ngOnInit() {
         this.consoleService.consoleResized.subscribe(ev => {
-            this.fitAddon.fit();
+            let numberOfColumns = Math.floor(ev.width / 9);
+            let numberOfRows = Math.floor(ev.height / 17);
+
+            this.consoleService.setNumberOfColumns(numberOfColumns);
+            this.consoleService.setNumberOfRows(numberOfRows);
+
+            this.term.resize(numberOfColumns, numberOfRows);
         });
+
+        if (this.consoleService.getNumberOfColumns() && this.consoleService.getNumberOfRows()){
+            this.term.resize(this.consoleService.getNumberOfColumns(), this.consoleService.getNumberOfRows());
+        }
     }
 
     ngAfterViewInit() {
