@@ -278,6 +278,30 @@ export class NewTemplateDialogComponent implements OnInit {
         this.applianceToInstall = object;
         setTimeout(() => {
             this.stepper.next();
+            if (this.applianceToInstall.qemu) {
+                setTimeout(() => {
+                    if (this.qemuBinaries.length) {
+                        if (this.applianceToInstall.qemu.arch === 'x86_64') {
+                            let filtered_binaries = this.qemuBinaries.filter(n => n.path.includes('qemu-system-x86_64'));
+                            if (filtered_binaries.length) {
+                                this.selectedBinary = filtered_binaries[0];
+                            }
+                        } else if (this.applianceToInstall.qemu.arch === 'i386') {
+                            let filtered_binaries = this.qemuBinaries.filter(n => n.path.includes('qemu-system-i386'));
+                            if (filtered_binaries.length) {
+                                this.selectedBinary = filtered_binaries[0];
+                            }
+                        } else if (this.applianceToInstall.qemu.arch === 'x86_64') {
+                            let filtered_binaries = this.qemuBinaries.filter(n => n.path.includes('qemu-system-arm'));
+                            if (filtered_binaries.length) {
+                                this.selectedBinary = filtered_binaries[0];
+                            }
+                        } else {
+                            this.selectedBinary = this.qemuBinaries[0];
+                        }
+                    }
+                }, 100);
+            }
         }, 100);
     }
 
