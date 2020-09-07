@@ -106,6 +106,7 @@
 
         <div>
             <button mat-button matStepperPrevious>Back</button>
+            <button mat-button [hidden]="action!=='install'" (click)="updateAppliances()">Update from online registry</button>
             <button mat-button (click)="onCloseClick()">Cancel</button>
         </div>
     </mat-step>

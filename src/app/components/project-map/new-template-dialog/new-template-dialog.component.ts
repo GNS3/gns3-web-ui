@@ -168,6 +168,12 @@ export class NewTemplateDialogComponent implements OnInit {
         };
     }
 
+    updateAppliances() {
+        this.applianceService.updateAppliances(this.server).subscribe((appliances) => {
+            this.appliances = appliances;
+        })
+    }
+
     refreshImages() {
         this.qemuService.getImages(this.server).subscribe((qemuImages) => {
             this.qemuImages = qemuImages;
