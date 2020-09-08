@@ -29,6 +29,7 @@ import { Template } from '../../../models/template';
 import { ComputeService } from '../../../services/compute.service';
 import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
 import { ProgressService } from '../../../common/progress/progress.service';
+import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -78,6 +79,8 @@ export class NewTemplateDialogComponent implements OnInit {
     private iosImages: Image[] = [];
     private iouImages: Image[] = [];
 
+    private templates: Template[] = [];
+
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
     @ViewChild('stepper', {static: true}) stepper: MatStepper;
 
@@ -98,6 +101,10 @@ export class NewTemplateDialogComponent implements OnInit {
     ) {}
 
     ngOnInit() {
+        this.templateService.list(this.server).subscribe((templates) => {
+            this.templates = templates;
+        });
+        
         this.computeService.getComputes(this.server).subscribe((computes) => {
             computes.forEach(compute => {
                 if (compute.compute_id === 'vm') {
@@ -423,6 +430,8 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     createIouTemplate (image: Image) {
+        if (!this.validateTemplateName()) return;
+
         let iouTemplate: IouTemplate = new IouTemplate();
         iouTemplate.name = this.applianceToInstall.name;
         iouTemplate.nvram = this.applianceToInstall.iou.nvram;
@@ -447,6 +456,8 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     createIosTemplate(image: Image) {
+        if (!this.validateTemplateName()) return;
+
         let iosTemplate: IosTemplate = new IosTemplate();
         iosTemplate.name = this.applianceToInstall.name;
         iosTemplate.chassis = this.applianceToInstall.dynamips.chassis;
@@ -479,6 +490,8 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     createDockerTemplate() {
+        if (!this.validateTemplateName()) return;
+
         let dockerTemplate: DockerTemplate = new DockerTemplate();
         dockerTemplate.name = this.applianceToInstall.name;
         dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
@@ -509,8 +522,8 @@ export class NewTemplateDialogComponent implements OnInit {
             this.toasterService.error('Please select QEMU binary first');
             return;
         }
+
         let qemuTemplate: QemuTemplate = new QemuTemplate();
-        qemuTemplate.name = this.applianceToInstall.name;
         qemuTemplate.ram = this.applianceToInstall.qemu.ram;
         qemuTemplate.adapters = this.applianceToInstall.qemu.adapters;
         qemuTemplate.adapter_type = this.applianceToInstall.qemu.adapter_type;
@@ -533,11 +546,58 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.template_type = 'qemu';
         qemuTemplate.usage = this.applianceToInstall.usage;
 
-        this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
-            this.templateService.newTemplateCreated.next(template as any as Template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-        });
+        if (this.templates.filter(t => t.name === this.applianceToInstall.name).length === 0) {
+            qemuTemplate.name = this.applianceToInstall.name;
+            
+            this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
+                this.templateService.newTemplateCreated.next(template as any as Template);
+                this.toasterService.success('Template added');
+                this.dialogRef.close();
+            });
+        } else {
+            const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
+                width: '400px',
+                height: '250px',
+                autoFocus: false,
+                disableClose: true
+            });
+            dialogRef.componentInstance.server = this.server;
+            dialogRef.afterClosed().subscribe((answer: string) => {
+                if (answer) {
+                    qemuTemplate.name = answer;
+            
+                    this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
+                        this.templateService.newTemplateCreated.next(template as any as Template);
+                        this.toasterService.success('Template added');
+                        this.dialogRef.close();
+                    });
+                } else{
+                    return false;
+                }
+            });
+        }
+    }
+
+    validateTemplateName() {
+        if (this.templates.filter(t => t.name === this.applianceToInstall.name).length === 0) {
+            return true;
+        } else {
+            const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
+                width: '400px',
+                height: '300px',
+                autoFocus: false,
+                disableClose: true
+            });
+            dialogRef.componentInstance.server = this.server;
+            dialogRef.afterClosed().subscribe((answer: string) => {
+                if (answer) {
+                    this.applianceToInstall.name = answer;
+                    return true;
+                } else{
+                    return false;
+                }
+            });
+        }
     }
 }
 

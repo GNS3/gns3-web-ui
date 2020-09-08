@@ -1,0 +1,26 @@
+<h1 mat-dialog-title>Please enter name for the new template</h1>
+<form [formGroup]="templateNameForm" class="file-name-form">
+  <mat-form-field class="file-name-form-field">
+    <input
+      matInput
+      (keydown)="onKeyDown($event)"
+      type="text"
+      formControlName="templateName"
+      [ngClass]="{ 'is-invalid': form.templateName?.errors }"
+      placeholder="Template name"
+    />
+    <mat-error *ngIf="form.templateName?.touched && form.templateName?.errors && form.templateName?.errors.required"
+      >Template name is required</mat-error
+    >
+    <mat-error *ngIf="form.templateName?.errors && form.templateName?.errors.invalidName"
+      >Template name is incorrect</mat-error
+    >
+    <mat-error *ngIf="form.templateName?.errors && form.templateName?.errors.templateExist"
+      >Template with this name exists</mat-error
+    >
+  </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" class="add-project-button" mat-raised-button color="primary">Add template</button>
+  </div>
+</form>

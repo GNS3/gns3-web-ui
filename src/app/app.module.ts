@@ -279,6 +279,7 @@ import { ChangeHostnameActionComponent } from './components/project-map/context-
 import { ChangeHostnameDialogComponent } from './components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
+import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
 
 @NgModule({
   declarations: [
@@ -462,7 +463,8 @@ import { InformationDialogComponent } from './components/dialogs/information-dia
     ChangeHostnameActionComponent,
     ChangeHostnameDialogComponent,
     ApplianceInfoDialogComponent,
-    InformationDialogComponent
+    InformationDialogComponent,
+    TemplateNameDialogComponent
   ],
   imports: [
     BrowserModule,
