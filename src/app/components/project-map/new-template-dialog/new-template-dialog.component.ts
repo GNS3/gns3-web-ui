@@ -176,9 +176,15 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     updateAppliances() {
+        this.progressService.activate();
         this.applianceService.updateAppliances(this.server).subscribe((appliances) => {
             this.appliances = appliances;
-        })
+            this.progressService.deactivate();
+            this.toasterService.success('Appliances are up-to-date.');
+        }, error => {
+            this.progressService.deactivate();
+            this.toasterService.error('Appliances were not updated correctly.');
+        });
     }
 
     refreshImages() {
