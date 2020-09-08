@@ -430,10 +430,7 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     createIouTemplate (image: Image) {
-        if (!this.validateTemplateName()) return;
-
         let iouTemplate: IouTemplate = new IouTemplate();
-        iouTemplate.name = this.applianceToInstall.name;
         iouTemplate.nvram = this.applianceToInstall.iou.nvram;
         iouTemplate.ram = this.applianceToInstall.iou.ram;
         iouTemplate.ethernet_adapters = this.applianceToInstall.iou.ethernet_adapters;
@@ -448,18 +445,40 @@ export class NewTemplateDialogComponent implements OnInit {
         iouTemplate.path = image.filename;
         iouTemplate.template_type = 'iou';
 
-        this.iouService.addTemplate(this.server, iouTemplate).subscribe((template) => {
-            this.templateService.newTemplateCreated.next(template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-        });
+        if (this.templates.filter(t => t.name === this.applianceToInstall.name).length === 0) {
+            iouTemplate.name = this.applianceToInstall.name;
+            
+            this.iouService.addTemplate(this.server, iouTemplate).subscribe((template) => {
+                this.templateService.newTemplateCreated.next(template);
+                this.toasterService.success('Template added');
+                this.dialogRef.close();
+            });
+        } else {
+            const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
+                width: '400px',
+                height: '250px',
+                autoFocus: false,
+                disableClose: true
+            });
+            dialogRef.componentInstance.server = this.server;
+            dialogRef.afterClosed().subscribe((answer: string) => {
+                if (answer) {
+                    iouTemplate.name = answer;
+            
+                    this.iouService.addTemplate(this.server, iouTemplate).subscribe((template) => {
+                        this.templateService.newTemplateCreated.next(template);
+                        this.toasterService.success('Template added');
+                        this.dialogRef.close();
+                    });
+                } else{
+                    return false;
+                }
+            });
+        }
     }
 
     createIosTemplate(image: Image) {
-        if (!this.validateTemplateName()) return;
-
         let iosTemplate: IosTemplate = new IosTemplate();
-        iosTemplate.name = this.applianceToInstall.name;
         iosTemplate.chassis = this.applianceToInstall.dynamips.chassis;
         iosTemplate.nvram = this.applianceToInstall.dynamips.nvram;
         iosTemplate.platform = this.applianceToInstall.dynamips.platform;
@@ -482,18 +501,40 @@ export class NewTemplateDialogComponent implements OnInit {
         iosTemplate.image = image.filename;
         iosTemplate.template_type = 'dynamips';
 
-        this.iosService.addTemplate(this.server, iosTemplate).subscribe((template) => {
-            this.templateService.newTemplateCreated.next(template as any as Template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-        });
+        if (this.templates.filter(t => t.name === this.applianceToInstall.name).length === 0) {
+            iosTemplate.name = this.applianceToInstall.name;
+            
+            this.iosService.addTemplate(this.server, iosTemplate).subscribe((template) => {
+                this.templateService.newTemplateCreated.next(template as any as Template);
+                this.toasterService.success('Template added');
+                this.dialogRef.close();
+            });
+        } else {
+            const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
+                width: '400px',
+                height: '250px',
+                autoFocus: false,
+                disableClose: true
+            });
+            dialogRef.componentInstance.server = this.server;
+            dialogRef.afterClosed().subscribe((answer: string) => {
+                if (answer) {
+                    iosTemplate.name = answer;
+            
+                    this.iosService.addTemplate(this.server, iosTemplate).subscribe((template) => {
+                        this.templateService.newTemplateCreated.next(template as any as Template);
+                        this.toasterService.success('Template added');
+                        this.dialogRef.close();
+                    });
+                } else{
+                    return false;
+                }
+            });
+        }
     }
 
     createDockerTemplate() {
-        if (!this.validateTemplateName()) return;
-
         let dockerTemplate: DockerTemplate = new DockerTemplate();
-        dockerTemplate.name = this.applianceToInstall.name;
         dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
         dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
         dockerTemplate.builtin = this.applianceToInstall.builtin;
@@ -505,11 +546,36 @@ export class NewTemplateDialogComponent implements OnInit {
         dockerTemplate.image = this.applianceToInstall.docker.image;
         dockerTemplate.template_type = 'docker';
 
-        this.dockerService.addTemplate(this.server, dockerTemplate).subscribe((template) => {
-            this.templateService.newTemplateCreated.next(template as any as Template);
-            this.toasterService.success('Template added');
-            this.dialogRef.close();
-        });
+        if (this.templates.filter(t => t.name === this.applianceToInstall.name).length === 0) {
+            dockerTemplate.name = this.applianceToInstall.name;
+            
+            this.dockerService.addTemplate(this.server, dockerTemplate).subscribe((template) => {
+                this.templateService.newTemplateCreated.next(template as any as Template);
+                this.toasterService.success('Template added');
+                this.dialogRef.close();
+            });
+        } else {
+            const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
+                width: '400px',
+                height: '250px',
+                autoFocus: false,
+                disableClose: true
+            });
+            dialogRef.componentInstance.server = this.server;
+            dialogRef.afterClosed().subscribe((answer: string) => {
+                if (answer) {
+                    dockerTemplate.name = answer;
+            
+                    this.dockerService.addTemplate(this.server, dockerTemplate).subscribe((template) => {
+                        this.templateService.newTemplateCreated.next(template as any as Template);
+                        this.toasterService.success('Template added');
+                        this.dialogRef.close();
+                    });
+                } else{
+                    return false;
+                }
+            });
+        }
     }
 
     createQemuTemplateFromVersion(version: Version) {
@@ -571,28 +637,6 @@ export class NewTemplateDialogComponent implements OnInit {
                         this.toasterService.success('Template added');
                         this.dialogRef.close();
                     });
-                } else{
-                    return false;
-                }
-            });
-        }
-    }
-
-    validateTemplateName() {
-        if (this.templates.filter(t => t.name === this.applianceToInstall.name).length === 0) {
-            return true;
-        } else {
-            const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
-                width: '400px',
-                height: '300px',
-                autoFocus: false,
-                disableClose: true
-            });
-            dialogRef.componentInstance.server = this.server;
-            dialogRef.afterClosed().subscribe((answer: string) => {
-                if (answer) {
-                    this.applianceToInstall.name = answer;
-                    return true;
                 } else{
                     return false;
                 }
