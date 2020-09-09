@@ -19,6 +19,15 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     name: string;
     generalSettingsForm: FormGroup;
     consoleTypes: string[] = [];
+    consoleResolutions: string[] = [
+        '640x480',
+        '800x600',
+        '1024x768',
+        '1280x800',
+        '1280x1024',
+        '1366x768',
+        '1920x1080'
+    ];
 
     constructor(
         public dialogRef: MatDialogRef<ConfiguratorDialogDockerComponent>,
@@ -29,7 +38,10 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     ) {
         this.generalSettingsForm = this.formBuilder.group({
             name: new FormControl('', Validators.required),
-            adapter: new FormControl('', Validators.required)
+            adapter: new FormControl('', Validators.required),
+            startCommand: new FormControl('', Validators.required),
+            consoleHttpPort: new FormControl('', Validators.required),
+            consoleHttpPath: new FormControl('', Validators.required)
         });
     }
 
@@ -43,7 +55,6 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
 
     getConfiguration() {
         this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
-
     }
 
     onSaveClick() {
