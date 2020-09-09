@@ -1,6 +1,6 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Server } from '../../../../models/server';
 import { v4 as uuid } from 'uuid';
@@ -28,13 +28,19 @@ export class TemplateNameDialogComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
     private templateNameValidator: ProjectNameValidator,
-    private templateService: TemplateService
+    private templateService: TemplateService,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   ngOnInit() {
+    let name = this.data['name'];
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(null, [Validators.required, this.templateNameValidator.get], [templateNameAsyncValidator(this.server, this.templateService)])
+      templateName: new FormControl(name, [Validators.required, this.templateNameValidator.get], [templateNameAsyncValidator(this.server, this.templateService)])
     });
+    
+    setTimeout(() => {
+      this.templateNameForm.controls['templateName'].markAsTouched();
+    }, 100);
   }
 
   get form() {
