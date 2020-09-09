@@ -17,10 +17,7 @@ export class TemplateService {
     return this.httpServer.get<Template[]>(server, '/templates') as Observable<Template[]>;
   }
 
-  deleteTemplate(server: Server, templateId: string): Observable<boolean> {
-    return this.httpServer.delete(server, `/templates/${templateId}`, { observe: 'body' }).map(response => {
-        return true;
-    })
-    .catch((response) => { return Observable.throw(false)});
+  deleteTemplate(server: Server, templateId: string): Observable<any> {
+    return this.httpServer.delete(server, `/templates/${templateId}`, { observe: 'body' });
   }
 }

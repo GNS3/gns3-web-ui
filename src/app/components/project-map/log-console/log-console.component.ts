@@ -16,6 +16,7 @@ import { ResizeEvent } from 'angular-resizable-element';
 import { ThemeService } from '../../../services/theme.service';
 import { FormControl } from '@angular/forms';
 import { version } from '../../../version';
+import { NodeConsoleService } from '../../../services/nodeConsole.service';
 
 
 @Component({
@@ -63,10 +64,17 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         private logEventsDataSource: LogEventsDataSource,
         private httpService: HttpServer,
         private themeService: ThemeService,
-        private cd: ChangeDetectorRef
+        private cd: ChangeDetectorRef,
+        private nodeConsoleService: NodeConsoleService,
+        private changeDetectorRef: ChangeDetectorRef
     ) {}
     
     ngOnInit() {
+        this.nodeConsoleService.consoleResized.subscribe(ev => {
+            this.style = { bottom: '20px', left: '20px', width: `${ev.width}px`, height: `${ev.height - 70}px`};
+            this.changeDetectorRef.detectChanges();
+        });
+
         this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false
         this.style = { bottom: '20px', left: '20px', width: '720px', height: '340px'};
 

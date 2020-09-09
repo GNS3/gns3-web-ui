@@ -14,6 +14,15 @@ export class AdbutlerComponent implements OnInit {
   theme: string;
   onLoad = new EventEmitter();
   htmlCode: string;
+  staticCode: string = `<a href="https://try.solarwinds.com/gns3-free-toolset-giveaway?CMP=LEC-HAD-GNS3-SW_NA_X_NP_X_X_EN_STSGA_SW-ST-20200901_ST_OF1_TRY-NWSLTR">
+  Access Our Favorite Network Free Tools!
+ </a><br/>
+ Access 20+ network performance management, monitoring, and troubleshooting tools for FREE ($200 Value).<br/>
+ <button>
+ <a target="_blank" href="https://try.solarwinds.com/gns3-free-toolset-giveaway?CMP=LEC-HAD-GNS3-SW_NA_X_NP_X_X_EN_STSGA_SW-ST-20200901_ST_OF1_TRY-NWSLTR">
+ Check it out!
+ </a>
+ </button>`;
 
   constructor(
     private httpClient: HttpClient
@@ -28,7 +37,8 @@ export class AdbutlerComponent implements OnInit {
             this.htmlCode = response['placements'].placement_1.body;
             this.ad.nativeElement.insertAdjacentHTML('beforeend', this.htmlCode);
           } else {
-            this.onLoad.emit(false);
+            this.onLoad.emit(true);
+            this.htmlCode = this.staticCode;
           }
         },
         error => {}

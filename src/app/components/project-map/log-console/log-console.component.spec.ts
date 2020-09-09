@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { NO_ERRORS_SCHEMA, EventEmitter, inject } from '@angular/core';
-import { MatMenuModule } from '@angular/material';
+import { MatMenuModule } from '@angular/material/menu';
 import { Server } from '../../../models/server';
 import { LogConsoleComponent } from './log-console.component';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
@@ -74,7 +74,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Current version: 2020.2.0-beta.1'});
+    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Current version: 2020.3.0-beta.2'});
   });
 
   it('should call show message when unknown command entered', () => {

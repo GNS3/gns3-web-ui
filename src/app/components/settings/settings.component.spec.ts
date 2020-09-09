@@ -1,5 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule, MatExpansionModule, MatIconModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -10,11 +14,16 @@ import { SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ConsoleService } from '../../services/settings/console.service';
+import { MapSettingsService } from '../../services/mapsettings.service';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
   let settingsService: SettingsService;
+  let mapSettingsService = {
+    integrateLinkLabelsToLinks: true,
+    toggleIntegrateInterfaceLabels(val: boolean) {}
+  };
   let consoleService;
 
   beforeEach(async(() => {
@@ -27,7 +36,8 @@ describe('SettingsComponent', () => {
       providers: [
         SettingsService,
         { provide: ToasterService, useClass: MockedToasterService },
-        { provide: ConsoleService, useValue: consoleService}
+        { provide: ConsoleService, useValue: consoleService },
+        { provide: MapSettingsService, useValue: mapSettingsService }
       ],
       declarations: [SettingsComponent]
     }).compileComponents();

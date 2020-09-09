@@ -25,7 +25,7 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
     if(changes.nodes) {
       this.isNodeWithStoppedStatus = false;
       this.nodes.forEach((node) => {
-        if (node.status === 'stopped') {
+        if (node.status === 'stopped' || node.status === 'suspended') {
           this.isNodeWithStoppedStatus = true;
         }
       });

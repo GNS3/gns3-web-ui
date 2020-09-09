@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatIconModule } from '@angular/material';
+import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from 'ngx-electron';
 
 import { ConsoleDeviceActionComponent } from './console-device-action.component';

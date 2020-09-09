@@ -1,7 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ConsoleComponent } from './console.component';
-import { MatFormFieldModule, MatCardModule, MatInputModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConsoleService } from '../../../services/settings/console.service';
 import { ToasterService } from '../../../services/toaster.service';

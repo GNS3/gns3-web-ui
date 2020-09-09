@@ -1,7 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProgressComponent } from './progress.component';
-import { MatIconModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProgressService } from './progress.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
