@@ -54,7 +54,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
-            if (!this.node.properties.memory) this.node.properties.cpus = 0.0;
+            if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
         });
     }
 
