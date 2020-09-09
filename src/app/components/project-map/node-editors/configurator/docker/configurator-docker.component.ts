@@ -6,6 +6,7 @@ import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
+import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
 
 
 @Component({
@@ -34,13 +35,14 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private dockerConfigurationService: DockerConfigurationService
+        private dockerConfigurationService: DockerConfigurationService,
+        private nonNegativeValidator: NonNegativeValidator,
     ) {
         this.generalSettingsForm = this.formBuilder.group({
             name: new FormControl('', Validators.required),
             adapter: new FormControl('', Validators.required),
-            memory: new FormControl(''),
-            cpus: new FormControl(''),
+            memory: new FormControl('', nonNegativeValidator.get),
+            cpus: new FormControl('', nonNegativeValidator.get),
             startCommand: new FormControl('', Validators.required),
             consoleHttpPort: new FormControl('', Validators.required),
             consoleHttpPath: new FormControl('', Validators.required)
@@ -52,6 +54,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
+            if (!this.node.properties.memory) this.node.properties.cpus = 0.0;
         });
     }
 
