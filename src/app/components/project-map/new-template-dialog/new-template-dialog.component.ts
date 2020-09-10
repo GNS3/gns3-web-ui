@@ -357,25 +357,14 @@ export class NewTemplateDialogComponent implements OnInit {
         fileReader.readAsText(file);
     }
 
-    checkImage(image: Image): boolean {
-        if (this.applianceToInstall.qemu) {
-            if (this.qemuImages.filter(n => n.filename === image.filename).length > 0) return true;
-        } else if (this.applianceToInstall.dynamips) {
-            if (this.iosImages.filter(n => n.filename === image.filename).length > 0) return true;
-        } else if (this.applianceToInstall.iou) {
-            if (this.iouImages.filter(n => n.filename === image.filename).length > 0) return true;
-        }
-
-        return false;
-    }
-
     checkImageFromVersion(image: string): boolean {
+        let imageToInstall = this.applianceToInstall.images.filter(n => n.filename === image)[0];
         if (this.applianceToInstall.qemu) {
-            if (this.qemuImages.filter(n => n.filename === image).length > 0) return true;
+            if (this.qemuImages.filter(n => n.md5sum === imageToInstall.md5sum).length > 0) return true;
         } else if (this.applianceToInstall.dynamips) {
-            if (this.iosImages.filter(n => n.filename === image).length > 0) return true;
+            if (this.iosImages.filter(n => n.md5sum === imageToInstall.md5sum).length > 0) return true;
         } else if (this.applianceToInstall.iou) {
-            if (this.iouImages.filter(n => n.filename === image).length > 0) return true;
+            if (this.iouImages.filter(n => n.md5sum === imageToInstall.md5sum).length > 0) return true;
         }
 
         return false;
