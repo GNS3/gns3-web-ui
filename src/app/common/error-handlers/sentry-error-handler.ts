@@ -9,7 +9,7 @@ import * as Sentry from "@sentry/browser";
 import { BrowserOptions, init } from '@sentry/browser';
 
 const config = {
-    dsn: "https://d6f2d7fc84e74b05ac017753ef7bfff5@o19455.ingest.sentry.io/842726"
+    dsn: "https://5ef1859eb22d496390bdb4a673120b9d@o19455.ingest.sentry.io/842726"
 };
 init(config as BrowserOptions);
 
@@ -59,12 +59,12 @@ export class SentryErrorHandler implements ErrorHandler {
 
     // Capture handled exception and send it to Sentry.
     const eventId = Sentry.captureException(extractedError);
-    
+
     // When in development mode, log the error to console for immediate feedback.
     if (!environment.production) {
       console.error(extractedError);
     }
-    
+
     // Optionally show user dialog to provide details on what happened.
     // Sentry.showReportDialog({ eventId });
   }
