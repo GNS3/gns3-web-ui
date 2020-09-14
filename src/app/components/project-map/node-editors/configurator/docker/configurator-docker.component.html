@@ -19,7 +19,9 @@
                                 <input formControlName="adapter" matInput type="number" [(ngModel)]="node.properties.adapters" placeholder="Adapters">
                             </mat-form-field>
 
-                            <!-- custom adapters -->
+                            <button mat-button class="form-field" (click)="configureCustomAdapters()">
+                                Configure custom adapters
+                            </button>
 
                             <mat-form-field class="select">
                                 <mat-select [ngModelOptions]="{standalone: true}" placeholder="Console type" [(ngModel)]="node.console_type">
@@ -48,6 +50,9 @@
                                 <input matInput formControlName="consoleHttpPath" type="text" [(ngModel)]="node.properties.console_http_path" placeholder="HTTP path">
                             </mat-form-field>
 
+                            <button mat-button class="form-field" (click)="editNetworkConfiguration()">
+                                Edit network configuration
+                            </button>
                         </form>
                         <h6>Environment</h6>
                         <mat-form-field class="form-field">

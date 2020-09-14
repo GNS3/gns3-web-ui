@@ -226,6 +226,8 @@ import { ConfiguratorDialogVmwareComponent } from './components/project-map/node
 import { ConfiguratorDialogIouComponent } from './components/project-map/node-editors/configurator/iou/configurator-iou.component';
 import { ConfiguratorDialogIosComponent } from './components/project-map/node-editors/configurator/ios/configurator-ios.component';
 import { ConfiguratorDialogDockerComponent } from './components/project-map/node-editors/configurator/docker/configurator-docker.component';
+import { EditNetworkConfigurationDialogComponent } from './components/project-map/node-editors/configurator/docker/edit-network-configuration/edit-network-configuration.component';
+import { ConfigureCustomAdaptersDialogComponent } from './components/project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component';
 import { ConfiguratorDialogNatComponent } from './components/project-map/node-editors/configurator/nat/configurator-nat.component';
 import { ConfiguratorDialogTracengComponent } from './components/project-map/node-editors/configurator/traceng/configurator-traceng.component';
 import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
@@ -280,6 +282,7 @@ import { ChangeHostnameDialogComponent } from './components/project-map/change-h
 import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -464,7 +467,9 @@ import { TemplateNameDialogComponent } from './components/project-map/new-templa
     ChangeHostnameDialogComponent,
     ApplianceInfoDialogComponent,
     InformationDialogComponent,
-    TemplateNameDialogComponent
+    TemplateNameDialogComponent,
+    ConfigureCustomAdaptersDialogComponent,
+    EditNetworkConfigurationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -606,7 +611,9 @@ import { TemplateNameDialogComponent } from './components/project-map/new-templa
     AdbutlerComponent,
     NewTemplateDialogComponent,
     ChangeHostnameDialogComponent,
-    ApplianceInfoDialogComponent
+    ApplianceInfoDialogComponent,
+    ConfigureCustomAdaptersDialogComponent,
+    EditNetworkConfigurationDialogComponent
   ],
   bootstrap: [AppComponent]
 })
