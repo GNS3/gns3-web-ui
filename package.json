@@ -73,7 +73,7 @@
     "ngx-childprocess": "^0.0.6",
     "ngx-device-detector": "^1.4.5",
     "ngx-electron": "^2.1.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "notosans-fontface": "1.1.0",
     "rxjs": "^6.5.5",
     "rxjs-compat": "^6.5.5",
