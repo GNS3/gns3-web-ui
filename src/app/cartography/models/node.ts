@@ -64,7 +64,7 @@ export class Node {
   console_auto_start: boolean;
   console_host: string;
   console_type: string;
-  custom_adapters?: CustomAdapter[];
+  custom_adapters?: any[];
   ethernet_adapters?: any;
   serial_adapters?: any;
   first_port_name: string;

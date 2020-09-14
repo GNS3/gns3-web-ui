@@ -11,11 +11,13 @@ import { DockerConfigurationService } from '../../../../../../services/docker-co
 @Component({
     selector: 'app-configure-custom-adapters',
     templateUrl: './configure-custom-adapters.component.html',
-    styleUrls: ['../../configurator.component.scss']
+    styleUrls: ['./configure-custom-adapters.component.scss']
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
     server: Server;
     node: Node;
+    displayedColumns: string[] = ['adapter_number', 'port_name'];
+    adapters: CustomAdapter[] = [];
 
     constructor(
         public dialogRef: MatDialogRef<ConfigureCustomAdaptersDialogComponent>,
@@ -26,16 +28,33 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-
+        let i: number = 0;
+        if (!this.node.custom_adapters) {
+            this.node.ports.forEach((port) => {
+                this.adapters.push({
+                    adapter_number: i,
+                    port_name: ''
+                });
+            });
+        } else {
+            this.adapters = this.node.custom_adapters;
+        }
     }
 
-    getConfiguration() {}
-
     onSaveClick() {
-        
+        this.node.custom_adapters = this.adapters;
+        this.nodeService.updateNodeWithCustomAdapters(this.server, this.node).subscribe(() => {
+            this.onCancelClick();
+            this.toasterService.success(`Configuration saved for node ${this.node.name}`);
+        });
     }
 
     onCancelClick() {
         this.dialogRef.close();
     }
+}
+
+export class CustomAdapter {
+    adapter_number: number;
+    port_name: string;
 }
