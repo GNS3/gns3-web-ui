@@ -37,6 +37,7 @@ import { ProjectMapComponent } from './components/project-map/project-map.compon
 import { ServersComponent } from './components/servers/servers.component';
 import { AddServerDialogComponent } from './components/servers/add-server-dialog/add-server-dialog.component';
 import { ContextMenuComponent } from './components/project-map/context-menu/context-menu.component';
+import { ContextConsoleMenuComponent } from './components/project-map/context-console-menu/context-console-menu.component';
 import { StartNodeActionComponent } from './components/project-map/context-menu/actions/start-node-action/start-node-action.component';
 import { StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
 import { TemplateComponent } from './components/template/template.component';
@@ -299,6 +300,7 @@ import { TemplateNameDialogComponent } from './components/project-map/new-templa
     DefaultLayoutComponent,
     ProgressDialogComponent,
     ContextMenuComponent,
+    ContextConsoleMenuComponent,
     StartNodeActionComponent,
     StopNodeActionComponent,
     TemplateComponent,

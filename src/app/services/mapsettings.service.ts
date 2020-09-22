@@ -22,6 +22,14 @@ export class MapSettingsService {
         this.isMapLocked.next(value);
     }
 
+    setConsoleContextMenuAction(action: string) {
+        localStorage.setItem('consoleContextMenu', action);
+    }
+
+    getConsoleContextManuAction(): string {
+        return localStorage.getItem('consoleContextMenu');
+    }
+
     toggleTopologySummary(value: boolean) {
         this.isTopologySummaryVisible = value;
     }
