@@ -252,7 +252,6 @@ import { AlignVerticallyActionComponent } from './components/project-map/context
 import { ConfirmationBottomSheetComponent } from './components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { TemplateFilter } from './filters/templateFilter.pipe';
 import { NotificationService } from './services/notification.service';
-import { DeviceDetectorModule } from 'ngx-device-detector';
 import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
 import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 import { Gns3vmService } from './services/gns3vm.service';
@@ -492,7 +491,6 @@ import { TemplateNameDialogComponent } from './components/project-map/new-templa
     DragDropModule,
     NgxChildProcessModule,
     MATERIAL_IMPORTS,
-    DeviceDetectorModule.forRoot(),
     NgCircleProgressModule.forRoot()
   ],
   providers: [
