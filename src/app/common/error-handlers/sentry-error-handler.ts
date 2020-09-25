@@ -9,7 +9,7 @@ import * as Sentry from "@sentry/browser";
 import { BrowserOptions, init } from '@sentry/browser';
 
 const config = {
-    dsn: "https://5ef1859eb22d496390bdb4a673120b9d@o19455.ingest.sentry.io/842726"
+    dsn: "https://d8be3a98530f49eb90968ff396db326c@o19455.ingest.sentry.io/842726"
 };
 init(config as BrowserOptions);
 
