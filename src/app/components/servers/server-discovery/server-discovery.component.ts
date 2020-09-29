@@ -9,6 +9,7 @@ import { Version } from '../../../models/version';
 import { forkJoin } from 'rxjs';
 import { ServerService } from '../../../services/server.service';
 import { ServerDatabase } from '../../../services/server.database';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-server-discovery',
@@ -43,8 +44,8 @@ export class ServerDiscoveryComponent implements OnInit {
 
   discoverFirstAvailableServer() {
     forkJoin(
-      Observable.fromPromise(this.serverService.findAll()).pipe(map((s: Server[]) => s)),
-      this.discovery()
+      [from(this.serverService.findAll()).pipe(map((s: Server[]) => s)),
+      this.discovery()]
     ).subscribe(([local, discovered]) => {
       local.forEach(added => {
         discovered = discovered.filter(server => {
