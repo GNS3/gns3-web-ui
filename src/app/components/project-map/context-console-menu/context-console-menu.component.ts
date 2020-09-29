@@ -109,8 +109,4 @@ export class ContextConsoleMenuComponent implements OnInit {
         this.toasterService.error('To open console please start the node');
     }
   }
-
-  ngOnDestroy() {
-    this.componentRef.destroy();    
-  }
 }
