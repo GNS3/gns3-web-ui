@@ -21,8 +21,7 @@
 
 .buttonSelected {
     border-width: 3px;
-    border-color: #0097a7;
-    width: 77px;
+    background: #0097a7!important;
 }
 
 .image {
@@ -33,7 +32,7 @@
 }
 
 .imageSelected {
-    margin-left: -3px;
+    margin-left: 0px;
 }
 
 .wrapper {
