@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class MapSettingsService {
+    public isScrollDisabled = new Subject<boolean>();
     public isMapLocked = new Subject<boolean>();
     public isTopologySummaryVisible: boolean = true;
     public isLogConsoleVisible: boolean = false;
