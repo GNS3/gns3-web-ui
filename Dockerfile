@@ -1,5 +1,5 @@
 # Dockerfile for GNS3 Web-ui development
-FROM node:carbon
+FROM node:stretch
 
 # Create user
 RUN useradd --user-group --create-home --shell /bin/false gns3-web-ui
