@@ -104,6 +104,14 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapSettings.isReadOnly = value;
   }
 
+  resize(val: boolean) {
+    if (val) {
+      this.svg.attr('height', window.innerHeight + window.scrollY - 16);
+    } else {
+      this.svg.attr('height', this.height);
+    }
+  }
+
   ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
     if (
       (changes['width'] && !changes['width'].isFirstChange()) ||
@@ -158,6 +166,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     );
 
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? 1 : 0;
+    this.mapSettingsService.isScrollDisabled.subscribe(val => this.resize(val));
   }
 
   ngOnDestroy() {
