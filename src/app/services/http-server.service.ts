@@ -179,8 +179,10 @@ export class HttpServer {
     if (server.host && server.port) {
       if (server.authorization === 'basic') {
         url = `https://${server.host}:${server.port}/v2${url}`;
+        console.log(url);
       } else {
         url = `http://${server.host}:${server.port}/v2${url}`;
+        console.log(url);
       }
     } else {
       url = `/v2${url}`;
