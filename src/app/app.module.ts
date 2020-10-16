@@ -282,6 +282,7 @@ import { ChangeHostnameDialogComponent } from './components/project-map/change-h
 import { ApplianceInfoDialogComponent } from './components/project-map/new-template-dialog/appliance-info-dialog/appliance-info-dialog.component';
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
+import { UpdatesService } from './services/updates.service';
 
 
 @NgModule({
@@ -565,7 +566,8 @@ import { TemplateNameDialogComponent } from './components/project-map/new-templa
     ServerResolve,
     ConsoleGuard,
     Title,
-    ApplianceService
+    ApplianceService,
+    UpdatesService
   ],
   entryComponents: [
     AddServerDialogComponent,
