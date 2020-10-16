@@ -4,6 +4,7 @@ import { ToasterService } from '../../services/toaster.service';
 import { ConsoleService } from '../../services/settings/console.service';
 import { ThemeService } from '../../services/theme.service';
 import { MapSettingsService } from '../../services/mapsettings.service';
+import { UpdatesService } from '../../services/updates.service';
 
 @Component({
   selector: 'app-settings',
@@ -20,7 +21,8 @@ export class SettingsComponent implements OnInit {
     private toaster: ToasterService,
     private consoleService: ConsoleService,
     private themeService: ThemeService,
-    public mapSettingsService: MapSettingsService
+    public mapSettingsService: MapSettingsService,
+    public updatesService: UpdatesService
   ) {}
 
   ngOnInit() {
@@ -37,5 +39,9 @@ export class SettingsComponent implements OnInit {
 
   setDarkMode(value: boolean) {
     this.themeService.setDarkMode(value);
+  }
+
+  checkForUpdates() {
+    window.open("https://gns3.com/software");
   }
 }

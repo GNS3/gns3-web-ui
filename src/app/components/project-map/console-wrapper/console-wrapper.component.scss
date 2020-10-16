@@ -41,6 +41,11 @@
     background: #263238!important;
 }
 
+.lightThemeConsoleHeader {
+    background: white!important;
+    color: black!important;
+}
+
 :host ::ng-deep .mat-tab-label {
     height: 3rem !important;
     min-width: 8rem !important;
