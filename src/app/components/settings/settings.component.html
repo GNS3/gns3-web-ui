@@ -54,6 +54,18 @@
           </div>
 
         </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Updates </mat-panel-title>
+            <mat-panel-description> Check for updates </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="theme-panel">
+            <button mat-raised-button (click)="checkForUpdates()" class="fullWidth">Check for updates</button>
+          </div>
+
+        </mat-expansion-panel>
       </mat-accordion>
     </div>
 

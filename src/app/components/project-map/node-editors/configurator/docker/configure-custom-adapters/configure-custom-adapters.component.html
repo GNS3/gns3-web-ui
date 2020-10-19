@@ -1,0 +1,32 @@
+<h1 mat-dialog-title>Configure custom adapters for node {{node.name}}</h1>
+
+<div *ngIf="node" class="modal-form-container">
+    <div class="header">
+        <span class="column">
+            Adapter number
+        </span>
+        <span class="column">
+            Port name
+        </span>
+    </div>
+
+    <div>
+        <mat-list>
+            <mat-list-item *ngFor="let adapter of adapters; index as i">
+                <div class="header">
+                    <span class="column">
+                        Adapter {{adapter.adapter_number}}
+                    </span>
+                    <span class="column">
+                        <input matInput type="text" [(ngModel)]="adapter.port_name" placeholder="Edit port name">
+                    </span>
+                </div>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

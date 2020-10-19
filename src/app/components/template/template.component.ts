@@ -48,9 +48,14 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
     this.templateService.list(this.server).subscribe((listOfTemplates: Template[]) => {
       this.filteredTemplates = listOfTemplates;
+      this.sortTemplates();
       this.templates = listOfTemplates;
     });
     this.symbolService.list(this.server);
+  }
+
+  sortTemplates() {
+    this.filteredTemplates = this.filteredTemplates.sort((a, b) => (a.name < b.name ? -1 : 1));
   }
 
   filterTemplates(event) {
@@ -63,6 +68,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
     } else  {
       this.filteredTemplates = temporaryTemplates.filter(t => t.template_type === this.selectedType);
     }
+    this.sortTemplates();
   }
 
   dragStart(ev) {

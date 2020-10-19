@@ -3,7 +3,7 @@
     (document:mousemove)="dragWidget($event)"
     (document:mouseup)="toggleDragging(false)">   
 </div>
-<!-- Option with resizing
+<!-- Option with resizing -->
 <div 
     class="consoleWrapper"
     [ngClass]="{lightTheme: isLightThemeEnabled}"
@@ -14,14 +14,14 @@
     [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
     [enableGhostResize]="true"
     (resizeStart)="toggleDragging(false)"
-    (resizeEnd)="onResizeEnd($event)"> -->
-<div 
+    (resizeEnd)="onResizeEnd($event)">
+<!-- <div 
     class="consoleWrapper"
     [ngClass]="{lightTheme: isLightThemeEnabled}"
     (mousedown)="toggleDragging(true)"
-    [ngStyle]="style">
+    [ngStyle]="style"> -->
 
-    <div class="consoleHeader">
+    <div class="consoleHeader" [ngClass]="{lightThemeConsoleHeader: isLightThemeEnabled}">
         <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
             <mat-tab>
                 <ng-template mat-tab-label>
@@ -32,7 +32,7 @@
             <mat-tab *ngFor="let node of nodes; let index = index" [label]="tab">
                 <ng-template mat-tab-label>
                     <div class="col" style="margin-left: 20px;">{{node.name}}</div>
-                    <button style="color:white" mat-icon-button (click)="removeTab(index)">
+                    <button [ngClass]="{lightThemeConsoleHeader: isLightThemeEnabled}" style="color:white" mat-icon-button (click)="removeTab(index)">
                         <mat-icon>close</mat-icon>
                     </button>
                 </ng-template>
@@ -40,20 +40,20 @@
     
         </mat-tab-group>
 
-        <button *ngIf="!isMinimized" style="color:white" mat-icon-button (click)="minimize(true)">
+        <button *ngIf="!isMinimized" [ngClass]="{lightThemeConsoleHeader: isLightThemeEnabled}" style="color:white" mat-icon-button (click)="minimize(true)">
             <mat-icon>remove</mat-icon>
         </button>
-        <button *ngIf="isMinimized" style="color:white" mat-icon-button (click)="minimize(false)">
+        <button *ngIf="isMinimized" [ngClass]="{lightThemeConsoleHeader: isLightThemeEnabled}" style="color:white" mat-icon-button (click)="minimize(false)">
             <mat-icon>web_asset</mat-icon>
         </button>
-        <button style="color:white" mat-icon-button (click)="close()">
+        <button [ngClass]="{lightThemeConsoleHeader: isLightThemeEnabled}" style="color:white" mat-icon-button (click)="close()">
             <mat-icon>close</mat-icon>
         </button>
     </div>
 
     <app-log-console [hidden]="!(selected.value===0) || isMinimized" [server]="server" [project]="project"></app-log-console>
 
-    <div [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
+    <div (mouseover)="disableScroll($event)" (mouseout)="enableScroll($event)" class="xterm-console" [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
         <app-web-console [hidden]="!(selected.value===(index+1))" [server]="server" [node]="nodes[index]"></app-web-console>
     </div>
 </div>

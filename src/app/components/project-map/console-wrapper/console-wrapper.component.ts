@@ -7,6 +7,7 @@ import { ThemeService } from '../../../services/theme.service';
 import { FormControl } from '@angular/forms';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { Node } from '../../../cartography/models/node';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 
 
 @Component({
@@ -24,15 +25,17 @@ export class ConsoleWrapperComponent implements OnInit {
 
     public style: object = {};
     public styleInside: object = { height: `120px` };
-
     public isDraggingEnabled: boolean = false;
     public isLightThemeEnabled: boolean = false;
-
     public isMinimized: boolean = false;
+
+    public resizedWidth: number = 720;
+    public resizedHeight: number = 480;
 
     constructor(
         private consoleService: NodeConsoleService,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private mapSettingsService: MapSettingsService
     ) {}
 
     nodes: Node[] = [];
@@ -55,9 +58,9 @@ export class ConsoleWrapperComponent implements OnInit {
     minimize(value: boolean) {
         this.isMinimized = value;
         if (!value) {
-            this.style = { bottom: '20px', left: '20px', width: '720px', height: '460px'};
+            this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px`}
         } else {
-            this.style = { bottom: '20px', left: '20px', width: '720px', height: '56px'};
+            this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px'};
         }
     }
 
@@ -113,8 +116,8 @@ export class ConsoleWrapperComponent implements OnInit {
         if (
             event.rectangle.width &&
             event.rectangle.height &&
-            (event.rectangle.width < 720 ||
-            event.rectangle.height < 460)
+            (event.rectangle.width < 500 ||
+            event.rectangle.height < 100)
         ) {
             return false;
         }
@@ -134,9 +137,25 @@ export class ConsoleWrapperComponent implements OnInit {
             height: `${event.rectangle.height - 60}px`,
             width: `${event.rectangle.width}px`
         };
+
+        this.consoleService.consoleResized.next({
+            width: event.rectangle.width,
+            height: event.rectangle.height - 53
+        });
+
+        this.resizedWidth = event.rectangle.width;
+        this.resizedHeight = event.rectangle.height;
     }
 
     close() {
         this.closeConsole.emit(false);
+    }
+
+    enableScroll(e) {
+        this.mapSettingsService.isScrollDisabled.next(false);
+    }
+
+    disableScroll(e) {
+        this.mapSettingsService.isScrollDisabled.next(true);
     }
 }

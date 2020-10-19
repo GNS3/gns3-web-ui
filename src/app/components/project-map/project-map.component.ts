@@ -13,6 +13,7 @@ import { ProjectService } from '../../services/project.service';
 import { Server } from '../../models/server';
 import { Drawing } from '../../cartography/models/drawing';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
+import { ContextConsoleMenuComponent } from './context-console-menu/context-console-menu.component';
 import { Template } from '../../models/template';
 import { NodeService } from '../../services/node.service';
 import { Symbol } from '../../models/symbol';
@@ -112,6 +113,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isLightThemeEnabled: boolean = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
+  @ViewChild(ContextConsoleMenuComponent) consoleContextMenu: ContextConsoleMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
@@ -437,6 +439,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
     });
 
+    const onContextConsoleMenu = this.nodeWidget.onContextConsoleMenu.subscribe((eventNode: NodeContextMenu) => {
+      const node = this.mapNodeToNode.convert(eventNode.node);
+      this.consoleContextMenu.openMenu(node, eventNode.event.pageY, eventNode.event.pageX);
+    });
+
     this.projectMapSubscription.add(onLinkContextMenu);
     this.projectMapSubscription.add(onEthernetLinkContextMenu);
     this.projectMapSubscription.add(onSerialLinkContextMenu);
@@ -445,6 +452,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(onContextMenu);
     this.projectMapSubscription.add(onLabelContextMenu);
     this.projectMapSubscription.add(onInterfaceLabelContextMenu);
+    this.projectMapSubscription.add(onContextConsoleMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 
@@ -880,7 +888,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public addNewTemplate() {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
       width: '1000px',
-      maxHeight: '500px',
+      maxHeight: '700px',
       autoFocus: false,
       disableClose: true
     });

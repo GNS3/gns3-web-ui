@@ -15,7 +15,26 @@ export class NodeConsoleService {
   public readonly defaultNumberOfColumns = 80;
   public readonly defaultNumberOfRows = 24;
 
+  private lastNumberOfColumns: number;
+  private lastNumberOfRows: number;
+
   constructor() {}
+
+  getNumberOfColumns() {
+    return this.lastNumberOfColumns;
+  }
+
+  getNumberOfRows() {
+    return this.lastNumberOfRows;
+  }
+
+  setNumberOfColumns(value: number) {
+    this.lastNumberOfColumns = value;
+  }
+
+  setNumberOfRows(value: number) {
+    this.lastNumberOfRows = value;
+  }
 
   openConsoleForNode(node: Node) {
     this.nodeConsoleTrigger.emit(node);
@@ -39,6 +58,6 @@ export class NodeConsoleService {
 }
 
 export interface ConsoleResizedEvent {
-  numberOfColumns: number,
-  numberOfRows: number
+  width: number,
+  height: number
 }

@@ -149,6 +149,14 @@ export class NodeService {
     return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
   }
 
+  getNetworkConfiguration(server: Server, node: Node) {
+    return this.httpServer.get(server, `/projects/${node.project_id}/nodes/${node.node_id}/files/etc/network/interfaces`, { responseType: 'text' as 'json'});
+  }
+
+  saveNetworkConfiguration(server: Server, node: Node, configuration: string) {
+    return this.httpServer.post(server, `/projects/${node.project_id}/nodes/${node.node_id}/files/etc/network/interfaces`, configuration);
+  }
+
   getStartupConfiguration(server: Server, node: Node) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 

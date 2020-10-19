@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Edit network configuration for node {{node.name}}</h1>
+
+<div *ngIf="node" class="modal-form-container">
+    <textarea matInput [(ngModel)]="configuration" class="textArea" type="text"></textarea>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

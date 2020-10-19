@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class MapSettingsService {
+    public isScrollDisabled = new Subject<boolean>();
     public isMapLocked = new Subject<boolean>();
     public isTopologySummaryVisible: boolean = true;
     public isLogConsoleVisible: boolean = false;
@@ -20,6 +21,14 @@ export class MapSettingsService {
 
     changeMapLockValue(value: boolean) {
         this.isMapLocked.next(value);
+    }
+
+    setConsoleContextMenuAction(action: string) {
+        localStorage.setItem('consoleContextMenu', action);
+    }
+
+    getConsoleContextManuAction(): string {
+        return localStorage.getItem('consoleContextMenu');
     }
 
     toggleTopologySummary(value: boolean) {

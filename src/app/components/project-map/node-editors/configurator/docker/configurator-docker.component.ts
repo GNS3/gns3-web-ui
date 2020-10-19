@@ -4,8 +4,11 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
+import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
+import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
+import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
 
 
 @Component({
@@ -19,19 +22,39 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     name: string;
     generalSettingsForm: FormGroup;
     consoleTypes: string[] = [];
+    consoleResolutions: string[] = [
+        '640x480',
+        '800x600',
+        '1024x768',
+        '1280x800',
+        '1280x1024',
+        '1366x768',
+        '1920x1080'
+    ];
+    private conf = {
+        autoFocus: false,
+        width: '800px',
+        disableClose: true
+    };
+    dialogRef;
 
     constructor(
-        public dialogRef: MatDialogRef<ConfiguratorDialogDockerComponent>,
+        public dialogReference: MatDialogRef<ConfiguratorDialogDockerComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
-        private dockerConfigurationService: DockerConfigurationService
+        private dockerConfigurationService: DockerConfigurationService,
+        private nonNegativeValidator: NonNegativeValidator,
+        private dialog: MatDialog
     ) {
         this.generalSettingsForm = this.formBuilder.group({
             name: new FormControl('', Validators.required),
             adapter: new FormControl('', Validators.required),
-            memory: new FormControl(''),
-            cpus: new FormControl('')
+            memory: new FormControl('', nonNegativeValidator.get),
+            cpus: new FormControl('', nonNegativeValidator.get),
+            startCommand: new FormControl('', Validators.required),
+            consoleHttpPort: new FormControl('', Validators.required),
+            consoleHttpPath: new FormControl('', Validators.required)
         });
     }
 
@@ -40,11 +63,26 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
             this.node = node;
             this.name = node.name;
             this.getConfiguration();
+            if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
         });
     }
 
     getConfiguration() {
         this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
+    }
+
+    configureCustomAdapters() {
+        this.dialogRef = this.dialog.open(ConfigureCustomAdaptersDialogComponent, this.conf);
+        let instance = this.dialogRef.componentInstance;
+        instance.server = this.server;
+        instance.node = this.node;
+    }
+
+    editNetworkConfiguration() {
+        this.dialogRef = this.dialog.open(EditNetworkConfigurationDialogComponent, this.conf);
+        let instance = this.dialogRef.componentInstance;
+        instance.server = this.server;
+        instance.node = this.node;
     }
 
     onSaveClick() {
@@ -59,6 +97,6 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     }
 
     onCancelClick() {
-        this.dialogRef.close();
+        this.dialogReference.close();
     }
 }

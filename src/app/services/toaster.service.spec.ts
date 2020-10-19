@@ -1,5 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ToasterService } from './toaster.service';
 import { NgZone } from '@angular/core';

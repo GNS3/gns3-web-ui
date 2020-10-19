@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ProjectService } from '../../../services/project.service';
 import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
