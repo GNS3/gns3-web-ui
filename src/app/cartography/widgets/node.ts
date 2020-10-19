@@ -15,6 +15,7 @@ import { MapSettingsService } from '../../services/mapsettings.service';
 @Injectable()
 export class NodeWidget implements Widget {
   public onContextMenu = new EventEmitter<NodeContextMenu>();
+  public onContextConsoleMenu = new EventEmitter<NodeContextMenu>();
   public onNodeClicked = new EventEmitter<NodeClicked>();
 
   constructor(
@@ -85,13 +86,19 @@ export class NodeWidget implements Widget {
         event.preventDefault();
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
+      .on('dblclick', function(n: MapNode, i: number) {
+        event.preventDefault();
+        self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
+      })
       .attr('xnode:href', (n: MapNode) => n.symbolUrl)
       .attr('width', (n: MapNode) => {
+        if (n.nodeType === 'cloud' || n.nodeType === 'nat') return 120;
         if (!n.width) return 60;
         if (n.width > 64) return 64;
         return n.width;
       })
       .attr('height', (n: MapNode) => {
+        if (n.nodeType === 'cloud' || n.nodeType === 'nat') return 60;
         if (!n.height) return 60;
         if (n.height > 64) return 64;
         return n.height;

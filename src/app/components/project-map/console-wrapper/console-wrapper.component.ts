@@ -7,6 +7,7 @@ import { ThemeService } from '../../../services/theme.service';
 import { FormControl } from '@angular/forms';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { Node } from '../../../cartography/models/node';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 
 
 @Component({
@@ -33,7 +34,8 @@ export class ConsoleWrapperComponent implements OnInit {
 
     constructor(
         private consoleService: NodeConsoleService,
-        private themeService: ThemeService
+        private themeService: ThemeService,
+        private mapSettingsService: MapSettingsService
     ) {}
 
     nodes: Node[] = [];
@@ -147,5 +149,13 @@ export class ConsoleWrapperComponent implements OnInit {
 
     close() {
         this.closeConsole.emit(false);
+    }
+
+    enableScroll(e) {
+        this.mapSettingsService.isScrollDisabled.next(false);
+    }
+
+    disableScroll(e) {
+        this.mapSettingsService.isScrollDisabled.next(true);
     }
 }

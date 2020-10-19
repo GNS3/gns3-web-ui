@@ -4,9 +4,11 @@ import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
 import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
+import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
+import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
 
 
 @Component({
@@ -29,14 +31,21 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         '1366x768',
         '1920x1080'
     ];
+    private conf = {
+        autoFocus: false,
+        width: '800px',
+        disableClose: true
+    };
+    dialogRef;
 
     constructor(
-        public dialogRef: MatDialogRef<ConfiguratorDialogDockerComponent>,
+        public dialogReference: MatDialogRef<ConfiguratorDialogDockerComponent>,
         public nodeService: NodeService,
         private toasterService: ToasterService,
         private formBuilder: FormBuilder,
         private dockerConfigurationService: DockerConfigurationService,
         private nonNegativeValidator: NonNegativeValidator,
+        private dialog: MatDialog
     ) {
         this.generalSettingsForm = this.formBuilder.group({
             name: new FormControl('', Validators.required),
@@ -62,6 +71,20 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
     }
 
+    configureCustomAdapters() {
+        this.dialogRef = this.dialog.open(ConfigureCustomAdaptersDialogComponent, this.conf);
+        let instance = this.dialogRef.componentInstance;
+        instance.server = this.server;
+        instance.node = this.node;
+    }
+
+    editNetworkConfiguration() {
+        this.dialogRef = this.dialog.open(EditNetworkConfigurationDialogComponent, this.conf);
+        let instance = this.dialogRef.componentInstance;
+        instance.server = this.server;
+        instance.node = this.node;
+    }
+
     onSaveClick() {
         if (this.generalSettingsForm.valid) {
             this.nodeService.updateNode(this.server, this.node).subscribe(() => {
@@ -74,6 +97,6 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     }
 
     onCancelClick() {
-        this.dialogRef.close();
+        this.dialogReference.close();
     }
 }
