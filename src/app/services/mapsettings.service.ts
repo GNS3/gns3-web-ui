@@ -13,10 +13,12 @@ export class MapSettingsService {
 
     public showInterfaceLabels: boolean = true;
     public integrateLinkLabelsToLinks: boolean = true;
+    public openReadme: boolean = true;
 
     constructor() {
         this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
         if (localStorage.getItem('integrateLinkLabelsToLinks')) this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
+        if (localStorage.getItem('openReadme')) this.openReadme = localStorage.getItem('openReadme') === 'true' ? true : false;
     }
 
     changeMapLockValue(value: boolean) {
@@ -54,6 +56,16 @@ export class MapSettingsService {
             localStorage.setItem('integrateLinkLabelsToLinks', 'true');
         } else {
             localStorage.setItem('integrateLinkLabelsToLinks', 'false');
+        }
+    }
+
+    toggleOpenReadme(value: boolean) {
+        this.openReadme = value;
+        localStorage.removeItem('openReadme');
+        if (value) {
+            localStorage.setItem('openReadme', 'true');
+        } else {
+            localStorage.setItem('openReadme', 'false');
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Server } from '../../../models/server';
@@ -6,6 +6,7 @@ import { Project, ProjectVariable } from '../../../models/project';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ProjectService } from '../../../services/project.service';
+import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 
 @Component({
   selector: 'app-edit-project-dialog',
@@ -13,6 +14,8 @@ import { ProjectService } from '../../../services/project.service';
   styleUrls: ['./edit-project-dialog.component.scss']
 })
 export class EditProjectDialogComponent implements OnInit {
+  @ViewChild('editor') editor: ReadmeEditorComponent;
+
   server: Server;
   project: Project;
   formGroup: FormGroup;
@@ -89,8 +92,10 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.auto_close = !this.project.auto_close;
 
       this.projectService.update(this.server, this.project).subscribe((project: Project) => {
-          this.toasterService.success(`Project ${project.name} updated.`);
-          this.onNoClick();
+          this.projectService.postReadmeFile(this.server, this.project.project_id, this.editor.markdown).subscribe((response) => {
+            this.toasterService.success(`Project ${project.name} updated.`);
+            this.onNoClick();
+          });
       })
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);

@@ -72,6 +72,7 @@ import { ThemeService } from '../../services/theme.service';
 import { Title } from '@angular/platform-browser';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { NodeConsoleService } from '../../services/nodeConsole.service';
+import { ProjectReadmeComponent } from './project-readme/project-readme.component';
 
 
 @Component({
@@ -258,8 +259,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             if (!project ) this.router.navigate(['/servers']);
 
             this.projectService.open(this.server, this.project.project_id);
-            this.title.setTitle(this.project.name);
-
+            this.title.setTitle(this.project.name); 
             this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
             
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
@@ -277,6 +277,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .subscribe(
           (project: Project) => {
             this.onProjectLoad(project);
+            if (this.mapSettingsService.openReadme) this.showReadme();
           },
           error => {
             this.progressService.setError(error);
@@ -889,6 +890,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
       width: '1000px',
       maxHeight: '700px',
+      autoFocus: false,
+      disableClose: true
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.project = this.project;
+  }
+
+  public showReadme() {
+    const dialogRef = this.dialog.open(ProjectReadmeComponent, {
+      width: '600px',
+      height: '650px',
       autoFocus: false,
       disableClose: true
     });
