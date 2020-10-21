@@ -286,6 +286,7 @@ import { MarkedDirective } from './directives/marked.directive';
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
 import { UpdatesService } from './services/updates.service';
+import { ProjectReadmeComponent } from './components/project-map/project-readme/project-readme.component';
 
 
 @NgModule({
@@ -621,7 +622,8 @@ import { UpdatesService } from './services/updates.service';
     ChangeHostnameDialogComponent,
     ApplianceInfoDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
-    EditNetworkConfigurationDialogComponent
+    EditNetworkConfigurationDialogComponent,
+    ProjectReadmeComponent
   ],
   bootstrap: [AppComponent]
 })
