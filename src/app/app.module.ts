@@ -7,7 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { D3Service } from 'd3-ng2-service';
-import { HotkeyModule } from 'angular2-hotkeys';
 import { PersistenceModule } from 'angular-persistence';
 import { NgxElectronModule } from 'ngx-electron';
 import { FileUploadModule } from 'ng2-file-upload';
@@ -54,7 +53,6 @@ import { DrawingsDataSource } from './cartography/datasources/drawings-datasourc
 import { EditStyleActionComponent } from './components/project-map/context-menu/actions/edit-style-action/edit-style-action.component';
 import { MoveLayerDownActionComponent } from './components/project-map/context-menu/actions/move-layer-down-action/move-layer-down-action.component';
 import { MoveLayerUpActionComponent } from './components/project-map/context-menu/actions/move-layer-up-action/move-layer-up-action.component';
-import { ProjectMapShortcutsComponent } from './components/project-map/project-map-shortcuts/project-map-shortcuts.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { SettingsService } from './services/settings.service';
 
@@ -316,7 +314,6 @@ import { UpdatesService } from './services/updates.service';
     StopCaptureActionComponent,
     ResumeLinkActionComponent,
     SuspendLinkActionComponent,
-    ProjectMapShortcutsComponent,
     SettingsComponent,
     PreferencesComponent,
     BundledServerFinderComponent,
@@ -482,7 +479,6 @@ import { UpdatesService } from './services/updates.service';
     BrowserAnimationsModule,
     CdkTableModule,
     CartographyModule,
-    HotkeyModule.forRoot(),
     PersistenceModule,
     NgxElectronModule,
     FileUploadModule,

@@ -330,6 +330,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       event.preventDefault();
       this.router.navigate(['/server', this.server.id, 'preferences']);
     });
+
+    Mousetrap.bind('del', (event: Event) => {
+      event.preventDefault();
+      const selected = this.selectionManager.getSelected();
+
+      selected
+        .filter(item => item instanceof MapNode)
+        .forEach((item: MapNode) => {
+          const node = this.mapNodeToNode.convert(item);
+          this.nodeService.delete(this.server, node).subscribe(data => {
+            this.toasterService.success('Node has been deleted');
+          });
+        });
+    });
   }
 
   onProjectLoad(project: Project) {
