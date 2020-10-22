@@ -72,6 +72,7 @@ import { ThemeService } from '../../services/theme.service';
 import { Title } from '@angular/platform-browser';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { NodeConsoleService } from '../../services/nodeConsole.service';
+import * as Mousetrap from 'mousetrap';
 
 
 @Component({
