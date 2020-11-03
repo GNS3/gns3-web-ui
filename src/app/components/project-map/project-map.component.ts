@@ -203,7 +203,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
         nodes.forEach((node: Node) => {
-          node.symbol_url = `http://${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
+          node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
         });
 
         this.nodes = nodes;

@@ -176,9 +176,6 @@ export class HttpServer {
   }
 
   private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
-    console.log('Server ', server.protocol);
-    console.log('Location ', location.protocol);
-
     if (server.host && server.port) {
       if (!server.protocol) {
         server.protocol = location.protocol as ServerProtocol;
