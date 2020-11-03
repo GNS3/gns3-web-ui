@@ -4,7 +4,7 @@ import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { Server } from '../models/server';
+import { Server, ServerProtocol } from '../models/server';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -176,12 +176,14 @@ export class HttpServer {
   }
 
   private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
+    console.log('Server ', server.protocol);
+    console.log('Location ', location.protocol);
+
     if (server.host && server.port) {
-      if (server.authorization === 'basic') {
-        url = `https://${server.host}:${server.port}/v2${url}`;
-      } else {
-        url = `http://${server.host}:${server.port}/v2${url}`;
+      if (!server.protocol) {
+        server.protocol = location.protocol as ServerProtocol;
       }
+      url = `${server.protocol}//${server.host}:${server.port}/v2${url}`;
     } else {
       url = `/v2${url}`;
     }

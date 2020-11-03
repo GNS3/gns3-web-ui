@@ -3,13 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { map } from 'rxjs//operators';
 
-import { Server } from '../../../models/server';
+import { Server, ServerProtocol } from '../../../models/server';
 import { VersionService } from '../../../services/version.service';
 import { Version } from '../../../models/version';
 import { forkJoin } from 'rxjs';
 import { ServerService } from '../../../services/server.service';
 import { ServerDatabase } from '../../../services/server.database';
 import { from } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-server-discovery',
@@ -29,7 +30,8 @@ export class ServerDiscoveryComponent implements OnInit {
   constructor(
     private versionService: VersionService,
     private serverService: ServerService,
-    private serverDatabase: ServerDatabase
+    private serverDatabase: ServerDatabase,
+    private route : ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -94,6 +96,7 @@ export class ServerDiscoveryComponent implements OnInit {
     }
 
     server.location = 'remote';
+    server.protocol = location.protocol as ServerProtocol;
 
     this.serverService.create(server).then((created: Server) => {
       this.serverDatabase.addServer(created);

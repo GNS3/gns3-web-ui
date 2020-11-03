@@ -4,8 +4,8 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, merge, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { Server } from '../../models/server';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Server, ServerProtocol } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { ServerDatabase } from '../../services/server.database';
 import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
@@ -35,6 +35,7 @@ export class ServersComponent implements OnInit, OnDestroy {
     private electronService: ElectronService,
     private childProcessService: ChildProcessService,
     private bottomSheet: MatBottomSheet,
+    private route : ActivatedRoute
   ) {}
   
   getServers() {

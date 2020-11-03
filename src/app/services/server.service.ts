@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { IndexedDbService } from './indexed-db.service';
-import { Server } from '../models/server';
+import { Server, ServerProtocol } from '../models/server';
 import { Observable, Subject } from 'rxjs';
 import { HttpServer } from './http-server.service';
 
@@ -138,7 +138,7 @@ export class ServerService {
   }
 
   public getServerUrl(server: Server) {
-    return `http://${server.host}:${server.port}/`;
+    return `${server.protocol}//${server.host}:${server.port}/`;
   }
 
   public checkServerVersion(server: Server): Observable<any> {
@@ -152,6 +152,7 @@ export class ServerService {
         if (local) {
           local.host = host;
           local.port = port;
+          local.protocol = location.protocol as ServerProtocol;
           this.update(local).then(updated => {
             resolve(updated);
           }, reject);
@@ -161,6 +162,7 @@ export class ServerService {
           server.host = host;
           server.port = port;
           server.location = 'bundled';
+          server.protocol = location.protocol as ServerProtocol;
           this.create(server).then(created => {
             resolve(created);
           }, reject);
