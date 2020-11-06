@@ -18,7 +18,7 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 @Component({
   selector: 'app-server-list',
   templateUrl: './servers.component.html',
-  styleUrls: ['./servers.component.css']
+  styleUrls: ['./servers.component.scss']
 })
 export class ServersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;

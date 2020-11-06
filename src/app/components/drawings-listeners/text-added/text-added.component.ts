@@ -15,7 +15,7 @@ import { Context } from '../../../cartography/models/context';
 @Component({
   selector: 'app-text-added',
   templateUrl: './text-added.component.html',
-  styleUrls: ['./text-added.component.css']
+  styleUrls: ['./text-added.component.scss']
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
   @Input() server: Server;

@@ -13,7 +13,7 @@ import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/ma
 @Component({
   selector: 'app-text-edited',
   templateUrl: './text-edited.component.html',
-  styleUrls: ['./text-edited.component.css']
+  styleUrls: ['./text-edited.component.scss']
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
   @Input() server: Server;

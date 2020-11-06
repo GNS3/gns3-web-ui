@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-drawing-resized',
   templateUrl: './drawing-resized.component.html',
-  styleUrls: ['./drawing-resized.component.css']
+  styleUrls: ['./drawing-resized.component.scss']
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
   @Input() server: Server;

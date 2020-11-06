@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   selector: 'app-default-layout',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './default-layout.component.html',
-  styleUrls: ['./default-layout.component.css']
+  styleUrls: ['./default-layout.component.scss']
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;

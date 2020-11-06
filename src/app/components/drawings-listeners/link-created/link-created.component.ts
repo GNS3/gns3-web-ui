@@ -14,7 +14,7 @@ import { LinksEventSource } from '../../../cartography/events/links-event-source
 @Component({
   selector: 'app-link-created',
   templateUrl: './link-created.component.html',
-  styleUrls: ['./link-created.component.css']
+  styleUrls: ['./link-created.component.scss']
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
