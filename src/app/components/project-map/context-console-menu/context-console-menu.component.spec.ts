@@ -17,7 +17,7 @@ import { Node } from '../../../cartography/models/node';
 import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
-fdescribe('ContextConsoleMenuComponent', () => {
+describe('ContextConsoleMenuComponent', () => {
   let component: ContextConsoleMenuComponent;
   let fixture: ComponentFixture<ContextConsoleMenuComponent>;
   let toasterService: MockedToasterService = new MockedToasterService();

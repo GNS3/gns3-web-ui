@@ -76,7 +76,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Current version: 2020.3.0-beta.4'});
+    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Current version: 2.2.16'});
   });
 
   it('should call show message when unknown command entered', () => {

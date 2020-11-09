@@ -15,6 +15,8 @@ import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ConsoleService } from '../../services/settings/console.service';
 import { MapSettingsService } from '../../services/mapsettings.service';
+import { UpdatesService } from '../../services/updates.service';
+import { autoSpy } from '../project-map/console-wrapper/console-wrapper.component.spec';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -25,6 +27,7 @@ describe('SettingsComponent', () => {
     toggleIntegrateInterfaceLabels(val: boolean) {}
   };
   let consoleService;
+  let updatesService = autoSpy(UpdatesService);
 
   beforeEach(async(() => {
     consoleService = {
@@ -37,7 +40,8 @@ describe('SettingsComponent', () => {
         SettingsService,
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: ConsoleService, useValue: consoleService },
-        { provide: MapSettingsService, useValue: mapSettingsService }
+        { provide: MapSettingsService, useValue: mapSettingsService },
+        { provide: UpdatesService, useValue: updatesService }
       ],
       declarations: [SettingsComponent]
     }).compileComponents();
