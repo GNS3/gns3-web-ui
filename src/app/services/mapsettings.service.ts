@@ -1,7 +1,9 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { Subject } from 'rxjs';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class MapSettingsService {
     public isScrollDisabled = new Subject<boolean>();
     public isMapLocked = new Subject<boolean>();

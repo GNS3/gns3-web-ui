@@ -9,7 +9,9 @@ export interface Settings {
   console_command: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class SettingsService {
   static DEFAULTS: Settings = {
     crash_reports: true,
