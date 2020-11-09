@@ -168,12 +168,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
-    this.settings = this.settingsService.getAll();
-    this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
-    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
-    this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
-
+    this.getSettings();
     this.progressService.activate();
 
     if (this.serverService.isServiceInitialized) {
@@ -186,6 +181,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       );
     }
 
+    this.addSubscriptions();
+    this.addKeyboardListeners();
+  }
+
+  getSettings() {
+    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+    this.settings = this.settingsService.getAll();
+    this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
+    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
+    this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
+    this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
+    this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
+    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
+  }
+
+  addSubscriptions() {
     this.projectMapSubscription.add(
       this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
         if (this.scrollEnabled) this.centerCanvas();
@@ -231,11 +242,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             message: message
         });
     }));
-
-    this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
-    this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
-    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
-    this.addKeyboardListeners();
   }
 
   getData() {
