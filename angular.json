@@ -33,7 +33,6 @@
 						"main": "src/main.ts",
 						"tsConfig": "src/tsconfig.app.json",
 						"polyfills": "src/polyfills.ts",
-						"extractCss": true,
 						"assets": [
 							"src/assets",
 							"src/favicon.ico",
@@ -44,12 +43,12 @@
 							"node_modules/notosans-fontface/css/notosans-fontface.min.css",
 							"src/styles.scss",
 							{
-								"inject": false,
+								"inject": true,
 								"input": "src/theme.scss",
 								"bundleName": "theme-default-dark"
 							},
 							{
-								"inject": false,
+								"inject": true,
 								"input": "src/theme-light.scss",
 								"bundleName": "theme-default"
 							}
@@ -71,7 +70,6 @@
 								"scripts": true,
 								"styles": false
 							},
-							"extractCss": true,
 							"namedChunks": false,
 							"aot": true,
 							"extractLicenses": true,
@@ -94,7 +92,6 @@
 							"optimization": true,
 							"outputHashing": "all",
 							"sourceMap": false,
-							"extractCss": true,
 							"namedChunks": false,
 							"aot": true,
 							"extractLicenses": true,
@@ -131,7 +128,6 @@
 							"optimization": true,
 							"outputHashing": "all",
 							"sourceMap": false,
-							"extractCss": true,
 							"namedChunks": false,
 							"aot": true,
 							"extractLicenses": true,
