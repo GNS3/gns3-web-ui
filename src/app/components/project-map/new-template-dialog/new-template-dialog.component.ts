@@ -373,10 +373,10 @@ export class NewTemplateDialogComponent implements OnInit {
     checkImages(version: Version): boolean {
         if (version.images.hdb_disk_image) {
             if (this.checkImageFromVersion(version.images.hda_disk_image) && this.checkImageFromVersion(version.images.hdb_disk_image)) return true;
+            return false;
         }
 
         if (this.checkImageFromVersion(version.images.hda_disk_image)) return true;
-
         return false;
     }
 
