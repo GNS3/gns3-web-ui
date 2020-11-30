@@ -35,29 +35,57 @@ export class ServerDiscoveryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.serverService.isServiceInitialized) this.discoverFirstAvailableServer();
-    
+    if (this.serverService.isServiceInitialized) this.discoverFirstServer();
     this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
-        this.discoverFirstAvailableServer();
+        this.discoverFirstServer();
       }
     });
+  }
+
+  async discoverFirstServer() {
+    let discovered = await this.discoverServers();
+    let local = await this.serverService.findAll();
+
+    local.forEach(added => {
+      discovered = discovered.filter(server => {
+        return !(server.host == added.host && server.port == added.port);
+      });
+    });
+
+    if (discovered.length > 0) {
+      this.discoveredServer = discovered.shift();
+    };
+  }
+
+  async discoverServers() {
+    let discoveredServers: Server[] = [];
+    this.defaultServers.forEach(async (testServer) => {
+      const server = new Server();
+      server.host = testServer.host;
+      server.port = testServer.port;
+      let version = await this.versionService.get(server).toPromise().catch(error => null);
+      if (version) discoveredServers.push(server);
+    });
+    return discoveredServers;
   }
 
   discoverFirstAvailableServer() {
     forkJoin(
       [from(this.serverService.findAll()).pipe(map((s: Server[]) => s)),
       this.discovery()]
-    ).subscribe(([local, discovered]) => {
-      local.forEach(added => {
-        discovered = discovered.filter(server => {
-          return !(server.host == added.host && server.port == added.port);
+    ).subscribe(
+      ([local, discovered]) => {
+        local.forEach(added => {
+          discovered = discovered.filter(server => {
+            return !(server.host == added.host && server.port == added.port);
+          });
         });
-      });
-      if (discovered.length > 0) {
-        this.discoveredServer = discovered.shift();
-      }
-    });
+        if (discovered.length > 0) {
+          this.discoveredServer = discovered.shift();
+        }
+      },
+      error => {});
   }
 
   discovery(): Observable<Server[]> {
