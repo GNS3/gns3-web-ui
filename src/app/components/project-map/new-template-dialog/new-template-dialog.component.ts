@@ -166,12 +166,14 @@ export class NewTemplateDialogComponent implements OnInit {
         this.uploaderImage.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.error('An error has occured');
             this.progressService.deactivate();
+            this.uploaderImage.clearQueue();
         };
         
         this.uploaderImage.onSuccessItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
             this.toasterService.success('Image imported succesfully');
             this.refreshImages();
             this.progressService.deactivate();
+            this.uploaderImage.clearQueue();
         };
     }
 
