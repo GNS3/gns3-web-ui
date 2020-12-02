@@ -167,7 +167,7 @@
                                         type="file"
                                         class="non-visible"
                                         #file2
-                                        (change)="importImage($event)"
+                                        (change)="importImage($event, version.images.hda_disk_image)"
                                         ng2FileSelect
                                         [uploader]="uploaderImage"/>
                                     <button class="button" mat-raised-button (click)="file2.click()">Import</button>
@@ -188,7 +188,7 @@
                                         type="file"
                                         class="non-visible"
                                         #file3
-                                        (change)="importImage($event)"
+                                        (change)="importImage($event, version.images.hdb_disk_image)"
                                         ng2FileSelect
                                         [uploader]="uploaderImage"/>
                                     <button class="button" mat-raised-button (click)="file3.click()">Import</button>
@@ -235,7 +235,7 @@
                                     type="file"
                                     class="non-visible"
                                     #file2
-                                    (change)="importImage($event)"
+                                    (change)="importImage($event, image.filename)"
                                     ng2FileSelect
                                     [uploader]="uploaderImage"/>
                                 <button class="button" mat-raised-button (click)="file2.click()">Import</button>
@@ -271,7 +271,7 @@
                                     type="file"
                                     class="non-visible"
                                     #file2
-                                    (change)="importImage($event)"
+                                    (change)="importImage($, image.filename)"
                                     ng2FileSelect
                                     [uploader]="uploaderImage"/>
                                 <button class="button" mat-raised-button (click)="file2.click()">Import</button>

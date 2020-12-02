@@ -30,6 +30,7 @@ import { ComputeService } from '../../../services/compute.service';
 import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
 import { ProgressService } from '../../../common/progress/progress.service';
 import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
+import * as SparkMD5 from 'spark-md5';
 
 @Component({
     selector: 'app-new-template-dialog',
@@ -334,7 +335,29 @@ export class NewTemplateDialogComponent implements OnInit {
         dialogRef.componentInstance.appliance = object;
     }
 
-    importImage(event) {
+    importImage(event, imageName) {
+        this.computeChecksumMd5(event.target.files[0], false).then((output) => {
+            let imageToInstall = this.applianceToInstall.images.filter(n => n.filename === imageName)[0];
+
+            if (imageToInstall.md5sum !== output) {
+                const dialogRef = this.dialog.open(InformationDialogComponent, {
+                    width: '400px',
+                    height: '200px',
+                    autoFocus: false,
+                    disableClose: true
+                });
+                dialogRef.componentInstance.confirmationMessage = `This is not the correct file. 
+                    The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
+                dialogRef.afterClosed().subscribe((answer: boolean) => {
+                    if (answer) this.importImageFile(event);
+                });
+            } else {
+                this.importImageFile(event);
+            }
+        });
+    }
+
+    importImageFile(event) {
         let name = event.target.files[0].name.split('-')[0];
         let fileName = event.target.files[0].name;
         let file = event.target.files[0];
@@ -611,6 +634,36 @@ export class NewTemplateDialogComponent implements OnInit {
             } else{
                 return false;
             }
+        });
+    }
+
+    private computeChecksumMd5(file: File, encode = false): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const chunkSize = 2097152;
+            const spark = new SparkMD5.ArrayBuffer();
+            const fileReader = new FileReader();
+            let cursor = 0;
+        
+            fileReader.onerror = function(): void {
+                reject('MD5 computation failed - error reading the file');
+            };
+
+            function processChunk(chunkStart: number): void {
+                const chunkEnd = Math.min(file.size, chunkStart + chunkSize);
+                fileReader.readAsArrayBuffer(file.slice(chunkStart, chunkEnd));
+            }
+
+            fileReader.onload = function(e: any): void {
+                spark.append(e.target.result);
+                cursor += chunkSize;
+                if (cursor < file.size) {
+                    processChunk(cursor);
+                } else {
+                    resolve(spark.end(encode));
+                }
+            };
+        
+            processChunk(0);
         });
     }
 }
