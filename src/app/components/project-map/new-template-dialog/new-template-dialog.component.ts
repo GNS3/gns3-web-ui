@@ -349,7 +349,11 @@ export class NewTemplateDialogComponent implements OnInit {
                 dialogRef.componentInstance.confirmationMessage = `This is not the correct file. 
                     The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
                 dialogRef.afterClosed().subscribe((answer: boolean) => {
-                    if (answer) this.importImageFile(event);
+                    if (answer) {
+                        this.importImageFile(event)
+                    } else {
+                        this.uploaderImage.clearQueue();
+                    }
                 });
             } else {
                 this.importImageFile(event);
