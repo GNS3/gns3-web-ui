@@ -336,10 +336,12 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     importImage(event, imageName) {
+        this.progressService.activate();
         this.computeChecksumMd5(event.target.files[0], false).then((output) => {
             let imageToInstall = this.applianceToInstall.images.filter(n => n.filename === imageName)[0];
 
             if (imageToInstall.md5sum !== output) {
+                this.progressService.deactivate();
                 const dialogRef = this.dialog.open(InformationDialogComponent, {
                     width: '400px',
                     height: '200px',
