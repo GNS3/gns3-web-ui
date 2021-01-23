@@ -64,6 +64,7 @@ import { SystemStatusComponent } from './components/system-status/system-status.
 import { ServerResolve } from './resolvers/server-resolve';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 import { ConsoleGuard } from './guards/console-guard';
+import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 
 const routes: Routes = [
   {
@@ -79,6 +80,7 @@ const routes: Routes = [
         resolve: { server : ServerResolve }
       },
       { path: 'help', component: HelpComponent },
+      { path: 'help/reportissue', component: ReportIssueComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
