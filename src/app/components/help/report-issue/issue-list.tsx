@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import CardGroup from 'react-bootstrap/CardGroup';
 
 const apiUrl = 'https://api.github.com/repos/GNS3/gns3-web-ui/issues';
+const newIssueLink = 'https://github.com/GNS3/gns3-web-ui/issues/new';
 
 class IssueListComponent extends Component<any, any> {
     constructor(props) {
@@ -24,7 +25,7 @@ class IssueListComponent extends Component<any, any> {
         const { issues } = this.state;
      
         return (
-          <div style={{ justifyContent: 'center', display: 'flex', flex: 1, flexDirection: 'row', flexWrap: 'wrap',  margin: '20px;' }}>
+          <div style={{ justifyContent: 'center', display: 'flex', flex: 1, flexDirection: 'row', flexWrap: 'wrap',  margin: '20px' }}>
             {issues.map(issue =>
                 <Card key={issue.title} style={{ width: '300px', margin: '20px' }}>
                     <Card.Body>
@@ -37,6 +38,12 @@ class IssueListComponent extends Component<any, any> {
                     </Card.Body>
                 </Card>
             )}
+            <Card style={{ width: '300px', margin: '20px' }}>
+                <Card.Body>
+                    <Card.Title style={{ color: 'red' }}>Don't see your issue here?</Card.Title>
+                    <Card.Link href={newIssueLink} target = "_blank">Open new issue</Card.Link>
+                </Card.Body>
+            </Card>
           </div>
         );
     }
