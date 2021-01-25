@@ -13,7 +13,7 @@ import {
     ViewChild,
     ViewEncapsulation
   } from '@angular/core';
-import { MyReactComponent } from '../report-issue/issue-list';
+import IssueListComponent from '../report-issue/issue-list';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
   
@@ -47,7 +47,7 @@ export class ReportIssueComponent implements OnInit, OnChanges, OnDestroy, After
 
     private render() {
         ReactDOM.render(<div className={'i-am-classy'}>
-        <MyReactComponent />
+        <IssueListComponent />
         </div>, this.containerRef.nativeElement);
     }
 }
