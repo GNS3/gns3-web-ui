@@ -5,11 +5,11 @@ import IssueComponent from './issue';
 import FilterComponent from './filter';
 
 const wrapperStyle = { 
-    justifyContent: 'center', 
+    JustifyContent: 'center', 
     display: 'flex', 
     flex: 1, 
-    flexDirection: 'row', 
-    flexWrap: 'wrap',  
+    FlexDirection: 'row', 
+    FlexWrap: 'wrap',  
     margin: '20px' 
 };
 

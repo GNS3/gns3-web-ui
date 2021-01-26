@@ -12,7 +12,7 @@ const cardTitleStyle = {
 
 const cardTextStyle = { 
     color: 'black', 
-    overflowY: 'auto', 
+    OverflowY: 'auto', 
     height: '100px' 
 };
 
