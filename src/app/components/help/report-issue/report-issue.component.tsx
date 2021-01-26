@@ -25,7 +25,7 @@ templateUrl: './report-issue.component.html',
 styleUrls: ['./report-issue.component.scss']
 })
 export class ReportIssueComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit  {
-    @ViewChild('myReactComponentContainer') containerRef: ElementRef;
+    @ViewChild('issueListComponentContainer') containerRef: ElementRef;
 
     constructor() {}
 
@@ -46,8 +46,8 @@ export class ReportIssueComponent implements OnInit, OnChanges, OnDestroy, After
     }
 
     private render() {
-        ReactDOM.render(<div className={'i-am-classy'}>
-        <IssueListComponent />
+        ReactDOM.render(<div>
+            <IssueListComponent />
         </div>, this.containerRef.nativeElement);
     }
 }
