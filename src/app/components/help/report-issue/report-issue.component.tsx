@@ -17,8 +17,6 @@ import IssueListComponent from '../report-issue/issue-list';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
   
-const containerElementName = 'myReactComponentContainer';
-
 @Component({
 selector: 'app-report-issue',
 templateUrl: './report-issue.component.html',
