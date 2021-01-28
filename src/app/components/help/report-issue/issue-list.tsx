@@ -3,6 +3,7 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import IssueComponent from './issue';
 import FilterComponent from './filter';
+import e from '../../../event-bus';
 
 const wrapperStyle = { 
     justifyContent: 'center' as 'center', 
@@ -21,7 +22,7 @@ const cardStyle = {
 const cardTitleStyle = { 
     color: 'red' 
 };
-
+const message = 'Thank you for reporting the issue!';
 const apiUrl = 'https://api.github.com/repos/GNS3/gns3-web-ui/issues';
 const newIssueLink = 'https://github.com/GNS3/gns3-web-ui/issues/new';
 
@@ -45,8 +46,8 @@ class IssueListComponent extends Component<any, any> {
             }));
     }
 
-    handleChange = (e) => {
-        let filter = e.target.value;
+    handleChange = (event) => {
+        let filter = event.target.value;
         let filteredIssues = this.state.issues;
 
         filteredIssues = filteredIssues.filter((issue) => {
@@ -56,6 +57,10 @@ class IssueListComponent extends Component<any, any> {
         this.setState({
             filteredIssues: filteredIssues
         });
+    }
+
+    newIssueOpened = (event) => {
+        e.emit('message', { text: message });
     }
 
     render() {
@@ -77,7 +82,7 @@ class IssueListComponent extends Component<any, any> {
                     <Card style={cardStyle}>
                         <Card.Body>
                             <Card.Title style={cardTitleStyle}>Don't see your issue here?</Card.Title>
-                            <Card.Link href={newIssueLink} target = "_blank">Open new issue</Card.Link>
+                            <Card.Link onClick={this.newIssueOpened} href={newIssueLink} target = "_blank">Open new issue</Card.Link>
                         </Card.Body>
                     </Card>
                     </div>

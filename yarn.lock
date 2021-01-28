@@ -5114,6 +5114,11 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
+eev@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/eev/-/eev-0.1.5.tgz#800c04d450b31972b02660b97182cd28a3058e06"
+  integrity sha512-U7+up/+0JaC+ffyrMicGDzb+j2Q04Fy22tKK1Xh6hHFWdVtXwoBF8M2DwFofwsJzJcs3W3NPDvmxcMak5/iQaA==
+
 ejs@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.5.tgz#aed723844dc20acb4b170cd9ab1017e476a0d93b"
