@@ -8,10 +8,10 @@ export class VpcsConfigurationService {
 
     getCategories(){
         let categories = [["Default", "guest"],
-            ["Routers", "routers"],
-            ["Switches", "switches"],
-            ["End devices", "end_devices"],
-            ["Security devices", "security_devices"]];
+            ["Routers", "router"],
+            ["Switches", "switch"],
+            ["End devices", "end_device"],
+            ["Security devices", "security_device"]];
 
         return categories;
     }
