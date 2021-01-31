@@ -84,8 +84,8 @@ export class QemuConfigurationService {
         let categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
-            ["End devices", "end_device"],
-            ["Security devices", "security_device"]];
+            ["End devices", "guest"],
+            ["Security devices", "firewall"]];
 
         return categories;
     }
