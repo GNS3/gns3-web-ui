@@ -103,8 +103,12 @@ export class NodeWidget implements Widget {
         if (n.height > 64) return 64;
         return n.height;
       })
-      .attr('x', (n: MapNode) => 0)
-      .attr('y', (n: MapNode) => 0)
+      .attr('x', (n: MapNode) => {
+        return 0
+      })
+      .attr('y', (n: MapNode) => {
+        return 0
+      })
       .on('mouseover', function(this, n: MapNode) {
         select(this).attr('class', 'over');
       })
@@ -113,6 +117,7 @@ export class NodeWidget implements Widget {
       });
 
     node_body_merge.attr('transform', (n: MapNode) => {
+      if (!n.width) return `translate(${n.x - 30},${n.y - 30})`
       return `translate(${n.x},${n.y})`;
     });
 
