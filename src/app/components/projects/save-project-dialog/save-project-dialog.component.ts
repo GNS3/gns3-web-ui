@@ -14,7 +14,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 @Component({
   selector: 'app-save-project-dialog',
   templateUrl: './save-project-dialog.component.html',
-  styleUrls: ['./save-project-dialog.component.css'],
+  styleUrls: ['./save-project-dialog.component.scss'],
   providers: [ProjectNameValidator]
 })
 export class SaveProjectDialogComponent implements OnInit {

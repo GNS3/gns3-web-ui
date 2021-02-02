@@ -64,17 +64,17 @@ export class QemuConfigurationService {
 
     getBootPriorities() {
         let bootPriorities = [["HDD", "c"],
-            ["CD/DVD-ROM", "d"], 
-            ["Network", "n"], 
-            ["HDD or Network", "cn"], 
+            ["CD/DVD-ROM", "d"],
+            ["Network", "n"],
+            ["HDD or Network", "cn"],
             ["HDD or CD/DVD-ROM", "cd"]];
 
         return bootPriorities;
     }
 
     getOnCloseOptions() {
-        let onCloseOptions = [["Power off the VM", "power_off"], 
-            ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
+        let onCloseOptions = [["Power off the VM", "power_off"],
+            ["Send the shutdown signal (ACPI)", "shutdown_signal"],
             ["Save the VM state", "save_vm_state"]];
 
         return onCloseOptions;
@@ -82,10 +82,10 @@ export class QemuConfigurationService {
 
     getCategories() {
         let categories = [["Default", "guest"],
-            ["Routers", "routers"],
-            ["Switches", "switches"],
-            ["End devices", "end_devices"],
-            ["Security devices", "security_devices"]];
+            ["Routers", "router"],
+            ["Switches", "switch"],
+            ["End devices", "guest"],
+            ["Security devices", "firewall"]];
 
         return categories;
     }

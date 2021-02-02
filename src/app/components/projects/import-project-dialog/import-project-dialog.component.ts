@@ -13,7 +13,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 @Component({
   selector: 'app-import-project-dialog',
   templateUrl: 'import-project-dialog.component.html',
-  styleUrls: ['import-project-dialog.component.css'],
+  styleUrls: ['import-project-dialog.component.scss'],
   providers: [ProjectNameValidator]
 })
 export class ImportProjectDialogComponent implements OnInit {

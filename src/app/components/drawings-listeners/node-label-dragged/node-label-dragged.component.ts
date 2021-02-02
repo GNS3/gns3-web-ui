@@ -12,7 +12,7 @@ import { MapLabel } from '../../../cartography/models/map/map-label';
 @Component({
   selector: 'app-node-label-dragged',
   templateUrl: './node-label-dragged.component.html',
-  styleUrls: ['./node-label-dragged.component.css']
+  styleUrls: ['./node-label-dragged.component.scss']
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   @Input() server: Server;

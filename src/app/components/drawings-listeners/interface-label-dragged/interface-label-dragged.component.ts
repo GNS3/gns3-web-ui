@@ -11,7 +11,7 @@ import { LinksEventSource } from '../../../cartography/events/links-event-source
 @Component({
   selector: 'app-interface-label-dragged',
   templateUrl: './interface-label-dragged.component.html',
-  styleUrls: ['./interface-label-dragged.component.css']
+  styleUrls: ['./interface-label-dragged.component.scss']
 })
 export class InterfaceLabelDraggedComponent {
   @Input() server: Server;

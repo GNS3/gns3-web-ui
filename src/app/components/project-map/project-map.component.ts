@@ -73,6 +73,7 @@ import { Title } from '@angular/platform-browser';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { NodeConsoleService } from '../../services/nodeConsole.service';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
+import * as Mousetrap from 'mousetrap';
 
 
 @Component({
@@ -168,12 +169,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
-    this.settings = this.settingsService.getAll();
-    this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
-    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
-    this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
-
+    this.getSettings();
     this.progressService.activate();
 
     if (this.serverService.isServiceInitialized) {
@@ -186,6 +182,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       );
     }
 
+    this.addSubscriptions();
+    this.addKeyboardListeners();
+  }
+
+  getSettings() {
+    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+    this.settings = this.settingsService.getAll();
+    this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
+    this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
+    this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
+    this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
+    this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
+    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
+  }
+
+  addSubscriptions() {
     this.projectMapSubscription.add(
       this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
         if (this.scrollEnabled) this.centerCanvas();
@@ -203,7 +215,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
         nodes.forEach((node: Node) => {
-          node.symbol_url = `http://${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
+          node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
         });
 
         this.nodes = nodes;
@@ -231,11 +243,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             message: message
         });
     }));
-
-    this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
-    this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
-    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
-    this.addKeyboardListeners();
   }
 
   getData() {
@@ -329,6 +336,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     Mousetrap.bind('ctrl+shift+s', (event: Event) => {
       event.preventDefault();
       this.router.navigate(['/server', this.server.id, 'preferences']);
+    });
+
+    Mousetrap.bind('del', (event: Event) => {
+      event.preventDefault();
+      const selected = this.selectionManager.getSelected();
+
+      selected
+        .filter(item => item instanceof MapNode)
+        .forEach((item: MapNode) => {
+          const node = this.mapNodeToNode.convert(item);
+          this.nodeService.delete(this.server, node).subscribe(data => {
+            this.toasterService.success('Node has been deleted');
+          });
+        });
     });
   }
 

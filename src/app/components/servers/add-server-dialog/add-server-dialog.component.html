@@ -28,6 +28,12 @@
       <input matInput tabindex="1" formControlName="port" placeholder="Port" />
     </mat-form-field>
 
+    <mat-form-field>
+      <mat-select placeholder="Protocol" formControlName="protocol" >
+        <mat-option *ngFor="let protocol of protocols" [value]="protocol.key"> {{ protocol.name }} </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-form-field *ngIf="serverForm.get('location').value === 'remote'">
       <mat-select placeholder="Authorization" formControlName="authorization" >
         <mat-option *ngFor="let auth of authorizations" [value]="auth.key"> {{ auth.name }} </mat-option>

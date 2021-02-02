@@ -12,7 +12,7 @@ import { Project } from '../../../models/project';
 @Component({
   selector: 'app-drawing-dragged',
   templateUrl: './drawing-dragged.component.html',
-  styleUrls: ['./drawing-dragged.component.css']
+  styleUrls: ['./drawing-dragged.component.scss']
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
   @Input() server: Server;

@@ -78,6 +78,6 @@ export class SymbolsComponent implements OnInit {
     }
 
     getImageSourceForTemplate(symbol: string) {
-        return `http://${this.server.host}:${this.server.port}/v2/symbols/${symbol}/raw`;
+        return `${this.server.protocol}//${this.server.host}:${this.server.port}/v2/symbols/${symbol}/raw`;
     }
 }

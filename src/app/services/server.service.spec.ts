@@ -150,6 +150,7 @@ describe('ServerService', () => {
     expectedServer.host = 'hostname';
     expectedServer.port = 9999;
     expectedServer.location = 'bundled';
+    expectedServer.protocol = 'http:';
 
     service.getLocalServer('hostname', 9999).then(() => {
       expect(service.create).toHaveBeenCalledWith(expectedServer);

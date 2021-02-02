@@ -13,7 +13,7 @@ import { AddedDataEvent } from '../../../cartography/events/event-source';
 @Component({
   selector: 'app-drawing-added',
   templateUrl: './drawing-added.component.html',
-  styleUrls: ['./drawing-added.component.css']
+  styleUrls: ['./drawing-added.component.scss']
 })
 export class DrawingAddedComponent implements OnInit, OnDestroy {
   @Input() server: Server;

@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'app-information-dialog',
   templateUrl: 'information-dialog.component.html',
-  styleUrls: ['information-dialog.component.css']
+  styleUrls: ['information-dialog.component.scss']
 })
 export class InformationDialogComponent implements OnInit {
   public confirmationMessage: string;

@@ -20,7 +20,7 @@ export class QemuService {
     } 
 
     getImagePath(server: Server, filename: string): string {
-        return `http://${server.host}:${server.port}/v2/compute/qemu/images/${filename}`;
+        return `${server.protocol}//${server.host}:${server.port}/v2/compute/qemu/images/${filename}`;
     }
 
     getBinaries(server: Server): Observable<QemuBinary[]> {

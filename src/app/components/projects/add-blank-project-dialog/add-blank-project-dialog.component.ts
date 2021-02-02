@@ -15,7 +15,7 @@ import { projectNameAsyncValidator } from '../../../validators/project-name-asyn
 @Component({
   selector: 'app-add-blank-project-dialog',
   templateUrl: './add-blank-project-dialog.component.html',
-  styleUrls: ['./add-blank-project-dialog.component.css'],
+  styleUrls: ['./add-blank-project-dialog.component.scss'],
   providers: [ProjectNameValidator]
 })
 export class AddBlankProjectDialogComponent implements OnInit {
