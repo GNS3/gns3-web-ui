@@ -136,7 +136,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+        if (this.console.nativeElement) this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
     }
 
     ngOnDestroy() {
