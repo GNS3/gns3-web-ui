@@ -282,6 +282,8 @@ import { InformationDialogComponent } from './components/dialogs/information-dia
 import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
 import { UpdatesService } from './services/updates.service';
 import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
+import { AngularReactBrowserModule } from '@angular-react/core';
+import { FabDialogModule, FabButtonModule } from '@angular-react/fabric';
 
 @NgModule({
   declarations: [
@@ -472,6 +474,7 @@ import { ReportIssueComponent } from './components/help/report-issue/report-issu
     ReportIssueComponent
   ],
   imports: [
+    AngularReactBrowserModule,
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
