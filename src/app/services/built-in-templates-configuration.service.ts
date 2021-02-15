@@ -6,8 +6,8 @@ export class BuiltInTemplatesConfigurationService {
         let categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+            ["End devices", "end_device"],
+            ["Security devices", "security_device"]];
 
         return categories;
     }
@@ -20,8 +20,8 @@ export class BuiltInTemplatesConfigurationService {
         let categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+            ["End devices", "end_device"],
+            ["Security devices", "security_device"]];
 
         return categories;
     }
@@ -30,8 +30,8 @@ export class BuiltInTemplatesConfigurationService {
         let categories = [["Default", "guest"],
             ["Routers", "router"],
             ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+            ["End devices", "end_device"],
+            ["Security devices", "security_device"]];
 
         return categories;
     }

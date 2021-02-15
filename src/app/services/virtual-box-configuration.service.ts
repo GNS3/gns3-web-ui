@@ -7,8 +7,8 @@ export class VirtualBoxConfigurationService{
     }
 
     getOnCloseoptions() {
-        let onCloseOptions = [["Power off the VM", "power_off"],
-            ["Send the shutdown signal (ACPI)", "shutdown_signal"],
+        let onCloseOptions = [["Power off the VM", "power_off"], 
+            ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
             ["Save the VM state", "save_vm_state"]];
 
         return onCloseOptions;
@@ -16,10 +16,10 @@ export class VirtualBoxConfigurationService{
 
     getCategories() {
         let categories = [["Default", "guest"],
-            ["Routers", "router"],
-            ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+            ["Routers", "routers"],
+            ["Switches", "switches"],
+            ["End devices", "end_devices"],
+            ["Security devices", "security_devices"]];
 
         return categories;
     }
@@ -33,5 +33,5 @@ export class VirtualBoxConfigurationService{
             "Paravirtualized Network (virtio-net)"];
 
         return networkTypes;
-    }
+    } 
 }
