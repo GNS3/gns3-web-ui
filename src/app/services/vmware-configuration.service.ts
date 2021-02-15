@@ -7,8 +7,8 @@ export class VmwareConfigurationService{
     }
 
     getOnCloseoptions() {
-        let onCloseOptions = [["Power off the VM", "power_off"], 
-            ["Send the shutdown signal (ACPI)", "shutdown_signal"], 
+        let onCloseOptions = [["Power off the VM", "power_off"],
+            ["Send the shutdown signal (ACPI)", "shutdown_signal"],
             ["Save the VM state", "save_vm_state"]];
 
         return onCloseOptions;
@@ -16,10 +16,10 @@ export class VmwareConfigurationService{
 
     getCategories() {
         let categories = [["Default", "guest"],
-            ["Routers", "routers"],
-            ["Switches", "switches"],
-            ["End devices", "end_devices"],
-            ["Security devices", "security_devices"]];
+            ["Routers", "router"],
+            ["Switches", "switch"],
+            ["End devices", "guest"],
+            ["Security devices", "firewall"]];
 
         return categories;
     }
@@ -35,5 +35,5 @@ export class VmwareConfigurationService{
             "vmxnet3"];
 
         return networkTypes;
-    } 
+    }
 }

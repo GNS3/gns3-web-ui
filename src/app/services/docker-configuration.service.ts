@@ -8,10 +8,10 @@ export class DockerConfigurationService {
 
     getCategories() {
         let categories = [["Default", "guest"],
-            ["Routers", "routers"],
-            ["Switches", "switches"],
-            ["End devices", "end_devices"],
-            ["Security devices", "security_devices"]];
+            ["Routers", "router"],
+            ["Switches", "switch"],
+            ["End devices", "guest"],
+            ["Security devices", "firewall"]];
 
         return categories;
     }
