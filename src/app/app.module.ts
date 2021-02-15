@@ -281,8 +281,6 @@ import { ApplianceInfoDialogComponent } from './components/project-map/new-templ
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
 import { UpdatesService } from './services/updates.service';
-import { FabDialogModule, FabButtonModule } from '@angular-react/fabric';
-import { AngularReactBrowserModule } from '@angular-react/core';
 import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 
 @NgModule({
@@ -474,7 +472,7 @@ import { ReportIssueComponent } from './components/help/report-issue/report-issu
     ReportIssueComponent
   ],
   imports: [
-    AngularReactBrowserModule,
+    BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
