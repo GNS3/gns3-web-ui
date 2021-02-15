@@ -281,7 +281,7 @@ import { ApplianceInfoDialogComponent } from './components/project-map/new-templ
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { TemplateNameDialogComponent } from './components/project-map/new-template-dialog/template-name-dialog/template-name-dialog.component';
 import { UpdatesService } from './services/updates.service';
-
+import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 
 @NgModule({
   declarations: [
@@ -468,7 +468,8 @@ import { UpdatesService } from './services/updates.service';
     InformationDialogComponent,
     TemplateNameDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
-    EditNetworkConfigurationDialogComponent
+    EditNetworkConfigurationDialogComponent,
+    ReportIssueComponent
   ],
   imports: [
     BrowserModule,
