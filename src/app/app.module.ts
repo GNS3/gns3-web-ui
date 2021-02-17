@@ -284,6 +284,7 @@ import { UpdatesService } from './services/updates.service';
 import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 import { AngularReactBrowserModule } from '@angular-react/core';
 import { FabDialogModule, FabButtonModule } from '@angular-react/fabric';
+import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
 
 @NgModule({
   declarations: [
@@ -492,7 +493,8 @@ import { FabDialogModule, FabButtonModule } from '@angular-react/fabric';
     DragDropModule,
     NgxChildProcessModule,
     MATERIAL_IMPORTS,
-    NgCircleProgressModule.forRoot()
+    NgCircleProgressModule.forRoot(),
+    OverlayModule
   ],
   providers: [
     SettingsService,

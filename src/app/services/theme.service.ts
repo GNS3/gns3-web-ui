@@ -1,6 +1,7 @@
 import { Injectable, RendererFactory2, Renderer2, Inject, EventEmitter } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
+import { OverlayContainer} from '@angular/cdk/overlay';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -17,18 +18,19 @@ export class ThemeService {
 
   constructor(
     rendererFactory: RendererFactory2,
+    private overlayContainer: OverlayContainer,
     @Inject(DOCUMENT) document: Document
   ) {
-    this.head = document.head;
-    this._renderer = rendererFactory.createRenderer(null, null);
-    this.theme$ = combineLatest(this._mainTheme$, this._darkMode$);
-    this.theme$.subscribe(async ([mainTheme, darkMode]) => {
-      const cssExt = '.css';
-      const cssFilename = darkMode ? mainTheme + '-dark' + cssExt : mainTheme + cssExt;
-      await this.loadCss(cssFilename);
-      if (this.themeLinks.length == 2)
-        this._renderer.removeChild(this.head, this.themeLinks.shift());
-    })
+    // this.head = document.head;
+    // this._renderer = rendererFactory.createRenderer(null, null);
+    // this.theme$ = combineLatest(this._mainTheme$, this._darkMode$);
+    // this.theme$.subscribe(async ([mainTheme, darkMode]) => {
+    //   const cssExt = '.css';
+    //   const cssFilename = darkMode ? mainTheme + '-dark' + cssExt : mainTheme + cssExt;
+    //   await this.loadCss(cssFilename);
+    //   if (this.themeLinks.length == 2)
+    //     this._renderer.removeChild(this.head, this.themeLinks.shift());
+    // })
   }
 
   getActualTheme() {
@@ -40,17 +42,20 @@ export class ThemeService {
   }
 
   setDarkMode(value: boolean) {
-    this._darkMode$.next(value);
-    localStorage.removeItem('theme');
-    if (value) {
-      this.savedTheme = 'dark';
-      this.themeChanged.emit(this.savedTheme);
-      localStorage.setItem('theme', 'dark');
-    } else {
-      this.savedTheme = 'light';
-      this.themeChanged.emit(this.savedTheme);
-      localStorage.setItem('theme', 'light');
-    }
+    if (value) this.overlayContainer.getContainerElement().classList.add('dark-theme');
+    if (!value) this.overlayContainer.getContainerElement().classList.add('light-theme');
+
+    // this._darkMode$.next(value);
+    // localStorage.removeItem('theme');
+    // if (value) {
+    //   this.savedTheme = 'dark';
+    //   this.themeChanged.emit(this.savedTheme);
+    //   localStorage.setItem('theme', 'dark');
+    // } else {
+    //   this.savedTheme = 'light';
+    //   this.themeChanged.emit(this.savedTheme);
+    //   localStorage.setItem('theme', 'light');
+    // }
   }
 
   private async loadCss(filename: string) {
