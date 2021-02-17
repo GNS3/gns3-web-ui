@@ -1,4 +1,4 @@
-<div class="dark">
-    <router-outlet class="dark"></router-outlet>
+<div [ngClass]="{dark: darkThemeEnabled, light: !darkThemeEnabled}">
+    <router-outlet></router-outlet>
     <app-notification-box></app-notification-box>    
 </div>

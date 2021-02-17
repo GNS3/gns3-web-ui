@@ -14,6 +14,8 @@ import { OverlayContainer} from '@angular/cdk/overlay';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  public darkThemeEnabled: boolean = false;
+
   constructor(
     private overlayContainer: OverlayContainer,
     iconReg: MatIconRegistry,
@@ -48,6 +50,11 @@ export class AppComponent implements OnInit {
   }
 
   applyTheme(theme: string) {
+    if (theme === 'dark-theme') {
+      this.darkThemeEnabled = true;
+    } else {
+      this.darkThemeEnabled = false;
+    }
     this.overlayContainer.getContainerElement().classList.add(theme);
     this.componentCssClass = theme;
   }
