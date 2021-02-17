@@ -46,7 +46,11 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
         // if (!this.location.path().includes('nodes') && !(adbutler == today)) this.startTimer();
 
         if (!this.location.path().includes('nodes')) this.startTimer();
-        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
+
+        this.themeService.themeChanged.subscribe((value: string) => {
+            this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
+        });
     }
 
     ngAfterViewInit() {

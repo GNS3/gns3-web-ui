@@ -172,7 +172,7 @@
   </div>
 
   <div *ngIf="toolbarVisibility" id="show-menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, shadowed: !isProjectMapMenuVisible }">
-    <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon class="unmarked">keyboard_arrow_right</mat-icon></button>
+    <button [ngClass]="{lightTheme: isLightThemeEnabled, darkTheme: !isLightThemeEnabled}" class="arrow-button" mat-icon-button (click)="showMenu()"><mat-icon class="unmarked">keyboard_arrow_right</mat-icon></button>
   </div>
 
   <div *ngIf="toolbarVisibility" id="menu-wrapper" [ngClass]="{lightTheme: isLightThemeEnabled, extended: isProjectMapMenuVisible }">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ElectronService } from 'ngx-electron';
@@ -6,6 +6,7 @@ import { SettingsService } from './services/settings.service';
 import { ThemeService } from './services/theme.service';
 import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { ProgressService } from './common/progress/progress.service';
+import { OverlayContainer} from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import { ProgressService } from './common/progress/progress.service';
 })
 export class AppComponent implements OnInit {
   constructor(
+    private overlayContainer: OverlayContainer,
     iconReg: MatIconRegistry,
     sanitizer: DomSanitizer,
     private settingsService: SettingsService,
@@ -30,18 +32,24 @@ export class AppComponent implements OnInit {
     });
   }
 
+  @HostBinding('class') componentCssClass;
+
   ngOnInit(): void {
     if (this.electronService.isElectronApp) {
       this.settingsService.subscribe(settings => {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }
-    let theme = localStorage.getItem('theme');
-    if (theme === 'light') {
-      this.themeService.setDarkMode(false);
-    } else {
-      this.themeService.setDarkMode(true);
-    }
+
+    this.applyTheme(this.themeService.savedTheme + '-theme');
+    this.themeService.themeChanged.subscribe((event: string) => {
+      this.applyTheme(event);
+    });
+  }
+
+  applyTheme(theme: string) {
+    this.overlayContainer.getContainerElement().classList.add(theme);
+    this.componentCssClass = theme;
   }
 
   checkEvent(routerEvent) : void {
