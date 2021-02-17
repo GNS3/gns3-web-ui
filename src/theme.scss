@@ -36,6 +36,7 @@ $dark-theme: map-merge(
 );
 
 .dark-theme {
+  @include angular-material-theme($dark-theme);
   @include mat-core-theme($dark-theme);
   @include mat-autocomplete-theme($dark-theme);
   @include mat-button-theme($dark-theme);
@@ -66,6 +67,7 @@ $dark-theme: map-merge(
   @include mat-toolbar-theme($dark-background);
   @include mat-tooltip-theme($dark-theme);
   @include mat-snack-bar-theme($dark-theme);
+  color: white!important;
 }
 
 // Light theme
