@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -164,7 +164,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private themeService: ThemeService,
     private title: Title,
-    private nodeConsoleService: NodeConsoleService
+    private nodeConsoleService: NodeConsoleService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -183,10 +184,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.addSubscriptions();
     this.addKeyboardListeners();
+
+    this.themeService.themeChanged.subscribe((value: string) => {
+      this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
+    });
   }
 
   getSettings() {
-    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
+    this.cd.detectChanges();
+
     this.settings = this.settingsService.getAll();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;

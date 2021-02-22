@@ -47,16 +47,7 @@
 							"node_modules/bootstrap/dist/css/bootstrap.min.css",
 							"node_modules/notosans-fontface/css/notosans-fontface.min.css",
 							"src/styles.scss",
-							{
-								"inject": true,
-								"input": "src/theme.scss",
-								"bundleName": "theme-default-dark"
-							},
-							{
-								"inject": true,
-								"input": "src/theme-light.scss",
-								"bundleName": "theme-default"
-							}
+							"src/theme.scss"
 						],
 						"scripts": []
 					},
