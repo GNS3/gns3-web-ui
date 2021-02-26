@@ -11,6 +11,7 @@ import { MockedSettingsService } from './settings.service.spec';
 import { Project } from '../models/project';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { of } from 'rxjs';
+import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 
 /**
  * Mocks ProjectsService so it's not based on settings
@@ -62,7 +63,7 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, ProjectService, { provide: SettingsService, useClass: MockedSettingsService }]
+      providers: [HttpServer, ProjectService, RecentlyOpenedProjectService, { provide: SettingsService, useClass: MockedSettingsService }]
     });
 
     httpClient = TestBed.get(HttpClient);
