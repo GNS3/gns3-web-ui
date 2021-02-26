@@ -7,12 +7,17 @@ import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { Drawing } from '../cartography/models/drawing';
 import { SettingsService } from './settings.service';
+import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 
 @Injectable()
 export class ProjectService {
   public projectListSubject = new Subject<boolean>();
 
-  constructor(private httpServer: HttpServer, private settingsService: SettingsService) {}
+  constructor(
+    private httpServer: HttpServer, 
+    private settingsService: SettingsService,
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService
+  ) {}
 
   projectListUpdated() {
     this.projectListSubject.next(true);
@@ -27,6 +32,7 @@ export class ProjectService {
   }
 
   close(server: Server, project_id: string) {
+    this.recentlyOpenedProjectService.removeData();
     return this.httpServer.post<Project>(server, `/projects/${project_id}/close`, {});
   }
 
