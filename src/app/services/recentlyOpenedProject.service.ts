@@ -20,4 +20,9 @@ export class RecentlyOpenedProjectService {
     getProjectId() : string {
         return this.projectId;
     }
+
+    removeData() {
+        this.serverId = '';
+        this.projectId = ''
+    }
 }

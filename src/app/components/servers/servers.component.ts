@@ -35,7 +35,8 @@ export class ServersComponent implements OnInit, OnDestroy {
     private electronService: ElectronService,
     private childProcessService: ChildProcessService,
     private bottomSheet: MatBottomSheet,
-    private route : ActivatedRoute
+    private route : ActivatedRoute,
+    private router: Router
   ) {}
   
   getServers() {
@@ -105,6 +106,10 @@ export class ServersComponent implements OnInit, OnDestroy {
   startLocalServer() {
     const server = this.serverDatabase.data.find(n => n.location === 'bundled' || 'local');
     this.startServer(server);
+  }
+
+  openProjects(server) {
+    this.router.navigate(['/server', server.id, 'projects']);
   }
 
   createModal() {
