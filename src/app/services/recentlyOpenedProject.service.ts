@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 export class RecentlyOpenedProjectService {
     private serverId: string;
     private projectId: string;
+
+    private serverIdProjectList: string;
     
     setServerId(serverId: string) {
         this.serverId = serverId;
@@ -11,6 +13,10 @@ export class RecentlyOpenedProjectService {
 
     setProjectId(projectId: string) {
         this.projectId = projectId;
+    }
+
+    setServerIdProjectList(serverId: string) {
+        this.serverIdProjectList = serverId;
     }
 
     getServerId() : string {
@@ -21,8 +27,12 @@ export class RecentlyOpenedProjectService {
         return this.projectId;
     }
 
+    getServerIdProjectList() : string {
+        return this.serverIdProjectList;
+    }
+ 
     removeData() {
-        this.serverId = '';
+        this.serverId = '',
         this.projectId = ''
     }
 }

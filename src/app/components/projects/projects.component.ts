@@ -24,6 +24,7 @@ import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/con
 import { ToasterService } from '../../services/toaster.service';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ElectronService } from 'ngx-electron';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 
 @Component({
   selector: 'app-projects',
@@ -50,12 +51,14 @@ export class ProjectsComponent implements OnInit {
     private router: Router,
     private bottomSheet: MatBottomSheet,
     private toasterService: ToasterService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
 
   ngOnInit() {
     this.server = this.route.snapshot.data['server'];
     if(!this.server) this.router.navigate(['/servers']);
+    this.recentlyOpenedProjectService.setServerIdProjectList(this.server.id.toString());
 
     this.refresh();
     this.sort.sort(<MatSortable>{

@@ -24,6 +24,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   recentlyOpenedServerId : string;
   recentlyOpenedProjectId : string;
+  serverIdProjectList: string;
 
   constructor(
     private electronService: ElectronService,
@@ -37,6 +38,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
+    this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();
     
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
@@ -54,6 +56,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop servers only when in Electron
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
+  }
+
+  listProjects() {
+    this.router.navigate(['/server', this.serverIdProjectList, 'projects'])
+      .catch(error => this.toasterService.error('Cannot list projects'));
   }
 
   backToProject() {
