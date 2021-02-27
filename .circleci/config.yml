@@ -86,8 +86,11 @@ jobs:
           name: Building gns3server
           command: |
             python3 -V
-            pip3 install -r scripts/requirements.txt
+            python3 -m pip install -U pip
+            python3 -m pip install -r scripts/requirements.txt
             python3 scripts/build.py download -a
+            # necessary because of https://github.com/GNS3/gns3-gui/issues/2849
+            python3 -m pip install jsonschema==2.6.0
             python3 scripts/build.py build_exe -b dist/exe.gns3server -s
             python3 scripts/build.py validate -b dist
 

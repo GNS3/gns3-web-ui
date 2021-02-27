@@ -144,7 +144,7 @@ def download_from_github(name, definition, output_directory):
     files = []
     if platform.system() == "Windows":
         files = definition['files']['windows']
-    
+
     for filename in files:
         dependency_file = os.path.join(dependency_dir, filename)
         dependency_url = list(filter(lambda x: x['name'] == filename, release['assets']))[0]['browser_download_url']
@@ -161,7 +161,7 @@ def download_from_http(name, definition, output_directory):
     files = []
     if platform.system() == "Windows":
         files = definition['files']['windows']
-    
+
     for filename in files:
         dependency_file = os.path.join(dependency_dir, filename)
         download(url, dependency_file)
@@ -193,7 +193,7 @@ def is_tagged():
       return True
     if os.environ.get('APPVEYOR_REPO_TAG', False) in (1, "True", "true"):
       return True
-    
+
 
 def is_web_ui_non_dev():
     package_file = os.path.join(FILE_DIR, '..', 'package.json')
@@ -237,6 +237,8 @@ def download_command(arguments):
 
     if platform.system() == "Windows":
         requirements = 'win-requirements.txt'
+    elif platform.system() == "Darwin":
+        requirements = 'mac-requirements.txt'
     else:
         requirements = 'requirements.txt'
 

@@ -1,7 +1,5 @@
-setuptools==19.2
+setuptools==53.1.0
 cx_Freeze==5.0.2
-requests==2.23.0
-packaging==19.0
-appdirs==1.4.3
-psutil==5.6.7
-jsonschema==2.6.0 # lock down jsonschema, 3.0 makes problems
+requests==2.25.1
+packaging==20.9
+appdirs==1.4.4
