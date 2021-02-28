@@ -1,5 +1,5 @@
-setuptools==53.1.0
-cx_Freeze==5.0.2
+setuptools==40.8.0
+cx_Freeze==5.1.1
 requests==2.25.1
 packaging==20.9
 appdirs==1.4.4

@@ -287,7 +287,6 @@ def build_command(arguments):
         "psutil",
         "asyncio",
         "packaging",  # needed for linux
-        "packaging.specifiers",
         "appdirs",
         "idna",  # required by aiohttp >= 2.3, cannot be found by cx_Freeze
     ]
