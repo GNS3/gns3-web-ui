@@ -2,6 +2,7 @@
 @import '~material-design-icons/iconfont/material-icons.css';
 @import '~typeface-roboto/index.css';
 @include mat-core();
+$mat-theme-ignore-duplication-warnings: true;
 
 $primary: mat-palette($mat-cyan, 700, 500, 900);
 $accent: mat-palette($mat-blue-grey, A200, A100, A700);
