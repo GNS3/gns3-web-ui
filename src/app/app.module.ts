@@ -182,7 +182,6 @@ import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
-import { NotificationBoxComponent } from './components/notification-box/notification-box.component';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
@@ -400,7 +399,6 @@ import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
     ShowNodeActionComponent,
     ConsoleComponent,
     NodesMenuComponent,
-    NotificationBoxComponent,
     ProjectMapMenuComponent,
     HelpComponent,
     ConfigEditorDialogComponent,

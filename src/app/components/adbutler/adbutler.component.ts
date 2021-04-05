@@ -59,7 +59,6 @@ export class AdbutlerComponent implements OnInit {
             : this.isLightThemeEnabled = false;
 
         this.themeService.themeChanged.subscribe((value: string) => {
-            console.log(value)
             this.themeService.getActualTheme() === 'light'
                 ? this.isLightThemeEnabled = true
                 : this.isLightThemeEnabled = false;
