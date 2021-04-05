@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ThemeService } from '../../services/theme.service';
 import { AdButlerResponse } from '../../models/adbutler';
 
-const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i
+const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 
 @Component({
     selector: 'app-adbutler',
@@ -58,7 +58,7 @@ export class AdbutlerComponent implements OnInit {
             ? this.isLightThemeEnabled = true
             : this.isLightThemeEnabled = false;
 
-        this.themeService.themeChanged.subscribe((value: string) => {
+        this.themeService.themeChanged.subscribe(() => {
             this.themeService.getActualTheme() === 'light'
                 ? this.isLightThemeEnabled = true
                 : this.isLightThemeEnabled = false;
