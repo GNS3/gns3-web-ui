@@ -39,8 +39,9 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        let adbutler = localStorage.getItem('adbutler');
-        var today = new Date().toISOString().substring(0, 10);
+        console.log('INIT')
+        // let adbutler = localStorage.getItem('adbutler');
+        // var today = new Date().toISOString().substring(0, 10);
 
         // to show ad once a day
         // if (!this.location.path().includes('nodes') && !(adbutler == today)) this.startTimer();
@@ -94,17 +95,17 @@ export class NotificationBoxComponent implements OnInit, OnDestroy {
 
     showNotification() {
         // localStorage.setItem('adbutler', new Date().toISOString().substring(0, 10));
-        
+
         this.viewTimer = timer(0, 100);
         this.progress = 0;
         this.isVisible = true;
-        this.viewTimerSubscription = this.viewTimer.subscribe(() => {
-            this.progress += 1;
-            if (this.progress > 100) {
-                this.isVisible = false;
-                this.viewTimerSubscription.unsubscribe();
-            }
-        });
+        // this.viewTimerSubscription = this.viewTimer.subscribe(() => {
+        //     this.progress += 1;
+        //     if (this.progress > 100) {
+        //         this.isVisible = false;
+        //         this.viewTimerSubscription.unsubscribe();
+        //     }
+        // });
     }
 
     closeNotification() {

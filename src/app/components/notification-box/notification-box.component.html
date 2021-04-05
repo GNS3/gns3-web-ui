@@ -2,7 +2,7 @@
     <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
     <div style="display: flex; height: 102px;">
         <div class="content" [ngClass]="{lightTheme: isLightThemeEnabled}">
-            <template #dynamicComponentContainer></template>
+            <ng-template #dynamicComponentContainer></ng-template>
             <mat-icon (click)="closeNotification()" class="close-button">close</mat-icon>
         </div>
     </div>
