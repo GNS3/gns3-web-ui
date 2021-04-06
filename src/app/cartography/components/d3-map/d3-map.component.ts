@@ -108,7 +108,13 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     if (val) {
       this.svg.attr('height', window.innerHeight + window.scrollY - 16);
     } else {
-      this.svg.attr('height', this.height);
+      let heightOfProjectWindow = window.innerHeight - 16;
+
+      if (this.height > heightOfProjectWindow) {
+        this.svg.attr('height', this.height);
+      } else {
+        this.svg.attr('height', heightOfProjectWindow);
+      }
     }
   }
 
