@@ -28,6 +28,14 @@ We're using [yarn](https://yarnpkg.com/lang/en/) for packages installation:
 yarn install
 ```
 
+## JavaScript heap out of memory
+
+Increase the memory allocated to Node if you get JavaScript heap out of memory errors.
+
+```
+export NODE_OPTIONS=--max-old-space-size=8192
+```
+
 #### Run GNS3 server
 
 Visit [gns3-server](https://github.com/GNS3/gns3-server) for guide how to run GNS3 server.
