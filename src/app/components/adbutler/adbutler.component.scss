@@ -19,6 +19,13 @@
     padding-right: 16px;
 }
 
+.close-button {
+   position: absolute;
+   top: 15px;
+   right: 15px;
+   color: #000 !important;
+}
+
 .lightTheme {
     background-color: #ddf9ff;
 }
@@ -35,17 +42,16 @@ button {
   padding: 5px;
   color: white;
   font-weight: bold;
+  font-size: 11px;
   padding-right: 15px;
   padding-left: 15px;
   border-radius: 6px;
+
+  a {
+    color: white;
+  }
 }
 
 a {
   color: #122124;
-}
-
-button {
-  a {
-    color: white;
-  }
 }
