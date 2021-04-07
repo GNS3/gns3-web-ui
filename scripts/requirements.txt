@@ -1,6 +1,6 @@
-setuptools==40.8.0
+setuptools==54.2.0
 cx_Freeze==5.1.1
 requests==2.25.1
 packaging==20.9
 appdirs==1.4.4
-psutil==5.6.7
+psutil==5.8.0
