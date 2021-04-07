@@ -7,19 +7,23 @@
 .summaryWrapper {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 60px;
+    right: 0px;
     height: 400px;
-    width: 300px;
+    width: 320px;
     background: #263238;
     color: white;
     overflow: hidden;
     font-size: 12px;
+    margin: 20px;
+    border-radius: 8px;
 }
 
 .lightTheme {
-    background: white!important;
+    background-color: rgba(244, 248, 252, 0.95);
     color: black;
+    margin: 20px;
+    border-radius: 8px;
 }
 
 .summaryHeaderMenu {
@@ -28,10 +32,7 @@
 
 .summaryHeader {
     width: 100%;
-    height: 34px;
     display: flex;
-    justify-content: space-between;
-    margin-right: 5px;
 }
 
 .summaryFilters {
@@ -46,17 +47,17 @@
     margin-right: 5px;
 }
 
+.tabContent {
+   padding: 10px;
+}
+
 .summaryContent {
-    margin-left: 5px;
-    margin-right: 5px;
     overflow: auto;
     scrollbar-color: darkgrey #263238;
     scrollbar-width: thin;
 }
 
 .summaryContentServers {
-    margin-left: 5px;
-    margin-right: 5px;
     max-height: 350px;
     overflow: auto;
     scrollbar-color: darkgrey #263238;
@@ -67,10 +68,12 @@
     margin-left: 5px;
     margin-top: 4px;
     outline: none;
+    border-radius: 0px;
 }
 
 .marked {
     color: #0097a7;
+    border-bottom: 2px solid #0097a7;
 }
 
 .divider {

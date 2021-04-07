@@ -1,15 +1,24 @@
-<button class="addNode" matTooltip="Add a node" matTooltipClass="custom-tooltip" mat-icon-button [matMenuTriggerFor]="mainMenu">
-    <mat-icon>add_to_queue</mat-icon>
+<button
+   class="addNode"
+   matTooltip="Add a node"
+   matTooltipClass="custom-tooltip"
+   mat-icon-button
+   class="menu-button add-menu-button"
+   [matMenuTriggerFor]="mainMenu">
+    <mat-icon>add</mat-icon>
 </button>
 
 <mat-menu #mainMenu="matMenu">
     <button mat-menu-item (click)="openDialog()">
-        <mat-icon>add</mat-icon>
+        <mat-icon>add_to_queue</mat-icon>
         <span>Open dialog to configure</span>
     </button>
 
-    <mat-form-field (click)="$event.stopPropagation()" class="form-field" floatPlaceholder="never">
-        <input 
+    <mat-form-field
+        (click)="$event.stopPropagation()"
+        class="form-field"
+        floatPlaceholder="never">
+        <input
             matInput
             placeholder="Search by name"
             (keyup)="filterTemplates($event)"
@@ -17,8 +26,8 @@
             [ngModelOptions]="{standalone: true}">
     </mat-form-field>
     <mat-form-field (click)="$event.stopPropagation()" class="form-field">
-        <mat-select 
-            [ngModelOptions]="{standalone: true}"  
+        <mat-select
+            [ngModelOptions]="{standalone: true}"
             placeholder="Filter templates by type"
             (selectionChange)="filterTemplates($event)"
             [(ngModel)]="selectedType">
