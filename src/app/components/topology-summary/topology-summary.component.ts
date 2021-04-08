@@ -77,7 +77,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             this.computes = computes;
         });
 
-         this.style = { top: '60px', right: '0px', width: '320px', height: '400px'};
+        this.style = { top: '60px', right: '0px', width: '320px', height: '400px'};
     }
 
     toggleDragging(value: boolean) {

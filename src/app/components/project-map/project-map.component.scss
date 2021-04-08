@@ -112,6 +112,7 @@ g.node:hover {
 
    mat-icon {
       font-size: 20px;
+      color: white;
    }
 
    .menu-button {
@@ -148,6 +149,10 @@ g.node:hover {
 
    &.lightTheme {
       background-color: rgba(244, 248, 252, 0.95) !important;
+
+      mat-icon {
+        color: black;
+      }
 
       .menu-button {
          opacity: 0.7;
