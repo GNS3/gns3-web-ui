@@ -45,6 +45,10 @@ g.node:hover {
       border-right: 1px solid rgba(255,255,255,0.3);
       padding-right: 15px;
       margin-right: 15px;
+
+      &.lightTheme {
+        border-right: 1px solid black;
+      }
    }
 
    .menu-button-group {
@@ -83,10 +87,10 @@ g.node:hover {
    }
 
    &.lightTheme {
-      background-color: #20313b !important;
+      background-color: white !important;
 
       mat-icon {
-         color: #fff !important;
+         color: black !important;
       }
 
       .selected mat-icon {
