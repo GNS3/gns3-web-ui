@@ -89,10 +89,6 @@ g.node:hover {
    &.lightTheme {
       background-color: white !important;
 
-      mat-icon {
-         color: black !important;
-      }
-
       .selected mat-icon {
          color: #0097a7 !important;
       }
@@ -112,7 +108,6 @@ g.node:hover {
 
    mat-icon {
       font-size: 20px;
-      color: white;
    }
 
    .menu-button {
@@ -124,6 +119,18 @@ g.node:hover {
       border-radius: 18px;
       background: none;
       margin: 2px 0px;
+   }
+
+   .zoom-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 36px;
+      width: 36px;
+      border-radius: 18px;
+      background: none;
+      margin: 2px 0px;
+      color: white;
    }
 
    .selection-button {
@@ -150,12 +157,9 @@ g.node:hover {
    &.lightTheme {
       background-color: rgba(244, 248, 252, 0.95) !important;
 
-      mat-icon {
-        color: black;
-      }
-
-      .menu-button {
+      .zoom-button {
          opacity: 0.7;
+         color: black;
       }
 
       .section {
@@ -360,4 +364,16 @@ g.node text,
 
 mat-menu-panel {
   min-height: 0px;
+}
+
+.unmarked {
+  color: white!important;
+}
+
+.unmarkedLight {
+  color: black!important;
+}
+
+.marked {
+  color: #0097a7!important;
 }

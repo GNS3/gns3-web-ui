@@ -29,7 +29,12 @@
       </div>
     </div>
     <div>
-      <button matTooltip="Toggle topology/servers summary" matTooltipClass="custom-tooltip" mat-icon-button [color]="isTopologySummaryVisible ? 'primary' : 'basic'" (click)="toggleShowTopologySummary(!isTopologySummaryVisible)">
+      <button 
+        matTooltip="Toggle topology/servers summary" 
+        matTooltipClass="custom-tooltip" 
+        [ngClass]="{unmarkedLight: !isTopologySummaryVisible && isLightThemeEnabled, marked: isTopologySummaryVisible}"
+        mat-icon-button
+        (click)="toggleShowTopologySummary(!isTopologySummaryVisible)">
         <mat-icon>toc</mat-icon>
       </button>
     </div>
@@ -142,13 +147,13 @@
       <button matTooltip="Pan workspace" matTooltipClass="custom-tooltip" class="pan-button menu-button" mat-icon-button [color]="tools.moving ? 'primary' : 'basic'" (click)="toggleMovingMode()">
         <mat-icon>zoom_out_map</mat-icon>
       </button>
-      <button matTooltip="Zoom in" matTooltipClass="custom-tooltip" [ngClass]="{lightTheme: isLightThemeEnabled}" class="menu-button" (click)="zoomIn()">
+      <button matTooltip="Zoom in" matTooltipClass="custom-tooltip" class="zoom-button" (click)="zoomIn()">
         <mat-icon>zoom_in</mat-icon>
       </button>
-      <button matTooltip="Reset zoom" matTooltipClass="custom-tooltip" [ngClass]="{lightTheme: isLightThemeEnabled}" class="menu-button" (click)="resetZoom()">
+      <button matTooltip="Reset zoom" matTooltipClass="custom-tooltip" class="zoom-button" (click)="resetZoom()">
         <mat-icon>adjust</mat-icon>
       </button>
-      <button matTooltip="Zoom out" matTooltipClass="custom-tooltip" [ngClass]="{lightTheme: isLightThemeEnabled}" class="menu-button" (click)="zoomOut()">
+      <button matTooltip="Zoom out" matTooltipClass="custom-tooltip" class="zoom-button" (click)="zoomOut()">
         <mat-icon>zoom_out</mat-icon>
       </button>
     </div>
