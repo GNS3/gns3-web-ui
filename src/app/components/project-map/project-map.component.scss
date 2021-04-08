@@ -9,20 +9,154 @@ app-map {
   width: auto;
 }
 
-svg.map {
-  background-color: #f0f0f0;
-}
-
 g.node:hover {
   background-color: #0097a7;
 }
 
-.project-toolbar {
-  width: 70px;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+.project-map {
+   background-color: #e8ecef;
+}
+
+#project-titlebar {
+   position: fixed;
+   top: 0px;
+   left: 0px;
+   right: 0px;
+   height: 60px;
+   padding: 0px 20px;
+   background-color: #20313b;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+   z-index: 2;
+
+   .gns3-button {
+      position: relative;
+      top: -2px;
+
+      mat-icon {
+         width: 30px !important;
+         height: 30px !important;
+      }
+   }
+
+   .primary-controls {
+      border-right: 1px solid rgba(255,255,255,0.3);
+      padding-right: 15px;
+      margin-right: 15px;
+   }
+
+   .menu-button-group {
+      display: flex;
+      align-items: center;
+      height: 24px;
+   }
+
+   .menu-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 36px;
+      width: 36px;
+      margin: 0px 8px;
+      border-radius: 18px;
+      background: none;
+      font-size: 20px;
+   }
+
+   .add-menu-button mat-icon {
+      font-size: 28px !important;
+   }
+
+   .selected {
+      background: rgba(0, 151, 167, 0.1);
+
+      mat-icon {
+         color: #0097a7 !important;
+      }
+   }
+
+   .project-titlebar-controls {
+      display: flex;
+      align-items: center;
+   }
+
+   &.lightTheme {
+      background-color: #20313b !important;
+
+      mat-icon {
+         color: #fff !important;
+      }
+
+      .selected mat-icon {
+         color: #0097a7 !important;
+      }
+   }
+}
+
+#project-toolbar {
+   position: fixed;
+   top: 60px;
+   left: 0px;
+   width: 50px;
+   margin: 20px;
+   background-color: rgba(15,18,20,0.90);
+   border-radius: 6px;
+   box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+   z-index: 2;
+
+   mat-icon {
+      font-size: 20px;
+   }
+
+   .menu-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 36px;
+      width: 36px;
+      border-radius: 18px;
+      background: none;
+      margin: 2px 0px;
+   }
+
+   .selection-button {
+      margin-bottom: 0px !important;
+   }
+
+   .snapshot-button mat-icon {
+      font-size: 16px;
+   }
+
+   .section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding: 5px 0px;
+
+      &:first-child {
+         border: none;
+      }
+   }
+
+   &.lightTheme {
+      background-color: rgba(244, 248, 252, 0.95) !important;
+
+      .menu-button {
+         opacity: 0.7;
+      }
+
+      .section {
+         border-top: 1px solid rgba(0,0,0,0.1);
+
+         &:first-child {
+            border: none;
+         }
+      }
+   }
 }
 
 img {
@@ -31,7 +165,6 @@ img {
 }
 
 .lightTheme {
-  background: white!important;
   color: black!important;
 }
 
@@ -42,7 +175,7 @@ img {
 #show-menu-wrapper {
   position: fixed;
   background: transparent;
-  top: 20px;
+  top: 0px;
   left: 92px;
   background: #263238;
   height: 72px;
@@ -64,8 +197,9 @@ img {
 #menu-wrapper {
   position: fixed;
   background: transparent;
-  top: 20px;
+  top: 0px;
   left: 92px;
+  right: 0px;
   background: #263238;
   height: 72px;
   padding-top: 16px;
@@ -109,30 +243,6 @@ mat-divider.divider {
   margin-right: 7px;
   width: 10px;
   color: gray;
-}
-
-.zoom-buttons {
-  position: fixed;
-  background: #263238;
-  bottom: 20px;
-  right: 20px;
-  display: grid;
-  color: white;
-
-  .zoom-button {
-    outline: none;
-    height: 40px;
-    width: 40px;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.25rem;
-    font-weight: bold;
-
-    mat-icon {
-      margin-left: -6px;
-    }
-  }
 }
 
 @-moz-document url-prefix() {

@@ -38,7 +38,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     captureFilterEnabled: boolean = false;
     packetFilterEnabled: boolean = false;
     computes: Compute[] = [];
-    
+
     isTopologyVisible: boolean = true;
     isDraggingEnabled: boolean = false;
     isLightThemeEnabled: boolean = false;
@@ -52,7 +52,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false; 
+        this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
         this.subscriptions.push(
             this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
                 this.nodes = nodes;
@@ -77,7 +77,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             this.computes = computes;
         });
 
-        this.style = { top: '20px', right: '20px', width: '300px', height: '400px'};
+         this.style = { top: '60px', right: '0px', width: '320px', height: '400px'};
     }
 
     toggleDragging(value: boolean) {
@@ -138,7 +138,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         };
     }
 
-    toogleTopologyVisibility(value: boolean) {
+    toggleTopologyVisibility(value: boolean) {
         this.isTopologyVisible = value;
     }
 
@@ -161,7 +161,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             this.filteredNodes = this.filteredNodes.sort(this.compareAsc);
         } else {
             this.filteredNodes = this.filteredNodes.sort(this.compareDesc);
-        }   
+        }
     }
 
     applyStatusFilter(filter: string) {
@@ -190,15 +190,15 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         if (this.startedStatusFilterEnabled) {
             nodes = nodes.concat(this.nodes.filter(n => n.status === 'started'));
         }
-        
+
         if (this.stoppedStatusFilterEnabled) {
             nodes = nodes.concat(this.nodes.filter(n => n.status === 'stopped'));
         }
-        
+
         if (this.suspendedStatusFilterEnabled) {
             nodes = nodes.concat(this.nodes.filter(n => n.status === 'suspended'));
         }
-        
+
         if (!this.startedStatusFilterEnabled && !this.stoppedStatusFilterEnabled && !this.suspendedStatusFilterEnabled) {
             nodes = nodes.concat(this.nodes);
         }
@@ -215,7 +215,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
             this.filteredNodes = nodes.sort(this.compareAsc);
         } else {
             this.filteredNodes = nodes.sort(this.compareDesc);
-        }    
+        }
     }
 
     checkCapturing(nodes: Node[]): Node[] {

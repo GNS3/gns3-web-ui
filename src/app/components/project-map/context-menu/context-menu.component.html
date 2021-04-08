@@ -62,9 +62,9 @@
       [drawing]="drawings[0]"
     ></app-edit-style-action>
     <app-edit-text-action
-      *ngIf="!projectService.isReadOnly(project) && 
-        (drawings.length===1 && hasTextCapabilities && labels.length===0 && linkNodes.length===0 || 
-        labels.length===1 && linkNodes.length===0 && drawings.length===0 || 
+      *ngIf="!projectService.isReadOnly(project) &&
+        (drawings.length===1 && hasTextCapabilities && labels.length===0 && linkNodes.length===0 ||
+        labels.length===1 && linkNodes.length===0 && drawings.length===0 ||
         linkNodes.length===1 && labels.length===0 && drawings.length===0)"
       [server]="server"
       [project]="project"
@@ -113,13 +113,13 @@
       [link]="links[0]"
     ></app-start-capture-action>
     <app-stop-capture-action
-      *ngIf="!projectService.isReadOnly(project) 
+      *ngIf="!projectService.isReadOnly(project)
       && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
       [server]="server"
       [link]="links[0]"
     ></app-stop-capture-action>
     <app-start-capture-on-started-link-action
-      *ngIf="!projectService.isReadOnly(project) 
+      *ngIf="!projectService.isReadOnly(project)
       && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
       [server]="server"
       [project]="project"
