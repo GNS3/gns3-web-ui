@@ -101,7 +101,7 @@ g.node:hover {
    left: 0px;
    width: 50px;
    margin: 20px;
-   background-color: rgba(15,18,20,0.90);
+   background-color: #20313b;
    border-radius: 6px;
    box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
    z-index: 2;
@@ -131,6 +131,27 @@ g.node:hover {
       background: none;
       margin: 2px 0px;
       color: white;
+
+      mat-icon {
+        font-size: 24px!important;
+      }
+   }
+
+   .reset-zoom-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 18px;
+    background: none;
+    margin: 2px 0px;
+    color: white;
+
+    mat-icon {
+      font-size: 16px!important;
+      margin-top: 8px;
+    }
    }
 
    .selection-button {
@@ -160,6 +181,11 @@ g.node:hover {
       .zoom-button {
          opacity: 0.7;
          color: black;
+      }
+
+      .reset-zoom-button {
+        opacity: 0.7;
+        color: black;
       }
 
       .section {
