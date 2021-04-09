@@ -268,7 +268,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   applyScalingOfNodeSymbols() {
     this.nodesDataSource.getItems().forEach((node) => {
-      if ((node.width > this.symbolService.getMaximumSymbolSize() || node.height > this.symbolService.getMaximumSymbolSize()) && !(node.node_type === 'cloud' || node.node_type === 'nat')) {
+      if (node.height > this.symbolService.getMaximumSymbolSize()) {
         let newDimensions = this.symbolService.scaleDimensionsForNode(node);
         node.width = newDimensions.width;
         node.height = newDimensions.height;
