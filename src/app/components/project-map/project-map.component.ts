@@ -73,6 +73,7 @@ import { Title } from '@angular/platform-browser';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { NodeConsoleService } from '../../services/nodeConsole.service';
 import * as Mousetrap from 'mousetrap';
+import { SymbolService } from '../../services/symbol.service';
 
 
 @Component({
@@ -98,6 +99,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public layersVisibility: boolean = false;
   public gridVisibility: boolean = false;
   public toolbarVisibility: boolean = true;
+  public symbolScaling: boolean = true;
 
   tools = {
     selection: true,
@@ -165,6 +167,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private title: Title,
     private nodeConsoleService: NodeConsoleService,
+    private symbolService: SymbolService,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -195,6 +198,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
+    this.symbolScaling = this.mapSettingsService.getSymbolScaling();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
     this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
@@ -220,11 +224,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
-        nodes.forEach((node: Node) => {
+        nodes.forEach(async (node: Node) => {
           node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
+
+          if (node.width == 0 && node.height == 0) {
+            let symbolDimensions = await this.symbolService.getDimensions(this.server, node.symbol).toPromise();
+            node.width = symbolDimensions.width;
+            node.height = symbolDimensions.height;
+          }
         });
 
         this.nodes = nodes;
+        if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -249,6 +260,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             message: message
         });
     }));
+
+    this.projectMapSubscription.add(this.mapSettingsService.symbolScalingSubject.subscribe((value) => {
+        if (value) this.applyScalingOfNodeSymbols();
+    }));
+  }
+
+  applyScalingOfNodeSymbols() {
+    this.nodesDataSource.getItems().forEach((node) => {
+      if ((node.width > this.symbolService.getMaximumSymbolSize() || node.height > this.symbolService.getMaximumSymbolSize()) && !(node.node_type === 'cloud' || node.node_type === 'nat')) {
+        let newDimensions = this.symbolService.scaleDimensionsForNode(node);
+        node.width = newDimensions.width;
+        node.height = newDimensions.height;
+      }
+    });
   }
 
   getData() {
@@ -691,6 +716,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public get readonly() {
     return this.inReadOnlyMode;
+  }
+
+  public toggleSymbolScaling(value: boolean) {
+    this.symbolScaling = value;
+    this.mapSettingsService.setSymbolScaling(value);
   }
 
   public toggleMovingMode() {

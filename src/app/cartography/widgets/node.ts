@@ -92,15 +92,11 @@ export class NodeWidget implements Widget {
       })
       .attr('xnode:href', (n: MapNode) => n.symbolUrl)
       .attr('width', (n: MapNode) => {
-        if (n.nodeType === 'cloud' || n.nodeType === 'nat') return 120;
         if (!n.width) return 60;
-        if (n.width > 64) return 64;
         return n.width;
       })
       .attr('height', (n: MapNode) => {
-        if (n.nodeType === 'cloud' || n.nodeType === 'nat') return 60;
         if (!n.height) return 60;
-        if (n.height > 64) return 64;
         return n.height;
       })
       .attr('x', (n: MapNode) => {

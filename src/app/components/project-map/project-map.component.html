@@ -134,6 +134,9 @@
         <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
           Snap to grid
         </mat-checkbox><br />
+        <mat-checkbox [ngModel]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
+          Scale symbols
+        </mat-checkbox><br />
       </div>
     </mat-menu>
   </div>
