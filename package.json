@@ -17,6 +17,7 @@
     "start": "ng serve",
     "startforelectron": "ng serve --configuration=electronDev",
     "build": "ng build",
+    "buildforproduction": "ng build --source-map=false --build-optimizer --configuration=production --base-href /static/web-ui/",
     "buildforelectron": "ng build --configuration=electronProd",
     "buildforgithub": "ng build --configuration=githubProd",
     "test": "ng test",
