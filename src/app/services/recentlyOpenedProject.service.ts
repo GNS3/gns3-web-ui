@@ -2,37 +2,36 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class RecentlyOpenedProjectService {
-    private serverId: string;
-    private projectId: string;
+  private serverId: string;
+  private projectId: string;
 
-    private serverIdProjectList: string;
-    
-    setServerId(serverId: string) {
-        this.serverId = serverId;
-    }
+  private serverIdProjectList: string;
 
-    setProjectId(projectId: string) {
-        this.projectId = projectId;
-    }
+  setServerId(serverId: string) {
+    this.serverId = serverId;
+  }
 
-    setServerIdProjectList(serverId: string) {
-        this.serverIdProjectList = serverId;
-    }
+  setProjectId(projectId: string) {
+    this.projectId = projectId;
+  }
 
-    getServerId() : string {
-        return this.serverId;
-    }
+  setServerIdProjectList(serverId: string) {
+    this.serverIdProjectList = serverId;
+  }
 
-    getProjectId() : string {
-        return this.projectId;
-    }
+  getServerId(): string {
+    return this.serverId;
+  }
 
-    getServerIdProjectList() : string {
-        return this.serverIdProjectList;
-    }
- 
-    removeData() {
-        this.serverId = '',
-        this.projectId = ''
-    }
+  getProjectId(): string {
+    return this.projectId;
+  }
+
+  getServerIdProjectList(): string {
+    return this.serverIdProjectList;
+  }
+
+  removeData() {
+    (this.serverId = ''), (this.projectId = '');
+  }
 }

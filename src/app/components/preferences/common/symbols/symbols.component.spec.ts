@@ -14,52 +14,59 @@ import { HttpClientModule } from '@angular/common/http';
 import { SearchFilter } from '../../../../filters/searchFilter.pipe';
 
 export class MockedSymbolService {
-    public list() {
-      return of([]);
-    }
+  public list() {
+    return of([]);
+  }
 
-    public raw() {
-      return of('<svg></svg>')
-    }
+  public raw() {
+    return of('<svg></svg>');
+  }
 }
 
 describe('Symbols component', () => {
-    let component: SymbolsComponent;
-    let fixture: ComponentFixture<SymbolsComponent>;
-    let mockedSymbolsService = new MockedSymbolService;
+  let component: SymbolsComponent;
+  let fixture: ComponentFixture<SymbolsComponent>;
+  let mockedSymbolsService = new MockedSymbolService();
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports:  [HttpClientModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: SymbolService,  useValue: mockedSymbolsService
-              }
-          ],
-          declarations: [
-              SymbolsComponent,
-              SearchFilter
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-      }));
-    
-      beforeEach(() => {
-        fixture = TestBed.createComponent(SymbolsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
-    
-      it('should create', () => {
-          expect(component).toBeTruthy();
-      });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        HttpClientModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: SymbolService,
+          useValue: mockedSymbolsService,
+        },
+      ],
+      declarations: [SymbolsComponent, SearchFilter],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-      it('should emit event when symbol selected', () => {
-            spyOn(component.symbolChanged, 'emit');
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SymbolsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-            component.setSelected('id');
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-            expect(component.symbolChanged.emit).toHaveBeenCalled();
-            expect(component.isSelected).toBe('id');
-      });
+  it('should emit event when symbol selected', () => {
+    spyOn(component.symbolChanged, 'emit');
+
+    component.setSelected('id');
+
+    expect(component.symbolChanged.emit).toHaveBeenCalled();
+    expect(component.isSelected).toBe('id');
+  });
 });

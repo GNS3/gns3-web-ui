@@ -37,5 +37,5 @@ export const D3_MAP_IMPORTS = [
   LineDrawingWidget,
   RectDrawingWidget,
   TextDrawingWidget,
-  DrawingWidget
+  DrawingWidget,
 ];

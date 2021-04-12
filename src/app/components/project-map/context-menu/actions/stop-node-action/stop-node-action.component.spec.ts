@@ -8,7 +8,7 @@ describe('StopNodeActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [StopNodeActionComponent]
+      declarations: [StopNodeActionComponent],
     }).compileComponents();
   }));
 

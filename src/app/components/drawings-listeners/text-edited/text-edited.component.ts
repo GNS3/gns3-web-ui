@@ -13,7 +13,7 @@ import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/ma
 @Component({
   selector: 'app-text-edited',
   templateUrl: './text-edited.component.html',
-  styleUrls: ['./text-edited.component.scss']
+  styleUrls: ['./text-edited.component.scss'],
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
@@ -27,7 +27,7 @@ export class TextEditedComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.textEdited = this.drawingsEventSource.textEdited.subscribe(evt => this.onTextEdited(evt));
+    this.textEdited = this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt));
   }
 
   onTextEdited(evt: TextEditedDataEvent) {

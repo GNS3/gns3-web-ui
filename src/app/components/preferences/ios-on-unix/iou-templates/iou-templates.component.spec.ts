@@ -18,41 +18,47 @@ import { IouTemplatesComponent } from './iou-templates.component';
 import { IouService } from '../../../../services/iou.service';
 
 export class MockedIouService {
-    public getTemplates(server: Server) {
-        return of([{} as IouTemplate]);
-    }
+  public getTemplates(server: Server) {
+    return of([{} as IouTemplate]);
+  }
 }
 
 describe('IouTemplatesComponent', () => {
-    let component: IouTemplatesComponent;
-    let fixture: ComponentFixture<IouTemplatesComponent>;
+  let component: IouTemplatesComponent;
+  let fixture: ComponentFixture<IouTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedIouService = new MockedIouService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              { provide: ActivatedRoute,  useValue: activatedRoute },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: IouService, useValue: mockedIouService }
-          ],
-          declarations: [
-              IouTemplatesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedIouService = new MockedIouService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(IouTemplatesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: IouService, useValue: mockedIouService },
+      ],
+      declarations: [IouTemplatesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(IouTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

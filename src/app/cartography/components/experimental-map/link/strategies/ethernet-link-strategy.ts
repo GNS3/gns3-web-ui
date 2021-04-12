@@ -6,7 +6,7 @@ export class EthernetLinkStrategy implements LinkStrategy {
   public d(link: MapLink): string {
     const points = [
       [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2],
-      [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2]
+      [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2],
     ];
 
     const line_generator = path();

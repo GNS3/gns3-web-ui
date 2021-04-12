@@ -8,7 +8,7 @@ describe('SnapshotMenuItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SnapshotMenuItemComponent]
+      declarations: [SnapshotMenuItemComponent],
     }).compileComponents();
   }));
 

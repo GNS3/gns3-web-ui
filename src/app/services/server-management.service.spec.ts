@@ -6,7 +6,7 @@ import { Server } from '../models/server';
 
 describe('ServerManagementService', () => {
   let electronService;
-  let callbacks
+  let callbacks;
   let removed;
   let server;
 
@@ -20,12 +20,12 @@ describe('ServerManagementService', () => {
         on: (channel, callback) => {
           callbacks.push({
             channel: channel,
-            callback: callback
+            callback: callback,
           });
         },
         removeAllListeners: (name) => {
           removed.push(name);
-        }
+        },
       },
       remote: {
         require: (file) => {
@@ -35,19 +35,18 @@ describe('ServerManagementService', () => {
             },
             stopLocalServer: (serv) => {
               server = serv;
-            }
-          }
-        }
-      }
+            },
+          };
+        },
+      },
     };
-  })
-  
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      { provide: ElectronService, useValue: electronService},
-      ServerManagementService
-    ]
-  }));
+  });
+
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [{ provide: ElectronService, useValue: electronService }, ServerManagementService],
+    })
+  );
 
   it('should be created', () => {
     const service: ServerManagementService = TestBed.get(ServerManagementService);
@@ -81,13 +80,13 @@ describe('ServerManagementService', () => {
 
   it('should start local server', async () => {
     const service: ServerManagementService = TestBed.get(ServerManagementService);
-    await service.start({ name: 'test'} as Server);
-    expect(server).toEqual({ name: 'test'});
+    await service.start({ name: 'test' } as Server);
+    expect(server).toEqual({ name: 'test' });
   });
 
   it('should stop local server', async () => {
     const service: ServerManagementService = TestBed.get(ServerManagementService);
-    await service.stop({ name: 'test2'} as Server);
-    expect(server).toEqual({ name: 'test2'});
+    await service.stop({ name: 'test2' } as Server);
+    expect(server).toEqual({ name: 'test2' });
   });
 });

@@ -6,23 +6,19 @@ import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
   selector: 'app-start-node-action',
-  templateUrl: './start-node-action.component.html'
+  templateUrl: './start-node-action.component.html',
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {
   @Input() server: Server;
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
 
-  constructor(
-    private nodeService: NodeService,
-    private toasterService: ToasterService
-  ) {}
+  constructor(private nodeService: NodeService, private toasterService: ToasterService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges(changes) {
-    if(changes.nodes) {
+    if (changes.nodes) {
       this.isNodeWithStoppedStatus = false;
       this.nodes.forEach((node) => {
         if (node.status === 'stopped' || node.status === 'suspended') {
@@ -36,8 +32,8 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
     this.nodes.forEach((node) => {
       this.nodeService.start(this.server, node).subscribe(
         (n: Node) => {},
-        error => {
-          this.toasterService.error(error.error.message)
+        (error) => {
+          this.toasterService.error(error.error.message);
         }
       );
     });

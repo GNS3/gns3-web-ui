@@ -21,7 +21,7 @@ export class DefaultDrawingsFactory {
       text: this.textElementFactory,
       ellipse: this.ellipseElementFactory,
       rectangle: this.rectangleElementFactory,
-      line: this.lineElementFactory
+      line: this.lineElementFactory,
     };
   }
 

@@ -24,26 +24,35 @@ describe('SettingsComponent', () => {
   let settingsService: SettingsService;
   let mapSettingsService = {
     integrateLinkLabelsToLinks: true,
-    toggleIntegrateInterfaceLabels(val: boolean) {}
+    toggleIntegrateInterfaceLabels(val: boolean) {},
   };
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
 
   beforeEach(async(() => {
     consoleService = {
-      command: 'command'
+      command: 'command',
     };
 
     TestBed.configureTestingModule({
-      imports: [MatExpansionModule, MatCheckboxModule, FormsModule, PersistenceModule, BrowserAnimationsModule, MatIconModule, MatFormFieldModule, MatInputModule],
+      imports: [
+        MatExpansionModule,
+        MatCheckboxModule,
+        FormsModule,
+        PersistenceModule,
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+      ],
       providers: [
         SettingsService,
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: ConsoleService, useValue: consoleService },
         { provide: MapSettingsService, useValue: mapSettingsService },
-        { provide: UpdatesService, useValue: updatesService }
+        { provide: UpdatesService, useValue: updatesService },
       ],
-      declarations: [SettingsComponent]
+      declarations: [SettingsComponent],
     }).compileComponents();
 
     settingsService = TestBed.get(SettingsService);
@@ -64,7 +73,7 @@ describe('SettingsComponent', () => {
       crash_reports: true,
       experimental_features: true,
       angular_map: false,
-      console_command: ''
+      console_command: '',
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');
@@ -75,5 +84,4 @@ describe('SettingsComponent', () => {
     component.save();
     expect(setAll).toHaveBeenCalledWith(settings);
   });
-
 });

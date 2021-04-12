@@ -11,12 +11,11 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
 
-
 @Component({
   selector: 'app-add-blank-project-dialog',
   templateUrl: './add-blank-project-dialog.component.html',
   styleUrls: ['./add-blank-project-dialog.component.scss'],
-  providers: [ProjectNameValidator]
+  providers: [ProjectNameValidator],
 })
 export class AddBlankProjectDialogComponent implements OnInit {
   server: Server;
@@ -36,7 +35,11 @@ export class AddBlankProjectDialogComponent implements OnInit {
 
   ngOnInit() {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new FormControl(null, [Validators.required, this.projectNameValidator.get], [projectNameAsyncValidator(this.server, this.projectService)])
+      projectName: new FormControl(
+        null,
+        [Validators.required, this.projectNameValidator.get],
+        [projectNameAsyncValidator(this.server, this.projectService)]
+      ),
     });
   }
 
@@ -50,7 +53,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
     }
     this.projectService.list(this.server).subscribe((projects: Project[]) => {
       const projectName = this.projectNameForm.controls['projectName'].value;
-      let existingProject = projects.find(project => project.name === projectName);
+      let existingProject = projects.find((project) => project.name === projectName);
 
       if (existingProject) {
         this.openConfirmationDialog(existingProject);
@@ -76,7 +79,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
   }
 
   onKeyDown(event) {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       this.onAddClick();
     }
   }
@@ -86,10 +89,10 @@ export class AddBlankProjectDialogComponent implements OnInit {
       width: '300px',
       height: '150px',
       data: {
-        existingProject: existingProject
+        existingProject: existingProject,
       },
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {

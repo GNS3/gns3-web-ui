@@ -11,7 +11,7 @@ export class QtDasharrayFixer {
     '25, 25': '10, 2',
     '5, 25': '4, 2',
     '5, 25, 25': '5, 5, 1, 5',
-    '25, 25, 5, 25, 5': '5, 2, 5, 2, 5'
+    '25, 25, 5, 25, 5': '5, 2, 5, 2, 5',
   };
 
   public fix(dasharray: string): string {

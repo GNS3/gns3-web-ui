@@ -58,7 +58,12 @@ import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.com
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
-import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource } from '../../cartography/datasources/map-datasource';
+import {
+  MapNodesDataSource,
+  MapLinksDataSource,
+  MapDrawingsDataSource,
+  MapSymbolsDataSource,
+} from '../../cartography/datasources/map-datasource';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NotificationService } from '../../services/notification.service';
@@ -73,7 +78,7 @@ export class MockedProgressService {
 export class MockedNodeService {
   public node = { label: {} } as Node;
   constructor() {}
-  
+
   getDefaultCommand(): string {
     return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
   }
@@ -133,7 +138,7 @@ export class MockedNodeService {
   saveConfiguration(server: Server, node: Node, configuration: string) {
     return of(configuration);
   }
-  
+
   update(server: Server, node: Node) {
     return of(node);
   }
@@ -179,7 +184,7 @@ export class MockedLinkService {
     return of({});
   }
 
-  deleteLink(_server: Server, link: Link){
+  deleteLink(_server: Server, link: Link) {
     return of({});
   }
 
@@ -199,7 +204,7 @@ export class MockedLinkService {
     return of({});
   }
 
-  getAvailableFilters(server: Server, link: Link) { 
+  getAvailableFilters(server: Server, link: Link) {
     return of({});
   }
 }
@@ -224,11 +229,11 @@ export class MockedNodesDataSource {
   clear() {}
 
   get() {
-    return {status: 'started'};
+    return { status: 'started' };
   }
 
   getItems() {
-    return [{name: 'testNode'}];
+    return [{ name: 'testNode' }];
   }
 
   update() {
@@ -253,15 +258,24 @@ xdescribe('ProjectMapComponent', () => {
   let linksDataSource = new MockedLinksDataSource();
   let mockedToasterService = new MockedToasterService();
   let nodeCreatedLabelStylesFixer;
-  let mockedRouter = new MockedActivatedRoute;
+  let mockedRouter = new MockedActivatedRoute();
 
   beforeEach(async(() => {
     nodeCreatedLabelStylesFixer = {
-      fix: (node) => node
+      fix: (node) => node,
     };
 
     TestBed.configureTestingModule({
-      imports: [MatBottomSheetModule, MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+      imports: [
+        MatBottomSheetModule,
+        MatIconModule,
+        MatDialogModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+      ],
       providers: [
         { provide: ActivatedRoute },
         { provide: ServerService, useClass: MockedServerService },
@@ -294,11 +308,11 @@ xdescribe('ProjectMapComponent', () => {
         { provide: MovingEventSource },
         {
           provide: RecentlyOpenedProjectService,
-          useClass: RecentlyOpenedProjectService
+          useClass: RecentlyOpenedProjectService,
         },
-        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer },
         { provide: MapScaleService },
-        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer},
+        { provide: NodeCreatedLabelStylesFixer, useValue: nodeCreatedLabelStylesFixer },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: Router, useValue: mockedRouter },
         { provide: MapNodesDataSource, useClass: MapNodesDataSource },
@@ -306,18 +320,18 @@ xdescribe('ProjectMapComponent', () => {
         { provide: MapDrawingsDataSource, useClass: MapDrawingsDataSource },
         { provide: MapSymbolsDataSource, useClass: MapSymbolsDataSource },
         { provide: MapSettingsService, useClass: MapSettingsService },
-        { provide: NotificationService }
+        { provide: NotificationService },
       ],
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
-    component.projectMapMenuComponent = { 
-      resetDrawToolChoice(){}
+    component.projectMapMenuComponent = {
+      resetDrawToolChoice() {},
     } as ProjectMapMenuComponent;
 
     component.ws = {

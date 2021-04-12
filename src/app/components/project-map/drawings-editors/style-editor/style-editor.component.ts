@@ -18,7 +18,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
 @Component({
   selector: 'app-style-editor',
   templateUrl: './style-editor.component.html',
-  styleUrls: ['./style-editor.component.scss']
+  styleUrls: ['./style-editor.component.scss'],
 })
 export class StyleEditorDialogComponent implements OnInit {
   server: Server;
@@ -40,7 +40,7 @@ export class StyleEditorDialogComponent implements OnInit {
   ) {
     this.formGroup = this.formBuilder.group({
       borderWidth: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      rotation: new FormControl('', [Validators.required, rotationValidator.get])
+      rotation: new FormControl('', [Validators.required, rotationValidator.get]),
     });
   }
 
@@ -69,10 +69,9 @@ export class StyleEditorDialogComponent implements OnInit {
 
   onYesClick() {
     if (this.formGroup.valid) {
-
-      this.element.stroke_width =  this.formGroup.get('borderWidth').value;
+      this.element.stroke_width = this.formGroup.get('borderWidth').value;
       this.drawing.rotation = this.formGroup.get('rotation').value;
-      
+
       if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
         this.drawing.element.fill = this.element.fill;
         this.drawing.element.stroke = this.element.stroke;

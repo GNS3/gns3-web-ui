@@ -6,9 +6,7 @@ import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calcu
 export class NodeCreatedLabelStylesFixer {
   MARGIN_BETWEEN_NODE_AND_LABEL = 8;
 
-  constructor(
-    private fontBBCalculator: FontBBoxCalculator
-  ) {}
+  constructor(private fontBBCalculator: FontBBoxCalculator) {}
 
   fix(node: Node): Node {
     node.label.style = 'font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;';

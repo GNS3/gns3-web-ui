@@ -23,5 +23,5 @@ export const ANGULAR_MAP_DECLARATIONS = [
   TextComponent,
   DraggableComponent,
   SelectionComponent,
-  InterfaceLabelComponent
+  InterfaceLabelComponent,
 ];

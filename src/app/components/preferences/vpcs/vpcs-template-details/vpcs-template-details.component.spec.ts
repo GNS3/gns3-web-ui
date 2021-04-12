@@ -22,110 +22,119 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
 
 export class MockedVpcsService {
-    public getTemplate(server: Server, template_id: string) {
-        return of({} as VpcsTemplate);  
-    }
+  public getTemplate(server: Server, template_id: string) {
+    return of({} as VpcsTemplate);
+  }
 
-    public saveTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
-        return of(vpcsTemplate);    
-    }
+  public saveTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
+    return of(vpcsTemplate);
+  }
 }
 
 describe('VpcsTemplateDetailsComponent', () => {
-    let component: VpcsTemplateDetailsComponent;
-    let fixture: ComponentFixture<VpcsTemplateDetailsComponent>;
+  let component: VpcsTemplateDetailsComponent;
+  let fixture: ComponentFixture<VpcsTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVpcsService = new MockedVpcsService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: VpcsService, useValue: mockedVpcsService },
-              { provide: ToasterService, useValue: mockedToasterService},
-              { provide: VpcsConfigurationService, useClass: VpcsConfigurationService }
-          ],
-          declarations: [
-              VpcsTemplateDetailsComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedVpcsService = new MockedVpcsService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(VpcsTemplateDetailsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: VpcsService, useValue: mockedVpcsService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: VpcsConfigurationService, useClass: VpcsConfigurationService },
+      ],
+      declarations: [VpcsTemplateDetailsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VpcsTemplateDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call save template', () => {
-        spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['scriptFile'].setValue('script file');
-        component.inputForm.controls['symbol'].setValue('symbol');
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onSave();
+  it('should call save template', () => {
+    spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['scriptFile'].setValue('script file');
+    component.inputForm.controls['symbol'].setValue('symbol');
 
-        expect(mockedVpcsService.saveTemplate).toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when template name is empty', () => {
-        spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
-        component.inputForm.controls['templateName'].setValue('');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['scriptFile'].setValue('script file');
-        component.inputForm.controls['symbol'].setValue('symbol');
+    expect(mockedVpcsService.saveTemplate).toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when template name is empty', () => {
+    spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
+    component.inputForm.controls['templateName'].setValue('');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['scriptFile'].setValue('script file');
+    component.inputForm.controls['symbol'].setValue('symbol');
 
-        expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when default name is empty', () => {
-        spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('');
-        component.inputForm.controls['scriptFile'].setValue('script file');
-        component.inputForm.controls['symbol'].setValue('symbol');
+    expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when default name is empty', () => {
+    spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('');
+    component.inputForm.controls['scriptFile'].setValue('script file');
+    component.inputForm.controls['symbol'].setValue('symbol');
 
-        expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when script file is empty', () => {
-        spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['scriptFile'].setValue('');
-        component.inputForm.controls['symbol'].setValue('symbol');
+    expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when script file is empty', () => {
+    spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['scriptFile'].setValue('');
+    component.inputForm.controls['symbol'].setValue('symbol');
 
-        expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when symbol path is empty', () => {
-        spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['scriptFile'].setValue('script file');
-        component.inputForm.controls['symbol'].setValue('');
+    expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when symbol path is empty', () => {
+    spyOn(mockedVpcsService, 'saveTemplate').and.returnValue(of({} as VpcsTemplate));
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['scriptFile'].setValue('script file');
+    component.inputForm.controls['symbol'].setValue('');
 
-        expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
+
+    expect(mockedVpcsService.saveTemplate).not.toHaveBeenCalled();
+  });
 });

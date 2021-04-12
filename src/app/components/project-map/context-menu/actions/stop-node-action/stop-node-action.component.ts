@@ -5,7 +5,7 @@ import { Node } from '../../../../../cartography/models/node';
 
 @Component({
   selector: 'app-stop-node-action',
-  templateUrl: './stop-node-action.component.html'
+  templateUrl: './stop-node-action.component.html',
 })
 export class StopNodeActionComponent implements OnInit, OnChanges {
   @Input() server: Server;
@@ -14,11 +14,10 @@ export class StopNodeActionComponent implements OnInit, OnChanges {
 
   constructor(private nodeService: NodeService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges(changes) {
-    if(changes.nodes) {
+    if (changes.nodes) {
       this.isNodeWithStartedStatus = false;
       this.nodes.forEach((node) => {
         if (node.status === 'started') {

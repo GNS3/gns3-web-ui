@@ -8,10 +8,8 @@ export class DraggableDraggedEvent {
 
 @Component({
   selector: '[app-draggable]',
-  template: `
-    <ng-content></ng-content>
-  `,
-  styleUrls: ['./draggable.component.scss']
+  template: ` <ng-content></ng-content> `,
+  styleUrls: ['./draggable.component.scss'],
 })
 export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input('app-draggable') item: Point;

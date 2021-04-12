@@ -29,116 +29,116 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 
 export class MockedIosService {
-    public addTemplate(server: Server, iosTemplate: IosTemplate) {
-        return of(iosTemplate);
-    }
+  public addTemplate(server: Server, iosTemplate: IosTemplate) {
+    return of(iosTemplate);
+  }
 }
 
 //Tests disabled due to instability
 xdescribe('AddIosTemplateComponent', () => {
-    let component: AddIosTemplateComponent;
-    let fixture: ComponentFixture<AddIosTemplateComponent>;
+  let component: AddIosTemplateComponent;
+  let fixture: ComponentFixture<AddIosTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedIosService = new MockedIosService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports: [
-                MatStepperModule, 
-                FormsModule, 
-                MatTableModule, 
-                MatAutocompleteModule, 
-                MatFormFieldModule, 
-                MatInputModule, 
-                ReactiveFormsModule, 
-                MatSelectModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
-                CommonModule, 
-                NoopAnimationsModule, 
-                RouterTestingModule.withRoutes([{path: 'server/1/preferences/dynamips/templates', component: AddIosTemplateComponent}])
-            ],
-            providers: [
-                { provide: ActivatedRoute,  useValue: activatedRoute },
-                { provide: ServerService, useValue: mockedServerService },
-                { provide: IosService, useValue: mockedIosService },
-                { provide: ToasterService, useValue: mockedToasterService},
-                { provide: TemplateMocksService, useClass: TemplateMocksService },
-                { provide: IosConfigurationService, useClass: IosConfigurationService }
-            ],
-            declarations: [
-                AddIosTemplateComponent
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedIosService = new MockedIosService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(AddIosTemplateComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatStepperModule,
+        FormsModule,
+        MatTableModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([
+          { path: 'server/1/preferences/dynamips/templates', component: AddIosTemplateComponent },
+        ]),
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: IosService, useValue: mockedIosService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: TemplateMocksService, useClass: TemplateMocksService },
+        { provide: IosConfigurationService, useClass: IosConfigurationService },
+      ],
+      declarations: [AddIosTemplateComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AddIosTemplateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call add template', () => {
-        spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
-        component.iosImageForm.controls['imageName'].setValue('image name');
-        component.iosNameForm.controls['templateName'].setValue('template name');
-        component.iosNameForm.controls['platform'].setValue('platform');
-        component.iosNameForm.controls['chassis'].setValue('chassis');
-        component.iosMemoryForm.controls['memory'].setValue(0);
-        component.server = {id: 1} as Server;
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.addTemplate();
+  it('should call add template', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosImageForm.controls['imageName'].setValue('image name');
+    component.iosNameForm.controls['templateName'].setValue('template name');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.iosMemoryForm.controls['memory'].setValue(0);
+    component.server = { id: 1 } as Server;
 
-        expect(mockedIosService.addTemplate).toHaveBeenCalled();
-    });
+    component.addTemplate();
 
-    it('should not call add template when template name is not defined', () => {
-        spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
-        component.iosImageForm.controls['imageName'].setValue('image name');
-        component.iosNameForm.controls['templateName'].setValue('');
-        component.iosNameForm.controls['platform'].setValue('platform');
-        component.iosNameForm.controls['chassis'].setValue('chassis');
-        component.iosMemoryForm.controls['memory'].setValue(0);
-        component.server = {id: 1} as Server;
+    expect(mockedIosService.addTemplate).toHaveBeenCalled();
+  });
 
-        component.addTemplate();
+  it('should not call add template when template name is not defined', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosImageForm.controls['imageName'].setValue('image name');
+    component.iosNameForm.controls['templateName'].setValue('');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.iosMemoryForm.controls['memory'].setValue(0);
+    component.server = { id: 1 } as Server;
 
-        expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
-    });
+    component.addTemplate();
 
-    it('should not call add template when image name is not defined', () => {
-        spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
-        component.iosNameForm.controls['templateName'].setValue('template name');
-        component.iosNameForm.controls['platform'].setValue('platform');
-        component.iosNameForm.controls['chassis'].setValue('chassis');
-        component.iosMemoryForm.controls['memory'].setValue(0);
-        component.server = {id: 1} as Server;
+    expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
+  });
 
-        component.addTemplate();
+  it('should not call add template when image name is not defined', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosNameForm.controls['templateName'].setValue('template name');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.iosMemoryForm.controls['memory'].setValue(0);
+    component.server = { id: 1 } as Server;
 
-        expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
-    });
+    component.addTemplate();
 
-    it('should not call add template when memory is not defined', () => {
-        spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
-        component.iosImageForm.controls['imageName'].setValue('image name');
-        component.iosNameForm.controls['templateName'].setValue('template name');
-        component.iosNameForm.controls['platform'].setValue('platform');
-        component.iosNameForm.controls['chassis'].setValue('chassis');
-        component.server = {id: 1} as Server;
+    expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
+  });
 
-        component.addTemplate();
+  it('should not call add template when memory is not defined', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosImageForm.controls['imageName'].setValue('image name');
+    component.iosNameForm.controls['templateName'].setValue('template name');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.server = { id: 1 } as Server;
 
-        expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
-    });
+    component.addTemplate();
+
+    expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
+  });
 });

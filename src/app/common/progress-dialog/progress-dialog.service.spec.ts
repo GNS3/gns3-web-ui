@@ -5,7 +5,7 @@ import { ProgressDialogService } from './progress-dialog.service';
 describe('ProgressDialogService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProgressDialogService]
+      providers: [ProgressDialogService],
     });
   });
 

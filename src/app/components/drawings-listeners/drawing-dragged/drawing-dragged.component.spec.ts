@@ -21,9 +21,9 @@ describe('DrawingDraggedComponent', () => {
       providers: [
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
-        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource }
+        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
       ],
-      declarations: [DrawingDraggedComponent]
+      declarations: [DrawingDraggedComponent],
     }).compileComponents();
   }));
 
@@ -44,7 +44,7 @@ describe('DrawingDraggedComponent', () => {
   it('should call drawing service when drawing is dragged', () => {
     const mapDrawingElement: DrawingElement = {
       width: 100,
-      height: 100
+      height: 100,
     };
     const mapDrawing: MapDrawing = {
       id: 'sampleId',
@@ -55,7 +55,7 @@ describe('DrawingDraggedComponent', () => {
       x: 0,
       y: 0,
       z: 0,
-      element: mapDrawingElement
+      element: mapDrawingElement,
     };
     const drawingDraggedDataEvent = new DraggedDataEvent<MapDrawing>(mapDrawing, 0, 0);
     spyOn(mockedDrawingService, 'updatePosition').and.returnValue(Observable.of());

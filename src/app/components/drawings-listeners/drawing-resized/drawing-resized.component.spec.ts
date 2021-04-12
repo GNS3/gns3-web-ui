@@ -24,9 +24,9 @@ describe('DrawingResizedComponent', () => {
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
-        { provide: MapDrawingToSvgConverter, useValue: mockedMapDrawingToSvgConverter }
+        { provide: MapDrawingToSvgConverter, useValue: mockedMapDrawingToSvgConverter },
       ],
-      declarations: [DrawingResizedComponent]
+      declarations: [DrawingResizedComponent],
     }).compileComponents();
   }));
 
@@ -47,7 +47,7 @@ describe('DrawingResizedComponent', () => {
   it('should call drawing service when drawing is resized', () => {
     const mapDrawingElement: DrawingElement = {
       width: 100,
-      height: 100
+      height: 100,
     };
     const mapDrawing: MapDrawing = {
       id: 'sampleId',
@@ -58,7 +58,7 @@ describe('DrawingResizedComponent', () => {
       x: 0,
       y: 0,
       z: 0,
-      element: mapDrawingElement
+      element: mapDrawingElement,
     };
     const drawingResizedDataEvent = new ResizedDataEvent<MapDrawing>(mapDrawing, 0, 0, 100, 100);
     spyOn(mockedDrawingService, 'updateSizeAndPosition').and.returnValue(Observable.of());

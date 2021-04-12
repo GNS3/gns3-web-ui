@@ -18,41 +18,47 @@ import { DockerTemplatesComponent } from './docker-templates.component';
 import { DockerService } from '../../../../services/docker.service';
 
 export class MockedDockerService {
-    public getTemplates(server: Server) {
-        return of([{} as DockerTemplate]);
-    }
+  public getTemplates(server: Server) {
+    return of([{} as DockerTemplate]);
+  }
 }
 
 describe('DockerTemplatesComponent', () => {
-    let component: DockerTemplatesComponent;
-    let fixture: ComponentFixture<DockerTemplatesComponent>;
+  let component: DockerTemplatesComponent;
+  let fixture: ComponentFixture<DockerTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedDockerService = new MockedDockerService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              { provide: ActivatedRoute,  useValue: activatedRoute },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: DockerService, useValue: mockedDockerService }
-          ],
-          declarations: [
-              DockerTemplatesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedDockerService = new MockedDockerService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(DockerTemplatesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: DockerService, useValue: mockedDockerService },
+      ],
+      declarations: [DockerTemplatesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(DockerTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

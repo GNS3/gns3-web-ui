@@ -160,7 +160,7 @@ export class HttpServer {
   private getJsonOptions(options: JsonOptions): JsonOptions {
     if (!options) {
       return {
-        responseType: 'json'
+        responseType: 'json',
       };
     }
     return options;
@@ -169,7 +169,7 @@ export class HttpServer {
   private getTextOptions(options: TextOptions): TextOptions {
     if (!options) {
       return {
-        responseType: 'text'
+        responseType: 'text',
       };
     }
     return options;
@@ -196,7 +196,7 @@ export class HttpServer {
 
     return {
       url: url,
-      options: options
+      options: options,
     };
   }
 }

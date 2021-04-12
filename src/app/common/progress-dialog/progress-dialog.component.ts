@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 @Component({
   selector: 'app-progress-dialog',
   templateUrl: './progress-dialog.component.html',
-  styleUrls: ['./progress-dialog.component.scss']
+  styleUrls: ['./progress-dialog.component.scss'],
 })
 export class ProgressDialogComponent implements OnInit {
   public static CANCELLED: 'canceled';

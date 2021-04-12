@@ -5,7 +5,7 @@ import { CssFixer } from '../../../helpers/css-fixer';
 @Component({
   selector: '[app-interface-label]',
   templateUrl: './interface-label.component.html',
-  styleUrls: ['./interface-label.component.scss']
+  styleUrls: ['./interface-label.component.scss'],
 })
 export class InterfaceLabelComponent implements OnInit {
   @Input('app-interface-label') ignore: any;
@@ -17,7 +17,7 @@ export class InterfaceLabelComponent implements OnInit {
     y: 0,
     text: '',
     style: '',
-    rotation: 0
+    rotation: 0,
   };
 
   borderSize = 5;

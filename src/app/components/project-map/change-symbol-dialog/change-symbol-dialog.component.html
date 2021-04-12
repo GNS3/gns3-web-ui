@@ -1,12 +1,12 @@
-<h1 mat-dialog-title>Change symbol for node: {{node.name}}</h1>
+<h1 mat-dialog-title>Change symbol for node: {{ node.name }}</h1>
 
 <div class="modal-form-container">
-    <div class="symbolsWrapper">
-        <app-symbols [server]="server" [symbol]="symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-    </div>
+  <div class="symbolsWrapper">
+    <app-symbols [server]="server" [symbol]="symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
+  </div>
 </div>
 
 <div mat-dialog-actions>
-    <button mat-button (click)="onCloseClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onSelectClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-button (click)="onCloseClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSelectClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
 </div>

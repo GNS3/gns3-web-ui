@@ -8,12 +8,11 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { version } from './../../version';
 import { Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-default-layout',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './default-layout.component.html',
-  styleUrls: ['./default-layout.component.scss']
+  styleUrls: ['./default-layout.component.scss'],
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
@@ -22,8 +21,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
-  recentlyOpenedServerId : string;
-  recentlyOpenedProjectId : string;
+  recentlyOpenedServerId: string;
+  recentlyOpenedProjectId: string;
   serverIdProjectList: string;
 
   constructor(
@@ -39,16 +38,16 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();
-    
+
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
     // attach to notification stream when any of running local servers experienced issues
     this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
-      if(serverStatus.status === 'errored') {
+      if (serverStatus.status === 'errored') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
-      if(serverStatus.status === 'stderr') {
+      if (serverStatus.status === 'stderr') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
@@ -59,21 +58,23 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   listProjects() {
-    this.router.navigate(['/server', this.serverIdProjectList, 'projects'])
-      .catch(error => this.toasterService.error('Cannot list projects'));
+    this.router
+      .navigate(['/server', this.serverIdProjectList, 'projects'])
+      .catch((error) => this.toasterService.error('Cannot list projects'));
   }
 
   backToProject() {
-    this.router.navigate(['/server', this.recentlyOpenedServerId, 'project', this.recentlyOpenedProjectId])
-      .catch(error => this.toasterService.error('Cannot navigate to the last opened project'));
+    this.router
+      .navigate(['/server', this.recentlyOpenedServerId, 'project', this.recentlyOpenedProjectId])
+      .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 
   @HostListener('window:beforeunload', ['$event'])
   async onBeforeUnload($event) {
-    if(!this.shouldStopServersOnClosing) {
+    if (!this.shouldStopServersOnClosing) {
       return;
     }
-    $event.preventDefault()
+    $event.preventDefault();
     $event.returnValue = false;
     this.progressService.activate();
     await this.serverManagement.stopAll();

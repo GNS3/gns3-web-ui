@@ -13,7 +13,7 @@ import { Snapshot } from '../../../models/snapshot';
 @Component({
   selector: 'app-snapshot-menu-item',
   templateUrl: './snapshot-menu-item.component.html',
-  styleUrls: ['./snapshot-menu-item.component.scss']
+  styleUrls: ['./snapshot-menu-item.component.scss'],
 })
 export class SnapshotMenuItemComponent implements OnInit {
   @Input('project') project: Project;
@@ -33,26 +33,24 @@ export class SnapshotMenuItemComponent implements OnInit {
       width: '450px',
       data: {
         server: this.server,
-        project: this.project
+        project: this.project,
       },
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(snapshot => {
+    dialogRef.afterClosed().subscribe((snapshot) => {
       if (snapshot) {
         const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
 
         const progress = this.progressDialogService.open();
 
-        const subscription = creation.subscribe(
-          (created_snapshot: Snapshot) => {
-            this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
-            progress.close();
-          }
-        );
+        const subscription = creation.subscribe((created_snapshot: Snapshot) => {
+          this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
+          progress.close();
+        });
 
-        progress.afterClosed().subscribe(result => {
+        progress.afterClosed().subscribe((result) => {
           if (result === ProgressDialogComponent.CANCELLED) {
             subscription.unsubscribe();
           }

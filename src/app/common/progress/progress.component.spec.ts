@@ -28,7 +28,7 @@ describe('ProgressComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
       providers: [ProgressService, { provide: Router, useValue: router }],
-      declarations: [ProgressComponent]
+      declarations: [ProgressComponent],
     }).compileComponents();
 
     progressService = TestBed.get(ProgressService);
@@ -59,7 +59,7 @@ describe('ProgressComponent', () => {
   });
 
   it('should set error state when error defined', () => {
-    const error = {error: 'test'};
+    const error = { error: 'test' };
     progressService.setError(error);
     expect(component.error).toEqual(error.error);
   });
@@ -75,7 +75,7 @@ describe('ProgressComponent', () => {
     expect(progressService.clear).toHaveBeenCalled();
   });
 
-  it("should reload page after clicking refresh", () => {
+  it('should reload page after clicking refresh', () => {
     spyOn(router, 'navigateByUrl');
 
     component.refresh();

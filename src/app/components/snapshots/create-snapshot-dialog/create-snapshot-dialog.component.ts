@@ -9,11 +9,10 @@ import { SnapshotService } from '../../../services/snapshot.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
 
-
 @Component({
   selector: 'app-create-snapshot-dialog',
   templateUrl: './create-snapshot-dialog.component.html',
-  styleUrls: ['./create-snapshot-dialog.component.scss']
+  styleUrls: ['./create-snapshot-dialog.component.scss'],
 })
 export class CreateSnapshotDialogComponent {
   server: Server;
@@ -35,7 +34,7 @@ export class CreateSnapshotDialogComponent {
     this.project = data['project'];
 
     this.inputForm = this.formBuilder.group({
-      snapshotName: new FormControl('', Validators.required)
+      snapshotName: new FormControl('', Validators.required),
     });
 
     this.snapshotService.list(this.server, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
@@ -52,7 +51,7 @@ export class CreateSnapshotDialogComponent {
   }
 
   isAlwaysRunningNode(nodeType: string) {
-    return !["qemu", "docker", "dynamips", "vpcs", "vmware", "virtualbox", "iou", "traceng"].includes(nodeType);
+    return !['qemu', 'docker', 'dynamips', 'vpcs', 'vmware', 'virtualbox', 'iou', 'traceng'].includes(nodeType);
   }
 
   onAddClick(): void {

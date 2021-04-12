@@ -6,7 +6,7 @@ import { FontFixer } from '../../../../../helpers/font-fixer';
 @Component({
   selector: '[app-text]',
   templateUrl: './text.component.html',
-  styleUrls: ['./text.component.scss']
+  styleUrls: ['./text.component.scss'],
 })
 export class TextComponent implements OnInit, DoCheck {
   static MARGIN = 4;

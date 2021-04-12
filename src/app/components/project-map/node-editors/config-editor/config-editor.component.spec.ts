@@ -19,10 +19,10 @@ describe('ConfigEditorDialogComponent', () => {
   let server: Server;
   let node: Node;
   let toaster = {
-    success: jasmine.createSpy('success')
+    success: jasmine.createSpy('success'),
   };
   let dialogRef = {
-    close: jasmine.createSpy('close')
+    close: jasmine.createSpy('close'),
   };
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 
@@ -34,15 +34,15 @@ describe('ConfigEditorDialogComponent', () => {
         NoopAnimationsModule,
         MatSnackBarModule,
         FormsModule,
-        MatTabsModule
+        MatTabsModule,
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: NodeService, useValue: mockedNodeService },
-        { provide: ToasterService, useValue: toaster }
+        { provide: ToasterService, useValue: toaster },
       ],
-      declarations: [ConfigEditorDialogComponent]
+      declarations: [ConfigEditorDialogComponent],
     }).compileComponents();
 
     server = new Server();

@@ -8,7 +8,7 @@ import { ImageElement } from '../../../../../cartography/models/drawings/image-e
 
 @Component({
   selector: 'app-edit-style-action',
-  templateUrl: './edit-style-action.component.html'
+  templateUrl: './edit-style-action.component.html',
 })
 export class EditStyleActionComponent implements OnChanges {
   @Input() server: Server;
@@ -26,7 +26,7 @@ export class EditStyleActionComponent implements OnChanges {
     const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
       width: '800px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

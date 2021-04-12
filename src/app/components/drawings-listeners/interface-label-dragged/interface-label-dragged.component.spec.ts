@@ -23,9 +23,9 @@ describe('InterfaceLabelDraggedComponent', () => {
       providers: [
         { provide: LinkService, useValue: mockedLinkService },
         { provide: LinksDataSource, useValue: mockedLinksDataSource },
-        { provide: LinksEventSource, useValue: mockedLinksEventSource }
+        { provide: LinksEventSource, useValue: mockedLinksEventSource },
       ],
-      declarations: [InterfaceLabelDraggedComponent]
+      declarations: [InterfaceLabelDraggedComponent],
     }).compileComponents();
   }));
 
@@ -50,7 +50,7 @@ describe('InterfaceLabelDraggedComponent', () => {
       linkId: 'sampleLinkId',
       adapterNumber: 0,
       portNumber: 0,
-      label: {} as MapLabel
+      label: {} as MapLabel,
     };
     const interfaceLabelDraggedDataEvent = new DraggedDataEvent<MapLinkNode>(mapLinkNode, 0, 0);
 
@@ -60,14 +60,14 @@ describe('InterfaceLabelDraggedComponent', () => {
         node_id: '1',
         adapter_number: 0,
         port_number: 0,
-        label: {} as Label
+        label: {} as Label,
       },
       {
         node_id: '2',
         adapter_number: 0,
         port_number: 0,
-        label: {} as Label
-      }
+        label: {} as Label,
+      },
     ];
     mockedLinksDataSource = TestBed.get(LinksDataSource);
 

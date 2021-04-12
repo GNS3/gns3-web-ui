@@ -14,41 +14,48 @@ import { VirtualBoxPreferencesComponent } from './virtual-box-preferences.compon
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 
 describe('VirtualBoxPreferencesComponent', () => {
-    let component: VirtualBoxPreferencesComponent;
-    let fixture: ComponentFixture<VirtualBoxPreferencesComponent>;
+  let component: VirtualBoxPreferencesComponent;
+  let fixture: ComponentFixture<VirtualBoxPreferencesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService }
-          ],
-          declarations: [
-              VirtualBoxPreferencesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(VirtualBoxPreferencesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+      ],
+      declarations: [VirtualBoxPreferencesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VirtualBoxPreferencesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should clear path to virtual box manage', () => {
-        component.restoreDefaults();
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        expect(component.vboxManagePath).toBe('');
-    });
+  it('should clear path to virtual box manage', () => {
+    component.restoreDefaults();
+
+    expect(component.vboxManagePath).toBe('');
+  });
 });

@@ -15,7 +15,6 @@ import { MockedToasterService } from '../../services/toaster.service.spec';
 import { Subject } from 'rxjs';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 
-
 class ElectronServiceMock {
   public isElectronApp: boolean;
 }
@@ -41,22 +40,22 @@ describe('DefaultLayoutComponent', () => {
       providers: [
         {
           provide: ElectronService,
-          useValue: electronServiceMock
+          useValue: electronServiceMock,
         },
         {
           provide: ServerManagementService,
-          useValue: serverManagementService
+          useValue: serverManagementService,
         },
         {
           provide: ToasterService,
-          useClass: MockedToasterService
+          useClass: MockedToasterService,
         },
         {
           provide: RecentlyOpenedProjectService,
-          useClass: RecentlyOpenedProjectService
+          useClass: RecentlyOpenedProjectService,
         },
-        ProgressService
-      ]
+        ProgressService,
+      ],
     }).compileComponents();
   }));
 
@@ -86,7 +85,7 @@ describe('DefaultLayoutComponent', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
     serverManagementService.serverStatusChanged.next({
       status: 'errored',
-      message: 'Message'
+      message: 'Message',
     });
     expect(toaster.errors).toEqual(['Message']);
   });
@@ -96,7 +95,7 @@ describe('DefaultLayoutComponent', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
     serverManagementService.serverStatusChanged.next({
       status: 'errored',
-      message: 'Message'
+      message: 'Message',
     });
     expect(toaster.errors).toEqual([]);
   });
@@ -119,6 +118,4 @@ describe('DefaultLayoutComponent', () => {
       expect(isClosed).toBeTruthy();
     });
   });
-
-
 });

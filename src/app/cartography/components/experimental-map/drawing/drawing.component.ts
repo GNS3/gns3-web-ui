@@ -12,7 +12,7 @@ import { DrawingsEventSource } from '../../../events/drawings-event-source';
 @Component({
   selector: '[app-drawing]',
   templateUrl: './drawing.component.html',
-  styleUrls: ['./drawing.component.scss']
+  styleUrls: ['./drawing.component.scss'],
 })
 export class DrawingComponent implements OnInit {
   @Input('app-drawing') drawing: MapDrawing;

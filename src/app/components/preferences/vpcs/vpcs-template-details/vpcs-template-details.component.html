@@ -1,72 +1,79 @@
 <div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">VPCS device configuration</h1>
-        </div>
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">VPCS device configuration</h1>
     </div>
-    <div class="default-content" *ngIf="vpcsTemplate">
-        <mat-card class="matCard">
-            <form [formGroup]="inputForm">
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="text" 
-                        [(ngModel)]="vpcsTemplate.name" 
-                        formControlName="templateName"
-                        placeholder="Template name">
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="text" 
-                        [(ngModel)]="vpcsTemplate.default_name_format" 
-                        formControlName="defaultName"
-                        placeholder="Default name format">
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="text" 
-                        [(ngModel)]="vpcsTemplate.base_script_file" 
-                        formControlName="scriptFile"
-                        placeholder="Base script file">
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="text" 
-                        [(ngModel)]="vpcsTemplate.symbol" 
-                        formControlName="symbol"
-                        placeholder="Symbol">
-                </mat-form-field>
-                <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                <mat-form-field class="form-field">
-                    <mat-select 
-                        placeholder="Category" 
-                        [ngModelOptions]="{standalone: true}" 
-                        [(ngModel)]="vpcsTemplate.category">
-                        <mat-option *ngFor="let category of categories" [value]="category[1]">
-                            {{category[0]}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="select">
-                    <mat-select 
-                        placeholder="Console type" 
-                        [ngModelOptions]="{standalone: true}" 
-                        [(ngModel)]="vpcsTemplate.console_type">
-                        <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-checkbox 
-                    [ngModelOptions]="{standalone: true}" 
-                    [(ngModel)]="vpcsTemplate.console_auto_start">
-                    Auto start console
-                </mat-checkbox>
-            </form>
-        </mat-card>
-        <div class="buttons-bar">
-            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
-        </div>
+  </div>
+  <div class="default-content" *ngIf="vpcsTemplate">
+    <mat-card class="matCard">
+      <form [formGroup]="inputForm">
+        <mat-form-field class="form-field">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="vpcsTemplate.name"
+            formControlName="templateName"
+            placeholder="Template name"
+          />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="vpcsTemplate.default_name_format"
+            formControlName="defaultName"
+            placeholder="Default name format"
+          />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="vpcsTemplate.base_script_file"
+            formControlName="scriptFile"
+            placeholder="Base script file"
+          />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="vpcsTemplate.symbol" formControlName="symbol" placeholder="Symbol" />
+        </mat-form-field>
+        <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+        <mat-form-field class="form-field">
+          <mat-select
+            placeholder="Category"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="vpcsTemplate.category"
+          >
+            <mat-option *ngFor="let category of categories" [value]="category[1]">
+              {{ category[0] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="select">
+          <mat-select
+            placeholder="Console type"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="vpcsTemplate.console_type"
+          >
+            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vpcsTemplate.console_auto_start">
+          Auto start console
+        </mat-checkbox>
+      </form>
+    </mat-card>
+    <div class="buttons-bar">
+      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
+  </div>
 </div>
-<app-symbols-menu *ngIf="isSymbolSelectionOpened && vpcsTemplate" [server]="server" [symbol]="vpcsTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>
+<app-symbols-menu
+  *ngIf="isSymbolSelectionOpened && vpcsTemplate"
+  [server]="server"
+  [symbol]="vpcsTemplate.symbol"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>

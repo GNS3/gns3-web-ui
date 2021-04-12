@@ -8,7 +8,7 @@ describe('MoveLayerDownActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MoveLayerDownActionComponent]
+      declarations: [MoveLayerDownActionComponent],
     }).compileComponents();
   }));
 

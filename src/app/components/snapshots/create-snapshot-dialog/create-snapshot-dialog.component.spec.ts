@@ -8,7 +8,7 @@ describe('CreateSnapshotDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CreateSnapshotDialogComponent]
+      declarations: [CreateSnapshotDialogComponent],
     }).compileComponents();
   }));
 

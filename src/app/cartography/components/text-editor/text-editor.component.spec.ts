@@ -31,9 +31,9 @@ describe('TextEditorComponent', () => {
         { provide: NodesDataSource, useClass: NodesDataSource },
         { provide: LinksDataSource, useClass: LinksDataSource },
         { provide: SelectionManager, useClass: SelectionManager },
-        { provide: FontFixer, useClass: FontFixer }
+        { provide: FontFixer, useClass: FontFixer },
       ],
-      declarations: [TextEditorComponent]
+      declarations: [TextEditorComponent],
     }).compileComponents();
   }));
 

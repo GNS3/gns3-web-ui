@@ -37,7 +37,7 @@ import {
   MapNodesDataSource,
   MapLinksDataSource,
   MapDrawingsDataSource,
-  MapSymbolsDataSource
+  MapSymbolsDataSource,
 } from './datasources/map-datasource';
 import { LinksEventSource } from './events/links-event-source';
 import { D3MapComponent } from './components/d3-map/d3-map.component';
@@ -75,7 +75,7 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SelectionSelectComponent,
     DraggableSelectionComponent,
     MovingCanvasDirective,
-    ZoomingCanvasDirective
+    ZoomingCanvasDirective,
   ],
   providers: [
     CssFixer,
@@ -122,8 +122,8 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     StylesToFontConverter,
     EthernetLinkWidget,
     SerialLinkWidget,
-    ...D3_MAP_IMPORTS
+    ...D3_MAP_IMPORTS,
   ],
-  exports: [D3MapComponent, ExperimentalMapComponent]
+  exports: [D3MapComponent, ExperimentalMapComponent],
 })
 export class CartographyModule {}

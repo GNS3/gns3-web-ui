@@ -12,11 +12,10 @@ import { Link } from '../../../models/link';
 import { ElectronService } from 'ngx-electron';
 import { LinkNode } from '../../../models/link-node';
 
-
 @Component({
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
-  styleUrls: ['./context-menu.component.scss']
+  styleUrls: ['./context-menu.component.scss'],
 })
 export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
@@ -96,7 +95,14 @@ export class ContextMenuComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
-  public openMenuForListOfElements(drawings: Drawing[], nodes: Node[], labels: Label[], links: Link[], top: number, left: number) {
+  public openMenuForListOfElements(
+    drawings: Drawing[],
+    nodes: Node[],
+    labels: Label[],
+    links: Link[],
+    top: number,
+    left: number
+  ) {
     this.resetCapabilities();
 
     this.drawings = drawings;

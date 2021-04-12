@@ -8,9 +8,8 @@ describe('InstalledSoftwareComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InstalledSoftwareComponent ]
-    })
-    .compileComponents();
+      declarations: [InstalledSoftwareComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -7,7 +7,7 @@ describe('ConsoleService', () => {
 
   beforeEach(() => {
     let defaultConsoleService = {
-      get: () => 'default'
+      get: () => 'default',
     };
     settings = new MockedSettingsService();
     service = new ConsoleService(defaultConsoleService as any, settings as any);

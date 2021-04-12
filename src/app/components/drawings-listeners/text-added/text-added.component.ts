@@ -15,7 +15,7 @@ import { Context } from '../../../cartography/models/context';
 @Component({
   selector: 'app-text-added',
   templateUrl: './text-added.component.html',
-  styleUrls: ['./text-added.component.scss']
+  styleUrls: ['./text-added.component.scss'],
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
@@ -33,7 +33,7 @@ export class TextAddedComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.textAdded = this.drawingsEventSource.textAdded.subscribe(evt => this.onTextAdded(evt));
+    this.textAdded = this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt));
   }
 
   onTextAdded(evt: TextAddedDataEvent) {
@@ -45,8 +45,10 @@ export class TextAddedComponent implements OnInit, OnDestroy {
       .add(
         this.server,
         this.project.project_id,
-        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x))/this.context.transformation.k,
-        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y))/this.context.transformation.k,
+        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) /
+          this.context.transformation.k,
+        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y)) /
+          this.context.transformation.k,
         svgText
       )
       .subscribe((serverDrawing: Drawing) => {

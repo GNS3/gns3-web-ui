@@ -14,9 +14,9 @@ describe('DrawingAddingComponent', () => {
       imports: [NoopAnimationsModule],
       providers: [
         { provide: DrawingsEventSource, useValue: drawingsEventSource },
-        { provide: Context, useClass: Context }
+        { provide: Context, useClass: Context },
       ],
-      declarations: [DrawingAddingComponent]
+      declarations: [DrawingAddingComponent],
     }).compileComponents();
   }));
 

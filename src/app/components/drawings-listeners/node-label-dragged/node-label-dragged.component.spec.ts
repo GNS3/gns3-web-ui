@@ -30,9 +30,9 @@ describe('NodeLabelDraggedComponent', () => {
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesEventSource, useValue: mockedNodesEventSource },
-        { provide: MapLabelToLabelConverter, useValue: mapLabelToLabelConverter }
+        { provide: MapLabelToLabelConverter, useValue: mapLabelToLabelConverter },
       ],
-      declarations: [NodeLabelDraggedComponent]
+      declarations: [NodeLabelDraggedComponent],
     }).compileComponents();
   }));
 
@@ -60,7 +60,7 @@ describe('NodeLabelDraggedComponent', () => {
       y: 0,
       originalX: 0,
       originalY: 0,
-      nodeId: 'node id'
+      nodeId: 'node id',
     };
     const nodeDraggedDataEvent = new DraggedDataEvent<MapLabel>(mapLabel, 0, 0);
     spyOn(mockedNodeService, 'updateLabel').and.returnValue(Observable.of());

@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-template',
   templateUrl: './template.component.html',
-  styleUrls: ['./template.component.scss']
+  styleUrls: ['./template.component.scss'],
 })
 export class TemplateComponent implements OnInit, OnDestroy {
   @Input() server: Server;
@@ -23,7 +23,20 @@ export class TemplateComponent implements OnInit, OnDestroy {
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
   searchText: string = '';
-  templateTypes: string[] = ['all', 'cloud', 'ethernet_hub', 'ethernet_switch', 'docker', 'dynamips', 'vpcs', 'traceng', 'virtualbox', 'vmware', 'iou', 'qemu'];
+  templateTypes: string[] = [
+    'all',
+    'cloud',
+    'ethernet_hub',
+    'ethernet_switch',
+    'docker',
+    'dynamips',
+    'vpcs',
+    'traceng',
+    'virtualbox',
+    'vmware',
+    'iou',
+    'qemu',
+  ];
   selectedType: string;
 
   movementX: number;
@@ -59,14 +72,14 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   filterTemplates(event) {
-    let temporaryTemplates = this.templates.filter(item => {
+    let temporaryTemplates = this.templates.filter((item) => {
       return item.name.toLowerCase().includes(this.searchText.toLowerCase());
     });
 
     if (this.selectedType === 'all' || !this.selectedType) {
       this.filteredTemplates = temporaryTemplates;
-    } else  {
-      this.filteredTemplates = temporaryTemplates.filter(t => t.template_type === this.selectedType);
+    } else {
+      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType);
     }
     this.sortTemplates();
   }
@@ -83,15 +96,15 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
   dragEnd(ev, template: Template) {
     this.symbolService.raw(this.server, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
-      let width = +symbolSvg.split("width=\"")[1].split("\"")[0] ? +symbolSvg.split("width=\"")[1].split("\"")[0] : 0;
+      let width = +symbolSvg.split('width="')[1].split('"')[0] ? +symbolSvg.split('width="')[1].split('"')[0] : 0;
       let scale = this.scaleService.getScale();
 
       let nodeAddedEvent: NodeAddedEvent = {
         template: template,
         server: 'local',
         numberOfNodes: 1,
-        x: (this.startX + ev.x - this.project.scene_width/2 - (width/2)) * scale + window.scrollX ,
-        y: (this.startY + ev.y - this.project.scene_height/2) * scale + window.scrollY
+        x: (this.startX + ev.x - this.project.scene_width / 2 - width / 2) * scale + window.scrollX,
+        y: (this.startY + ev.y - this.project.scene_height / 2) * scale + window.scrollY,
       };
       this.onNodeCreation.emit(nodeAddedEvent);
     });
@@ -102,10 +115,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
       width: '600px',
       data: {
         server: this.server,
-        project: this.project
+        project: this.project,
       },
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((nodeAddedEvent: NodeAddedEvent) => {

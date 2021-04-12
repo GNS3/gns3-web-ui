@@ -18,43 +18,50 @@ import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 
 export class MockedVirtualBoxService {
-    public getTemplates(server: Server) {
-        return of([{} as VirtualBoxTemplate]);
-    }
+  public getTemplates(server: Server) {
+    return of([{} as VirtualBoxTemplate]);
+  }
 }
 
 describe('VirtualBoxTemplatesComponent', () => {
-    let component: VirtualBoxTemplatesComponent;
-    let fixture: ComponentFixture<VirtualBoxTemplatesComponent>;
+  let component: VirtualBoxTemplatesComponent;
+  let fixture: ComponentFixture<VirtualBoxTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVirtualBoxService = new MockedVirtualBoxService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: VirtualBoxService, useValue: mockedVirtualBoxService }
-          ],
-          declarations: [
-              VirtualBoxTemplatesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedVirtualBoxService = new MockedVirtualBoxService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(VirtualBoxTemplatesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
+      ],
+      declarations: [VirtualBoxTemplatesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VirtualBoxTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

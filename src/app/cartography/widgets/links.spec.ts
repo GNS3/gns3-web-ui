@@ -46,10 +46,7 @@ describe('LinksWidget', () => {
 
     const layersSelection = svg.canvas.selectAll<SVGGElement, Layer>('g.layer').data(layers);
 
-    layersEnter = layersSelection
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'layer');
+    layersEnter = layersSelection.enter().append<SVGGElement>('g').attr('class', 'layer');
 
     layersSelection.exit().remove();
   });

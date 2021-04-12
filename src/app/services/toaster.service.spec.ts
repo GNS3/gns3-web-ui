@@ -11,13 +11,13 @@ export class MockedToasterService {
     duration: 2000,
     panelClass: ['snackabar-success'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
   snackBarConfigForError = {
     duration: 2000,
     panelClass: ['snackabar-error'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
 
   constructor() {
@@ -41,9 +41,7 @@ class MockedSnackBar {
 describe('ToasterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ToasterService,
-        { provide: MatSnackBar, useClass: MockedSnackBar }]
+      providers: [ToasterService, { provide: MatSnackBar, useClass: MockedSnackBar }],
     });
   });
 

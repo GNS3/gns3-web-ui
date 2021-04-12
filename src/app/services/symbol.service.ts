@@ -31,11 +31,11 @@ export class SymbolService {
   }
 
   scaleDimensionsForNode(node: Node): SymbolDimension {
-    let scale = node.width > node.height ? this.maximumSymbolSize/node.width : this.maximumSymbolSize/node.height;
+    let scale = node.width > node.height ? this.maximumSymbolSize / node.width : this.maximumSymbolSize / node.height;
     return {
       width: node.width * scale,
-      height: node.height * scale
-    }
+      height: node.height * scale,
+    };
   }
 
   getByFilename(symbol_filename: string) {
@@ -44,7 +44,7 @@ export class SymbolService {
 
   add(server: Server, symbolName: string, symbol: string) {
     this.cache = null;
-    return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol)
+    return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol);
   }
 
   load(server: Server): Observable<Symbol[]> {
@@ -52,10 +52,8 @@ export class SymbolService {
   }
 
   list(server: Server) {
-    if(!this.cache) {
-      this.cache = this.load(server).pipe(
-        shareReplay(CACHE_SIZE)
-      );
+    if (!this.cache) {
+      this.cache = this.load(server).pipe(shareReplay(CACHE_SIZE));
     }
 
     return this.cache;
@@ -69,5 +67,5 @@ export class SymbolService {
 
 class SymbolDimension {
   width: number;
-  height: number
+  height: number;
 }

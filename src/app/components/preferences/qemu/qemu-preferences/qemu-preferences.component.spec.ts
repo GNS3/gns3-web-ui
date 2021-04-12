@@ -20,47 +20,55 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { of } from 'rxjs';
 
 describe('QemuPreferencesComponent', () => {
-    let component: QemuPreferencesComponent;
-    let fixture: ComponentFixture<QemuPreferencesComponent>;
+  let component: QemuPreferencesComponent;
+  let fixture: ComponentFixture<QemuPreferencesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    let mockedServerSettingsService = new MockedServerSettingsService();
-    let mockedToasterService = new MockedToasterService();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [HttpClientModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: ServerSettingsService, useValue: mockedServerSettingsService },
-              { provide: ToasterService, useValue: mockedToasterService }
-          ],
-          declarations: [
-              QemuPreferencesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let activatedRoute = new MockedActivatedRoute().get();
+  let mockedServerSettingsService = new MockedServerSettingsService();
+  let mockedToasterService = new MockedToasterService();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(QemuPreferencesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        HttpClientModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: ServerSettingsService, useValue: mockedServerSettingsService },
+        { provide: ToasterService, useValue: mockedToasterService },
+      ],
+      declarations: [QemuPreferencesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(QemuPreferencesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call update settings when restore defaults chosen', () => {
-        spyOn(mockedServerSettingsService, 'updateSettingsForQemu').and.returnValue(of([]));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.restoreDefaults();
+  it('should call update settings when restore defaults chosen', () => {
+    spyOn(mockedServerSettingsService, 'updateSettingsForQemu').and.returnValue(of([]));
 
-        expect(mockedServerSettingsService.updateSettingsForQemu).toHaveBeenCalled();
-    });
+    component.restoreDefaults();
+
+    expect(mockedServerSettingsService.updateSettingsForQemu).toHaveBeenCalled();
+  });
 });

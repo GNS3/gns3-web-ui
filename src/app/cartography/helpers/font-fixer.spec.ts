@@ -12,13 +12,13 @@ describe('FontFixer', () => {
     const font: Font = {
       font_family: 'TypeWriter',
       font_size: 10,
-      font_weight: 'bold'
+      font_weight: 'bold',
     };
 
     expect(fixer.fix(font)).toEqual({
       font_family: 'Noto Sans',
       font_size: 11,
-      font_weight: 'bold'
+      font_weight: 'bold',
     });
   });
 
@@ -26,13 +26,13 @@ describe('FontFixer', () => {
     const font: Font = {
       font_family: 'OtherFont',
       font_size: 11,
-      font_weight: 'bold'
+      font_weight: 'bold',
     };
 
     expect(fixer.fix(font)).toEqual({
       font_family: 'OtherFont',
       font_size: 11,
-      font_weight: 'bold'
+      font_weight: 'bold',
     });
   });
 

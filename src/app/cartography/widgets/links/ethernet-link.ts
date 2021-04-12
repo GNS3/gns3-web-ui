@@ -9,11 +9,12 @@ class EthernetLinkPath {
   constructor(public source: [number, number], public target: [number, number]) {}
 }
 
-@Injectable() export class EthernetLinkWidget implements Widget {
+@Injectable()
+export class EthernetLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
 
   constructor() {}
-  
+
   private linktoEthernetLink(link: MapLink) {
     return new EthernetLinkPath(
       [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2],
@@ -22,7 +23,7 @@ class EthernetLinkPath {
   }
 
   public draw(view: SVGSelection) {
-    const link = view.selectAll<SVGPathElement, EthernetLinkPath>('path.ethernet_link').data(l => {
+    const link = view.selectAll<SVGPathElement, EthernetLinkPath>('path.ethernet_link').data((l) => {
       if (l.linkType === 'ethernet') {
         return [this.linktoEthernetLink(l)];
       }
@@ -34,7 +35,7 @@ class EthernetLinkPath {
       .append<SVGPathElement>('path')
       .attr('class', 'ethernet_link')
       .on('contextmenu', (datum) => {
-        let link: MapLink = datum as unknown as MapLink;
+        let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });
@@ -43,14 +44,14 @@ class EthernetLinkPath {
       .attr('stroke', '#000')
       .attr('stroke-width', '2')
       .on('contextmenu', (datum) => {
-        let link: MapLink = datum as unknown as MapLink;
+        let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });
 
     const link_merge = link.merge(link_enter);
 
-    link_merge.attr('d', ethernet => {
+    link_merge.attr('d', (ethernet) => {
       const line_generator = path();
       line_generator.moveTo(ethernet.source[0], ethernet.source[1]);
       line_generator.lineTo(ethernet.target[0], ethernet.target[1]);

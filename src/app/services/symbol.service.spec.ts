@@ -19,7 +19,7 @@ describe('SymbolService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SymbolService]
+      providers: [HttpServer, SymbolService],
     });
 
     httpClient = TestBed.get(HttpClient);

@@ -58,10 +58,7 @@ describe('InterfaceLabelsWidget', () => {
 
     const linksSelection = svg.canvas.selectAll<SVGGElement, MapLink>('g.link').data(links);
 
-    linksEnter = linksSelection
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'link');
+    linksEnter = linksSelection.enter().append<SVGGElement>('g').attr('class', 'link');
 
     linksSelection.exit().remove();
 

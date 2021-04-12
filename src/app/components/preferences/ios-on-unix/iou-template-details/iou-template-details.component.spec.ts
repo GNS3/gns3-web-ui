@@ -22,63 +22,71 @@ import { IouService } from '../../../../services/iou.service';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 
 export class MockedIouService {
-    public getTemplate(server: Server, template_id: string) {
-        return of({} as IouTemplate);  
-    }
+  public getTemplate(server: Server, template_id: string) {
+    return of({} as IouTemplate);
+  }
 
-    public saveTemplate(server: Server, iouTemplate: IouTemplate) {
-        return of(iouTemplate);    
-    }
+  public saveTemplate(server: Server, iouTemplate: IouTemplate) {
+    return of(iouTemplate);
+  }
 }
 
 describe('IouTemplateDetailsComponent', () => {
-    let component: IouTemplateDetailsComponent;
-    let fixture: ComponentFixture<IouTemplateDetailsComponent>;
+  let component: IouTemplateDetailsComponent;
+  let fixture: ComponentFixture<IouTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedIouService = new MockedIouService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              { provide: ActivatedRoute,  useValue: activatedRoute },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: IouService, useValue: mockedIouService },
-              { provide: ToasterService, useValue: mockedToasterService },
-              { provide: IouConfigurationService, useClass: IouConfigurationService }
-          ],
-          declarations: [
-              IouTemplateDetailsComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedIouService = new MockedIouService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(IouTemplateDetailsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: IouService, useValue: mockedIouService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: IouConfigurationService, useClass: IouConfigurationService },
+      ],
+      declarations: [IouTemplateDetailsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(IouTemplateDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call save template', () => {
-        spyOn(mockedIouService, 'saveTemplate').and.returnValue(of({} as IouTemplate));
-        component.generalSettingsForm.controls['templateName'].setValue('template name');
-        component.generalSettingsForm.controls['defaultName'].setValue('default name');
-        component.generalSettingsForm.controls['symbol'].setValue('symbol');
-        component.generalSettingsForm.controls['path'].setValue('path');
-        component.generalSettingsForm.controls['initialConfig'].setValue('txt');
-        component.networkForm.controls['ethernetAdapters'].setValue('1');
-        component.networkForm.controls['serialAdapters'].setValue('1');
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onSave();
+  it('should call save template', () => {
+    spyOn(mockedIouService, 'saveTemplate').and.returnValue(of({} as IouTemplate));
+    component.generalSettingsForm.controls['templateName'].setValue('template name');
+    component.generalSettingsForm.controls['defaultName'].setValue('default name');
+    component.generalSettingsForm.controls['symbol'].setValue('symbol');
+    component.generalSettingsForm.controls['path'].setValue('path');
+    component.generalSettingsForm.controls['initialConfig'].setValue('txt');
+    component.networkForm.controls['ethernetAdapters'].setValue('1');
+    component.networkForm.controls['serialAdapters'].setValue('1');
 
-        expect(mockedIouService.saveTemplate).toHaveBeenCalled();
-    });
+    component.onSave();
+
+    expect(mockedIouService.saveTemplate).toHaveBeenCalled();
+  });
 });

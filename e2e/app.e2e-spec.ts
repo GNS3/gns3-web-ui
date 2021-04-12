@@ -10,7 +10,7 @@ describe('GNS3 Web UI Application', () => {
   it('should have correct page title', async () => {
     // arrange
     await page.navigateTo();
-    
+
     // act
     let text = await page.getTitleText();
 

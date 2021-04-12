@@ -17,10 +17,9 @@ import { ConfiguratorDialogDockerComponent } from '../../../node-editors/configu
 import { ConfiguratorDialogNatComponent } from '../../../node-editors/configurator/nat/configurator-nat.component';
 import { ConfiguratorDialogTracengComponent } from '../../../node-editors/configurator/traceng/configurator-traceng.component';
 
-
 @Component({
   selector: 'app-config-node-action',
-  templateUrl: './config-action.component.html'
+  templateUrl: './config-action.component.html',
 })
 export class ConfigActionComponent {
   @Input() server: Server;
@@ -28,7 +27,7 @@ export class ConfigActionComponent {
   private conf = {
     autoFocus: false,
     width: '800px',
-    disableClose: true
+    disableClose: true,
   };
   dialogRef;
 

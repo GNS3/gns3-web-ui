@@ -22,7 +22,7 @@ describe('NodeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, NodeService]
+      providers: [HttpServer, NodeService],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -64,7 +64,7 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({});
   }));
 
-  it('should suspend node', inject([NodeService], (service:NodeService) => {
+  it('should suspend node', inject([NodeService], (service: NodeService) => {
     const node = new Node();
     node.project_id = 'myproject';
     node.node_id = 'id';
@@ -76,7 +76,7 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({});
   }));
 
-  it('should reload node', inject([NodeService], (service:NodeService) => {
+  it('should reload node', inject([NodeService], (service: NodeService) => {
     const node = new Node();
     node.project_id = 'myproject';
     node.node_id = 'id';
@@ -90,7 +90,7 @@ describe('NodeService', () => {
 
   it('should start all nodes', inject([NodeService], (service: NodeService) => {
     let project = {
-      project_id: '1'
+      project_id: '1',
     } as Project;
 
     service.startAll(server, project).subscribe();
@@ -102,7 +102,7 @@ describe('NodeService', () => {
 
   it('should stop all nodes', inject([NodeService], (service: NodeService) => {
     let project = {
-      project_id: '1'
+      project_id: '1',
     } as Project;
 
     service.stopAll(server, project).subscribe();
@@ -114,7 +114,7 @@ describe('NodeService', () => {
 
   it('should suspend all nodes', inject([NodeService], (service: NodeService) => {
     let project = {
-      project_id: '1'
+      project_id: '1',
     } as Project;
 
     service.suspendAll(server, project).subscribe();
@@ -126,7 +126,7 @@ describe('NodeService', () => {
 
   it('should reload all nodes', inject([NodeService], (service: NodeService) => {
     let project = {
-      project_id: '1'
+      project_id: '1',
     } as Project;
 
     service.reloadAll(server, project).subscribe();
@@ -149,13 +149,13 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({
       x: 10,
       y: 20,
-      compute_id: 'compute'
+      compute_id: 'compute',
     });
   }));
 
   it('should updatePosition of node', inject([NodeService], (service: NodeService) => {
     let project = {
-      project_id: '1'
+      project_id: '1',
     } as Project;
     const node = new Node();
     node.project_id = 'myproject';
@@ -167,13 +167,13 @@ describe('NodeService', () => {
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
-      y: 20
+      y: 20,
     });
   }));
 
   it('should updatePosition of node and round to integer', inject([NodeService], (service: NodeService) => {
     let project = {
-      project_id: '1'
+      project_id: '1',
     } as Project;
     const node = new Node();
     node.project_id = 'myproject';
@@ -185,7 +185,7 @@ describe('NodeService', () => {
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
-      y: 21
+      y: 21,
     });
   }));
 
@@ -211,8 +211,8 @@ describe('NodeService', () => {
         style: 'my style',
         text: 'my text',
         x: 10,
-        y: 20
-      }
+        y: 20,
+      },
     });
   }));
 
@@ -231,7 +231,7 @@ describe('NodeService', () => {
     expect(req.request.body).toEqual({
       x: 10,
       y: 20,
-      z: 30
+      z: 30,
     });
   }));
 
@@ -248,12 +248,14 @@ describe('NodeService', () => {
 
   it('should duplicate node', inject([NodeService], (service: NodeService) => {
     const node = new Node();
-    node.project_id = "project_id_1";
-    node.node_id = "node_id_1";
+    node.project_id = 'project_id_1';
+    node.node_id = 'node_id_1';
 
     service.duplicate(server, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/v2/projects/${node.project_id}/nodes/${node.node_id}/duplicate`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/v2/projects/${node.project_id}/nodes/${node.node_id}/duplicate`
+    );
     expect(req.request.method).toEqual('POST');
   }));
 });

@@ -38,8 +38,8 @@ export class MockedProjectService {
       show_layers: false,
       show_grid: false,
       snap_to_grid: false,
-      variables: []
-    }
+      variables: [],
+    },
   ];
 
   list() {
@@ -63,7 +63,7 @@ describe('ImportProjectDialogComponent', () => {
   let fileSelectDirective: FileSelectDirective;
 
   let dialogRef = {
-    close: jasmine.createSpy('close')
+    close: jasmine.createSpy('close'),
   };
 
   beforeEach(async(() => {
@@ -80,14 +80,14 @@ describe('ImportProjectDialogComponent', () => {
         FileUploadModule,
         FormsModule,
         ReactiveFormsModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
-        { provide: ProjectService, useClass: MockedProjectService }
+        { provide: ProjectService, useClass: MockedProjectService },
       ],
-      declarations: [ImportProjectDialogComponent]
+      declarations: [ImportProjectDialogComponent],
     }).compileComponents();
 
     server = new Server();
@@ -222,8 +222,8 @@ describe('ImportProjectDialogComponent', () => {
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {
-        files: [{ name: 'uploadedFile' }]
-      }
+        files: [{ name: 'uploadedFile' }],
+      },
     };
     component.uploadProjectFile(event);
 
@@ -235,8 +235,8 @@ describe('ImportProjectDialogComponent', () => {
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {
-        files: [{ name: 'uploadedFile' }]
-      }
+        files: [{ name: 'uploadedFile' }],
+      },
     };
     component.uploadProjectFile(event);
     component.onDeleteClick();

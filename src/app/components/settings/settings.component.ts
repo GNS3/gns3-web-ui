@@ -9,7 +9,7 @@ import { UpdatesService } from '../../services/updates.service';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
   settings = { ...SettingsService.DEFAULTS };
@@ -42,6 +42,6 @@ export class SettingsComponent implements OnInit {
   }
 
   checkForUpdates() {
-    window.open("https://gns3.com/software");
+    window.open('https://gns3.com/software');
   }
 }

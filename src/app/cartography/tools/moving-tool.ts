@@ -42,7 +42,7 @@ export class MovingTool {
   private activate(selection: SVGSelection) {
     const self = this;
 
-    const onZoom = function(this: SVGSVGElement) {
+    const onZoom = function (this: SVGSVGElement) {
       const canvas = selection.select<SVGGElement>('g.canvas');
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr('transform', () => {

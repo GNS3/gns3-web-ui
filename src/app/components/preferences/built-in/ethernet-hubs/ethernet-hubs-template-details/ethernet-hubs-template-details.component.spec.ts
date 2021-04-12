@@ -23,102 +23,112 @@ import { EthernetHubsTemplateDetailsComponent } from './ethernet-hubs-template-d
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 
 export class MockedBuiltInTemplatesService {
-    public getTemplate(server: Server, template_id: string) {
-        return of({ports_mapping: []} as EthernetHubTemplate);  
-    }
+  public getTemplate(server: Server, template_id: string) {
+    return of({ ports_mapping: [] } as EthernetHubTemplate);
+  }
 
-    public saveTemplate(server: Server, cloudTemplate: EthernetHubTemplate) {
-        return of(cloudTemplate);    
-    }
+  public saveTemplate(server: Server, cloudTemplate: EthernetHubTemplate) {
+    return of(cloudTemplate);
+  }
 }
 
 describe('EthernetHubsTemplateDetailsComponent', () => {
-    let component: EthernetHubsTemplateDetailsComponent;
-    let fixture: ComponentFixture<EthernetHubsTemplateDetailsComponent>;
+  let component: EthernetHubsTemplateDetailsComponent;
+  let fixture: ComponentFixture<EthernetHubsTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-              { provide: ToasterService, useValue: mockedToasterService},
-              { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService }
-          ],
-          declarations: [
-                EthernetHubsTemplateDetailsComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(EthernetHubsTemplateDetailsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },
+      ],
+      declarations: [EthernetHubsTemplateDetailsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(EthernetHubsTemplateDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call save template', () => {
-        spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
-        component.numberOfPorts = 2;
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['symbol'].setValue('symbol');
-        component.ethernetHubTemplate = {ports_mapping: []} as EthernetHubTemplate;
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onSave();
+  it('should call save template', () => {
+    spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
+    component.numberOfPorts = 2;
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['symbol'].setValue('symbol');
+    component.ethernetHubTemplate = { ports_mapping: [] } as EthernetHubTemplate;
 
-        expect(mockedBuiltInTemplatesService.saveTemplate).toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when template name is empty', () => {
-        spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
-        component.numberOfPorts = 2;
-        component.inputForm.controls['templateName'].setValue('');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['symbol'].setValue('symbol');
-        component.ethernetHubTemplate = {ports_mapping: []} as EthernetHubTemplate;
+    expect(mockedBuiltInTemplatesService.saveTemplate).toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when template name is empty', () => {
+    spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
+    component.numberOfPorts = 2;
+    component.inputForm.controls['templateName'].setValue('');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['symbol'].setValue('symbol');
+    component.ethernetHubTemplate = { ports_mapping: [] } as EthernetHubTemplate;
 
-        expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when default name is empty', () => {
-        spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
-        component.numberOfPorts = 2;
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('');
-        component.inputForm.controls['symbol'].setValue('symbol');
-        component.ethernetHubTemplate = {ports_mapping: []} as EthernetHubTemplate;
+    expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when default name is empty', () => {
+    spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
+    component.numberOfPorts = 2;
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('');
+    component.inputForm.controls['symbol'].setValue('symbol');
+    component.ethernetHubTemplate = { ports_mapping: [] } as EthernetHubTemplate;
 
-        expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should call save template when symbol path is empty', () => {
-        spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
-        component.numberOfPorts = 2;
-        component.inputForm.controls['templateName'].setValue('template name');
-        component.inputForm.controls['defaultName'].setValue('default name');
-        component.inputForm.controls['symbol'].setValue('');
-        component.ethernetHubTemplate = {ports_mapping: []} as EthernetHubTemplate;
+    expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should call save template when symbol path is empty', () => {
+    spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as EthernetHubTemplate));
+    component.numberOfPorts = 2;
+    component.inputForm.controls['templateName'].setValue('template name');
+    component.inputForm.controls['defaultName'].setValue('default name');
+    component.inputForm.controls['symbol'].setValue('');
+    component.ethernetHubTemplate = { ports_mapping: [] } as EthernetHubTemplate;
 
-        expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
+
+    expect(mockedBuiltInTemplatesService.saveTemplate).not.toHaveBeenCalled();
+  });
 });

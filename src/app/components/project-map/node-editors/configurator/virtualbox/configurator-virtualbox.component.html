@@ -1,61 +1,74 @@
-<h1 mat-dialog-title>Configurator for node {{name}}</h1>
+<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
 
 <div class="modal-form-container">
-    <div class="content">
-        <div class="default-content">
-            <mat-card class="matCard">
-                <mat-tab-group *ngIf="name">
-                    <mat-tab label="General settings">
-                        <br/><form [formGroup]="generalSettingsForm">
-                            <mat-form-field class="form-field">
-                                <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name">
-                            </mat-form-field>
-                            <mat-form-field class="select">
-                                <mat-select [ngModelOptions]="{standalone: true}" placeholder="Console type" [(ngModel)]="node.console_type">
-                                    <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                                        {{type}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="node.console_auto_start">
-                                Auto start console
-                            </mat-checkbox>
-                            <mat-form-field class="form-field">
-                                <input matInput formControlName="ram" type="number" [(ngModel)]="node.properties.ram" placeholder="RAM">
-                                <span matSuffix>MB</span>
-                            </mat-form-field>
-                            <mat-form-field class="form-field">
-                                <mat-select [ngModelOptions]="{standalone: true}" placeholder="On close" [(ngModel)]="node.properties.on_close">
-                                    <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
-                                        {{option[0]}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </form>
-                        <mat-checkbox [(ngModel)]="node.properties.headless">
-                            Start VM in headless mode
-                        </mat-checkbox>
-                    </mat-tab>
-                    <mat-tab label="Network">
-                        <br/><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
-                            Allow GNS3 to use any configured VirtualBox adapter
-                        </mat-checkbox>
-                        <app-custom-adapters-table 
-                            #customAdapters
-                            [networkTypes]="networkTypes" 
-                            [displayedColumns]="displayedColumns"
-                            [adapters]="node.ports"
-                        ></app-custom-adapters-table>
-                    </mat-tab>
-                    <mat-tab label="Usage">
-                        <mat-form-field class="form-field">
-                            <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-                        </mat-form-field>
-                    </mat-tab>
-                </mat-tab-group>
-            </mat-card>
-        </div>
+  <div class="content">
+    <div class="default-content">
+      <mat-card class="matCard">
+        <mat-tab-group *ngIf="name">
+          <mat-tab label="General settings">
+            <br />
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name" />
+              </mat-form-field>
+              <mat-form-field class="select">
+                <mat-select
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Console type"
+                  [(ngModel)]="node.console_type"
+                >
+                  <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                    {{ type }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="node.console_auto_start">
+                Auto start console
+              </mat-checkbox>
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  formControlName="ram"
+                  type="number"
+                  [(ngModel)]="node.properties.ram"
+                  placeholder="RAM"
+                />
+                <span matSuffix>MB</span>
+              </mat-form-field>
+              <mat-form-field class="form-field">
+                <mat-select
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="On close"
+                  [(ngModel)]="node.properties.on_close"
+                >
+                  <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
+                    {{ option[0] }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </form>
+            <mat-checkbox [(ngModel)]="node.properties.headless"> Start VM in headless mode </mat-checkbox>
+          </mat-tab>
+          <mat-tab label="Network">
+            <br /><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
+              Allow GNS3 to use any configured VirtualBox adapter
+            </mat-checkbox>
+            <app-custom-adapters-table
+              #customAdapters
+              [networkTypes]="networkTypes"
+              [displayedColumns]="displayedColumns"
+              [adapters]="node.ports"
+            ></app-custom-adapters-table>
+          </mat-tab>
+          <mat-tab label="Usage">
+            <mat-form-field class="form-field">
+              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
     </div>
+  </div>
 </div>
 
 <div mat-dialog-actions>

@@ -23,85 +23,85 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComputeService } from '../../../../services/compute.service';
 
 export class MockedComputeService {
-    getComputes(server: Server) {
-        return of([]);
-    }
+  getComputes(server: Server) {
+    return of([]);
+  }
 }
 
 export class MockedVpcsService {
-    public addTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
-        return of(vpcsTemplate);    
-    }
+  public addTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
+    return of(vpcsTemplate);
+  }
 }
 
 describe('AddVpcsTemplateComponent', () => {
-    let component: AddVpcsTemplateComponent;
-    let fixture: ComponentFixture<AddVpcsTemplateComponent>;
+  let component: AddVpcsTemplateComponent;
+  let fixture: ComponentFixture<AddVpcsTemplateComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVpcsService = new MockedVpcsService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    let mockedComputeService = new MockedComputeService();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports: [
-                FormsModule, 
-                ReactiveFormsModule, 
-                MatIconModule, 
-                MatToolbarModule, 
-                MatMenuModule, 
-                MatCheckboxModule, 
-                CommonModule, 
-                NoopAnimationsModule, 
-                RouterTestingModule.withRoutes([{path: 'server/1/preferences/vpcs/templates', component: AddVpcsTemplateComponent}])
-                ],
-            providers: [
-                { provide: ActivatedRoute,  useValue: activatedRoute },
-                { provide: ServerService, useValue: mockedServerService },
-                { provide: VpcsService, useValue: mockedVpcsService },
-                { provide: ToasterService, useValue: mockedToasterService },
-                { provide: ComputeService, useValue: mockedComputeService },
-                { provide: TemplateMocksService, useClass: TemplateMocksService }
-            ],
-            declarations: [
-                AddVpcsTemplateComponent
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedVpcsService = new MockedVpcsService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
+  let mockedComputeService = new MockedComputeService();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(AddVpcsTemplateComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([
+          { path: 'server/1/preferences/vpcs/templates', component: AddVpcsTemplateComponent },
+        ]),
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: VpcsService, useValue: mockedVpcsService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: ComputeService, useValue: mockedComputeService },
+        { provide: TemplateMocksService, useClass: TemplateMocksService },
+      ],
+      declarations: [AddVpcsTemplateComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AddVpcsTemplateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call add template', () => {
-        spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
-        component.templateName = "sample name";
-        component.templateNameForm.controls['templateName'].setValue('template name');
-        component.server = {id: 1} as Server;
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.addTemplate();
+  it('should call add template', () => {
+    spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
+    component.templateName = 'sample name';
+    component.templateNameForm.controls['templateName'].setValue('template name');
+    component.server = { id: 1 } as Server;
 
-        expect(mockedVpcsService.addTemplate).toHaveBeenCalled();
-    });
+    component.addTemplate();
 
-    it('should not call add template when template name is empty', () => {
-        spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
-        spyOn(mockedToasterService, 'error');
-        component.templateName = "";
-        component.server = {id: 1} as Server;
+    expect(mockedVpcsService.addTemplate).toHaveBeenCalled();
+  });
 
-        component.addTemplate();
+  it('should not call add template when template name is empty', () => {
+    spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
+    spyOn(mockedToasterService, 'error');
+    component.templateName = '';
+    component.server = { id: 1 } as Server;
 
-        expect(mockedVpcsService.addTemplate).not.toHaveBeenCalled();
-        expect(mockedToasterService.error).toHaveBeenCalled();
-    });
+    component.addTemplate();
+
+    expect(mockedVpcsService.addTemplate).not.toHaveBeenCalled();
+    expect(mockedToasterService.error).toHaveBeenCalled();
+  });
 });

@@ -67,8 +67,8 @@ describe('DraggableSelectionComponent', () => {
       draggable: {
         start: nodesStartEventEmitter,
         drag: nodesDragEventEmitter,
-        end: nodesEndEventEmitter
-      }
+        end: nodesEndEventEmitter,
+      },
     };
 
     const drawingsWidgetStub = {
@@ -76,11 +76,11 @@ describe('DraggableSelectionComponent', () => {
       draggable: {
         start: drawingsStartEventEmitter,
         drag: drawingsDragEventEmitter,
-        end: drawingsEndEventEmitter
-      }
+        end: drawingsEndEventEmitter,
+      },
     };
     const linksWidgetStub = {
-      redrawLink: () => {}
+      redrawLink: () => {},
     };
 
     const labelWidgetStub = {
@@ -88,27 +88,27 @@ describe('DraggableSelectionComponent', () => {
       draggable: {
         start: labelStartEventEmitter,
         drag: labelDragEventEmitter,
-        end: labelEndEventEmitter
-      }
+        end: labelEndEventEmitter,
+      },
     };
 
     const interfaceLabelWidgetStub = {
       draggable: {
         start: interfaceLabelStartEventEmitter,
         drag: interfaceLabelDragEventEmitter,
-        end: interfaceLabelEndEventEmitter
-      }
+        end: interfaceLabelEndEventEmitter,
+      },
     };
 
     const nodesEventSourceStub = {
       dragged: { emit: () => {} },
-      labelDragged: { emit: () => {} }
+      labelDragged: { emit: () => {} },
     };
     const drawingsEventSourceStub = {
-      dragged: { emit: () => {} }
+      dragged: { emit: () => {} },
     };
     const linksEventSourceStub = {
-      interfaceDragged: { emit: () => {} }
+      interfaceDragged: { emit: () => {} },
     };
 
     TestBed.configureTestingModule({
@@ -123,9 +123,9 @@ describe('DraggableSelectionComponent', () => {
         { provide: DrawingsEventSource, useValue: drawingsEventSourceStub },
         { provide: GraphDataManager, useValue: mockedGraphDataManager },
         { provide: LinksEventSource, useValue: linksEventSourceStub },
-        { provide: MapSettingsService, useClass: MapSettingsService }
+        { provide: MapSettingsService, useClass: MapSettingsService },
       ],
-      declarations: [DraggableSelectionComponent]
+      declarations: [DraggableSelectionComponent],
     }).compileComponents();
   }));
 

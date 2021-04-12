@@ -29,7 +29,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
-  styleUrls: ['./projects.component.scss']
+  styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnInit {
   server: Server;
@@ -40,7 +40,7 @@ export class ProjectsComponent implements OnInit {
 
   searchText: string = '';
 
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,13 +57,13 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.server = this.route.snapshot.data['server'];
-    if(!this.server) this.router.navigate(['/servers']);
+    if (!this.server) this.router.navigate(['/servers']);
     this.recentlyOpenedProjectService.setServerIdProjectList(this.server.id.toString());
 
     this.refresh();
     this.sort.sort(<MatSortable>{
       id: 'name',
-      start: 'asc'
+      start: 'asc',
     });
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
     this.settings = this.settingsService.getAll();
@@ -71,26 +71,27 @@ export class ProjectsComponent implements OnInit {
     this.projectService.projectListSubject.subscribe(() => this.refresh());
 
     let gns3vmConfig = localStorage.getItem('gns3vmConfig');
-    if (this.electronService.isElectronApp && gns3vmConfig!=='configured') {
+    if (this.electronService.isElectronApp && gns3vmConfig !== 'configured') {
       const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
         width: '350px',
         height: '120px',
         autoFocus: false,
-        disableClose: true
+        disableClose: true,
       });
-  
+
       dialogRef.afterClosed().subscribe((answer: boolean) => {
         if (answer) {
           localStorage.setItem('gns3vmConfig', 'configured');
           this.router.navigate(['/server', this.server.id, 'preferences', 'gns3vm']);
         }
       });
-    };
+    }
   }
 
   goToPreferences() {
-    this.router.navigate(['/server', this.server.id, 'preferences'])
-      .catch(error => this.toasterService.error('Cannot navigate to the preferences'));
+    this.router
+      .navigate(['/server', this.server.id, 'preferences'])
+      .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
   }
 
   refresh() {
@@ -98,7 +99,7 @@ export class ProjectsComponent implements OnInit {
       (projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
       },
-      error => {
+      (error) => {
         this.progressService.setError(error);
       }
     );
@@ -153,7 +154,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -167,7 +168,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -178,7 +179,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -193,7 +194,7 @@ export class ProjectsComponent implements OnInit {
         this.bottomSheet.open(NavigationDialogComponent);
         let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
         bottomSheetRef.instance.projectMessage = 'imported project';
-        
+
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.server, uuid).subscribe(() => {

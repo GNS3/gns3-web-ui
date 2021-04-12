@@ -33,52 +33,49 @@ export class DrawingWidget implements Widget {
       this.imageDrawingWidget,
       this.rectDrawingWidget,
       this.lineDrawingWidget,
-      this.ellipseDrawingWidget
+      this.ellipseDrawingWidget,
     ];
   }
 
   public draw(view: SVGSelection) {
     const drawing_body = view.selectAll<SVGGElement, MapDrawing>('g.drawing_body').data((l: MapDrawing) => [l]);
 
-    const drawing_body_enter = drawing_body
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'drawing_body');
+    const drawing_body_enter = drawing_body.enter().append<SVGGElement>('g').attr('class', 'drawing_body');
 
     const drawing_body_merge = drawing_body.merge(drawing_body_enter).attr('transform', (d: MapDrawing) => {
       return `translate(${d.x},${d.y}) rotate(${d.rotation})`;
     });
 
-    this.drawingWidgets.forEach(widget => {
+    this.drawingWidgets.forEach((widget) => {
       widget.draw(drawing_body_merge);
     });
 
     drawing_body_merge.select('.layer_label_wrapper').remove();
     if (this.mapSettingsService.isLayerNumberVisible) {
       drawing_body_merge
-        .filter(n => ((n.element instanceof RectElement) || (n.element instanceof EllipseElement)))
+        .filter((n) => n.element instanceof RectElement || n.element instanceof EllipseElement)
         .append<SVGRectElement>('rect')
         .attr('class', 'layer_label_wrapper')
         .attr('width', '26')
         .attr('height', '26')
-        .attr('x', n => n.element ? n.element.width/2 - 13 : 0)
-        .attr('y', n => n.element ? n.element.height/2 - 13 : 0)
+        .attr('x', (n) => (n.element ? n.element.width / 2 - 13 : 0))
+        .attr('y', (n) => (n.element ? n.element.height / 2 - 13 : 0))
         .attr('fill', 'red');
     }
 
     drawing_body_merge.select('.layer_label').remove();
     if (this.mapSettingsService.isLayerNumberVisible) {
       drawing_body_merge
-        .filter(n => ((n.element instanceof RectElement) || (n.element instanceof EllipseElement)))
+        .filter((n) => n.element instanceof RectElement || n.element instanceof EllipseElement)
         .append<SVGTextElement>('text')
         .attr('class', 'layer_label')
         .text((elem) => elem.z)
-        .attr('x', function(n) {
-          if(n.z >= 100 ) return n.element ? n.element.width/2 - 13 : 0
-          else if(n.z >= 10 ) return n.element ? n.element.width/2 - 9 : 0
-          else return n.element.width/2 - 5
+        .attr('x', function (n) {
+          if (n.z >= 100) return n.element ? n.element.width / 2 - 13 : 0;
+          else if (n.z >= 10) return n.element ? n.element.width / 2 - 9 : 0;
+          else return n.element.width / 2 - 5;
         })
-        .attr('y', n => n.element ? n.element.height/2 + 5 : 0)
+        .attr('y', (n) => (n.element ? n.element.height / 2 + 5 : 0))
         .attr('style', () => {
           const styles: string[] = [];
           styles.push(`font-family: "Noto Sans"`);
@@ -93,10 +90,10 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.top')
       .attr('stroke', 'transparent')
       .attr('stroke-width', '8px')
-      .attr('x1', drawing =>
+      .attr('x1', (drawing) =>
         drawing.element instanceof EllipseElement ? drawing.element.cx - drawing.element.width / 10 : '0'
       )
-      .attr('x2', drawing =>
+      .attr('x2', (drawing) =>
         drawing.element instanceof EllipseElement
           ? drawing.element.cx + drawing.element.width / 10
           : drawing.element.width
@@ -110,16 +107,16 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.bottom')
       .attr('stroke', 'transparent')
       .attr('stroke-width', '8px')
-      .attr('x1', drawing =>
+      .attr('x1', (drawing) =>
         drawing.element instanceof EllipseElement ? drawing.element.cx - drawing.element.width / 10 : '0'
       )
-      .attr('x2', drawing =>
+      .attr('x2', (drawing) =>
         drawing.element instanceof EllipseElement
           ? drawing.element.cx + drawing.element.width / 10
           : drawing.element.width
       )
-      .attr('y1', drawing => drawing.element.height)
-      .attr('y2', drawing => drawing.element.height)
+      .attr('y1', (drawing) => drawing.element.height)
+      .attr('y2', (drawing) => drawing.element.height)
       .attr('draggable', 'true')
       .attr('cursor', 'ns-resize');
 
@@ -129,10 +126,10 @@ export class DrawingWidget implements Widget {
       .attr('stroke-width', '8px')
       .attr('x1', '0')
       .attr('x2', '0')
-      .attr('y1', drawing =>
+      .attr('y1', (drawing) =>
         drawing.element instanceof EllipseElement ? drawing.element.cy - drawing.element.height / 10 : '0'
       )
-      .attr('y2', drawing =>
+      .attr('y2', (drawing) =>
         drawing.element instanceof EllipseElement
           ? drawing.element.cy + drawing.element.height / 10
           : drawing.element.height
@@ -144,12 +141,12 @@ export class DrawingWidget implements Widget {
       .select<SVGAElement>('line.left')
       .attr('stroke', 'transparent')
       .attr('stroke-width', '8px')
-      .attr('x1', drawing => drawing.element.width)
-      .attr('x2', drawing => drawing.element.width)
-      .attr('y1', drawing =>
+      .attr('x1', (drawing) => drawing.element.width)
+      .attr('x2', (drawing) => drawing.element.width)
+      .attr('y1', (drawing) =>
         drawing.element instanceof EllipseElement ? drawing.element.cy - drawing.element.height / 10 : '0'
       )
-      .attr('y2', drawing =>
+      .attr('y2', (drawing) =>
         drawing.element instanceof EllipseElement
           ? drawing.element.cy + drawing.element.height / 10
           : drawing.element.height
@@ -162,8 +159,8 @@ export class DrawingWidget implements Widget {
       .attr('draggable', 'true')
       .attr('fill', 'transparent')
       .attr('stroke', 'transparent')
-      .attr('cx', drawing => (drawing.element as LineElement).x1)
-      .attr('cy', drawing => (drawing.element as LineElement).y1)
+      .attr('cx', (drawing) => (drawing.element as LineElement).x1)
+      .attr('cy', (drawing) => (drawing.element as LineElement).y1)
       .attr('r', 10)
       .attr('cursor', 'move');
 
@@ -172,8 +169,8 @@ export class DrawingWidget implements Widget {
       .attr('draggable', 'true')
       .attr('fill', 'transparent')
       .attr('stroke', 'transparent')
-      .attr('cx', drawing => (drawing.element as LineElement).x2)
-      .attr('cy', drawing => (drawing.element as LineElement).y2)
+      .attr('cx', (drawing) => (drawing.element as LineElement).x2)
+      .attr('cy', (drawing) => (drawing.element as LineElement).y2)
       .attr('r', 10)
       .attr('cursor', 'move');
 

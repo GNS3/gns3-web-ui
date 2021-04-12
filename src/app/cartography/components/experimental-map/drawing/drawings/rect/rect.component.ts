@@ -5,7 +5,7 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 @Component({
   selector: '[app-rect]',
   templateUrl: './rect.component.html',
-  styleUrls: ['./rect.component.scss']
+  styleUrls: ['./rect.component.scss'],
 })
 export class RectComponent implements OnInit {
   @Input('app-rect') rect: RectElement;

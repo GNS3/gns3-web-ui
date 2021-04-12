@@ -8,7 +8,7 @@ describe('TemplateListDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TemplateListDialogComponent]
+      declarations: [TemplateListDialogComponent],
     }).compileComponents();
   }));
 

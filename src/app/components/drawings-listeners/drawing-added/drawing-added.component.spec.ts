@@ -34,9 +34,9 @@ describe('DrawingAddedComponent', () => {
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
         { provide: DefaultDrawingsFactory, useValue: mockedDrawingsFactory },
-        { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter }
+        { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
       ],
-      declarations: [DrawingAddedComponent]
+      declarations: [DrawingAddedComponent],
     }).compileComponents();
   }));
 

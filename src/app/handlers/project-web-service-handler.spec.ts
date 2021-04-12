@@ -15,7 +15,7 @@ describe('ProjectWebServiceHandler', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProjectWebServiceHandler, NodesDataSource, LinksDataSource, DrawingsDataSource]
+      providers: [ProjectWebServiceHandler, NodesDataSource, LinksDataSource, DrawingsDataSource],
     });
 
     ws = new Subject<WebServiceMessage>();

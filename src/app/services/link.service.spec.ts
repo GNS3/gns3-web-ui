@@ -19,7 +19,7 @@ describe('LinkService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, LinkService]
+      providers: [HttpServer, LinkService],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -64,11 +64,11 @@ describe('LinkService', () => {
           adapter_number: 2,
           label: {
             rotation: 0,
-            style: "font-size: 10; font-style: Verdana",
+            style: 'font-size: 10; font-style: Verdana',
             text: sourcePort.short_name,
             x: 0,
-            y: 0
-          }
+            y: 0,
+          },
         },
         {
           node_id: 'targetid',
@@ -76,13 +76,13 @@ describe('LinkService', () => {
           adapter_number: 4,
           label: {
             rotation: 0,
-            style: "font-size: 10; font-style: Verdana",
+            style: 'font-size: 10; font-style: Verdana',
             text: sourcePort.short_name,
             x: 10,
-            y: 10
-          }
-        }
-      ]
+            y: 10,
+          },
+        },
+      ],
     });
   }));
 });

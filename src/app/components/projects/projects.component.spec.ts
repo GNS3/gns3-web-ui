@@ -48,10 +48,10 @@ xdescribe('ProjectsComponent', () => {
       remote: {
         require: (file) => {
           return {
-            openConsole() {}
-          }
-        }
-      }
+            openConsole() {},
+          };
+        },
+      },
     };
 
     TestBed.configureTestingModule({
@@ -67,7 +67,7 @@ xdescribe('ProjectsComponent', () => {
         MatBottomSheetModule,
         FormsModule,
         ReactiveFormsModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
       ],
       providers: [
         { provide: ServerService, useClass: MockedServerService },
@@ -75,13 +75,15 @@ xdescribe('ProjectsComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         { provide: ToasterService },
         { provide: ElectronService, useValue: electronService },
-        ProgressService
+        ProgressService,
       ],
       declarations: [ProjectsComponent, ChooseNameDialogComponent, ConfigureGns3VMDialogComponent, ProjectsFilter],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ChooseNameDialogComponent, ConfigureGns3VMDialogComponent] } })
-    .compileComponents();
+      .overrideModule(BrowserDynamicTestingModule, {
+        set: { entryComponents: [ChooseNameDialogComponent, ConfigureGns3VMDialogComponent] },
+      })
+      .compileComponents();
 
     serverService = TestBed.get(ServerService);
     settingsService = TestBed.get(SettingsService);

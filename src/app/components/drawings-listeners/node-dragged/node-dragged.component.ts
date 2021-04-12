@@ -12,11 +12,11 @@ import { Project } from '../../../models/project';
 @Component({
   selector: 'app-node-dragged',
   templateUrl: './node-dragged.component.html',
-  styleUrls: ['./node-dragged.component.scss']
+  styleUrls: ['./node-dragged.component.scss'],
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
-  @Input() project: Project
+  @Input() project: Project;
   private nodeDragged: Subscription;
 
   constructor(
@@ -26,7 +26,7 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.nodeDragged = this.nodesEventSource.dragged.subscribe(evt => this.onNodeDragged(evt));
+    this.nodeDragged = this.nodesEventSource.dragged.subscribe((evt) => this.onNodeDragged(evt));
   }
 
   onNodeDragged(draggedEvent: DraggedDataEvent<MapNode>) {

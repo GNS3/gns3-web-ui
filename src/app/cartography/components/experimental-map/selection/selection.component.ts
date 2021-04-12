@@ -5,7 +5,7 @@ import { Rectangle } from '../../../models/rectangle';
 @Component({
   selector: '[app-selection]',
   templateUrl: './selection.component.html',
-  styleUrls: ['./selection.component.scss']
+  styleUrls: ['./selection.component.scss'],
 })
 export class SelectionComponent implements OnInit, AfterViewInit {
   @Input('app-selection') svg: SVGSVGElement;

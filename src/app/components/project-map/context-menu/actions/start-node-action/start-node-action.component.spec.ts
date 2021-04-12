@@ -8,7 +8,7 @@ describe('StartNodeActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [StartNodeActionComponent]
+      declarations: [StartNodeActionComponent],
     }).compileComponents();
   }));
 

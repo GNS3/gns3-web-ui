@@ -14,7 +14,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   selector: 'app-import-project-dialog',
   templateUrl: 'import-project-dialog.component.html',
   styleUrls: ['import-project-dialog.component.scss'],
-  providers: [ProjectNameValidator]
+  providers: [ProjectNameValidator],
 })
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
@@ -38,13 +38,13 @@ export class ImportProjectDialogComponent implements OnInit {
     private projectNameValidator: ProjectNameValidator
   ) {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new FormControl(null, [Validators.required, projectNameValidator.get])
+      projectName: new FormControl(null, [Validators.required, projectNameValidator.get]),
     });
   }
 
   ngOnInit() {
     this.uploader = new FileUploader({});
-    this.uploader.onAfterAddingFile = file => {
+    this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
 
@@ -82,7 +82,7 @@ export class ImportProjectDialogComponent implements OnInit {
     } else {
       this.projectService.list(this.server).subscribe((projects: Project[]) => {
         const projectName = this.projectNameForm.controls['projectName'].value;
-        let existingProject = projects.find(project => project.name === projectName);
+        let existingProject = projects.find((project) => project.name === projectName);
 
         if (existingProject) {
           this.openConfirmationDialog(existingProject);
@@ -95,7 +95,7 @@ export class ImportProjectDialogComponent implements OnInit {
 
   importProject() {
     const url = this.prepareUploadPath();
-    this.uploader.queue.forEach(elem => (elem.url = url));
+    this.uploader.queue.forEach((elem) => (elem.url = url));
 
     this.isFirstStepCompleted = true;
 
@@ -108,10 +108,10 @@ export class ImportProjectDialogComponent implements OnInit {
       width: '300px',
       height: '150px',
       data: {
-        existingProject: existingProject
+        existingProject: existingProject,
       },
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {

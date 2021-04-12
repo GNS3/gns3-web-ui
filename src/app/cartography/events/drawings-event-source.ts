@@ -4,7 +4,7 @@ import {
   ResizedDataEvent,
   TextAddedDataEvent,
   TextEditedDataEvent,
-  AddedDataEvent
+  AddedDataEvent,
 } from './event-source';
 import { MapDrawing } from '../models/map/map-drawing';
 

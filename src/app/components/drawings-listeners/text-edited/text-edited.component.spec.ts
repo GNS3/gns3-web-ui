@@ -22,9 +22,9 @@ describe('TextEditedComponent', () => {
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
-        { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter }
+        { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
       ],
-      declarations: [TextEditedComponent]
+      declarations: [TextEditedComponent],
     }).compileComponents();
   }));
 
@@ -52,7 +52,7 @@ describe('TextEditedComponent', () => {
       font_family: 'font',
       font_size: 100,
       font_weight: 'bold',
-      text_decoration: 'sample decoration'
+      text_decoration: 'sample decoration',
     };
     const textEditedDataEvent = new TextEditedDataEvent('id', 'edited text', textElement);
     spyOn(mockedDrawingService, 'updateText').and.returnValue(Observable.of());

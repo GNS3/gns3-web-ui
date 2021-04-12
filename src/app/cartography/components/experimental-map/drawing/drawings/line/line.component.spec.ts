@@ -8,7 +8,7 @@ describe('LineComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [LineComponent]
+      declarations: [LineComponent],
     }).compileComponents();
   }));
 

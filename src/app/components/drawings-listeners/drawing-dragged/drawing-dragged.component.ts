@@ -12,7 +12,7 @@ import { Project } from '../../../models/project';
 @Component({
   selector: 'app-drawing-dragged',
   templateUrl: './drawing-dragged.component.html',
-  styleUrls: ['./drawing-dragged.component.scss']
+  styleUrls: ['./drawing-dragged.component.scss'],
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
@@ -26,7 +26,7 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.drawingDragged = this.drawingsEventSource.dragged.subscribe(evt => this.onDrawingDragged(evt));
+    this.drawingDragged = this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt));
   }
 
   onDrawingDragged(draggedEvent: DraggedDataEvent<MapDrawing>) {

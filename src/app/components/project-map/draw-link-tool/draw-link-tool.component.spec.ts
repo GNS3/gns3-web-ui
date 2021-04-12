@@ -8,7 +8,7 @@ describe('DrawLinkToolComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DrawLinkToolComponent]
+      declarations: [DrawLinkToolComponent],
     }).compileComponents();
   }));
 

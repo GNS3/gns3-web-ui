@@ -16,69 +16,67 @@ import { SettingsService } from '../../../services/settings.service';
 import { ElectronService } from 'ngx-electron';
 
 xdescribe('NodesMenuComponent', () => {
-    let component: NodesMenuComponent;
-    let fixture: ComponentFixture<NodesMenuComponent>;
-    let mockedToasterService: MockedToasterService = new MockedToasterService();
-    let mockedNodeService: MockedNodeService = new MockedNodeService();
-    let mockedNodesDataSource: MockedNodesDataSource =  new MockedNodesDataSource();
+  let component: NodesMenuComponent;
+  let fixture: ComponentFixture<NodesMenuComponent>;
+  let mockedToasterService: MockedToasterService = new MockedToasterService();
+  let mockedNodeService: MockedNodeService = new MockedNodeService();
+  let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports:  [MatButtonModule, MatIconModule, CommonModule, NoopAnimationsModule],
-            providers: [
-                { provide: NodeService, useValue: mockedNodeService },
-                { provide: ToasterService, useValue: mockedToasterService },
-                { provide: NodesDataSource, useValue: mockedNodesDataSource },
-                { provide: ServerService },
-                { provide: SettingsService },
-                { provide: ElectronService }
-            ],
-            declarations: [
-                NodesMenuComponent,
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MatButtonModule, MatIconModule, CommonModule, NoopAnimationsModule],
+      providers: [
+        { provide: NodeService, useValue: mockedNodeService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: NodesDataSource, useValue: mockedNodesDataSource },
+        { provide: ServerService },
+        { provide: SettingsService },
+        { provide: ElectronService },
+      ],
+      declarations: [NodesMenuComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(NodesMenuComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NodesMenuComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-    it('should call start all nodes', () => {
-        spyOn(mockedNodeService, 'startAll').and.returnValue(of());
+  it('should call start all nodes', () => {
+    spyOn(mockedNodeService, 'startAll').and.returnValue(of());
 
-        component.startNodes();
+    component.startNodes();
 
-        expect(mockedNodeService.startAll).toHaveBeenCalled();
-    });
+    expect(mockedNodeService.startAll).toHaveBeenCalled();
+  });
 
-    it('should call stop all nodes', () => {
-        spyOn(mockedNodeService, 'stopAll').and.returnValue(of());
+  it('should call stop all nodes', () => {
+    spyOn(mockedNodeService, 'stopAll').and.returnValue(of());
 
-        component.stopNodes();
+    component.stopNodes();
 
-        expect(mockedNodeService.stopAll).toHaveBeenCalled();
-    });
+    expect(mockedNodeService.stopAll).toHaveBeenCalled();
+  });
 
-    it('should call suspend all nodes', () => {
-        spyOn(mockedNodeService, 'suspendAll').and.returnValue(of());
+  it('should call suspend all nodes', () => {
+    spyOn(mockedNodeService, 'suspendAll').and.returnValue(of());
 
-        component.suspendNodes();
+    component.suspendNodes();
 
-        expect(mockedNodeService.suspendAll).toHaveBeenCalled();
-    });
+    expect(mockedNodeService.suspendAll).toHaveBeenCalled();
+  });
 
-    it('should call reload all nodes', () => {
-        spyOn(mockedNodeService, 'reloadAll').and.returnValue(of());
+  it('should call reload all nodes', () => {
+    spyOn(mockedNodeService, 'reloadAll').and.returnValue(of());
 
-        component.reloadNodes();
+    component.reloadNodes();
 
-        expect(mockedNodeService.reloadAll).toHaveBeenCalled();
-    });
+    expect(mockedNodeService.reloadAll).toHaveBeenCalled();
+  });
 });

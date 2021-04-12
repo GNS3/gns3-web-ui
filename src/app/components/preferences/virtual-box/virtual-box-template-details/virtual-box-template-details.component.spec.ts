@@ -23,107 +23,117 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
 
 export class MockedVirtualBoxService {
-    public getTemplate(server: Server, template_id: string) {
-        return of({} as VirtualBoxTemplate);  
-    }
+  public getTemplate(server: Server, template_id: string) {
+    return of({} as VirtualBoxTemplate);
+  }
 
-    public saveTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate) {
-        return of(virtualBoxTemplate);    
-    }
+  public saveTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate) {
+    return of(virtualBoxTemplate);
+  }
 }
 
 describe('VirtualBoxTemplateDetailsComponent', () => {
-    let component: VirtualBoxTemplateDetailsComponent;
-    let fixture: ComponentFixture<VirtualBoxTemplateDetailsComponent>;
+  let component: VirtualBoxTemplateDetailsComponent;
+  let fixture: ComponentFixture<VirtualBoxTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVirtualBoxService = new MockedVirtualBoxService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatTableModule , MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
-              { provide: ToasterService, useValue: mockedToasterService },
-              { provide: VirtualBoxConfigurationService, useClass: VirtualBoxConfigurationService }
-          ],
-          declarations: [
-              VirtualBoxTemplateDetailsComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedVirtualBoxService = new MockedVirtualBoxService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(VirtualBoxTemplateDetailsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: VirtualBoxConfigurationService, useClass: VirtualBoxConfigurationService },
+      ],
+      declarations: [VirtualBoxTemplateDetailsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VirtualBoxTemplateDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call save template', () => {
-        spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
-        component.generalSettingsForm.controls['templateName'].setValue('template name');
-        component.generalSettingsForm.controls['defaultName'].setValue('default name');
-        component.generalSettingsForm.controls['symbol'].setValue('symbol');
-        component.generalSettingsForm.controls['ram'].setValue('256');
-        component.networkForm.controls['adapters'].setValue('1');
-        component.networkForm.controls['nameFormat'].setValue('{}');
-        component.networkForm.controls['size'].setValue('256');
-        component.virtualBoxTemplate = {
-            adapters: 0,
-            custom_adapters: []
-        } as VirtualBoxTemplate;
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onSave();
+  it('should call save template', () => {
+    spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
+    component.generalSettingsForm.controls['templateName'].setValue('template name');
+    component.generalSettingsForm.controls['defaultName'].setValue('default name');
+    component.generalSettingsForm.controls['symbol'].setValue('symbol');
+    component.generalSettingsForm.controls['ram'].setValue('256');
+    component.networkForm.controls['adapters'].setValue('1');
+    component.networkForm.controls['nameFormat'].setValue('{}');
+    component.networkForm.controls['size'].setValue('256');
+    component.virtualBoxTemplate = {
+      adapters: 0,
+      custom_adapters: [],
+    } as VirtualBoxTemplate;
 
-        expect(mockedVirtualBoxService.saveTemplate).toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when general settings are not filled', () => {
-        spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
-        component.generalSettingsForm.controls['templateName'].setValue('');
-        component.generalSettingsForm.controls['defaultName'].setValue('default name');
-        component.generalSettingsForm.controls['symbol'].setValue('symbol');
-        component.generalSettingsForm.controls['ram'].setValue('256');
-        component.networkForm.controls['adapters'].setValue('1');
-        component.networkForm.controls['nameFormat'].setValue('{}');
-        component.networkForm.controls['size'].setValue('256');
-        component.virtualBoxTemplate = {
-            adapters: 0,
-            custom_adapters: []
-        } as VirtualBoxTemplate;
+    expect(mockedVirtualBoxService.saveTemplate).toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when general settings are not filled', () => {
+    spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
+    component.generalSettingsForm.controls['templateName'].setValue('');
+    component.generalSettingsForm.controls['defaultName'].setValue('default name');
+    component.generalSettingsForm.controls['symbol'].setValue('symbol');
+    component.generalSettingsForm.controls['ram'].setValue('256');
+    component.networkForm.controls['adapters'].setValue('1');
+    component.networkForm.controls['nameFormat'].setValue('{}');
+    component.networkForm.controls['size'].setValue('256');
+    component.virtualBoxTemplate = {
+      adapters: 0,
+      custom_adapters: [],
+    } as VirtualBoxTemplate;
 
-        expect(mockedVirtualBoxService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
 
-    it('should not call save template when network settings are not filled', () => {
-        spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
-        component.generalSettingsForm.controls['templateName'].setValue('template name');
-        component.generalSettingsForm.controls['defaultName'].setValue('default name');
-        component.generalSettingsForm.controls['symbol'].setValue('symbol');
-        component.generalSettingsForm.controls['ram'].setValue('256');
-        component.networkForm.controls['adapters'].setValue('');
-        component.networkForm.controls['nameFormat'].setValue('{}');
-        component.networkForm.controls['size'].setValue('256');
-        component.virtualBoxTemplate = {
-            adapters: 0,
-            custom_adapters: []
-        } as VirtualBoxTemplate;
+    expect(mockedVirtualBoxService.saveTemplate).not.toHaveBeenCalled();
+  });
 
-        component.onSave();
+  it('should not call save template when network settings are not filled', () => {
+    spyOn(mockedVirtualBoxService, 'saveTemplate').and.returnValue(of({} as VirtualBoxTemplate));
+    component.generalSettingsForm.controls['templateName'].setValue('template name');
+    component.generalSettingsForm.controls['defaultName'].setValue('default name');
+    component.generalSettingsForm.controls['symbol'].setValue('symbol');
+    component.generalSettingsForm.controls['ram'].setValue('256');
+    component.networkForm.controls['adapters'].setValue('');
+    component.networkForm.controls['nameFormat'].setValue('{}');
+    component.networkForm.controls['size'].setValue('256');
+    component.virtualBoxTemplate = {
+      adapters: 0,
+      custom_adapters: [],
+    } as VirtualBoxTemplate;
 
-        expect(mockedVirtualBoxService.saveTemplate).not.toHaveBeenCalled();
-    });
+    component.onSave();
+
+    expect(mockedVirtualBoxService.saveTemplate).not.toHaveBeenCalled();
+  });
 });

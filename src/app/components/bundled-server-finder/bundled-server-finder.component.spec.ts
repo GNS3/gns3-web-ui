@@ -9,7 +9,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ProgressService } from '../../common/progress/progress.service';
 import { MockedProgressService } from '../project-map/project-map.component.spec';
 
-
 describe('BundledServerFinderComponent', () => {
   let component: BundledServerFinderComponent;
   let fixture: ComponentFixture<BundledServerFinderComponent>;
@@ -19,7 +18,7 @@ describe('BundledServerFinderComponent', () => {
 
   beforeEach(async(() => {
     router = {
-      navigate: jasmine.createSpy('navigate')
+      navigate: jasmine.createSpy('navigate'),
     };
 
     const server = new Server();
@@ -32,10 +31,10 @@ describe('BundledServerFinderComponent', () => {
       providers: [
         { provide: Router, useValue: router },
         { provide: ServerService, useValue: serverService },
-        { provide: ProgressService, useValue: progressService }
+        { provide: ProgressService, useValue: progressService },
       ],
       declarations: [BundledServerFinderComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BundledServerFinderComponent);

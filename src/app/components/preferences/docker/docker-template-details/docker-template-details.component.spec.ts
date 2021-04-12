@@ -22,62 +22,71 @@ import { DockerService } from '../../../../services/docker.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 
 export class MockedDockerService {
-    public getTemplate(server: Server, template_id: string) {
-        return of({} as DockerTemplate);  
-    }
+  public getTemplate(server: Server, template_id: string) {
+    return of({} as DockerTemplate);
+  }
 
-    public saveTemplate(server: Server, dockerTemplate: DockerTemplate) {
-        return of(dockerTemplate);    
-    }
+  public saveTemplate(server: Server, dockerTemplate: DockerTemplate) {
+    return of(dockerTemplate);
+  }
 }
 
 describe('DockerTemplateDetailsComponent', () => {
-    let component: DockerTemplateDetailsComponent;
-    let fixture: ComponentFixture<DockerTemplateDetailsComponent>;
+  let component: DockerTemplateDetailsComponent;
+  let fixture: ComponentFixture<DockerTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedDockerService = new MockedDockerService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: DockerService, useValue: mockedDockerService },
-              { provide: ToasterService, useValue: mockedToasterService },
-              { provide: DockerConfigurationService, useClass: DockerConfigurationService }
-          ],
-          declarations: [
-              DockerTemplateDetailsComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedDockerService = new MockedDockerService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(DockerTemplateDetailsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: DockerService, useValue: mockedDockerService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: DockerConfigurationService, useClass: DockerConfigurationService },
+      ],
+      declarations: [DockerTemplateDetailsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(DockerTemplateDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call save template', () => {
-        spyOn(mockedDockerService, 'saveTemplate').and.returnValue(of({} as DockerTemplate));
-        component.generalSettingsForm.controls['templateName'].setValue('template name');
-        component.generalSettingsForm.controls['defaultName'].setValue('default name');
-        component.generalSettingsForm.controls['adapter'].setValue(1);
-        component.generalSettingsForm.controls['symbol'].setValue('symbol path');
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onSave();
+  it('should call save template', () => {
+    spyOn(mockedDockerService, 'saveTemplate').and.returnValue(of({} as DockerTemplate));
+    component.generalSettingsForm.controls['templateName'].setValue('template name');
+    component.generalSettingsForm.controls['defaultName'].setValue('default name');
+    component.generalSettingsForm.controls['adapter'].setValue(1);
+    component.generalSettingsForm.controls['symbol'].setValue('symbol path');
 
-        expect(mockedDockerService.saveTemplate).toHaveBeenCalled();
-    });
+    component.onSave();
+
+    expect(mockedDockerService.saveTemplate).toHaveBeenCalled();
+  });
 });

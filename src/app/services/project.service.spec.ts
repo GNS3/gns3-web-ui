@@ -63,7 +63,12 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, ProjectService, RecentlyOpenedProjectService, { provide: SettingsService, useClass: MockedSettingsService }]
+      providers: [
+        HttpServer,
+        ProjectService,
+        RecentlyOpenedProjectService,
+        { provide: SettingsService, useClass: MockedSettingsService },
+      ],
     });
 
     httpClient = TestBed.get(HttpClient);

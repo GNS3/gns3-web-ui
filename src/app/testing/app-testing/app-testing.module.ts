@@ -5,6 +5,6 @@ import { ServerErrorHandler } from '../../services/http-server.service';
 @NgModule({
   imports: [CommonModule],
   declarations: [],
-  providers: [ServerErrorHandler]
+  providers: [ServerErrorHandler],
 })
 export class AppTestingModule {}

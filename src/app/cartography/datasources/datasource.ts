@@ -20,7 +20,7 @@ export abstract class DataSource<T> {
   }
 
   public set(data: T[]) {
-    data.forEach(item => {
+    data.forEach((item) => {
       const index = this.findIndex(item);
       if (index >= 0) {
         const updated = Object.assign(this.data[index], item);
@@ -31,9 +31,9 @@ export abstract class DataSource<T> {
     });
 
     const toRemove = this.data.filter(
-      item => data.filter(i => this.getItemKey(i) === this.getItemKey(item)).length === 0
+      (item) => data.filter((i) => this.getItemKey(i) === this.getItemKey(item)).length === 0
     );
-    toRemove.forEach(item => this.remove(item));
+    toRemove.forEach((item) => this.remove(item));
 
     this.dataChange.next(this.data);
   }

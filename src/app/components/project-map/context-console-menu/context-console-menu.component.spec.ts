@@ -23,43 +23,39 @@ describe('ContextConsoleMenuComponent', () => {
   let toasterService: MockedToasterService = new MockedToasterService();
   let router = {
     url: '',
-    navigate: jasmine.createSpy('navigate')
+    navigate: jasmine.createSpy('navigate'),
   };
   let node = {
-    status: 'started'
+    status: 'started',
   };
   let mapSettingsService = new MapSettingsService();
 
   beforeEach(async(() => {
     const electronMock = {
-      isElectronApp: true
+      isElectronApp: true,
     };
 
     TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
       providers: [
-        { provide: ChangeDetectorRef }, 
+        { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ElectronService, useValue: electronMock },
         { provide: MapSettingsService, useValue: mapSettingsService },
         { provide: NodeConsoleService },
         { provide: ConsoleService },
         { provide: ToasterService, useValue: toasterService },
-        { provide: Router, useValue: router }
+        { provide: Router, useValue: router },
       ],
-      declarations: [
-          ContextConsoleMenuComponent,
-          ConsoleDeviceActionComponent,
-          ConsoleDeviceActionBrowserComponent
-        ],
-      schemas: [NO_ERRORS_SCHEMA]
+      declarations: [ContextConsoleMenuComponent, ConsoleDeviceActionComponent, ConsoleDeviceActionBrowserComponent],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ContextConsoleMenuComponent);
     component = fixture.componentInstance;
-    component.server = {location: 'local'} as Server;
+    component.server = { location: 'local' } as Server;
     fixture.detectChanges();
   });
 
@@ -75,7 +71,7 @@ describe('ContextConsoleMenuComponent', () => {
     let spy = spyOn(component.contextConsoleMenu, 'openMenu');
     localStorage.removeItem('consoleContextMenu');
 
-    component.openMenu(node as unknown as Node, 0, 0);
+    component.openMenu((node as unknown) as Node, 0, 0);
 
     expect(spy.calls.any()).toBeTruthy();
   });
@@ -84,7 +80,7 @@ describe('ContextConsoleMenuComponent', () => {
     let spy = spyOn(component, 'openWebConsole');
     mapSettingsService.setConsoleContextMenuAction('web console');
 
-    component.openMenu(node as unknown as Node, 0, 0);
+    component.openMenu((node as unknown) as Node, 0, 0);
 
     expect(spy.calls.any()).toBeTruthy();
   });
@@ -93,7 +89,7 @@ describe('ContextConsoleMenuComponent', () => {
     let spy = spyOn(component, 'openWebConsoleInNewTab');
     mapSettingsService.setConsoleContextMenuAction('web console in new tab');
 
-    component.openMenu(node as unknown as Node, 0, 0);
+    component.openMenu((node as unknown) as Node, 0, 0);
 
     expect(spy.calls.any()).toBeTruthy();
   });
@@ -102,7 +98,7 @@ describe('ContextConsoleMenuComponent', () => {
     let spy = spyOn(component, 'openConsole');
     mapSettingsService.setConsoleContextMenuAction('console');
 
-    component.openMenu(node as unknown as Node, 0, 0);
+    component.openMenu((node as unknown) as Node, 0, 0);
 
     expect(spy.calls.any()).toBeTruthy();
   });

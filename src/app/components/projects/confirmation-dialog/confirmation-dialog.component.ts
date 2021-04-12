@@ -5,7 +5,7 @@ import { Project } from '../../../models/project';
 @Component({
   selector: 'app-import-project-dialog',
   templateUrl: 'confirmation-dialog.component.html',
-  styleUrls: ['confirmation-dialog.component.scss']
+  styleUrls: ['confirmation-dialog.component.scss'],
 })
 export class ConfirmationDialogComponent implements OnInit {
   private existingProject: Project;

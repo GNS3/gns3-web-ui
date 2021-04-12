@@ -16,72 +16,72 @@ import { LinkService } from '../../../../../services/link.service';
 import { Link } from '../../../../../models/link';
 
 describe('DeleteActionComponent', () => {
-    let component: DeleteActionComponent;
-    let fixture: ComponentFixture<DeleteActionComponent>;
-    let mockedNodeService: MockedNodeService = new MockedNodeService();
-    let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
-    let mockedLinkService: MockedLinkService = new MockedLinkService();
+  let component: DeleteActionComponent;
+  let fixture: ComponentFixture<DeleteActionComponent>;
+  let mockedNodeService: MockedNodeService = new MockedNodeService();
+  let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
+  let mockedLinkService: MockedLinkService = new MockedLinkService();
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
-            providers: [
-                { provide: NodesDataSource,  useClass: NodesDataSource },
-                { provide: DrawingsDataSource, useClass: DrawingsDataSource },
-                { provide: LinksDataSource, useClass: LinksDataSource },
-                { provide: NodeService, useValue: mockedNodeService },
-                { provide: DrawingService, useValue: mockedDrawingService },
-                { provide: LinkService, useValue: mockedLinkService }
-            ],
-            declarations: [DeleteActionComponent]
-        }).compileComponents();
-    }));
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
+      providers: [
+        { provide: NodesDataSource, useClass: NodesDataSource },
+        { provide: DrawingsDataSource, useClass: DrawingsDataSource },
+        { provide: LinksDataSource, useClass: LinksDataSource },
+        { provide: NodeService, useValue: mockedNodeService },
+        { provide: DrawingService, useValue: mockedDrawingService },
+        { provide: LinkService, useValue: mockedLinkService },
+      ],
+      declarations: [DeleteActionComponent],
+    }).compileComponents();
+  }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(DeleteActionComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(DeleteActionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-    it('should call delete action in drawing service', () => {
-        let node = { node_id: '1' } as Node;
-        component.nodes = [node];
-        let drawing = { drawing_id: '1' } as Drawing;
-        component.drawings = [drawing];
-        component.links = [];
-        spyOn(mockedDrawingService, 'delete').and.returnValue(of());
+  it('should call delete action in drawing service', () => {
+    let node = { node_id: '1' } as Node;
+    component.nodes = [node];
+    let drawing = { drawing_id: '1' } as Drawing;
+    component.drawings = [drawing];
+    component.links = [];
+    spyOn(mockedDrawingService, 'delete').and.returnValue(of());
 
-        component.delete();
+    component.delete();
 
-        expect(mockedDrawingService.delete).toHaveBeenCalled();
-    });
+    expect(mockedDrawingService.delete).toHaveBeenCalled();
+  });
 
-    it('should call delete action in node service', () => {
-        let node = { node_id: '1' } as Node;
-        component.nodes = [node];
-        let drawing = { drawing_id: '1' } as Drawing;
-        component.drawings = [drawing];
-        component.links = [];
-        spyOn(mockedNodeService, 'delete').and.returnValue(of());
+  it('should call delete action in node service', () => {
+    let node = { node_id: '1' } as Node;
+    component.nodes = [node];
+    let drawing = { drawing_id: '1' } as Drawing;
+    component.drawings = [drawing];
+    component.links = [];
+    spyOn(mockedNodeService, 'delete').and.returnValue(of());
 
-        component.delete();
+    component.delete();
 
-        expect(mockedNodeService.delete).toHaveBeenCalled();
-    });
+    expect(mockedNodeService.delete).toHaveBeenCalled();
+  });
 
-    it('should call delete action in link service', () => {
-        component.nodes = [];
-        component.drawings = [];
-        let link = { link_id: '1', project_id: '1' } as Link;
-        component.links = [link];
-        spyOn(mockedLinkService, 'deleteLink').and.returnValue(of());
+  it('should call delete action in link service', () => {
+    component.nodes = [];
+    component.drawings = [];
+    let link = { link_id: '1', project_id: '1' } as Link;
+    component.links = [link];
+    spyOn(mockedLinkService, 'deleteLink').and.returnValue(of());
 
-        component.delete();
+    component.delete();
 
-        expect(mockedLinkService.deleteLink).toHaveBeenCalled();
-    });
+    expect(mockedLinkService.deleteLink).toHaveBeenCalled();
+  });
 });

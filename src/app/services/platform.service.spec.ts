@@ -5,7 +5,7 @@ import { ElectronService } from 'ngx-electron';
 
 class ElectronServiceMock {
   process = {
-    platform: 'unknown'
+    platform: 'unknown',
   };
 }
 
@@ -19,16 +19,13 @@ describe('PlatformService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        PlatformService,
-        {provide: ElectronService, useValue: electronServiceMock}
-      ]
+      providers: [PlatformService, { provide: ElectronService, useValue: electronServiceMock }],
     });
   });
 
   beforeEach(() => {
     service = TestBed.get(PlatformService);
-  })
+  });
 
   it('should be created', () => {
     expect(service).toBeTruthy();

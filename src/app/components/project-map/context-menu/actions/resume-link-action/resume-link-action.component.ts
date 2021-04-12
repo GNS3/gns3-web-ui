@@ -5,18 +5,16 @@ import { LinkService } from '../../../../../services/link.service';
 
 @Component({
   selector: 'app-resume-link-action',
-  templateUrl: './resume-link-action.component.html'
+  templateUrl: './resume-link-action.component.html',
 })
 export class ResumeLinkActionComponent {
-    @Input() server: Server;
-    @Input() link: Link;
+  @Input() server: Server;
+  @Input() link: Link;
 
-    constructor(
-        private linkService: LinkService
-    ) {}
+  constructor(private linkService: LinkService) {}
 
-    resumeLink() {
-        this.link.suspend = false;
-        this.linkService.updateLink(this.server, this.link).subscribe(() => {});
-    }
+  resumeLink() {
+    this.link.suspend = false;
+    this.linkService.updateLink(this.server, this.link).subscribe(() => {});
+  }
 }

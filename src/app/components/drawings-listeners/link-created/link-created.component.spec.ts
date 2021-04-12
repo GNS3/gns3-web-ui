@@ -38,9 +38,9 @@ describe('LinkCreatedComponent', () => {
         { provide: LinksDataSource, useClass: LinksDataSource },
         { provide: LinksEventSource, useValue: mockedLinksEventSource },
         { provide: MapNodeToNodeConverter, useValue: mockedMapNodeToNodeConverter },
-        { provide: MapPortToPortConverter, useClass: MapPortToPortConverter }
+        { provide: MapPortToPortConverter, useClass: MapPortToPortConverter },
       ],
-      declarations: [LinkCreatedComponent]
+      declarations: [LinkCreatedComponent],
     }).compileComponents();
   }));
 
@@ -86,14 +86,14 @@ describe('LinkCreatedComponent', () => {
       width: 0,
       x: 0,
       y: 0,
-      z: 0
+      z: 0,
     };
     const mapPort: MapPort = {
       adapterNumber: 1,
       linkType: 'sampleLinkType',
       name: 'sampleName',
       portNumber: 1,
-      shortName: 'sampleShortName'
+      shortName: 'sampleShortName',
     };
     const linkCreatedDataEvent = new MapLinkCreated(mapNode, mapPort, mapNode, mapPort);
     spyOn(mockedLinkService, 'createLink').and.returnValue(Observable.of({}));

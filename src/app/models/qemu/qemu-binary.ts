@@ -1,4 +1,4 @@
 export class QemuBinary {
-    path: string;
-    version: string;
+  path: string;
+  version: string;
 }

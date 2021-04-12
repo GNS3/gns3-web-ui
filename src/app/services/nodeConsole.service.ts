@@ -58,6 +58,6 @@ export class NodeConsoleService {
 }
 
 export interface ConsoleResizedEvent {
-  width: number,
-  height: number
+  width: number;
+  height: number;
 }

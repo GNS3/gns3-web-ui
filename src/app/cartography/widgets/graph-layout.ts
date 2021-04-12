@@ -33,10 +33,7 @@ export class GraphLayout implements Widget {
   }
 
   connect(view: SVGSelection, context: Context) {
-    this.drawingLineTool.connect(
-      view,
-      context
-    );
+    this.drawingLineTool.connect(view, context);
   }
 
   draw(view: SVGSelection, context: Context) {
@@ -44,10 +41,7 @@ export class GraphLayout implements Widget {
 
     const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([context]);
 
-    const canvasEnter = canvas
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'canvas');
+    const canvasEnter = canvas.enter().append<SVGGElement>('g').attr('class', 'canvas');
 
     canvas.merge(canvasEnter).attr('transform', (ctx: Context) => {
       const xTrans = ctx.getZeroZeroTransformationPoint().x + ctx.transformation.x;

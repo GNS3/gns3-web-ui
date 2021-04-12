@@ -24,8 +24,8 @@ describe('ToasterErrorHandler', () => {
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: SettingsService, useClass: MockedSettingsService },
         SentryErrorHandler,
-        ToasterErrorHandler
-      ]
+        ToasterErrorHandler,
+      ],
     });
 
     handler = new MockedToasterErrorHandler(TestBed.get(Injector));

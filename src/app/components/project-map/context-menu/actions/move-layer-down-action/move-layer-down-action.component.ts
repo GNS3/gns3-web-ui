@@ -9,7 +9,7 @@ import { DrawingService } from '../../../../../services/drawing.service';
 
 @Component({
   selector: 'app-move-layer-down-action',
-  templateUrl: './move-layer-down-action.component.html'
+  templateUrl: './move-layer-down-action.component.html',
 })
 export class MoveLayerDownActionComponent implements OnInit {
   @Input() server: Server;

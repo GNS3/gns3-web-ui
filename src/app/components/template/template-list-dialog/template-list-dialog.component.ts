@@ -14,12 +14,24 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
 @Component({
   selector: 'app-template-list-dialog',
   templateUrl: './template-list-dialog.component.html',
-  styleUrls: ['./template-list-dialog.component.scss']
+  styleUrls: ['./template-list-dialog.component.scss'],
 })
 export class TemplateListDialogComponent implements OnInit {
   server: Server;
   project: Project;
-  templateTypes: string[] = ['cloud', 'ethernet_hub', 'ethernet_switch', 'docker', 'dynamips', 'vpcs', 'traceng', 'virtualbox', 'vmware', 'iou', 'qemu'];
+  templateTypes: string[] = [
+    'cloud',
+    'ethernet_hub',
+    'ethernet_switch',
+    'docker',
+    'dynamips',
+    'vpcs',
+    'traceng',
+    'virtualbox',
+    'vmware',
+    'iou',
+    'qemu',
+  ];
   selectedType: string;
   configurationForm: FormGroup;
   positionForm: FormGroup;
@@ -36,17 +48,17 @@ export class TemplateListDialogComponent implements OnInit {
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator,
+    private nonNegativeValidator: NonNegativeValidator
   ) {
     this.server = data['server'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
       // name: new FormControl('new node', Validators.required),
-      numberOfNodes: new FormControl(1, [Validators.required, nonNegativeValidator.get])
+      numberOfNodes: new FormControl(1, [Validators.required, nonNegativeValidator.get]),
     });
     this.positionForm = this.formBuilder.group({
       top: new FormControl(0, Validators.required),
-      left: new FormControl(0, Validators.required)
+      left: new FormControl(0, Validators.required),
     });
   }
 
@@ -62,15 +74,19 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   filterTemplates(event) {
-    let temporaryTemplates = this.templates.filter( item => {
+    let temporaryTemplates = this.templates.filter((item) => {
       return item.name.toLowerCase().includes(this.searchText.toLowerCase());
     });
-    this.filteredTemplates = temporaryTemplates.filter(t => t.template_type === event.value.toString());
+    this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === event.value.toString());
   }
 
   chooseTemplate(event) {
     this.selectedTemplate = event.value;
-    if (this.selectedTemplate.template_type === 'cloud' || this.selectedTemplate.template_type === 'ethernet_hub' || this.selectedTemplate.template_type === 'ethernet_switch') {
+    if (
+      this.selectedTemplate.template_type === 'cloud' ||
+      this.selectedTemplate.template_type === 'ethernet_hub' ||
+      this.selectedTemplate.template_type === 'ethernet_switch'
+    ) {
       this.selectedTemplate.compute_id = 'local';
     }
     // this.configurationForm.controls['name'].setValue(this.selectedTemplate.default_name_format);
@@ -84,8 +100,13 @@ export class TemplateListDialogComponent implements OnInit {
     } else {
       let x: number = this.positionForm.get('left').value;
       let y: number = this.positionForm.get('top').value;
-      if (x>(this.project.scene_width/2) || x<-(this.project.scene_width/2) || y>(this.project.scene_height/2) || y<-(this.project.scene_height)) {
-        this.toasterService.error('Please set correct position values.')
+      if (
+        x > this.project.scene_width / 2 ||
+        x < -(this.project.scene_width / 2) ||
+        y > this.project.scene_height / 2 ||
+        y < -this.project.scene_height
+      ) {
+        this.toasterService.error('Please set correct position values.');
       } else {
         let event: NodeAddedEvent = {
           template: this.selectedTemplate,
@@ -93,7 +114,7 @@ export class TemplateListDialogComponent implements OnInit {
           // name: this.configurationForm.get('name').value,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
-          y: y
+          y: y,
         };
         this.dialogRef.close(event);
       }
@@ -102,9 +123,9 @@ export class TemplateListDialogComponent implements OnInit {
 }
 
 export interface NodeAddedEvent {
-  template: Template,
-  server: string,
-  name?: string,
+  template: Template;
+  server: string;
+  name?: string;
   numberOfNodes: number;
   x: number;
   y: number;
@@ -118,7 +139,7 @@ export class TemplateDatabase {
   }
 
   constructor(private server: Server, private templateService: TemplateService) {
-    this.templateService.list(this.server).subscribe(templates => {
+    this.templateService.list(this.server).subscribe((templates) => {
       this.dataChange.next(templates);
     });
   }

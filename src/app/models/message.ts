@@ -1,4 +1,4 @@
 export class Message {
-    name?: string;
-    description: string;
+  name?: string;
+  description: string;
 }

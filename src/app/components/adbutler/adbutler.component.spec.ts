@@ -8,9 +8,8 @@ xdescribe('AdbutlerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AdbutlerComponent ]
-    })
-    .compileComponents();
+      declarations: [AdbutlerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

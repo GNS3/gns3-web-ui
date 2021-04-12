@@ -22,7 +22,7 @@ describe('AppComponent', () => {
       declarations: [AppComponent],
       imports: [RouterTestingModule, MatIconModule, NgxElectronModule],
       providers: [SettingsService, PersistenceService, ProgressService],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     electronService = TestBed.get(ElectronService);

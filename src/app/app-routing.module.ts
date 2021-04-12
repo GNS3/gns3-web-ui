@@ -74,10 +74,10 @@ const routes: Routes = [
       { path: '', redirectTo: 'servers', pathMatch: 'full' },
       { path: 'servers', component: ServersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
-      { 
-        path: 'server/:server_id/projects', 
+      {
+        path: 'server/:server_id/projects',
         component: ProjectsComponent,
-        resolve: { server : ServerResolve }
+        resolve: { server: ServerResolve },
       },
       { path: 'help', component: HelpComponent },
       { path: 'help/reportissue', component: ReportIssueComponent },
@@ -86,54 +86,87 @@ const routes: Routes = [
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'server/:server_id/systemstatus', component: SystemStatusComponent },
 
-      { path: 'server/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent},
-      { 
-        path: 'server/:server_id/project/:project_id/snapshots', 
+      { path: 'server/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent },
+      {
+        path: 'server/:server_id/project/:project_id/snapshots',
         component: ListOfSnapshotsComponent,
-        resolve: { server : ServerResolve }
+        resolve: { server: ServerResolve },
       },
       { path: 'server/:server_id/preferences', component: PreferencesComponent },
       { path: 'server/:server_id/preferences/gns3vm', component: Gns3vmComponent },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
-      { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent},
+      { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent },
 
       { path: 'server/:server_id/preferences/builtin/ethernet-hubs', component: EthernetHubsTemplatesComponent },
-      { path: 'server/:server_id/preferences/builtin/ethernet-hubs/addtemplate', component: EthernetHubsAddTemplateComponent },
-      { path: 'server/:server_id/preferences/builtin/ethernet-hubs/:template_id', component: EthernetHubsTemplateDetailsComponent },
+      {
+        path: 'server/:server_id/preferences/builtin/ethernet-hubs/addtemplate',
+        component: EthernetHubsAddTemplateComponent,
+      },
+      {
+        path: 'server/:server_id/preferences/builtin/ethernet-hubs/:template_id',
+        component: EthernetHubsTemplateDetailsComponent,
+      },
 
-      { path: 'server/:server_id/preferences/builtin/ethernet-switches', component: EthernetSwitchesTemplatesComponent },
-      { path: 'server/:server_id/preferences/builtin/ethernet-switches/addtemplate', component: EthernetSwitchesAddTemplateComponent },
-      { path: 'server/:server_id/preferences/builtin/ethernet-switches/:template_id', component: EthernetSwitchesTemplateDetailsComponent },
+      {
+        path: 'server/:server_id/preferences/builtin/ethernet-switches',
+        component: EthernetSwitchesTemplatesComponent,
+      },
+      {
+        path: 'server/:server_id/preferences/builtin/ethernet-switches/addtemplate',
+        component: EthernetSwitchesAddTemplateComponent,
+      },
+      {
+        path: 'server/:server_id/preferences/builtin/ethernet-switches/:template_id',
+        component: EthernetSwitchesTemplateDetailsComponent,
+      },
 
       { path: 'server/:server_id/preferences/builtin/cloud-nodes', component: CloudNodesTemplatesComponent },
-      { path: 'server/:server_id/preferences/builtin/cloud-nodes/addtemplate', component: CloudNodesAddTemplateComponent },
-      { path: 'server/:server_id/preferences/builtin/cloud-nodes/:template_id', component: CloudNodesTemplateDetailsComponent },
+      {
+        path: 'server/:server_id/preferences/builtin/cloud-nodes/addtemplate',
+        component: CloudNodesAddTemplateComponent,
+      },
+      {
+        path: 'server/:server_id/preferences/builtin/cloud-nodes/:template_id',
+        component: CloudNodesTemplateDetailsComponent,
+      },
 
       //{ path: 'server/:server_id/preferences/dynamips', component: DynamipsPreferencesComponent },
       { path: 'server/:server_id/preferences/dynamips/templates', component: IosTemplatesComponent },
       { path: 'server/:server_id/preferences/dynamips/templates/addtemplate', component: AddIosTemplateComponent },
       { path: 'server/:server_id/preferences/dynamips/templates/:template_id', component: IosTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/dynamips/templates/:template_id/copy', component: CopyIosTemplateComponent },
+      {
+        path: 'server/:server_id/preferences/dynamips/templates/:template_id/copy',
+        component: CopyIosTemplateComponent,
+      },
 
       // { path: 'server/:server_id/preferences/qemu', component: QemuPreferencesComponent },
       { path: 'server/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent },
-      { path: 'server/:server_id/preferences/qemu/templates/:template_id/copy', component: CopyQemuVmTemplateComponent },
+      {
+        path: 'server/:server_id/preferences/qemu/templates/:template_id/copy',
+        component: CopyQemuVmTemplateComponent,
+      },
       { path: 'server/:server_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent },
 
       // { path: 'server/:server_id/preferences/vpcs', component: VpcsPreferencesComponent },
       { path: 'server/:server_id/preferences/vpcs/templates', component: VpcsTemplatesComponent },
-      { path: 'server/:server_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent},
+      { path: 'server/:server_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent },
 
       // { path: 'server/:server_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent },
       { path: 'server/:server_id/preferences/virtualbox/templates', component: VirtualBoxTemplatesComponent },
-      { path: 'server/:server_id/preferences/virtualbox/templates/:template_id', component: VirtualBoxTemplateDetailsComponent },
+      {
+        path: 'server/:server_id/preferences/virtualbox/templates/:template_id',
+        component: VirtualBoxTemplateDetailsComponent,
+      },
       { path: 'server/:server_id/preferences/virtualbox/addtemplate', component: AddVirtualBoxTemplateComponent },
 
       // { path: 'server/:server_id/preferences/vmware', component: VmwarePreferencesComponent },
       { path: 'server/:server_id/preferences/vmware/templates', component: VmwareTemplatesComponent },
-      { path: 'server/:server_id/preferences/vmware/templates/:template_id', component: VmwareTemplateDetailsComponent },
+      {
+        path: 'server/:server_id/preferences/vmware/templates/:template_id',
+        component: VmwareTemplateDetailsComponent,
+      },
       { path: 'server/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent },
 
       // { path: 'server/:server_id/preferences/traceng', component: TracengPreferencesComponent },
@@ -142,37 +175,49 @@ const routes: Routes = [
       // { path: 'server/:server_id/preferences/traceng/addtemplate', component: AddTracengTemplateComponent },
 
       { path: 'server/:server_id/preferences/docker/templates', component: DockerTemplatesComponent },
-      { path: 'server/:server_id/preferences/docker/templates/:template_id', component: DockerTemplateDetailsComponent },
-      { path: 'server/:server_id/preferences/docker/templates/:template_id/copy', component: CopyDockerTemplateComponent },
+      {
+        path: 'server/:server_id/preferences/docker/templates/:template_id',
+        component: DockerTemplateDetailsComponent,
+      },
+      {
+        path: 'server/:server_id/preferences/docker/templates/:template_id/copy',
+        component: CopyDockerTemplateComponent,
+      },
       { path: 'server/:server_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent },
 
       { path: 'server/:server_id/preferences/iou/templates', component: IouTemplatesComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent },
       { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent },
-      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent }
-    ]
+      { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent },
+    ],
   },
-  { 
-    path: 'server/:server_id/project/:project_id', 
+  {
+    path: 'server/:server_id/project/:project_id',
     component: ProjectMapComponent,
-    canDeactivate: [ConsoleGuard]
+    canDeactivate: [ConsoleGuard],
   },
-  { 
-    path: 'server/:server_id/project/:project_id/nodes/:node_id', 
-    component: WebConsoleFullWindowComponent
+  {
+    path: 'server/:server_id/project/:project_id/nodes/:node_id',
+    component: WebConsoleFullWindowComponent,
   },
-  { 
-    path: 'static/web-ui/server/:server_id/project/:project_id/nodes/:node_id', 
-    component: WebConsoleFullWindowComponent
+  {
+    path: 'static/web-ui/server/:server_id/project/:project_id/nodes/:node_id',
+    component: WebConsoleFullWindowComponent,
   },
   {
     path: '**',
-    component: PageNotFoundComponent
-  }
+    component: PageNotFoundComponent,
+  },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { anchorScrolling: 'enabled', enableTracing: false, scrollPositionRestoration: 'enabled'})],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes, {
+      anchorScrolling: 'enabled',
+      enableTracing: false,
+      scrollPositionRestoration: 'enabled',
+    }),
+  ],
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

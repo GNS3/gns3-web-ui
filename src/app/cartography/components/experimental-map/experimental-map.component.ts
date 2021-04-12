@@ -9,7 +9,7 @@ import {
   SimpleChange,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 
 import { GraphLayout } from '../../widgets/graph-layout';
@@ -29,7 +29,7 @@ import { LayersManager } from '../../managers/layers-manager';
   selector: 'app-experimental-map',
   templateUrl: './experimental-map.component.html',
   styleUrls: ['./experimental-map.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
@@ -48,7 +48,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   private changesDetected: Subscription;
 
   protected settings = {
-    show_interface_labels: true
+    show_interface_labels: true,
   };
 
   constructor(

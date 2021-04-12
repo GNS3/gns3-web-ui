@@ -7,35 +7,32 @@ import { Symbol } from '../../../models/symbol';
 import { NodeService } from '../../../services/node.service';
 
 @Component({
-    selector: 'app-change-symbol-dialog',
-    templateUrl: './change-symbol-dialog.component.html',
-    styleUrls: ['./change-symbol-dialog.component.scss']
+  selector: 'app-change-symbol-dialog',
+  templateUrl: './change-symbol-dialog.component.html',
+  styleUrls: ['./change-symbol-dialog.component.scss'],
 })
 export class ChangeSymbolDialogComponent implements OnInit {
-    @Input() server: Server;
-    @Input() node: Node;
-    symbol: string;
+  @Input() server: Server;
+  @Input() node: Node;
+  symbol: string;
 
-    constructor(
-        public dialogRef: MatDialogRef<ChangeSymbolDialogComponent>,
-        private nodeService: NodeService
-    ) {}
+  constructor(public dialogRef: MatDialogRef<ChangeSymbolDialogComponent>, private nodeService: NodeService) {}
 
-    ngOnInit() {
-        this.symbol = this.node.symbol;
-    }
+  ngOnInit() {
+    this.symbol = this.node.symbol;
+  }
 
-    symbolChanged(chosenSymbol: string) {
-        this.symbol = chosenSymbol;
-    }
+  symbolChanged(chosenSymbol: string) {
+    this.symbol = chosenSymbol;
+  }
 
-    onCloseClick() {
-        this.dialogRef.close();
-    }
+  onCloseClick() {
+    this.dialogRef.close();
+  }
 
-    onSelectClick() {
-        this.nodeService.updateSymbol(this.server, this.node, this.symbol).subscribe(() => {
-            this.onCloseClick()
-        });
-    }
+  onSelectClick() {
+    this.nodeService.updateSymbol(this.server, this.node, this.symbol).subscribe(() => {
+      this.onCloseClick();
+    });
+  }
 }

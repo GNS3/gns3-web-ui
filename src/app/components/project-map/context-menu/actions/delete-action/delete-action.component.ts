@@ -12,7 +12,7 @@ import { LinksDataSource } from '../../../../../cartography/datasources/links-da
 
 @Component({
   selector: 'app-delete-action',
-  templateUrl: './delete-action.component.html'
+  templateUrl: './delete-action.component.html',
 })
 export class DeleteActionComponent implements OnInit {
   @Input() server: Server;
@@ -33,21 +33,21 @@ export class DeleteActionComponent implements OnInit {
 
   delete() {
     this.nodes.forEach((node) => {
-        this.nodesDataSource.remove(node);
+      this.nodesDataSource.remove(node);
 
-        this.nodeService.delete(this.server, node).subscribe((node: Node) => {});
+      this.nodeService.delete(this.server, node).subscribe((node: Node) => {});
     });
 
     this.drawings.forEach((drawing) => {
-        this.drawingsDataSource.remove(drawing);
+      this.drawingsDataSource.remove(drawing);
 
-        this.drawingService.delete(this.server, drawing).subscribe((drawing: Drawing) => {});
+      this.drawingService.delete(this.server, drawing).subscribe((drawing: Drawing) => {});
     });
 
     this.links.forEach((link) => {
-        this.linksDataSource.remove(link);
+      this.linksDataSource.remove(link);
 
-        this.linkService.deleteLink(this.server, link).subscribe(() => {});
+      this.linkService.deleteLink(this.server, link).subscribe(() => {});
     });
   }
 }

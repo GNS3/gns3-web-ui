@@ -1,3 +1,3 @@
 export class Builtin {
-    default_nat_interface: string;
+  default_nat_interface: string;
 }

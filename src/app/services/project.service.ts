@@ -14,7 +14,7 @@ export class ProjectService {
   public projectListSubject = new Subject<boolean>();
 
   constructor(
-    private httpServer: HttpServer, 
+    private httpServer: HttpServer,
     private settingsService: SettingsService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
@@ -56,7 +56,7 @@ export class ProjectService {
     return this.httpServer.post<Project>(server, `/projects`, { name: project_name, project_id: project_id });
   }
 
-  update(server: Server, project: Project) : Observable<Project> {
+  update(server: Server, project: Project): Observable<Project> {
     return this.httpServer.put<Project>(server, `/projects/${project.project_id}`, {
       auto_close: project.auto_close,
       auto_open: project.auto_open,
@@ -66,7 +66,7 @@ export class ProjectService {
       name: project.name,
       scene_width: project.scene_width,
       scene_height: project.scene_height,
-      show_interface_labels: project.show_interface_labels
+      show_interface_labels: project.show_interface_labels,
     });
   }
 
@@ -83,13 +83,13 @@ export class ProjectService {
   }
 
   export(server: Server, project_id: string): Observable<any> {
-    return this.httpServer.get(server, `/projects/${project_id}/export`)
+    return this.httpServer.get(server, `/projects/${project_id}/export`);
   }
 
   getStatistics(server: Server, project_id: string): Observable<any> {
     return this.httpServer.get(server, `/projects/${project_id}/stats`);
   }
-  
+
   duplicate(server: Server, project_id: string, project_name): Observable<any> {
     return this.httpServer.post(server, `/projects/${project_id}/duplicate`, { name: project_name });
   }

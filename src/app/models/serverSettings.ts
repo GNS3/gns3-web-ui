@@ -9,14 +9,14 @@ import { VPCS } from './server-settings-models/vpcs';
 import { VirtualBox } from './server-settings-models/virtual-box';
 
 export class ServerSettings {
-    Builtin: Builtin;
-    Docker: Docker;
-    Dynamips: Dynamips;
-    Graphicsview: GraphicsView;
-    IOU: IOU;
-    Qemu: Qemu;
-    VMware: VMware;
-    VPCS: VPCS;
-    VirtualBox:  VirtualBox;
-    modification_uuid: string
+  Builtin: Builtin;
+  Docker: Docker;
+  Dynamips: Dynamips;
+  Graphicsview: GraphicsView;
+  IOU: IOU;
+  Qemu: Qemu;
+  VMware: VMware;
+  VPCS: VPCS;
+  VirtualBox: VirtualBox;
+  modification_uuid: string;
 }

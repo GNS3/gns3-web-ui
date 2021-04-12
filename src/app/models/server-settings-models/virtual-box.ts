@@ -1,3 +1,3 @@
 export class VirtualBox {
-    vboxmanage_path: string;
+  vboxmanage_path: string;
 }

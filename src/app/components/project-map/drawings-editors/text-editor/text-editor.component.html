@@ -2,16 +2,22 @@
 
 <div class="modal-form-container">
   <mat-form-field class="form-field">
-    <input matInput placeholder="Fill color" type="color" (ngModelChange)="changeTextColor($event)" [(ngModel)]="element.fill">
+    <input
+      matInput
+      placeholder="Fill color"
+      type="color"
+      (ngModelChange)="changeTextColor($event)"
+      [(ngModel)]="element.fill"
+    />
   </mat-form-field>
 
   <form [formGroup]="formGroup">
     <mat-form-field class="form-field">
-      <input formControlName="rotation" matInput placeholder="Rotation" type="text">
+      <input formControlName="rotation" matInput placeholder="Rotation" type="text" />
     </mat-form-field>
   </form>
 
-  <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text" [readonly]="!isTextEditable"></textarea> 
+  <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text" [readonly]="!isTextEditable"></textarea>
 </div>
 
 <div mat-dialog-actions>

@@ -18,43 +18,50 @@ import { VmwareTemplatesComponent } from './vmware-templates.component';
 import { VmwareService } from '../../../../services/vmware.service';
 
 export class MockedVmwareService {
-    public getTemplates(server: Server) {
-        return of([{} as VmwareTemplate]);
-    }
+  public getTemplates(server: Server) {
+    return of([{} as VmwareTemplate]);
+  }
 }
 
 describe('VmwareTemplatesComponent', () => {
-    let component: VmwareTemplatesComponent;
-    let fixture: ComponentFixture<VmwareTemplatesComponent>;
+  let component: VmwareTemplatesComponent;
+  let fixture: ComponentFixture<VmwareTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVmwareService = new MockedVmwareService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: VmwareService, useValue: mockedVmwareService }
-          ],
-          declarations: [
-              VmwareTemplatesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedVmwareService = new MockedVmwareService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(VmwareTemplatesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: VmwareService, useValue: mockedVmwareService },
+      ],
+      declarations: [VmwareTemplatesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VmwareTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

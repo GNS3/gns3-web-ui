@@ -8,28 +8,28 @@ import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { of } from 'rxjs';
 
 export class MockedServerSettingsService {
-    getSettingsForQemu(server: Server) {
-        return of([]);
-    }
+  getSettingsForQemu(server: Server) {
+    return of([]);
+  }
 
-    updateSettingsForQemu(server: Server, qemuSettings: QemuSettings) {
-        return of([]);
-    }
+  updateSettingsForQemu(server: Server, qemuSettings: QemuSettings) {
+    return of([]);
+  }
 }
 
 describe('ServerSettingsService', () => {
-    let httpServer: HttpServer;
+  let httpServer: HttpServer;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, AppTestingModule],
-            providers: [HttpServer, ServerSettingsService]
-        });
-
-        httpServer = TestBed.get(HttpServer);
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, AppTestingModule],
+      providers: [HttpServer, ServerSettingsService],
     });
 
-    it('should be created', inject([ServerSettingsService], (service: ServerSettingsService) => {
-        expect(service).toBeTruthy();
-    }));
+    httpServer = TestBed.get(HttpServer);
+  });
+
+  it('should be created', inject([ServerSettingsService], (service: ServerSettingsService) => {
+    expect(service).toBeTruthy();
+  }));
 });

@@ -16,11 +16,7 @@ describe('MovingTool', () => {
     tool = new MovingTool(context);
     svg = new TestSVGCanvas();
 
-    node = svg.canvas
-      .append<SVGGElement>('g')
-      .attr('class', 'node')
-      .attr('x', 10)
-      .attr('y', 20);
+    node = svg.canvas.append<SVGGElement>('g').attr('class', 'node').attr('x', 10).attr('y', 20);
 
     tool.setEnabled(true);
     tool.draw(svg.svg, context);
@@ -39,7 +35,7 @@ describe('MovingTool', () => {
           relatedTarget: svg.svg.node(),
           screenY: 1024,
           screenX: 1024,
-          view: window
+          view: window,
         })
       );
 
@@ -70,7 +66,7 @@ describe('MovingTool', () => {
           relatedTarget: svg.svg.node(),
           screenY: 1024,
           screenX: 1024,
-          view: window
+          view: window,
         })
       );
 
@@ -101,7 +97,7 @@ describe('MovingTool', () => {
           relatedTarget: svg.svg.node(),
           screenY: 1024,
           screenX: 1024,
-          view: window
+          view: window,
         })
       );
 

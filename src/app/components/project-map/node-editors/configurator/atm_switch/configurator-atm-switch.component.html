@@ -1,106 +1,100 @@
-<h1 mat-dialog-title>Configurator for node {{name}}</h1>
+<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
 
 <div class="modal-form-container">
-    <div class="content">
-        <div class="default-content">
-            <mat-card>
-                <table *ngIf="nodeMappingsDataSource.length" class="table" mat-table [dataSource]="nodeMappingsDataSource">
-                    <ng-container matColumnDef="portIn">
-                        <th mat-header-cell *matHeaderCellDef> Port : VPI : VCI </th>
-                        <td mat-cell *matCellDef="let element"> {{element.portIn}} </td>
-                    </ng-container>
-                
-                    <ng-container matColumnDef="portOut">
-                        <th mat-header-cell *matHeaderCellDef> Port : VPI : VCI </th>
-                        <td mat-cell *matCellDef="let element"> {{element.portOut}} </td>
-                    </ng-container>
-                
-                    <ng-container matColumnDef="actions">
-                        <th mat-header-cell *matHeaderCellDef> Actions </th>
-                        <td mat-cell *matCellDef="let element">
-                            <button mat-icon-button matTooltip="Delete port" matTooltipClass="custom-tooltip" (click)="delete(element)">
-                                <mat-icon aria-label="Delete port">delete</mat-icon>
-                            </button>
-                        </td>
-                    </ng-container>
-                    
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table><br/>
+  <div class="content">
+    <div class="default-content">
+      <mat-card>
+        <table *ngIf="nodeMappingsDataSource.length" class="table" mat-table [dataSource]="nodeMappingsDataSource">
+          <ng-container matColumnDef="portIn">
+            <th mat-header-cell *matHeaderCellDef>Port : VPI : VCI</th>
+            <td mat-cell *matCellDef="let element">{{ element.portIn }}</td>
+          </ng-container>
 
-                <form [formGroup]="nameForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="node.name" 
-                            formControlName="name"
-                            placeholder="Name">
-                    </mat-form-field>
-                </form>
+          <ng-container matColumnDef="portOut">
+            <th mat-header-cell *matHeaderCellDef>Port : VPI : VCI</th>
+            <td mat-cell *matCellDef="let element">{{ element.portOut }}</td>
+          </ng-container>
 
-                <mat-checkbox [(ngModel)]="useVpiOnly">
-                    Use VPI only (VP tunnel)
-                </mat-checkbox>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                matTooltip="Delete port"
+                matTooltipClass="custom-tooltip"
+                (click)="delete(element)"
+              >
+                <mat-icon aria-label="Delete port">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-                <form [formGroup]="inputForm">
-                    Source
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="sourcePort" 
-                            formControlName="sourcePort"
-                            placeholder="Port">
-                    </mat-form-field>
-                </form>
-                <form [formGroup]="abstractForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="sourceVpi" 
-                            formControlName="sourceVpi"
-                            placeholder="VPI">
-                    </mat-form-field>
-                </form>
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="sourceVci" 
-                            formControlName="sourceVci"
-                            placeholder="VCI">
-                    </mat-form-field>
-                    Destination
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="destinationPort" 
-                            formControlName="destinationPort"
-                            placeholder="Port">
-                    </mat-form-field>
-                </form>
-                <form [formGroup]="abstractForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="destinationVpi" 
-                            formControlName="destinationVpi"
-                            placeholder="VPI">
-                    </mat-form-field>
-                </form>
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="destinationVci" 
-                            formControlName="destinationVci"
-                            placeholder="VCI">
-                    </mat-form-field>
-                </form>
-                
-                <button mat-button class="form-field" (click)="add()">Add</button>
-            </mat-card>
-        </div>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <br />
+
+        <form [formGroup]="nameForm">
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="node.name" formControlName="name" placeholder="Name" />
+          </mat-form-field>
+        </form>
+
+        <mat-checkbox [(ngModel)]="useVpiOnly"> Use VPI only (VP tunnel) </mat-checkbox>
+
+        <form [formGroup]="inputForm">
+          Source
+          <mat-form-field class="form-field">
+            <input matInput type="number" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
+          </mat-form-field>
+        </form>
+        <form [formGroup]="abstractForm">
+          <mat-form-field class="form-field">
+            <input matInput type="number" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
+          </mat-form-field>
+        </form>
+        <form [formGroup]="inputForm">
+          <mat-form-field class="form-field">
+            <input matInput type="number" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
+          </mat-form-field>
+          Destination
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="number"
+              [(ngModel)]="destinationPort"
+              formControlName="destinationPort"
+              placeholder="Port"
+            />
+          </mat-form-field>
+        </form>
+        <form [formGroup]="abstractForm">
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="number"
+              [(ngModel)]="destinationVpi"
+              formControlName="destinationVpi"
+              placeholder="VPI"
+            />
+          </mat-form-field>
+        </form>
+        <form [formGroup]="inputForm">
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="number"
+              [(ngModel)]="destinationVci"
+              formControlName="destinationVci"
+              placeholder="VCI"
+            />
+          </mat-form-field>
+        </form>
+
+        <button mat-button class="form-field" (click)="add()">Add</button>
+      </mat-card>
     </div>
+  </div>
 </div>
 
 <div mat-dialog-actions>

@@ -42,7 +42,7 @@ describe('NodesWidget', () => {
           relatedTarget: drewNode,
           screenY: 1024,
           screenX: 1024,
-          view: window
+          view: window,
         })
       );
 

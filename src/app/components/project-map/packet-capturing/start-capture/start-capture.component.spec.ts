@@ -1,4 +1,4 @@
-import { StartCaptureDialogComponent } from "./start-capture.component";
+import { StartCaptureDialogComponent } from './start-capture.component';
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -19,70 +19,78 @@ import { NodesDataSource } from '../../../../cartography/datasources/nodes-datas
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
 
 describe('StartCaptureDialogComponent', () => {
-    let component: StartCaptureDialogComponent;
-    let fixture: ComponentFixture<StartCaptureDialogComponent>;
+  let component: StartCaptureDialogComponent;
+  let fixture: ComponentFixture<StartCaptureDialogComponent>;
 
-    let mockedToasterService = new MockedToasterService;
-    let mockedLinkService = new MockedLinkService;
-    let mockedNodesDataSource = new MockedNodesDataSource;
-    let dialogRef = {
-        close: jasmine.createSpy('close')
-    };
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatDialogModule, FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
-          providers: [
-            { provide: MatDialogRef, useValue: dialogRef },
-            { provide: MAT_DIALOG_DATA, useValue: [] },
-            { provide: ToasterService, useValue: mockedToasterService },
-            { provide: LinkService, useValue: mockedLinkService },
-            { provide: NodesDataSource, useValue: mockedNodesDataSource },
-            { provide: PacketCaptureService }
-          ],
-          declarations: [
-            StartCaptureDialogComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedToasterService = new MockedToasterService();
+  let mockedLinkService = new MockedLinkService();
+  let mockedNodesDataSource = new MockedNodesDataSource();
+  let dialogRef = {
+    close: jasmine.createSpy('close'),
+  };
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(StartCaptureDialogComponent);
-        component = fixture.componentInstance;
-        component.link = {link_type: 'ethernet', nodes: [{node_id: '1'}, {node_id: '2'}]} as Link;
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatDialogModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+      ],
+      providers: [
+        { provide: MatDialogRef, useValue: dialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: LinkService, useValue: mockedLinkService },
+        { provide: NodesDataSource, useValue: mockedNodesDataSource },
+        { provide: PacketCaptureService },
+      ],
+      declarations: [StartCaptureDialogComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(StartCaptureDialogComponent);
+    component = fixture.componentInstance;
+    component.link = { link_type: 'ethernet', nodes: [{ node_id: '1' }, { node_id: '2' }] } as Link;
+  });
 
-    it('should call link service when input is valid', () => {
-        component.inputForm.controls['linkType'].setValue('Ethernet');
-        component.inputForm.controls['fileName'].setValue('SampleFileName');
-        spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onYesClick();
+  it('should call link service when input is valid', () => {
+    component.inputForm.controls['linkType'].setValue('Ethernet');
+    component.inputForm.controls['fileName'].setValue('SampleFileName');
+    spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
 
-        expect(mockedLinkService.startCaptureOnLink).toHaveBeenCalled();
-    });
+    component.onYesClick();
 
-    it('should not call link service when link type is not set', () => {
-        component.inputForm.controls['fileName'].setValue('SampleFileName');
-        spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
+    expect(mockedLinkService.startCaptureOnLink).toHaveBeenCalled();
+  });
 
-        component.onYesClick();
+  it('should not call link service when link type is not set', () => {
+    component.inputForm.controls['fileName'].setValue('SampleFileName');
+    spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
 
-        expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
-    });
+    component.onYesClick();
 
-    it('should not call link service when filename is empty', () => {
-        component.inputForm.controls['linkType'].setValue('Ethernet');
-        component.inputForm.controls['fileName'].setValue('');
-        spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
+    expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
+  });
 
-        component.onYesClick();
+  it('should not call link service when filename is empty', () => {
+    component.inputForm.controls['linkType'].setValue('Ethernet');
+    component.inputForm.controls['fileName'].setValue('');
+    spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
 
-        expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
-    });
+    component.onYesClick();
+
+    expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
+  });
 });

@@ -9,7 +9,7 @@ import {
   SimpleChange,
   EventEmitter,
   Output,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { Selection, select } from 'd3-selection';
 
@@ -38,7 +38,7 @@ import { MapSettingsService } from '../../../services/mapsettings.service';
 @Component({
   selector: 'app-d3-map',
   templateUrl: './d3-map.component.html',
-  styleUrls: ['./d3-map.component.scss']
+  styleUrls: ['./d3-map.component.scss'],
 })
 export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
@@ -60,7 +60,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   private subscriptions: Subscription[] = [];
   private drawLinkTool: boolean;
   protected settings = {
-    show_interface_labels: true
+    show_interface_labels: true,
   };
   public gridVisibility: number = 0;
 
@@ -148,9 +148,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
-    this.subscriptions.push(
-      this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.redraw())
-    );
+    this.subscriptions.push(this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.redraw()));
 
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
@@ -172,7 +170,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     );
 
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? 1 : 0;
-    this.mapSettingsService.isScrollDisabled.subscribe(val => this.resize(val));
+    this.mapSettingsService.isScrollDisabled.subscribe((val) => this.resize(val));
   }
 
   ngOnDestroy() {
@@ -190,10 +188,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public createGraph(domElement: HTMLElement) {
     const rootElement = select(domElement);
     this.svg = rootElement.select<SVGSVGElement>('svg');
-    this.graphLayout.connect(
-      this.svg,
-      this.context
-    );
+    this.graphLayout.connect(this.svg, this.context);
     this.graphLayout.draw(this.svg, this.context);
     this.mapChangeDetectorRef.hasBeenDrawn = true;
   }
@@ -227,11 +222,23 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateGrid() {
-    if (this.project.grid_size && this.project.grid_size > 0) this.nodeGridX = (this.project.scene_width/2 - (Math.floor(this.project.scene_width/2 / this.project.grid_size) * this.project.grid_size));
-    if (this.project.grid_size && this.project.grid_size > 0) this.nodeGridY = (this.project.scene_height/2 - (Math.floor(this.project.scene_height/2 / this.project.grid_size) * this.project.grid_size));
+    if (this.project.grid_size && this.project.grid_size > 0)
+      this.nodeGridX =
+        this.project.scene_width / 2 -
+        Math.floor(this.project.scene_width / 2 / this.project.grid_size) * this.project.grid_size;
+    if (this.project.grid_size && this.project.grid_size > 0)
+      this.nodeGridY =
+        this.project.scene_height / 2 -
+        Math.floor(this.project.scene_height / 2 / this.project.grid_size) * this.project.grid_size;
 
-    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0) this.drawingGridX = (this.project.scene_width/2 - (Math.floor(this.project.scene_width/2 / this.project.drawing_grid_size) * this.project.drawing_grid_size));
-    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0) this.drawingGridY = (this.project.scene_height/2 - (Math.floor(this.project.scene_height/2 / this.project.drawing_grid_size) * this.project.drawing_grid_size));
+    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
+      this.drawingGridX =
+        this.project.scene_width / 2 -
+        Math.floor(this.project.scene_width / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
+    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
+      this.drawingGridY =
+        this.project.scene_height / 2 -
+        Math.floor(this.project.scene_height / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
   }
 
   @HostListener('window:resize', ['$event'])

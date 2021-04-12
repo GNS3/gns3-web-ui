@@ -7,19 +7,14 @@ import { ToasterService } from '../../../services/toaster.service';
 @Component({
   selector: 'app-console',
   templateUrl: './console.component.html',
-  styleUrls: ['./console.component.scss']
+  styleUrls: ['./console.component.scss'],
 })
 export class ConsoleComponent implements OnInit {
-
   consoleForm = new FormGroup({
-    'command': new FormControl(''),
+    command: new FormControl(''),
   });
-  
-  constructor(
-    private router: Router,
-    private consoleService: ConsoleService,
-    private toasterService: ToasterService
-  ) { }
+
+  constructor(private router: Router, private consoleService: ConsoleService, private toasterService: ToasterService) {}
 
   ngOnInit() {
     const commandControl = this.consoleForm.get('command');
@@ -33,8 +28,7 @@ export class ConsoleComponent implements OnInit {
   save() {
     const formValue = this.consoleForm.value;
     this.consoleService.command = formValue.command;
-    this.toasterService.success("Console command has been updated.");
+    this.toasterService.success('Console command has been updated.');
     this.goBack();
   }
-
 }

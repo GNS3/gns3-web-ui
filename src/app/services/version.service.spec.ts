@@ -27,7 +27,7 @@ describe('VersionService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, VersionService]
+      providers: [HttpServer, VersionService],
     });
 
     httpClient = TestBed.get(HttpClient);

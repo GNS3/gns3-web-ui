@@ -1,11 +1,11 @@
-<div class="ad" [ngClass]="{hidden: !isVisible, lightTheme: isLightThemeEnabled}">
-    <div class="adInnerContainer">
-        <span class="adBody">
-            <a [href]="adUrl" target="_blank">{{ adBody }}</a>
-        </span>
-        <button>
-            <a target="_blank" [href]="adUrl">{{ buttonLabel }}</a>
-        </button>
-    </div>
-    <mat-icon (click)="hide()" class="close-button">close</mat-icon>
+<div class="ad" [ngClass]="{ hidden: !isVisible, lightTheme: isLightThemeEnabled }">
+  <div class="adInnerContainer">
+    <span class="adBody">
+      <a [href]="adUrl" target="_blank">{{ adBody }}</a>
+    </span>
+    <button>
+      <a target="_blank" [href]="adUrl">{{ buttonLabel }}</a>
+    </button>
+  </div>
+  <mat-icon (click)="hide()" class="close-button">close</mat-icon>
 </div>

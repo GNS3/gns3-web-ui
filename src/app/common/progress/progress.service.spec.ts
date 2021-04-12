@@ -7,7 +7,7 @@ describe('ProgressService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProgressService]
+      providers: [ProgressService],
     });
 
     progressService = TestBed.get(ProgressService);
@@ -30,7 +30,7 @@ describe('ProgressService', () => {
   });
 
   it('should propagate event on error', () => {
-    const error = {error: 'Error'};
+    const error = { error: 'Error' };
     progressService.setError(error);
     expect(progressService.state.next).toHaveBeenCalledWith(new State(false, error.error));
   });

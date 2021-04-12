@@ -21,9 +21,9 @@ describe('NodeDraggedComponent', () => {
       providers: [
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: NodeService, useValue: mockedNodeService },
-        { provide: NodesEventSource, useValue: mockedNodesEventSource }
+        { provide: NodesEventSource, useValue: mockedNodesEventSource },
       ],
-      declarations: [NodeDraggedComponent]
+      declarations: [NodeDraggedComponent],
     }).compileComponents();
   }));
 
@@ -66,7 +66,7 @@ describe('NodeDraggedComponent', () => {
       width: 0,
       x: 0,
       y: 0,
-      z: 0
+      z: 0,
     };
     const draggedDataEvent = new DraggedDataEvent<MapNode>(mapNode, 0, 0);
     spyOn(mockedNodeService, 'updatePosition').and.returnValue(Observable.of());

@@ -18,43 +18,50 @@ import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hu
 import { EthernetHubsTemplatesComponent } from './ethernet-hubs-templates.component';
 
 export class MockedBuiltInTemplatesService {
-    public getTemplates(server: Server) {
-        return of([{} as EthernetHubTemplate]);
-    }
+  public getTemplates(server: Server) {
+    return of([{} as EthernetHubTemplate]);
+  }
 }
 
 describe('EthernetHubsTemplatesComponent', () => {
-    let component: EthernetHubsTemplatesComponent;
-    let fixture: ComponentFixture<EthernetHubsTemplatesComponent>;
+  let component: EthernetHubsTemplatesComponent;
+  let fixture: ComponentFixture<EthernetHubsTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService }
-          ],
-          declarations: [
-              EthernetHubsTemplatesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(EthernetHubsTemplatesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
+      ],
+      declarations: [EthernetHubsTemplatesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(EthernetHubsTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

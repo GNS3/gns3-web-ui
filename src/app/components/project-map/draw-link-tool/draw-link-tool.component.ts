@@ -15,7 +15,7 @@ import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node
 @Component({
   selector: 'app-draw-link-tool',
   templateUrl: './draw-link-tool.component.html',
-  styleUrls: ['./draw-link-tool.component.scss']
+  styleUrls: ['./draw-link-tool.component.scss'],
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   @Input() links: Link[];
@@ -33,7 +33,7 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.nodeClicked$ = this.nodesEventSource.clicked.subscribe(clickedEvent => {
+    this.nodeClicked$ = this.nodesEventSource.clicked.subscribe((clickedEvent) => {
       let node = this.mapNodeToNode.convert(clickedEvent.datum);
       this.nodeSelectInterfaceMenu.open(node, clickedEvent.y, clickedEvent.x);
     });
@@ -55,7 +55,7 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
     } else {
       this.drawingLineTool.start(node.x + node.width / 2, node.y + node.height / 2, {
         node: node,
-        port: port
+        port: port,
       });
     }
   }

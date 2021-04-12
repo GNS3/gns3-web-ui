@@ -1,4 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, ElementRef, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  ElementRef,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Observable, Subject, Subscription, from } from 'rxjs';
@@ -31,7 +39,12 @@ import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-nod
 import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { ToolsService } from '../../services/tools.service';
-import { DrawingContextMenu, LinkContextMenu, LabelContextMenu, InterfaceLabelContextMenu } from '../../cartography/events/event-source';
+import {
+  DrawingContextMenu,
+  LinkContextMenu,
+  LabelContextMenu,
+  InterfaceLabelContextMenu,
+} from '../../cartography/events/event-source';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { SelectionManager } from '../../cartography/managers/selection-manager';
 import { SelectionTool } from '../../cartography/tools/selection-tool';
@@ -59,7 +72,13 @@ import { mixinColor } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
-import { MapNodesDataSource, MapLinksDataSource, MapDrawingsDataSource, MapSymbolsDataSource, Indexed } from '../../cartography/datasources/map-datasource';
+import {
+  MapNodesDataSource,
+  MapLinksDataSource,
+  MapDrawingsDataSource,
+  MapSymbolsDataSource,
+  Indexed,
+} from '../../cartography/datasources/map-datasource';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
@@ -75,12 +94,11 @@ import { NodeConsoleService } from '../../services/nodeConsole.service';
 import * as Mousetrap from 'mousetrap';
 import { SymbolService } from '../../services/symbol.service';
 
-
 @Component({
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
-  styleUrls: ['./project-map.component.scss']
+  styleUrls: ['./project-map.component.scss'],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
@@ -105,7 +123,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     selection: true,
     moving: false,
     draw_link: false,
-    text_editing: true
+    text_editing: true,
   };
 
   protected settings: Settings;
@@ -120,7 +138,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
-  private projectMapSubscription: Subscription =  new Subscription();
+  private projectMapSubscription: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -189,19 +207,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.addKeyboardListeners();
 
     this.themeService.themeChanged.subscribe((value: string) => {
-      this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
+      this.themeService.getActualTheme() === 'light'
+        ? (this.isLightThemeEnabled = true)
+        : (this.isLightThemeEnabled = false);
     });
   }
 
   getSettings() {
-    this.themeService.getActualTheme() === 'light' ? this.isLightThemeEnabled = true : this.isLightThemeEnabled = false;
+    this.themeService.getActualTheme() === 'light'
+      ? (this.isLightThemeEnabled = true)
+      : (this.isLightThemeEnabled = false);
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
     this.symbolScaling = this.mapSettingsService.getSymbolScaling();
     this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
-    this.mapSettingsService.logConsoleSubject.subscribe(value => this.isConsoleVisible = value);
+    this.mapSettingsService.logConsoleSubject.subscribe((value) => (this.isConsoleVisible = value));
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
@@ -247,23 +269,29 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.projectMapSubscription.add(this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
-      this.showMessage({
-          type: 'error',
-          message: message
-      });
-    }));
-
-    this.projectMapSubscription.add(this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+    this.projectMapSubscription.add(
+      this.projectWebServiceHandler.errorNotificationEmitter.subscribe((message) => {
         this.showMessage({
-            type: 'warning',
-            message: message
+          type: 'error',
+          message: message,
         });
-    }));
+      })
+    );
 
-    this.projectMapSubscription.add(this.mapSettingsService.symbolScalingSubject.subscribe((value) => {
+    this.projectMapSubscription.add(
+      this.projectWebServiceHandler.warningNotificationEmitter.subscribe((message) => {
+        this.showMessage({
+          type: 'warning',
+          message: message,
+        });
+      })
+    );
+
+    this.projectMapSubscription.add(
+      this.mapSettingsService.symbolScalingSubject.subscribe((value) => {
         if (value) this.applyScalingOfNodeSymbols();
-    }));
+      })
+    );
   }
 
   applyScalingOfNodeSymbols() {
@@ -283,29 +311,29 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       from(this.serverService.get(server_id))
         .pipe(
           mergeMap((server: Server) => {
-            if (!server ) this.router.navigate(['/servers']);
+            if (!server) this.router.navigate(['/servers']);
 
             this.server = server;
             return this.projectService.get(server, paramMap.get('project_id')).pipe(
-              map(project => {
+              map((project) => {
                 return project;
               })
             );
           }),
           mergeMap((project: Project) => {
             this.project = project;
-            if (!project ) this.router.navigate(['/servers']);
+            if (!project) this.router.navigate(['/servers']);
 
             this.projectService.open(this.server, this.project.project_id);
             this.title.setTitle(this.project.name);
 
             this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
-            
+
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
             this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
             if (this.project.status === 'opened') {
-              return new Observable<Project>(observer => {
+              return new Observable<Project>((observer) => {
                 observer.next(this.project);
               });
             } else {
@@ -317,7 +345,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           (project: Project) => {
             this.onProjectLoad(project);
           },
-          error => {
+          (error) => {
             this.progressService.setError(error);
           },
           () => {
@@ -374,10 +402,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       const selected = this.selectionManager.getSelected();
 
       selected
-        .filter(item => item instanceof MapNode)
+        .filter((item) => item instanceof MapNode)
         .forEach((item: MapNode) => {
           const node = this.mapNodeToNode.convert(item);
-          this.nodeService.delete(this.server, node).subscribe(data => {
+          this.nodeService.delete(this.server, node).subscribe((data) => {
             this.toasterService.success('Node has been deleted');
           });
         });
@@ -407,7 +435,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         this.progressService.deactivate();
       });
-      this.projectMapSubscription.add(subscription);
+    this.projectMapSubscription.add(subscription);
   }
 
   setUpProjectWS(project: Project) {
@@ -458,15 +486,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
-      const node = this.nodes.find(n => n.node_id === eventLabel.label.nodeId);
+      const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
       this.contextMenu.openMenuForLabel(label, node, eventLabel.event.pageY, eventLabel.event.pageX);
     });
 
-    const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe((eventInterfaceLabel: InterfaceLabelContextMenu) => {
-      const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
-      const link = this.links.find(l => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
-      this.contextMenu.openMenuForInterfaceLabel(linkNode, link, eventInterfaceLabel.event.pageY, eventInterfaceLabel.event.pageX);
-    });
+    const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
+      (eventInterfaceLabel: InterfaceLabelContextMenu) => {
+        const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
+        const link = this.links.find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
+        this.contextMenu.openMenuForInterfaceLabel(
+          linkNode,
+          link,
+          eventInterfaceLabel.event.pageY,
+          eventInterfaceLabel.event.pageX
+        );
+      }
+    );
 
     const onContextMenu = this.selectionTool.contextMenuOpened.subscribe((event) => {
       const selectedItems = this.selectionManager.getSelected();
@@ -485,7 +520,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         } else if (elem instanceof MapLabel) {
           labels.push(this.mapLabelToLabel.convert(elem));
         } else if (elem instanceof MapLink) {
-          links.push(this.mapLinkToLink.convert(elem))
+          links.push(this.mapLinkToLink.convert(elem));
         }
       });
 
@@ -510,104 +545,120 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onNodeCreation(nodeAddedEvent: NodeAddedEvent) {
-    if(!nodeAddedEvent) {
+    if (!nodeAddedEvent) {
       return;
     }
 
     this.progressService.activate();
-    this.nodeService.createFromTemplate(this.server, this.project, nodeAddedEvent.template, nodeAddedEvent.x, nodeAddedEvent.y, nodeAddedEvent.server).subscribe((node: Node) => {
-      // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
-      //   node.name = nodeAddedEvent.name;
-      //   this.nodeService.updateNode(this.server, node).subscribe(()=>{});
-      // }
-      this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
+    this.nodeService
+      .createFromTemplate(
+        this.server,
+        this.project,
+        nodeAddedEvent.template,
+        nodeAddedEvent.x,
+        nodeAddedEvent.y,
+        nodeAddedEvent.server
+      )
+      .subscribe(
+        (node: Node) => {
+          // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
+          //   node.name = nodeAddedEvent.name;
+          //   this.nodeService.updateNode(this.server, node).subscribe(()=>{});
+          // }
+          this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
+            nodes
+              .filter((node) => node.label.style === null)
+              .forEach((node) => {
+                const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
+                this.nodeService.updateLabel(this.server, node, fixedNode.label).subscribe();
+              });
 
-        nodes.filter((node) => node.label.style === null).forEach((node) => {
-          const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
-          this.nodeService.updateLabel(this.server, node, fixedNode.label).subscribe();
-        });
-
-        this.nodesDataSource.set(nodes);
-        nodeAddedEvent.numberOfNodes--;
-        if (nodeAddedEvent.numberOfNodes > 0) {
-          nodeAddedEvent.x = nodeAddedEvent.x + 50 < this.project.scene_width/2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
-          nodeAddedEvent.y = nodeAddedEvent.y + 50 < this.project.scene_height/2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
-          this.onNodeCreation(nodeAddedEvent);
-        } else {
+            this.nodesDataSource.set(nodes);
+            nodeAddedEvent.numberOfNodes--;
+            if (nodeAddedEvent.numberOfNodes > 0) {
+              nodeAddedEvent.x =
+                nodeAddedEvent.x + 50 < this.project.scene_width / 2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
+              nodeAddedEvent.y =
+                nodeAddedEvent.y + 50 < this.project.scene_height / 2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
+              this.onNodeCreation(nodeAddedEvent);
+            } else {
+              this.progressService.deactivate();
+            }
+          });
+        },
+        (error) => {
+          this.toasterService.error(error.error.message);
           this.progressService.deactivate();
         }
-      });
-    },
-    error => {
-      this.toasterService.error(error.error.message);
-      this.progressService.deactivate();
-    });
+      );
   }
 
   public fitInView() {
-    this.drawings.forEach(drawing => {
-      let splittedSvg = drawing.svg.split("\"");
+    this.drawings.forEach((drawing) => {
+      let splittedSvg = drawing.svg.split('"');
       let height: number = parseInt(splittedSvg[1], 10);
-      let width: number =  parseInt(splittedSvg[3], 10);
+      let width: number = parseInt(splittedSvg[3], 10);
 
       drawing.element = {
         width: width,
-        height: height
+        height: height,
       };
     });
 
-    if ((this.nodes.length === 0) && (this.drawings.length === 0)) { return };
-    let minX : number, maxX : number, minY: number, maxY : number;
+    if (this.nodes.length === 0 && this.drawings.length === 0) {
+      return;
+    }
+    let minX: number, maxX: number, minY: number, maxY: number;
 
     let borderedNodes: BorderedNode[] = [];
-    this.nodes.forEach(n => {
+    this.nodes.forEach((n) => {
       let borderedNode: BorderedNode = new BorderedNode();
       borderedNode.node = n;
       borderedNode.top = n.y;
       borderedNode.left = n.x;
-      borderedNode.bottom =  n.y + n.height;
+      borderedNode.bottom = n.y + n.height;
       borderedNode.right = n.x + n.width;
 
-      if ((n.y + n.label.y) < borderedNode.top) {
+      if (n.y + n.label.y < borderedNode.top) {
         borderedNode.top = n.y + n.label.y;
-      };
+      }
 
-      if ((n.x + n.label.x) < borderedNode.left) {
+      if (n.x + n.label.x < borderedNode.left) {
         borderedNode.left = n.x + n.label.x;
-      };
+      }
 
-      if ((n.y + n.label.y) > borderedNode.bottom) {
+      if (n.y + n.label.y > borderedNode.bottom) {
         borderedNode.bottom = n.y + n.label.y;
-      };
+      }
 
-      if ((n.x + n.label.x) > borderedNode.right) {
+      if (n.x + n.label.x > borderedNode.right) {
         borderedNode.right = n.x + n.label.x;
-      };
+      }
 
       borderedNodes.push(borderedNode);
     });
 
-    let nodeMinX = borderedNodes.sort((n,m) => n.left - m.left)[0];
-    let nodeMaxX = borderedNodes.sort((n,m) => n.right - m.right)[borderedNodes.length - 1];
-    let nodeMinY = borderedNodes.sort((n,m) => n.top - m.top)[0];
-    let nodeMaxY = borderedNodes.sort((n,m) => n.bottom - m.bottom)[borderedNodes.length - 1];
+    let nodeMinX = borderedNodes.sort((n, m) => n.left - m.left)[0];
+    let nodeMaxX = borderedNodes.sort((n, m) => n.right - m.right)[borderedNodes.length - 1];
+    let nodeMinY = borderedNodes.sort((n, m) => n.top - m.top)[0];
+    let nodeMaxY = borderedNodes.sort((n, m) => n.bottom - m.bottom)[borderedNodes.length - 1];
 
     let borderedDrawings: BorderedDrawing[] = [];
-    this.drawings.forEach(n => {
-      let borderedDrawing: BorderedDrawing =  new BorderedDrawing();
+    this.drawings.forEach((n) => {
+      let borderedDrawing: BorderedDrawing = new BorderedDrawing();
       borderedDrawing.drawing = n;
       borderedDrawing.top = n.y;
       borderedDrawing.left = n.x;
-      borderedDrawing.bottom =  n.y + n.element.height;
+      borderedDrawing.bottom = n.y + n.element.height;
       borderedDrawing.right = n.x + n.element.width;
 
       borderedDrawings.push(borderedDrawing);
     });
 
-    let drawingMinX = borderedDrawings.sort((n,m) => n.left - m.left)[0];
-    let drawingMaxX = borderedDrawings.sort((n,m) => n.right - m.right)[borderedDrawings.length - 1];
-    let drawingMinY = borderedDrawings.sort((n,m) => n.top - m.top)[0];
-    let drawingMaxY = borderedDrawings.sort((n,m) => n.bottom - m.bottom)[borderedDrawings.length - 1];
+    let drawingMinX = borderedDrawings.sort((n, m) => n.left - m.left)[0];
+    let drawingMaxX = borderedDrawings.sort((n, m) => n.right - m.right)[borderedDrawings.length - 1];
+    let drawingMinY = borderedDrawings.sort((n, m) => n.top - m.top)[0];
+    let drawingMaxY = borderedDrawings.sort((n, m) => n.bottom - m.bottom)[borderedDrawings.length - 1];
 
     if (drawingMinX && nodeMinX) {
       if (nodeMinX.left < drawingMinX.left) {
@@ -615,19 +666,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       } else {
         minX = drawingMinX.left;
       }
-  
+
       if (nodeMaxX.right > drawingMaxX.right) {
         maxX = nodeMaxX.right;
       } else {
         maxX = drawingMaxX.right;
       }
-  
+
       if (nodeMinY.top < drawingMinY.top) {
         minY = nodeMinY.top;
       } else {
         minY = drawingMinY.top;
       }
-  
+
       if (nodeMaxY.bottom > drawingMaxY.bottom) {
         maxY = nodeMaxY.bottom;
       } else {
@@ -670,15 +721,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.project.scene_width = this.project.scene_width * scale;
       this.project.scene_height = this.project.scene_height * scale;
       if (heightToSceneHeightRatio < widthOfAreaToShow) {
-        this.scrollX = (minX * scale) - ((windowWidth - widthOfAreaToShow*scale)/2) + this.project.scene_width/2;
-        this.scrollY = (minY * scale) + this.project.scene_height/2;
+        this.scrollX = minX * scale - (windowWidth - widthOfAreaToShow * scale) / 2 + this.project.scene_width / 2;
+        this.scrollY = minY * scale + this.project.scene_height / 2;
       } else {
-        this.scrollX = (minX * scale) + this.project.scene_width/2;
-        this.scrollY = (minY * scale) - ((windowHeight - heightOfAreaToShow*scale)/2) + this.project.scene_height/2;
+        this.scrollX = minX * scale + this.project.scene_width / 2;
+        this.scrollY = minY * scale - (windowHeight - heightOfAreaToShow * scale) / 2 + this.project.scene_height / 2;
       }
     } else {
-      this.scrollX = (minX * scale) + this.project.scene_width/2;
-      this.scrollY = (minY * scale) + this.project.scene_height/2;
+      this.scrollX = minX * scale + this.project.scene_width / 2;
+      this.scrollY = minY * scale + this.project.scene_height / 2;
     }
     this.scrollEnabled = true;
   }
@@ -690,9 +741,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public centerView() {
     if (this.project) {
-      let scrollX: number = (this.project.scene_width - document.documentElement.clientWidth) > 0 ? (this.project.scene_width - document.documentElement.clientWidth)/2 : 0;
-      let scrollY: number = (this.project.scene_height - document.documentElement.clientHeight) > 0 ? (this.project.scene_height - document.documentElement.clientHeight)/2 : 0;
-  
+      let scrollX: number =
+        this.project.scene_width - document.documentElement.clientWidth > 0
+          ? (this.project.scene_width - document.documentElement.clientWidth) / 2
+          : 0;
+      let scrollY: number =
+        this.project.scene_height - document.documentElement.clientHeight > 0
+          ? (this.project.scene_height - document.documentElement.clientHeight) / 2
+          : 0;
+
       window.scrollTo(scrollX, scrollY);
     } else {
       this.toasterService.error('Please wait until all components are loaded.');
@@ -726,7 +783,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleMovingMode() {
     this.tools.moving = !this.tools.moving;
     this.movingEventSource.movingModeState.emit(this.tools.moving);
-    
+
     if (!this.readonly) {
       this.tools.selection = !this.tools.moving;
       this.toolsService.selectionToolActivation(this.tools.selection);
@@ -748,7 +805,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.isConsoleVisible = visible;
     this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
   }
-  
+
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
@@ -769,7 +826,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (this.layersVisibility) {
       localStorage.setItem('layersVisibility', 'true');
     } else {
-      localStorage.removeItem('layersVisibility')
+      localStorage.removeItem('layersVisibility');
     }
     this.mapChild.applyMapSettingsChanges();
   }
@@ -781,7 +838,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('gridVisibility');
     }
-    this.mapChild.gridVisibility =  this.gridVisibility ? 1 : 0;
+    this.mapChild.gridVisibility = this.gridVisibility ? 1 : 0;
   }
 
   public toggleSnapToGrid(enabled: boolean) {
@@ -796,7 +853,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public hideMenu() {
-    this.projectMapMenuComponent.resetDrawToolChoice()
+    this.projectMapMenuComponent.resetDrawToolChoice();
     this.isProjectMapMenuVisible = false;
   }
 
@@ -811,7 +868,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   zoomOut() {
     let currentScale = this.mapScaleService.getScale();
 
-    if ((currentScale - 0.1) > 0) {
+    if (currentScale - 0.1 > 0) {
       this.mapScaleService.setScale(currentScale - 0.1);
     }
   }
@@ -824,7 +881,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -834,7 +891,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(SaveProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -845,7 +902,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
       width: '600px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -857,7 +914,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -871,7 +928,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.bottomSheet.open(NavigationDialogComponent);
         let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
         bottomSheetRef.instance.projectMessage = 'imported project';
-        
+
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.server, uuid).subscribe(() => {
@@ -884,18 +941,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   exportProject() {
-    if (this.nodes.filter(node => node.node_type === 'virtualbox').length > 0) {
-      this.toasterService.error('Map with VirtualBox machines cannot be exported.')
-    } else if (this.nodes.filter(node => 
-        (node.status === 'started' && node.node_type==='vpcs') || 
-        (node.status === 'started' && node.node_type==='virtualbox') || 
-        (node.status === 'started' && node.node_type==='vmware')).length > 0) {
-      this.toasterService.error('Project with running nodes cannot be exported.')
+    if (this.nodes.filter((node) => node.node_type === 'virtualbox').length > 0) {
+      this.toasterService.error('Map with VirtualBox machines cannot be exported.');
+    } else if (
+      this.nodes.filter(
+        (node) =>
+          (node.status === 'started' && node.node_type === 'vpcs') ||
+          (node.status === 'started' && node.node_type === 'virtualbox') ||
+          (node.status === 'started' && node.node_type === 'vmware')
+      ).length > 0
+    ) {
+      this.toasterService.error('Project with running nodes cannot be exported.');
     } else {
       location.assign(this.projectService.getExportPath(this.server, this.project));
     }
   }
-  
+
   public uploadImageFile(event) {
     this.readImageFile(event.target);
   }
@@ -910,10 +971,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
                 height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
                 xlink:href=\"${image}\"/>\n</svg>`;
-      this.drawingService.add(this.server, this.project.project_id, -(imageToUpload.width/2), -(imageToUpload.height/2), svg).subscribe(() => {});
-    }
-        
-    imageToUpload.onload = () => { fileReader.readAsDataURL(file) };
+      this.drawingService
+        .add(this.server, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
+        .subscribe(() => {});
+    };
+
+    imageToUpload.onload = () => {
+      fileReader.readAsDataURL(file);
+    };
     imageToUpload.src = window.URL.createObjectURL(file);
   }
 
@@ -948,7 +1013,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       width: '1000px',
       maxHeight: '700px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

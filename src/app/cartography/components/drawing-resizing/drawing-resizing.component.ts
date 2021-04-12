@@ -8,10 +8,8 @@ import { ResizingEnd } from '../../events/resizing';
 
 @Component({
   selector: 'app-drawing-resizing',
-  template: `
-    <ng-content></ng-content>
-  `,
-  styleUrls: ['./drawing-resizing.component.scss']
+  template: ` <ng-content></ng-content> `,
+  styleUrls: ['./drawing-resizing.component.scss'],
 })
 export class DrawingResizingComponent implements OnInit, OnDestroy {
   resizingFinished: Subscription;

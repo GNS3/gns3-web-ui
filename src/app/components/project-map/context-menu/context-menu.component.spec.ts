@@ -17,25 +17,25 @@ describe('ContextMenuComponent', () => {
 
   beforeEach(async(() => {
     const electronMock = {
-      isElectronApp: true
+      isElectronApp: true,
     };
 
     TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
       providers: [
-        { provide: ChangeDetectorRef }, 
+        { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
-        { provide: ElectronService, useValue: electronMock}
+        { provide: ElectronService, useValue: electronMock },
       ],
       declarations: [ContextMenuComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ContextMenuComponent);
     component = fixture.componentInstance;
-    component.server = {location: 'local'} as Server;
+    component.server = { location: 'local' } as Server;
     fixture.detectChanges();
   });
 

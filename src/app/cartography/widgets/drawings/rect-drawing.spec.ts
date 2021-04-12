@@ -31,10 +31,7 @@ describe('RectDrawingWidget', () => {
     drawing.element = rect;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

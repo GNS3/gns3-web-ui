@@ -8,7 +8,7 @@ describe('D3MapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [D3MapComponent]
+      declarations: [D3MapComponent],
     }).compileComponents();
   }));
 

@@ -11,7 +11,7 @@ import { LinkNode } from '../../../../../models/link-node';
 
 @Component({
   selector: 'app-edit-text-action',
-  templateUrl: './edit-text-action.component.html'
+  templateUrl: './edit-text-action.component.html',
 })
 export class EditTextActionComponent implements OnInit {
   @Input() server: Server;
@@ -30,7 +30,7 @@ export class EditTextActionComponent implements OnInit {
     const dialogRef = this.dialog.open(TextEditorDialogComponent, {
       width: '300px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

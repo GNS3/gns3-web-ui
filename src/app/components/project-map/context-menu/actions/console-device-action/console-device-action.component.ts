@@ -9,7 +9,7 @@ import { NodeService } from '../../../../../services/node.service';
 
 @Component({
   selector: 'app-console-device-action',
-  templateUrl: './console-device-action.component.html'
+  templateUrl: './console-device-action.component.html',
 })
 export class ConsoleDeviceActionComponent implements OnInit {
   @Input() server: Server;
@@ -21,21 +21,23 @@ export class ConsoleDeviceActionComponent implements OnInit {
     private settingsService: SettingsService,
     private toasterService: ToasterService,
     private nodeService: NodeService
-  ) { }
+  ) {}
 
   ngOnInit() {}
 
   async console() {
-    let consoleCommand = this.settingsService.get<string>('console_command') ? this.settingsService.get<string>('console_command') : this.nodeService.getDefaultCommand();
-    const startedNodes = this.nodes.filter(node => node.status === 'started');
+    let consoleCommand = this.settingsService.get<string>('console_command')
+      ? this.settingsService.get<string>('console_command')
+      : this.nodeService.getDefaultCommand();
+    const startedNodes = this.nodes.filter((node) => node.status === 'started');
 
-    if(startedNodes.length === 0) {
+    if (startedNodes.length === 0) {
       this.toasterService.error('Device needs to be started in order to console to it.');
       return;
     }
 
-    for(var node of this.nodes) {
-      if(node.status !== 'started') {
+    for (var node of this.nodes) {
+      if (node.status !== 'started') {
         continue;
       }
 
@@ -47,7 +49,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
         name: node.name,
         project_id: node.project_id,
         node_id: node.node_id,
-        server_url: this.serverService.getServerUrl(this.server)
+        server_url: this.serverService.getServerUrl(this.server),
       };
       await this.openConsole(consoleRequest);
     }

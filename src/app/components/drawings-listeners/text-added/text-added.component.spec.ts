@@ -36,9 +36,9 @@ describe('TextAddedComponent', () => {
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
         { provide: DefaultDrawingsFactory, useValue: mockedDrawingsFactory },
         { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
-        { provide: Context, useClass: Context }
+        { provide: Context, useClass: Context },
       ],
-      declarations: [TextAddedComponent]
+      declarations: [TextAddedComponent],
     }).compileComponents();
   }));
 

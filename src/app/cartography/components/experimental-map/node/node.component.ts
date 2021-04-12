@@ -10,7 +10,7 @@ import {
   EventEmitter,
   OnDestroy,
   OnChanges,
-  AfterViewInit
+  AfterViewInit,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -25,7 +25,7 @@ import { DraggedDataEvent } from '../../../events/event-source';
   selector: '[app-node]',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   static NODE_LABEL_MARGIN = 3;

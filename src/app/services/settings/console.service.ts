@@ -4,15 +4,11 @@ import { SettingsService } from '../settings.service';
 
 @Injectable()
 export class ConsoleService {
-
-  constructor(
-    private defaultConsoleService: DefaultConsoleService,
-    private settingsService: SettingsService
-  ) { }
+  constructor(private defaultConsoleService: DefaultConsoleService, private settingsService: SettingsService) {}
 
   get command(): string {
     const command = this.settingsService.get<string>('console_command');
-    if(command === undefined) {
+    if (command === undefined) {
       return this.defaultConsoleService.get();
     }
     return command;

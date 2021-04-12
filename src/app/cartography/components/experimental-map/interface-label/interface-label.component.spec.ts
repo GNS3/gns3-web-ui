@@ -8,7 +8,7 @@ describe('InterfaceLabelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [InterfaceLabelComponent]
+      declarations: [InterfaceLabelComponent],
     }).compileComponents();
   }));
 

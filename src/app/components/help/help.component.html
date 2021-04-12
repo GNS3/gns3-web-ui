@@ -1,43 +1,39 @@
 <div class="content">
-    <div class="default-header"><h1>Help</h1></div>
-    <div class="default-content">
-        <div class="container mat-elevation-z8">
-            <mat-accordion>
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title> Useful shortcuts </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <mat-list>
-                        <mat-list-item> ctrl + + to zoom in </mat-list-item>
-                        <mat-list-item> ctrl + - to zoom out </mat-list-item>
-                        <mat-list-item> ctrl + 0 to reset zoom </mat-list-item>
-                        <mat-list-item> ctrl + h to hide toolbar </mat-list-item>
-                        <mat-list-item> ctrl + a to select all items on map </mat-list-item>
-                        <mat-list-item> ctrl + shift + a to deselect all items on map </mat-list-item>
-                        <mat-list-item> ctrl + shift + s to go to preferences </mat-list-item>
-                    </mat-list>
-                </mat-expansion-panel>
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title> Third party components </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <div [innerHTML]="thirdpartylicenses"></div>
-                </mat-expansion-panel>
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title> Release notes </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <div [innerHTML]="releasenotes"></div>
-                </mat-expansion-panel>
-            </mat-accordion>
-        </div>
-        <button mat-button class="full-width">
-            <a href="https://docs.gns3.com/docs/">
-                Go to documentation
-            </a>
-        </button>
-        <button mat-button routerLink="/help/reportissue" class="full-width">
-            Report an issue
-        </button>
+  <div class="default-header"><h1>Help</h1></div>
+  <div class="default-content">
+    <div class="container mat-elevation-z8">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Useful shortcuts </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-list>
+            <mat-list-item> ctrl + + to zoom in </mat-list-item>
+            <mat-list-item> ctrl + - to zoom out </mat-list-item>
+            <mat-list-item> ctrl + 0 to reset zoom </mat-list-item>
+            <mat-list-item> ctrl + h to hide toolbar </mat-list-item>
+            <mat-list-item> ctrl + a to select all items on map </mat-list-item>
+            <mat-list-item> ctrl + shift + a to deselect all items on map </mat-list-item>
+            <mat-list-item> ctrl + shift + s to go to preferences </mat-list-item>
+          </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Third party components </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div [innerHTML]="thirdpartylicenses"></div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Release notes </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div [innerHTML]="releasenotes"></div>
+        </mat-expansion-panel>
+      </mat-accordion>
     </div>
+    <button mat-button class="full-width">
+      <a href="https://docs.gns3.com/docs/"> Go to documentation </a>
+    </button>
+    <button mat-button routerLink="/help/reportissue" class="full-width">Report an issue</button>
+  </div>
 </div>

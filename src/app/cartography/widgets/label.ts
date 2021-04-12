@@ -43,12 +43,10 @@ export class LabelWidget implements Widget {
       .attr('class', 'label_container')
       .attr('label_id', (label: MapLabel) => label.id);
 
-    const merge = label_view
-      .merge(label_enter)
-      .on('contextmenu', (n: MapLabel, i: number) => {
-        event.preventDefault();
-        self.onContextMenu.emit(new LabelContextMenu(event, n));
-      });
+    const merge = label_view.merge(label_enter).on('contextmenu', (n: MapLabel, i: number) => {
+      event.preventDefault();
+      self.onContextMenu.emit(new LabelContextMenu(event, n));
+    });
 
     this.drawLabel(merge);
 
@@ -60,20 +58,16 @@ export class LabelWidget implements Widget {
   }
 
   private drawLabel(view: SVGSelection) {
-    const label_body = view.selectAll<SVGGElement, MapLabel>('g.label_body').data(label => [label]);
+    const label_body = view.selectAll<SVGGElement, MapLabel>('g.label_body').data((label) => [label]);
 
-    const label_body_enter = label_body
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'label_body');
+    const label_body_enter = label_body.enter().append<SVGGElement>('g').attr('class', 'label_body');
 
     // add label of node
     label_body_enter.append<SVGTextElement>('text').attr('class', 'label');
 
     label_body_enter.append<SVGRectElement>('rect').attr('class', 'label_selection');
 
-    const label_body_merge = label_body
-      .merge(label_body_enter);
+    const label_body_merge = label_body.merge(label_body_enter);
 
     label_body_merge
       .select<SVGTextElement>('text.label')
@@ -93,13 +87,13 @@ export class LabelWidget implements Widget {
     label_body_merge
       .select<SVGRectElement>('rect.label_selection')
       .attr('visibility', (l: MapLabel) => {
-        return (this.selectionManager.isSelected(l) ? 'visible' : 'hidden')
+        return this.selectionManager.isSelected(l) ? 'visible' : 'hidden';
       })
       .attr('stroke', 'black')
       .attr('stroke-dasharray', '3,3')
       .attr('stroke-width', '0.5')
       .attr('fill', 'none')
-      .each(function(this: SVGRectElement, label: MapLabel) {
+      .each(function (this: SVGRectElement, label: MapLabel) {
         const current = select(this);
         const textLabel = label_body_merge.select<SVGTextElement>(`text[label_id="${label.id}"]`);
         const bbox = textLabel.node().getBBox();

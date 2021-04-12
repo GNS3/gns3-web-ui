@@ -1,4 +1,4 @@
-import { ProjectMapMenuComponent } from "./project-map-menu.component";
+import { ProjectMapMenuComponent } from './project-map-menu.component';
 import { ComponentFixture, async, TestBed } from '@angular/core/testing';
 import { MockedDrawingService } from '../project-map.component.spec';
 import { MapSettingsService } from '../../../services/mapsettings.service';
@@ -19,59 +19,67 @@ import { MockedSymbolService } from '../../preferences/common/symbols/symbols.co
 import { ElectronService } from 'ngx-electron';
 
 describe('ProjectMapMenuComponent', () => {
-    let component: ProjectMapMenuComponent;
-    let fixture: ComponentFixture<ProjectMapMenuComponent>;
-    let drawingService = new MockedDrawingService();
-    let mapSettingService = new MapSettingsService();
-    let mockedSymbolService = new MockedSymbolService;
+  let component: ProjectMapMenuComponent;
+  let fixture: ComponentFixture<ProjectMapMenuComponent>;
+  let drawingService = new MockedDrawingService();
+  let mapSettingService = new MapSettingsService();
+  let mockedSymbolService = new MockedSymbolService();
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports: [MatIconModule, MatDialogModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
-            providers: [
-              { provide: DrawingService, useValue: drawingService },
-              { provide: ToolsService },
-              { provide: MapSettingsService, useValue: mapSettingService },
-              { provide: SymbolService, useValue: mockedSymbolService},
-              { provide: ElectronService }
-            ],
-            declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
-            schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatDialogModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+      ],
+      providers: [
+        { provide: DrawingService, useValue: drawingService },
+        { provide: ToolsService },
+        { provide: MapSettingsService, useValue: mapSettingService },
+        { provide: SymbolService, useValue: mockedSymbolService },
+        { provide: ElectronService },
+      ],
+      declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectMapMenuComponent);
-        component = fixture.componentInstance;
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ProjectMapMenuComponent);
+    component = fixture.componentInstance;
+  });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-    it('should reset choice on draw menu after saving drawing', () => {
-        spyOn(component, 'resetDrawToolChoice');
+  it('should reset choice on draw menu after saving drawing', () => {
+    spyOn(component, 'resetDrawToolChoice');
 
-        component.onDrawingSaved();
+    component.onDrawingSaved();
 
-        expect(component.resetDrawToolChoice).toHaveBeenCalled();
-    });
+    expect(component.resetDrawToolChoice).toHaveBeenCalled();
+  });
 
-    it('should call map settings service when lock value was changed', () => {
-        spyOn(mapSettingService, 'changeMapLockValue');
+  it('should call map settings service when lock value was changed', () => {
+    spyOn(mapSettingService, 'changeMapLockValue');
 
-        component.changeLockValue();
+    component.changeLockValue();
 
-        expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
-    });
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
+  });
 
-    it('should call map settings service with proper value', () => {
-        spyOn(mapSettingService, 'changeMapLockValue');
+  it('should call map settings service with proper value', () => {
+    spyOn(mapSettingService, 'changeMapLockValue');
 
-        component.changeLockValue();
-        expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);
+    component.changeLockValue();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);
 
-        component.changeLockValue();
-        expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);
-    });
+    component.changeLockValue();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);
+  });
 });

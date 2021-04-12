@@ -13,34 +13,41 @@ export class ServerService {
   public serviceInitialized: Subject<boolean> = new Subject<boolean>();
   public isServiceInitialized: boolean;
 
-  constructor(
-    private indexedDbService: IndexedDbService,
-    private httpServer: HttpServer
-  ) {
-    this.ready = this.indexedDbService.get().openDatabase(1,  evt => {
-      evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
-    }).then(() => {
-      this.indexedDbService.get().getAll(this.tablename)
-      .then(() => {})
+  constructor(private indexedDbService: IndexedDbService, private httpServer: HttpServer) {
+    this.ready = this.indexedDbService
+      .get()
+      .openDatabase(1, (evt) => {
+        evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+      })
+      .then(() => {
+        this.indexedDbService
+          .get()
+          .getAll(this.tablename)
+          .then(() => {})
+          .catch(() => {
+            this.isIncognitoMode = true;
+          });
+      })
       .catch(() => {
         this.isIncognitoMode = true;
+      })
+      .finally(() => {
+        this.isServiceInitialized = true;
+        this.serviceInitialized.next(true);
       });
-    }).catch(() => {
-      this.isIncognitoMode = true;
-    }).finally(() => {
-      this.isServiceInitialized = true;
-      this.serviceInitialized.next(true);
-    });
   }
 
   public tryToCreateDb() {
-    let promise = new Promise(resolve => {
-      this.indexedDbService.get().openDatabase(1,  evt => {
-        evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
-      }).then(() => {
-      }).catch(() => {
-        this.isIncognitoMode = true;
-      });
+    let promise = new Promise((resolve) => {
+      this.indexedDbService
+        .get()
+        .openDatabase(1, (evt) => {
+          evt.currentTarget.result.createObjectStore(this.tablename, { keyPath: 'id', autoIncrement: true });
+        })
+        .then(() => {})
+        .catch(() => {
+          this.isIncognitoMode = true;
+        });
     });
     return promise;
   }
@@ -48,7 +55,7 @@ export class ServerService {
   public get(id: number): Promise<Server> {
     if (this.isIncognitoMode) {
       let server: Server = JSON.parse(localStorage.getItem(`server-${id}`));
-      let promise = new Promise<Server>(resolve => {
+      let promise = new Promise<Server>((resolve) => {
         resolve(server);
       });
       return promise;
@@ -63,7 +70,7 @@ export class ServerService {
       localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
       this.serverIdsInIncognitoMode.push(`server-${server.id}`);
 
-      let promise = new Promise<Server>(resolve => {
+      let promise = new Promise<Server>((resolve) => {
         resolve(server);
       });
       return promise;
@@ -74,7 +81,7 @@ export class ServerService {
         this.indexedDbService
           .get()
           .add(this.tablename, server)
-          .then(added => {
+          .then((added) => {
             server.id = added.key;
             resolve(server);
           }, reject);
@@ -88,7 +95,7 @@ export class ServerService {
       localStorage.removeItem(`server-${server.id}`);
       localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
 
-      let promise = new Promise<Server>(resolve => {
+      let promise = new Promise<Server>((resolve) => {
         resolve(server);
       });
       return promise;
@@ -99,7 +106,7 @@ export class ServerService {
         this.indexedDbService
           .get()
           .update(this.tablename, server)
-          .then(updated => {
+          .then((updated) => {
             resolve(server);
           }, reject);
       });
@@ -109,9 +116,9 @@ export class ServerService {
 
   public findAll() {
     if (this.isIncognitoMode) {
-      let promise = new Promise<Server[]>(resolve => {
+      let promise = new Promise<Server[]>((resolve) => {
         let servers: Server[] = [];
-        this.serverIdsInIncognitoMode.forEach(n => {
+        this.serverIdsInIncognitoMode.forEach((n) => {
           let server: Server = JSON.parse(localStorage.getItem(n));
           servers.push(server);
         });
@@ -126,9 +133,9 @@ export class ServerService {
   public delete(server: Server) {
     if (this.isIncognitoMode) {
       localStorage.removeItem(`server-${server.id}`);
-      this.serverIdsInIncognitoMode = this.serverIdsInIncognitoMode.filter(n => n !== `server-${server.id}`);
+      this.serverIdsInIncognitoMode = this.serverIdsInIncognitoMode.filter((n) => n !== `server-${server.id}`);
 
-      let promise = new Promise(resolve => {
+      let promise = new Promise((resolve) => {
         resolve(server.id);
       });
       return promise;
@@ -148,12 +155,12 @@ export class ServerService {
   public getLocalServer(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
       this.findAll().then((servers: Server[]) => {
-        const local = servers.find(server => server.location === 'bundled');
+        const local = servers.find((server) => server.location === 'bundled');
         if (local) {
           local.host = host;
           local.port = port;
           local.protocol = location.protocol as ServerProtocol;
-          this.update(local).then(updated => {
+          this.update(local).then((updated) => {
             resolve(updated);
           }, reject);
         } else {
@@ -163,7 +170,7 @@ export class ServerService {
           server.port = port;
           server.location = 'bundled';
           server.protocol = location.protocol as ServerProtocol;
-          this.create(server).then(created => {
+          this.create(server).then((created) => {
             resolve(created);
           }, reject);
         }
@@ -178,15 +185,15 @@ export class ServerService {
       this.ready.then(
         () => {
           query().then(
-            result => {
+            (result) => {
               resolve(result);
             },
-            error => {
+            (error) => {
               reject(error);
             }
           );
         },
-        error => {
+        (error) => {
           reject(error);
         }
       );

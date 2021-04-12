@@ -10,12 +10,11 @@ import { TemplateService } from '../../../../services/template.service';
 import { templateNameAsyncValidator } from '../../../../validators/template-name-async-validator';
 import { Template } from '../../../../models/template';
 
-
 @Component({
   selector: 'app-template-name-dialog',
   templateUrl: './template-name-dialog.component.html',
   styleUrls: ['./template-name-dialog.component.scss'],
-  providers: [ProjectNameValidator]
+  providers: [ProjectNameValidator],
 })
 export class TemplateNameDialogComponent implements OnInit {
   server: Server;
@@ -35,9 +34,13 @@ export class TemplateNameDialogComponent implements OnInit {
   ngOnInit() {
     let name = this.data['name'];
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(name, [Validators.required, this.templateNameValidator.get], [templateNameAsyncValidator(this.server, this.templateService)])
+      templateName: new FormControl(
+        name,
+        [Validators.required, this.templateNameValidator.get],
+        [templateNameAsyncValidator(this.server, this.templateService)]
+      ),
     });
-    
+
     setTimeout(() => {
       this.templateNameForm.controls['templateName'].markAsTouched();
     }, 100);
@@ -54,7 +57,7 @@ export class TemplateNameDialogComponent implements OnInit {
     }
     this.templateService.list(this.server).subscribe((templates: Template[]) => {
       const templateName = this.templateNameForm.controls['templateName'].value;
-      let existingProject = templates.find(t => t.name === templateName);
+      let existingProject = templates.find((t) => t.name === templateName);
 
       if (existingProject) {
         this.toasterService.error('Template with this name exists');
@@ -69,7 +72,7 @@ export class TemplateNameDialogComponent implements OnInit {
   }
 
   onKeyDown(event) {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       this.onAddClick();
     }
   }

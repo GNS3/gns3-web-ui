@@ -29,12 +29,9 @@ export class NodeWidget implements Widget {
   public draw(view: SVGSelection) {
     const self = this;
 
-    const node_body = view.selectAll<SVGGElement, MapNode>('g.node_body').data(n => [n]);
+    const node_body = view.selectAll<SVGGElement, MapNode>('g.node_body').data((n) => [n]);
 
-    const node_body_enter = node_body
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'node_body');
+    const node_body_enter = node_body.enter().append<SVGGElement>('g').attr('class', 'node_body');
 
     node_body_enter.append<SVGImageElement>('image');
 
@@ -52,8 +49,8 @@ export class NodeWidget implements Widget {
         .attr('class', 'layer_label_wrapper')
         .attr('width', '26')
         .attr('height', '26')
-        .attr('x', (n: MapNode) => n.width/2 - 13)
-        .attr('y', (n: MapNode) => n.height/2 - 13)
+        .attr('x', (n: MapNode) => n.width / 2 - 13)
+        .attr('y', (n: MapNode) => n.height / 2 - 13)
         .attr('fill', 'red');
     }
 
@@ -62,13 +59,15 @@ export class NodeWidget implements Widget {
       node_body_merge
         .append<SVGTextElement>('text')
         .attr('class', 'layer_label')
-        .text((n: MapNode) => { return n.z})
-        .attr('x', function(n: MapNode) {
-          if(n.z >= 100 ) return n.width/2 - 13
-          else if(n.z >= 10 ) return n.width/2 - 9
-          else return n.width/2 - 5
+        .text((n: MapNode) => {
+          return n.z;
         })
-        .attr('y', (n: MapNode) => n.height/2 + 5)
+        .attr('x', function (n: MapNode) {
+          if (n.z >= 100) return n.width / 2 - 13;
+          else if (n.z >= 10) return n.width / 2 - 9;
+          else return n.width / 2 - 5;
+        })
+        .attr('y', (n: MapNode) => n.height / 2 + 5)
         .attr('style', () => {
           const styles: string[] = [];
           styles.push(`font-family: "Noto Sans"`);
@@ -82,11 +81,11 @@ export class NodeWidget implements Widget {
     // update image of node
     node_body_merge
       .select<SVGImageElement>('image')
-      .on('contextmenu', function(n: MapNode, i: number) {
+      .on('contextmenu', function (n: MapNode, i: number) {
         event.preventDefault();
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
-      .on('dblclick', function(n: MapNode, i: number) {
+      .on('dblclick', function (n: MapNode, i: number) {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
@@ -100,20 +99,20 @@ export class NodeWidget implements Widget {
         return n.height;
       })
       .attr('x', (n: MapNode) => {
-        return 0
+        return 0;
       })
       .attr('y', (n: MapNode) => {
-        return 0
+        return 0;
       })
-      .on('mouseover', function(this, n: MapNode) {
+      .on('mouseover', function (this, n: MapNode) {
         select(this).attr('class', 'over');
       })
-      .on('mouseout', function(this, n: MapNode) {
+      .on('mouseout', function (this, n: MapNode) {
         select(this).attr('class', '');
       });
 
     node_body_merge.attr('transform', (n: MapNode) => {
-      if (!n.width) return `translate(${n.x - 30},${n.y - 30})`
+      if (!n.width) return `translate(${n.x - 30},${n.y - 30})`;
       return `translate(${n.x},${n.y})`;
     });
 

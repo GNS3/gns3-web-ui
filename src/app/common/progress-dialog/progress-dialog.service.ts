@@ -10,7 +10,7 @@ export class ProgressDialogService {
     const ref = this.dialog.open(ProgressDialogComponent, {
       width: '250px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     return ref;
   }

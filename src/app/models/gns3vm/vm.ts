@@ -1,3 +1,3 @@
 export interface VM {
-    vmname: string;
+  vmname: string;
 }

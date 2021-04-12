@@ -36,9 +36,9 @@ describe('DrawingResizingComponent', () => {
       imports: [NoopAnimationsModule],
       providers: [
         { provide: DrawingsWidget, useValue: drawingsWidgetMock },
-        { provide: DrawingsEventSource, useValue: drawingsEventSource }
+        { provide: DrawingsEventSource, useValue: drawingsEventSource },
       ],
-      declarations: [DrawingResizingComponent]
+      declarations: [DrawingResizingComponent],
     }).compileComponents();
   }));
 

@@ -15,53 +15,61 @@ import { of } from 'rxjs';
 import { PacketFiltersDialogComponent } from './packet-filters.component';
 
 describe('PacketFiltersDialogComponent', () => {
-    let component: PacketFiltersDialogComponent;
-    let fixture: ComponentFixture<PacketFiltersDialogComponent>;
+  let component: PacketFiltersDialogComponent;
+  let fixture: ComponentFixture<PacketFiltersDialogComponent>;
 
-    let mockedLinkService = new MockedLinkService;
-    let dialogRef = {
-        close: jasmine.createSpy('close')
-    };
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatDialogModule, FormsModule, ReactiveFormsModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
-          providers: [
-            { provide: MatDialogRef, useValue: dialogRef },
-            { provide: MAT_DIALOG_DATA, useValue: [] },
-            { provide: LinkService, useValue: mockedLinkService }
-          ],
-          declarations: [
-            PacketFiltersDialogComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedLinkService = new MockedLinkService();
+  let dialogRef = {
+    close: jasmine.createSpy('close'),
+  };
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(PacketFiltersDialogComponent);
-        component = fixture.componentInstance;
-        component.link = {link_type: 'ethernet'} as Link;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatDialogModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+      ],
+      providers: [
+        { provide: MatDialogRef, useValue: dialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: [] },
+        { provide: LinkService, useValue: mockedLinkService },
+      ],
+      declarations: [PacketFiltersDialogComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(PacketFiltersDialogComponent);
+    component = fixture.componentInstance;
+    component.link = { link_type: 'ethernet' } as Link;
+    fixture.detectChanges();
+  });
 
-    it('should call update link when filters applied', () => {
-        spyOn(mockedLinkService, 'updateLink').and.returnValue(of({}));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.onYesClick();
+  it('should call update link when filters applied', () => {
+    spyOn(mockedLinkService, 'updateLink').and.returnValue(of({}));
 
-        expect(mockedLinkService.updateLink).toHaveBeenCalled();
-    });
+    component.onYesClick();
 
-    it('should call update link after resetting', () => {
-        spyOn(mockedLinkService, 'updateLink').and.returnValue(of({}));
+    expect(mockedLinkService.updateLink).toHaveBeenCalled();
+  });
 
-        component.onResetClick();
+  it('should call update link after resetting', () => {
+    spyOn(mockedLinkService, 'updateLink').and.returnValue(of({}));
 
-        expect(mockedLinkService.updateLink).toHaveBeenCalled();
-    });
+    component.onResetClick();
+
+    expect(mockedLinkService.updateLink).toHaveBeenCalled();
+  });
 });

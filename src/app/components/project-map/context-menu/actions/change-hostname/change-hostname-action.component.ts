@@ -6,7 +6,7 @@ import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/c
 
 @Component({
   selector: 'app-change-hostname-action',
-  templateUrl: './change-hostname-action.component.html'
+  templateUrl: './change-hostname-action.component.html',
 })
 export class ChangeHostnameActionComponent implements OnInit {
   @Input() server: Server;
@@ -18,11 +18,11 @@ export class ChangeHostnameActionComponent implements OnInit {
 
   changeHostname() {
     const dialogRef = this.dialog.open(ChangeHostnameDialogComponent, {
-        autoFocus: false,
-        disableClose: true
-      });
-      let instance = dialogRef.componentInstance;
-      instance.server = this.server;
-      instance.node = this.node;
+      autoFocus: false,
+      disableClose: true,
+    });
+    let instance = dialogRef.componentInstance;
+    instance.server = this.server;
+    instance.node = this.node;
   }
 }

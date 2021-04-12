@@ -6,12 +6,12 @@ import { SettingsService } from './services/settings.service';
 import { ThemeService } from './services/theme.service';
 import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { ProgressService } from './common/progress/progress.service';
-import { OverlayContainer} from '@angular/cdk/overlay';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   public darkThemeEnabled: boolean = false;
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.electronService.isElectronApp) {
-      this.settingsService.subscribe(settings => {
+      this.settingsService.subscribe((settings) => {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }
@@ -59,14 +59,14 @@ export class AppComponent implements OnInit {
     this.componentCssClass = theme;
   }
 
-  checkEvent(routerEvent) : void {
+  checkEvent(routerEvent): void {
     if (routerEvent instanceof NavigationStart) {
       this.progressService.activate();
-    }
- 
-    else if (routerEvent instanceof NavigationEnd ||
-             routerEvent instanceof NavigationCancel ||
-             routerEvent instanceof NavigationError) {
+    } else if (
+      routerEvent instanceof NavigationEnd ||
+      routerEvent instanceof NavigationCancel ||
+      routerEvent instanceof NavigationError
+    ) {
       this.progressService.deactivate();
     }
   }

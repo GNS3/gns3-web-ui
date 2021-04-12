@@ -11,7 +11,6 @@ import { MockedToasterService } from '../../../services/toaster.service.spec';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 
-
 describe('ConsoleComponent', () => {
   let component: ConsoleComponent;
   let fixture: ComponentFixture<ConsoleComponent>;
@@ -21,11 +20,11 @@ describe('ConsoleComponent', () => {
 
   beforeEach(async(() => {
     consoleService = {
-      command: 'command'
+      command: 'command',
     };
 
     router = {
-      navigate: jasmine.createSpy('navigate')
+      navigate: jasmine.createSpy('navigate'),
     };
 
     toaster = new MockedToasterService();
@@ -34,12 +33,18 @@ describe('ConsoleComponent', () => {
       providers: [
         { provide: ConsoleService, useValue: consoleService },
         { provide: ToasterService, useValue: toaster },
-        { provide: Router, useValue: router}
+        { provide: Router, useValue: router },
       ],
-      imports: [ FormsModule, ReactiveFormsModule, MatFormFieldModule, MatCardModule, MatInputModule, NoopAnimationsModule ],
-      declarations: [ ConsoleComponent ]
-    })
-    .compileComponents();
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatCardModule,
+        MatInputModule,
+        NoopAnimationsModule,
+      ],
+      declarations: [ConsoleComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -55,13 +60,12 @@ describe('ConsoleComponent', () => {
   it('should set default command', () => {
     component.ngOnInit();
     expect(component.consoleForm.value.command).toEqual('command');
-  })
+  });
 
   it('should go back', () => {
     component.goBack();
     expect(router.navigate).toHaveBeenCalledWith(['/settings']);
   });
-
 
   it('should update console command', () => {
     component.consoleForm.get('command').setValue('newCommand');
@@ -70,5 +74,4 @@ describe('ConsoleComponent', () => {
     expect(toaster.success.length).toEqual(1);
     expect(component.goBack).toHaveBeenCalled();
   });
-
 });

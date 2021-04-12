@@ -6,7 +6,7 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-installed-software',
   templateUrl: './installed-software.component.html',
-  styleUrls: ['./installed-software.component.scss']
+  styleUrls: ['./installed-software.component.scss'],
 })
 export class InstalledSoftwareComponent implements OnInit {
   dataSource: InstalledSoftwareDataSource;
@@ -15,7 +15,7 @@ export class InstalledSoftwareComponent implements OnInit {
   constructor(
     private installedSoftwareService: InstalledSoftwareService,
     private changeDetectorRef: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.dataSource = new InstalledSoftwareDataSource(this.installedSoftwareService);
@@ -32,7 +32,7 @@ export class InstalledSoftwareComponent implements OnInit {
   }
 }
 
-export class InstalledSoftwareDataSource extends DataSource<any> {
+export class InstalledSoftwareDataSource extends DataSource<any> {
   installed = new BehaviorSubject([]);
 
   constructor(private installedSoftwareService: InstalledSoftwareService) {
@@ -49,9 +49,8 @@ export class InstalledSoftwareDataSource extends DataSource<any> {
   refresh() {
     let installedSoftware = this.installedSoftwareService.list();
     installedSoftware.push({
-      type: 'adbutler'
+      type: 'adbutler',
     });
     this.installed.next(installedSoftware);
   }
-
 }

@@ -8,7 +8,7 @@ describe('ProgressDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ProgressDialogComponent]
+      declarations: [ProgressDialogComponent],
     }).compileComponents();
   }));
 

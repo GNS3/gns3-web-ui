@@ -19,7 +19,7 @@ export class SvgToDrawingConverter {
       image: new ImageConverter(),
       rect: new RectConverter(),
       line: new LineConverter(),
-      ellipse: new EllipseConverter()
+      ellipse: new EllipseConverter(),
     };
   }
 

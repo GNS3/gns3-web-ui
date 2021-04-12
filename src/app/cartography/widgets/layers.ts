@@ -21,10 +21,7 @@ export class LayersWidget implements Widget {
       return layer.index.toString();
     });
 
-    const layers_enter = layers_selection
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'layer');
+    const layers_enter = layers_selection.enter().append<SVGGElement>('g').attr('class', 'layer');
 
     // add container for links
     layers_enter.append<SVGGElement>('g').attr('class', 'links');

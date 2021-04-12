@@ -18,43 +18,50 @@ import { VpcsTemplatesComponent } from './vpcs-templates.component';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 
 export class MockedVpcsService {
-    public getTemplates(server: Server) {
-        return of([{} as VpcsTemplate]);
-    }
+  public getTemplates(server: Server) {
+    return of([{} as VpcsTemplate]);
+  }
 }
 
 describe('VpcsTemplatesComponent', () => {
-    let component: VpcsTemplatesComponent;
-    let fixture: ComponentFixture<VpcsTemplatesComponent>;
+  let component: VpcsTemplatesComponent;
+  let fixture: ComponentFixture<VpcsTemplatesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedVpcsService = new MockedVpcsService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: VpcsService, useValue: mockedVpcsService }
-          ],
-          declarations: [
-              VpcsTemplatesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedVpcsService = new MockedVpcsService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(VpcsTemplatesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: VpcsService, useValue: mockedVpcsService },
+      ],
+      declarations: [VpcsTemplatesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VpcsTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

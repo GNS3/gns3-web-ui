@@ -470,7 +470,7 @@ import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
     TemplateNameDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
     EditNetworkConfigurationDialogComponent,
-    ReportIssueComponent
+    ReportIssueComponent,
   ],
   imports: [
     AngularReactBrowserModule,
@@ -492,7 +492,7 @@ import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
     NgxChildProcessModule,
     MATERIAL_IMPORTS,
     NgCircleProgressModule.forRoot(),
-    OverlayModule
+    OverlayModule,
   ],
   providers: [
     SettingsService,
@@ -567,7 +567,7 @@ import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
     ConsoleGuard,
     Title,
     ApplianceService,
-    UpdatesService
+    UpdatesService,
   ],
   entryComponents: [
     AddServerDialogComponent,
@@ -615,10 +615,10 @@ import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
     ChangeHostnameDialogComponent,
     ApplianceInfoDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
-    EditNetworkConfigurationDialogComponent
+    EditNetworkConfigurationDialogComponent,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(protected _googleAnalyticsService: GoogleAnalyticsService) { }
+  constructor(protected _googleAnalyticsService: GoogleAnalyticsService) {}
 }

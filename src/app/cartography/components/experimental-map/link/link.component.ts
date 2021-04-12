@@ -6,7 +6,7 @@ import {
   ElementRef,
   EventEmitter,
   ChangeDetectorRef,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LinkStrategy } from './strategies/link-strategy';
@@ -19,7 +19,7 @@ import { MapLink } from '../../../models/map/map-link';
 @Component({
   selector: '[app-link]',
   templateUrl: './link.component.html',
-  styleUrls: ['./link.component.scss']
+  styleUrls: ['./link.component.scss'],
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;

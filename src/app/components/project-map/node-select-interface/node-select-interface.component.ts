@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
@@ -9,7 +18,7 @@ import { LinkNode } from '../../../models/link-node';
 @Component({
   selector: 'app-node-select-interface',
   templateUrl: './node-select-interface.component.html',
-  styleUrls: ['./node-select-interface.component.scss']
+  styleUrls: ['./node-select-interface.component.scss'],
 })
 export class NodeSelectInterfaceComponent implements OnInit {
   @Input() links: Link[];
@@ -22,10 +31,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   public node: Node;
   public ports: Port[];
 
-  constructor(
-    private sanitizer: DomSanitizer, 
-    private changeDetector: ChangeDetectorRef
-  ) {}
+  constructor(private sanitizer: DomSanitizer, private changeDetector: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.setPosition(0, 0);
@@ -56,11 +62,16 @@ export class NodeSelectInterfaceComponent implements OnInit {
 
     this.ports = [];
     this.node.ports.forEach((port: Port) => {
-      let linkNodesOnTheSameAdapter = linkNodes.filter((linkNode: LinkNode) => linkNode.adapter_number === port.adapter_number);
+      let linkNodesOnTheSameAdapter = linkNodes.filter(
+        (linkNode: LinkNode) => linkNode.adapter_number === port.adapter_number
+      );
       if (linkNodesOnTheSameAdapter.length === 0) {
         port.available = true;
       } else {
-        if (linkNodesOnTheSameAdapter.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length === 0) {
+        if (
+          linkNodesOnTheSameAdapter.filter((linkNode: LinkNode) => linkNode.port_number === port.port_number).length ===
+          0
+        ) {
           port.available = true;
         } else {
           port.available = false;
@@ -74,7 +85,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   public chooseInterface(port: Port) {
     this.onChooseInterface.emit({
       node: this.node,
-      port: port
+      port: port,
     });
   }
 }

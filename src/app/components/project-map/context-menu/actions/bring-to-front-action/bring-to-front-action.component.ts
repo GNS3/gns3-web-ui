@@ -9,7 +9,7 @@ import { DrawingService } from '../../../../../services/drawing.service';
 
 @Component({
   selector: 'app-bring-to-front-action',
-  templateUrl: './bring-to-front-action.component.html'
+  templateUrl: './bring-to-front-action.component.html',
 })
 export class BringToFrontActionComponent implements OnInit {
   @Input() server: Server;
@@ -26,8 +26,8 @@ export class BringToFrontActionComponent implements OnInit {
   ngOnInit() {}
 
   bringToFront() {
-    let maxZValueForNodes = Math.max(...this.nodes.map(n => n.z));
-    let maxZValueForDrawings = Math.max(...this.drawings.map(n => n.z));
+    let maxZValueForNodes = Math.max(...this.nodes.map((n) => n.z));
+    let maxZValueForDrawings = Math.max(...this.drawings.map((n) => n.z));
     let maxZValue = Math.max(maxZValueForNodes, maxZValueForDrawings);
     if (maxZValue < 100) maxZValue++;
 

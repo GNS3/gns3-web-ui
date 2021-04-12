@@ -10,17 +10,14 @@ import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-con
 
 @Injectable()
 export class DrawingService {
-  constructor(
-    private httpServer: HttpServer,
-    private svgToDrawingConverter: SvgToDrawingConverter
-  ) {}
+  constructor(private httpServer: HttpServer, private svgToDrawingConverter: SvgToDrawingConverter) {}
 
   add(server: Server, project_id: string, x: number, y: number, svg: string) {
     return this.httpServer.post<Drawing>(server, `/projects/${project_id}/drawings`, {
       svg: svg,
       x: Math.round(x),
       y: Math.round(y),
-      z: 1
+      z: 1,
     });
   }
 
@@ -30,7 +27,7 @@ export class DrawingService {
       rotation: drawing.rotation,
       x: drawing.x + 10,
       y: drawing.y + 10,
-      z: drawing.z
+      z: drawing.z,
     });
   }
 
@@ -41,16 +38,18 @@ export class DrawingService {
     if (project.snap_to_grid) {
       drawing.element = this.svgToDrawingConverter.convert(drawing.svg);
 
-      xPosition = Math.round((xPosition + drawing.element.width/2) / project.drawing_grid_size) * project.drawing_grid_size;
-      yPosition = Math.round((yPosition + drawing.element.width/2) / project.drawing_grid_size) * project.drawing_grid_size;
+      xPosition =
+        Math.round((xPosition + drawing.element.width / 2) / project.drawing_grid_size) * project.drawing_grid_size;
+      yPosition =
+        Math.round((yPosition + drawing.element.width / 2) / project.drawing_grid_size) * project.drawing_grid_size;
 
-      xPosition = Math.round(xPosition - drawing.element.width/2);
-      yPosition = Math.round(yPosition - drawing.element.height/2);
+      xPosition = Math.round(xPosition - drawing.element.width / 2);
+      yPosition = Math.round(yPosition - drawing.element.height / 2);
     }
 
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       x: xPosition,
-      y: yPosition
+      y: yPosition,
     });
   }
 
@@ -58,7 +57,7 @@ export class DrawingService {
     return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       svg: svg,
       x: Math.round(x),
-      y: Math.round(y)
+      y: Math.round(y),
     });
   }
 
@@ -67,7 +66,7 @@ export class DrawingService {
       svg: svg,
       x: Math.round(drawing.x),
       y: Math.round(drawing.y),
-      z: drawing.z
+      z: drawing.z,
     });
   }
 
@@ -78,7 +77,7 @@ export class DrawingService {
       rotation: drawing.rotation,
       x: Math.round(drawing.x),
       y: Math.round(drawing.y),
-      z: drawing.z
+      z: drawing.z,
     });
   }
 

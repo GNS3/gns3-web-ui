@@ -14,7 +14,7 @@ import {
   MapNodesDataSource,
   MapLinksDataSource,
   MapDrawingsDataSource,
-  MapSymbolsDataSource
+  MapSymbolsDataSource,
 } from '../datasources/map-datasource';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 
@@ -35,7 +35,7 @@ export class GraphDataManager {
 
   public setNodes(nodes: Node[]) {
     if (nodes) {
-      const mapNodes = nodes.map(n => this.nodeToMapNode.convert(n));
+      const mapNodes = nodes.map((n) => this.nodeToMapNode.convert(n));
       this.mapNodesDataSource.set(mapNodes);
 
       this.assignDataToLinks();
@@ -45,7 +45,7 @@ export class GraphDataManager {
 
   public setLinks(links: Link[]) {
     if (links) {
-      const mapLinks = links.map(l => this.linkToMapLink.convert(l));
+      const mapLinks = links.map((l) => this.linkToMapLink.convert(l));
       this.mapLinksDataSource.set(mapLinks);
 
       this.assignDataToLinks();
@@ -55,16 +55,16 @@ export class GraphDataManager {
 
   public setDrawings(drawings: Drawing[]) {
     if (drawings) {
-      const mapDrawings = drawings.map(d => this.drawingToMapDrawing.convert(d));
+      const mapDrawings = drawings.map((d) => this.drawingToMapDrawing.convert(d));
       this.mapDrawingsDataSource.set(mapDrawings);
-  
+
       this.onDataUpdate();
     }
   }
 
   public setSymbols(symbols: Symbol[]) {
     if (symbols) {
-      const mapSymbols = symbols.map(s => this.symbolToMapSymbol.convert(s));
+      const mapSymbols = symbols.map((s) => this.symbolToMapSymbol.convert(s));
       this.mapSymbolsDataSource.set(mapSymbols);
     }
   }

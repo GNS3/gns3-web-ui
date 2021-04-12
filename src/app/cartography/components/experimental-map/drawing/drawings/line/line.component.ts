@@ -5,7 +5,7 @@ import { LineElement } from '../../../../../models/drawings/line-element';
 @Component({
   selector: '[app-line]',
   templateUrl: './line.component.html',
-  styleUrls: ['./line.component.scss']
+  styleUrls: ['./line.component.scss'],
 })
 export class LineComponent implements OnInit {
   @Input('app-line') line: LineElement;
