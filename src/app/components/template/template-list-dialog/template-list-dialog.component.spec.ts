@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TemplateListDialogComponent } from './template-list-dialog.component';
 
 describe('TemplateListDialogComponent', () => {
@@ -8,7 +7,7 @@ describe('TemplateListDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TemplateListDialogComponent]
+      declarations: [TemplateListDialogComponent],
     }).compileComponents();
   }));
 

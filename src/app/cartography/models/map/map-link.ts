@@ -1,7 +1,7 @@
+import { Filter } from '../../../models/filter';
+import { Indexed } from '../../datasources/map-datasource';
 import { MapLinkNode } from './map-link-node';
 import { MapNode } from './map-node';
-import { Indexed } from '../../datasources/map-datasource';
-import { Filter } from '../../../models/filter';
 
 export class MapLink implements Indexed {
   id: string;

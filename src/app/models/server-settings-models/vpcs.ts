@@ -1,3 +1,3 @@
 export class VPCS {
-    vpcs_path: string;
+  vpcs_path: string;
 }

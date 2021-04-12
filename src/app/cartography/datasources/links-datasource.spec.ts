@@ -1,5 +1,5 @@
-import { LinksDataSource } from './links-datasource';
 import { Link } from '../../models/link';
+import { LinksDataSource } from './links-datasource';
 
 describe('LinksDataSource', () => {
   let dataSource: LinksDataSource;

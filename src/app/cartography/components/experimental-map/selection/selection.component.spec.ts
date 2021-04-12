@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SelectionComponent } from './selection.component';
 
 describe('SelectionComponent', () => {
@@ -8,7 +7,7 @@ describe('SelectionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SelectionComponent]
+      declarations: [SelectionComponent],
     }).compileComponents();
   }));
 

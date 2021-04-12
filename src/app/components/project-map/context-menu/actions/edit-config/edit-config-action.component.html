@@ -1,6 +1,8 @@
-<button mat-menu-item 
-    *ngIf="node.node_type==='vpcs' || node.node_type==='iou' || node.node_type==='dynamips'" 
-    (click)="editConfig()">
-    <mat-icon>settings</mat-icon>
-    <span>Edit config</span>
+<button
+  mat-menu-item
+  *ngIf="node.node_type === 'vpcs' || node.node_type === 'iou' || node.node_type === 'dynamips'"
+  (click)="editConfig()"
+>
+  <mat-icon>settings</mat-icon>
+  <span>Edit config</span>
 </button>

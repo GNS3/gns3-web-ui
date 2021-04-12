@@ -1,35 +1,33 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatDialogModule, MatDialogRef, MatDialogContainer } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterTestingModule } from '@angular/router/testing';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Observable, of } from 'rxjs';
-import { ProjectsComponent } from './projects.component';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from '../../services/server.service.spec';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ElectronService } from 'ngx-electron';
+import { of } from 'rxjs';
+import { ProgressService } from '../../common/progress/progress.service';
+import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
-import { SettingsService } from '../../services/settings.service';
+import { ServerService } from '../../services/server.service';
+import { MockedServerService } from '../../services/server.service.spec';
+import { Settings, SettingsService } from '../../services/settings.service';
 import { MockedSettingsService } from '../../services/settings.service.spec';
-import { ProgressService } from '../../common/progress/progress.service';
-import { Server } from '../../models/server';
-import { Settings } from '../../services/settings.service';
-import { Project } from '../../models/project';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
-import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
-import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { ToasterService } from '../../services/toaster.service';
-import { ElectronService } from 'ngx-electron';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { ProjectsComponent } from './projects.component';
 
 xdescribe('ProjectsComponent', () => {
   let component: ProjectsComponent;
@@ -48,10 +46,10 @@ xdescribe('ProjectsComponent', () => {
       remote: {
         require: (file) => {
           return {
-            openConsole() {}
-          }
-        }
-      }
+            openConsole() {},
+          };
+        },
+      },
     };
 
     TestBed.configureTestingModule({
@@ -67,7 +65,7 @@ xdescribe('ProjectsComponent', () => {
         MatBottomSheetModule,
         FormsModule,
         ReactiveFormsModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
       ],
       providers: [
         { provide: ServerService, useClass: MockedServerService },
@@ -75,13 +73,15 @@ xdescribe('ProjectsComponent', () => {
         { provide: SettingsService, useClass: MockedSettingsService },
         { provide: ToasterService },
         { provide: ElectronService, useValue: electronService },
-        ProgressService
+        ProgressService,
       ],
       declarations: [ProjectsComponent, ChooseNameDialogComponent, ConfigureGns3VMDialogComponent, ProjectsFilter],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     })
-    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [ChooseNameDialogComponent, ConfigureGns3VMDialogComponent] } })
-    .compileComponents();
+      .overrideModule(BrowserDynamicTestingModule, {
+        set: { entryComponents: [ChooseNameDialogComponent, ConfigureGns3VMDialogComponent] },
+      })
+      .compileComponents();
 
     serverService = TestBed.get(ServerService);
     settingsService = TestBed.get(SettingsService);

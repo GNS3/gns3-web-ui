@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-
-import { line } from 'd3-shape';
 import { mouse } from 'd3-selection';
-
-import { DrawingLine } from '../models/drawing-line';
-import { SVGSelection } from '../models/types';
-import { Point } from '../models/point';
+import { line } from 'd3-shape';
 import { Context } from '../models/context';
+import { DrawingLine } from '../models/drawing-line';
+import { Point } from '../models/point';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class DrawingLineWidget {
@@ -23,7 +21,7 @@ export class DrawingLineWidget {
     this.drawingLine.start = new Point(x, y);
     this.drawingLine.end = new Point(x, y);
 
-    const over = function(this, d, i) {
+    const over = function (this, d, i) {
       const node = self.selection.select<SVGGElement>('g.canvas').node();
       const coordinates = mouse(node);
       self.drawingLine.end.x = coordinates[0];
@@ -60,7 +58,10 @@ export class DrawingLineWidget {
 
     if (this.drawing) {
       link_data = [
-        [[this.drawingLine.start.x, this.drawingLine.start.y], [this.drawingLine.end.x, this.drawingLine.end.y]]
+        [
+          [this.drawingLine.start.x, this.drawingLine.start.y],
+          [this.drawingLine.end.x, this.drawingLine.end.y],
+        ],
       ];
     }
 
@@ -72,11 +73,7 @@ export class DrawingLineWidget {
 
     const enter = tool.enter().append<SVGPathElement>('path');
 
-    tool
-      .merge(enter)
-      .attr('d', value_line)
-      .attr('stroke', '#000')
-      .attr('stroke-width', '2');
+    tool.merge(enter).attr('d', value_line).attr('stroke', '#000').attr('stroke-width', '2');
 
     tool.exit().remove();
   }

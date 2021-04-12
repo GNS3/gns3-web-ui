@@ -3,10 +3,7 @@ import { ElectronService } from 'ngx-electron';
 
 @Injectable()
 export class PlatformService {
-
-  constructor(
-    private electronService: ElectronService
-  ) { }
+  constructor(private electronService: ElectronService) {}
 
   isWindows() {
     return this.electronService.process.platform === 'win32';

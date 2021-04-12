@@ -1,31 +1,30 @@
 import {
-  Component,
-  OnInit,
-  Input,
-  ElementRef,
-  ViewChild,
-  ChangeDetectorRef,
+  AfterViewInit,
   ChangeDetectionStrategy,
-  Output,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
   EventEmitter,
-  OnDestroy,
+  Input,
   OnChanges,
-  AfterViewInit
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
+import { Symbol } from '../../../../models/symbol';
+import { DraggedDataEvent } from '../../../events/event-source';
+import { NodesEventSource } from '../../../events/nodes-event-source';
 import { CssFixer } from '../../../helpers/css-fixer';
 import { FontFixer } from '../../../helpers/font-fixer';
-import { Symbol } from '../../../../models/symbol';
 import { MapNode } from '../../../models/map/map-node';
-import { NodesEventSource } from '../../../events/nodes-event-source';
-import { DraggedDataEvent } from '../../../events/event-source';
 
 @Component({
   selector: '[app-node]',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   static NODE_LABEL_MARGIN = 3;

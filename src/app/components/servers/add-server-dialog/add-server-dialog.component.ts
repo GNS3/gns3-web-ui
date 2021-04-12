@@ -1,32 +1,37 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Server } from '../../../models/server';
 import { ElectronService } from 'ngx-electron';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Server } from '../../../models/server';
 import { ServerService } from '../../../services/server.service';
 import { ToasterService } from '../../../services/toaster.service';
 
-
 @Component({
   selector: 'app-add-server-dialog',
-  templateUrl: 'add-server-dialog.component.html'
+  templateUrl: 'add-server-dialog.component.html',
 })
 export class AddServerDialogComponent implements OnInit {
-  authorizations = [{ key: 'none', name: 'No authorization' }, { key: 'basic', name: 'Basic authorization' }];
-  protocols = [{ key: 'http:', name: 'HTTP' }, { key: 'https:', name: 'HTTPS' }];
+  authorizations = [
+    { key: 'none', name: 'No authorization' },
+    { key: 'basic', name: 'Basic authorization' },
+  ];
+  protocols = [
+    { key: 'http:', name: 'HTTP' },
+    { key: 'https:', name: 'HTTPS' },
+  ];
   locations = [];
 
   serverForm = new FormGroup({
-    'name': new FormControl('', [ Validators.required ]),
-    'location': new FormControl(''),
-    'path': new FormControl(''),
-    'ubridge_path': new FormControl(''),
-    'host': new FormControl('', [ Validators.required ]),
-    'port': new FormControl('', [ Validators.required, Validators.min(1) ]),
-    'protocol': new FormControl('http:'),
-    'authorization': new FormControl('none'),
-    'login': new FormControl(''),
-    'password': new FormControl('')
+    name: new FormControl('', [Validators.required]),
+    location: new FormControl(''),
+    path: new FormControl(''),
+    ubridge_path: new FormControl(''),
+    host: new FormControl('', [Validators.required]),
+    port: new FormControl('', [Validators.required, Validators.min(1)]),
+    protocol: new FormControl('http:'),
+    authorization: new FormControl('none'),
+    login: new FormControl(''),
+    password: new FormControl(''),
   });
 
   constructor(
@@ -34,24 +39,23 @@ export class AddServerDialogComponent implements OnInit {
     private electronService: ElectronService,
     private serverService: ServerService,
     private toasterService: ToasterService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   async getLocations() {
     const localServers = await this.numberOfLocalServers();
 
     let locations = [];
-    if(this.electronService.isElectronApp && localServers === 0) {
+    if (this.electronService.isElectronApp && localServers === 0) {
       locations.push({ key: 'local', name: 'Local' });
     }
     locations.push({ key: 'remote', name: 'Remote' });
-    return locations
+    return locations;
   }
 
-  
   async getDefaultLocation() {
     const localServers = await this.numberOfLocalServers();
-    if(this.electronService.isElectronApp && localServers === 0) {
+    if (this.electronService.isElectronApp && localServers === 0) {
       return 'local';
     }
     return 'remote';
@@ -72,14 +76,14 @@ export class AddServerDialogComponent implements OnInit {
   }
 
   async getDefaultLocalServerPath() {
-    if(this.electronService.isElectronApp) {
+    if (this.electronService.isElectronApp) {
       return await this.electronService.remote.require('./local-server.js').getLocalServerPath();
     }
     return;
   }
 
   async getDefaultUbridgePath() {
-    if(this.electronService.isElectronApp) {
+    if (this.electronService.isElectronApp) {
       return await this.electronService.remote.require('./local-server.js').getUbridgePath();
     }
     return;
@@ -95,14 +99,13 @@ export class AddServerDialogComponent implements OnInit {
       const pathControl = this.serverForm.get('path');
       const ubridgePathControl = this.serverForm.get('ubridge_path');
 
-      if(location === 'local') {
+      if (location === 'local') {
         pathControl.setValue(defaultLocalServerPath);
         pathControl.setValidators([Validators.required]);
 
         ubridgePathControl.setValue(defaultUbridgePath);
         ubridgePathControl.setValidators([Validators.required]);
-      }
-      else {
+      } else {
         pathControl.setValue('');
         pathControl.clearValidators();
 
@@ -112,29 +115,28 @@ export class AddServerDialogComponent implements OnInit {
 
       [pathControl, ubridgePathControl].forEach((control) => {
         control.updateValueAndValidity({
-          onlySelf: true
+          onlySelf: true,
         });
-      })
+      });
     });
-    
+
     this.serverForm.get('authorization').valueChanges.subscribe((authorization: string) => {
       const loginControl = this.serverForm.get('login');
       const passwordControl = this.serverForm.get('password');
 
-      if(authorization === 'none') {
+      if (authorization === 'none') {
         loginControl.clearValidators();
         passwordControl.clearValidators();
-      }
-      else {
+      } else {
         loginControl.setValidators([Validators.required]);
         passwordControl.setValidators([Validators.required]);
       }
 
       [loginControl, passwordControl].forEach((control) => {
         control.updateValueAndValidity({
-          onlySelf: true
+          onlySelf: true,
         });
-      })
+      });
     });
 
     const defaultLocation = await this.getDefaultLocation();
@@ -145,23 +147,23 @@ export class AddServerDialogComponent implements OnInit {
   }
 
   onAddClick(): void {
-    if(!this.serverForm.valid) {
+    if (!this.serverForm.valid) {
       return;
     }
 
     const server: Server = Object.assign({}, this.serverForm.value);
     this.serverService.checkServerVersion(server).subscribe(
       (serverInfo) => {
-        if ((serverInfo.version.split('.')[1]>=2) && (serverInfo.version.split('.')[0]>=2)) {
+        if (serverInfo.version.split('.')[1] >= 2 && serverInfo.version.split('.')[0] >= 2) {
           this.dialogRef.close(server);
-          this.toasterService.success(`Server ${server.name} added.`)
+          this.toasterService.success(`Server ${server.name} added.`);
         } else {
           this.dialogRef.close();
-          this.toasterService.error(`Server version is not supported.`)
+          this.toasterService.error(`Server version is not supported.`);
         }
       },
-      error => { 
-        this.toasterService.error('Cannot connect to the server: ' + error)
+      (error) => {
+        this.toasterService.error('Cannot connect to the server: ' + error);
       }
     );
   }

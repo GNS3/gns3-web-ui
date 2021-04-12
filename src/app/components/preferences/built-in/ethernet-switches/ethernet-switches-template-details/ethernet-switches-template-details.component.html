@@ -1,75 +1,84 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened}">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Ethernet switch configuration</h1>
-        </div>
+<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Ethernet switch configuration</h1>
     </div>
-    <div class="default-content" *ngIf="ethernetSwitchTemplate">
-        <mat-accordion>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        General settings
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="ethernetSwitchTemplate.name" 
-                            formControlName="templateName"
-                            placeholder="Template name">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="ethernetSwitchTemplate.default_name_format" 
-                            formControlName="defaultName"
-                            placeholder="Default name format">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="ethernetSwitchTemplate.symbol" 
-                            formControlName="symbol"
-                            placeholder="Symbol">
-                    </mat-form-field>
-                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                    <mat-form-field class="form-field">
-                        <mat-select 
-                            placeholder="Category" 
-                            [ngModelOptions]="{standalone: true}" 
-                            [(ngModel)]="ethernetSwitchTemplate.category">
-                            <mat-option *ngFor="let category of categories" [value]="category[1]">
-                                {{category[0]}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="select">
-                        <mat-select 
-                            placeholder="Console type" 
-                            [ngModelOptions]="{standalone: true}" 
-                            [(ngModel)]="ethernetSwitchTemplate.console_type">
-                                <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                                    {{type}}
-                                </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </form>
-            </mat-expansion-panel>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Port settings
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-            <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
-            </mat-expansion-panel>
-        </mat-accordion>
-        <div class="buttons-bar">
-            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
-        </div>
+  </div>
+  <div class="default-content" *ngIf="ethernetSwitchTemplate">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> General settings </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form [formGroup]="inputForm">
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="ethernetSwitchTemplate.name"
+              formControlName="templateName"
+              placeholder="Template name"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="ethernetSwitchTemplate.default_name_format"
+              formControlName="defaultName"
+              placeholder="Default name format"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="ethernetSwitchTemplate.symbol"
+              formControlName="symbol"
+              placeholder="Symbol"
+            />
+          </mat-form-field>
+          <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+          <mat-form-field class="form-field">
+            <mat-select
+              placeholder="Category"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="ethernetSwitchTemplate.category"
+            >
+              <mat-option *ngFor="let category of categories" [value]="category[1]">
+                {{ category[0] }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="select">
+            <mat-select
+              placeholder="Console type"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="ethernetSwitchTemplate.console_type"
+            >
+              <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Port settings </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <div class="buttons-bar">
+      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
+  </div>
 </div>
-<app-symbols-menu *ngIf="isSymbolSelectionOpened && ethernetSwitchTemplate" [server]="server" [symbol]="ethernetSwitchTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>
+<app-symbols-menu
+  *ngIf="isSymbolSelectionOpened && ethernetSwitchTemplate"
+  [server]="server"
+  [symbol]="ethernetSwitchTemplate.symbol"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>

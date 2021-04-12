@@ -1,82 +1,89 @@
 <h1 mat-dialog-title>Edit project</h1>
 
 <div class="modal-form-container">
-    <mat-tab-group>
-        <mat-tab label="General">
-            <form [formGroup]="formGroup">
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="projectName" placeholder="Project name" type="text">
-                </mat-form-field>
-            
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="width" placeholder="Scene width (px)" type="number">
-                </mat-form-field>
-            
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="height" placeholder="Scene height (px)" type="number">
-                </mat-form-field>
-            
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="nodeGridSize" placeholder="Node grid size" type="number">
-                </mat-form-field>
-            
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="drawingGridSize" placeholder="Drawing grid size" type="number">
-                </mat-form-field>
-            </form>
-            
-            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_open">
-                Open this project in the background when GNS3 server starts
-            </mat-checkbox>
-            
-            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_start">
-                Start all nodes when this project is opened
-            </mat-checkbox>
-            
-            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="auto_close">
-                Leave this project running in the background after closing
-            </mat-checkbox>
-            
-            <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.show_interface_labels">
-                Show interface labels at start
-            </mat-checkbox>
-        </mat-tab>
-        <mat-tab label="Global variables">
-            <form [formGroup]="variableFormGroup">
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="name" placeholder="Name" type="text">
-                </mat-form-field>
-            
-                <mat-form-field class="form-field">
-                    <input matInput formControlName="value" placeholder="Value" type="text">
-                </mat-form-field>
-            </form>
-            <button class="form-field" mat-button (click)="addVariable()" mat-raised-button color="primary">Add variable</button>
-            <table class="table" mat-table [dataSource]="variables">
-                <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let element">{{element.name}} </td>
-                </ng-container>
-            
-                <ng-container matColumnDef="value">
-                    <th mat-header-cell *matHeaderCellDef>Value</th>
-                    <td mat-cell *matCellDef="let element">{{element.value}}</td>
-                </ng-container>
-            
-                <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Actions</th>
-                    <td mat-cell *matCellDef="let element">
-                        <button mat-icon-button matTooltip="Delete variable" matTooltipClass="custom-tooltip" (click)="deleteVariable(element)">
-                            <mat-icon aria-label="Delete adapter">delete</mat-icon>
-                        </button>
-                    </td>
-                </ng-container>
-                
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-        </mat-tab>
-    </mat-tab-group>
+  <mat-tab-group>
+    <mat-tab label="General">
+      <form [formGroup]="formGroup">
+        <mat-form-field class="form-field">
+          <input matInput formControlName="projectName" placeholder="Project name" type="text" />
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+          <input matInput formControlName="width" placeholder="Scene width (px)" type="number" />
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+          <input matInput formControlName="height" placeholder="Scene height (px)" type="number" />
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+          <input matInput formControlName="nodeGridSize" placeholder="Node grid size" type="number" />
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+          <input matInput formControlName="drawingGridSize" placeholder="Drawing grid size" type="number" />
+        </mat-form-field>
+      </form>
+
+      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="project.auto_open">
+        Open this project in the background when GNS3 server starts
+      </mat-checkbox>
+
+      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="project.auto_start">
+        Start all nodes when this project is opened
+      </mat-checkbox>
+
+      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="auto_close">
+        Leave this project running in the background after closing
+      </mat-checkbox>
+
+      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="project.show_interface_labels">
+        Show interface labels at start
+      </mat-checkbox>
+    </mat-tab>
+    <mat-tab label="Global variables">
+      <form [formGroup]="variableFormGroup">
+        <mat-form-field class="form-field">
+          <input matInput formControlName="name" placeholder="Name" type="text" />
+        </mat-form-field>
+
+        <mat-form-field class="form-field">
+          <input matInput formControlName="value" placeholder="Value" type="text" />
+        </mat-form-field>
+      </form>
+      <button class="form-field" mat-button (click)="addVariable()" mat-raised-button color="primary">
+        Add variable
+      </button>
+      <table class="table" mat-table [dataSource]="variables">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef>Value</th>
+          <td mat-cell *matCellDef="let element">{{ element.value }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              matTooltip="Delete variable"
+              matTooltipClass="custom-tooltip"
+              (click)="deleteVariable(element)"
+            >
+              <mat-icon aria-label="Delete adapter">delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </mat-tab>
+  </mat-tab-group>
 </div>
 
 <div mat-dialog-actions>

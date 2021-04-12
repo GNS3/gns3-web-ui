@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-
 import { Rectangle } from '../models/rectangle';
 
 @Injectable()

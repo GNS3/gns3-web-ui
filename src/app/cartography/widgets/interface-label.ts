@@ -1,16 +1,15 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
-import { SVGSelection } from '../models/types';
-import { CssFixer } from '../helpers/css-fixer';
+import { EventEmitter, Injectable } from '@angular/core';
 import { select } from 'd3-selection';
-import { MapLink } from '../models/map/map-link';
+import { Draggable } from '../events/draggable';
+import { InterfaceLabelContextMenu } from '../events/event-source';
+import { CssFixer } from '../helpers/css-fixer';
 import { FontFixer } from '../helpers/font-fixer';
+import { MapSettingsManager } from '../managers/map-settings-manager';
 import { SelectionManager } from '../managers/selection-manager';
+import { MapLink } from '../models/map/map-link';
 import { MapLinkNode } from '../models/map/map-link-node';
 import { MapNode } from '../models/map/map-node';
-import { Draggable } from '../events/draggable';
-import { MapSettingsManager } from '../managers/map-settings-manager';
-import { InterfaceLabelContextMenu } from '../events/event-source';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class InterfaceLabelWidget {
@@ -36,7 +35,10 @@ export class InterfaceLabelWidget {
 
     const link_node_position = selection
       .selectAll<SVGGElement, MapLinkNode>('g.link_node_position')
-      .data((link: MapLink) => [[link.source, link.nodes[0]], [link.target, link.nodes[1]]]);
+      .data((link: MapLink) => [
+        [link.source, link.nodes[0]],
+        [link.target, link.nodes[1]],
+      ]);
 
     const enter_link_node_position = link_node_position
       .enter()
@@ -58,10 +60,7 @@ export class InterfaceLabelWidget {
         return [];
       });
 
-    const enter = labels
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('interface_label_container', true);
+    const enter = labels.enter().append<SVGGElement>('g').classed('interface_label_container', true);
 
     // create surrounding rect
     enter.append<SVGRectElement>('rect').attr('class', 'interface_label_selection');
@@ -72,12 +71,10 @@ export class InterfaceLabelWidget {
       .attr('class', 'interface_label noselect')
       .attr('interface_label_id', (i: MapLinkNode) => `${i.id}`);
 
-    const merge = labels
-      .merge(enter)
-      .on('contextmenu', (n: MapLinkNode, i: number) => {
-        event.preventDefault();
-        self.onContextMenu.emit(new InterfaceLabelContextMenu(event, n));
-      });
+    const merge = labels.merge(enter).on('contextmenu', (n: MapLinkNode, i: number) => {
+      event.preventDefault();
+      self.onContextMenu.emit(new InterfaceLabelContextMenu(event, n));
+    });
 
     // update label
     merge
@@ -102,7 +99,7 @@ export class InterfaceLabelWidget {
       .attr('stroke-dasharray', '3,3')
       .attr('stroke-width', '0.5')
       .attr('fill', 'none')
-      .each(function(this: SVGRectElement, l: MapLinkNode) {
+      .each(function (this: SVGRectElement, l: MapLinkNode) {
         const current = select(this);
         const textLabel = merge.select<SVGTextElement>(`text[interface_label_id="${l.id}"]`);
         const bbox = textLabel.node().getBBox();

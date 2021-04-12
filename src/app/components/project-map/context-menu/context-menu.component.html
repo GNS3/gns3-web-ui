@@ -1,27 +1,19 @@
 <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
   <span [matMenuTriggerFor]="contextMenu"></span>
   <mat-menu #contextMenu="matMenu" class="context-menu-items">
-    <app-show-node-action *ngIf="nodes.length===1"
-      [server]="server"
-      [node]="nodes[0]"
-    ></app-show-node-action>
-    <app-config-node-action *ngIf="nodes.length===1"
-      [server]="server"
-      [node]="nodes[0]"
-    ></app-config-node-action>
+    <app-show-node-action *ngIf="nodes.length === 1" [server]="server" [node]="nodes[0]"></app-show-node-action>
+    <app-config-node-action *ngIf="nodes.length === 1" [server]="server" [node]="nodes[0]"></app-config-node-action>
     <app-start-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-start-node-action>
     <app-suspend-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-suspend-node-action>
     <app-stop-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-stop-node-action>
-    <app-reload-node-action
-      *ngIf="nodes.length" [server]="server" [nodes]="nodes"
-    ></app-reload-node-action>
+    <app-reload-node-action *ngIf="nodes.length" [server]="server" [nodes]="nodes"></app-reload-node-action>
     <app-http-console-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
       [server]="server"
       [nodes]="nodes"
     ></app-http-console-action>
     <app-http-console-new-tab-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
       [server]="server"
       [nodes]="nodes"
     ></app-http-console-new-tab-action>
@@ -31,41 +23,45 @@
       [nodes]="nodes"
     ></app-console-device-action>
     <app-console-device-action-browser
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1 && !isElectronApp"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1 && !isElectronApp"
       [server]="server"
       [node]="nodes[0]"
     ></app-console-device-action-browser>
     <app-open-file-explorer-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1 && isElectronApp"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1 && isElectronApp"
       [server]="server"
       [node]="nodes[0]"
     ></app-open-file-explorer-action>
     <app-change-hostname-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
       [server]="server"
       [node]="nodes[0]"
     ></app-change-hostname-action>
     <app-change-symbol-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length===1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
       [server]="server"
       [node]="nodes[0]"
     ></app-change-symbol-action>
-    <app-duplicate-action *ngIf="drawings.length>0 || nodes.length>0"
+    <app-duplicate-action
+      *ngIf="drawings.length > 0 || nodes.length > 0"
       [server]="server"
       [project]="project"
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-duplicate-action>
-    <app-edit-style-action *ngIf="!projectService.isReadOnly(project) && drawings.length===1 && !hasTextCapabilities"
+    <app-edit-style-action
+      *ngIf="!projectService.isReadOnly(project) && drawings.length === 1 && !hasTextCapabilities"
       [server]="server"
       [project]="project"
       [drawing]="drawings[0]"
     ></app-edit-style-action>
     <app-edit-text-action
-      *ngIf="!projectService.isReadOnly(project) &&
-        (drawings.length===1 && hasTextCapabilities && labels.length===0 && linkNodes.length===0 ||
-        labels.length===1 && linkNodes.length===0 && drawings.length===0 ||
-        linkNodes.length===1 && labels.length===0 && drawings.length===0)"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        ((drawings.length === 1 && hasTextCapabilities && labels.length === 0 && linkNodes.length === 0) ||
+          (labels.length === 1 && linkNodes.length === 0 && drawings.length === 0) ||
+          (linkNodes.length === 1 && labels.length === 0 && drawings.length === 0))
+      "
       [server]="server"
       [project]="project"
       [drawing]="drawings[0]"
@@ -74,16 +70,25 @@
       [link]="links[0]"
       [linkNode]="linkNodes[0]"
     ></app-edit-text-action>
-    <app-edit-config-action *ngIf="nodes.length===1 && nodes[0].node_type==='vpcs'"
+    <app-edit-config-action
+      *ngIf="nodes.length === 1 && nodes[0].node_type === 'vpcs'"
       [server]="server"
       [project]="project"
       [node]="nodes[0]"
     ></app-edit-config-action>
-    <app-export-config-action *ngIf="nodes.length===1 && (nodes[0].node_type==='vpcs' || nodes[0].node_type==='iou' || nodes[0].node_type==='dynamips')"
+    <app-export-config-action
+      *ngIf="
+        nodes.length === 1 &&
+        (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type === 'dynamips')
+      "
       [server]="server"
       [node]="nodes[0]"
     ></app-export-config-action>
-    <app-import-config-action *ngIf="nodes.length===1 && (nodes[0].node_type==='vpcs' || nodes[0].node_type==='iou' || nodes[0].node_type==='dynamips')"
+    <app-import-config-action
+      *ngIf="
+        nodes.length === 1 &&
+        (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type === 'dynamips')
+      "
       [server]="server"
       [node]="nodes[0]"
     ></app-import-config-action>
@@ -106,61 +111,92 @@
       [drawings]="drawings"
     ></app-bring-to-front-action>
     <app-start-capture-action
-      *ngIf="!projectService.isReadOnly(project)
-      && drawings.length===0 && nodes.length===0 && links.length===1"
+      *ngIf="!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1"
       [server]="server"
       [project]="project"
       [link]="links[0]"
     ></app-start-capture-action>
     <app-stop-capture-action
-      *ngIf="!projectService.isReadOnly(project)
-      && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        drawings.length === 0 &&
+        nodes.length === 0 &&
+        links.length === 1 &&
+        linkNodes.length === 0
+      "
       [server]="server"
       [link]="links[0]"
     ></app-stop-capture-action>
     <app-start-capture-on-started-link-action
-      *ngIf="!projectService.isReadOnly(project)
-      && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        drawings.length === 0 &&
+        nodes.length === 0 &&
+        links.length === 1 &&
+        linkNodes.length === 0
+      "
       [server]="server"
       [project]="project"
       [link]="links[0]"
     ></app-start-capture-on-started-link-action>
     <app-packet-filters-action
-      *ngIf="!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        drawings.length === 0 &&
+        nodes.length === 0 &&
+        links.length === 1 &&
+        linkNodes.length === 0
+      "
       [server]="server"
       [project]="project"
       [link]="links[0]"
     ></app-packet-filters-action>
     <app-resume-link-action
-      *ngIf="!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        drawings.length === 0 &&
+        nodes.length === 0 &&
+        links.length === 1 &&
+        linkNodes.length === 0
+      "
       [server]="server"
       [link]="links[0]"
     ></app-resume-link-action>
     <app-suspend-link-action
-      *ngIf="!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        drawings.length === 0 &&
+        nodes.length === 0 &&
+        links.length === 1 &&
+        linkNodes.length === 0
+      "
       [server]="server"
       [link]="links[0]"
     ></app-suspend-link-action>
     <app-lock-action
-      *ngIf="!projectService.isReadOnly(project) && (drawings.length>0 || nodes.length>0)"
+      *ngIf="!projectService.isReadOnly(project) && (drawings.length > 0 || nodes.length > 0)"
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
     ></app-lock-action>
     <app-delete-action
-      *ngIf="!projectService.isReadOnly(project) && (drawings.length>0 || nodes.length>0 || links.length>0) && linkNodes.length === 0"
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        (drawings.length > 0 || nodes.length > 0 || links.length > 0) &&
+        linkNodes.length === 0
+      "
       [server]="server"
       [nodes]="nodes"
       [drawings]="drawings"
       [links]="links"
     ></app-delete-action>
     <app-align-horizontally-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length>1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length > 1"
       [server]="server"
       [nodes]="nodes"
     ></app-align-horizontally-action>
     <app-align-vertically-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length>1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length > 1"
       [server]="server"
       [nodes]="nodes"
     ></app-align-vertically-action>

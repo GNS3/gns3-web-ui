@@ -1,64 +1,72 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { HttpClientModule } from '@angular/common/http';
 import { MockedServerSettingsService } from '../../../../services/server-settings.service.spec';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { DynamipsPreferencesComponent } from './dynamips-preferences.component';
 
 describe('DynamipsPreferencesComponent', () => {
-    let component: DynamipsPreferencesComponent;
-    let fixture: ComponentFixture<DynamipsPreferencesComponent>;
+  let component: DynamipsPreferencesComponent;
+  let fixture: ComponentFixture<DynamipsPreferencesComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    let mockedServerSettingsService = new MockedServerSettingsService();
-    let mockedToasterService = new MockedToasterService();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [HttpClientModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: ServerSettingsService, useValue: mockedServerSettingsService },
-              { provide: ToasterService, useValue: mockedToasterService }
-          ],
-          declarations: [
-              DynamipsPreferencesComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let activatedRoute = new MockedActivatedRoute().get();
+  let mockedServerSettingsService = new MockedServerSettingsService();
+  let mockedToasterService = new MockedToasterService();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(DynamipsPreferencesComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        HttpClientModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: ServerSettingsService, useValue: mockedServerSettingsService },
+        { provide: ToasterService, useValue: mockedToasterService },
+      ],
+      declarations: [DynamipsPreferencesComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(DynamipsPreferencesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should clear path when restore defaults called', () => {
-        component.dynamipsPath = 'Non empty';
-        component.restoreDefaults();
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        expect(component.dynamipsPath).toBe('');
-    });
+  it('should clear path when restore defaults called', () => {
+    component.dynamipsPath = 'Non empty';
+    component.restoreDefaults();
+
+    expect(component.dynamipsPath).toBe('');
+  });
 });

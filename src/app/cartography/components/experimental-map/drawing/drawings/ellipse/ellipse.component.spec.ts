@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { EllipseComponent } from './ellipse.component';
 
 describe('EllipseComponent', () => {
@@ -8,7 +7,7 @@ describe('EllipseComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EllipseComponent]
+      declarations: [EllipseComponent],
     }).compileComponents();
   }));
 

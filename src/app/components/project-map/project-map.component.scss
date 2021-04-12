@@ -14,130 +14,114 @@ g.node:hover {
 }
 
 .project-map {
-   background-color: #e8ecef;
+  background-color: #e8ecef;
 }
 
 #project-titlebar {
-   position: fixed;
-   top: 0px;
-   left: 0px;
-   right: 0px;
-   height: 60px;
-   padding: 0px 20px;
-   background-color: #20313b;
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
-   z-index: 2;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 60px;
+  padding: 0px 20px;
+  background-color: #20313b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2;
 
-   .gns3-button {
-      position: relative;
-      top: -2px;
+  .gns3-button {
+    position: relative;
+    top: -2px;
 
-      mat-icon {
-         width: 30px !important;
-         height: 30px !important;
-      }
-   }
+    mat-icon {
+      width: 30px !important;
+      height: 30px !important;
+    }
+  }
 
-   .primary-controls {
-      border-right: 1px solid rgba(255,255,255,0.3);
-      padding-right: 15px;
-      margin-right: 15px;
+  .primary-controls {
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    padding-right: 15px;
+    margin-right: 15px;
 
-      &.lightTheme {
-        border-right: 1px solid black;
-      }
-   }
+    &.lightTheme {
+      border-right: 1px solid black;
+    }
+  }
 
-   .menu-button-group {
-      display: flex;
-      align-items: center;
-      height: 24px;
-   }
+  .menu-button-group {
+    display: flex;
+    align-items: center;
+    height: 24px;
+  }
 
-   .menu-button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 36px;
-      width: 36px;
-      margin: 0px 8px;
-      border-radius: 18px;
-      background: none;
-      font-size: 20px;
-   }
+  .menu-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    width: 36px;
+    margin: 0px 8px;
+    border-radius: 18px;
+    background: none;
+    font-size: 20px;
+  }
 
-   .add-menu-button mat-icon {
-      font-size: 28px !important;
-   }
+  .add-menu-button mat-icon {
+    font-size: 28px !important;
+  }
 
-   .selected {
-      background: rgba(0, 151, 167, 0.1);
+  .selected {
+    background: rgba(0, 151, 167, 0.1);
 
-      mat-icon {
-         color: #0097a7 !important;
-      }
-   }
+    mat-icon {
+      color: #0097a7 !important;
+    }
+  }
 
-   .project-titlebar-controls {
-      display: flex;
-      align-items: center;
-   }
+  .project-titlebar-controls {
+    display: flex;
+    align-items: center;
+  }
 
-   &.lightTheme {
-      background-color: white !important;
+  &.lightTheme {
+    background-color: white !important;
 
-      .selected mat-icon {
-         color: #0097a7 !important;
-      }
-   }
+    .selected mat-icon {
+      color: #0097a7 !important;
+    }
+  }
 }
 
 #project-toolbar {
-   position: fixed;
-   top: 60px;
-   left: 0px;
-   width: 50px;
-   margin: 20px;
-   background-color: #20313b;
-   border-radius: 6px;
-   box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
-   z-index: 2;
+  position: fixed;
+  top: 60px;
+  left: 0px;
+  width: 50px;
+  margin: 20px;
+  background-color: #20313b;
+  border-radius: 6px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2;
 
-   mat-icon {
-      font-size: 20px;
-   }
+  mat-icon {
+    font-size: 20px;
+  }
 
-   .menu-button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 36px;
-      width: 36px;
-      border-radius: 18px;
-      background: none;
-      margin: 2px 0px;
-   }
+  .menu-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 18px;
+    background: none;
+    margin: 2px 0px;
+  }
 
-   .zoom-button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 36px;
-      width: 36px;
-      border-radius: 18px;
-      background: none;
-      margin: 2px 0px;
-      color: white;
-
-      mat-icon {
-        font-size: 24px!important;
-      }
-   }
-
-   .reset-zoom-button {
+  .zoom-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -149,53 +133,69 @@ g.node:hover {
     color: white;
 
     mat-icon {
-      font-size: 16px!important;
+      font-size: 24px !important;
+    }
+  }
+
+  .reset-zoom-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 18px;
+    background: none;
+    margin: 2px 0px;
+    color: white;
+
+    mat-icon {
+      font-size: 16px !important;
       margin-top: 8px;
     }
-   }
+  }
 
-   .selection-button {
-      margin-bottom: 0px !important;
-   }
+  .selection-button {
+    margin-bottom: 0px !important;
+  }
 
-   .snapshot-button mat-icon {
-      font-size: 16px;
-   }
+  .snapshot-button mat-icon {
+    font-size: 16px;
+  }
 
-   .section {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      border-top: 1px solid rgba(255,255,255,0.3);
-      padding: 5px 0px;
+  .section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 5px 0px;
+
+    &:first-child {
+      border: none;
+    }
+  }
+
+  &.lightTheme {
+    background-color: rgba(244, 248, 252, 0.95) !important;
+
+    .zoom-button {
+      opacity: 0.7;
+      color: black;
+    }
+
+    .reset-zoom-button {
+      opacity: 0.7;
+      color: black;
+    }
+
+    .section {
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
 
       &:first-child {
-         border: none;
+        border: none;
       }
-   }
-
-   &.lightTheme {
-      background-color: rgba(244, 248, 252, 0.95) !important;
-
-      .zoom-button {
-         opacity: 0.7;
-         color: black;
-      }
-
-      .reset-zoom-button {
-        opacity: 0.7;
-        color: black;
-      }
-
-      .section {
-         border-top: 1px solid rgba(0,0,0,0.1);
-
-         &:first-child {
-            border: none;
-         }
-      }
-   }
+    }
+  }
 }
 
 img {
@@ -204,11 +204,11 @@ img {
 }
 
 .lightTheme {
-  color: black!important;
+  color: black !important;
 }
 
 .darkTheme {
-  color: white!important;
+  color: white !important;
 }
 
 #show-menu-wrapper {
@@ -393,13 +393,13 @@ mat-menu-panel {
 }
 
 .unmarked {
-  color: white!important;
+  color: white !important;
 }
 
 .unmarkedLight {
-  color: black!important;
+  color: black !important;
 }
 
 .marked {
-  color: #0097a7!important;
+  color: #0097a7 !important;
 }

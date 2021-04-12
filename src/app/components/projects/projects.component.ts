@@ -1,35 +1,30 @@
+import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
-
-import { DataSource } from '@angular/cdk/collections';
-
-import { map, switchMap } from 'rxjs//operators';
-import { BehaviorSubject, Observable, merge } from 'rxjs';
-
-import { Project } from '../../models/project';
-import { ProjectService } from '../../services/project.service';
-import { Server } from '../../models/server';
-import { ServerService } from '../../services/server.service';
-import { SettingsService, Settings } from '../../services/settings.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ElectronService } from 'ngx-electron';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
+import { map } from 'rxjs//operators';
 import { ProgressService } from '../../common/progress/progress.service';
-
-import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
-import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
-import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
-import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
+import { ProjectService } from '../../services/project.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
-import { ElectronService } from 'ngx-electron';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
+import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
-  styleUrls: ['./projects.component.scss']
+  styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnInit {
   server: Server;
@@ -40,7 +35,7 @@ export class ProjectsComponent implements OnInit {
 
   searchText: string = '';
 
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,13 +52,13 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.server = this.route.snapshot.data['server'];
-    if(!this.server) this.router.navigate(['/servers']);
+    if (!this.server) this.router.navigate(['/servers']);
     this.recentlyOpenedProjectService.setServerIdProjectList(this.server.id.toString());
 
     this.refresh();
     this.sort.sort(<MatSortable>{
       id: 'name',
-      start: 'asc'
+      start: 'asc',
     });
     this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
     this.settings = this.settingsService.getAll();
@@ -71,26 +66,27 @@ export class ProjectsComponent implements OnInit {
     this.projectService.projectListSubject.subscribe(() => this.refresh());
 
     let gns3vmConfig = localStorage.getItem('gns3vmConfig');
-    if (this.electronService.isElectronApp && gns3vmConfig!=='configured') {
+    if (this.electronService.isElectronApp && gns3vmConfig !== 'configured') {
       const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
         width: '350px',
         height: '120px',
         autoFocus: false,
-        disableClose: true
+        disableClose: true,
       });
-  
+
       dialogRef.afterClosed().subscribe((answer: boolean) => {
         if (answer) {
           localStorage.setItem('gns3vmConfig', 'configured');
           this.router.navigate(['/server', this.server.id, 'preferences', 'gns3vm']);
         }
       });
-    };
+    }
   }
 
   goToPreferences() {
-    this.router.navigate(['/server', this.server.id, 'preferences'])
-      .catch(error => this.toasterService.error('Cannot navigate to the preferences'));
+    this.router
+      .navigate(['/server', this.server.id, 'preferences'])
+      .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
   }
 
   refresh() {
@@ -98,7 +94,7 @@ export class ProjectsComponent implements OnInit {
       (projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
       },
-      error => {
+      (error) => {
         this.progressService.setError(error);
       }
     );
@@ -153,7 +149,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -167,7 +163,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -178,7 +174,7 @@ export class ProjectsComponent implements OnInit {
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;
@@ -193,7 +189,7 @@ export class ProjectsComponent implements OnInit {
         this.bottomSheet.open(NavigationDialogComponent);
         let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
         bottomSheetRef.instance.projectMessage = 'imported project';
-        
+
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.server, uuid).subscribe(() => {

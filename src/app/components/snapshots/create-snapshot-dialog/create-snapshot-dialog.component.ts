@@ -1,19 +1,18 @@
 import { Component, Inject } from '@angular/core';
-import { Snapshot } from '../../../models/snapshot';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
-import { SnapshotService } from '../../../services/snapshot.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
-
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { Snapshot } from '../../../models/snapshot';
+import { SnapshotService } from '../../../services/snapshot.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-create-snapshot-dialog',
   templateUrl: './create-snapshot-dialog.component.html',
-  styleUrls: ['./create-snapshot-dialog.component.scss']
+  styleUrls: ['./create-snapshot-dialog.component.scss'],
 })
 export class CreateSnapshotDialogComponent {
   server: Server;
@@ -35,7 +34,7 @@ export class CreateSnapshotDialogComponent {
     this.project = data['project'];
 
     this.inputForm = this.formBuilder.group({
-      snapshotName: new FormControl('', Validators.required)
+      snapshotName: new FormControl('', Validators.required),
     });
 
     this.snapshotService.list(this.server, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
@@ -52,7 +51,7 @@ export class CreateSnapshotDialogComponent {
   }
 
   isAlwaysRunningNode(nodeType: string) {
-    return !["qemu", "docker", "dynamips", "vpcs", "vmware", "virtualbox", "iou", "traceng"].includes(nodeType);
+    return !['qemu', 'docker', 'dynamips', 'vpcs', 'vmware', 'virtualbox', 'iou', 'traceng'].includes(nodeType);
   }
 
   onAddClick(): void {

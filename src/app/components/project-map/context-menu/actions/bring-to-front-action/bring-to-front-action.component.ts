@@ -1,15 +1,15 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../../../../services/node.service';
-import { Drawing } from '../../../../../cartography/models/drawing';
+import { Component, Input, OnInit } from '@angular/core';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Drawing } from '../../../../../cartography/models/drawing';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { DrawingService } from '../../../../../services/drawing.service';
+import { NodeService } from '../../../../../services/node.service';
 
 @Component({
   selector: 'app-bring-to-front-action',
-  templateUrl: './bring-to-front-action.component.html'
+  templateUrl: './bring-to-front-action.component.html',
 })
 export class BringToFrontActionComponent implements OnInit {
   @Input() server: Server;
@@ -26,8 +26,8 @@ export class BringToFrontActionComponent implements OnInit {
   ngOnInit() {}
 
   bringToFront() {
-    let maxZValueForNodes = Math.max(...this.nodes.map(n => n.z));
-    let maxZValueForDrawings = Math.max(...this.drawings.map(n => n.z));
+    let maxZValueForNodes = Math.max(...this.nodes.map((n) => n.z));
+    let maxZValueForDrawings = Math.max(...this.drawings.map((n) => n.z));
     let maxZValue = Math.max(maxZValueForNodes, maxZValueForDrawings);
     if (maxZValue < 100) maxZValue++;
 

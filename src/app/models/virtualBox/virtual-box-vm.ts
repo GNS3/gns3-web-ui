@@ -1,4 +1,4 @@
 export class VirtualBoxVm {
-    ram: number;
-    vmname: string;
+  ram: number;
+  vmname: string;
 }

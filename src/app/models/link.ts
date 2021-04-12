@@ -1,6 +1,6 @@
 import { Node } from '../cartography/models/node';
-import { LinkNode } from './link-node';
 import { Filter } from './filter';
+import { LinkNode } from './link-node';
 
 export class Link {
   capture_file_name: string;

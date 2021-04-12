@@ -1,9 +1,9 @@
-import { SelectionTool } from './selection-tool';
-import { Context } from '../models/context';
-import { SVGSelection } from '../models/types';
-import { Rectangle } from '../models/rectangle';
-import { TestSVGCanvas } from '../testing';
 import { SelectionEventSource } from '../events/selection-event-source';
+import { Context } from '../models/context';
+import { Rectangle } from '../models/rectangle';
+import { SVGSelection } from '../models/types';
+import { TestSVGCanvas } from '../testing';
+import { SelectionTool } from './selection-tool';
 
 describe('SelectionTool', () => {
   let tool: SelectionTool;

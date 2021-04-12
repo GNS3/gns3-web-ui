@@ -1,21 +1,21 @@
 <div class="content" class="configurator">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Custom adapters configuration</h1>
-        </div>
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Custom adapters configuration</h1>
     </div>
-    <div class="default-content">
-        <div class="container mat-elevation-z8">
-            <app-custom-adapters-table 
-                #customAdapters
-                [networkTypes]="networkTypes" 
-                [displayedColumns]="displayedColumns"
-                [adapters]="adapters"
-            ></app-custom-adapters-table>
-        </div>
-        <div class="buttons-bar">
-            <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
-            <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br/>
-        </div>
+  </div>
+  <div class="default-content">
+    <div class="container mat-elevation-z8">
+      <app-custom-adapters-table
+        #customAdapters
+        [networkTypes]="networkTypes"
+        [displayedColumns]="displayedColumns"
+        [adapters]="adapters"
+      ></app-custom-adapters-table>
     </div>
+    <div class="buttons-bar">
+      <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br />
+    </div>
+  </div>
 </div>

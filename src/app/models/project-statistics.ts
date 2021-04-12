@@ -1,6 +1,6 @@
 export class ProjectStatistics {
-    drawings: number;
-    links: number;
-    nodes: number;
-    snapshots: number
+  drawings: number;
+  links: number;
+  nodes: number;
+  snapshots: number;
 }

@@ -4,8 +4,12 @@
     <div class="error-icon"><mat-icon>error_outline</mat-icon></div>
     <div>Error occurred: {{ error.message }}</div>
     <div>
-      <button mat-button (click)="refresh()" matTooltip="Refresh page" matTooltipClass="custom-tooltip"><mat-icon>refresh</mat-icon></button>
-      <button mat-button routerLink="/" matTooltip="Go to home" matTooltipClass="custom-tooltip"><mat-icon>home</mat-icon></button>
+      <button mat-button (click)="refresh()" matTooltip="Refresh page" matTooltipClass="custom-tooltip">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-button routerLink="/" matTooltip="Go to home" matTooltipClass="custom-tooltip">
+        <mat-icon>home</mat-icon>
+      </button>
     </div>
   </div>
 </div>

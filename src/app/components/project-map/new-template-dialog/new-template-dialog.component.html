@@ -1,81 +1,91 @@
 <h1 mat-dialog-title>Add new template</h1>
 
 <mat-horizontal-stepper [linear]="false" #stepper>
-    <mat-step>
-        <ng-template matStepLabel>Please select how you want to create new template</ng-template>
+  <mat-step>
+    <ng-template matStepLabel>Please select how you want to create new template</ng-template>
 
-        <mat-radio-group class="radio-group">
-            <mat-radio-button class="radio-button" value="1" (click)="setAction('install')" checked>Install new appliance from the GNS server</mat-radio-button><br/>
-            <mat-radio-button class="radio-button" value="2" (click)="setAction('import')">Import an appliance file</mat-radio-button>
-        </mat-radio-group>
+    <mat-radio-group class="radio-group">
+      <mat-radio-button class="radio-button" value="1" (click)="setAction('install')" checked
+        >Install new appliance from the GNS server</mat-radio-button
+      ><br />
+      <mat-radio-button class="radio-button" value="2" (click)="setAction('import')"
+        >Import an appliance file</mat-radio-button
+      >
+    </mat-radio-group>
 
-        <div>
-            <button mat-button matStepperNext>Next</button>
-            <button mat-button (click)="onCloseClick()">Cancel</button>
-        </div>
-    </mat-step>
+    <div>
+      <button mat-button matStepperNext>Next</button>
+      <button mat-button (click)="onCloseClick()">Cancel</button>
+    </div>
+  </mat-step>
 
-    <mat-step>
-        <ng-template matStepLabel>{{actionTitle}}</ng-template>
+  <mat-step>
+    <ng-template matStepLabel>{{ actionTitle }}</ng-template>
 
-        <mat-card [hidden]="!(action==='install')">
-            <div class="tableHeader">
-                <mat-form-field class="filter-field">
-                    <input matInput [(ngModel)]="searchText" placeholder="Filter">
-                </mat-form-field>
-    
-                <mat-select (selectionChange)="filterAppliances($event)" [ngModelOptions]="{standalone: true}" placeholder="Category" [(ngModel)]="category">
-                    <mat-option *ngFor="let category of categories" [value]="category">
-                        {{category}}
-                    </mat-option>
-                </mat-select>
-            </div>
+    <mat-card [hidden]="!(action === 'install')">
+      <div class="tableHeader">
+        <mat-form-field class="filter-field">
+          <input matInput [(ngModel)]="searchText" placeholder="Filter" />
+        </mat-form-field>
 
-            <mat-table 
-                class="mat-table" 
-                #table 
-                matSort 
-                multiTemplateDataRows 
-                (matSortChange)= "sortData($event)" 
-                [dataSource]="dataSource | datasourcefilter: searchText">
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
-                </ng-container>
+        <mat-select
+          (selectionChange)="filterAppliances($event)"
+          [ngModelOptions]="{ standalone: true }"
+          placeholder="Category"
+          [(ngModel)]="category"
+        >
+          <mat-option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </mat-option>
+        </mat-select>
+      </div>
 
-                <ng-container matColumnDef="emulator">
-                    <mat-header-cell *matHeaderCellDef> Emulator </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{row.emulator}} </mat-cell>
-                </ng-container>
+      <mat-table
+        class="mat-table"
+        #table
+        matSort
+        multiTemplateDataRows
+        (matSortChange)="sortData($event)"
+        [dataSource]="dataSource | datasourcefilter: searchText"
+      >
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.name }} </mat-cell>
+        </ng-container>
 
-                <ng-container matColumnDef="vendor">
-                    <mat-header-cell *matHeaderCellDef> Vendor </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{row.vendor_name}} </mat-cell>
-                </ng-container>
-        
-                <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-                    <mat-cell *matCellDef="let row" style="text-align: right">
-                        <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
-                            <mat-icon aria-label="Install">archive</mat-icon>
-                        </button>
-                        
-                        <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
-                            <mat-icon aria-label="Show info">info</mat-icon>
-                        </button>
-                    </mat-cell>
-                </ng-container>
+        <ng-container matColumnDef="emulator">
+          <mat-header-cell *matHeaderCellDef> Emulator </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.emulator }} </mat-cell>
+        </ng-container>
 
-                <!-- <ng-container matColumnDef="expandedDetail">
+        <ng-container matColumnDef="vendor">
+          <mat-header-cell *matHeaderCellDef> Vendor </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.vendor_name }} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+          <mat-cell *matCellDef="let row" style="text-align: right">
+            <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
+              <mat-icon aria-label="Install">archive</mat-icon>
+            </button>
+
+            <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
+              <mat-icon aria-label="Show info">info</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="expandedDetail">
                     <mat-cell *matCellDef="let detail"> 
                         The symbol for {{detail.element}}
                     </mat-cell>
                 </ng-container> -->
-        
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 
-                <!-- <mat-row 
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        <!-- <mat-row 
                     *matRowDef="let row; columns: displayedColumns;"
                     matRipple 
                     class="element-row" 
@@ -87,206 +97,319 @@
                     [@detailExpand]="row.element == expandedElement ? 'expanded' : 'collapsed'"
                     style="overflow: hidden">
                 </mat-row> -->
-            </mat-table>
+      </mat-table>
 
-            <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
-        </mat-card>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+    </mat-card>
 
-        <mat-card [hidden]="action==='install'">
-            <input
-                type="file"
-                accept=".gns3appliance, .gns3a"
-                class="non-visible"
-                #file
-                (change)="addAppliance($event)"
-                ng2FileSelect
-                [uploader]="uploader"/>
-            <button mat-raised-button color="primary" (click)="file.click()" class="create-button">Click to import appliance</button>
-        </mat-card>
+    <mat-card [hidden]="action === 'install'">
+      <input
+        type="file"
+        accept=".gns3appliance, .gns3a"
+        class="non-visible"
+        #file
+        (change)="addAppliance($event)"
+        ng2FileSelect
+        [uploader]="uploader"
+      />
+      <button mat-raised-button color="primary" (click)="file.click()" class="create-button">
+        Click to import appliance
+      </button>
+    </mat-card>
 
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button [hidden]="action !== 'install'" (click)="updateAppliances()">
+        Update from online registry
+      </button>
+      <button mat-button (click)="onCloseClick()">Cancel</button>
+    </div>
+  </mat-step>
+
+  <mat-step *ngIf="applianceToInstall">
+    <ng-template matStepLabel>{{ secondActionTitle }}</ng-template>
+
+    <mat-card [hidden]="!(!isLinuxPlatform && !isGns3VmAvailable && !applianceToInstall.dynamips)">
+      Please configure GNS3 VM to install selected appliance
+    </mat-card>
+
+    <mat-card [hidden]="!(isLinuxPlatform || isGns3VmAvailable || applianceToInstall.dynamips)">
+      <div *ngIf="applianceToInstall.qemu">
         <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button [hidden]="action!=='install'" (click)="updateAppliances()">Update from online registry</button>
-            <button mat-button (click)="onCloseClick()">Cancel</button>
+          Server type<br />
+          <mat-radio-group class="radio-group">
+            <mat-radio-button
+              [disabled]="!isLinuxPlatform"
+              [checked]="!isGns3VmChosen"
+              class="radio-button"
+              value="1"
+              (click)="setServerType('local')"
+              >Install the appliance locally</mat-radio-button
+            >
+            <mat-radio-button
+              [disabled]="!isGns3VmAvailable"
+              [checked]="isGns3VmChosen"
+              class="radio-button"
+              value="2"
+              (click)="setServerType('gns3 vm')"
+              >Install the appliance on the GNS3 VM</mat-radio-button
+            >
+          </mat-radio-group>
         </div>
-    </mat-step>
-
-    <mat-step *ngIf="applianceToInstall">
-        <ng-template matStepLabel>{{secondActionTitle}}</ng-template>
-
-        <mat-card [hidden]="!(!isLinuxPlatform && !isGns3VmAvailable && !applianceToInstall.dynamips)">
-            Please configure GNS3 VM to install selected appliance
-        </mat-card>
-
-        <mat-card [hidden]="!(isLinuxPlatform || isGns3VmAvailable || applianceToInstall.dynamips)">
-            <div *ngIf="applianceToInstall.qemu">
-                <div>
-                    Server type<br/>
-                    <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
-                    </mat-radio-group>
-                </div>
-                <div>
-                    Qemu binary<br/>
-                    <mat-select
-                        class="selection-group"
-                        placeholder="Qemu binary"
-                        [(ngModel)]="selectedBinary"
-                        [ngModelOptions]="{standalone: true}">
-                        <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
-                            {{binary.path}}
-                        </mat-option>
-                    </mat-select>
-                </div>
-                <div>
-                    Install required files 
-                    <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
-                        <mat-icon aria-label="Refresh list of images">refresh</mat-icon>
-                    </button><br/>
-                    <div>
-                        <div *ngFor="let version of applianceToInstall.versions">
-                            <div class="list-item">
-                                <span>{{applianceToInstall.name}} version {{version.name}}</span>
-
-                                <div>
-                                    <button class="button" mat-raised-button color="primary" (click)="createQemuTemplateFromVersion(version)">Create</button>
-                                </div>
-                            </div>
-
-                            <div class="list-item-inside" *ngIf="version.images.hda_disk_image">
-                                <span>
-                                    {{version.images.hda_disk_image}}
-                                </span>
-
-                                <div>
-                                    <span *ngIf="checkImageFromVersion(version.images.hda_disk_image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
-                                    <span *ngIf="!checkImageFromVersion(version.images.hda_disk_image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
-
-                                    <input
-                                        type="file"
-                                        class="non-visible"
-                                        #file2
-                                        (change)="importImage($event, version.images.hda_disk_image)"
-                                        ng2FileSelect
-                                        [uploader]="uploaderImage"/>
-                                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                                    <button class="button" mat-raised-button (click)="downloadImageFromVersion(version.images.hda_disk_image)">Download</button>
-                                </div>
-                            </div>
-
-                            <div class="list-item-inside" *ngIf="version.images.hdb_disk_image">
-                                <span>
-                                    {{version.images.hdb_disk_image}}
-                                </span>
-
-                                <div>
-                                    <span *ngIf="checkImageFromVersion(version.images.hdb_disk_image)"><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span>
-                                    <span *ngIf="!checkImageFromVersion(version.images.hdb_disk_image)"><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span>
-
-                                    <input
-                                        type="file"
-                                        class="non-visible"
-                                        #file3
-                                        (change)="importImage($event, version.images.hdb_disk_image)"
-                                        ng2FileSelect
-                                        [uploader]="uploaderImage"/>
-                                    <button class="button" mat-raised-button (click)="file3.click()">Import</button>
-                                    <button class="button" mat-raised-button (click)="downloadImageFromVersion(version.images.hdb_disk_image)">Download</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div *ngIf="applianceToInstall.docker">
-                <div>
-                    Server type<br/>
-                    <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
-                    </mat-radio-group>
-                </div>
-                <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">Create docker template</button>
-            </div>
-
-            <div *ngIf="applianceToInstall.dynamips">
-                <div>
-                    Server type<br/>
-                    <mat-radio-group class="radio-group">
-                        <mat-radio-button [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
-                    </mat-radio-group>
-                </div>
-                <div>
-                    Install required files 
-                    <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
-                        <mat-icon aria-label="Refresh list of images">refresh</mat-icon>
-                    </button><br/>
-                    <mat-list>
-                        <mat-list-item *ngFor="let image of applianceToInstall.images">
-                          <div class="list-item">
-                            <div>
-                                {{image.filename}}
-                            </div>
-                            <div>
-                                <input
-                                    type="file"
-                                    class="non-visible"
-                                    #file2
-                                    (change)="importImage($event, image.filename)"
-                                    ng2FileSelect
-                                    [uploader]="uploaderImage"/>
-                                <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                                <button class="button" mat-raised-button color="primary" (click)="createIosTemplate(image)">Create</button>
-                            </div>
-                          </div>
-                        </mat-list-item>
-                    </mat-list>
-                </div>
-            </div>
-
-            <div *ngIf="applianceToInstall.iou">
-                <div>
-                    Server type<br/>
-                    <mat-radio-group class="radio-group">
-                        <mat-radio-button [disabled]="!isLinuxPlatform" [checked]="!isGns3VmChosen" class="radio-button" value="1" (click)="setServerType('local')">Install the appliance locally</mat-radio-button>
-                        <mat-radio-button [disabled]="!isGns3VmAvailable" [checked]="isGns3VmChosen" class="radio-button" value="2" (click)="setServerType('gns3 vm')">Install the appliance on the GNS3 VM</mat-radio-button>
-                    </mat-radio-group>
-                </div>
-                <div>
-                    Install required files 
-                    <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
-                        <mat-icon aria-label="Refresh list of images">refresh</mat-icon>
-                    </button><br/>
-                    <mat-list>
-                        <mat-list-item *ngFor="let image of applianceToInstall.images">
-                          <div class="list-item">
-                            <div>
-                                {{image.filename}}
-                            </div>
-                            <div>
-                                <input
-                                    type="file"
-                                    class="non-visible"
-                                    #file2
-                                    (change)="importImage($, image.filename)"
-                                    ng2FileSelect
-                                    [uploader]="uploaderImage"/>
-                                <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                                <button class="button" mat-raised-button color="primary" (click)="createIouTemplate(image)">Create</button>
-                            </div>
-                          </div>
-                        </mat-list-item>
-                    </mat-list>
-                </div>
-            </div>
-        </mat-card>
-
         <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button (click)="onCloseClick()">Cancel</button>
+          Qemu binary<br />
+          <mat-select
+            class="selection-group"
+            placeholder="Qemu binary"
+            [(ngModel)]="selectedBinary"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
+              {{ binary.path }}
+            </mat-option>
+          </mat-select>
         </div>
-    </mat-step>
+        <div>
+          Install required files
+          <button
+            mat-icon-button
+            matTooltip="Refresh list of images"
+            matTooltipClass="custom-tooltip"
+            (click)="refreshImages()"
+          >
+            <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
+          ><br />
+          <div>
+            <div *ngFor="let version of applianceToInstall.versions">
+              <div class="list-item">
+                <span>{{ applianceToInstall.name }} version {{ version.name }}</span>
+
+                <div>
+                  <button
+                    class="button"
+                    mat-raised-button
+                    color="primary"
+                    (click)="createQemuTemplateFromVersion(version)"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+
+              <div class="list-item-inside" *ngIf="version.images.hda_disk_image">
+                <span>
+                  {{ version.images.hda_disk_image }}
+                </span>
+
+                <div>
+                  <span *ngIf="checkImageFromVersion(version.images.hda_disk_image)"
+                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
+                  >
+                  <span *ngIf="!checkImageFromVersion(version.images.hda_disk_image)"
+                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
+                  >
+
+                  <input
+                    type="file"
+                    class="non-visible"
+                    #file2
+                    (change)="importImage($event, version.images.hda_disk_image)"
+                    ng2FileSelect
+                    [uploader]="uploaderImage"
+                  />
+                  <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                  <button
+                    class="button"
+                    mat-raised-button
+                    (click)="downloadImageFromVersion(version.images.hda_disk_image)"
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
+
+              <div class="list-item-inside" *ngIf="version.images.hdb_disk_image">
+                <span>
+                  {{ version.images.hdb_disk_image }}
+                </span>
+
+                <div>
+                  <span *ngIf="checkImageFromVersion(version.images.hdb_disk_image)"
+                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
+                  >
+                  <span *ngIf="!checkImageFromVersion(version.images.hdb_disk_image)"
+                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
+                  >
+
+                  <input
+                    type="file"
+                    class="non-visible"
+                    #file3
+                    (change)="importImage($event, version.images.hdb_disk_image)"
+                    ng2FileSelect
+                    [uploader]="uploaderImage"
+                  />
+                  <button class="button" mat-raised-button (click)="file3.click()">Import</button>
+                  <button
+                    class="button"
+                    mat-raised-button
+                    (click)="downloadImageFromVersion(version.images.hdb_disk_image)"
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="applianceToInstall.docker">
+        <div>
+          Server type<br />
+          <mat-radio-group class="radio-group">
+            <mat-radio-button
+              [disabled]="!isLinuxPlatform"
+              [checked]="!isGns3VmChosen"
+              class="radio-button"
+              value="1"
+              (click)="setServerType('local')"
+              >Install the appliance locally</mat-radio-button
+            >
+            <mat-radio-button
+              [disabled]="!isGns3VmAvailable"
+              [checked]="isGns3VmChosen"
+              class="radio-button"
+              value="2"
+              (click)="setServerType('gns3 vm')"
+              >Install the appliance on the GNS3 VM</mat-radio-button
+            >
+          </mat-radio-group>
+        </div>
+        <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">
+          Create docker template
+        </button>
+      </div>
+
+      <div *ngIf="applianceToInstall.dynamips">
+        <div>
+          Server type<br />
+          <mat-radio-group class="radio-group">
+            <mat-radio-button
+              [checked]="!isGns3VmChosen"
+              class="radio-button"
+              value="1"
+              (click)="setServerType('local')"
+              >Install the appliance locally</mat-radio-button
+            >
+            <mat-radio-button
+              [disabled]="!isGns3VmAvailable"
+              [checked]="isGns3VmChosen"
+              class="radio-button"
+              value="2"
+              (click)="setServerType('gns3 vm')"
+              >Install the appliance on the GNS3 VM</mat-radio-button
+            >
+          </mat-radio-group>
+        </div>
+        <div>
+          Install required files
+          <button
+            mat-icon-button
+            matTooltip="Refresh list of images"
+            matTooltipClass="custom-tooltip"
+            (click)="refreshImages()"
+          >
+            <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
+          ><br />
+          <mat-list>
+            <mat-list-item *ngFor="let image of applianceToInstall.images">
+              <div class="list-item">
+                <div>
+                  {{ image.filename }}
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    class="non-visible"
+                    #file2
+                    (change)="importImage($event, image.filename)"
+                    ng2FileSelect
+                    [uploader]="uploaderImage"
+                  />
+                  <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                  <button class="button" mat-raised-button color="primary" (click)="createIosTemplate(image)">
+                    Create
+                  </button>
+                </div>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+
+      <div *ngIf="applianceToInstall.iou">
+        <div>
+          Server type<br />
+          <mat-radio-group class="radio-group">
+            <mat-radio-button
+              [disabled]="!isLinuxPlatform"
+              [checked]="!isGns3VmChosen"
+              class="radio-button"
+              value="1"
+              (click)="setServerType('local')"
+              >Install the appliance locally</mat-radio-button
+            >
+            <mat-radio-button
+              [disabled]="!isGns3VmAvailable"
+              [checked]="isGns3VmChosen"
+              class="radio-button"
+              value="2"
+              (click)="setServerType('gns3 vm')"
+              >Install the appliance on the GNS3 VM</mat-radio-button
+            >
+          </mat-radio-group>
+        </div>
+        <div>
+          Install required files
+          <button
+            mat-icon-button
+            matTooltip="Refresh list of images"
+            matTooltipClass="custom-tooltip"
+            (click)="refreshImages()"
+          >
+            <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
+          ><br />
+          <mat-list>
+            <mat-list-item *ngFor="let image of applianceToInstall.images">
+              <div class="list-item">
+                <div>
+                  {{ image.filename }}
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    class="non-visible"
+                    #file2
+                    (change)="importImage($, image.filename)"
+                    ng2FileSelect
+                    [uploader]="uploaderImage"
+                  />
+                  <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                  <button class="button" mat-raised-button color="primary" (click)="createIouTemplate(image)">
+                    Create
+                  </button>
+                </div>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+    </mat-card>
+
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="onCloseClick()">Cancel</button>
+    </div>
+  </mat-step>
 </mat-horizontal-stepper>

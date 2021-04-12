@@ -1,7 +1,5 @@
-<div *ngIf="!computeStatistics.length">
-    Statistics not loaded
-</div>
-<div *ngFor='let statistics of computeStatistics'>
-    {{statistics.compute_name}}
-    <app-status-chart [computeStatistics]="statistics"></app-status-chart>
+<div *ngIf="!computeStatistics.length">Statistics not loaded</div>
+<div *ngFor="let statistics of computeStatistics">
+  {{ statistics.compute_name }}
+  <app-status-chart [computeStatistics]="statistics"></app-status-chart>
 </div>

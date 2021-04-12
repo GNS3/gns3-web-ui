@@ -1,6 +1,5 @@
-import { TestBed, inject, fakeAsync } from '@angular/core/testing';
+import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { PersistenceService, StorageType } from 'angular-persistence';
-
 import { Settings, SettingsService } from './settings.service';
 
 export class MockedSettingsService {
@@ -25,7 +24,7 @@ describe('SettingsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SettingsService, PersistenceService]
+      providers: [SettingsService, PersistenceService],
     });
 
     persistenceService = TestBed.get(PersistenceService);
@@ -61,13 +60,13 @@ describe('SettingsService', () => {
       crash_reports: true,
       experimental_features: false,
       angular_map: false,
-      console_command: undefined
+      console_command: undefined,
     });
   }));
 
   it('should set all values', inject([SettingsService], (service: SettingsService) => {
     const settings = {
-      crash_reports: false
+      crash_reports: false,
     };
     service.setAll(settings);
 
@@ -75,7 +74,7 @@ describe('SettingsService', () => {
       crash_reports: false,
       experimental_features: false,
       angular_map: false,
-      console_command: undefined
+      console_command: undefined,
     });
   }));
 
@@ -85,7 +84,7 @@ describe('SettingsService', () => {
       let changedSettings: Settings;
 
       service.set('crash_reports', true);
-      service.subscribe(settings => {
+      service.subscribe((settings) => {
         changedSettings = settings;
       });
       service.set('crash_reports', false);

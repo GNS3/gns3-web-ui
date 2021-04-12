@@ -1,16 +1,16 @@
 import { path } from 'd3-path';
-import { LinkStrategy } from './link-strategy';
 import { MapLink } from '../../../../models/map/map-link';
+import { LinkStrategy } from './link-strategy';
 
 export class SerialLinkStrategy implements LinkStrategy {
   private linkToPoints(link: MapLink) {
     const source = {
       x: link.source.x + link.source.width / 2,
-      y: link.source.y + link.source.height / 2
+      y: link.source.y + link.source.height / 2,
     };
     const target = {
       x: link.target.x + link.target.width / 2,
-      y: link.target.y + link.target.height / 2
+      y: link.target.y + link.target.height / 2,
     };
 
     const dx = target.x - source.x;
@@ -22,12 +22,12 @@ export class SerialLinkStrategy implements LinkStrategy {
 
     const angle_source: [number, number] = [
       source.x + dx / 2.0 + 15 * vect_rot[0],
-      source.y + dy / 2.0 + 15 * vect_rot[1]
+      source.y + dy / 2.0 + 15 * vect_rot[1],
     ];
 
     const angle_target: [number, number] = [
       target.x - dx / 2.0 - 15 * vect_rot[0],
-      target.y - dy / 2.0 - 15 * vect_rot[1]
+      target.y - dy / 2.0 - 15 * vect_rot[1],
     ];
 
     return [[source.x, source.y], angle_source, angle_target, [target.x, target.y]];

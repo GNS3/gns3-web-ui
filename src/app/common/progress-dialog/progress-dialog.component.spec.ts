@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ProgressDialogComponent } from './progress-dialog.component';
 
 describe('ProgressDialogComponent', () => {
@@ -8,7 +7,7 @@ describe('ProgressDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ProgressDialogComponent]
+      declarations: [ProgressDialogComponent],
     }).compileComponents();
   }));
 

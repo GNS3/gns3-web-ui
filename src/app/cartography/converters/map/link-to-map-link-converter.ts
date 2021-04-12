@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-
-import { Converter } from '../converter';
-import { LinkNodeToMapLinkNodeConverter } from './link-node-to-map-link-node-converter';
 import { Link } from '../../../models/link';
 import { MapLink } from '../../models/map/map-link';
+import { Converter } from '../converter';
+import { LinkNodeToMapLinkNodeConverter } from './link-node-to-map-link-node-converter';
 
 @Injectable()
 export class LinkToMapLinkConverter implements Converter<Link, MapLink> {
@@ -17,7 +16,9 @@ export class LinkToMapLinkConverter implements Converter<Link, MapLink> {
     mapLink.capturing = link.capturing;
     mapLink.filters = link.filters;
     mapLink.linkType = link.link_type;
-    mapLink.nodes = link.nodes.map(linkNode => this.linkNodeToMapLinkNode.convert(linkNode, { link_id: link.link_id }));
+    mapLink.nodes = link.nodes.map((linkNode) =>
+      this.linkNodeToMapLinkNode.convert(linkNode, { link_id: link.link_id })
+    );
     mapLink.projectId = link.project_id;
     mapLink.suspend = link.suspend;
     return mapLink;

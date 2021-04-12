@@ -1,9 +1,7 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
 import { Server, ServerProtocol } from '../models/server';
 
 /* tslint:disable:interface-over-type-literal */
@@ -160,7 +158,7 @@ export class HttpServer {
   private getJsonOptions(options: JsonOptions): JsonOptions {
     if (!options) {
       return {
-        responseType: 'json'
+        responseType: 'json',
       };
     }
     return options;
@@ -169,7 +167,7 @@ export class HttpServer {
   private getTextOptions(options: TextOptions): TextOptions {
     if (!options) {
       return {
-        responseType: 'text'
+        responseType: 'text',
       };
     }
     return options;
@@ -196,7 +194,7 @@ export class HttpServer {
 
     return {
       url: url,
-      options: options
+      options: options,
     };
   }
 }

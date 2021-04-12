@@ -1,12 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-
-import { ServerService } from './server.service';
-import { Server } from '../models/server';
-import { IndexedDbService } from './indexed-db.service';
-import { AngularIndexedDB } from 'angular2-indexeddb';
-import Spy = jasmine.Spy;
-import { HttpServer, ServerErrorHandler } from '../services/http-server.service';
 import { HttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { AngularIndexedDB } from 'angular2-indexeddb';
+import { Server } from '../models/server';
+import { HttpServer, ServerErrorHandler } from '../services/http-server.service';
+import { IndexedDbService } from './indexed-db.service';
+import { ServerService } from './server.service';
+
+import Spy = jasmine.Spy;
 
 export class MockedServerService {
   public servers: Server[] = [];
@@ -59,10 +59,10 @@ describe('ServerService', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        ServerService, 
+        ServerService,
         { provide: IndexedDbService, useValue: indexedDbService },
-        { provide: HttpServer, useValue: httpServer }
-      ]
+        { provide: HttpServer, useValue: httpServer },
+      ],
     });
 
     service = TestBed.get(ServerService);
@@ -76,9 +76,9 @@ describe('ServerService', () => {
     const evnt = {
       currentTarget: {
         result: {
-          createObjectStore: function() {}
-        }
-      }
+          createObjectStore: function () {},
+        },
+      },
     };
 
     spyOn(evnt.currentTarget.result, 'createObjectStore');
@@ -97,29 +97,29 @@ describe('ServerService', () => {
       record.name = 'test';
     });
 
-    it('should create an object', done => {
+    it('should create an object', (done) => {
       const created = new Server();
       created.id = 22;
 
       spyOn(db, 'add').and.returnValue(Promise.resolve(created));
 
-      service.create(record).then(result => {
+      service.create(record).then((result) => {
         expect(db.add).toHaveBeenCalledWith('servers', record);
         done();
       });
     });
 
-    it('should update an object', done => {
+    it('should update an object', (done) => {
       spyOn(db, 'update').and.returnValue(Promise.resolve(record));
 
-      service.update(record).then(result => {
+      service.update(record).then((result) => {
         expect(db.update).toHaveBeenCalledWith('servers', record);
         expect(result).toEqual(record);
         done();
       });
     });
 
-    it('should delete an object', done => {
+    it('should delete an object', (done) => {
       record.id = 88;
 
       spyOn(db, 'delete').and.returnValue(Promise.resolve());
@@ -131,17 +131,17 @@ describe('ServerService', () => {
     });
   });
 
-  it('should call findAll', done => {
+  it('should call findAll', (done) => {
     spyOn(db, 'getAll').and.returnValue(Promise.resolve([]));
 
-    service.findAll().then(result => {
+    service.findAll().then((result) => {
       expect(result).toEqual([]);
       expect(db.getAll).toHaveBeenCalledWith('servers');
       done();
     });
   });
 
-  it('should create local server when missing', done => {
+  it('should create local server when missing', (done) => {
     spyOn(db, 'getAll').and.returnValue(Promise.resolve([]));
     spyOn(service, 'create').and.returnValue(Promise.resolve(new Server()));
 
@@ -158,7 +158,7 @@ describe('ServerService', () => {
     });
   });
 
-  it('should update local server when found', done => {
+  it('should update local server when found', (done) => {
     const server = new Server();
     server.name = 'local';
     server.host = 'hostname';

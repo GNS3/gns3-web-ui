@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
-import { ElectronService } from 'ngx-electron';
 import { DeviceDetectorService } from 'ngx-device-detector';
-
+import { ElectronService } from 'ngx-electron';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-screenshot-dialog',
   templateUrl: './screenshot-dialog.component.html',
-  styleUrls: ['./screenshot-dialog.component.scss']
+  styleUrls: ['./screenshot-dialog.component.scss'],
 })
 export class ScreenshotDialogComponent implements OnInit {
   nameForm: FormGroup;
@@ -24,9 +23,9 @@ export class ScreenshotDialogComponent implements OnInit {
     private deviceService: DeviceDetectorService
   ) {
     this.nameForm = this.formBuilder.group({
-      screenshotName: new FormControl(`screenshot-${Date.now()}`, [Validators.required])
+      screenshotName: new FormControl(`screenshot-${Date.now()}`, [Validators.required]),
     });
-    this.isPngAvailable = this.electronService.isWindows || (this.deviceService.getDeviceInfo().os==='Windows');
+    this.isPngAvailable = this.electronService.isWindows || this.deviceService.getDeviceInfo().os === 'Windows';
   }
 
   ngOnInit() {}
@@ -37,12 +36,12 @@ export class ScreenshotDialogComponent implements OnInit {
 
   onAddClick(): void {
     if (this.nameForm.invalid) {
-        return;
+      return;
     }
 
     let screenshotProperties: Screenshot = {
-        name: this.nameForm.get('screenshotName').value,
-        filetype: this.filetype
+      name: this.nameForm.get('screenshotName').value,
+      filetype: this.filetype,
     };
     this.dialogRef.close(screenshotProperties);
   }
@@ -52,19 +51,19 @@ export class ScreenshotDialogComponent implements OnInit {
   }
 
   onKeyDown(event) {
-    if (event.key === "Enter") {
-        this.onAddClick();
+    if (event.key === 'Enter') {
+      this.onAddClick();
     }
   }
 
   setFiletype(type: string) {
     if (this.isPngAvailable) {
-        this.filetype = type;   
+      this.filetype = type;
     }
   }
 }
 
 export class Screenshot {
-    name: string;
-    filetype: string;
+  name: string;
+  filetype: string;
 }

@@ -1,27 +1,26 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-
-import { DraggableSelectionComponent } from './draggable-selection.component';
-import { NodesWidget } from '../../widgets/nodes';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { LinksWidget } from '../../widgets/links';
-import { LabelWidget } from '../../widgets/label';
-import { InterfaceLabelWidget } from '../../widgets/interface-label';
-import { SelectionManager } from '../../managers/selection-manager';
-import { SelectionManagerMock } from '../../managers/selection-manager.spec';
-import { NodesEventSource } from '../../events/nodes-event-source';
+import { EventEmitter } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { select } from 'd3-selection';
+import { MapSettingsService } from '../../../services/mapsettings.service';
+import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
+import { LinksEventSource } from '../../events/links-event-source';
+import { NodesEventSource } from '../../events/nodes-event-source';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MockedGraphDataManager } from '../../managers/graph-data-manager.spec';
-import { LinksEventSource } from '../../events/links-event-source';
-import { DraggableStart, DraggableDrag, DraggableEnd } from '../../events/draggable';
-import { MapNode } from '../../models/map/map-node';
-import { EventEmitter } from '@angular/core';
+import { SelectionManager } from '../../managers/selection-manager';
+import { SelectionManagerMock } from '../../managers/selection-manager.spec';
 import { MapDrawing } from '../../models/map/map-drawing';
 import { MapLabel } from '../../models/map/map-label';
-import { MapLinkNode } from '../../models/map/map-link-node';
-import { select } from 'd3-selection';
 import { MapLink } from '../../models/map/map-link';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MapLinkNode } from '../../models/map/map-link-node';
+import { MapNode } from '../../models/map/map-node';
+import { DrawingsWidget } from '../../widgets/drawings';
+import { InterfaceLabelWidget } from '../../widgets/interface-label';
+import { LabelWidget } from '../../widgets/label';
+import { LinksWidget } from '../../widgets/links';
+import { NodesWidget } from '../../widgets/nodes';
+import { DraggableSelectionComponent } from './draggable-selection.component';
 
 describe('DraggableSelectionComponent', () => {
   let component: DraggableSelectionComponent;
@@ -67,8 +66,8 @@ describe('DraggableSelectionComponent', () => {
       draggable: {
         start: nodesStartEventEmitter,
         drag: nodesDragEventEmitter,
-        end: nodesEndEventEmitter
-      }
+        end: nodesEndEventEmitter,
+      },
     };
 
     const drawingsWidgetStub = {
@@ -76,11 +75,11 @@ describe('DraggableSelectionComponent', () => {
       draggable: {
         start: drawingsStartEventEmitter,
         drag: drawingsDragEventEmitter,
-        end: drawingsEndEventEmitter
-      }
+        end: drawingsEndEventEmitter,
+      },
     };
     const linksWidgetStub = {
-      redrawLink: () => {}
+      redrawLink: () => {},
     };
 
     const labelWidgetStub = {
@@ -88,27 +87,27 @@ describe('DraggableSelectionComponent', () => {
       draggable: {
         start: labelStartEventEmitter,
         drag: labelDragEventEmitter,
-        end: labelEndEventEmitter
-      }
+        end: labelEndEventEmitter,
+      },
     };
 
     const interfaceLabelWidgetStub = {
       draggable: {
         start: interfaceLabelStartEventEmitter,
         drag: interfaceLabelDragEventEmitter,
-        end: interfaceLabelEndEventEmitter
-      }
+        end: interfaceLabelEndEventEmitter,
+      },
     };
 
     const nodesEventSourceStub = {
       dragged: { emit: () => {} },
-      labelDragged: { emit: () => {} }
+      labelDragged: { emit: () => {} },
     };
     const drawingsEventSourceStub = {
-      dragged: { emit: () => {} }
+      dragged: { emit: () => {} },
     };
     const linksEventSourceStub = {
-      interfaceDragged: { emit: () => {} }
+      interfaceDragged: { emit: () => {} },
     };
 
     TestBed.configureTestingModule({
@@ -123,9 +122,9 @@ describe('DraggableSelectionComponent', () => {
         { provide: DrawingsEventSource, useValue: drawingsEventSourceStub },
         { provide: GraphDataManager, useValue: mockedGraphDataManager },
         { provide: LinksEventSource, useValue: linksEventSourceStub },
-        { provide: MapSettingsService, useClass: MapSettingsService }
+        { provide: MapSettingsService, useClass: MapSettingsService },
       ],
-      declarations: [DraggableSelectionComponent]
+      declarations: [DraggableSelectionComponent],
     }).compileComponents();
   }));
 

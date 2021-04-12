@@ -1,96 +1,149 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened}">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Docker image configuration</h1>
-        </div>
+<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Docker image configuration</h1>
     </div>
-    <div class="default-content" *ngIf="dockerTemplate">
-        <mat-accordion>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        General settings
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <form [formGroup]="generalSettingsForm">
-                    <mat-form-field class="form-field">
-                        <input formControlName="templateName" matInput type="text" [(ngModel)]="dockerTemplate.name" placeholder="Template name">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input formControlName="defaultName" matInput type="text" [(ngModel)]="dockerTemplate.default_name_format" placeholder="Default name format">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <mat-select [ngModelOptions]="{standalone: true}"  placeholder="Category" [(ngModel)]="dockerTemplate.category">
-                            <mat-option *ngFor="let category of categories" [value]="category[1]">
-                                {{category[0]}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input formControlName="symbol" matInput type="text" [(ngModel)]="dockerTemplate.symbol" placeholder="Symbol">
-                    </mat-form-field>
-                    <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br/><br/>
-                    <mat-form-field class="form-field">
-                        <input matInput type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="dockerTemplate.start_command" placeholder="Start command">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input formControlName="adapter" matInput type="number" [(ngModel)]="dockerTemplate.adapters" placeholder="Adapters">
-                    </mat-form-field>
-                    <mat-form-field class="select">
-                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="Console type" [(ngModel)]="dockerTemplate.console_type">
-                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                                {{type}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="dockerTemplate.console_auto_start">
-                        Auto start console
-                    </mat-checkbox>
-                    <mat-form-field class="select">
-                        <mat-select [ngModelOptions]="{standalone: true}" placeholder="VNC console resolution" [(ngModel)]="dockerTemplate.console_resolution">
-                            <mat-option *ngFor="let resolution of consoleResolutions" [value]="resolution">
-                                {{resolution}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input [ngModelOptions]="{standalone: true}" matInput type="number" [(ngModel)]="dockerTemplate.console_http_port" placeholder="HTTP port in the container">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input [ngModelOptions]="{standalone: true}" matInput type="text" [(ngModel)]="dockerTemplate.console_http_path" placeholder="HTTP path">
-                    </mat-form-field>
-                </form>
-                <h6>Environment</h6>
-                <mat-form-field class="form-field">
-                    <textarea matInput type="text" [(ngModel)]="dockerTemplate.environment"></textarea>
-                </mat-form-field>
-            </mat-expansion-panel>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Advanced
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <h6>Extra hosts</h6>
-                <mat-form-field class="form-field">
-                    <textarea matInput type="text" [(ngModel)]="dockerTemplate.extra_hosts"></textarea>
-                </mat-form-field>
-            </mat-expansion-panel>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Usage
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <mat-form-field class="form-field">
-                    <textarea matInput type="text" [(ngModel)]="dockerTemplate.usage"></textarea>
-                </mat-form-field>
-            </mat-expansion-panel>
-        </mat-accordion>
-        <div class="buttons-bar">
-            <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-            <button mat-raised-button color="primary" (click)="onSave()">Save</button>
-        </div>
+  </div>
+  <div class="default-content" *ngIf="dockerTemplate">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> General settings </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form [formGroup]="generalSettingsForm">
+          <mat-form-field class="form-field">
+            <input
+              formControlName="templateName"
+              matInput
+              type="text"
+              [(ngModel)]="dockerTemplate.name"
+              placeholder="Template name"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              formControlName="defaultName"
+              matInput
+              type="text"
+              [(ngModel)]="dockerTemplate.default_name_format"
+              placeholder="Default name format"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="Category"
+              [(ngModel)]="dockerTemplate.category"
+            >
+              <mat-option *ngFor="let category of categories" [value]="category[1]">
+                {{ category[0] }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              formControlName="symbol"
+              matInput
+              type="text"
+              [(ngModel)]="dockerTemplate.symbol"
+              placeholder="Symbol"
+            />
+          </mat-form-field>
+          <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="dockerTemplate.start_command"
+              placeholder="Start command"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              formControlName="adapter"
+              matInput
+              type="number"
+              [(ngModel)]="dockerTemplate.adapters"
+              placeholder="Adapters"
+            />
+          </mat-form-field>
+          <mat-form-field class="select">
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="Console type"
+              [(ngModel)]="dockerTemplate.console_type"
+            >
+              <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="dockerTemplate.console_auto_start">
+            Auto start console
+          </mat-checkbox>
+          <mat-form-field class="select">
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="VNC console resolution"
+              [(ngModel)]="dockerTemplate.console_resolution"
+            >
+              <mat-option *ngFor="let resolution of consoleResolutions" [value]="resolution">
+                {{ resolution }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              [ngModelOptions]="{ standalone: true }"
+              matInput
+              type="number"
+              [(ngModel)]="dockerTemplate.console_http_port"
+              placeholder="HTTP port in the container"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              [ngModelOptions]="{ standalone: true }"
+              matInput
+              type="text"
+              [(ngModel)]="dockerTemplate.console_http_path"
+              placeholder="HTTP path"
+            />
+          </mat-form-field>
+        </form>
+        <h6>Environment</h6>
+        <mat-form-field class="form-field">
+          <textarea matInput type="text" [(ngModel)]="dockerTemplate.environment"></textarea>
+        </mat-form-field>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Advanced </mat-panel-title>
+        </mat-expansion-panel-header>
+        <h6>Extra hosts</h6>
+        <mat-form-field class="form-field">
+          <textarea matInput type="text" [(ngModel)]="dockerTemplate.extra_hosts"></textarea>
+        </mat-form-field>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Usage </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-form-field class="form-field">
+          <textarea matInput type="text" [(ngModel)]="dockerTemplate.usage"></textarea>
+        </mat-form-field>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <div class="buttons-bar">
+      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
+  </div>
 </div>
-<app-symbols-menu *ngIf="isSymbolSelectionOpened && dockerTemplate" [server]="server" [symbol]="dockerTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>
+<app-symbols-menu
+  *ngIf="isSymbolSelectionOpened && dockerTemplate"
+  [server]="server"
+  [symbol]="dockerTemplate.symbol"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>

@@ -1,17 +1,15 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-
 import { Observable } from 'rxjs/Rx';
-
-import { ServerDiscoveryComponent } from './server-discovery.component';
-import { VersionService } from '../../../services/version.service';
-import { MockedVersionService } from '../../../services/version.service.spec';
-import { Version } from '../../../models/version';
 import { Server } from '../../../models/server';
+import { Version } from '../../../models/version';
+import { ServerDatabase } from '../../../services/server.database';
 import { ServerService } from '../../../services/server.service';
 import { MockedServerService } from '../../../services/server.service.spec';
-import { ServerDatabase } from '../../../services/server.database';
+import { VersionService } from '../../../services/version.service';
+import { MockedVersionService } from '../../../services/version.service.spec';
+import { ServerDiscoveryComponent } from './server-discovery.component';
 
 xdescribe('ServerDiscoveryComponent', () => {
   let component: ServerDiscoveryComponent;
@@ -27,9 +25,9 @@ xdescribe('ServerDiscoveryComponent', () => {
       providers: [
         { provide: VersionService, useFactory: () => mockedVersionService },
         { provide: ServerService, useFactory: () => mockedServerService },
-        ServerDatabase
+        ServerDatabase,
       ],
-      declarations: [ServerDiscoveryComponent]
+      declarations: [ServerDiscoveryComponent],
     }).compileComponents();
   }));
 
@@ -55,7 +53,7 @@ xdescribe('ServerDiscoveryComponent', () => {
 
       const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(Observable.of(version));
 
-      component.isServerAvailable('127.0.0.1', 3080).subscribe(s => {
+      component.isServerAvailable('127.0.0.1', 3080).subscribe((s) => {
         expect(s.host).toEqual('127.0.0.1');
         expect(s.port).toEqual(3080);
       });
@@ -78,8 +76,8 @@ xdescribe('ServerDiscoveryComponent', () => {
       let hasExecuted = false;
 
       component.isServerAvailable('127.0.0.1', 3080).subscribe(
-        ver => {},
-        err => {
+        (ver) => {},
+        (err) => {
           hasExecuted = true;
           expect(err.toString()).toEqual('Error: server is unavailable');
         }
@@ -91,7 +89,7 @@ xdescribe('ServerDiscoveryComponent', () => {
   });
 
   describe('discovery', () => {
-    it('should discovery all servers available', done => {
+    it('should discovery all servers available', (done) => {
       const version = new Version();
       version.version = '2.1.8';
 
@@ -102,7 +100,7 @@ xdescribe('ServerDiscoveryComponent', () => {
         return Observable.of(server);
       });
 
-      component.discovery().subscribe(discovered => {
+      component.discovery().subscribe((discovered) => {
         expect(discovered[0].host).toEqual('127.0.0.1');
         expect(discovered[0].port).toEqual(3080);
 
@@ -116,7 +114,7 @@ xdescribe('ServerDiscoveryComponent', () => {
   describe('discoverFirstAvailableServer', () => {
     let server: Server;
 
-    beforeEach(function() {
+    beforeEach(function () {
       server = new Server();
       (server.host = '199.111.111.1'), (server.port = 3333);
 

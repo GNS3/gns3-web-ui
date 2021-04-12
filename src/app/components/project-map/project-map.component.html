@@ -1,24 +1,63 @@
-<div *ngIf="project" [ngClass]="{lightTheme: isLightThemeEnabled}" class="project-map">
-  <app-d3-map *ngIf="!settings.angular_map" [server]="server" [project]="project" [symbols]="symbols" [nodes]="nodes" [links]="links" [drawings]="drawings" [width]="project.scene_width" [height]="project.scene_height"
-     [show-interface-labels]="isInterfaceLabelVisible" [readonly]="inReadOnlyMode" (nodeDragged)="onNodeDragged($event)" (drawingDragged)="onDrawingDragged($event)" (onLinkCreated)="onLinkCreated($event)"
-     (onDrawingResized)="onDrawingResized($event)">
+<div *ngIf="project" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="project-map">
+  <app-d3-map
+    *ngIf="!settings.angular_map"
+    [server]="server"
+    [project]="project"
+    [symbols]="symbols"
+    [nodes]="nodes"
+    [links]="links"
+    [drawings]="drawings"
+    [width]="project.scene_width"
+    [height]="project.scene_height"
+    [show-interface-labels]="isInterfaceLabelVisible"
+    [readonly]="inReadOnlyMode"
+    (nodeDragged)="onNodeDragged($event)"
+    (drawingDragged)="onDrawingDragged($event)"
+    (onLinkCreated)="onLinkCreated($event)"
+    (onDrawingResized)="onDrawingResized($event)"
+  >
   </app-d3-map>
 
-  <app-experimental-map *ngIf="settings.angular_map" [symbols]="symbols" [nodes]="nodes" [links]="links" [drawings]="drawings" [width]="project.scene_width" [height]="project.scene_height" [show-interface-labels]="isInterfaceLabelVisible"
-     [selection-tool]="tools.selection" [moving-tool]="tools.moving" [draw-link-tool]="tools.draw_link" [readonly]="inReadOnlyMode">
+  <app-experimental-map
+    *ngIf="settings.angular_map"
+    [symbols]="symbols"
+    [nodes]="nodes"
+    [links]="links"
+    [drawings]="drawings"
+    [width]="project.scene_width"
+    [height]="project.scene_height"
+    [show-interface-labels]="isInterfaceLabelVisible"
+    [selection-tool]="tools.selection"
+    [moving-tool]="tools.moving"
+    [draw-link-tool]="tools.draw_link"
+    [readonly]="inReadOnlyMode"
+  >
   </app-experimental-map>
 
   <!-- Project Titlebar -->
-  <div id="project-titlebar" [ngClass]="{lightTheme: isLightThemeEnabled}">
-    <button matTooltip="Open menu" matTooltipClass="custom-tooltip" mat-icon-button class="gns3-button menu-button" [matMenuTriggerFor]="mainMenu">
+  <div id="project-titlebar" [ngClass]="{ lightTheme: isLightThemeEnabled }">
+    <button
+      matTooltip="Open menu"
+      matTooltipClass="custom-tooltip"
+      mat-icon-button
+      class="gns3-button menu-button"
+      [matMenuTriggerFor]="mainMenu"
+    >
       <mat-icon *ngIf="!isLightThemeEnabled" svgIcon="gns3"></mat-icon>
       <mat-icon *ngIf="isLightThemeEnabled" svgIcon="gns3black"></mat-icon>
     </button>
     <div class="project-titlebar-controls">
-      <div *ngIf="!readonly" [ngClass]="{lightTheme: isLightThemeEnabled}" class="menu-button-group primary-controls">
-        <app-template [server]="server" [project]="project" (onNodeCreation)="onNodeCreation($event)">
-        </app-template>
-        <button matTooltip="Add a link" matTooltipClass="custom-tooltip" class="menu-button" mat-icon-button [ngClass]="{selected: tools.draw_link}" [color]="tools.draw_link ? 'primary' : 'basic'" (click)="toggleDrawLineMode()">
+      <div *ngIf="!readonly" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="menu-button-group primary-controls">
+        <app-template [server]="server" [project]="project" (onNodeCreation)="onNodeCreation($event)"> </app-template>
+        <button
+          matTooltip="Add a link"
+          matTooltipClass="custom-tooltip"
+          class="menu-button"
+          mat-icon-button
+          [ngClass]="{ selected: tools.draw_link }"
+          [color]="tools.draw_link ? 'primary' : 'basic'"
+          (click)="toggleDrawLineMode()"
+        >
           <mat-icon>timeline</mat-icon>
         </button>
       </div>
@@ -29,12 +68,16 @@
       </div>
     </div>
     <div>
-      <button 
-        matTooltip="Toggle topology/servers summary" 
-        matTooltipClass="custom-tooltip" 
-        [ngClass]="{unmarkedLight: !isTopologySummaryVisible && isLightThemeEnabled, marked: isTopologySummaryVisible}"
+      <button
+        matTooltip="Toggle topology/servers summary"
+        matTooltipClass="custom-tooltip"
+        [ngClass]="{
+          unmarkedLight: !isTopologySummaryVisible && isLightThemeEnabled,
+          marked: isTopologySummaryVisible
+        }"
         mat-icon-button
-        (click)="toggleShowTopologySummary(!isTopologySummaryVisible)">
+        (click)="toggleShowTopologySummary(!isTopologySummaryVisible)"
+      >
         <mat-icon>toc</mat-icon>
       </button>
     </div>
@@ -49,11 +92,11 @@
         <mat-icon>developer_board</mat-icon>
         <span>Go to servers</span>
       </button>
-      <button mat-menu-item routerLink="/server/{{server.id}}/preferences">
+      <button mat-menu-item routerLink="/server/{{ server.id }}/preferences">
         <mat-icon>settings_applications</mat-icon>
         <span>Go to preferences</span>
       </button>
-      <button mat-menu-item routerLink="/server/{{server.id}}/systemstatus">
+      <button mat-menu-item routerLink="/server/{{ server.id }}/systemstatus">
         <mat-icon>info</mat-icon>
         <span>Go to system status</span>
       </button>
@@ -114,40 +157,51 @@
     <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
       <div class="options-item">
         <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
-          Show interface labels
-        </mat-checkbox><br />
+          Show interface labels </mat-checkbox
+        ><br />
         <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
-          Show console
-        </mat-checkbox><br />
+          Show console </mat-checkbox
+        ><br />
         <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
-          Show topology/servers summary
-        </mat-checkbox><br />
+          Show topology/servers summary </mat-checkbox
+        ><br />
         <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
-          Show notifications
-        </mat-checkbox><br />
-        <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)">
-          Show layers
-        </mat-checkbox><br />
-        <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)">
-          Show grid
-        </mat-checkbox><br />
+          Show notifications </mat-checkbox
+        ><br />
+        <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
+        ><br />
+        <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
         <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
-          Snap to grid
-        </mat-checkbox><br />
+          Snap to grid </mat-checkbox
+        ><br />
         <mat-checkbox [ngModel]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
-          Scale symbols
-        </mat-checkbox><br />
+          Scale symbols </mat-checkbox
+        ><br />
       </div>
     </mat-menu>
   </div>
 
   <!-- Project toolbar -->
-  <div id="project-toolbar" [ngClass]="{lightTheme: isLightThemeEnabled}">
+  <div id="project-toolbar" [ngClass]="{ lightTheme: isLightThemeEnabled }">
     <div class="section">
-      <button matTooltip="Selection mode" matTooltipClass="custom-tooltip" mat-icon-button class="selection-button menu-button" [color]="tools.moving ? 'basic' : 'primary'" (click)="toggleMovingMode()">
+      <button
+        matTooltip="Selection mode"
+        matTooltipClass="custom-tooltip"
+        mat-icon-button
+        class="selection-button menu-button"
+        [color]="tools.moving ? 'basic' : 'primary'"
+        (click)="toggleMovingMode()"
+      >
         <mat-icon>near_me</mat-icon>
       </button>
-      <button matTooltip="Pan workspace" matTooltipClass="custom-tooltip" class="pan-button menu-button" mat-icon-button [color]="tools.moving ? 'primary' : 'basic'" (click)="toggleMovingMode()">
+      <button
+        matTooltip="Pan workspace"
+        matTooltipClass="custom-tooltip"
+        class="pan-button menu-button"
+        mat-icon-button
+        [color]="tools.moving ? 'primary' : 'basic'"
+        (click)="toggleMovingMode()"
+      >
         <mat-icon>zoom_out_map</mat-icon>
       </button>
       <button matTooltip="Zoom in" matTooltipClass="custom-tooltip" class="zoom-button" (click)="zoomIn()">
@@ -179,8 +233,19 @@
   <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
   <app-text-edited [server]="server"></app-text-edited>
   <div [ngClass]="{ visible: !isConsoleVisible }">
-    <app-console-wrapper *ngIf="project" [server]="server" [project]="project" (closeConsole)='toggleShowConsole($event)'></app-console-wrapper>
+    <app-console-wrapper
+      *ngIf="project"
+      [server]="server"
+      [project]="project"
+      (closeConsole)="toggleShowConsole($event)"
+    ></app-console-wrapper>
   </div>
   <div [ngClass]="{ visible: !isTopologySummaryVisible }">
-    <app-topology-summary *ngIf="project" [server]="server" [project]="project" (closeTopologySummary)='toggleShowTopologySummary($event)'></app-topology-summary>
+    <app-topology-summary
+      *ngIf="project"
+      [server]="server"
+      [project]="project"
+      (closeTopologySummary)="toggleShowTopologySummary($event)"
+    ></app-topology-summary>
   </div>
+</div>

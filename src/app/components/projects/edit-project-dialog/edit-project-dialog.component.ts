@@ -1,16 +1,16 @@
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Server } from '../../../models/server';
 import { Project, ProjectVariable } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
-import { ProjectService } from '../../../services/project.service';
 
 @Component({
   selector: 'app-edit-project-dialog',
   templateUrl: './edit-project-dialog.component.html',
-  styleUrls: ['./edit-project-dialog.component.scss']
+  styleUrls: ['./edit-project-dialog.component.scss'],
 })
 export class EditProjectDialogComponent implements OnInit {
   server: Server;
@@ -19,7 +19,7 @@ export class EditProjectDialogComponent implements OnInit {
   variableFormGroup: FormGroup;
   projectVariables: ProjectVariable[];
 
-  displayedColumns: string[] = ['name', 'value', 'actions']; 
+  displayedColumns: string[] = ['name', 'value', 'actions'];
   variables: ProjectVariable[] = [];
 
   auto_close: boolean;
@@ -36,12 +36,12 @@ export class EditProjectDialogComponent implements OnInit {
       width: new FormControl('', [Validators.required, nonNegativeValidator.get]),
       height: new FormControl('', [Validators.required, nonNegativeValidator.get]),
       nodeGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      drawingGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get])
+      drawingGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get]),
     });
 
     this.variableFormGroup = this.formBuilder.group({
       name: new FormControl('', [Validators.required]),
-      value: new FormControl('', [Validators.required])
+      value: new FormControl('', [Validators.required]),
     });
   }
 
@@ -52,7 +52,7 @@ export class EditProjectDialogComponent implements OnInit {
     this.formGroup.controls['nodeGridSize'].setValue(this.project.grid_size);
     this.formGroup.controls['drawingGridSize'].setValue(this.project.drawing_grid_size);
     if (this.project.variables) {
-      this.project.variables.forEach(n => this.variables.push(n));
+      this.project.variables.forEach((n) => this.variables.push(n));
     }
     this.auto_close = !this.project.auto_close;
   }
@@ -61,7 +61,7 @@ export class EditProjectDialogComponent implements OnInit {
     if (this.variableFormGroup.valid) {
       let variable: ProjectVariable = {
         name: this.variableFormGroup.get('name').value,
-        value: this.variableFormGroup.get('value').value
+        value: this.variableFormGroup.get('value').value,
       };
       this.variables = this.variables.concat([variable]);
     } else {
@@ -70,7 +70,7 @@ export class EditProjectDialogComponent implements OnInit {
   }
 
   deleteVariable(variable: ProjectVariable) {
-    this.variables = this.variables.filter(elem => elem!== variable);
+    this.variables = this.variables.filter((elem) => elem !== variable);
   }
 
   onNoClick() {
@@ -89,9 +89,9 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.auto_close = !this.project.auto_close;
 
       this.projectService.update(this.server, this.project).subscribe((project: Project) => {
-          this.toasterService.success(`Project ${project.name} updated.`);
-          this.onNoClick();
-      })
+        this.toasterService.success(`Project ${project.name} updated.`);
+        this.onNoClick();
+      });
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);
     }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class NotificationService {

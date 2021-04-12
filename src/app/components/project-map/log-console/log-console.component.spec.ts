@@ -1,27 +1,27 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { NO_ERRORS_SCHEMA, EventEmitter, inject } from '@angular/core';
-import { MatMenuModule } from '@angular/material/menu';
-import { Server } from '../../../models/server';
-import { LogConsoleComponent } from './log-console.component';
-import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
-import { NodeService } from '../../../services/node.service';
-import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { of } from 'rxjs';
-import { LogEventsDataSource } from './log-events-datasource';
-import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserModule } from '@angular/platform-browser';
+import { of } from 'rxjs';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
+import { Server } from '../../../models/server';
+import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
+import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
+import { LogConsoleComponent } from './log-console.component';
+import { LogEventsDataSource } from './log-events-datasource';
 
 export class MockedProjectWebServiceHandler {
-    public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
-    public linkNotificationEmitter = new EventEmitter<WebServiceMessage>();
-    public drawingNotificationEmitter = new EventEmitter<WebServiceMessage>();
-    public infoNotificationEmitter = new EventEmitter<any>();
-    public warningNotificationEmitter = new EventEmitter<any>();
-    public errorNotificationEmitter = new EventEmitter<any>();
+  public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
+  public linkNotificationEmitter = new EventEmitter<WebServiceMessage>();
+  public drawingNotificationEmitter = new EventEmitter<WebServiceMessage>();
+  public infoNotificationEmitter = new EventEmitter<any>();
+  public warningNotificationEmitter = new EventEmitter<any>();
+  public errorNotificationEmitter = new EventEmitter<any>();
 }
 
 describe('LogConsoleComponent', () => {
@@ -30,7 +30,7 @@ describe('LogConsoleComponent', () => {
 
   let mockedNodeService: MockedNodeService = new MockedNodeService();
   let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
-  let mockedProjectWebServiceHandler: MockedProjectWebServiceHandler =  new MockedProjectWebServiceHandler();
+  let mockedProjectWebServiceHandler: MockedProjectWebServiceHandler = new MockedProjectWebServiceHandler();
 
   let httpServer = new HttpServer({} as HttpClient, {} as ServerErrorHandler);
 
@@ -38,22 +38,22 @@ describe('LogConsoleComponent', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, MatMenuModule, BrowserModule],
       providers: [
-        { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler }, 
+        { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: LogEventsDataSource, useClass: LogEventsDataSource },
         { provide: HttpServer, useValue: httpServer },
-        { provide: NodeConsoleService }
+        { provide: NodeConsoleService },
       ],
       declarations: [LogConsoleComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LogConsoleComponent);
     component = fixture.componentInstance;
-    component.server = {location: 'local'} as Server;
+    component.server = { location: 'local' } as Server;
     fixture.detectChanges();
   });
 
@@ -67,7 +67,11 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: "Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}."});
+    expect(component.showMessage).toHaveBeenCalledWith({
+      type: 'command',
+      message:
+        'Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.',
+    });
   });
 
   xit('should call show message when version command entered', () => {
@@ -76,7 +80,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Current version: 2.2.18dev'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Current version: 2.2.18dev' });
   });
 
   it('should call show message when unknown command entered', () => {
@@ -85,7 +89,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Unknown syntax: xyz'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Unknown syntax: xyz' });
   });
 
   it('should call node service when start all entered', () => {
@@ -95,7 +99,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Starting all nodes...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Starting all nodes...' });
     expect(mockedNodeService.startAll).toHaveBeenCalled();
   });
 
@@ -106,7 +110,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Stopping all nodes...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Stopping all nodes...' });
     expect(mockedNodeService.stopAll).toHaveBeenCalled();
   });
 
@@ -117,7 +121,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Suspending all nodes...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Suspending all nodes...' });
     expect(mockedNodeService.suspendAll).toHaveBeenCalled();
   });
 
@@ -128,7 +132,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Reloading all nodes...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Reloading all nodes...' });
     expect(mockedNodeService.reloadAll).toHaveBeenCalled();
   });
 
@@ -139,7 +143,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Starting node testNode...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Starting node testNode...' });
     expect(mockedNodeService.start).toHaveBeenCalled();
   });
 
@@ -150,7 +154,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Stopping node testNode...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Stopping node testNode...' });
     expect(mockedNodeService.stop).toHaveBeenCalled();
   });
 
@@ -161,7 +165,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-      expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Suspending node testNode...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Suspending node testNode...' });
     expect(mockedNodeService.suspend).toHaveBeenCalled();
   });
 
@@ -172,7 +176,7 @@ describe('LogConsoleComponent', () => {
 
     component.handleCommand();
 
-    expect(component.showMessage).toHaveBeenCalledWith({type: 'command', message: 'Reloading node testNode...'});
+    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Reloading node testNode...' });
     expect(mockedNodeService.reload).toHaveBeenCalled();
   });
 });

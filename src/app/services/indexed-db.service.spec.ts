@@ -1,11 +1,10 @@
-import { TestBed, inject } from '@angular/core/testing';
-
+import { inject, TestBed } from '@angular/core/testing';
 import { IndexedDbService } from './indexed-db.service';
 
 describe('IndexedDbService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [IndexedDbService]
+      providers: [IndexedDbService],
     });
   });
 

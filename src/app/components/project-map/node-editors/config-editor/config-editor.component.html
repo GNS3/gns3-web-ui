@@ -1,16 +1,16 @@
-<h1 mat-dialog-title>Configuration for node {{node.name}}</h1>
+<h1 mat-dialog-title>Configuration for node {{ node.name }}</h1>
 
-<div *ngIf="node.node_type==='vpcs'" class="modal-form-container">
-    <textarea #textArea id="textArea" class="textArea" [(ngModel)]="config"></textarea> 
+<div *ngIf="node.node_type === 'vpcs'" class="modal-form-container">
+  <textarea #textArea id="textArea" class="textArea" [(ngModel)]="config"></textarea>
 </div>
 
-<mat-tab-group *ngIf="node.node_type==='iou' || node.node_type==='dynamips'">
-    <mat-tab label="Startup config">
-      <textarea #textArea id="textArea" class="textAreaTab" [(ngModel)]="config"></textarea> 
-    </mat-tab>
-    <mat-tab label="Private config">
-      <textarea #textArea id="textArea" class="textAreaTab" [(ngModel)]="privateConfig"></textarea> 
-    </mat-tab>
+<mat-tab-group *ngIf="node.node_type === 'iou' || node.node_type === 'dynamips'">
+  <mat-tab label="Startup config">
+    <textarea #textArea id="textArea" class="textAreaTab" [(ngModel)]="config"></textarea>
+  </mat-tab>
+  <mat-tab label="Private config">
+    <textarea #textArea id="textArea" class="textAreaTab" [(ngModel)]="privateConfig"></textarea>
+  </mat-tab>
 </mat-tab-group>
 
 <div mat-dialog-actions>

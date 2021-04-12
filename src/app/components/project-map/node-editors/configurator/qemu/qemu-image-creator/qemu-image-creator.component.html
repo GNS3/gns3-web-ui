@@ -1,104 +1,108 @@
 <h1 mat-dialog-title>Qemu image configurator</h1>
 
 <div class="modal-form-container">
-    <div class="content">
-        <div class="default-content">
-            <mat-card class="matCard">
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="qemuImg.qemu_img" 
-                            formControlName="qemu_img"
-                            placeholder="Qemu image path">
-                    </mat-form-field>
-                </form>
-                <mat-form-field class="form-field">
-                    <mat-select placeholder="Image format" [(ngModel)]="qemuImg.format">
-                        <mat-option *ngFor="let format of formatOptions" [value]="format">
-                            {{format}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <div *ngIf="qemuImg.format==='qcow2'">
-                    Size options
-                    <mat-form-field class="form-field">
-                        <mat-select placeholder="Image format" [(ngModel)]="qemuImg.preallocation">
-                            <mat-option *ngFor="let preallocation of preallocationsOptions" [value]="preallocation">
-                                {{preallocation}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <mat-select placeholder="Cluster size" [(ngModel)]="qemuImg.cluster_size">
-                            <mat-option *ngFor="let clusterSize of clusterSizeOptions" [value]="clusterSize.value">
-                                {{clusterSize.name}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    Refcounts
-                    <mat-form-field class="form-field">
-                        <mat-select placeholder="Lazy refcounts" [(ngModel)]="qemuImg.lazy_refcounts">
-                            <mat-option *ngFor="let lazyRefcount of lazyRefcountsOptions" [value]="lazyRefcount">
-                                {{lazyRefcount}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <mat-select placeholder="Refcount entry size" [(ngModel)]="qemuImg.refcount_bits">
-                            <mat-option *ngFor="let clusterSize of clusterSizeOptions" [value]="clusterSize.value">
-                                {{clusterSize.name}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div *ngIf="qemuImg.format==='vhd' || qemuImg.format==='vdi'">
-                    <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
-                        <mat-radio-button value="1" (click)="setSubformat('dynamic')" checked>Dynamic</mat-radio-button>
-                        <mat-radio-button value="2" (click)="setSubformat('fixed')">Fixed</mat-radio-button>
-                    </mat-radio-group>
-                </div>
-                <div *ngIf="qemuImg.format==='vmdk'">
-                    Adapter type<br/>
-                    <mat-radio-group aria-label="Adapter type" class="radio-selection">
-                        <mat-radio-button value="1" (click)="setAdapterType('ide')" checked>IDE</mat-radio-button>
-                        <mat-radio-button value="2" (click)="setAdapterType('lsilogic')">LSI Logic</mat-radio-button>
-                        <mat-radio-button value="3" (click)="setAdapterType('buslogic')">BusLogic</mat-radio-button>
-                        <mat-radio-button value="4" (click)="setAdapterType('legacyESX')">Legacy (ESX)</mat-radio-button>
-                    </mat-radio-group><br/><br/>
-                    Image file sizing mode<br/>
-                    <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
-                        <mat-radio-button value="1" (click)="setSubformat('streamOptimized')" checked>Stream optimized</mat-radio-button>
-                        <mat-radio-button value="2" (click)="setSubformat('twoGbMaxExtentSparse')">Split every 2GB (sparse)</mat-radio-button>
-                        <mat-radio-button value="3" (click)="setSubformat('twoGbMaxExtentFlat')">Split every 2GB (flat)</mat-radio-button>
-                        <mat-radio-button value="4" (click)="setSubformat('monolithicSparse')">Monolithic sparse</mat-radio-button>
-                        <mat-radio-button value="5" (click)="setSubformat('monolithicFlat')">Monolithic flat</mat-radio-button>
-                    </mat-radio-group><br/><br/>
-                    <mat-select placeholder="Zeroed grain" [(ngModel)]="qemuImg.zeroed_grain">
-                        <mat-option *ngFor="let option of zeroedGrainOptions" [value]="option">
-                            {{option}}
-                        </mat-option>
-                    </mat-select>
-                </div>
-                <form [formGroup]="inputForm">
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="text" 
-                            [(ngModel)]="qemuImg.path" 
-                            formControlName="path"
-                            placeholder="File location">
-                    </mat-form-field>
-                    <mat-form-field class="form-field">
-                        <input 
-                            matInput type="number" 
-                            [(ngModel)]="qemuImg.size" 
-                            formControlName="size"
-                            placeholder="Disk size">
-                    </mat-form-field>
-                </form>
-            </mat-card>
+  <div class="content">
+    <div class="default-content">
+      <mat-card class="matCard">
+        <form [formGroup]="inputForm">
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="qemuImg.qemu_img"
+              formControlName="qemu_img"
+              placeholder="Qemu image path"
+            />
+          </mat-form-field>
+        </form>
+        <mat-form-field class="form-field">
+          <mat-select placeholder="Image format" [(ngModel)]="qemuImg.format">
+            <mat-option *ngFor="let format of formatOptions" [value]="format">
+              {{ format }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div *ngIf="qemuImg.format === 'qcow2'">
+          Size options
+          <mat-form-field class="form-field">
+            <mat-select placeholder="Image format" [(ngModel)]="qemuImg.preallocation">
+              <mat-option *ngFor="let preallocation of preallocationsOptions" [value]="preallocation">
+                {{ preallocation }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-select placeholder="Cluster size" [(ngModel)]="qemuImg.cluster_size">
+              <mat-option *ngFor="let clusterSize of clusterSizeOptions" [value]="clusterSize.value">
+                {{ clusterSize.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          Refcounts
+          <mat-form-field class="form-field">
+            <mat-select placeholder="Lazy refcounts" [(ngModel)]="qemuImg.lazy_refcounts">
+              <mat-option *ngFor="let lazyRefcount of lazyRefcountsOptions" [value]="lazyRefcount">
+                {{ lazyRefcount }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-select placeholder="Refcount entry size" [(ngModel)]="qemuImg.refcount_bits">
+              <mat-option *ngFor="let clusterSize of clusterSizeOptions" [value]="clusterSize.value">
+                {{ clusterSize.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
+        <div *ngIf="qemuImg.format === 'vhd' || qemuImg.format === 'vdi'">
+          <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
+            <mat-radio-button value="1" (click)="setSubformat('dynamic')" checked>Dynamic</mat-radio-button>
+            <mat-radio-button value="2" (click)="setSubformat('fixed')">Fixed</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div *ngIf="qemuImg.format === 'vmdk'">
+          Adapter type<br />
+          <mat-radio-group aria-label="Adapter type" class="radio-selection">
+            <mat-radio-button value="1" (click)="setAdapterType('ide')" checked>IDE</mat-radio-button>
+            <mat-radio-button value="2" (click)="setAdapterType('lsilogic')">LSI Logic</mat-radio-button>
+            <mat-radio-button value="3" (click)="setAdapterType('buslogic')">BusLogic</mat-radio-button>
+            <mat-radio-button value="4" (click)="setAdapterType('legacyESX')"
+              >Legacy (ESX)</mat-radio-button
+            > </mat-radio-group
+          ><br /><br />
+          Image file sizing mode<br />
+          <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
+            <mat-radio-button value="1" (click)="setSubformat('streamOptimized')" checked
+              >Stream optimized</mat-radio-button
+            >
+            <mat-radio-button value="2" (click)="setSubformat('twoGbMaxExtentSparse')"
+              >Split every 2GB (sparse)</mat-radio-button
+            >
+            <mat-radio-button value="3" (click)="setSubformat('twoGbMaxExtentFlat')"
+              >Split every 2GB (flat)</mat-radio-button
+            >
+            <mat-radio-button value="4" (click)="setSubformat('monolithicSparse')">Monolithic sparse</mat-radio-button>
+            <mat-radio-button value="5" (click)="setSubformat('monolithicFlat')"
+              >Monolithic flat</mat-radio-button
+            > </mat-radio-group
+          ><br /><br />
+          <mat-select placeholder="Zeroed grain" [(ngModel)]="qemuImg.zeroed_grain">
+            <mat-option *ngFor="let option of zeroedGrainOptions" [value]="option">
+              {{ option }}
+            </mat-option>
+          </mat-select>
+        </div>
+        <form [formGroup]="inputForm">
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="qemuImg.path" formControlName="path" placeholder="File location" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="number" [(ngModel)]="qemuImg.size" formControlName="size" placeholder="Disk size" />
+          </mat-form-field>
+        </form>
+      </mat-card>
     </div>
+  </div>
 </div>
 
 <div mat-dialog-actions>

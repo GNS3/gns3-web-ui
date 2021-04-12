@@ -1,10 +1,9 @@
+import { EventEmitter, Injectable } from '@angular/core';
 import { path } from 'd3-path';
-
-import { Widget } from '../widget';
-import { SVGSelection } from '../../models/types';
-import { MapLink } from '../../models/map/map-link';
-import { Injectable, EventEmitter } from '@angular/core';
 import { LinkContextMenu } from '../../events/event-source';
+import { MapLink } from '../../models/map/map-link';
+import { SVGSelection } from '../../models/types';
+import { Widget } from '../widget';
 
 class SerialLinkPath {
   constructor(
@@ -15,19 +14,20 @@ class SerialLinkPath {
   ) {}
 }
 
-@Injectable() export class SerialLinkWidget implements Widget {
+@Injectable()
+export class SerialLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
 
   constructor() {}
-  
+
   private linkToSerialLink(link: MapLink) {
     const source = {
       x: link.source.x + link.source.width / 2,
-      y: link.source.y + link.source.height / 2
+      y: link.source.y + link.source.height / 2,
     };
     const target = {
       x: link.target.x + link.target.width / 2,
-      y: link.target.y + link.target.height / 2
+      y: link.target.y + link.target.height / 2,
     };
 
     const dx = target.x - source.x;
@@ -39,19 +39,19 @@ class SerialLinkPath {
 
     const angle_source: [number, number] = [
       source.x + dx / 2.0 + 15 * vect_rot[0],
-      source.y + dy / 2.0 + 15 * vect_rot[1]
+      source.y + dy / 2.0 + 15 * vect_rot[1],
     ];
 
     const angle_target: [number, number] = [
       target.x - dx / 2.0 - 15 * vect_rot[0],
-      target.y - dy / 2.0 - 15 * vect_rot[1]
+      target.y - dy / 2.0 - 15 * vect_rot[1],
     ];
 
     return new SerialLinkPath([source.x, source.y], angle_source, angle_target, [target.x, target.y]);
   }
 
   public draw(view: SVGSelection) {
-    const link = view.selectAll<SVGPathElement, SerialLinkPath>('path.serial_link').data(l => {
+    const link = view.selectAll<SVGPathElement, SerialLinkPath>('path.serial_link').data((l) => {
       if (l.linkType === 'serial') {
         return [this.linkToSerialLink(l)];
       }
@@ -63,19 +63,16 @@ class SerialLinkPath {
       .append<SVGPathElement>('path')
       .attr('class', 'serial_link')
       .on('contextmenu', (datum) => {
-        let link: MapLink = datum as unknown as MapLink;
+        let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });
 
-    link_enter
-      .attr('stroke', '#B22222')
-      .attr('fill', 'none')
-      .attr('stroke-width', '2');
+    link_enter.attr('stroke', '#B22222').attr('fill', 'none').attr('stroke-width', '2');
 
     const link_merge = link.merge(link_enter);
 
-    link_merge.attr('d', serial => {
+    link_merge.attr('d', (serial) => {
       const line_generator = path();
       line_generator.moveTo(serial.source[0], serial.source[1]);
       line_generator.lineTo(serial.source_angle[0], serial.source_angle[1]);

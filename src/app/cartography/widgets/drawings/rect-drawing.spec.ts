@@ -1,8 +1,8 @@
+import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { RectElement } from '../../models/drawings/rect-element';
+import { MapDrawing } from '../../models/map/map-drawing';
 import { TestSVGCanvas } from '../../testing';
 import { RectDrawingWidget } from './rect-drawing';
-import { RectElement } from '../../models/drawings/rect-element';
-import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
-import { MapDrawing } from '../../models/map/map-drawing';
 
 describe('RectDrawingWidget', () => {
   let svg: TestSVGCanvas;
@@ -31,10 +31,7 @@ describe('RectDrawingWidget', () => {
     drawing.element = rect;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

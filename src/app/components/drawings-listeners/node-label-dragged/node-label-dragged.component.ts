@@ -1,18 +1,18 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
-import { NodeService } from '../../../services/node.service';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { DraggedDataEvent } from '../../../cartography/events/event-source';
+import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
+import { MapLabel } from '../../../cartography/models/map/map-label';
 import { Node } from '../../../cartography/models/node';
 import { Server } from '../../../models/server';
-import { Subscription } from 'rxjs';
-import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { MapLabel } from '../../../cartography/models/map/map-label';
+import { NodeService } from '../../../services/node.service';
 
 @Component({
   selector: 'app-node-label-dragged',
   templateUrl: './node-label-dragged.component.html',
-  styleUrls: ['./node-label-dragged.component.scss']
+  styleUrls: ['./node-label-dragged.component.scss'],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
@@ -26,7 +26,7 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.nodeLabelDragged = this.nodesEventSource.labelDragged.subscribe(evt => this.onNodeLabelDragged(evt));
+    this.nodeLabelDragged = this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt));
   }
 
   onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {

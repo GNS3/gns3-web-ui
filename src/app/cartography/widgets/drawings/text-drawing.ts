@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-
-import { SVGSelection } from '../../models/types';
-import { TextElement } from '../../models/drawings/text-element';
-import { DrawingShapeWidget } from './drawing-shape-widget';
-import { FontFixer } from '../../helpers/font-fixer';
 import { select } from 'd3-selection';
+import { FontFixer } from '../../helpers/font-fixer';
+import { TextElement } from '../../models/drawings/text-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { SVGSelection } from '../../models/types';
+import { DrawingShapeWidget } from './drawing-shape-widget';
 
 @Injectable()
 export class TextDrawingWidget implements DrawingShapeWidget {
@@ -18,10 +17,7 @@ export class TextDrawingWidget implements DrawingShapeWidget {
       return d.element && d.element instanceof TextElement ? [d.element] : [];
     });
 
-    const drawing_enter = drawing
-      .enter()
-      .append<SVGTextElement>('text')
-      .attr('class', 'text_element noselect');
+    const drawing_enter = drawing.enter().append<SVGTextElement>('text').attr('class', 'text_element noselect');
 
     const merge = drawing.merge(drawing_enter);
     merge
@@ -40,8 +36,8 @@ export class TextDrawingWidget implements DrawingShapeWidget {
         }
         return styles.join('; ');
       })
-      .attr('fill', text => text.fill)
-      .attr('text-decoration', text => text.text_decoration);
+      .attr('fill', (text) => text.fill)
+      .attr('text-decoration', (text) => text.text_decoration);
 
     const lines = merge.selectAll<SVGTSpanElement, string>('tspan').data((text: TextElement) => {
       return text.text.split(/\r?\n/);
@@ -52,14 +48,14 @@ export class TextDrawingWidget implements DrawingShapeWidget {
     const lines_merge = lines.merge(lines_enter);
 
     lines_merge
-      .text(line => line)
+      .text((line) => line)
       .attr('xml:space', 'preserve')
       .attr('x', 0)
       .attr('dy', (line, i) => (i === 0 ? '0em' : '1.4em'));
 
     lines.exit().remove();
 
-    merge.attr('transform', function(this: SVGTextElement) {
+    merge.attr('transform', function (this: SVGTextElement) {
       // SVG calculates y pos by the /bottom/ of the first tspan, hence we need to make some
       // approx and make it matching to GUI
       const tspan = select(this).selectAll<SVGTSpanElement, string>('tspan');

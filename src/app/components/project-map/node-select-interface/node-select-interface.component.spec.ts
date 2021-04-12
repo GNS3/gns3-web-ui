@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { NodeSelectInterfaceComponent } from './node-select-interface.component';
 
 describe('NodeSelectInterfaceComponent', () => {
@@ -8,7 +7,7 @@ describe('NodeSelectInterfaceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NodeSelectInterfaceComponent]
+      declarations: [NodeSelectInterfaceComponent],
     }).compileComponents();
   }));
 

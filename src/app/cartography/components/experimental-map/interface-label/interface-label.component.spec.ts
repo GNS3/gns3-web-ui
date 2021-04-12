@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { InterfaceLabelComponent } from './interface-label.component';
 
 describe('InterfaceLabelComponent', () => {
@@ -8,7 +7,7 @@ describe('InterfaceLabelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [InterfaceLabelComponent]
+      declarations: [InterfaceLabelComponent],
     }).compileComponents();
   }));
 
