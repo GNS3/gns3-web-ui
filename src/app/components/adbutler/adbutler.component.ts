@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AdButlerResponse } from '../../models/adbutler';
 import { ThemeService } from '../../services/theme.service';
+import { Location } from '@angular/common';
 
 const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 
@@ -21,13 +22,14 @@ export class AdbutlerComponent implements OnInit {
     'Network Config Generator makes it easy configure network devices, including VLANs without opening the CLI';
   buttonLabel: string = 'Check it out!';
 
-  constructor(private httpClient: HttpClient, private themeService: ThemeService) {}
+  constructor(private httpClient: HttpClient, private themeService: ThemeService, private location: Location) {}
 
   hide() {
     this.isVisible = false;
   }
 
   ngOnInit() {
+    if (this.location.path().includes('nodes')) return;
     this.httpClient
       .get<AdButlerResponse>('https://servedbyadbutler.com/adserve/;ID=165803;size=0x0;setID=371476;type=json;')
       .subscribe(
