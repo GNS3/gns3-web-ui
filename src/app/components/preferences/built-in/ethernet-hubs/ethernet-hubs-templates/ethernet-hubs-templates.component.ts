@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Server } from '../../../../../models/server';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
+import { Server } from '../../../../../models/server';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 @Component({

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../cartography/models/node';
 import { Project } from '../../../../models/project';
 import { Server } from '../../../../models/server';
-import { MatDialogRef } from '@angular/material/dialog';
 import { NodeService } from '../../../../services/node.service';
 import { ToasterService } from '../../../../services/toaster.service';
 

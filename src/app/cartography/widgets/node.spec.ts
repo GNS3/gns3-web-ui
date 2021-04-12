@@ -1,12 +1,8 @@
-import { TestSVGCanvas } from '../testing';
-import { CssFixer } from '../helpers/css-fixer';
-import { FontFixer } from '../helpers/font-fixer';
-import { NodeWidget } from './node';
-import { MapNode } from '../models/map/map-node';
-import { MapLabel } from '../models/map/map-label';
 import { MockedGraphDataManager } from '../managers/graph-data-manager.spec';
-import { GraphDataManager } from '../managers/graph-data-manager';
-import { SelectionManager } from '../managers/selection-manager';
+import { MapLabel } from '../models/map/map-label';
+import { MapNode } from '../models/map/map-node';
+import { TestSVGCanvas } from '../testing';
+import { NodeWidget } from './node';
 
 describe('NodesWidget', () => {
   let svg: TestSVGCanvas;

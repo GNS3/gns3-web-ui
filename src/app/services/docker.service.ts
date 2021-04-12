@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
-import { DockerTemplate } from '../models/templates/docker-template';
 import { DockerImage } from '../models/docker/docker-image';
+import { Server } from '../models/server';
+import { DockerTemplate } from '../models/templates/docker-template';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class DockerService {

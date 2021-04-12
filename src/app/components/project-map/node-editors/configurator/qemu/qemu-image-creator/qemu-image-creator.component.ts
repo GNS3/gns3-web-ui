@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { QemuImg } from '../../../../../../models/qemu/qemu-img';
 import { Server } from '../../../../../../models/server';
 import { NodeService } from '../../../../../../services/node.service';
-import { ToasterService } from '../../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material/dialog';
 import { QemuService } from '../../../../../../services/qemu.service';
-import { QemuImg } from '../../../../../../models/qemu/qemu-img';
+import { ToasterService } from '../../../../../../services/toaster.service';
 
 @Component({
   selector: 'app-qemu-image-creator',

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ThemeService } from '../../services/theme.service';
+import { Component, OnInit } from '@angular/core';
 import { AdButlerResponse } from '../../models/adbutler';
+import { ThemeService } from '../../services/theme.service';
 
 const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 

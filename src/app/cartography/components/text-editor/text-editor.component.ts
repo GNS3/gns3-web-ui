@@ -1,35 +1,33 @@
 import {
   Component,
-  ViewChild,
   ElementRef,
-  OnInit,
-  Input,
   EventEmitter,
-  OnDestroy,
-  Renderer2,
+  Input,
   NgZone,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
 } from '@angular/core';
+import { select } from 'd3-selection';
+import { Subscription } from 'rxjs';
+import { StyleProperty } from '../../../components/project-map/drawings-editors/text-editor/text-editor.component';
+import { Link } from '../../../models/link';
+import { Server } from '../../../models/server';
+import { LinkService } from '../../../services/link.service';
+import { MapScaleService } from '../../../services/mapScale.service';
+import { ToolsService } from '../../../services/tools.service';
+import { LinksDataSource } from '../../datasources/links-datasource';
+import { NodesDataSource } from '../../datasources/nodes-datasource';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { TextAddedDataEvent, TextEditedDataEvent } from '../../events/event-source';
-import { ToolsService } from '../../../services/tools.service';
-import { select } from 'd3-selection';
-import { TextElement } from '../../models/drawings/text-element';
-import { Context } from '../../models/context';
-import { Subscription } from 'rxjs';
-import { MapScaleService } from '../../../services/mapScale.service';
-import { MapLabel } from '../../models/map/map-label';
-import { MapNode } from '../../models/map/map-node';
-import { NodesDataSource } from '../../datasources/nodes-datasource';
-import { Node } from '../../models/node';
-import { SelectionManager } from '../../managers/selection-manager';
-import { Server } from '../../../models/server';
-import { MapLinkNode } from '../../models/map/map-link-node';
-import { LinkService } from '../../../services/link.service';
-import { LinksDataSource } from '../../datasources/links-datasource';
-import { Link } from '../../../models/link';
-import { StyleProperty } from '../../../components/project-map/drawings-editors/text-editor/text-editor.component';
 import { FontFixer } from '../../helpers/font-fixer';
+import { SelectionManager } from '../../managers/selection-manager';
+import { Context } from '../../models/context';
+import { TextElement } from '../../models/drawings/text-element';
 import { Font } from '../../models/font';
+import { MapLinkNode } from '../../models/map/map-link-node';
+import { Node } from '../../models/node';
 
 @Component({
   selector: 'app-text-editor',

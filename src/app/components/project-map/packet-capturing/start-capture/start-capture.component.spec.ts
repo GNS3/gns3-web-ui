@@ -1,22 +1,22 @@
-import { StartCaptureDialogComponent } from './start-capture.component';
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ToasterService } from '../../../../services/toaster.service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { LinkService } from '../../../../services/link.service';
-import { MockedLinkService, MockedNodesDataSource } from '../../project-map.component.spec';
-import { Link } from '../../../../models/link';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { Link } from '../../../../models/link';
+import { LinkService } from '../../../../services/link.service';
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { MockedLinkService, MockedNodesDataSource } from '../../project-map.component.spec';
+import { StartCaptureDialogComponent } from './start-capture.component';
 
 describe('StartCaptureDialogComponent', () => {
   let component: StartCaptureDialogComponent;

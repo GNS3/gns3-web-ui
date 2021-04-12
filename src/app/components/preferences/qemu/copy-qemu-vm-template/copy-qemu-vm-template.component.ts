@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { QemuService } from '../../../../services/qemu.service';
-import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import { ToasterService } from '../../../../services/toaster.service';
-import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { v4 as uuid } from 'uuid';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { QemuBinary } from '../../../../models/qemu/qemu-binary';
+import { Server } from '../../../../models/server';
+import { QemuTemplate } from '../../../../models/templates/qemu-template';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-copy-qemu-virtual-machine-template',

@@ -1,13 +1,13 @@
-import { NodeDraggedComponent } from './node-dragged.component';
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../../services/node.service';
-import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
-import { MockedNodeService, MockedNodesDataSource } from '../../project-map/project-map.component.spec';
-import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { MapNode } from '../../../cartography/models/map/map-node';
-import { MapLabel } from '../../../cartography/models/map/map-label';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { DraggedDataEvent } from '../../../cartography/events/event-source';
+import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
+import { MapLabel } from '../../../cartography/models/map/map-label';
+import { MapNode } from '../../../cartography/models/map/map-node';
+import { NodeService } from '../../../services/node.service';
+import { MockedNodesDataSource, MockedNodeService } from '../../project-map/project-map.component.spec';
+import { NodeDraggedComponent } from './node-dragged.component';
 
 describe('NodeDraggedComponent', () => {
   let component: NodeDraggedComponent;

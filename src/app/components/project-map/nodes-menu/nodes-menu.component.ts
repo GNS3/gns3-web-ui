@@ -1,12 +1,12 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ElectronService } from 'ngx-electron';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { NodeService } from '../../../services/node.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { ElectronService } from 'ngx-electron';
-import { SettingsService } from '../../../services/settings.service';
 import { ServerService } from '../../../services/server.service';
+import { SettingsService } from '../../../services/settings.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-nodes-menu',

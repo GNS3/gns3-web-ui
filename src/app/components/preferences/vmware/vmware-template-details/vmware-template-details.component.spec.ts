@@ -1,26 +1,26 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Server } from '../../../../models/server';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { VmwareTemplateDetailsComponent } from './vmware-template-details.component';
-import { VmwareService } from '../../../../services/vmware.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
+import { VmwareService } from '../../../../services/vmware.service';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { VmwareTemplateDetailsComponent } from './vmware-template-details.component';
 
 export class MockedVmwareService {
   public getTemplate(server: Server, template_id: string) {

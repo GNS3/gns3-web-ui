@@ -1,24 +1,15 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  Input,
-  AfterViewInit,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-} from '@angular/core';
-import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ResizeEvent } from 'angular-resizable-element';
+import { Subscription } from 'rxjs';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { Node } from '../../cartography/models/node';
-import { Subscription } from 'rxjs';
-import { ProjectService } from '../../services/project.service';
-import { ProjectStatistics } from '../../models/project-statistics';
 import { Compute } from '../../models/compute';
+import { Project } from '../../models/project';
+import { ProjectStatistics } from '../../models/project-statistics';
+import { Server } from '../../models/server';
 import { ComputeService } from '../../services/compute.service';
-import { LinksDataSource } from '../../cartography/datasources/links-datasource';
-import { ResizeEvent } from 'angular-resizable-element';
+import { ProjectService } from '../../services/project.service';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({

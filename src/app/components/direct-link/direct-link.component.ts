@@ -1,17 +1,8 @@
-import {
-  Component,
-  OnInit,
-  ElementRef,
-  ViewChild,
-  ViewEncapsulation,
-  Input,
-  Output,
-  EventEmitter,
-} from '@angular/core';
-import { ServerService } from '../../services/server.service';
-import { ServerDatabase } from '../../services/server.database';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Server } from '../../models/server';
+import { ServerDatabase } from '../../services/server.database';
+import { ServerService } from '../../services/server.service';
 import { ToasterService } from '../../services/toaster.service';
 
 @Component({

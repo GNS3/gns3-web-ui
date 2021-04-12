@@ -1,15 +1,15 @@
-import { Component, OnDestroy, Input, OnInit } from '@angular/core';
-import { Server } from '../../../models/server';
-import { LinkService } from '../../../services/link.service';
-import { ProjectService } from '../../../services/project.service';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
-import { Subscription } from 'rxjs';
-import { Project } from '../../../models/project';
 import { MapLinkCreated } from '../../../cartography/events/links';
-import { Link } from '../../../models/link';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
+import { Link } from '../../../models/link';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { LinkService } from '../../../services/link.service';
+import { ProjectService } from '../../../services/project.service';
 
 @Component({
   selector: 'app-link-created',

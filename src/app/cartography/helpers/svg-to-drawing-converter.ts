@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { DrawingElement } from '../models/drawings/drawing-element';
+import { EllipseConverter } from './svg-to-drawing-converter/ellipse-converter';
+import { ImageConverter } from './svg-to-drawing-converter/image-converter';
+import { LineConverter } from './svg-to-drawing-converter/line-converter';
+import { RectConverter } from './svg-to-drawing-converter/rect-converter';
 import { SvgConverter } from './svg-to-drawing-converter/svg-converter';
 import { TextConverter } from './svg-to-drawing-converter/text-converter';
-import { ImageConverter } from './svg-to-drawing-converter/image-converter';
-import { RectConverter } from './svg-to-drawing-converter/rect-converter';
-import { LineConverter } from './svg-to-drawing-converter/line-converter';
-import { EllipseConverter } from './svg-to-drawing-converter/ellipse-converter';
 
 @Injectable()
 export class SvgToDrawingConverter {

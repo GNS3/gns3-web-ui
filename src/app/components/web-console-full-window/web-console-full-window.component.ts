@@ -1,16 +1,15 @@
-import { Component, OnInit, Input, AfterViewInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
-import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
-import { Node } from '../../cartography/models/node';
 import { FitAddon } from 'xterm-addon-fit';
-import { NodeConsoleService } from '../../services/nodeConsole.service';
-import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../services/server.service';
-import { Title } from '@angular/platform-browser';
+import { Node } from '../../cartography/models/node';
+import { Server } from '../../models/server';
 import { NodeService } from '../../services/node.service';
-import { Subscription } from 'rxjs';
+import { NodeConsoleService } from '../../services/nodeConsole.service';
+import { ServerService } from '../../services/server.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,

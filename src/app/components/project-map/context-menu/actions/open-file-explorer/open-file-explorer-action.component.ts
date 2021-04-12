@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
-import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-open-file-explorer-action',

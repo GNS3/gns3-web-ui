@@ -1,17 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Server } from '../../../../models/server';
+import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ToasterService } from '../../../../services/toaster.service';
 import { of } from 'rxjs/internal/observable/of';
-import { ConfigEditorDialogComponent } from './config-editor.component';
-import { NodeService } from '../../../../services/node.service';
-import { FormsModule } from '@angular/forms';
-import { MockedNodeService } from '../../project-map.component.spec';
 import { Node } from '../../../../cartography/models/node';
+import { Server } from '../../../../models/server';
+import { NodeService } from '../../../../services/node.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedNodeService } from '../../project-map.component.spec';
+import { ConfigEditorDialogComponent } from './config-editor.component';
 
 describe('ConfigEditorDialogComponent', () => {
   let component: ConfigEditorDialogComponent;

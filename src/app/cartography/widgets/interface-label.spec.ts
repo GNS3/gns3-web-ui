@@ -1,15 +1,14 @@
 import { Selection } from 'd3-selection';
-
-import { TestSVGCanvas } from '../testing';
-import { InterfaceLabelWidget } from './interface-label';
 import { CssFixer } from '../helpers/css-fixer';
-import { MapNode } from '../models/map/map-node';
+import { FontFixer } from '../helpers/font-fixer';
+import { MapSettingsManager } from '../managers/map-settings-manager';
+import { SelectionManager } from '../managers/selection-manager';
+import { MapLabel } from '../models/map/map-label';
 import { MapLink } from '../models/map/map-link';
 import { MapLinkNode } from '../models/map/map-link-node';
-import { MapLabel } from '../models/map/map-label';
-import { FontFixer } from '../helpers/font-fixer';
-import { SelectionManager } from '../managers/selection-manager';
-import { MapSettingsManager } from '../managers/map-settings-manager';
+import { MapNode } from '../models/map/map-node';
+import { TestSVGCanvas } from '../testing';
+import { InterfaceLabelWidget } from './interface-label';
 
 describe('InterfaceLabelsWidget', () => {
   let svg: TestSVGCanvas;

@@ -1,13 +1,13 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
+import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
+import { DraggedDataEvent } from '../../../cartography/events/event-source';
+import { Drawing } from '../../../cartography/models/drawing';
+import { MapDrawing } from '../../../cartography/models/map/map-drawing';
+import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { DrawingService } from '../../../services/drawing.service';
-import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { Drawing } from '../../../cartography/models/drawing';
-import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { Project } from '../../../models/project';
 
 @Component({
   selector: 'app-drawing-dragged',

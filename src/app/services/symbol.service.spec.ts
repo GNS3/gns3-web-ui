@@ -1,14 +1,13 @@
-import { TestBed, inject } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
-import { SymbolService } from './symbol.service';
 import { Symbol } from '../models/symbol';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { of } from 'rxjs';
+import { HttpServer } from './http-server.service';
+import { SymbolService } from './symbol.service';
+import { getTestServer } from './testing';
 
 describe('SymbolService', () => {
   let httpClient: HttpClient;

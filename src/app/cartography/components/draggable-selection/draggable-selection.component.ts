@@ -1,23 +1,23 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Subscription, merge } from 'rxjs';
-import { NodesWidget } from '../../widgets/nodes';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { LinksWidget } from '../../widgets/links';
-import { SelectionManager } from '../../managers/selection-manager';
-import { NodesEventSource } from '../../events/nodes-event-source';
-import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { GraphDataManager } from '../../managers/graph-data-manager';
-import { DraggableStart, DraggableDrag, DraggableEnd } from '../../events/draggable';
-import { MapNode } from '../../models/map/map-node';
-import { MapDrawing } from '../../models/map/map-drawing';
-import { DraggedDataEvent } from '../../events/event-source';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { select } from 'd3-selection';
-import { MapLabel } from '../../models/map/map-label';
-import { LabelWidget } from '../../widgets/label';
-import { InterfaceLabelWidget } from '../../widgets/interface-label';
-import { MapLinkNode } from '../../models/map/map-link-node';
-import { LinksEventSource } from '../../events/links-event-source';
+import { merge, Subscription } from 'rxjs';
 import { MapSettingsService } from '../../../services/mapsettings.service';
+import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
+import { DrawingsEventSource } from '../../events/drawings-event-source';
+import { DraggedDataEvent } from '../../events/event-source';
+import { LinksEventSource } from '../../events/links-event-source';
+import { NodesEventSource } from '../../events/nodes-event-source';
+import { GraphDataManager } from '../../managers/graph-data-manager';
+import { SelectionManager } from '../../managers/selection-manager';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { MapLabel } from '../../models/map/map-label';
+import { MapLinkNode } from '../../models/map/map-link-node';
+import { MapNode } from '../../models/map/map-node';
+import { DrawingsWidget } from '../../widgets/drawings';
+import { InterfaceLabelWidget } from '../../widgets/interface-label';
+import { LabelWidget } from '../../widgets/label';
+import { LinksWidget } from '../../widgets/links';
+import { NodesWidget } from '../../widgets/nodes';
 
 @Component({
   selector: 'app-draggable-selection',

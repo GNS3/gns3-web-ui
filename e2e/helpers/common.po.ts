@@ -1,5 +1,4 @@
-import { browser, by, element } from 'protractor';
-import { ServersPage } from './server.po';
+import { browser } from 'protractor';
 
 export class TestHelper {
   sleep(value: number) {

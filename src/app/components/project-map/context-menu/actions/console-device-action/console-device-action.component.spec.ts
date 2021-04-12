@@ -1,18 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from 'ngx-electron';
-
-import { ConsoleDeviceActionComponent } from './console-device-action.component';
-import { ServerService } from '../../../../../services/server.service';
-import { MockedServerService } from '../../../../../services/server.service.spec';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../../services/toaster.service.spec';
-import { SettingsService } from '../../../../../services/settings.service';
-import { MockedSettingsService } from '../../../../../services/settings.service.spec';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
-import { MockedNodeService } from '../../../project-map.component.spec';
 import { NodeService } from '../../../../../services/node.service';
+import { ServerService } from '../../../../../services/server.service';
+import { MockedServerService } from '../../../../../services/server.service.spec';
+import { SettingsService } from '../../../../../services/settings.service';
+import { MockedSettingsService } from '../../../../../services/settings.service.spec';
+import { ToasterService } from '../../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { MockedNodeService } from '../../../project-map.component.spec';
+import { ConsoleDeviceActionComponent } from './console-device-action.component';
 
 describe('ConsoleDeviceActionComponent', () => {
   let component: ConsoleDeviceActionComponent;

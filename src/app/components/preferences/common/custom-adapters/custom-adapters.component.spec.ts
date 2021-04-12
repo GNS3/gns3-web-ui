@@ -1,3 +1,5 @@
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -5,10 +7,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { CustomAdaptersComponent } from './custom-adapters.component';
 import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
+import { CustomAdaptersComponent } from './custom-adapters.component';
 
 describe('Custom adapters component', () => {
   let component: CustomAdaptersComponent;

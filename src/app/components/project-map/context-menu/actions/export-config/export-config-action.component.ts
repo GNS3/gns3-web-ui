@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Node } from '../../../../../cartography/models/node';
-import { NodeService } from '../../../../../services/node.service';
-import { Server } from '../../../../../models/server';
 import { MatDialog } from '@angular/material/dialog';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
+import { NodeService } from '../../../../../services/node.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({

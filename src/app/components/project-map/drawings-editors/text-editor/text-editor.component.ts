@@ -1,26 +1,26 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
-import { Project } from '../../../../models/project';
-import { Drawing } from '../../../../cartography/models/drawing';
-import { Server } from '../../../../models/server';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
-import { DrawingService } from '../../../../services/drawing.service';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
-import { TextElement } from '../../../../cartography/models/drawings/text-element';
-import { Label } from '../../../../cartography/models/label';
-import { NodeService } from '../../../../services/node.service';
-import { Node } from '../../../../cartography/models/node';
+import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { FontFixer } from '../../../../cartography/helpers/font-fixer';
+import { Drawing } from '../../../../cartography/models/drawing';
+import { TextElement } from '../../../../cartography/models/drawings/text-element';
+import { Font } from '../../../../cartography/models/font';
+import { Label } from '../../../../cartography/models/label';
+import { Node } from '../../../../cartography/models/node';
 import { Link } from '../../../../models/link';
 import { LinkNode } from '../../../../models/link-node';
+import { Project } from '../../../../models/project';
+import { Server } from '../../../../models/server';
+import { DrawingService } from '../../../../services/drawing.service';
 import { LinkService } from '../../../../services/link.service';
-import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { NodeService } from '../../../../services/node.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
-import { Font } from '../../../../cartography/models/font';
-import { FontFixer } from '../../../../cartography/helpers/font-fixer';
 
 @Component({
   selector: 'app-text-editor',

@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Server } from '../models/server';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
+import { Server } from '../models/server';
 
 export interface ServerStateEvent {
   serverName: string;

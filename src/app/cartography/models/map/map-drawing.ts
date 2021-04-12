@@ -1,5 +1,5 @@
-import { DrawingElement } from '../drawings/drawing-element';
 import { Indexed } from '../../datasources/map-datasource';
+import { DrawingElement } from '../drawings/drawing-element';
 
 export class MapDrawing implements Indexed {
   id: string;

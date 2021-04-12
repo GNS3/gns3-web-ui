@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
+import { Component, Input, OnInit } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
+import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
 
 @Component({
   selector: '[app-ellipse]',

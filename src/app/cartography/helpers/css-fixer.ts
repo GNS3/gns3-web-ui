@@ -1,6 +1,5 @@
-import * as csstree from 'css-tree';
-
 import { Injectable } from '@angular/core';
+import * as csstree from 'css-tree';
 
 @Injectable()
 export class CssFixer {

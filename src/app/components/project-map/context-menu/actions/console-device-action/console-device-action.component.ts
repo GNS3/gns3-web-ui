@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
-import { ElectronService } from 'ngx-electron';
+import { NodeService } from '../../../../../services/node.service';
 import { ServerService } from '../../../../../services/server.service';
 import { SettingsService } from '../../../../../services/settings.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { NodeService } from '../../../../../services/node.service';
 
 @Component({
   selector: 'app-console-device-action',

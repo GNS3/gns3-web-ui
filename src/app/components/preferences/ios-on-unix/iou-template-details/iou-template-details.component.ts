@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
 import { IouTemplate } from '../../../../models/templates/iou-template';
-import { IouService } from '../../../../services/iou.service';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { IouService } from '../../../../services/iou.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-iou-template-details',

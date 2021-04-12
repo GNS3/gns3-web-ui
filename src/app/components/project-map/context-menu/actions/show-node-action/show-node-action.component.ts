@@ -1,8 +1,8 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
+import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-show-node-action',

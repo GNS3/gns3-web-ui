@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { QemuService } from '../../../../services/qemu.service';
+import { QemuBinary } from '../../../../models/qemu/qemu-binary';
+import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { Server } from '../../../../models/server';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import { ToasterService } from '../../../../services/toaster.service';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({

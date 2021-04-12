@@ -1,4 +1,6 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AbstractControlDirective, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCommonModule } from '@angular/material/core';
@@ -11,26 +13,22 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Route } from '@angular/router';
 import { of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
+import { DockerTemplate } from '../../../../models/templates/docker-template';
+import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
+import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { FormsModule, ReactiveFormsModule, AbstractControlDirective, FormControl } from '@angular/forms';
-import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { AddDockerTemplateComponent } from './add-docker-template.component';
-import { DockerService } from '../../../../services/docker.service';
-import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
-import { StepperOrientation, STEPPER_GLOBAL_OPTIONS, STEP_STATE, CdkStep } from '@angular/cdk/stepper';
-import { By } from '@angular/platform-browser';
 
 export class MockedDockerService {
   public addTemplate(server: Server, dockerTemplate: DockerTemplate) {

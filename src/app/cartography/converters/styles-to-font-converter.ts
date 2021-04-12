@@ -1,8 +1,7 @@
-import * as csstree from 'css-tree';
-
 import { Injectable } from '@angular/core';
-import { Converter } from './converter';
+import * as csstree from 'css-tree';
 import { Font } from '../models/font';
+import { Converter } from './converter';
 
 @Injectable()
 export class StylesToFontConverter implements Converter<string, Font> {

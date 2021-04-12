@@ -1,6 +1,6 @@
-import { NodeCreatedLabelStylesFixer } from './node-created-label-styles-fixer';
-import { Node } from '../../../cartography/models/node';
 import { Label } from '../../../cartography/models/label';
+import { Node } from '../../../cartography/models/node';
+import { NodeCreatedLabelStylesFixer } from './node-created-label-styles-fixer';
 
 describe('NodeCreatedLabelStylesFixer', () => {
   let fixer: NodeCreatedLabelStylesFixer;

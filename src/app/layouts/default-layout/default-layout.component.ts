@@ -1,12 +1,12 @@
-import { ElectronService } from 'ngx-electron';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { Component, OnInit, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
-import { ServerManagementService } from '../../services/server-management.service';
-import { Subscription } from 'rxjs';
-import { ToasterService } from '../../services/toaster.service';
-import { ProgressService } from '../../common/progress/progress.service';
-import { version } from './../../version';
+import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { ElectronService } from 'ngx-electron';
+import { Subscription } from 'rxjs';
+import { ProgressService } from '../../common/progress/progress.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { ServerManagementService } from '../../services/server-management.service';
+import { ToasterService } from '../../services/toaster.service';
+import { version } from './../../version';
 
 @Component({
   selector: 'app-default-layout',

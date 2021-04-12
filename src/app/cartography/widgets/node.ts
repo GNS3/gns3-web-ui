@@ -1,16 +1,15 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { NodeContextMenu, NodeClicked } from '../events/nodes';
-import { select, event } from 'd3-selection';
-import { MapNode } from '../models/map/map-node';
+import { EventEmitter, Injectable } from '@angular/core';
+import { event, select } from 'd3-selection';
+import { MapSettingsService } from '../../services/mapsettings.service';
+import { ClickedDataEvent } from '../events/event-source';
+import { NodeClicked, NodeContextMenu } from '../events/nodes';
+import { NodesEventSource } from '../events/nodes-event-source';
 import { GraphDataManager } from '../managers/graph-data-manager';
 import { SelectionManager } from '../managers/selection-manager';
+import { MapNode } from '../models/map/map-node';
+import { SVGSelection } from '../models/types';
 import { LabelWidget } from './label';
-import { NodesEventSource } from '../events/nodes-event-source';
-import { ClickedDataEvent } from '../events/event-source';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { Widget } from './widget';
 
 @Injectable()
 export class NodeWidget implements Widget {

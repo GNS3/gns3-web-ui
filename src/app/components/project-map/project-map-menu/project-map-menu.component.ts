@@ -1,18 +1,16 @@
-import { Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { select } from 'd3-selection';
+import * as svg from 'save-svg-as-png';
+import downloadSvg from 'svg-crowbar';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
-import { ToolsService } from '../../../services/tools.service';
-import { MapSettingsService } from '../../../services/mapsettings.service';
 import { DrawingService } from '../../../services/drawing.service';
-import * as svg from 'save-svg-as-png';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { SymbolService } from '../../../services/symbol.service';
-import { select } from 'd3-selection';
-import downloadSvg from 'svg-crowbar';
-import { ElectronService } from 'ngx-electron';
-import { MatDialog } from '@angular/material/dialog';
-import { ScreenshotDialogComponent, Screenshot } from '../screenshot-dialog/screenshot-dialog.component';
-import { saveAsPng, saveAsJpeg } from 'save-html-as-image';
 import { ThemeService } from '../../../services/theme.service';
+import { ToolsService } from '../../../services/tools.service';
+import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
 
 @Component({
   selector: 'app-project-map-menu',

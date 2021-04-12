@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
-
-import { Widget } from './widget';
+import { MapSettingsService } from '../../services/mapsettings.service';
+import { SelectionManager } from '../managers/selection-manager';
+import { EllipseElement } from '../models/drawings/ellipse-element';
+import { LineElement } from '../models/drawings/line-element';
+import { RectElement } from '../models/drawings/rect-element';
+import { MapDrawing } from '../models/map/map-drawing';
 import { SVGSelection } from '../models/types';
 import { DrawingShapeWidget } from './drawings/drawing-shape-widget';
-import { TextDrawingWidget } from './drawings/text-drawing';
-import { ImageDrawingWidget } from './drawings/image-drawing';
-import { RectDrawingWidget } from './drawings/rect-drawing';
-import { LineDrawingWidget } from './drawings/line-drawing';
 import { EllipseDrawingWidget } from './drawings/ellipse-drawing';
-import { MapDrawing } from '../models/map/map-drawing';
-import { SelectionManager } from '../managers/selection-manager';
-import { LineElement } from '../models/drawings/line-element';
-import { EllipseElement } from '../models/drawings/ellipse-element';
-import { RectElement } from '../models/drawings/rect-element';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { ImageDrawingWidget } from './drawings/image-drawing';
+import { LineDrawingWidget } from './drawings/line-drawing';
+import { RectDrawingWidget } from './drawings/rect-drawing';
+import { TextDrawingWidget } from './drawings/text-drawing';
+import { Widget } from './widget';
 
 @Injectable()
 export class DrawingWidget implements Widget {

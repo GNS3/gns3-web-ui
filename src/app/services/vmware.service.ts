@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
+import { Server } from '../models/server';
 import { VmwareTemplate } from '../models/templates/vmware-template';
 import { VmwareVm } from '../models/vmware/vmware-vm';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class VmwareService {

@@ -1,15 +1,15 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { v4 as uuid } from 'uuid';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ProjectService } from '../../../services/project.service';
-import { v4 as uuid } from 'uuid';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ToasterService } from '../../../services/toaster.service';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
   selector: 'app-add-blank-project-dialog',

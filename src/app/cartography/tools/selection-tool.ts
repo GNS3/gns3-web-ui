@@ -1,11 +1,10 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { mouse, select, event } from 'd3-selection';
+import { EventEmitter, Injectable } from '@angular/core';
+import { event, mouse, select } from 'd3-selection';
 import { Subject } from 'rxjs';
-
-import { SVGSelection } from '../models/types';
+import { SelectionEventSource } from '../events/selection-event-source';
 import { Context } from '../models/context';
 import { Rectangle } from '../models/rectangle';
-import { SelectionEventSource } from '../events/selection-event-source';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class SelectionTool {

@@ -1,20 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
-import { ToasterService } from '../../../services/toaster.service';
-import { ServerResponse } from '../../../models/serverResponse';
-import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
-import { Template } from '../../../models/template';
 import { DockerTemplate } from '../../../models/templates/docker-template';
-import { QemuTemplate } from '../../../models/templates/qemu-template';
-import { IouTemplate } from '../../../models/templates/iou-template';
 import { IosTemplate } from '../../../models/templates/ios-template';
-import { TemplateService } from '../../../services/template.service';
+import { IouTemplate } from '../../../models/templates/iou-template';
+import { QemuTemplate } from '../../../models/templates/qemu-template';
 import { DockerService } from '../../../services/docker.service';
-import { QemuService } from '../../../services/qemu.service';
-import { IouService } from '../../../services/iou.service';
 import { IosService } from '../../../services/ios.service';
-import { TemplatePortalDirective } from '@angular/cdk/portal';
+import { IouService } from '../../../services/iou.service';
+import { QemuService } from '../../../services/qemu.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-import-appliance',

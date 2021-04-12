@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { StopNodeActionComponent } from './stop-node-action.component';
 
 describe('StopNodeActionComponent', () => {

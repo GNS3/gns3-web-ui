@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
 import { v4 as uuid } from 'uuid';
+import { Server } from '../../../../models/server';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-copy-docker-template',

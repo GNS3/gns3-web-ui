@@ -1,5 +1,5 @@
-import { TestHelper } from './common.po';
 import { browser, by } from 'protractor';
+import { TestHelper } from './common.po';
 
 export class ProjectsPage {
   helper = new TestHelper();

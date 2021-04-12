@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosService } from '../../../../services/ios.service';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { IosConfigurationService } from '../../../../services/ios-configuration.service';
-import { IosImage } from '../../../../models/images/ios-image';
-import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
-import { ServerResponse } from '../../../../models/serverResponse';
-import { ComputeService } from '../../../../services/compute.service';
 import { Compute } from '../../../../models/compute';
+import { IosImage } from '../../../../models/images/ios-image';
+import { Server } from '../../../../models/server';
+import { IosTemplate } from '../../../../models/templates/ios-template';
+import { ComputeService } from '../../../../services/compute.service';
+import { IosConfigurationService } from '../../../../services/ios-configuration.service';
+import { IosService } from '../../../../services/ios.service';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-add-ios-template',

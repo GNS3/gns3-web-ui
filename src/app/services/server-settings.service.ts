@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
 import { Server } from '../models/server';
 import { ServerSettings } from '../models/serverSettings';
 import { QemuSettings } from '../models/settings/qemu-settings';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class ServerSettingsService {

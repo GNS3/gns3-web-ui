@@ -1,26 +1,26 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AbstractControlDirective, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormsModule, ReactiveFormsModule, AbstractControlDirective, FormControl } from '@angular/forms';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { QemuVmTemplateDetailsComponent } from './qemu-vm-template-details.component';
-import { QemuService } from '../../../../services/qemu.service';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
+import { ToasterService } from '../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { QemuVmTemplateDetailsComponent } from './qemu-vm-template-details.component';
 
 export class MockedQemuService {
   public getTemplate(server: Server, template_id: string) {

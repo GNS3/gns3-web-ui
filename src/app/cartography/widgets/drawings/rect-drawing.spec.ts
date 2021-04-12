@@ -1,8 +1,8 @@
+import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { RectElement } from '../../models/drawings/rect-element';
+import { MapDrawing } from '../../models/map/map-drawing';
 import { TestSVGCanvas } from '../../testing';
 import { RectDrawingWidget } from './rect-drawing';
-import { RectElement } from '../../models/drawings/rect-element';
-import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
-import { MapDrawing } from '../../models/map/map-drawing';
 
 describe('RectDrawingWidget', () => {
   let svg: TestSVGCanvas;

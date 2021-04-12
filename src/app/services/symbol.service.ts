@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-
-import { Symbol } from '../models/symbol';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
+import { Server } from '../models/server';
+import { Symbol } from '../models/symbol';
+import { HttpServer } from './http-server.service';
 
 const CACHE_SIZE = 1;
 

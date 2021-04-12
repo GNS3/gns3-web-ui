@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-http-console-new-tab-action',

@@ -1,15 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ConsoleComponent } from './console.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
 import { ConsoleService } from '../../../services/settings/console.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
+import { ConsoleComponent } from './console.component';
 
 describe('ConsoleComponent', () => {
   let component: ConsoleComponent;

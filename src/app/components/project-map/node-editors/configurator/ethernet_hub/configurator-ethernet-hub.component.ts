@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
 
 @Component({
   selector: 'app-configurator-ethernet-hub',

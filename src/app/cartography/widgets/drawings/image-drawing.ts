@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-
-import { SVGSelection } from '../../models/types';
 import { ImageElement } from '../../models/drawings/image-element';
-import { DrawingShapeWidget } from './drawing-shape-widget';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { SVGSelection } from '../../models/types';
+import { DrawingShapeWidget } from './drawing-shape-widget';
 
 @Injectable()
 export class ImageDrawingWidget implements DrawingShapeWidget {

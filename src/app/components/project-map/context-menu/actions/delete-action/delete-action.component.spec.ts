@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DeleteActionComponent } from './delete-action.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
-import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { NodeService } from '../../../../../services/node.service';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { MockedDrawingService, MockedNodeService, MockedLinkService } from '../../../project-map.component.spec';
-import { Node } from '../../../../../cartography/models/node';
-import { Drawing } from '../../../../../cartography/models/drawing';
 import { of } from 'rxjs';
+import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
-import { LinkService } from '../../../../../services/link.service';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Drawing } from '../../../../../cartography/models/drawing';
+import { Node } from '../../../../../cartography/models/node';
 import { Link } from '../../../../../models/link';
+import { DrawingService } from '../../../../../services/drawing.service';
+import { LinkService } from '../../../../../services/link.service';
+import { NodeService } from '../../../../../services/node.service';
+import { MockedDrawingService, MockedLinkService, MockedNodeService } from '../../../project-map.component.spec';
+import { DeleteActionComponent } from './delete-action.component';
 
 describe('DeleteActionComponent', () => {
   let component: DeleteActionComponent;

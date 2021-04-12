@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { PlatformService } from './platform.service';
 import { environment } from '../../environments/environment';
+import { PlatformService } from './platform.service';
 
 @Injectable()
 export class ExternalSoftwareDefinitionService {

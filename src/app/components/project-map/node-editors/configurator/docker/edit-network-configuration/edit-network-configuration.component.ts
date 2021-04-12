@@ -1,11 +1,9 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
 import { Server } from '../../../../../../models/server';
 import { NodeService } from '../../../../../../services/node.service';
 import { ToasterService } from '../../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material/dialog';
-import { DockerConfigurationService } from '../../../../../../services/docker-configuration.service';
 
 @Component({
   selector: 'app-edit-network-configuration',

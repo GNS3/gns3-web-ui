@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '../../../../../models/project';
 import { Server } from '../../../../../models/server';
 import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor/config-editor.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-config-action',

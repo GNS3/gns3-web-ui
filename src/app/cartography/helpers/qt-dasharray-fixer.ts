@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Font } from '../models/font';
 
 /**
  * GNS3 GUI performs mapping from QT styles to SVG dasharray, but styles don't match

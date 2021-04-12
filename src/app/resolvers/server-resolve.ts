@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
-import { ServerService } from '../services/server.service';
+import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 import { Server } from '../models/server';
+import { ServerService } from '../services/server.service';
 
 @Injectable()
 export class ServerResolve implements Resolve<Server> {

@@ -1,15 +1,14 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
+import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
+import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
+import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
 import { Server } from '../../../../../models/server';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialogRef } from '@angular/material/dialog';
-import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
-import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
 
 @Component({
   selector: 'app-configurator-cloud',

@@ -1,5 +1,5 @@
-import { SvgConverter } from './svg-converter';
 import { EllipseElement } from '../../models/drawings/ellipse-element';
+import { SvgConverter } from './svg-converter';
 
 export class EllipseConverter implements SvgConverter {
   convert(element: Element): EllipseElement {

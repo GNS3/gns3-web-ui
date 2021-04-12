@@ -1,30 +1,25 @@
+import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
-
-import { DataSource } from '@angular/cdk/collections';
-
-import { map, switchMap } from 'rxjs//operators';
-import { BehaviorSubject, Observable, merge } from 'rxjs';
-
-import { Project } from '../../models/project';
-import { ProjectService } from '../../services/project.service';
-import { Server } from '../../models/server';
-import { ServerService } from '../../services/server.service';
-import { SettingsService, Settings } from '../../services/settings.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ElectronService } from 'ngx-electron';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
+import { map } from 'rxjs//operators';
 import { ProgressService } from '../../common/progress/progress.service';
-
-import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
-import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
-import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
-import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
+import { ProjectService } from '../../services/project.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
-import { ElectronService } from 'ngx-electron';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
+import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
+import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
+import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 
 @Component({
   selector: 'app-projects',

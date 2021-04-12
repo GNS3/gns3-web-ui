@@ -1,15 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ContextMenuComponent } from './context-menu.component';
-import { BrowserModule } from '@angular/platform-browser';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProjectService } from '../../../services/project.service';
-import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { BrowserModule } from '@angular/platform-browser';
+import { ElectronService } from 'ngx-electron';
 import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Server } from '../../../models/server';
-import { ElectronService } from 'ngx-electron';
+import { ProjectService } from '../../../services/project.service';
+import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
+import { ContextMenuComponent } from './context-menu.component';
 
 describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;

@@ -1,98 +1,84 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  ViewEncapsulation,
-  ElementRef,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-
-import { Observable, Subject, Subscription, from } from 'rxjs';
-import { webSocket } from 'rxjs/webSocket';
+import * as Mousetrap from 'mousetrap';
+import { from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-
-import { Project } from '../../models/project';
-import { Node } from '../../cartography/models/node';
-import { Link } from '../../models/link';
-import { ServerService } from '../../services/server.service';
-import { ProjectService } from '../../services/project.service';
-import { Server } from '../../models/server';
-import { Drawing } from '../../cartography/models/drawing';
-import { ContextMenuComponent } from './context-menu/context-menu.component';
-import { ContextConsoleMenuComponent } from './context-console-menu/context-console-menu.component';
-import { Template } from '../../models/template';
-import { NodeService } from '../../services/node.service';
-import { Symbol } from '../../models/symbol';
-import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
-import { LinksDataSource } from '../../cartography/datasources/links-datasource';
-import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
-import { DrawingsDataSource } from '../../cartography/datasources/drawings-datasource';
-import { ProgressService } from '../../common/progress/progress.service';
-import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
-import { NodeContextMenu } from '../../cartography/events/nodes';
-import { NodeWidget } from '../../cartography/widgets/node';
-import { DrawingsWidget } from '../../cartography/widgets/drawings';
-import { DrawingService } from '../../services/drawing.service';
-import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
-import { SettingsService, Settings } from '../../services/settings.service';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
-import { ToolsService } from '../../services/tools.service';
+import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
+import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
+import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
+import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
+import { MapNodeToNodeConverter } from '../../cartography/converters/map/map-node-to-node-converter';
+import { DrawingsDataSource } from '../../cartography/datasources/drawings-datasource';
+import { LinksDataSource } from '../../cartography/datasources/links-datasource';
+import {
+  Indexed,
+  MapDrawingsDataSource,
+  MapLinksDataSource,
+  MapNodesDataSource,
+  MapSymbolsDataSource,
+} from '../../cartography/datasources/map-datasource';
+import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import {
   DrawingContextMenu,
-  LinkContextMenu,
-  LabelContextMenu,
   InterfaceLabelContextMenu,
+  LabelContextMenu,
+  LinkContextMenu,
 } from '../../cartography/events/event-source';
-import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
+import { MovingEventSource } from '../../cartography/events/moving-event-source';
+import { NodeContextMenu } from '../../cartography/events/nodes';
 import { SelectionManager } from '../../cartography/managers/selection-manager';
-import { SelectionTool } from '../../cartography/tools/selection-tool';
+import { Drawing } from '../../cartography/models/drawing';
+import { Label } from '../../cartography/models/label';
 import { MapDrawing } from '../../cartography/models/map/map-drawing';
 import { MapLabel } from '../../cartography/models/map/map-label';
-import { Label } from '../../cartography/models/label';
-import { MapNode } from '../../cartography/models/map/map-node';
-import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { MapLink } from '../../cartography/models/map/map-link';
-import { MapLinkToLinkConverter } from '../../cartography/converters/map/map-link-to-link-converter';
-import { MovingEventSource } from '../../cartography/events/moving-event-source';
-import { log } from 'util';
-import { LinkWidget } from '../../cartography/widgets/link';
-import { MapScaleService } from '../../services/mapScale.service';
-import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { MapNode } from '../../cartography/models/map/map-node';
+import { Node } from '../../cartography/models/node';
+import { MapChangeDetectorRef } from '../../cartography/services/map-change-detector-ref';
+import { SelectionTool } from '../../cartography/tools/selection-tool';
+import { DrawingsWidget } from '../../cartography/widgets/drawings';
 import { InterfaceLabelWidget } from '../../cartography/widgets/interface-label';
 import { LabelWidget } from '../../cartography/widgets/label';
-import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
-import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
-import { ToasterService } from '../../services/toaster.service';
-import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { mixinColor } from '@angular/material/core';
-import { MatDialog } from '@angular/material/dialog';
-import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
-import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
-import {
-  MapNodesDataSource,
-  MapLinksDataSource,
-  MapDrawingsDataSource,
-  MapSymbolsDataSource,
-  Indexed,
-} from '../../cartography/datasources/map-datasource';
-import { MapSettingsService } from '../../services/mapsettings.service';
-import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
+import { LinkWidget } from '../../cartography/widgets/link';
 import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-link';
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
-import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
-import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
-import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
-import { NotificationService } from '../../services/notification.service';
-import { ThemeService } from '../../services/theme.service';
-import { Title } from '@angular/platform-browser';
-import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
+import { NodeWidget } from '../../cartography/widgets/node';
+import { ProgressService } from '../../common/progress/progress.service';
+import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
+import { Link } from '../../models/link';
+import { Project } from '../../models/project';
+import { Server } from '../../models/server';
+import { Symbol } from '../../models/symbol';
+import { DrawingService } from '../../services/drawing.service';
+import { MapScaleService } from '../../services/mapScale.service';
+import { MapSettingsService } from '../../services/mapsettings.service';
+import { NodeService } from '../../services/node.service';
 import { NodeConsoleService } from '../../services/nodeConsole.service';
-import * as Mousetrap from 'mousetrap';
+import { NotificationService } from '../../services/notification.service';
+import { ProjectService } from '../../services/project.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { ServerService } from '../../services/server.service';
+import { Settings, SettingsService } from '../../services/settings.service';
 import { SymbolService } from '../../services/symbol.service';
+import { ThemeService } from '../../services/theme.service';
+import { ToasterService } from '../../services/toaster.service';
+import { ToolsService } from '../../services/tools.service';
+import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
+import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
+import { ImportProjectDialogComponent } from '../projects/import-project-dialog/import-project-dialog.component';
+import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
+import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
+import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
+import { ContextConsoleMenuComponent } from './context-console-menu/context-console-menu.component';
+import { ContextMenuComponent } from './context-menu/context-menu.component';
+import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
+import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
+import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 
 @Component({
   selector: 'app-project-map',

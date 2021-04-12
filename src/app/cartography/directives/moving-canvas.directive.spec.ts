@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed, async, tick, fakeAsync } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Context } from '../models/context';
-import { MovingEventSource } from '../events/moving-event-source';
-import { MovingCanvasDirective } from './moving-canvas.directive';
 import { Component } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MovingEventSource } from '../events/moving-event-source';
+import { Context } from '../models/context';
+import { MovingCanvasDirective } from './moving-canvas.directive';
 
 @Component({
   template: `<svg #svg class="map" preserveAspectRatio="none" movingCanvas>

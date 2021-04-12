@@ -1,5 +1,5 @@
-import { SvgToDrawingConverter } from './svg-to-drawing-converter';
 import { TextElement } from '../models/drawings/text-element';
+import { SvgToDrawingConverter } from './svg-to-drawing-converter';
 
 describe('SvgToDrawingHelper', () => {
   let svgToDrawingConverter: SvgToDrawingConverter;

@@ -1,6 +1,5 @@
-import { ServersPage } from './helpers/server.po';
 import { TestHelper } from './helpers/common.po';
-import { element } from 'protractor';
+import { ServersPage } from './helpers/server.po';
 
 describe('Servers page', () => {
   let page: ServersPage;

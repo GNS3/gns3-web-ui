@@ -1,5 +1,5 @@
-import { SymbolsDataSource } from './symbols-datasource';
 import { Symbol } from '../../models/symbol';
+import { SymbolsDataSource } from './symbols-datasource';
 
 describe('SymbolsDataSource', () => {
   let dataSource: SymbolsDataSource;

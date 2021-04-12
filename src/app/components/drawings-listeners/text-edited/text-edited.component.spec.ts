@@ -1,13 +1,13 @@
-import { TextEditedComponent } from './text-edited.component';
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { DrawingService } from '../../../services/drawing.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
+import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
-import { Observable } from 'rxjs';
 import { TextEditedDataEvent } from '../../../cartography/events/event-source';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
-import { MockedDrawingService, MockedDrawingsDataSource } from '../../project-map/project-map.component.spec';
+import { DrawingService } from '../../../services/drawing.service';
+import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
+import { TextEditedComponent } from './text-edited.component';
 
 describe('TextEditedComponent', () => {
   let component: TextEditedComponent;

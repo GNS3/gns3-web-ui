@@ -1,20 +1,20 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Server } from '../../../../../models/server';
+import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
 import { MockedServerService } from '../../../../../services/server.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
-import { ServerService } from '../../../../../services/server.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { EthernetHubsTemplatesComponent } from './ethernet-hubs-templates.component';
 
 export class MockedBuiltInTemplatesService {

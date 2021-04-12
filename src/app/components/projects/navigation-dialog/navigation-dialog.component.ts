@@ -1,6 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ThemeService } from '../../../services/theme.service';
 
 @Component({

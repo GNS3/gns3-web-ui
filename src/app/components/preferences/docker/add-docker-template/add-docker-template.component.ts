@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Server } from '../../../../models/server';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { DockerTemplate } from '../../../../models/templates/docker-template';
-import { DockerService } from '../../../../services/docker.service';
-import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
-import { DockerImage } from '../../../../models/docker/docker-image';
-import { ComputeService } from '../../../../services/compute.service';
 import { Compute } from '../../../../models/compute';
+import { DockerImage } from '../../../../models/docker/docker-image';
+import { Server } from '../../../../models/server';
+import { DockerTemplate } from '../../../../models/templates/docker-template';
+import { ComputeService } from '../../../../services/compute.service';
+import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
+import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-add-docker-template',

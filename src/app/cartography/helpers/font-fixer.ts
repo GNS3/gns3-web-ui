@@ -1,5 +1,5 @@
-import * as csstree from 'css-tree';
 import { Injectable } from '@angular/core';
+import * as csstree from 'css-tree';
 import { Font } from '../models/font';
 
 /**

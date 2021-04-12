@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Server } from '../../../../models/server';
+import { Component, Input, OnInit } from '@angular/core';
 import { PortsMappingEntity } from '../../../../models/ethernetHub/ports-mapping-enity';
 import { BuiltInTemplatesConfigurationService } from '../../../../services/built-in-templates-configuration.service';
 

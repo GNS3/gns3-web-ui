@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/change-symbol-dialog.component';
 
 @Component({

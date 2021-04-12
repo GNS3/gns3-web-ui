@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectionManager } from '../../managers/selection-manager';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';

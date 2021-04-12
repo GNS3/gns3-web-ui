@@ -1,13 +1,12 @@
-import { TestBed, inject } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs/Rx';
 import { Server } from '../models/server';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
 import { getTestServer } from './testing';
 import { VersionService } from './version.service';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { Observable } from 'rxjs/Rx';
 
 export class MockedVersionService {
   public response: Observable<any>;

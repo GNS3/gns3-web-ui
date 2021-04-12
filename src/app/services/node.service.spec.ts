@@ -1,16 +1,15 @@
-import { TestBed, inject } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
-import { Node } from '../cartography/models/node';
-import { getTestServer } from './testing';
-import { NodeService } from './node.service';
-import { Template } from '../models/template';
-import { Project } from '../models/project';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Label } from '../cartography/models/label';
+import { Node } from '../cartography/models/node';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
+import { Template } from '../models/template';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { NodeService } from './node.service';
+import { getTestServer } from './testing';
 
 describe('NodeService', () => {
   let httpClient: HttpClient;

@@ -1,16 +1,15 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { SerialLinkWidget } from './links/serial-link';
-import { EthernetLinkWidget } from './links/ethernet-link';
-import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
-import { InterfaceLabelWidget } from './interface-label';
-import { InterfaceStatusWidget } from './interface-status';
-import { MapLink } from '../models/map/map-link';
-import { SelectionManager } from '../managers/selection-manager';
+import { EventEmitter, Injectable } from '@angular/core';
 import { event } from 'd3-selection';
 import { LinkContextMenu } from '../events/event-source';
+import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
+import { SelectionManager } from '../managers/selection-manager';
+import { MapLink } from '../models/map/map-link';
+import { SVGSelection } from '../models/types';
+import { InterfaceLabelWidget } from './interface-label';
+import { InterfaceStatusWidget } from './interface-status';
+import { EthernetLinkWidget } from './links/ethernet-link';
+import { SerialLinkWidget } from './links/serial-link';
+import { Widget } from './widget';
 
 @Injectable()
 export class LinkWidget implements Widget {

@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Link } from '../../../../../models/link';
 import { MatDialog } from '@angular/material/dialog';
-import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
+import { Link } from '../../../../../models/link';
 import { Project } from '../../../../../models/project';
+import { Server } from '../../../../../models/server';
+import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({
   selector: 'app-start-capture-action',

@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { InstalledSoftwareService } from '../../services/installed-software.service';
 import { DataSource } from '@angular/cdk/table';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { InstalledSoftwareService } from '../../services/installed-software.service';
 
 @Component({
   selector: 'app-installed-software',

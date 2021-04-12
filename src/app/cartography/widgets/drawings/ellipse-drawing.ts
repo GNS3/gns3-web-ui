@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-
-import { SVGSelection } from '../../models/types';
-import { EllipseElement } from '../../models/drawings/ellipse-element';
-import { DrawingShapeWidget } from './drawing-shape-widget';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { SVGSelection } from '../../models/types';
+import { DrawingShapeWidget } from './drawing-shape-widget';
 
 @Injectable()
 export class EllipseDrawingWidget implements DrawingShapeWidget {

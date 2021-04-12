@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Link } from '../../../../../models/link';
-import { Server } from '../../../../../models/server';
-import { Project } from '../../../../../models/project';
 import { MatDialog } from '@angular/material/dialog';
+import { Link } from '../../../../../models/link';
+import { Project } from '../../../../../models/project';
+import { Server } from '../../../../../models/server';
 import { PacketFiltersDialogComponent } from '../../../packet-capturing/packet-filters/packet-filters.component';
 
 @Component({

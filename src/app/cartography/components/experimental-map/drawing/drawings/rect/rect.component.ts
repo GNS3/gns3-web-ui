@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { RectElement } from '../../../../../models/drawings/rect-element';
+import { Component, Input, OnInit } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
+import { RectElement } from '../../../../../models/drawings/rect-element';
 
 @Component({
   selector: '[app-rect]',

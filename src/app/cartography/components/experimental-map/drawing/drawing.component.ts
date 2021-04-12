@@ -1,13 +1,13 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { DrawingsEventSource } from '../../../events/drawings-event-source';
+import { DraggedDataEvent } from '../../../events/event-source';
+import { SvgToDrawingConverter } from '../../../helpers/svg-to-drawing-converter';
 import { EllipseElement } from '../../../models/drawings/ellipse-element';
 import { ImageElement } from '../../../models/drawings/image-element';
 import { LineElement } from '../../../models/drawings/line-element';
 import { RectElement } from '../../../models/drawings/rect-element';
 import { TextElement } from '../../../models/drawings/text-element';
-import { SvgToDrawingConverter } from '../../../helpers/svg-to-drawing-converter';
-import { DraggedDataEvent } from '../../../events/event-source';
 import { MapDrawing } from '../../../models/map/map-drawing';
-import { DrawingsEventSource } from '../../../events/drawings-event-source';
 
 @Component({
   selector: '[app-drawing]',

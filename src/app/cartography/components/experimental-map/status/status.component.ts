@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
 
 @Component({
   selector: '[app-status]',

@@ -1,18 +1,18 @@
-import { Component, Inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable, merge, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server, ServerProtocol } from '../../models/server';
-import { ServerService } from '../../services/server.service';
-import { ServerDatabase } from '../../services/server.database';
-import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
-import { ServerManagementService } from '../../services/server-management.service';
-import { ElectronService } from 'ngx-electron';
 import { ChildProcessService } from 'ngx-childprocess';
+import { ElectronService } from 'ngx-electron';
+import { merge, Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Server, ServerProtocol } from '../../models/server';
+import { ServerManagementService } from '../../services/server-management.service';
+import { ServerDatabase } from '../../services/server.database';
+import { ServerService } from '../../services/server.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
 
 @Component({
   selector: 'app-server-list',

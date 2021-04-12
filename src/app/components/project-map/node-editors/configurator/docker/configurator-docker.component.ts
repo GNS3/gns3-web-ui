@@ -1,13 +1,13 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
-import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
 import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
+import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
 
 @Component({
   selector: 'app-configurator-docker',

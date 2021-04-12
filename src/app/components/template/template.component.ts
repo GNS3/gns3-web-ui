@@ -1,14 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { TemplateListDialogComponent, NodeAddedEvent } from './template-list-dialog/template-list-dialog.component';
-
+import { Subscription } from 'rxjs';
+import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { Template } from '../../models/template';
-import { Project } from '../../models/project';
-import { TemplateService } from '../../services/template.service';
 import { MapScaleService } from '../../services/mapScale.service';
 import { SymbolService } from '../../services/symbol.service';
-import { Subscription } from 'rxjs';
+import { TemplateService } from '../../services/template.service';
+import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 
 @Component({
   selector: 'app-template',

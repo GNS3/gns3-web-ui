@@ -1,6 +1,6 @@
 import { path } from 'd3-path';
-import { LinkStrategy } from './link-strategy';
 import { MapLink } from '../../../../models/map/map-link';
+import { LinkStrategy } from './link-strategy';
 
 export class SerialLinkStrategy implements LinkStrategy {
   private linkToPoints(link: MapLink) {

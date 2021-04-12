@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DrawLinkToolComponent } from './draw-link-tool.component';
 
 describe('DrawLinkToolComponent', () => {

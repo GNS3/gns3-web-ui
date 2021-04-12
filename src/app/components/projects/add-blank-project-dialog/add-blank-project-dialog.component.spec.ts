@@ -1,18 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
-import { Server } from '../../../models/server';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ProjectService } from '../../../services/project.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Router } from '@angular/router';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
-import { Router } from '@angular/router';
-import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
+import { ToasterService } from '../../../services/toaster.service';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
 
 export class MockedProjectService {
   public projects: Project[] = [

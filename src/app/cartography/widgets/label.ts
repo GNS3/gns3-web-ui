@@ -1,17 +1,15 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
+import { EventEmitter, Injectable } from '@angular/core';
+import { select } from 'd3-selection';
+import { Draggable } from '../events/draggable';
+import { LabelContextMenu } from '../events/event-source';
 import { CssFixer } from '../helpers/css-fixer';
 import { FontFixer } from '../helpers/font-fixer';
-import { select } from 'd3-selection';
-import { MapNode } from '../models/map/map-node';
-import { SelectionManager } from '../managers/selection-manager';
-import { Draggable } from '../events/draggable';
-import { MapLabel } from '../models/map/map-label';
 import { MapSettingsManager } from '../managers/map-settings-manager';
-import { LabelContextMenu } from '../events/event-source';
-import { TextElement } from '../models/drawings/text-element';
+import { SelectionManager } from '../managers/selection-manager';
+import { MapLabel } from '../models/map/map-label';
+import { MapNode } from '../models/map/map-node';
+import { SVGSelection } from '../models/types';
+import { Widget } from './widget';
 
 @Injectable()
 export class LabelWidget implements Widget {

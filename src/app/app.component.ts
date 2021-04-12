@@ -1,12 +1,12 @@
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
+import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from './services/settings.service';
 import { ThemeService } from './services/theme.service';
-import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
-import { ProgressService } from './common/progress/progress.service';
-import { OverlayContainer } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-root',

@@ -1,8 +1,6 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { ToasterService } from './toaster.service';
-import { NgZone } from '@angular/core';
 
 export class MockedToasterService {
   public errors: string[];

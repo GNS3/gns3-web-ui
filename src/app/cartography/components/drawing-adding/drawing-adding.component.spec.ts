@@ -1,8 +1,8 @@
-import { DrawingAddingComponent } from './drawing-adding.component';
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { Context } from '../../models/context';
+import { DrawingAddingComponent } from './drawing-adding.component';
 
 describe('DrawingAddingComponent', () => {
   let component: DrawingAddingComponent;

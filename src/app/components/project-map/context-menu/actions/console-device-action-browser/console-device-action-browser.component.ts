@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { NodeService } from '../../../../../services/node.service';
 import { Server } from '../../../../../models/server';
+import { NodeService } from '../../../../../services/node.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
   selector: 'app-console-device-action-browser',

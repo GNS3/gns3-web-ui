@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
+import { Component, Input, OnInit } from '@angular/core';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { NodeService } from '../../../../../services/node.service';
 
 @Component({

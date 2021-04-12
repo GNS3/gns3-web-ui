@@ -1,25 +1,24 @@
+import { CommonModule } from '@angular/common';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BringToFrontActionComponent } from './bring-to-front-action.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Drawing } from '../../../../../cartography/models/drawing';
+import { Node } from '../../../../../cartography/models/node';
+import { DrawingService } from '../../../../../services/drawing.service';
+import { NodeService } from '../../../../../services/node.service';
 import {
-  MockedDrawingService,
   MockedDrawingsDataSource,
+  MockedDrawingService,
   MockedNodesDataSource,
   MockedNodeService,
 } from '../../../project-map.component.spec';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
-import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { NodeService } from '../../../../../services/node.service';
-import { Node } from '../../../../../cartography/models/node';
-import { of } from 'rxjs';
-import { ComponentFactoryResolver } from '@angular/core';
-import { Drawing } from '../../../../../cartography/models/drawing';
+import { BringToFrontActionComponent } from './bring-to-front-action.component';
 
 describe('BringToFrontActionComponent', () => {
   let component: BringToFrontActionComponent;

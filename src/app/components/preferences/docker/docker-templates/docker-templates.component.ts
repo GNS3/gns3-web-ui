@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Server } from '../../../../models/server';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
+import { Server } from '../../../../models/server';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
   selector: 'app-docker-templates',

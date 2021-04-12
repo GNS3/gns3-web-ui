@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Project } from '../models/project';
-import { Node } from '../cartography/models/node';
 import { Observable } from 'rxjs';
-
 import 'rxjs/add/operator/map';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
-import { Template } from '../models/template';
 import { Label } from '../cartography/models/label';
+import { Node } from '../cartography/models/node';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
+import { Template } from '../models/template';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class NodeService {

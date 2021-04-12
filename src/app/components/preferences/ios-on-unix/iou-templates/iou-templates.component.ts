@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Server } from '../../../../models/server';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
+import { Server } from '../../../../models/server';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
+import { ServerService } from '../../../../services/server.service';
+import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
   selector: 'app-iou-templates',

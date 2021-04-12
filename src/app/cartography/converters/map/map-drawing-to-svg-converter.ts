@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-
-import { Converter } from '../converter';
-import { MapDrawing } from '../../models/map/map-drawing';
-import { RectElement } from '../../models/drawings/rect-element';
 import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { LineElement } from '../../models/drawings/line-element';
+import { RectElement } from '../../models/drawings/rect-element';
 import { TextElement } from '../../models/drawings/text-element';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { Converter } from '../converter';
 
 @Injectable()
 export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {

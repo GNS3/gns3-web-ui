@@ -1,16 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-
-import { Observable } from 'rxjs/Rx';
-import { map } from 'rxjs//operators';
-
-import { Server, ServerProtocol } from '../../../models/server';
-import { VersionService } from '../../../services/version.service';
-import { Version } from '../../../models/version';
-import { forkJoin } from 'rxjs';
-import { ServerService } from '../../../services/server.service';
-import { ServerDatabase } from '../../../services/server.database';
-import { from } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin, from } from 'rxjs';
+import { map } from 'rxjs//operators';
+import { Observable } from 'rxjs/Rx';
+import { Server, ServerProtocol } from '../../../models/server';
+import { Version } from '../../../models/version';
+import { ServerDatabase } from '../../../services/server.database';
+import { ServerService } from '../../../services/server.service';
+import { VersionService } from '../../../services/version.service';
 
 @Component({
   selector: 'app-server-discovery',

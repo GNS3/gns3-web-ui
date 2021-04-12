@@ -1,5 +1,6 @@
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ListOfSnapshotsComponent } from './list-of-snapshots.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,23 +8,20 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { SnapshotService } from '../../../services/snapshot.service';
-import { DateFilter } from '../../../filters/dateFilter.pipe';
-import { of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../services/server.service';
-import { MockedServerService } from '../../../services/server.service.spec';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { DateFilter } from '../../../filters/dateFilter.pipe';
+import { NameFilter } from '../../../filters/nameFilter.pipe';
 import { Server } from '../../../models/server';
 import { Snapshot } from '../../../models/snapshot';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { NameFilter } from '../../../filters/nameFilter.pipe';
 import { ServerResolve } from '../../../resolvers/server-resolve';
+import { SnapshotService } from '../../../services/snapshot.service';
+import { ToasterService } from '../../../services/toaster.service';
+import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { ListOfSnapshotsComponent } from './list-of-snapshots.component';
 
 export class MockedActivatedRoute {
   get() {

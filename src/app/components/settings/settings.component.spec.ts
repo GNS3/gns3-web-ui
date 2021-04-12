@@ -1,22 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { PersistenceModule } from 'angular-persistence';
-
-import { SettingsComponent } from './settings.component';
+import { MapSettingsService } from '../../services/mapsettings.service';
 import { SettingsService } from '../../services/settings.service';
+import { ConsoleService } from '../../services/settings/console.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
-import { ConsoleService } from '../../services/settings/console.service';
-import { MapSettingsService } from '../../services/mapsettings.service';
 import { UpdatesService } from '../../services/updates.service';
 import { autoSpy } from '../project-map/console-wrapper/console-wrapper.component.spec';
+import { SettingsComponent } from './settings.component';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;

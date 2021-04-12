@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentFactory,
+  ComponentFactoryResolver,
   ComponentRef,
   Input,
   OnInit,
@@ -10,17 +11,16 @@ import {
 } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
+import { Node } from '../../../cartography/models/node';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ToasterService } from '../../../services/toaster.service';
-import { Router } from '@angular/router';
-import { ComponentFactoryResolver } from '@angular/core';
-import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
+import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
 
 @Component({
   selector: 'app-context-console-menu',

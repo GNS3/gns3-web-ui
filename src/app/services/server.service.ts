@@ -1,8 +1,8 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { IndexedDbService } from './indexed-db.service';
-import { Server, ServerProtocol } from '../models/server';
+import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { Server, ServerProtocol } from '../models/server';
 import { HttpServer } from './http-server.service';
+import { IndexedDbService } from './indexed-db.service';
 
 @Injectable()
 export class ServerService {

@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-
-import { SVGSelection } from '../../models/types';
-import { LineElement } from '../../models/drawings/line-element';
-import { DrawingShapeWidget } from './drawing-shape-widget';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { LineElement } from '../../models/drawings/line-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { SVGSelection } from '../../models/types';
+import { DrawingShapeWidget } from './drawing-shape-widget';
 
 @Injectable()
 export class LineDrawingWidget implements DrawingShapeWidget {

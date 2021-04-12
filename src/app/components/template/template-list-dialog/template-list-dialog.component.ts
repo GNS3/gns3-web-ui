@@ -1,14 +1,14 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataSource } from '@angular/cdk/collections';
-import { Observable, BehaviorSubject, fromEvent, merge } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { Server } from '../../../models/server';
-import { TemplateService } from '../../../services/template.service';
-import { Template } from '../../../models/template';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { Template } from '../../../models/template';
+import { TemplateService } from '../../../services/template.service';
+import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 
 @Component({

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Drawing } from '../cartography/models/drawing';
 import { Observable } from 'rxjs';
-
 import 'rxjs/add/operator/map';
+import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
+import { Drawing } from '../cartography/models/drawing';
+import { Project } from '../models/project';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
-import { Project } from '../models/project';
-import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 
 @Injectable()
 export class DrawingService {

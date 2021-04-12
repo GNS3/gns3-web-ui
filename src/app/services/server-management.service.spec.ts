@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-
-import { ServerManagementService } from './server-management.service';
 import { ElectronService } from 'ngx-electron';
 import { Server } from '../models/server';
+import { ServerManagementService } from './server-management.service';
 
 describe('ServerManagementService', () => {
   let electronService;

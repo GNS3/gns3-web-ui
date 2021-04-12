@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
 import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosService } from '../../../../services/ios.service';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
+import { IosService } from '../../../../services/ios.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-ios-template-details',

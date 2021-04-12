@@ -1,9 +1,9 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
-import { Node } from '../../../../../cartography/models/node';
-import { NodeService } from '../../../../../services/node.service';
-import { Server } from '../../../../../models/server';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
+import { NodeService } from '../../../../../services/node.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({

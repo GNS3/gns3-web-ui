@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Context } from '../../models/context';
+import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
-import { Subscription } from 'rxjs';
+import { Context } from '../../models/context';
 
 @Component({
   selector: 'app-drawing-adding',

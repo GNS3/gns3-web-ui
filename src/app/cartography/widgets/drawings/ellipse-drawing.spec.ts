@@ -1,7 +1,7 @@
-import { TestSVGCanvas } from '../../testing';
-import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { TestSVGCanvas } from '../../testing';
 import { EllipseDrawingWidget } from './ellipse-drawing';
 
 describe('EllipseDrawingWidget', () => {

@@ -1,14 +1,14 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-
-import { AppComponent } from './app.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
-import { SettingsService } from './services/settings.service';
+import { RouterTestingModule } from '@angular/router/testing';
 import { PersistenceService } from 'angular-persistence';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
-import createSpyObj = jasmine.createSpyObj;
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { AppComponent } from './app.component';
 import { ProgressService } from './common/progress/progress.service';
+import { SettingsService } from './services/settings.service';
+
+import createSpyObj = jasmine.createSpyObj;
 // import 'jasmine';
 
 describe('AppComponent', () => {

@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { Server } from '../../../../models/server';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { QemuService } from '../../../../services/qemu.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { v4 as uuid } from 'uuid';
+import { Compute } from '../../../../models/compute';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../models/qemu/qemu-image';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Server } from '../../../../models/server';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { v4 as uuid } from 'uuid';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { ComputeService } from '../../../../services/compute.service';
-import { Compute } from '../../../../models/compute';
-import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
+import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
+import { QemuService } from '../../../../services/qemu.service';
+import { ServerService } from '../../../../services/server.service';
+import { TemplateMocksService } from '../../../../services/template-mocks.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-add-qemu-virtual-machine-template',

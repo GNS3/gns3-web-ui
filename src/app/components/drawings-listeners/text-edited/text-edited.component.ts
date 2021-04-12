@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { TextEditedDataEvent } from '../../../cartography/events/event-source';
-import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { TextElement } from '../../../cartography/models/drawings/text-element';
-import { Drawing } from '../../../cartography/models/drawing';
-import { Server } from '../../../models/server';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { DrawingService } from '../../../services/drawing.service';
+import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
+import { TextEditedDataEvent } from '../../../cartography/events/event-source';
+import { Drawing } from '../../../cartography/models/drawing';
+import { TextElement } from '../../../cartography/models/drawings/text-element';
+import { MapDrawing } from '../../../cartography/models/map/map-drawing';
+import { Server } from '../../../models/server';
+import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
   selector: 'app-text-edited',

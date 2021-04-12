@@ -1,11 +1,11 @@
-import { TestBed, inject } from '@angular/core/testing';
-import { ServerSettingsService } from './server-settings.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { Server } from '../models/server';
 import { QemuSettings } from '../models/settings/qemu-settings';
-import { HttpServer } from './http-server.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { of } from 'rxjs';
+import { HttpServer } from './http-server.service';
+import { ServerSettingsService } from './server-settings.service';
 
 export class MockedServerSettingsService {
   getSettingsForQemu(server: Server) {

@@ -1,12 +1,8 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ErrorHandler, Injectable, Injector, Inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-
-import { environment } from '../../../environments/environment';
-import { AppComponent } from '../../app.component';
-
+import { ErrorHandler, Inject, Injectable, Injector } from '@angular/core';
 import * as Sentry from '@sentry/browser';
 import { BrowserOptions, init } from '@sentry/browser';
+import { environment } from '../../../environments/environment';
 
 const config = {
   dsn: 'https://d8be3a98530f49eb90968ff396db326c@o19455.ingest.sentry.io/842726',

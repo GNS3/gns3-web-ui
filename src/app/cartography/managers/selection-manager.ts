@@ -1,5 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
+import { EventEmitter, Injectable } from '@angular/core';
 import { Indexed } from '../datasources/map-datasource';
 
 @Injectable()

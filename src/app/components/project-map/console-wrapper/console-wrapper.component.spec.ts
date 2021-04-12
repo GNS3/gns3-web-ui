@@ -1,7 +1,7 @@
-import { ConsoleWrapperComponent } from './console-wrapper.component';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { ConsoleWrapperComponent } from './console-wrapper.component';
 
 describe('ConsoleWrapperComponent', () => {
   it('should get actual theme', () => {

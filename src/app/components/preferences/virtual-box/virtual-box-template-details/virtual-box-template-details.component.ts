@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { Server } from '../../../../models/server';
+import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
+import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({

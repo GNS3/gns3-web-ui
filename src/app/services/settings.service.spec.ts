@@ -1,6 +1,5 @@
-import { TestBed, inject, fakeAsync } from '@angular/core/testing';
+import { fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { PersistenceService, StorageType } from 'angular-persistence';
-
 import { Settings, SettingsService } from './settings.service';
 
 export class MockedSettingsService {

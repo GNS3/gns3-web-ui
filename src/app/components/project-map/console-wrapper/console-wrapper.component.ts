@@ -1,13 +1,12 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ResizeEvent } from 'angular-resizable-element';
+import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
-import { ResizeEvent } from 'angular-resizable-element';
-import { ThemeService } from '../../../services/theme.service';
-import { FormControl } from '@angular/forms';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { Node } from '../../../cartography/models/node';
 import { MapSettingsService } from '../../../services/mapsettings.service';
+import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-console-wrapper',

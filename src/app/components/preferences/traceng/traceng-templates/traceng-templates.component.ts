@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Server } from '../../../../models/server';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
+import { Server } from '../../../../models/server';
 import { TracengTemplate } from '../../../../models/templates/traceng-template';
+import { ServerService } from '../../../../services/server.service';
 import { TracengService } from '../../../../services/traceng.service';
+import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
   selector: 'app-traceng-templates',

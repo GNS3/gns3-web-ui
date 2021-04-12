@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ServerService } from '../../../../../services/server.service';
 import { Server } from '../../../../../models/server';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
   selector: 'app-ethernet-hubs-template-details',

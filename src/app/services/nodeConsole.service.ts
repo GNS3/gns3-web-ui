@@ -1,6 +1,6 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { Node } from '../cartography/models/node';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { Node } from '../cartography/models/node';
 
 @Injectable()
 export class NodeConsoleService {

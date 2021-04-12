@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
-import { Server } from '../../../../models/server';
-import { ToasterService } from '../../../../services/toaster.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { Server } from '../../../../models/server';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
-import { DockerService } from '../../../../services/docker.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { DockerService } from '../../../../services/docker.service';
+import { ServerService } from '../../../../services/server.service';
+import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
   selector: 'app-docker-template-details',

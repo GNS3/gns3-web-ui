@@ -1,34 +1,31 @@
 import {
-  Component,
-  OnInit,
   AfterViewInit,
-  OnDestroy,
-  Input,
-  ViewChild,
-  ElementRef,
-  Output,
-  EventEmitter,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { ProjectWebServiceHandler } from '../../../handlers/project-web-service-handler';
-import { NodeService } from '../../../services/node.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { Drawing } from '../../../cartography/models/drawing';
+import { Node } from '../../../cartography/models/node';
+import { ProjectWebServiceHandler } from '../../../handlers/project-web-service-handler';
+import { Link } from '../../../models/link';
+import { LogEvent } from '../../../models/logEvent';
+import { Port } from '../../../models/port';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
-import { Drawing } from '../../../cartography/models/drawing';
-import { Link } from '../../../models/link';
-import { Node } from '../../../cartography/models/node';
-import { Port } from '../../../models/port';
-import { LogEventsDataSource } from './log-events-datasource';
 import { HttpServer } from '../../../services/http-server.service';
-import { LogEvent } from '../../../models/logEvent';
-import { ResizeEvent } from 'angular-resizable-element';
-import { ThemeService } from '../../../services/theme.service';
-import { FormControl } from '@angular/forms';
-import { version } from '../../../version';
+import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { ThemeService } from '../../../services/theme.service';
+import { version } from '../../../version';
+import { LogEventsDataSource } from './log-events-datasource';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

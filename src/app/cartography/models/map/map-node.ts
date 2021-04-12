@@ -1,6 +1,6 @@
+import { Indexed } from '../../datasources/map-datasource';
 import { MapLabel } from './map-label';
 import { MapPort } from './map-port';
-import { Indexed } from '../../datasources/map-datasource';
 
 export class MapNode implements Indexed {
   id: string;

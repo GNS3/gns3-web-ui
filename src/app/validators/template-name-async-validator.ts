@@ -1,8 +1,8 @@
-import { TemplateService } from '../services/template.service';
 import { FormControl } from '@angular/forms';
 import { timer } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Server } from '../models/server';
+import { TemplateService } from '../services/template.service';
 
 export const templateNameAsyncValidator = (server: Server, templateService: TemplateService) => {
   return (control: FormControl) => {

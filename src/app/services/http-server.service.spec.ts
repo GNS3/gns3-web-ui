@@ -1,11 +1,10 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer, ServerError, ServerErrorHandler } from './http-server.service';
 import { getTestServer } from './testing';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 
 class MyType {
   id: number;

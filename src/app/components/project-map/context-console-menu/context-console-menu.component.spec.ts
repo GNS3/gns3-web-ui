@@ -1,21 +1,21 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProjectService } from '../../../services/project.service';
-import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { Server } from '../../../models/server';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserModule } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
-import { ContextConsoleMenuComponent } from './context-console-menu.component';
+import { Node } from '../../../cartography/models/node';
+import { Server } from '../../../models/server';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { ProjectService } from '../../../services/project.service';
 import { ConsoleService } from '../../../services/settings/console.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { Router } from '@angular/router';
-import { Node } from '../../../cartography/models/node';
-import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
+import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
+import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
+import { ContextConsoleMenuComponent } from './context-console-menu.component';
 
 describe('ContextConsoleMenuComponent', () => {
   let component: ContextConsoleMenuComponent;

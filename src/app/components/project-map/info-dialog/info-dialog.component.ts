@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../cartography/models/node';
-import { InfoService } from '../../../services/info.service';
 import { Server } from '../../../models/server';
+import { InfoService } from '../../../services/info.service';
 
 @Component({
   selector: 'app-info-dialog',

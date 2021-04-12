@@ -1,19 +1,19 @@
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { NodesMenuComponent } from './nodes-menu.component';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { NodeService } from '../../../services/node.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { ElectronService } from 'ngx-electron';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { NodeService } from '../../../services/node.service';
 import { ServerService } from '../../../services/server.service';
 import { SettingsService } from '../../../services/settings.service';
-import { ElectronService } from 'ngx-electron';
+import { ToasterService } from '../../../services/toaster.service';
+import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
+import { NodesMenuComponent } from './nodes-menu.component';
 
 xdescribe('NodesMenuComponent', () => {
   let component: NodesMenuComponent;

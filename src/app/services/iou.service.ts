@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
 import { Observable } from 'rxjs';
-import { IouTemplate } from '../models/templates/iou-template';
 import { IouImage } from '../models/iou/iou-image';
+import { Server } from '../models/server';
+import { IouTemplate } from '../models/templates/iou-template';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class IouService {

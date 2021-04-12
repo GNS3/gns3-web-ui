@@ -1,9 +1,9 @@
-import { path } from 'd3-path';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Widget } from '../widget';
-import { SVGSelection } from '../../models/types';
-import { MapLink } from '../../models/map/map-link';
+import { path } from 'd3-path';
 import { LinkContextMenu } from '../../events/event-source';
+import { MapLink } from '../../models/map/map-link';
+import { SVGSelection } from '../../models/types';
+import { Widget } from '../widget';
 
 class EthernetLinkPath {
   constructor(public source: [number, number], public target: [number, number]) {}

@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Link } from '../../../../models/link';
-import { Server } from '../../../../models/server';
-import { Project } from '../../../../models/project';
-import { MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { LinkService } from '../../../../services/link.service';
-import { FilterDescription } from '../../../../models/filter-description';
-import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
-import { Message } from '../../../../models/message';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Filter } from '../../../../models/filter';
+import { FilterDescription } from '../../../../models/filter-description';
+import { Link } from '../../../../models/link';
+import { Message } from '../../../../models/message';
+import { Project } from '../../../../models/project';
+import { Server } from '../../../../models/server';
+import { LinkService } from '../../../../services/link.service';
+import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
 @Component({
   selector: 'app-packet-filters',

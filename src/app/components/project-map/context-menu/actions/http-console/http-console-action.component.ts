@@ -1,9 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { MapSettingsService } from '../../../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../../../services/nodeConsole.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MapSettingsService } from '../../../../../services/mapsettings.service';
 
 @Component({
   selector: 'app-http-console-action',

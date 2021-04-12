@@ -1,10 +1,9 @@
+import { EventEmitter, Injectable } from '@angular/core';
 import { path } from 'd3-path';
-
-import { Widget } from '../widget';
-import { SVGSelection } from '../../models/types';
-import { MapLink } from '../../models/map/map-link';
-import { Injectable, EventEmitter } from '@angular/core';
 import { LinkContextMenu } from '../../events/event-source';
+import { MapLink } from '../../models/map/map-link';
+import { SVGSelection } from '../../models/types';
+import { Widget } from '../widget';
 
 class SerialLinkPath {
   constructor(

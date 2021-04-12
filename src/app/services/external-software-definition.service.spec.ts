@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ExternalSoftwareDefinitionService } from './external-software-definition.service';
 import { PlatformService } from './platform.service';
 

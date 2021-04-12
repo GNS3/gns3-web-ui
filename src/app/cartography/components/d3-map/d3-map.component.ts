@@ -7,33 +7,30 @@ import {
   OnDestroy,
   OnInit,
   SimpleChange,
-  EventEmitter,
-  Output,
   ViewChild,
 } from '@angular/core';
-import { Selection, select } from 'd3-selection';
-
-import { GraphLayout } from '../../widgets/graph-layout';
-import { Context } from '../../models/context';
-import { Size } from '../../models/size';
+import { select, Selection } from 'd3-selection';
 import { Subscription } from 'rxjs';
-import { InterfaceLabelWidget } from '../../widgets/interface-label';
-import { SelectionTool } from '../../tools/selection-tool';
-import { MovingTool } from '../../tools/moving-tool';
-import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
-import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
-import { Node } from '../../models/node';
 import { Link } from '../../../models/link';
-import { Drawing } from '../../models/drawing';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
 import { Symbol } from '../../../models/symbol';
+import { MapScaleService } from '../../../services/mapScale.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
+import { ToolsService } from '../../../services/tools.service';
+import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { MapSettingsManager } from '../../managers/map-settings-manager';
-import { Server } from '../../../models/server';
-import { ToolsService } from '../../../services/tools.service';
+import { Context } from '../../models/context';
+import { Drawing } from '../../models/drawing';
+import { Node } from '../../models/node';
+import { Size } from '../../models/size';
+import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
+import { MovingTool } from '../../tools/moving-tool';
+import { SelectionTool } from '../../tools/selection-tool';
+import { GraphLayout } from '../../widgets/graph-layout';
+import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
-import { MapScaleService } from '../../../services/mapScale.service';
-import { Project } from '../../../models/project';
-import { MapSettingsService } from '../../../services/mapsettings.service';
 
 @Component({
   selector: 'app-d3-map',

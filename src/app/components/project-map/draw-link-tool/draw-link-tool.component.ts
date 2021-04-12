@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { NodeSelectInterfaceComponent } from '../../../components/project-map/node-select-interface/node-select-interface.component';
-import { DrawingLineWidget } from '../../../cartography/widgets/drawing-line';
-import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
+import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
+import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node-to-map-node-converter';
+import { PortToMapPortConverter } from '../../../cartography/converters/map/port-to-map-port-converter';
+import { MapLinkCreated } from '../../../cartography/events/links';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
+import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
-import { MapLinkCreated } from '../../../cartography/events/links';
+import { DrawingLineWidget } from '../../../cartography/widgets/drawing-line';
+import { NodeSelectInterfaceComponent } from '../../../components/project-map/node-select-interface/node-select-interface.component';
 import { Link } from '../../../models/link';
-import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
-import { PortToMapPortConverter } from '../../../cartography/converters/map/port-to-map-port-converter';
-import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node-to-map-node-converter';
 
 @Component({
   selector: 'app-draw-link-tool',

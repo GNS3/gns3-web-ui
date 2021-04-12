@@ -1,15 +1,14 @@
-import { TestBed, inject } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
-import { Drawing } from '../cartography/models/drawing';
-import { getTestServer } from './testing';
-import { DrawingService } from './drawing.service';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { Project } from '../models/project';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
+import { Drawing } from '../cartography/models/drawing';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { DrawingService } from './drawing.service';
+import { HttpServer } from './http-server.service';
+import { getTestServer } from './testing';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;

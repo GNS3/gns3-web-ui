@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, AfterViewInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
-import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
-import { Node } from '../../../cartography/models/node';
 import { FitAddon } from 'xterm-addon-fit';
+import { Node } from '../../../cartography/models/node';
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
 

@@ -1,12 +1,12 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
+import { MapDrawing } from '../models/map/map-drawing';
 import {
+  AddedDataEvent,
   DraggedDataEvent,
   ResizedDataEvent,
   TextAddedDataEvent,
   TextEditedDataEvent,
-  AddedDataEvent,
 } from './event-source';
-import { MapDrawing } from '../models/map/map-drawing';
 
 @Injectable()
 export class DrawingsEventSource {

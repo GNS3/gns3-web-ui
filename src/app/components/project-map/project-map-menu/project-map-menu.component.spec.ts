@@ -1,22 +1,22 @@
-import { ProjectMapMenuComponent } from './project-map-menu.component';
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MockedDrawingService } from '../project-map.component.spec';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { DrawingService } from '../../../services/drawing.service';
-import { ToolsService } from '../../../services/tools.service';
-import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
-import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { SymbolService } from '../../../services/symbol.service';
-import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
 import { ElectronService } from 'ngx-electron';
+import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
+import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
+import { DrawingService } from '../../../services/drawing.service';
+import { MapSettingsService } from '../../../services/mapsettings.service';
+import { SymbolService } from '../../../services/symbol.service';
+import { ToolsService } from '../../../services/tools.service';
+import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
+import { MockedDrawingService } from '../project-map.component.spec';
+import { ProjectMapMenuComponent } from './project-map-menu.component';
 
 describe('ProjectMapMenuComponent', () => {
   let component: ProjectMapMenuComponent;

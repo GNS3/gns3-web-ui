@@ -1,5 +1,5 @@
-import { ToasterService } from '../../services/toaster.service';
 import { Injectable } from '@angular/core';
+import { ToasterService } from '../../services/toaster.service';
 import { SentryErrorHandler } from './sentry-error-handler';
 
 @Injectable()

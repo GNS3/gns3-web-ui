@@ -1,25 +1,25 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockedServerService } from '../../../../services/server.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { VpcsTemplateDetailsComponent } from './vpcs-template-details.component';
 import { Server } from '../../../../models/server';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VpcsService } from '../../../../services/vpcs.service';
+import { ServerService } from '../../../../services/server.service';
+import { MockedServerService } from '../../../../services/server.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
+import { VpcsService } from '../../../../services/vpcs.service';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { VpcsTemplateDetailsComponent } from './vpcs-template-details.component';
 
 export class MockedVpcsService {
   public getTemplate(server: Server, template_id: string) {

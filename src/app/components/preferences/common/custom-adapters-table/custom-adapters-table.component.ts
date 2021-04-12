@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 
 @Component({

@@ -1,23 +1,23 @@
-import { LinkCreatedComponent } from './link-created.component';
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { ProjectService } from '../../../services/project.service';
-import { MockedProjectService } from '../../../services/project.service.spec';
-import { LinkService } from '../../../services/link.service';
-import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
-import { LinksEventSource } from '../../../cartography/events/links-event-source';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
+import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
-import { MockedLinkService } from '../../project-map/project-map.component.spec';
-import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
-import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
-import { CssFixer } from '../../../cartography/helpers/css-fixer';
-import { FontFixer } from '../../../cartography/helpers/font-fixer';
+import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { MapLinkCreated } from '../../../cartography/events/links';
-import { MapNode } from '../../../cartography/models/map/map-node';
+import { LinksEventSource } from '../../../cartography/events/links-event-source';
+import { CssFixer } from '../../../cartography/helpers/css-fixer';
+import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
+import { FontFixer } from '../../../cartography/helpers/font-fixer';
 import { MapLabel } from '../../../cartography/models/map/map-label';
+import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
-import { Observable } from 'rxjs';
 import { Project } from '../../../models/project';
+import { LinkService } from '../../../services/link.service';
+import { ProjectService } from '../../../services/project.service';
+import { MockedProjectService } from '../../../services/project.service.spec';
+import { MockedLinkService } from '../../project-map/project-map.component.spec';
+import { LinkCreatedComponent } from './link-created.component';
 
 describe('LinkCreatedComponent', () => {
   let component: LinkCreatedComponent;

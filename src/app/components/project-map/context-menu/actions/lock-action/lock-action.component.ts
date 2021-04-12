@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, OnDestroy, OnChanges } from '@angular/core';
-import { Server } from '../../../../../models/server';
-import { Node } from '../../../../../cartography/models/node';
-import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../../../../services/node.service';
-import { Drawing } from '../../../../../cartography/models/drawing';
+import { Component, Input, OnChanges } from '@angular/core';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { Drawing } from '../../../../../cartography/models/drawing';
+import { Node } from '../../../../../cartography/models/node';
+import { Server } from '../../../../../models/server';
 import { DrawingService } from '../../../../../services/drawing.service';
+import { NodeService } from '../../../../../services/node.service';
 
 @Component({
   selector: 'app-lock-action',

@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Message } from '../../../models/message';
-import { Server } from '../../../models/server';
 import { Node } from '../../../cartography/models/node';
-import { Symbol } from '../../../models/symbol';
+import { Server } from '../../../models/server';
 import { NodeService } from '../../../services/node.service';
 
 @Component({

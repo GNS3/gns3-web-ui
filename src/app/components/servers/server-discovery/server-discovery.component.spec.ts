@@ -1,17 +1,15 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-
 import { Observable } from 'rxjs/Rx';
-
-import { ServerDiscoveryComponent } from './server-discovery.component';
-import { VersionService } from '../../../services/version.service';
-import { MockedVersionService } from '../../../services/version.service.spec';
-import { Version } from '../../../models/version';
 import { Server } from '../../../models/server';
+import { Version } from '../../../models/version';
+import { ServerDatabase } from '../../../services/server.database';
 import { ServerService } from '../../../services/server.service';
 import { MockedServerService } from '../../../services/server.service.spec';
-import { ServerDatabase } from '../../../services/server.database';
+import { VersionService } from '../../../services/version.service';
+import { MockedVersionService } from '../../../services/version.service.spec';
+import { ServerDiscoveryComponent } from './server-discovery.component';
 
 xdescribe('ServerDiscoveryComponent', () => {
   let component: ServerDiscoveryComponent;

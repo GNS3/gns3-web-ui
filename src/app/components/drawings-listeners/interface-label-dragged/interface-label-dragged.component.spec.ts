@@ -1,15 +1,15 @@
-import { InterfaceLabelDraggedComponent } from './interface-label-dragged.component';
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { MockedLinkService } from '../../project-map/project-map.component.spec';
-import { LinksEventSource } from '../../../cartography/events/links-event-source';
-import { LinkService } from '../../../services/link.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
-import { Observable } from 'rxjs';
-import { MapLabel } from '../../../cartography/models/map/map-label';
-import { Link } from '../../../models/link';
+import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { Label } from '../../../cartography/models/label';
+import { MapLabel } from '../../../cartography/models/map/map-label';
+import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
+import { Link } from '../../../models/link';
+import { LinkService } from '../../../services/link.service';
+import { MockedLinkService } from '../../project-map/project-map.component.spec';
+import { InterfaceLabelDraggedComponent } from './interface-label-dragged.component';
 
 describe('InterfaceLabelDraggedComponent', () => {
   let component: InterfaceLabelDraggedComponent;

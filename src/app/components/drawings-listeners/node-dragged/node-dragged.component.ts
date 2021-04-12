@@ -1,13 +1,13 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../../services/node.service';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapNode } from '../../../cartography/models/map/map-node';
-import { Subscription } from 'rxjs';
+import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { NodeService } from '../../../services/node.service';
 
 @Component({
   selector: 'app-node-dragged',

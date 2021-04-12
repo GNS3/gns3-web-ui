@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ToasterService } from '../../../services/toaster.service';
-import { ElectronService } from 'ngx-electron';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { ElectronService } from 'ngx-electron';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-screenshot-dialog',

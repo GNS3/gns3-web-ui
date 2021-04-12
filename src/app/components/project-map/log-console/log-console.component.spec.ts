@@ -1,19 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
-import { NO_ERRORS_SCHEMA, EventEmitter, inject } from '@angular/core';
-import { MatMenuModule } from '@angular/material/menu';
-import { Server } from '../../../models/server';
-import { LogConsoleComponent } from './log-console.component';
-import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
-import { NodeService } from '../../../services/node.service';
-import { MockedNodeService, MockedNodesDataSource } from '../project-map.component.spec';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { of } from 'rxjs';
-import { LogEventsDataSource } from './log-events-datasource';
-import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserModule } from '@angular/platform-browser';
+import { of } from 'rxjs';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
+import { Server } from '../../../models/server';
+import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
+import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
+import { LogConsoleComponent } from './log-console.component';
+import { LogEventsDataSource } from './log-events-datasource';
 
 export class MockedProjectWebServiceHandler {
   public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();

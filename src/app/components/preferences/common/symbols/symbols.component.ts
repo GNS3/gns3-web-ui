@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { SymbolService } from '../../../../services/symbol.service';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Server } from '../../../../models/server';
 import { Symbol } from '../../../../models/symbol';
+import { SymbolService } from '../../../../services/symbol.service';
 
 @Component({
   selector: 'app-symbols',

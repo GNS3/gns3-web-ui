@@ -1,13 +1,13 @@
-import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { FileUploader, ParsedResponseHeaders, FileItem } from 'ng2-file-upload';
-import { Server } from '../../../models/server';
+import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ProjectService } from '../../../services/project.service';
 import { Project } from '../../../models/project';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { Server } from '../../../models/server';
 import { ServerResponse } from '../../../models/serverResponse';
+import { ProjectService } from '../../../services/project.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({

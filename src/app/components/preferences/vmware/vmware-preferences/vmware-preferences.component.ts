@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Server } from '../../../../models/server';
-import { switchMap } from 'rxjs/operators';
 import { ServerService } from '../../../../services/server.service';
 
 @Component({

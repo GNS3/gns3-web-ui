@@ -1,8 +1,8 @@
-import { HostListener, ElementRef, Directive, Input, OnInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
-import { select } from 'd3-selection';
 
 @Directive({
   selector: '[movingCanvas]',

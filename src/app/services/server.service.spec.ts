@@ -1,12 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-
-import { ServerService } from './server.service';
-import { Server } from '../models/server';
-import { IndexedDbService } from './indexed-db.service';
-import { AngularIndexedDB } from 'angular2-indexeddb';
-import Spy = jasmine.Spy;
-import { HttpServer, ServerErrorHandler } from '../services/http-server.service';
 import { HttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { AngularIndexedDB } from 'angular2-indexeddb';
+import { Server } from '../models/server';
+import { HttpServer, ServerErrorHandler } from '../services/http-server.service';
+import { IndexedDbService } from './indexed-db.service';
+import { ServerService } from './server.service';
+
+import Spy = jasmine.Spy;
 
 export class MockedServerService {
   public servers: Server[] = [];

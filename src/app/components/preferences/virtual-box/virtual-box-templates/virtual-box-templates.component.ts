@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Server } from '../../../../models/server';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../../services/server.service';
+import { Server } from '../../../../models/server';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
+import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
+import { ServerService } from '../../../../services/server.service';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 
 @Component({
   selector: 'app-virtual-box-templates',

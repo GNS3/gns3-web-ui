@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-
-import { SVGSelection } from '../../models/types';
-import { TextElement } from '../../models/drawings/text-element';
-import { DrawingShapeWidget } from './drawing-shape-widget';
-import { FontFixer } from '../../helpers/font-fixer';
 import { select } from 'd3-selection';
+import { FontFixer } from '../../helpers/font-fixer';
+import { TextElement } from '../../models/drawings/text-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { SVGSelection } from '../../models/types';
+import { DrawingShapeWidget } from './drawing-shape-widget';
 
 @Injectable()
 export class TextDrawingWidget implements DrawingShapeWidget {

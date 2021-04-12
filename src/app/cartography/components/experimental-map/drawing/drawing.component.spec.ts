@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { DrawingComponent } from './drawing.component';
 
 describe('DrawingComponent', () => {

@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Server } from '../../../../models/server';
-import { Link } from '../../../../models/link';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
-import { LinkService } from '../../../../services/link.service';
-import { CapturingSettings } from '../../../../models/capturingSettings';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToasterService } from '../../../../services/toaster.service';
-import { LinkNode } from '../../../../models/link-node';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
-import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { CapturingSettings } from '../../../../models/capturingSettings';
+import { Link } from '../../../../models/link';
+import { LinkNode } from '../../../../models/link-node';
 import { Project } from '../../../../models/project';
+import { Server } from '../../../../models/server';
+import { LinkService } from '../../../../services/link.service';
+import { PacketCaptureService } from '../../../../services/packet-capture.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 
 @Component({
   selector: 'app-start-capture',

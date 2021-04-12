@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
-import { QemuTemplate } from '../models/templates/qemu-template';
-import { VpcsTemplate } from '../models/templates/vpcs-template';
 import { Observable, of } from 'rxjs';
-import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
-import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { CloudTemplate } from '../models/templates/cloud-template';
+import { DockerTemplate } from '../models/templates/docker-template';
+import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
 import { IosTemplate } from '../models/templates/ios-template';
-import { VmwareTemplate } from '../models/templates/vmware-template';
-import { DockerTemplate } from '../models/templates/docker-template';
-import { CustomAdapter } from '../models/qemu/qemu-custom-adapter';
 import { IouTemplate } from '../models/templates/iou-template';
+import { QemuTemplate } from '../models/templates/qemu-template';
 import { TracengTemplate } from '../models/templates/traceng-template';
+import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
+import { VmwareTemplate } from '../models/templates/vmware-template';
+import { VpcsTemplate } from '../models/templates/vpcs-template';
 
 @Injectable()
 export class TemplateMocksService {

@@ -1,8 +1,8 @@
 import { Context } from '../models/context';
-import { SVGSelection } from '../models/types';
-import { MovingTool } from './moving-tool';
-import { TestSVGCanvas } from '../testing';
 import { Size } from '../models/size';
+import { SVGSelection } from '../models/types';
+import { TestSVGCanvas } from '../testing';
+import { MovingTool } from './moving-tool';
 
 describe('MovingTool', () => {
   let tool: MovingTool;

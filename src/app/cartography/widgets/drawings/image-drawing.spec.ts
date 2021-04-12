@@ -1,7 +1,7 @@
-import { TestSVGCanvas } from '../../testing';
-import { ImageDrawingWidget } from './image-drawing';
 import { ImageElement } from '../../models/drawings/image-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { TestSVGCanvas } from '../../testing';
+import { ImageDrawingWidget } from './image-drawing';
 
 describe('ImageDrawingWidget', () => {
   let svg: TestSVGCanvas;

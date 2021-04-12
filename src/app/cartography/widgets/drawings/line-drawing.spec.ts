@@ -1,8 +1,8 @@
+import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { LineElement } from '../../models/drawings/line-element';
+import { MapDrawing } from '../../models/map/map-drawing';
 import { TestSVGCanvas } from '../../testing';
 import { LineDrawingWidget } from './line-drawing';
-import { LineElement } from '../../models/drawings/line-element';
-import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
-import { MapDrawing } from '../../models/map/map-drawing';
 
 describe('LineDrawingWidget', () => {
   let svg: TestSVGCanvas;
