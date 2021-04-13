@@ -43,7 +43,7 @@ export class ConsoleWrapperComponent implements OnInit {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '20px', width: '720px', height: '460px' };
+    this.style = { bottom: '20px', left: '80px', width: '720px', height: '460px' };
 
     this.consoleService.nodeConsoleTrigger.subscribe((node) => {
       this.addTab(node, true);
@@ -58,7 +58,7 @@ export class ConsoleWrapperComponent implements OnInit {
   minimize(value: boolean) {
     this.isMinimized = value;
     if (!value) {
-      this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+      this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
     } else {
       this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px' };
     }
