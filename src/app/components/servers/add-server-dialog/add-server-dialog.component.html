@@ -45,7 +45,7 @@
     </mat-form-field>
 
     <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
-      <input matInput tabindex="1" formControlName="password" placeholder="Password" />
+      <input matInput type="password" tabindex="1" formControlName="password" placeholder="Password" />
     </mat-form-field>
   </div>
   <div mat-dialog-actions>
