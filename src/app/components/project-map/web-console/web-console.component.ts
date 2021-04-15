@@ -81,6 +81,12 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     }
 
     getUrl() {
-        return `ws://${this.server.host}:${this.server.port}/v2/projects/${this.node.project_id}/nodes/${this.node.node_id}/console/ws`
+	let protocol:string = "ws://"
+
+	if (this.server.protocol === "https:")
+	{
+		protocol = "wss://"
+	}
+	return `${protocol}${this.server.host}:${this.server.port}/v2/projects/${this.node.project_id}/nodes/${this.node.node_id}/console/ws`
     }
 }

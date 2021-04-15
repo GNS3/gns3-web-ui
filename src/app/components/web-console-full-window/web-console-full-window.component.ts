@@ -107,6 +107,13 @@ export class WebConsoleFullWindowComponent implements OnInit {
     }
 
     getUrl() {
-        return `ws://${this.server.host}:${this.server.port}/v2/projects/${this.projectId}/nodes/${this.nodeId}/console/ws`
+	let protocol:string = "ws://"
+
+        if (this.server.protocol === "https:")
+        {
+                protocol = "wss://"
+        }
+        
+	return `${protocol}://${this.server.host}:${this.server.port}/v2/projects/${this.projectId}/nodes/${this.nodeId}/console/ws`
     }
 }

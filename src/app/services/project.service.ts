@@ -95,7 +95,14 @@ export class ProjectService {
   }
 
   notificationsPath(server: Server, project_id: string): string {
-    return `ws://${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
+    let protocol:string = "ws://"
+
+    if (server.protocol === "https:")
+    {
+      protocol = "wss://"
+    }
+    
+    return `${protocol}//${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
   }
 
   isReadOnly(project: Project) {

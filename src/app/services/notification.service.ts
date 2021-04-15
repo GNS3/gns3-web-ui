@@ -7,6 +7,13 @@ export class NotificationService {
   constructor(private httpServer: HttpServer) {}
 
   notificationsPath(server: Server): string {
-    return `ws://${server.host}:${server.port}/v2/notifications/ws`;
+	let protocol:string = "ws://"
+
+        if (server.protocol === "https:")
+        {
+                protocol = "wss://"
+        }
+
+	return `${protocol}://${server.host}:${server.port}/v2/notifications/ws`;
   }
 }
