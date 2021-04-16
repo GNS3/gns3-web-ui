@@ -152,11 +152,6 @@ describe('ProjectService', () => {
     expect(req.request.method).toEqual('POST');
   });
 
-  it('should get notifications path of project', () => {
-    const path = service.notificationsPath(server, 'myproject');
-    expect(path).toEqual('ws://127.0.0.1:3080/v2/projects/myproject/notifications/ws');
-  });
-
   it('project should be readonly when defined as readonly ', () => {
     const project = new Project();
     project.readonly = true;
