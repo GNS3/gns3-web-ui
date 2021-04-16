@@ -1,6 +1,6 @@
+import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ImportProjectDialogComponent } from './import-project-dialog.component';
-import { Server } from '../../../models/server';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,15 +8,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { FileUploadModule, FileSelectDirective, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { ProjectService } from '../../../services/project.service';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { FileItem, FileSelectDirective, FileUploadModule } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
+import { ImportProjectDialogComponent } from './import-project-dialog.component';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -38,8 +38,8 @@ export class MockedProjectService {
       show_layers: false,
       show_grid: false,
       snap_to_grid: false,
-      variables: []
-    }
+      variables: [],
+    },
   ];
 
   list() {
@@ -63,7 +63,7 @@ describe('ImportProjectDialogComponent', () => {
   let fileSelectDirective: FileSelectDirective;
 
   let dialogRef = {
-    close: jasmine.createSpy('close')
+    close: jasmine.createSpy('close'),
   };
 
   beforeEach(async(() => {
@@ -80,14 +80,14 @@ describe('ImportProjectDialogComponent', () => {
         FileUploadModule,
         FormsModule,
         ReactiveFormsModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
-        { provide: ProjectService, useClass: MockedProjectService }
+        { provide: ProjectService, useClass: MockedProjectService },
       ],
-      declarations: [ImportProjectDialogComponent]
+      declarations: [ImportProjectDialogComponent],
     }).compileComponents();
 
     server = new Server();
@@ -222,8 +222,8 @@ describe('ImportProjectDialogComponent', () => {
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {
-        files: [{ name: 'uploadedFile' }]
-      }
+        files: [{ name: 'uploadedFile' }],
+      },
     };
     component.uploadProjectFile(event);
 
@@ -235,8 +235,8 @@ describe('ImportProjectDialogComponent', () => {
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {
-        files: [{ name: 'uploadedFile' }]
-      }
+        files: [{ name: 'uploadedFile' }],
+      },
     };
     component.uploadProjectFile(event);
     component.onDeleteClick();

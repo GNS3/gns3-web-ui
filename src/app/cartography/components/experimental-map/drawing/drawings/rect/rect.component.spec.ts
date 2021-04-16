@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RectComponent } from './rect.component';
 
 describe('RectComponent', () => {
@@ -8,7 +7,7 @@ describe('RectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [RectComponent]
+      declarations: [RectComponent],
     }).compileComponents();
   }));
 

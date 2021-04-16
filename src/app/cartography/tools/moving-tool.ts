@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-
-import { D3ZoomEvent, zoom, ZoomBehavior } from 'd3-zoom';
 import { event } from 'd3-selection';
-
-import { SVGSelection } from '../models/types';
+import { D3ZoomEvent, zoom, ZoomBehavior } from 'd3-zoom';
 import { Context } from '../models/context';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class MovingTool {
@@ -42,7 +40,7 @@ export class MovingTool {
   private activate(selection: SVGSelection) {
     const self = this;
 
-    const onZoom = function(this: SVGSVGElement) {
+    const onZoom = function (this: SVGSVGElement) {
       const canvas = selection.select<SVGGElement>('g.canvas');
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr('transform', () => {

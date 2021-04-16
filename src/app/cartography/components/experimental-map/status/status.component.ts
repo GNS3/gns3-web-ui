@@ -1,9 +1,9 @@
-import { Component, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
 
 @Component({
   selector: '[app-status]',
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss']
+  styleUrls: ['./status.component.scss'],
 })
 export class StatusComponent {
   static STOPPED_STATUS_RECT_WIDTH = 10;
@@ -12,7 +12,7 @@ export class StatusComponent {
     status: '',
     path: null,
     direction: null,
-    d: null
+    d: null,
   };
 
   constructor(protected element: ElementRef, private ref: ChangeDetectorRef) {}

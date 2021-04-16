@@ -1,5 +1,5 @@
-import { DrawingsDataSource } from './drawings-datasource';
 import { Drawing } from '../models/drawing';
+import { DrawingsDataSource } from './drawings-datasource';
 
 describe('DrawingsDataSource', () => {
   let dataSource: DrawingsDataSource;

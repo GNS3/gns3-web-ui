@@ -4,13 +4,17 @@
 
     <button mat-button routerLink="/servers">Servers</button>
 
-    <button *ngIf="!recentlyOpenedProjectId && serverIdProjectList" mat-button (click)="listProjects()">Projects</button>
+    <button *ngIf="!recentlyOpenedProjectId && serverIdProjectList" mat-button (click)="listProjects()">
+      Projects
+    </button>
 
-    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId" mat-button (click)="backToProject()">Back to project</button>
+    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId" mat-button (click)="backToProject()">
+      Back to project
+    </button>
 
     <span class="fill-space"></span>
 
-    <button mat-button [matMenuTriggerFor]="menu" >
+    <button mat-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
 
@@ -28,7 +32,6 @@
         <span>Help</span>
       </button>
     </mat-menu>
-
   </mat-toolbar>
 </header>
 
@@ -36,6 +39,4 @@
 
 <app-progress></app-progress>
 
-<footer class="footer mat-app-background">
-  GNS3 Web UI &copy; 2020 - v{{ uiVersion }}
-</footer>
+<footer class="footer mat-app-background">GNS3 Web UI &copy; 2020 - v{{ uiVersion }}</footer>

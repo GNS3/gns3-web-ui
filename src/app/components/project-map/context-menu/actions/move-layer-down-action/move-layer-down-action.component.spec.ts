@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MoveLayerDownActionComponent } from './move-layer-down-action.component';
 
 describe('MoveLayerDownActionComponent', () => {
@@ -8,7 +7,7 @@ describe('MoveLayerDownActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MoveLayerDownActionComponent]
+      declarations: [MoveLayerDownActionComponent],
     }).compileComponents();
   }));
 

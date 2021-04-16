@@ -1,32 +1,31 @@
 <div class="consoleHeader">
-    <div class="consoleFiltering">
-        <button [ngClass]="{lightTheme: isLightThemeEnabled}" class="filterButton" [matMenuTriggerFor]="filterMenu">
-            Apply filter
-        </button>
-        <mat-menu #filterMenu="matMenu" xPosition="after">
-            <button (click)="applyFilter('all')" mat-menu-item>all</button>
-            <button (click)="applyFilter('errors')" mat-menu-item>errors</button>
-            <button (click)="applyFilter('warnings')" mat-menu-item>warnings</button>
-            <button (click)="applyFilter('info')" mat-menu-item>info</button>
-            <button (click)="applyFilter('map updates')" mat-menu-item>map updates</button>
-            <button (click)="applyFilter('server requests')" mat-menu-item>server requests</button>
-        </mat-menu>
-    </div>
+  <div class="consoleFiltering">
+    <button [ngClass]="{ lightTheme: isLightThemeEnabled }" class="filterButton" [matMenuTriggerFor]="filterMenu">
+      Apply filter
+    </button>
+    <mat-menu #filterMenu="matMenu" xPosition="after">
+      <button (click)="applyFilter('all')" mat-menu-item>all</button>
+      <button (click)="applyFilter('errors')" mat-menu-item>errors</button>
+      <button (click)="applyFilter('warnings')" mat-menu-item>warnings</button>
+      <button (click)="applyFilter('info')" mat-menu-item>info</button>
+      <button (click)="applyFilter('map updates')" mat-menu-item>map updates</button>
+      <button (click)="applyFilter('server requests')" mat-menu-item>server requests</button>
+    </mat-menu>
+  </div>
 </div>
 
-<div [ngClass]="{lightTheme: isLightThemeEnabled}" #console class="console" [ngStyle]="style">
-    <span class="console-item" *ngFor="let event of filteredEvents">
-        {{event.message}} <br/>
-    </span>
+<div [ngClass]="{ lightTheme: isLightThemeEnabled }" #console class="console" [ngStyle]="style">
+  <span class="console-item" *ngFor="let event of filteredEvents"> {{ event.message }} <br /> </span>
 </div>
 
-<div [ngClass]="{lightTheme: isLightThemeEnabled}" class="consoleInput">
-    <mat-icon class="inputIcon">keyboard_arrow_right</mat-icon>
-    <input
-        [ngClass]="{lightTheme: isLightThemeEnabled}"
-        class="commandLine"
-        autofocus
-        (keydown)="onKeyDown($event)"
-        type="text"
-        [(ngModel)]="command"/>
+<div [ngClass]="{ lightTheme: isLightThemeEnabled }" class="consoleInput">
+  <mat-icon class="inputIcon">keyboard_arrow_right</mat-icon>
+  <input
+    [ngClass]="{ lightTheme: isLightThemeEnabled }"
+    class="commandLine"
+    autofocus
+    (keydown)="onKeyDown($event)"
+    type="text"
+    [(ngModel)]="command"
+  />
 </div>

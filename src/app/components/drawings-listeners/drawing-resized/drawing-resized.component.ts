@@ -1,18 +1,18 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { DrawingService } from '../../../services/drawing.service';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
-import { Server } from '../../../models/server';
 import { ResizedDataEvent } from '../../../cartography/events/event-source';
-import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Drawing } from '../../../cartography/models/drawing';
-import { Subscription } from 'rxjs';
+import { MapDrawing } from '../../../cartography/models/map/map-drawing';
+import { Server } from '../../../models/server';
+import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
   selector: 'app-drawing-resized',
   templateUrl: './drawing-resized.component.html',
-  styleUrls: ['./drawing-resized.component.scss']
+  styleUrls: ['./drawing-resized.component.scss'],
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
   @Input() server: Server;
@@ -26,7 +26,7 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.drawingResized = this.drawingsEventSource.resized.subscribe(evt => this.onDrawingResized(evt));
+    this.drawingResized = this.drawingsEventSource.resized.subscribe((evt) => this.onDrawingResized(evt));
   }
 
   onDrawingResized(resizedEvent: ResizedDataEvent<MapDrawing>) {

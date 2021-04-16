@@ -26,13 +26,13 @@ $mat-dark-theme-background: (
   selected-disabled-button: map_get($mat-grey, 800),
   disabled-button-toggle: black,
   unselected-chip: map_get($mat-grey, 700),
-  disabled-list-option: black
+  disabled-list-option: black,
 );
 
 $dark-theme: map-merge(
   $dark-theme,
   (
-    background: $mat-dark-theme-background
+    background: $mat-dark-theme-background,
   )
 );
 
@@ -68,7 +68,7 @@ $dark-theme: map-merge(
   @include mat-toolbar-theme($dark-background);
   @include mat-tooltip-theme($dark-theme);
   @include mat-snack-bar-theme($dark-theme);
-  color: white!important;
+  color: white !important;
 }
 
 // Light theme
@@ -90,13 +90,13 @@ $mat-light-theme-background: (
   selected-disabled-button: map_get($mat-blue, 800),
   disabled-button-toggle: black,
   unselected-chip: map_get($mat-blue, 700),
-  disabled-list-option: black
+  disabled-list-option: black,
 );
 
 $light-theme: map-merge(
   $light-theme,
   (
-    background: $mat-light-theme-background
+    background: $mat-light-theme-background,
   )
 );
 

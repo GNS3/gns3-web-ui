@@ -1,12 +1,12 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, DoCheck } from '@angular/core';
+import { Component, DoCheck, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { TextElement } from '../../../../../models/drawings/text-element';
 import { FontFixer } from '../../../../../helpers/font-fixer';
+import { TextElement } from '../../../../../models/drawings/text-element';
 
 @Component({
   selector: '[app-text]',
   templateUrl: './text.component.html',
-  styleUrls: ['./text.component.scss']
+  styleUrls: ['./text.component.scss'],
 })
 export class TextComponent implements OnInit, DoCheck {
   static MARGIN = 4;

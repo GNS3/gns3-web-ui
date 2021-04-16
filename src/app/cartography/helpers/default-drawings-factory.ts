@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { TextElementFactory } from './drawings-factory/text-element-factory';
-import { EllipseElementFactory } from './drawings-factory/ellipse-element-factory';
-import { RectangleElementFactory } from './drawings-factory/rectangle-element-factory';
-import { LineElementFactory } from './drawings-factory/line-element-factory';
-import { DrawingElementFactory } from './drawings-factory/drawing-element-factory';
 import { MapDrawing } from '../models/map/map-drawing';
+import { DrawingElementFactory } from './drawings-factory/drawing-element-factory';
+import { EllipseElementFactory } from './drawings-factory/ellipse-element-factory';
+import { LineElementFactory } from './drawings-factory/line-element-factory';
+import { RectangleElementFactory } from './drawings-factory/rectangle-element-factory';
+import { TextElementFactory } from './drawings-factory/text-element-factory';
 
 @Injectable()
 export class DefaultDrawingsFactory {
@@ -21,7 +21,7 @@ export class DefaultDrawingsFactory {
       text: this.textElementFactory,
       ellipse: this.ellipseElementFactory,
       rectangle: this.rectangleElementFactory,
-      line: this.lineElementFactory
+      line: this.lineElementFactory,
     };
   }
 

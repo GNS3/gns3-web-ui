@@ -1,14 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
 import { Server } from '../../../../../models/server';
+import { MapSettingsService } from '../../../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../../../services/nodeConsole.service';
 import { ToasterService } from '../../../../../services/toaster.service';
-import { MapSettingsService } from '../../../../../services/mapsettings.service';
-
 
 @Component({
   selector: 'app-http-console-action',
-  templateUrl: './http-console-action.component.html'
+  templateUrl: './http-console-action.component.html',
 })
 export class HttpConsoleActionComponent implements OnInit {
   @Input() server: Server;
@@ -18,12 +17,12 @@ export class HttpConsoleActionComponent implements OnInit {
     private consoleService: NodeConsoleService,
     private toasterService: ToasterService,
     private mapSettingsService: MapSettingsService
-  ) { }
+  ) {}
 
   ngOnInit() {}
 
   openConsole() {
-    this.nodes.forEach(n => {
+    this.nodes.forEach((n) => {
       if (n.status === 'started') {
         this.mapSettingsService.logConsoleSubject.next(true);
         this.consoleService.openConsoleForNode(n);

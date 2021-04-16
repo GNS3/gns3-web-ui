@@ -1,24 +1,20 @@
 <div class="content">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Copy IOU device template</h1>
-        </div>
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Copy IOU device template</h1>
     </div>
-    <div class="default-content">
-        <mat-card class="matCard">
-            <form [formGroup]="templateNameForm">
-                <mat-form-field class="form-field">
-                    <input 
-                        matInput type="text" 
-                        [(ngModel)]="templateName" 
-                        placeholder="Name"
-                        formControlName="templateName"/>
-                </mat-form-field>
-            </form>
-        </mat-card>
-        <div class="buttons-bar">
-            <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-            <button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button>
-        </div>
+  </div>
+  <div class="default-content">
+    <mat-card class="matCard">
+      <form [formGroup]="templateNameForm">
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="templateName" placeholder="Name" formControlName="templateName" />
+        </mat-form-field>
+      </form>
+    </mat-card>
+    <div class="buttons-bar">
+      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button>
     </div>
+  </div>
 </div>

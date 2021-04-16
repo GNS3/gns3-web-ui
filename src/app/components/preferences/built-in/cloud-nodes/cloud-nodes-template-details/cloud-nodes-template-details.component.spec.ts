@@ -1,81 +1,91 @@
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Server } from '../../../../../models/server';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
-import { CloudNodesTemplateDetailsComponent } from './cloud-nodes-template-details.component';
+import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
+import { ServerService } from '../../../../../services/server.service';
 import { MockedServerService } from '../../../../../services/server.service.spec';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ServerService } from '../../../../../services/server.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
+import { CloudNodesTemplateDetailsComponent } from './cloud-nodes-template-details.component';
 
 export class MockedBuiltInTemplatesService {
-    public getTemplate(server: Server, template_id: string) {
-        return of({ports_mapping: []} as CloudTemplate);  
-    }
+  public getTemplate(server: Server, template_id: string) {
+    return of({ ports_mapping: [] } as CloudTemplate);
+  }
 
-    public saveTemplate(server: Server, cloudTemplate: CloudTemplate) {
-        return of(cloudTemplate);    
-    }
+  public saveTemplate(server: Server, cloudTemplate: CloudTemplate) {
+    return of(cloudTemplate);
+  }
 }
 
 describe('CloudNodesTemplateDetailsComponent', () => {
-    let component: CloudNodesTemplateDetailsComponent;
-    let fixture: ComponentFixture<CloudNodesTemplateDetailsComponent>;
+  let component: CloudNodesTemplateDetailsComponent;
+  let fixture: ComponentFixture<CloudNodesTemplateDetailsComponent>;
 
-    let mockedServerService = new MockedServerService;
-    let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService;
-    let mockedToasterService = new MockedToasterService;
-    let activatedRoute = new MockedActivatedRoute().get();
-    
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-          imports: [FormsModule, ReactiveFormsModule, MatTableModule, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule, RouterTestingModule.withRoutes([])],
-          providers: [
-              {
-                  provide: ActivatedRoute,  useValue: activatedRoute
-              },
-              { provide: ServerService, useValue: mockedServerService },
-              { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-              { provide: ToasterService, useValue: mockedToasterService },
-              { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService }
-          ],
-          declarations: [
-                CloudNodesTemplateDetailsComponent
-          ],
-          schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+  let mockedServerService = new MockedServerService();
+  let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(CloudNodesTemplateDetailsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: activatedRoute,
+        },
+        { provide: ServerService, useValue: mockedServerService },
+        { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },
+      ],
+      declarations: [CloudNodesTemplateDetailsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  }));
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(CloudNodesTemplateDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-    it('should call save template', () => {
-        spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as CloudTemplate));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-        component.cloudNodeTemplate = {ports_mapping: []} as CloudTemplate;
-        component.onSave();
+  it('should call save template', () => {
+    spyOn(mockedBuiltInTemplatesService, 'saveTemplate').and.returnValue(of({} as CloudTemplate));
 
-        expect(mockedBuiltInTemplatesService.saveTemplate).toHaveBeenCalled();
-    });
+    component.cloudNodeTemplate = { ports_mapping: [] } as CloudTemplate;
+    component.onSave();
+
+    expect(mockedBuiltInTemplatesService.saveTemplate).toHaveBeenCalled();
+  });
 });

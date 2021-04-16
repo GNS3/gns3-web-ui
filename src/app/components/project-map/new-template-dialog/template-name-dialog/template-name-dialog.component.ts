@@ -1,21 +1,19 @@
-import { Component, OnInit, EventEmitter, Inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Server } from '../../../../models/server';
-import { v4 as uuid } from 'uuid';
-import { ProjectNameValidator } from '../../../projects/models/projectNameValidator';
-import { ToasterService } from '../../../../services/toaster.service';
-import { TemplateService } from '../../../../services/template.service';
-import { templateNameAsyncValidator } from '../../../../validators/template-name-async-validator';
 import { Template } from '../../../../models/template';
-
+import { TemplateService } from '../../../../services/template.service';
+import { ToasterService } from '../../../../services/toaster.service';
+import { templateNameAsyncValidator } from '../../../../validators/template-name-async-validator';
+import { ProjectNameValidator } from '../../../projects/models/projectNameValidator';
 
 @Component({
   selector: 'app-template-name-dialog',
   templateUrl: './template-name-dialog.component.html',
   styleUrls: ['./template-name-dialog.component.scss'],
-  providers: [ProjectNameValidator]
+  providers: [ProjectNameValidator],
 })
 export class TemplateNameDialogComponent implements OnInit {
   server: Server;
@@ -35,9 +33,13 @@ export class TemplateNameDialogComponent implements OnInit {
   ngOnInit() {
     let name = this.data['name'];
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(name, [Validators.required, this.templateNameValidator.get], [templateNameAsyncValidator(this.server, this.templateService)])
+      templateName: new FormControl(
+        name,
+        [Validators.required, this.templateNameValidator.get],
+        [templateNameAsyncValidator(this.server, this.templateService)]
+      ),
     });
-    
+
     setTimeout(() => {
       this.templateNameForm.controls['templateName'].markAsTouched();
     }, 100);
@@ -54,7 +56,7 @@ export class TemplateNameDialogComponent implements OnInit {
     }
     this.templateService.list(this.server).subscribe((templates: Template[]) => {
       const templateName = this.templateNameForm.controls['templateName'].value;
-      let existingProject = templates.find(t => t.name === templateName);
+      let existingProject = templates.find((t) => t.name === templateName);
 
       if (existingProject) {
         this.toasterService.error('Template with this name exists');
@@ -69,7 +71,7 @@ export class TemplateNameDialogComponent implements OnInit {
   }
 
   onKeyDown(event) {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       this.onAddClick();
     }
   }

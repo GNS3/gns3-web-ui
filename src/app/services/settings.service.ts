@@ -10,14 +10,14 @@ export interface Settings {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SettingsService {
   static DEFAULTS: Settings = {
     crash_reports: true,
     experimental_features: false,
     angular_map: false,
-    console_command: undefined
+    console_command: undefined,
   };
 
   private settingsSubject: BehaviorSubject<Settings>;
@@ -47,14 +47,14 @@ export class SettingsService {
 
   getAll() {
     const settings = { ...SettingsService.DEFAULTS };
-    Object.keys(SettingsService.DEFAULTS).forEach(key => {
+    Object.keys(SettingsService.DEFAULTS).forEach((key) => {
       settings[key] = this.get(key);
     });
     return settings;
   }
 
   setAll(settings) {
-    Object.keys(settings).forEach(key => {
+    Object.keys(settings).forEach((key) => {
       this.set(key, settings[key]);
     });
   }
@@ -63,7 +63,7 @@ export class SettingsService {
     return this.get('experimental_features');
   }
 
-  subscribe(subscriber: ((settings: Settings) => void)) {
+  subscribe(subscriber: (settings: Settings) => void) {
     return this.settingsSubject.subscribe(subscriber);
   }
 }

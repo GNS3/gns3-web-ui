@@ -1,8 +1,6 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { ToasterService } from './toaster.service';
-import { NgZone } from '@angular/core';
 
 export class MockedToasterService {
   public errors: string[];
@@ -11,13 +9,13 @@ export class MockedToasterService {
     duration: 2000,
     panelClass: ['snackabar-success'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
   snackBarConfigForError = {
     duration: 2000,
     panelClass: ['snackabar-error'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
 
   constructor() {
@@ -41,9 +39,7 @@ class MockedSnackBar {
 describe('ToasterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ToasterService,
-        { provide: MatSnackBar, useClass: MockedSnackBar }]
+      providers: [ToasterService, { provide: MatSnackBar, useClass: MockedSnackBar }],
     });
   });
 

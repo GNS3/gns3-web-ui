@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-
 import { Layer } from '../models/layer';
-import { Dictionary } from '../models/types';
-import { MapNode } from '../models/map/map-node';
 import { MapDrawing } from '../models/map/map-drawing';
 import { MapLink } from '../models/map/map-link';
+import { MapNode } from '../models/map/map-node';
+import { Dictionary } from '../models/types';
 
 @Injectable()
 export class LayersManager {

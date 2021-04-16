@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
 import { Snapshot } from '../models/snapshot';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class SnapshotService {

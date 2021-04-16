@@ -1,15 +1,11 @@
-import { BrowserModule } from "@angular/platform-browser";
-import { NgModule, ErrorHandler, Injectable, Injector, Inject } from "@angular/core";
-import { HttpErrorResponse } from "@angular/common/http";
-
-import { environment } from "../../../environments/environment";
-import { AppComponent } from "../../app.component";
-
-import * as Sentry from "@sentry/browser";
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandler, Inject, Injectable, Injector } from '@angular/core';
+import * as Sentry from '@sentry/browser';
 import { BrowserOptions, init } from '@sentry/browser';
+import { environment } from '../../../environments/environment';
 
 const config = {
-    dsn: "https://d8be3a98530f49eb90968ff396db326c@o19455.ingest.sentry.io/842726"
+  dsn: 'https://d8be3a98530f49eb90968ff396db326c@o19455.ingest.sentry.io/842726',
 };
 init(config as BrowserOptions);
 
@@ -25,7 +21,7 @@ export class SentryErrorHandler implements ErrorHandler {
     }
 
     // We can handle messages and Error objects directly.
-    if (typeof error === "string" || error instanceof Error) {
+    if (typeof error === 'string' || error instanceof Error) {
       return error;
     }
 
@@ -42,7 +38,7 @@ export class SentryErrorHandler implements ErrorHandler {
       }
 
       // ...or the request body itself, which we can use as a message instead.
-      if (typeof error.error === "string") {
+      if (typeof error.error === 'string') {
         return `Server returned code ${error.status} with body "${error.error}"`;
       }
 
@@ -55,7 +51,7 @@ export class SentryErrorHandler implements ErrorHandler {
   }
 
   handleError(error) {
-    let extractedError = this.extractError(error) || "Handled unknown error";
+    let extractedError = this.extractError(error) || 'Handled unknown error';
 
     // Capture handled exception and send it to Sentry.
     const eventId = Sentry.captureException(extractedError);

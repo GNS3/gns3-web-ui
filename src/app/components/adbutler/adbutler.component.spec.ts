@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AdbutlerComponent } from './adbutler.component';
 
 xdescribe('AdbutlerComponent', () => {
@@ -8,9 +7,8 @@ xdescribe('AdbutlerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AdbutlerComponent ]
-    })
-    .compileComponents();
+      declarations: [AdbutlerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

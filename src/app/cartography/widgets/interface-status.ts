@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
-
 import { select } from 'd3-selection';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
+import { MapSettingsService } from '../../services/mapsettings.service';
 import { LinkStatus } from '../models/link-status';
 import { MapLink } from '../models/map/map-link';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { SVGSelection } from '../models/types';
+import { Widget } from './widget';
 
 @Injectable()
 export class InterfaceStatusWidget implements Widget {
-  private mapSettingsService: MapSettingsService
+  private mapSettingsService: MapSettingsService;
 
-  constructor(
-    private _mapSettingsService: MapSettingsService
-  ) {
+  constructor(private _mapSettingsService: MapSettingsService) {
     this.mapSettingsService = _mapSettingsService;
   }
 
@@ -22,22 +18,24 @@ export class InterfaceStatusWidget implements Widget {
     const self = this;
     let mapLinks: MapLink[] = [];
 
-    view.each(function(this: SVGGElement, l: MapLink) {
+    view.each(function (this: SVGGElement, l: MapLink) {
       mapLinks.push(l);
     });
-    mapLinks.forEach(mapLink => {
-      mapLinks.forEach(n => {
-        if (n.nodes[0].linkId !== mapLink.nodes[0].linkId){
-          if ((mapLink.nodes[0].nodeId === n.nodes[0].nodeId && mapLink.nodes[1].nodeId === n.nodes[1].nodeId) || 
-            (mapLink.nodes[0].nodeId === n.nodes[1].nodeId && mapLink.nodes[1].nodeId === n.nodes[0].nodeId) || 
-            (mapLink.nodes[1].nodeId === n.nodes[0].nodeId && mapLink.nodes[0].nodeId === n.nodes[1].nodeId)) {
+    mapLinks.forEach((mapLink) => {
+      mapLinks.forEach((n) => {
+        if (n.nodes[0].linkId !== mapLink.nodes[0].linkId) {
+          if (
+            (mapLink.nodes[0].nodeId === n.nodes[0].nodeId && mapLink.nodes[1].nodeId === n.nodes[1].nodeId) ||
+            (mapLink.nodes[0].nodeId === n.nodes[1].nodeId && mapLink.nodes[1].nodeId === n.nodes[0].nodeId) ||
+            (mapLink.nodes[1].nodeId === n.nodes[0].nodeId && mapLink.nodes[0].nodeId === n.nodes[1].nodeId)
+          ) {
             mapLink.isMultiplied = true;
           }
         }
       });
     });
 
-    view.each(function(this: SVGGElement, l: MapLink) {
+    view.each(function (this: SVGGElement, l: MapLink) {
       const link_group = select<SVGGElement, MapLink>(this);
       const link_path = link_group.select<SVGPathElement>('path');
 
@@ -48,37 +46,42 @@ export class InterfaceStatusWidget implements Widget {
 
         if (link_path.node().getTotalLength() > 2 * 45 + 130) {
           if (l.source && l.target) {
-            let sourcePort = l.nodes.find(node => node.nodeId === l.source.id).label.text;
-            let destinationPort = l.nodes.find(node => node.nodeId === l.target.id).label.text;
+            let sourcePort = l.nodes.find((node) => node.nodeId === l.source.id).label.text;
+            let destinationPort = l.nodes.find((node) => node.nodeId === l.target.id).label.text;
             statuses = [
-              new LinkStatus(start_point.x, start_point.y, (l.capturing && l.suspend) ? 'suspended' : l.source.status, sourcePort),
-              new LinkStatus(end_point.x, end_point.y, (l.capturing && l.suspend) ? 'suspended' : l.target.status, destinationPort)
+              new LinkStatus(
+                start_point.x,
+                start_point.y,
+                l.capturing && l.suspend ? 'suspended' : l.source.status,
+                sourcePort
+              ),
+              new LinkStatus(
+                end_point.x,
+                end_point.y,
+                l.capturing && l.suspend ? 'suspended' : l.target.status,
+                destinationPort
+              ),
             ];
           }
         }
       }
 
-      link_group
-        .selectAll<SVGCircleElement, LinkStatus>('circle.status_started').remove();
-      link_group
-        .selectAll<SVGCircleElement, LinkStatus>('circle.status_stopped').remove();
-      link_group
-        .selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended').remove();
+      link_group.selectAll<SVGCircleElement, LinkStatus>('circle.status_started').remove();
+      link_group.selectAll<SVGCircleElement, LinkStatus>('circle.status_stopped').remove();
+      link_group.selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended').remove();
 
-      link_group
-        .selectAll<SVGRectElement, LinkStatus>('rect.status_started').remove();
-      link_group
-        .selectAll<SVGTextElement, LinkStatus>('text.status_started_label').remove();
-      link_group
-        .selectAll<SVGRectElement, LinkStatus>('rect.status_stopped').remove();
-      link_group
-        .selectAll<SVGTextElement, LinkStatus>('text.status_stopped_label').remove();
-      link_group
-        .selectAll<SVGRectElement, LinkStatus>('rect.status_suspended').remove();
-      link_group
-        .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
+      link_group.selectAll<SVGRectElement, LinkStatus>('rect.status_started').remove();
+      link_group.selectAll<SVGTextElement, LinkStatus>('text.status_started_label').remove();
+      link_group.selectAll<SVGRectElement, LinkStatus>('rect.status_stopped').remove();
+      link_group.selectAll<SVGTextElement, LinkStatus>('text.status_stopped_label').remove();
+      link_group.selectAll<SVGRectElement, LinkStatus>('rect.status_suspended').remove();
+      link_group.selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
 
-      if (self.mapSettingsService.showInterfaceLabels && self.mapSettingsService.integrateLinkLabelsToLinks && !l.isMultiplied) {
+      if (
+        self.mapSettingsService.showInterfaceLabels &&
+        self.mapSettingsService.integrateLinkLabelsToLinks &&
+        !l.isMultiplied
+      ) {
         const status_started = link_group
           .selectAll<SVGRectElement, LinkStatus>('rect.status_started')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
@@ -87,7 +90,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_started_enter)
           .attr('class', 'status_started')
           .attr('width', (ls: LinkStatus) => {
-            return (ls.port.length * 8) + 10;
+            return ls.port.length * 8 + 10;
           })
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)
@@ -110,7 +113,7 @@ export class InterfaceStatusWidget implements Widget {
           .attr('y', (ls: LinkStatus) => ls.y + 5)
           .attr('fill', `black`);
         status_started_label.exit().remove();
-        
+
         const status_stopped = link_group
           .selectAll<SVGRectElement, LinkStatus>('rect.status_stopped')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'stopped'));
@@ -119,7 +122,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_stopped_enter)
           .attr('class', 'status_stopped')
           .attr('width', (ls: LinkStatus) => {
-            return (ls.port.length * 8) + 10;
+            return ls.port.length * 8 + 10;
           })
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)
@@ -151,7 +154,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_suspended_enter)
           .attr('class', 'status_suspended')
           .attr('width', (ls: LinkStatus) => {
-            return (ls.port.length * 8) + 10;
+            return ls.port.length * 8 + 10;
           })
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)

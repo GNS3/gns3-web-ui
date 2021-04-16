@@ -25,7 +25,7 @@ export class MultiLinkCalculatorHelper {
     }
     return {
       dx: x2_x0,
-      dy: y2_y0
+      dy: y2_y0,
     };
   }
 

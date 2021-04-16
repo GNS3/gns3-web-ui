@@ -1,28 +1,27 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Server } from '../../../../models/server';
 
-
 @Component({
-    selector: 'app-symbols-menu',
-    templateUrl: './symbols-menu.component.html',
-    styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss']
+  selector: 'app-symbols-menu',
+  templateUrl: './symbols-menu.component.html',
+  styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],
 })
 export class SymbolsMenuComponent {
-    @Input() server: Server;
-    @Input() symbol: string;
-    @Output() symbolChangedEmitter = new EventEmitter<string>();
-    
-    chosenSymbol: string = '';
+  @Input() server: Server;
+  @Input() symbol: string;
+  @Output() symbolChangedEmitter = new EventEmitter<string>();
 
-    symbolChanged(chosenSymbol: string) {
-        this.chosenSymbol = chosenSymbol;
-    }
+  chosenSymbol: string = '';
 
-    chooseSymbol() {
-        this.symbolChangedEmitter.emit(this.chosenSymbol);
-    }
+  symbolChanged(chosenSymbol: string) {
+    this.chosenSymbol = chosenSymbol;
+  }
 
-    cancelChooseSymbol() {
-        this.symbolChangedEmitter.emit(this.symbol);
-    }
+  chooseSymbol() {
+    this.symbolChangedEmitter.emit(this.chosenSymbol);
+  }
+
+  cancelChooseSymbol() {
+    this.symbolChangedEmitter.emit(this.symbol);
+  }
 }

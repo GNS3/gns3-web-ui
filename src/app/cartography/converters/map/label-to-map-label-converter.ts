@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-
-import { Converter } from '../converter';
+import { CssFixer } from '../../helpers/css-fixer';
+import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
+import { FontFixer } from '../../helpers/font-fixer';
 import { Label } from '../../models/label';
 import { MapLabel } from '../../models/map/map-label';
-import { FontBBoxCalculator } from '../../helpers/font-bbox-calculator';
-import { CssFixer } from '../../helpers/css-fixer';
-import { FontFixer } from '../../helpers/font-fixer';
+import { Converter } from '../converter';
 
 @Injectable()
 export class LabelToMapLabelConverter implements Converter<Label, MapLabel> {

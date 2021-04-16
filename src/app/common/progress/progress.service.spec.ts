@@ -1,5 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { ProgressService, State } from './progress.service';
 
 describe('ProgressService', () => {
@@ -7,7 +6,7 @@ describe('ProgressService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProgressService]
+      providers: [ProgressService],
     });
 
     progressService = TestBed.get(ProgressService);
@@ -30,7 +29,7 @@ describe('ProgressService', () => {
   });
 
   it('should propagate event on error', () => {
-    const error = {error: 'Error'};
+    const error = { error: 'Error' };
     progressService.setError(error);
     expect(progressService.state.next).toHaveBeenCalledWith(new State(false, error.error));
   });

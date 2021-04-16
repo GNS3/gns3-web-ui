@@ -1,17 +1,16 @@
-import { TestBed } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { Project } from '../models/project';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
 import { ProjectService } from './project.service';
+import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
 import { MockedSettingsService } from './settings.service.spec';
-import { Project } from '../models/project';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { of } from 'rxjs';
-import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
+import { getTestServer } from './testing';
 
 /**
  * Mocks ProjectsService so it's not based on settings
@@ -63,7 +62,12 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, ProjectService, RecentlyOpenedProjectService, { provide: SettingsService, useClass: MockedSettingsService }]
+      providers: [
+        HttpServer,
+        ProjectService,
+        RecentlyOpenedProjectService,
+        { provide: SettingsService, useClass: MockedSettingsService },
+      ],
     });
 
     httpClient = TestBed.get(HttpClient);

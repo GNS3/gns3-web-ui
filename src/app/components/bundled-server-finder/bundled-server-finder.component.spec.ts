@@ -1,14 +1,12 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-
-import { BundledServerFinderComponent } from './bundled-server-finder.component';
+import { ProgressService } from '../../common/progress/progress.service';
+import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
-import { Server } from '../../models/server';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProgressService } from '../../common/progress/progress.service';
 import { MockedProgressService } from '../project-map/project-map.component.spec';
-
+import { BundledServerFinderComponent } from './bundled-server-finder.component';
 
 describe('BundledServerFinderComponent', () => {
   let component: BundledServerFinderComponent;
@@ -19,7 +17,7 @@ describe('BundledServerFinderComponent', () => {
 
   beforeEach(async(() => {
     router = {
-      navigate: jasmine.createSpy('navigate')
+      navigate: jasmine.createSpy('navigate'),
     };
 
     const server = new Server();
@@ -32,10 +30,10 @@ describe('BundledServerFinderComponent', () => {
       providers: [
         { provide: Router, useValue: router },
         { provide: ServerService, useValue: serverService },
-        { provide: ProgressService, useValue: progressService }
+        { provide: ProgressService, useValue: progressService },
       ],
       declarations: [BundledServerFinderComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BundledServerFinderComponent);

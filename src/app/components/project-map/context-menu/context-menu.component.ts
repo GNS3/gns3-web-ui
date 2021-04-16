@@ -1,22 +1,21 @@
 import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
-import { Project } from '../../../models/project';
-import { ProjectService } from '../../../services/project.service';
+import { ElectronService } from 'ngx-electron';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Label } from '../../../cartography/models/label';
+import { Node } from '../../../cartography/models/node';
 import { Link } from '../../../models/link';
-import { ElectronService } from 'ngx-electron';
 import { LinkNode } from '../../../models/link-node';
-
+import { Project } from '../../../models/project';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
 
 @Component({
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
-  styleUrls: ['./context-menu.component.scss']
+  styleUrls: ['./context-menu.component.scss'],
 })
 export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
@@ -96,7 +95,14 @@ export class ContextMenuComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
-  public openMenuForListOfElements(drawings: Drawing[], nodes: Node[], labels: Label[], links: Link[], top: number, left: number) {
+  public openMenuForListOfElements(
+    drawings: Drawing[],
+    nodes: Node[],
+    labels: Label[],
+    links: Link[],
+    top: number,
+    left: number
+  ) {
     this.resetCapabilities();
 
     this.drawings = drawings;

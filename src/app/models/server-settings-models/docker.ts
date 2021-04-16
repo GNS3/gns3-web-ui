@@ -1,3 +1,3 @@
 export class Docker {
-    containers: any[];
+  containers: any[];
 }

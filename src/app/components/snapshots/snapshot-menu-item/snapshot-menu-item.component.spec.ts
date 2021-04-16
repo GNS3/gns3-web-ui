@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SnapshotMenuItemComponent } from './snapshot-menu-item.component';
 
 describe('SnapshotMenuItemComponent', () => {
@@ -8,7 +7,7 @@ describe('SnapshotMenuItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SnapshotMenuItemComponent]
+      declarations: [SnapshotMenuItemComponent],
     }).compileComponents();
   }));
 

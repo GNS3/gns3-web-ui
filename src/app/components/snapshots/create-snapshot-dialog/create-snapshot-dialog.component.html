@@ -1,14 +1,19 @@
 <div class="title-container">
   <h1 mat-dialog-title>Create snapshot</h1>
-  <button mat-button class="top-button" color="accent" (click)="onNoClick()" routerLink="/server/{{server.id}}/project/{{project.project_id}}/snapshots">Go to snapshots</button>
+  <button
+    mat-button
+    class="top-button"
+    color="accent"
+    (click)="onNoClick()"
+    routerLink="/server/{{ server.id }}/project/{{ project.project_id }}/snapshots"
+  >
+    Go to snapshots
+  </button>
 </div>
 <div mat-dialog-content>
   <form [formGroup]="inputForm">
     <mat-form-field class="name-input">
-      <input 
-        matInput tabindex="1" 
-        formControlName="snapshotName"
-        placeholder="Name" />
+      <input matInput tabindex="1" formControlName="snapshotName" placeholder="Name" />
     </mat-form-field>
   </form>
 </div>

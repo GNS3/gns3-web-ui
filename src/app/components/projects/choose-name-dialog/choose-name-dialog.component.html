@@ -1,12 +1,12 @@
 <h1 mat-dialog-title>Please choose name for exporting project</h1>
 
 <div class="modal-form-container">
-    <mat-form-field class="form-field">
-        <input matInput placeholder="Project name" [(ngModel)]="name" type="text">
-    </mat-form-field>
+  <mat-form-field class="form-field">
+    <input matInput placeholder="Project name" [(ngModel)]="name" type="text" />
+  </mat-form-field>
 </div>
 
 <div mat-dialog-actions>
-    <button mat-button (click)="onCloseClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+  <button mat-button (click)="onCloseClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onSaveClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
 </div>

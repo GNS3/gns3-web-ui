@@ -1,22 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { PersistenceModule } from 'angular-persistence';
-
-import { SettingsComponent } from './settings.component';
+import { MapSettingsService } from '../../services/mapsettings.service';
 import { SettingsService } from '../../services/settings.service';
+import { ConsoleService } from '../../services/settings/console.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
-import { ConsoleService } from '../../services/settings/console.service';
-import { MapSettingsService } from '../../services/mapsettings.service';
 import { UpdatesService } from '../../services/updates.service';
 import { autoSpy } from '../project-map/console-wrapper/console-wrapper.component.spec';
+import { SettingsComponent } from './settings.component';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -24,26 +22,35 @@ describe('SettingsComponent', () => {
   let settingsService: SettingsService;
   let mapSettingsService = {
     integrateLinkLabelsToLinks: true,
-    toggleIntegrateInterfaceLabels(val: boolean) {}
+    toggleIntegrateInterfaceLabels(val: boolean) {},
   };
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
 
   beforeEach(async(() => {
     consoleService = {
-      command: 'command'
+      command: 'command',
     };
 
     TestBed.configureTestingModule({
-      imports: [MatExpansionModule, MatCheckboxModule, FormsModule, PersistenceModule, BrowserAnimationsModule, MatIconModule, MatFormFieldModule, MatInputModule],
+      imports: [
+        MatExpansionModule,
+        MatCheckboxModule,
+        FormsModule,
+        PersistenceModule,
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+      ],
       providers: [
         SettingsService,
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: ConsoleService, useValue: consoleService },
         { provide: MapSettingsService, useValue: mapSettingsService },
-        { provide: UpdatesService, useValue: updatesService }
+        { provide: UpdatesService, useValue: updatesService },
       ],
-      declarations: [SettingsComponent]
+      declarations: [SettingsComponent],
     }).compileComponents();
 
     settingsService = TestBed.get(SettingsService);
@@ -64,7 +71,7 @@ describe('SettingsComponent', () => {
       crash_reports: true,
       experimental_features: true,
       angular_map: false,
-      console_command: ''
+      console_command: '',
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');
@@ -75,5 +82,4 @@ describe('SettingsComponent', () => {
     component.save();
     expect(setAll).toHaveBeenCalledWith(settings);
   });
-
 });

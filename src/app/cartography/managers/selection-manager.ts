@@ -1,5 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
+import { EventEmitter, Injectable } from '@angular/core';
 import { Indexed } from '../datasources/map-datasource';
 
 @Injectable()
@@ -13,16 +12,16 @@ export class SelectionManager {
     const dictItems = this.convertToKeyDict(items);
 
     const selected = Object.keys(dictItems)
-      .filter(key => {
+      .filter((key) => {
         return !this.isSelectedByKey(key);
       })
-      .map(key => dictItems[key]);
+      .map((key) => dictItems[key]);
 
     const unselected = Object.keys(this.selection)
-      .filter(key => {
+      .filter((key) => {
         return !(key in dictItems);
       })
-      .map(key => this.selection[key]);
+      .map((key) => this.selection[key]);
 
     this.selection = dictItems;
 
@@ -36,7 +35,7 @@ export class SelectionManager {
   }
 
   public getSelected(): Indexed[] {
-    return Object.keys(this.selection).map(key => this.selection[key]);
+    return Object.keys(this.selection).map((key) => this.selection[key]);
   }
 
   public isSelected(item): boolean {
@@ -55,7 +54,7 @@ export class SelectionManager {
 
   private convertToKeyDict(items: Indexed[]) {
     const dict = {};
-    items.forEach(item => {
+    items.forEach((item) => {
       dict[this.getKey(item)] = item;
     });
     return dict;

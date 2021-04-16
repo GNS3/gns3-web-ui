@@ -1,13 +1,12 @@
-import { TestBed, inject } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
-import { getTestServer } from './testing';
-import { SnapshotService } from './snapshot.service';
 import { Snapshot } from '../models/snapshot';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { SnapshotService } from './snapshot.service';
+import { getTestServer } from './testing';
 
 describe('SnapshotService', () => {
   let httpClient: HttpClient;
@@ -19,7 +18,7 @@ describe('SnapshotService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SnapshotService]
+      providers: [HttpServer, SnapshotService],
     });
 
     httpClient = TestBed.get(HttpClient);

@@ -1,13 +1,13 @@
+import { Injectable } from '@angular/core';
+import { LayersManager } from '../managers/layers-manager';
 import { Context } from '../models/context';
+import { SVGSelection } from '../models/types';
+import { MovingTool } from '../tools/moving-tool';
+import { SelectionTool } from '../tools/selection-tool';
+import { DrawingLineWidget } from './drawing-line';
+import { LayersWidget } from './layers';
 import { NodesWidget } from './nodes';
 import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { DrawingLineWidget } from './drawing-line';
-import { SelectionTool } from '../tools/selection-tool';
-import { MovingTool } from '../tools/moving-tool';
-import { LayersWidget } from './layers';
-import { LayersManager } from '../managers/layers-manager';
-import { Injectable } from '@angular/core';
 
 @Injectable()
 export class GraphLayout implements Widget {
@@ -33,10 +33,7 @@ export class GraphLayout implements Widget {
   }
 
   connect(view: SVGSelection, context: Context) {
-    this.drawingLineTool.connect(
-      view,
-      context
-    );
+    this.drawingLineTool.connect(view, context);
   }
 
   draw(view: SVGSelection, context: Context) {
@@ -44,10 +41,7 @@ export class GraphLayout implements Widget {
 
     const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([context]);
 
-    const canvasEnter = canvas
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'canvas');
+    const canvasEnter = canvas.enter().append<SVGGElement>('g').attr('class', 'canvas');
 
     canvas.merge(canvasEnter).attr('transform', (ctx: Context) => {
       const xTrans = ctx.getZeroZeroTransformationPoint().x + ctx.transformation.x;
