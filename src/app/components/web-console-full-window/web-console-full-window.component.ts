@@ -72,7 +72,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
   openTerminal() {
     setTimeout(() => {
       this.term.open(this.terminal.nativeElement);
-      const socket = new WebSocket(this.getUrl());
+      const socket = new WebSocket(this.consoleService.getUrl(this.server, this.node));
 
       socket.onerror = (event) => {
         this.term.write('Connection lost' + '\r\n');
@@ -102,9 +102,5 @@ export class WebConsoleFullWindowComponent implements OnInit {
       let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());
       this.term.resize(numberOfColumns, numberOfRows);
     }, 0);
-  }
-
-  getUrl() {
-    return `ws://${this.server.host}:${this.server.port}/v2/projects/${this.projectId}/nodes/${this.nodeId}/console/ws`;
   }
 }

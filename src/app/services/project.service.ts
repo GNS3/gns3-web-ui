@@ -94,10 +94,6 @@ export class ProjectService {
     return this.httpServer.post(server, `/projects/${project_id}/duplicate`, { name: project_name });
   }
 
-  notificationsPath(server: Server, project_id: string): string {
-    return `ws://${server.host}:${server.port}/v2/projects/${project_id}/notifications/ws`;
-  }
-
   isReadOnly(project: Project) {
     if (project.readonly) {
       return project.readonly;

@@ -235,11 +235,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         nodes.forEach(async (node: Node) => {
           node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
 
-          if (node.width == 0 && node.height == 0) {
-            let symbolDimensions = await this.symbolService.getDimensions(this.server, node.symbol).toPromise();
-            node.width = symbolDimensions.width;
-            node.height = symbolDimensions.height;
-          }
+          // if (node.width == 0 && node.height == 0) {
+          //   let symbolDimensions = await this.symbolService.getDimensions(this.server, node.symbol).toPromise();
+          //   node.width = symbolDimensions.width;
+          //   node.height = symbolDimensions.height;
+          // }
         });
 
         this.nodes = nodes;
@@ -425,7 +425,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpProjectWS(project: Project) {
-    this.projectws = new WebSocket(this.projectService.notificationsPath(this.server, project.project_id));
+    this.projectws = new WebSocket(this.notificationService.projectNotificationsPath(this.server, project.project_id));
 
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));

@@ -53,7 +53,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     if (this.isLightThemeEnabled)
       this.term.setOption('theme', { background: 'white', foreground: 'black', cursor: 'black' });
 
-    const socket = new WebSocket(this.getUrl());
+    const socket = new WebSocket(this.consoleService.getUrl(this.server, this.node));
 
     socket.onerror = (event) => {
       this.term.write('Connection lost');
@@ -77,9 +77,5 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
       }
       return true;
     });
-  }
-
-  getUrl() {
-    return `ws://${this.server.host}:${this.server.port}/v2/projects/${this.node.project_id}/nodes/${this.node.node_id}/console/ws`;
   }
 }
