@@ -23,6 +23,7 @@ describe('SettingsComponent', () => {
   let mapSettingsService = {
     integrateLinkLabelsToLinks: true,
     toggleIntegrateInterfaceLabels(val: boolean) {},
+    toggleOpenReadme(val: boolean) {}
   };
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
