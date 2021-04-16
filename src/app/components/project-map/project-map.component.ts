@@ -79,6 +79,7 @@ import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
+import { ProjectReadmeComponent } from './project-readme/project-readme.component';
 
 @Component({
   selector: 'app-project-map',
