@@ -1,73 +1,94 @@
-import { Injectable, EventEmitter } from "@angular/core";
+import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
 export class MapSettingsService {
-    public isScrollDisabled = new Subject<boolean>();
-    public isMapLocked = new Subject<boolean>();
-    public isTopologySummaryVisible: boolean = true;
-    public isLogConsoleVisible: boolean = false;
-    public isLayerNumberVisible: boolean = false;
-    public logConsoleSubject = new Subject<boolean>();
-    public mapRenderedEmitter = new EventEmitter<boolean>();
+  public symbolScalingSubject: Subject<boolean> = new Subject<boolean>();
 
-    public showInterfaceLabels: boolean = true;
-    public integrateLinkLabelsToLinks: boolean = true;
-    public openReadme: boolean = true;
+  public isScrollDisabled = new Subject<boolean>();
+  public isMapLocked = new Subject<boolean>();
+  public isTopologySummaryVisible: boolean = true;
+  public isLogConsoleVisible: boolean = false;
+  public isLayerNumberVisible: boolean = false;
+  public logConsoleSubject = new Subject<boolean>();
+  public mapRenderedEmitter = new EventEmitter<boolean>();
+  public openReadme: boolean = true;
+  public showInterfaceLabels: boolean = true;
+  public integrateLinkLabelsToLinks: boolean = true;
 
-    constructor() {
-        this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
-        if (localStorage.getItem('integrateLinkLabelsToLinks')) this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
-        if (localStorage.getItem('openReadme')) this.openReadme = localStorage.getItem('openReadme') === 'true' ? true : false;
+  constructor() {
+    this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
+    if (localStorage.getItem('integrateLinkLabelsToLinks'))
+      this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
+
+    let isSymbolScalingEnabled = true;
+    if (localStorage.getItem('symbolScaling')) {
+      isSymbolScalingEnabled = localStorage.getItem('symbolScaling') === 'true' ? true : false;
+    } else {
+      localStorage.setItem('symbolScaling', 'true');
     }
+  }
 
-    changeMapLockValue(value: boolean) {
-        this.isMapLocked.next(value);
-    }
+  public getSymbolScaling(): boolean {
+    return localStorage.getItem('symbolScaling') === 'true' ? true : false;
+  }
 
-    setConsoleContextMenuAction(action: string) {
-        localStorage.setItem('consoleContextMenu', action);
+  public setSymbolScaling(value: boolean) {
+    if (value) {
+      localStorage.setItem('symbolScaling', 'true');
+    } else {
+      localStorage.setItem('symbolScaling', 'false');
     }
+    this.symbolScalingSubject.next(value);
+  }
 
-    getConsoleContextManuAction(): string {
-        return localStorage.getItem('consoleContextMenu');
-    }
+  changeMapLockValue(value: boolean) {
+    this.isMapLocked.next(value);
+  }
 
-    toggleTopologySummary(value: boolean) {
-        this.isTopologySummaryVisible = value;
-    }
+  setConsoleContextMenuAction(action: string) {
+    localStorage.setItem('consoleContextMenu', action);
+  }
 
-    toggleLogConsole(value: boolean) {
-        this.isLogConsoleVisible = value;
-    }
+  getConsoleContextManuAction(): string {
+    return localStorage.getItem('consoleContextMenu');
+  }
 
-    toggleLayers(value: boolean) {
-        this.isLayerNumberVisible = value;
-    }
+  toggleTopologySummary(value: boolean) {
+    this.isTopologySummaryVisible = value;
+  }
 
-    toggleShowInterfaceLabels(value: boolean) {
-        this.showInterfaceLabels = value;
-    }
+  toggleLogConsole(value: boolean) {
+    this.isLogConsoleVisible = value;
+  }
 
-    toggleIntegrateInterfaceLabels(value: boolean) {
-        this.integrateLinkLabelsToLinks = value;
-        localStorage.removeItem('integrateLinkLabelsToLinks');
-        if (value) {
-            localStorage.setItem('integrateLinkLabelsToLinks', 'true');
-        } else {
-            localStorage.setItem('integrateLinkLabelsToLinks', 'false');
-        }
-    }
+  toggleLayers(value: boolean) {
+    this.isLayerNumberVisible = value;
+  }
 
-    toggleOpenReadme(value: boolean) {
-        this.openReadme = value;
-        localStorage.removeItem('openReadme');
-        if (value) {
-            localStorage.setItem('openReadme', 'true');
-        } else {
-            localStorage.setItem('openReadme', 'false');
-        }
+  toggleShowInterfaceLabels(value: boolean) {
+    this.showInterfaceLabels = value;
+  }
+
+  toggleIntegrateInterfaceLabels(value: boolean) {
+    this.integrateLinkLabelsToLinks = value;
+    localStorage.removeItem('integrateLinkLabelsToLinks');
+    if (value) {
+      localStorage.setItem('integrateLinkLabelsToLinks', 'true');
+    } else {
+      localStorage.setItem('integrateLinkLabelsToLinks', 'false');
     }
+  }
+
+  toggleOpenReadme(value: boolean) {
+      this.openReadme = value;
+      localStorage.removeItem('openReadme');
+      if (value) {
+          localStorage.setItem('openReadme', 'true');
+      } else {
+          localStorage.setItem('openReadme', 'false');
+      }
+  }
 }

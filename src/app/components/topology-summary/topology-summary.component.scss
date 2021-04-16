@@ -1,126 +1,133 @@
 @media screen and (max-width: 600px) {
-    .summaryWrapper {
-        visibility: hidden;
-    }
+  .summaryWrapper {
+    visibility: hidden;
+  }
+}
+
+mat-tab-group {
+  width: 100%;
 }
 
 .summaryWrapper {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    height: 400px;
-    width: 300px;
-    background: #263238;
-    color: white;
-    overflow: hidden;
-    font-size: 12px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  position: fixed;
+  top: 60px;
+  right: 0px;
+  height: 400px;
+  width: 320px;
+  background: #263238;
+  color: white;
+  overflow: hidden;
+  font-size: 12px;
+  margin: 20px;
+  border-radius: 8px;
 }
 
 .lightTheme {
-    background: white!important;
-    color: black;
+  background-color: rgba(244, 248, 252, 0.95);
+  color: black;
+  margin: 20px;
+  border-radius: 8px;
 }
 
 .summaryHeaderMenu {
-    height: 24px;
+  height: 24px;
 }
 
 .summaryHeader {
-    width: 100%;
-    height: 34px;
-    display: flex;
-    justify-content: space-between;
-    margin-right: 5px;
+  width: 100%;
+  display: flex;
 }
 
 .summaryFilters {
-    height: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
+  height: 25px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .summarySorting {
-    height: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
+  height: 25px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.tabContent {
+  padding: 10px;
 }
 
 .summaryContent {
-    margin-left: 5px;
-    margin-right: 5px;
-    overflow: auto;
-    scrollbar-color: darkgrey #263238;
-    scrollbar-width: thin;
+  overflow: auto;
+  scrollbar-color: darkgrey #263238;
+  scrollbar-width: thin;
 }
 
 .summaryContentServers {
-    margin-left: 5px;
-    margin-right: 5px;
-    max-height: 350px;
-    overflow: auto;
-    scrollbar-color: darkgrey #263238;
-    scrollbar-width: thin;
+  max-height: 350px;
+  overflow: auto;
+  scrollbar-color: darkgrey #263238;
+  scrollbar-width: thin;
 }
 
 .titleButton {
-    margin-left: 5px;
-    margin-top: 4px;
-    outline: none;
+  margin-left: 5px;
+  margin-top: 4px;
+  outline: none;
+  border-radius: 0px;
 }
 
 .marked {
-    color: #0097a7;
+  color: #0097a7;
+  border-bottom: 2px solid #0097a7;
 }
 
 .divider {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    width: 100%;
-    height: 2px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+  height: 2px;
 }
 
 .nodeRow {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding-right: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 5px;
 }
 
 ::-webkit-scrollbar {
-    width: 0.5em;
+  width: 0.5em;
 }
 
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: darkgrey;
-    outline: 1px solid #263238;
+  background-color: darkgrey;
+  outline: 1px solid #263238;
 }
 
 .radio-group-wrapper {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .radio-group {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .closeButton {
-    cursor: pointer;
-    font-size: 24px;
-    margin-top: 8px;
-    margin-right: 5px;
+  cursor: pointer;
+  font-size: 24px;
+  margin-top: 8px;
+  margin-right: 5px;
 }
 
 .filterBox {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .notvisible {
-    display: none;
+  display: none;
 }

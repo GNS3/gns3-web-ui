@@ -1,8 +1,7 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened}">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Cloud configuration</h1>
-        </div>
+<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Cloud configuration</h1>
     </div>
     <div class="default-content" *ngIf="cloudNodeTemplate">
         <mat-accordion>
@@ -178,6 +177,85 @@
             <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
             <button mat-raised-button color="primary" (click)="onSave()">Save</button><br/>
         </div>
+        <mat-form-field class="select">
+          <mat-select
+            placeholder="Ethernet interface"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="ethernetInterface"
+          >
+            <mat-option *ngFor="let type of ethernetInterfaces" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> TAP interfaces </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="form-field" *ngFor="let port of portsMappingTap">
+          <div class="form-field">{{ port.name }}</div>
+          <br /><br />
+        </div>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="tapInterface" placeholder="TAP interface" />
+        </mat-form-field>
+        <button mat-button class="form-field" (click)="onAddTapInterface()">Add</button>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> UDP tunnels </mat-panel-title>
+        </mat-expansion-panel-header>
+        <table *ngIf="dataSourceUdp.length" class="table" mat-table [dataSource]="dataSourceUdp">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="rport">
+            <th mat-header-cell *matHeaderCellDef>Local port</th>
+            <td mat-cell *matCellDef="let element">{{ element.rport }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="rhost">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let element">{{ element.rhost }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="lport">
+            <th mat-header-cell *matHeaderCellDef>Remote port</th>
+            <td mat-cell *matCellDef="let element">{{ element.lport }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <br *ngIf="dataSourceUdp.length" />
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="newPort.name" placeholder="Name" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="number" [(ngModel)]="newPort.lport" placeholder="Local port" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="newPort.rhost" placeholder="Remote host" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="number" [(ngModel)]="newPort.rport" placeholder="Remote port" />
+        </mat-form-field>
+        <button mat-button class="form-field" (click)="onAddUdpInterface()">Add</button>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <div class="buttons-bar">
+      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Save</button><br />
     </div>
+  </div>
 </div>
-<app-symbols-menu *ngIf="isSymbolSelectionOpened && cloudNodeTemplate" [server]="server" [symbol]="cloudNodeTemplate.symbol" (symbolChangedEmitter)="symbolChanged($event)"></app-symbols-menu>
+<app-symbols-menu
+  *ngIf="isSymbolSelectionOpened && cloudNodeTemplate"
+  [server]="server"
+  [symbol]="cloudNodeTemplate.symbol"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>

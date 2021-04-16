@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { D3MapComponent } from './d3-map.component';
 
 describe('D3MapComponent', () => {
@@ -8,7 +7,7 @@ describe('D3MapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [D3MapComponent]
+      declarations: [D3MapComponent],
     }).compileComponents();
   }));
 

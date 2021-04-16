@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-
-import { Converter } from '../converter';
 import { Drawing } from '../../models/drawing';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { Converter } from '../converter';
 
 @Injectable()
 export class MapDrawingToDrawingConverter implements Converter<MapDrawing, Drawing> {

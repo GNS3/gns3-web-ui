@@ -1,6 +1,6 @@
-import { Size } from './size';
-import { Point } from './point';
 import { Injectable } from '@angular/core';
+import { Point } from './point';
+import { Size } from './size';
 
 export class Transformation {
   constructor(public x: number, public y: number, public k: number) {}

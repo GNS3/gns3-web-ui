@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TextComponent } from './text.component';
 
 describe('TextComponent', () => {
@@ -8,7 +7,7 @@ describe('TextComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TextComponent]
+      declarations: [TextComponent],
     }).compileComponents();
   }));
 

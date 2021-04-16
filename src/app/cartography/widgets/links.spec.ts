@@ -1,13 +1,12 @@
-import { instance, mock } from 'ts-mockito';
 import { Selection } from 'd3-selection';
-
-import { TestSVGCanvas } from '../testing';
-import { Layer } from '../models/layer';
-import { LinksWidget } from './links';
-import { LinkWidget } from './link';
+import { instance, mock } from 'ts-mockito';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
-import { MapNode } from '../models/map/map-node';
+import { Layer } from '../models/layer';
 import { MapLink } from '../models/map/map-link';
+import { MapNode } from '../models/map/map-node';
+import { TestSVGCanvas } from '../testing';
+import { LinkWidget } from './link';
+import { LinksWidget } from './links';
 
 describe('LinksWidget', () => {
   let svg: TestSVGCanvas;
@@ -46,10 +45,7 @@ describe('LinksWidget', () => {
 
     const layersSelection = svg.canvas.selectAll<SVGGElement, Layer>('g.layer').data(layers);
 
-    layersEnter = layersSelection
-      .enter()
-      .append<SVGGElement>('g')
-      .attr('class', 'layer');
+    layersEnter = layersSelection.enter().append<SVGGElement>('g').attr('class', 'layer');
 
     layersSelection.exit().remove();
   });

@@ -1,13 +1,13 @@
-import { DrawingDraggedComponent } from './drawing-dragged.component';
-import { ComponentFixture, async, TestBed } from '@angular/core/testing';
-import { DrawingService } from '../../../services/drawing.service';
-import { MockedDrawingService, MockedDrawingsDataSource } from '../../project-map/project-map.component.spec';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
-import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { DrawingElement } from '../../../cartography/models/drawings/drawing-element';
-import { Observable } from 'rxjs';
+import { MapDrawing } from '../../../cartography/models/map/map-drawing';
+import { DrawingService } from '../../../services/drawing.service';
+import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
+import { DrawingDraggedComponent } from './drawing-dragged.component';
 
 describe('DrawingDraggedComponent', () => {
   let component: DrawingDraggedComponent;
@@ -21,9 +21,9 @@ describe('DrawingDraggedComponent', () => {
       providers: [
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
-        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource }
+        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
       ],
-      declarations: [DrawingDraggedComponent]
+      declarations: [DrawingDraggedComponent],
     }).compileComponents();
   }));
 
@@ -44,7 +44,7 @@ describe('DrawingDraggedComponent', () => {
   it('should call drawing service when drawing is dragged', () => {
     const mapDrawingElement: DrawingElement = {
       width: 100,
-      height: 100
+      height: 100,
     };
     const mapDrawing: MapDrawing = {
       id: 'sampleId',
@@ -55,7 +55,7 @@ describe('DrawingDraggedComponent', () => {
       x: 0,
       y: 0,
       z: 0,
-      element: mapDrawingElement
+      element: mapDrawingElement,
     };
     const drawingDraggedDataEvent = new DraggedDataEvent<MapDrawing>(mapDrawing, 0, 0);
     spyOn(mockedDrawingService, 'updatePosition').and.returnValue(Observable.of());

@@ -1,30 +1,58 @@
 .ad {
-  background-color: transparent;
-  width: 400px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #a8ecff;
   padding-top: 10px;
   padding-bottom: 10px;
   font-size: 12px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.adInnerContainer {
+  margin: auto;
+  text-align: center;
+}
+
+.adBody {
+  padding-right: 16px;
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: #000 !important;
+}
+
+.lightTheme {
+  background-color: #ddf9ff;
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 button {
-  background-color: #0097a7;
+  background-color: #01d4ff;
   margin-top: 2px;
   border: none;
   outline: none;
   padding: 5px;
   color: white;
   font-weight: bold;
+  font-size: 11px;
   padding-right: 15px;
   padding-left: 15px;
-  border-radius: 4px;
-}
+  border-radius: 6px;
 
-a {
-  color: #0097a7;
-}
-
-button {
   a {
     color: white;
   }
+}
+
+a {
+  color: #122124;
 }

@@ -36,11 +36,10 @@
 
           <div>
             <mat-form-field class="full-width-field">
-              <input matInput placeholder="console" [value]="consoleCommand" readonly="true">
+              <input matInput placeholder="console" [value]="consoleCommand" readonly="true" />
               <a mat-icon-button matSuffix routerLink="/settings/console"><mat-icon>mode_edit</mat-icon></a>
             </mat-form-field>
           </div>
-
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="false">
@@ -53,7 +52,6 @@
             <button mat-raised-button (click)="setDarkMode(false)">Switch to light theme</button>
             <button mat-raised-button (click)="setDarkMode(true)">Switch to dark theme</button>
           </div>
-
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="false">
@@ -65,12 +63,10 @@
           <div class="theme-panel">
             <button mat-raised-button (click)="checkForUpdates()" class="fullWidth">Check for updates</button>
           </div>
-
         </mat-expansion-panel>
       </mat-accordion>
     </div>
 
     <div class="buttons-bar"><button mat-raised-button color="primary" (click)="save()">Save settings</button></div>
   </div>
-
 </div>

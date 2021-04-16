@@ -1,8 +1,8 @@
+import { FontFixer } from '../../helpers/font-fixer';
+import { TextElement } from '../../models/drawings/text-element';
+import { MapDrawing } from '../../models/map/map-drawing';
 import { TestSVGCanvas } from '../../testing';
 import { TextDrawingWidget } from './text-drawing';
-import { TextElement } from '../../models/drawings/text-element';
-import { FontFixer } from '../../helpers/font-fixer';
-import { MapDrawing } from '../../models/map/map-drawing';
 
 describe('TextDrawingWidget', () => {
   let svg: TestSVGCanvas;
@@ -32,10 +32,7 @@ describe('TextDrawingWidget', () => {
     drawing.element = text;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);
@@ -55,10 +52,7 @@ describe('TextDrawingWidget', () => {
     drawing.element = text;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);
@@ -81,10 +75,7 @@ describe('TextDrawingWidget', () => {
     drawing.element = text;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

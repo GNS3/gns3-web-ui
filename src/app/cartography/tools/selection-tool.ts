@@ -1,11 +1,10 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { mouse, select, event } from 'd3-selection';
+import { EventEmitter, Injectable } from '@angular/core';
+import { event, mouse, select } from 'd3-selection';
 import { Subject } from 'rxjs';
-
-import { SVGSelection } from '../models/types';
+import { SelectionEventSource } from '../events/selection-event-source';
 import { Context } from '../models/context';
 import { Rectangle } from '../models/rectangle';
-import { SelectionEventSource } from '../events/selection-event-source';
+import { SVGSelection } from '../models/types';
 
 @Injectable()
 export class SelectionTool {
@@ -17,14 +16,9 @@ export class SelectionTool {
   private path;
   private enabled = false;
 
-  public constructor(
-    private context: Context, 
-    private selectionEventSource: SelectionEventSource
-  ) {}
+  public constructor(private context: Context, private selectionEventSource: SelectionEventSource) {}
 
-  public disableContextMenu(){
-
-  }
+  public disableContextMenu() {}
 
   public setEnabled(enabled) {
     this.enabled = enabled;
@@ -34,7 +28,7 @@ export class SelectionTool {
   private activate(selection) {
     const self = this;
 
-    selection.on('mousedown', function() {
+    selection.on('mousedown', function () {
       // prevent deselection on right click
       if (event.button == 2) {
         selection.on('contextmenu', () => {
@@ -55,11 +49,11 @@ export class SelectionTool {
       selection.selectAll(SelectionTool.SELECTABLE_CLASS).classed('selected', false);
 
       subject
-        .on('mousemove.selection', function() {
+        .on('mousemove.selection', function () {
           const end = self.transformation(mouse(parent));
           self.moveSelection(start, end);
         })
-        .on('mouseup.selection', function() {
+        .on('mouseup.selection', function () {
           const end = self.transformation(mouse(parent));
           self.endSelection(start, end);
           subject.on('mousemove.selection', null).on('mouseup.selection', null);
@@ -100,9 +94,12 @@ export class SelectionTool {
   }
 
   private moveSelection(start, move) {
-    let x = start[0]/this.context.transformation.k;
-    let y = start[1]/this.context.transformation.k;
-    this.path.attr('d', this.rect(x, y, move[0]/this.context.transformation.k - x, move[1]/this.context.transformation.k - y));
+    let x = start[0] / this.context.transformation.k;
+    let y = start[1] / this.context.transformation.k;
+    this.path.attr(
+      'd',
+      this.rect(x, y, move[0] / this.context.transformation.k - x, move[1] / this.context.transformation.k - y)
+    );
     this.selectedEvent(start, move);
   }
 
@@ -127,7 +124,7 @@ export class SelectionTool {
     const transformation_point = this.context.getZeroZeroTransformationPoint();
     return [
       point[0] - transformation_point.x - this.context.transformation.x,
-      point[1] - transformation_point.y - this.context.transformation.y
+      point[1] - transformation_point.y - this.context.transformation.y,
     ];
   }
 }

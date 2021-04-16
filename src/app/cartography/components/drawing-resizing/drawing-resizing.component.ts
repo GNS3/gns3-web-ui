@@ -1,17 +1,15 @@
-import { Component, OnInit, ElementRef, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { MapDrawing } from '../../models/map/map-drawing';
 import { ResizedDataEvent } from '../../events/event-source';
 import { ResizingEnd } from '../../events/resizing';
+import { MapDrawing } from '../../models/map/map-drawing';
+import { DrawingsWidget } from '../../widgets/drawings';
 
 @Component({
   selector: 'app-drawing-resizing',
-  template: `
-    <ng-content></ng-content>
-  `,
-  styleUrls: ['./drawing-resizing.component.scss']
+  template: ` <ng-content></ng-content> `,
+  styleUrls: ['./drawing-resizing.component.scss'],
 })
 export class DrawingResizingComponent implements OnInit, OnDestroy {
   resizingFinished: Subscription;

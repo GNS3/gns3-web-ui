@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { Layer } from '../models/layer';
-import { NodeWidget } from './node';
 import { Draggable } from '../events/draggable';
-import { MapNode } from '../models/map/map-node';
 import { MapSettingsManager } from '../managers/map-settings-manager';
+import { Layer } from '../models/layer';
+import { MapNode } from '../models/map/map-node';
+import { SVGSelection } from '../models/types';
+import { NodeWidget } from './node';
+import { Widget } from './widget';
 
 @Injectable()
 export class NodesWidget implements Widget {

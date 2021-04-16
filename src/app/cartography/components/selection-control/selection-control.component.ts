@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectionEventSource } from '../../events/selection-event-source';
-import { GraphDataManager } from '../../managers/graph-data-manager';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';
+import { GraphDataManager } from '../../managers/graph-data-manager';
 import { SelectionManager } from '../../managers/selection-manager';
 import { Rectangle } from '../../models/rectangle';
 
 @Component({
   selector: 'app-selection-control',
   templateUrl: './selection-control.component.html',
-  styleUrls: ['./selection-control.component.scss']
+  styleUrls: ['./selection-control.component.scss'],
 })
 export class SelectionControlComponent implements OnInit, OnDestroy {
   private onSelection: Subscription;
@@ -23,21 +23,21 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onSelection = this.selectionEventSource.selected.subscribe((rectangle: Rectangle) => {
-      const selectedNodes = this.graphDataManager.getNodes().filter(node => {
+      const selectedNodes = this.graphDataManager.getNodes().filter((node) => {
         return this.inRectangleHelper.inRectangle(rectangle, node.x, node.y);
       });
 
-      const selectedLinks = this.graphDataManager.getLinks().filter(link => {
+      const selectedLinks = this.graphDataManager.getLinks().filter((link) => {
         return this.inRectangleHelper.inRectangle(rectangle, link.x, link.y);
       });
 
-      const selectedDrawings = this.graphDataManager.getDrawings().filter(drawing => {
+      const selectedDrawings = this.graphDataManager.getDrawings().filter((drawing) => {
         return this.inRectangleHelper.inRectangle(rectangle, drawing.x, drawing.y);
       });
 
       const selectedLabels = this.graphDataManager
         .getNodes()
-        .filter(node => {
+        .filter((node) => {
           if (node.label === undefined) {
             return false;
           }
@@ -45,11 +45,11 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
           const labelY = node.y + node.label.y;
           return this.inRectangleHelper.inRectangle(rectangle, labelX, labelY);
         })
-        .map(node => node.label);
+        .map((node) => node.label);
 
       const selectedInterfacesLabelsSources = this.graphDataManager
         .getLinks()
-        .filter(link => {
+        .filter((link) => {
           if (link.source === undefined || link.nodes.length != 2 || link.nodes[0].label === undefined) {
             return false;
           }
@@ -57,11 +57,11 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
           const interfaceLabelY = link.source.y + link.nodes[0].label.y;
           return this.inRectangleHelper.inRectangle(rectangle, interfaceLabelX, interfaceLabelY);
         })
-        .map(link => link.nodes[0]);
+        .map((link) => link.nodes[0]);
 
       const selectedInterfacesLabelsTargets = this.graphDataManager
         .getLinks()
-        .filter(link => {
+        .filter((link) => {
           if (link.target === undefined || link.nodes.length != 2 || link.nodes[1].label === undefined) {
             return false;
           }
@@ -69,7 +69,7 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
           const interfaceLabelY = link.target.y + link.nodes[1].label.y;
           return this.inRectangleHelper.inRectangle(rectangle, interfaceLabelX, interfaceLabelY);
         })
-        .map(link => link.nodes[1]);
+        .map((link) => link.nodes[1]);
 
       const selectedInterfaces = [...selectedInterfacesLabelsSources, ...selectedInterfacesLabelsTargets];
 
@@ -78,7 +78,7 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
         ...selectedLinks,
         ...selectedDrawings,
         ...selectedLabels,
-        ...selectedInterfaces
+        ...selectedInterfaces,
       ];
 
       this.selectionManager.setSelected(selected);

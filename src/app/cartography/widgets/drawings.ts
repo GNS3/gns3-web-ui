@@ -1,20 +1,19 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { Layer } from '../models/layer';
-import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
-import { Draggable, DraggableDrag, DraggableStart, DraggableEnd } from '../events/draggable';
-import { DrawingWidget } from './drawing';
-import { drag, D3DragEvent } from 'd3-drag';
+import { EventEmitter, Injectable } from '@angular/core';
+import { drag } from 'd3-drag';
 import { event } from 'd3-selection';
-import { MapDrawing } from '../models/map/map-drawing';
+import { Draggable } from '../events/draggable';
+import { DrawingContextMenu } from '../events/event-source';
+import { ResizingEnd } from '../events/resizing';
+import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
+import { MapSettingsManager } from '../managers/map-settings-manager';
 import { Context } from '../models/context';
 import { EllipseElement } from '../models/drawings/ellipse-element';
-import { ResizingEnd } from '../events/resizing';
 import { LineElement } from '../models/drawings/line-element';
-import { MapSettingsManager } from '../managers/map-settings-manager';
-import { DrawingContextMenu } from '../events/event-source';
+import { Layer } from '../models/layer';
+import { MapDrawing } from '../models/map/map-drawing';
+import { SVGSelection } from '../models/types';
+import { DrawingWidget } from './drawing';
+import { Widget } from './widget';
 
 @Injectable()
 export class DrawingsWidget implements Widget {
@@ -111,15 +110,18 @@ export class DrawingsWidget implements Widget {
             }
           }
         } else {
-          dy = y - (evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y));
-          y = evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y);
+          dy =
+            y -
+            (evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y));
+          y = evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
 
           if (datum.element.height + dy < 0) {
             isReflectedVertical = false;
             y = topEdge;
             datum.element.height = Math.abs(datum.element.height + evt.dy);
           } else {
-            datum.y = evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y);
+            datum.y =
+              evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
             datum.element.height += dy;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cy =
@@ -143,7 +145,7 @@ export class DrawingsWidget implements Widget {
 
     let top = drag()
       .on('start', (datum: MapDrawing) => {
-        y = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y);
+        y = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
         bottomEdge = y + datum.element.height;
         document.body.style.cursor = 'ns-resize';
       })
@@ -151,15 +153,18 @@ export class DrawingsWidget implements Widget {
         const evt = event;
 
         if (!isReflectedVertical) {
-          dy = y - (evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y));
-          y = evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y);
+          dy =
+            y -
+            (evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y));
+          y = evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
 
           if (datum.element.height + dy < 0) {
             y = bottomEdge;
             isReflectedVertical = true;
             datum.element.height = Math.abs(datum.element.height + evt.dy);
           } else {
-            datum.y = evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y  + this.context.transformation.y);
+            datum.y =
+              evt.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
             datum.element.height += dy;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cy =
@@ -207,7 +212,7 @@ export class DrawingsWidget implements Widget {
     let isReflectedHorizontal: boolean = false;
     let right = drag()
       .on('start', (datum: MapDrawing) => {
-        x = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x);
+        x = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
         leftEdge = x + datum.element.width;
         document.body.style.cursor = 'ew-resize';
       })
@@ -215,15 +220,18 @@ export class DrawingsWidget implements Widget {
         const evt = event;
 
         if (!isReflectedHorizontal) {
-          dx = x - (evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x));
-          x = evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x);
+          dx =
+            x -
+            (evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x));
+          x = evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
 
           if (datum.element.width + dx < 0) {
             x = leftEdge;
             isReflectedHorizontal = true;
             datum.element.width = Math.abs(datum.element.width + evt.dx);
           } else {
-            datum.x = evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x);
+            datum.x =
+              evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
             datum.element.width += dx;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cx =
@@ -290,15 +298,18 @@ export class DrawingsWidget implements Widget {
             datum.element.width = datum.element.width + evt.dx < 0 ? 1 : (datum.element.width += evt.dx);
           }
         } else {
-          dx = x - (evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x));
-          x = evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x);
+          dx =
+            x -
+            (evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x));
+          x = evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
 
           if (datum.element.width + dx < 0) {
             x = rightEdge;
             isReflectedHorizontal = false;
             datum.element.width = Math.abs(datum.element.width + evt.dx);
           } else {
-            datum.x = evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x  + this.context.transformation.x);
+            datum.x =
+              evt.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
             datum.element.width += dx;
             if (datum.element instanceof EllipseElement) {
               (datum.element as EllipseElement).cx =

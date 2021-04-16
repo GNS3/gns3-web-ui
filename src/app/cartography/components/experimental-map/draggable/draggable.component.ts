@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, AfterViewInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Point } from '../../../models/point';
 
@@ -8,10 +8,8 @@ export class DraggableDraggedEvent {
 
 @Component({
   selector: '[app-draggable]',
-  template: `
-    <ng-content></ng-content>
-  `,
-  styleUrls: ['./draggable.component.scss']
+  template: ` <ng-content></ng-content> `,
+  styleUrls: ['./draggable.component.scss'],
 })
 export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input('app-draggable') item: Point;

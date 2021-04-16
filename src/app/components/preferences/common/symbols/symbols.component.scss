@@ -1,60 +1,60 @@
 .buttonWrapper {
-    width: 85px;
-    height: 85px;
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    margin-right: auto;
-    outline: none;
+  width: 85px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  outline: none;
 }
 
 .menu {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .button {
-    background: border-box;
-    border-width: 0px;
-    outline: none;
+  background: border-box;
+  border-width: 0px;
+  outline: none;
 }
 
 .buttonSelected {
-    border-width: 3px;
-    background: #0097a7!important;
+  border-width: 3px;
+  background: #0097a7 !important;
 }
 
 .image {
-    width: 65px;
-    height: 65px;   
-    filter: invert(0);
-    --webkit-filter: invert(0)!important;
+  width: 65px;
+  height: 65px;
+  filter: invert(0);
+  --webkit-filter: invert(0) !important;
 }
 
 .imageSelected {
-    margin-left: 0px;
+  margin-left: 0px;
 }
 
 .wrapper {
-    display: grid;
-    grid-template-rows: auto;
-    grid-template-columns: repeat(7, 1fr);
-    grid-row-gap: 3em;
-    grid-column-gap: 1em;
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(7, 1fr);
+  grid-row-gap: 3em;
+  grid-column-gap: 1em;
 }
 
 .radio-selection {
-    width: 90%;
+  width: 90%;
 }
 
 .mat-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
+  margin-left: 16px;
 }
 
 .non-visible {
-    display: none;
+  display: none;
 }
 
 .example-full-width {
-    width: 100%;
+  width: 100%;
 }

@@ -1,6 +1,7 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { Node } from '../cartography/models/node';
+import { EventEmitter, Injectable } from '@angular/core';
+import { Server } from '../models/server';
 import { Subject } from 'rxjs';
+import { Node } from '../cartography/models/node';
 
 @Injectable()
 export class NodeConsoleService {
@@ -55,9 +56,18 @@ export class NodeConsoleService {
   getLineHeight() {
     return this.defaultConsoleHeight / this.defaultNumberOfRows;
   }
+
+  getUrl(server: Server, node: Node) {
+    let protocol:string = "ws"
+	  if (server.protocol === "https:") {
+		  protocol = "wss"
+	  }
+
+    return `${protocol}://${server.host}:${server.port}/v2/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
+  }
 }
 
 export interface ConsoleResizedEvent {
-  width: number,
-  height: number
+  width: number;
+  height: number;
 }

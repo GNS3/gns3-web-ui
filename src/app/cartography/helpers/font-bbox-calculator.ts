@@ -14,7 +14,7 @@ export class FontBBoxCalculator {
 
     return {
       width: bbox.width,
-      height: bbox.height
+      height: bbox.height,
     };
   }
 }

@@ -1,15 +1,14 @@
-import { TestBed, inject } from '@angular/core/testing';
-
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
-import { Drawing } from '../cartography/models/drawing';
-import { getTestServer } from './testing';
-import { DrawingService } from './drawing.service';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { Project } from '../models/project';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
+import { Drawing } from '../cartography/models/drawing';
+import { Project } from '../models/project';
+import { Server } from '../models/server';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { DrawingService } from './drawing.service';
+import { HttpServer } from './http-server.service';
+import { getTestServer } from './testing';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;
@@ -21,7 +20,7 @@ describe('DrawingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SvgToDrawingConverter, DrawingService]
+      providers: [HttpServer, SvgToDrawingConverter, DrawingService],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -49,7 +48,7 @@ describe('DrawingService', () => {
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
-      y: 20
+      y: 20,
     });
   }));
 
@@ -64,7 +63,7 @@ describe('DrawingService', () => {
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
-      y: 21
+      y: 21,
     });
   }));
 
@@ -81,7 +80,7 @@ describe('DrawingService', () => {
     expect(req.request.body).toEqual({
       x: 100,
       y: 100,
-      svg: svgSample
+      svg: svgSample,
     });
   }));
 
@@ -100,7 +99,7 @@ describe('DrawingService', () => {
       expect(req.request.body).toEqual({
         x: 100,
         y: 101,
-        svg: svgSample
+        svg: svgSample,
       });
     }
   ));
@@ -126,7 +125,7 @@ describe('DrawingService', () => {
       z: 30,
       rotation: 0,
       svg: '<svg></svg>',
-      locked: false
+      locked: false,
     });
   }));
 
@@ -143,13 +142,14 @@ describe('DrawingService', () => {
 
   it('should duplicate drawing', inject([DrawingService], (service: DrawingService) => {
     const drawing = new Drawing();
-    drawing.project_id = "project_id_1";
-    drawing.drawing_id = "drawing_id_1";
+    drawing.project_id = 'project_id_1';
+    drawing.drawing_id = 'drawing_id_1';
     drawing.x = 100;
     drawing.y = 90;
     drawing.z = 1;
     drawing.rotation = 0;
-    drawing.svg = "<svg height=\"100\" width=\"200\"><rect fill=\"#ffffff\" fill-opacity=\"1.0\" height=\"100\" stroke=\"#000000\" stroke-width=\"2\" width=\"200\" /></svg>";
+    drawing.svg =
+      '<svg height="100" width="200"><rect fill="#ffffff" fill-opacity="1.0" height="100" stroke="#000000" stroke-width="2" width="200" /></svg>';
 
     service.duplicate(server, drawing.project_id, drawing).subscribe();
 
@@ -160,7 +160,7 @@ describe('DrawingService', () => {
       rotation: 0,
       x: 110,
       y: 100,
-      z: 1
+      z: 1,
     });
   }));
 });

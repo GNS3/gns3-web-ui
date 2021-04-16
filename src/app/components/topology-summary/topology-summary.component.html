@@ -1,92 +1,98 @@
 <div
-    *ngIf="isDraggingEnabled"
-    (document:mousemove)="dragWidget($event)"
-    (document:mouseup)="toggleDragging(false)">
-</div>
+  *ngIf="isDraggingEnabled"
+  (document:mousemove)="dragWidget($event)"
+  (document:mouseup)="toggleDragging(false)"
+></div>
 <div
-    class="summaryWrapper" 
-    (mousedown)="toggleDragging(true)"
-    *ngIf="projectsStatistics" 
-    [ngStyle]="style" 
-    [ngClass]="{lightTheme: isLightThemeEnabled}"
-    mwlResizable
-    [validateResize]="validate"
-    [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
-    [enableGhostResize]="true"
-    (resizeStart)="toggleDragging(false)"
-    (resizeEnd)="onResizeEnd($event)">
-    <div class="summaryHeader">
-        <button class="titleButton" [ngClass]="{ marked: isTopologyVisible }" (click)="toogleTopologyVisibility(true)" mat-button>Map topology</button>
-        <button class="titleButton" [ngClass]="{ marked: !isTopologyVisible }" (click)=toogleTopologyVisibility(false) mat-button>Servers</button>
-        <mat-icon (click)="close()" class="closeButton">close</mat-icon>
-    </div>
-    <div [ngClass]="{ notvisible: !isTopologyVisible }">
-        <mat-divider class="divider"></mat-divider>
-        <div class="summaryFilters">
+  class="summaryWrapper"
+  (mousedown)="toggleDragging(true)"
+  *ngIf="projectsStatistics"
+  [ngStyle]="style"
+  [ngClass]="{ lightTheme: isLightThemeEnabled }"
+  mwlResizable
+  [validateResize]="validate"
+  [resizeEdges]="{ right: true, left: true, bottom: true, top: true }"
+  [enableGhostResize]="true"
+  (resizeStart)="toggleDragging(false)"
+  (resizeEnd)="onResizeEnd($event)"
+>
+  <div class="summaryHeader">
+    <mat-tab-group>
+      <mat-tab (click)="toggleTopologyVisibility(true)" label="Map topology">
+        <div class="tabContent">
+          <div class="summaryFilters">
             <mat-select placeholder="Filter nodes" multiple>
-                <mat-optgroup label="Status filter">
-                  <mat-option value="started" (onSelectionChange)="applyStatusFilter('started')">started</mat-option>
-                  <mat-option value="suspended" (onSelectionChange)="applyStatusFilter('suspended')">suspended</mat-option>
-                  <mat-option value="stopped" (onSelectionChange)="applyStatusFilter('stopped')">stopped</mat-option>
-                </mat-optgroup>
-                <mat-optgroup label="Capture filter">
-                  <mat-option value="capture" (onSelectionChange)="applyCaptureFilter('capture')">active capture(s)</mat-option>
-                  <mat-option value="packet" (onSelectionChange)="applyCaptureFilter('packet')">active packet captures</mat-option>
-                </mat-optgroup>
+              <mat-optgroup label="Status filter">
+                <mat-option value="started" (onSelectionChange)="applyStatusFilter('started')">started</mat-option>
+                <mat-option value="suspended" (onSelectionChange)="applyStatusFilter('suspended')"
+                  >suspended</mat-option
+                >
+                <mat-option value="stopped" (onSelectionChange)="applyStatusFilter('stopped')">stopped</mat-option>
+              </mat-optgroup>
+              <mat-optgroup label="Capture filter">
+                <mat-option value="capture" (onSelectionChange)="applyCaptureFilter('capture')"
+                  >active capture(s)</mat-option
+                >
+                <mat-option value="packet" (onSelectionChange)="applyCaptureFilter('packet')"
+                  >active packet captures</mat-option
+                >
+              </mat-optgroup>
             </mat-select>
-        </div>
-        <div class="summarySorting">
+          </div>
+          <div class="summarySorting">
             <mat-select (selectionChange)="setSortingOrder()" placeholder="Sorting" [(value)]="sortingOrder">
-                <mat-option value="asc">sort by name ascending</mat-option>
-                <mat-option value="desc">sort by name descending</mat-option>
+              <mat-option value="asc">sort by name ascending</mat-option>
+              <mat-option value="desc">sort by name descending</mat-option>
             </mat-select>
-        </div>
-        <mat-divider class="divider"></mat-divider>
-        <div
-            [ngStyle]="styleInside" 
-            class="summaryContent">
+          </div>
+          <mat-divider class="divider"></mat-divider>
+          <div [ngStyle]="styleInside" class="summaryContent">
             <div class="nodeRow" *ngFor="let node of filteredNodes">
-                <div>
-                    <svg *ngIf="node.status==='started'" width="10" height="10">
-                        <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
-                    </svg>
-                    <svg *ngIf="node.status==='suspended'" width="10" height="10">
-                        <rect class="status_suspended" x="0" y="0" width="10" height="10" fill="yellow"></rect>
-                    </svg>
-                    <svg *ngIf="node.status==='stopped'" width="10" height="10">
-                        <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
-                    </svg>
-                    {{node.name}}
-                </div>
-                <div *ngIf="node.console!=null && node.console!=undefined && node.console_type!='none'">
-                    {{node.console_type}} {{node.console_host}}:{{node.console}}
-                </div>
-                <div *ngIf="node.console===null || node.console===undefined || node.console_type==='none'">
-                    none
-                </div>
+              <div>
+                <svg *ngIf="node.status === 'started'" width="10" height="10">
+                  <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
+                </svg>
+                <svg *ngIf="node.status === 'suspended'" width="10" height="10">
+                  <rect class="status_suspended" x="0" y="0" width="10" height="10" fill="yellow"></rect>
+                </svg>
+                <svg *ngIf="node.status === 'stopped'" width="10" height="10">
+                  <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
+                </svg>
+                {{ node.name }}
+              </div>
+              <div *ngIf="node.console != null && node.console != undefined && node.console_type != 'none'">
+                {{ node.console_type }} {{ node.console_host }}:{{ node.console }}
+              </div>
+              <div *ngIf="node.console === null || node.console === undefined || node.console_type === 'none'">
+                none
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-    <div [ngClass]="{ notvisible: isTopologyVisible }">
-        <mat-divider class="divider"></mat-divider>
-        <div class="summaryContentServers">
+      </mat-tab>
+      <mat-tab (click)="toggleTopologyVisibility(false)" label="Servers">
+        <div class="tabContent">
+          <div class="summaryContentServers">
             <div class="nodeRow" *ngFor="let compute of computes">
-                <div>
-                    <svg *ngIf="compute.connected" width="10" height="10">
-                        <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
-                    </svg>
-                    <svg *ngIf="!compute.connected" width="10" height="10">
-                        <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
-                    </svg>
-                    {{compute.name}}
-                </div>
-                <div>
-                    {{compute.host}}
-                </div>
-                <div>
-                    {{server.location}}
-                </div>
+              <div>
+                <svg *ngIf="compute.connected" width="10" height="10">
+                  <rect class="status_started" x="0" y="0" width="10" height="10" fill="green"></rect>
+                </svg>
+                <svg *ngIf="!compute.connected" width="10" height="10">
+                  <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
+                </svg>
+                {{ compute.name }}
+              </div>
+              <div>
+                {{ compute.host }}
+              </div>
+              <div>
+                {{ server.location }}
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

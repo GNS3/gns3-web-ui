@@ -7,26 +7,24 @@ export class ToasterService {
     duration: 4000,
     panelClass: ['snackabar-success'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
 
   snackBarConfigForWarning = {
     duration: 4000,
     panelClass: ['snackabar-warning'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
 
   snackBarConfigForError = {
     duration: 10000,
     panelClass: ['snackabar-error'],
     MatSnackBarHorizontalPosition: 'center',
-    MatSnackBarVerticalPosition: 'bottom'
+    MatSnackBarVerticalPosition: 'bottom',
   };
 
-  constructor(
-    private snackbar: MatSnackBar,
-    private zone: NgZone) {}
+  constructor(private snackbar: MatSnackBar, private zone: NgZone) {}
 
   public error(message: string) {
     this.zone.run(() => {

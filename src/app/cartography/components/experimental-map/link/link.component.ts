@@ -1,25 +1,25 @@
 import {
+  ChangeDetectorRef,
   Component,
-  OnInit,
-  Input,
-  ViewChild,
   ElementRef,
   EventEmitter,
-  ChangeDetectorRef,
-  OnDestroy
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { LinkStrategy } from './strategies/link-strategy';
-import { EthernetLinkStrategy } from './strategies/ethernet-link-strategy';
-import { SerialLinkStrategy } from './strategies/serial-link-strategy';
 import { MultiLinkCalculatorHelper } from '../../../helpers/multi-link-calculator-helper';
-import { Node } from '../../../models/node';
 import { MapLink } from '../../../models/map/map-link';
+import { Node } from '../../../models/node';
+import { EthernetLinkStrategy } from './strategies/ethernet-link-strategy';
+import { LinkStrategy } from './strategies/link-strategy';
+import { SerialLinkStrategy } from './strategies/serial-link-strategy';
 
 @Component({
   selector: '[app-link]',
   templateUrl: './link.component.html',
-  styleUrls: ['./link.component.scss']
+  styleUrls: ['./link.component.scss'],
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;

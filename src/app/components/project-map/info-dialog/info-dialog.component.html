@@ -1,27 +1,27 @@
-<h1 mat-dialog-title>{{node.name}}</h1>
+<h1 mat-dialog-title>{{ node.name }}</h1>
 
 <div class="modal-form-container">
-    <mat-tab-group animationDuration="0ms">
-        <mat-tab label="General information">
-            <div class='textBox'>
-                <div *ngFor="let info of infoList">
-                    {{info}}
-                </div>
-            </div>
-        </mat-tab>
-        <mat-tab label="Usage instructions">
-            <div class="textBox">
-                {{usage}}
-            </div>
-        </mat-tab>
-        <mat-tab label="Command line">
-            <div class="textBox">
-                {{commandLine}}
-            </div>
-        </mat-tab>
-    </mat-tab-group>
+  <mat-tab-group animationDuration="0ms">
+    <mat-tab label="General information">
+      <div class="textBox">
+        <div *ngFor="let info of infoList">
+          {{ info }}
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Usage instructions">
+      <div class="textBox">
+        {{ usage }}
+      </div>
+    </mat-tab>
+    <mat-tab label="Command line">
+      <div class="textBox">
+        {{ commandLine }}
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>
 
 <div mat-dialog-actions>
-    <button mat-button (click)="onCloseClick()" color="accent">Close</button>
+  <button mat-button (click)="onCloseClick()" color="accent">Close</button>
 </div>

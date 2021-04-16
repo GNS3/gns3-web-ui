@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-
-import { Converter } from '../converter';
 import { Symbol } from '../../../models/symbol';
 import { MapSymbol } from '../../models/map/map-symbol';
+import { Converter } from '../converter';
 
 @Injectable()
 export class SymbolToMapSymbolConverter implements Converter<Symbol, MapSymbol> {

@@ -1,5 +1,5 @@
-import * as csstree from 'css-tree';
 import { Injectable } from '@angular/core';
+import * as csstree from 'css-tree';
 import { Font } from '../models/font';
 
 /**
@@ -22,16 +22,16 @@ export class FontFixer {
 
   public fixStyles(styles: string) {
     const ast = csstree.parse(styles, {
-      context: 'declarationList'
+      context: 'declarationList',
     });
 
     let fontFamilyPointer = null;
     let fontSizePointer = null;
     let isByIdentifier = true;
 
-    ast.children.forEach(child => {
+    ast.children.forEach((child) => {
       if (child.property === 'font-family' && child.value && child.value.children) {
-        child.value.children.forEach(value => {
+        child.value.children.forEach((value) => {
           if (value.type === 'Identifier') {
             fontFamilyPointer = value;
           }
@@ -42,7 +42,7 @@ export class FontFixer {
         });
       }
       if (child.property === 'font-size' && child.value && child.value.children) {
-        child.value.children.forEach(value => {
+        child.value.children.forEach((value) => {
           if (value.type === 'Dimension') {
             fontSizePointer = value;
           }
@@ -62,7 +62,7 @@ export class FontFixer {
 
       const fixedFont = this.fix({
         font_family: fontFamilyValue.split('"').join(''),
-        font_size: parseInt(fontSizeValue, 10)
+        font_size: parseInt(fontSizeValue, 10),
       } as Font);
 
       if (isByIdentifier) {

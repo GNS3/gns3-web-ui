@@ -1,5 +1,9 @@
 # iOS CircleCI 2.1 configuration file
 version: 2.1
+
+orbs:
+  node: circleci/node@4.2.0
+
 jobs:
   build:
     macos:
@@ -7,13 +11,16 @@ jobs:
 
     steps:
       - checkout
+      - node/install:
+          install-yarn: true
 
       - run:
-          name: Install nodejs
+          name: Update BREW and print configs
           command: |
             brew update
-            brew upgrade yarn
-            brew upgrade node
+            brew analytics off
+            brew --env
+            brew --config
 
       - run:
           name: Set timezone and check current datetime
@@ -34,6 +41,8 @@ jobs:
             curl -o /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/readline.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/b1bd1c4a62e1336422de3614d1fc49ffbce589a8/Formula/readline.rb
             # remove check for old compilers which creates the error described in https://github.com/sashkab/homebrew-python/issues/36
             sed -i.bak -e '58,61d' /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/python.rb
+            # remove 'do devel' block to avoid error: Calling 'devel' blocks in formulae is disabled!
+            sed -i.bak -e '14,17d' /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/python.rb
             brew unlink python
             brew uninstall --ignore-dependencies readline
             brew install readline
@@ -41,7 +50,7 @@ jobs:
             brew pin readline
             # --ignore-dependencies is used to prevent this issue: https://github.com/tensorflow/tensorflow/issues/25093
             brew install --ignore-dependencies python
-            brew switch python 3.6.5_1
+            #brew link python 3.6.5_1
             brew info python
             brew pin python
 
@@ -77,8 +86,11 @@ jobs:
           name: Building gns3server
           command: |
             python3 -V
-            pip3 install -r scripts/requirements.txt
+            python3 -m pip install -U pip
+            python3 -m pip install -r scripts/requirements.txt
             python3 scripts/build.py download -a
+            # necessary because of https://github.com/GNS3/gns3-gui/issues/2849
+            python3 -m pip install jsonschema==2.6.0
             python3 scripts/build.py build_exe -b dist/exe.gns3server -s
             python3 scripts/build.py validate -b dist
 
@@ -105,4 +117,3 @@ workflows:
           filters:
             tags:
               only: /v.*/
-

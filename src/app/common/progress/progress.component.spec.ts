@@ -1,12 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ProgressComponent } from './progress.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ProgressService } from './progress.service';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BehaviorSubject } from 'rxjs';
+import { ProgressComponent } from './progress.component';
+import { ProgressService } from './progress.service';
 
 export class MockedRouter {
   events: BehaviorSubject<boolean>;
@@ -28,7 +27,7 @@ describe('ProgressComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
       providers: [ProgressService, { provide: Router, useValue: router }],
-      declarations: [ProgressComponent]
+      declarations: [ProgressComponent],
     }).compileComponents();
 
     progressService = TestBed.get(ProgressService);
@@ -59,7 +58,7 @@ describe('ProgressComponent', () => {
   });
 
   it('should set error state when error defined', () => {
-    const error = {error: 'test'};
+    const error = { error: 'test' };
     progressService.setError(error);
     expect(component.error).toEqual(error.error);
   });
@@ -75,7 +74,7 @@ describe('ProgressComponent', () => {
     expect(progressService.clear).toHaveBeenCalled();
   });
 
-  it("should reload page after clicking refresh", () => {
+  it('should reload page after clicking refresh', () => {
     spyOn(router, 'navigateByUrl');
 
     component.refresh();

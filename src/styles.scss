@@ -1,3 +1,7 @@
+body {
+  background-color: #e8ecef;
+}
+
 img.logo-header {
   width: 50px;
 }
@@ -7,27 +11,27 @@ a.table-link {
 }
 
 .snackabar-success {
-  background:#0097a7!important;
-  color: white!important;
+  background: #0097a7 !important;
+  color: white !important;
 }
 
 .snackbar-warning {
-  background: rgb(197, 199, 64)!important;
-  color: white!important;
+  background: rgb(197, 199, 64) !important;
+  color: white !important;
 }
 
 .snackbar-error {
-  background: #B00020!important;
-  color: white!important;
+  background: #b00020 !important;
+  color: white !important;
 }
 
 .mat-dialog-actions {
-  margin-bottom: -12px!important;
+  margin-bottom: -12px !important;
 }
 
 @-moz-document url-prefix() {
-  .temporaryElement{
-      line-height: 1.4em;
+  .temporaryElement {
+    line-height: 1.4em;
   }
 }
 

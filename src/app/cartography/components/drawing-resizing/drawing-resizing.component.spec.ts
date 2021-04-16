@@ -1,12 +1,11 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-
-import { DrawingResizingComponent } from './drawing-resizing.component';
-import { DrawingsWidget } from '../../widgets/drawings';
-import { DrawingsEventSource } from '../../events/drawings-event-source';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EventEmitter } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { ResizingEnd } from '../../events/resizing';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { DrawingsWidget } from '../../widgets/drawings';
+import { DrawingResizingComponent } from './drawing-resizing.component';
 
 export class DrawingWidgetMock {
   resizingFinished = new EventEmitter<ResizingEnd<MapDrawing>>();
@@ -36,9 +35,9 @@ describe('DrawingResizingComponent', () => {
       imports: [NoopAnimationsModule],
       providers: [
         { provide: DrawingsWidget, useValue: drawingsWidgetMock },
-        { provide: DrawingsEventSource, useValue: drawingsEventSource }
+        { provide: DrawingsEventSource, useValue: drawingsEventSource },
       ],
-      declarations: [DrawingResizingComponent]
+      declarations: [DrawingResizingComponent],
     }).compileComponents();
   }));
 

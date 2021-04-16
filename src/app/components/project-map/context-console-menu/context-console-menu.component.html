@@ -1,22 +1,20 @@
 <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
-    <span [matMenuTriggerFor]="contextConsoleMenu"></span>
-    <mat-menu #contextConsoleMenu="matMenu" class="context-menu-items">
-        <span class="title">
-            Choose default behavior for double click on node
-        </span>
-        <button mat-menu-item (click)="openConsole()">
-            <mat-icon>web_asset</mat-icon>
-            <span>Open console</span>
-        </button>
-        <button mat-menu-item (click)="openWebConsole()">
-            <mat-icon>http</mat-icon>
-            <span>Open web console</span>
-        </button>
-        <button mat-menu-item (click)="openWebConsoleInNewTab()">
-            <mat-icon>http</mat-icon>
-            <span>Open web console in new tab</span>
-        </button>
-    </mat-menu>
+  <span [matMenuTriggerFor]="contextConsoleMenu"></span>
+  <mat-menu #contextConsoleMenu="matMenu" class="context-menu-items">
+    <span class="title"> Choose default behavior for double click on node </span>
+    <button mat-menu-item (click)="openConsole()">
+      <mat-icon>web_asset</mat-icon>
+      <span>Open console</span>
+    </button>
+    <button mat-menu-item (click)="openWebConsole()">
+      <mat-icon>http</mat-icon>
+      <span>Open web console</span>
+    </button>
+    <button mat-menu-item (click)="openWebConsoleInNewTab()">
+      <mat-icon>http</mat-icon>
+      <span>Open web console in new tab</span>
+    </button>
+  </mat-menu>
 </div>
 
 <template [hidden]="true" #container></template>

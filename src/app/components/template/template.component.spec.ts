@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TemplateComponent } from './template.component';
 
 describe('TemplateComponent', () => {
@@ -8,7 +7,7 @@ describe('TemplateComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TemplateComponent]
+      declarations: [TemplateComponent],
     }).compileComponents();
   }));
 

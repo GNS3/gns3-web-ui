@@ -1,19 +1,18 @@
-import { ElectronService } from 'ngx-electron';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { Component, OnInit, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
-import { ServerManagementService } from '../../services/server-management.service';
-import { Subscription } from 'rxjs';
-import { ToasterService } from '../../services/toaster.service';
-import { ProgressService } from '../../common/progress/progress.service';
-import { version } from './../../version';
+import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { ElectronService } from 'ngx-electron';
+import { Subscription } from 'rxjs';
+import { ProgressService } from '../../common/progress/progress.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { ServerManagementService } from '../../services/server-management.service';
+import { ToasterService } from '../../services/toaster.service';
+import { version } from './../../version';
 
 @Component({
   selector: 'app-default-layout',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './default-layout.component.html',
-  styleUrls: ['./default-layout.component.scss']
+  styleUrls: ['./default-layout.component.scss'],
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
@@ -22,8 +21,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
-  recentlyOpenedServerId : string;
-  recentlyOpenedProjectId : string;
+  recentlyOpenedServerId: string;
+  recentlyOpenedProjectId: string;
+  serverIdProjectList: string;
 
   constructor(
     private electronService: ElectronService,
@@ -37,16 +37,17 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
-    
+    this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();
+
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
     // attach to notification stream when any of running local servers experienced issues
     this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
-      if(serverStatus.status === 'errored') {
+      if (serverStatus.status === 'errored') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
-      if(serverStatus.status === 'stderr') {
+      if (serverStatus.status === 'stderr') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
       }
@@ -56,17 +57,24 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
   }
 
+  listProjects() {
+    this.router
+      .navigate(['/server', this.serverIdProjectList, 'projects'])
+      .catch((error) => this.toasterService.error('Cannot list projects'));
+  }
+
   backToProject() {
-    this.router.navigate(['/server', this.recentlyOpenedServerId, 'project', this.recentlyOpenedProjectId])
-      .catch(error => this.toasterService.error('Cannot navigate to the last opened project'));
+    this.router
+      .navigate(['/server', this.recentlyOpenedServerId, 'project', this.recentlyOpenedProjectId])
+      .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 
   @HostListener('window:beforeunload', ['$event'])
   async onBeforeUnload($event) {
-    if(!this.shouldStopServersOnClosing) {
+    if (!this.shouldStopServersOnClosing) {
       return;
     }
-    $event.preventDefault()
+    $event.preventDefault();
     $event.returnValue = false;
     this.progressService.activate();
     await this.serverManagement.stopAll();

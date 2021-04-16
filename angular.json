@@ -25,7 +25,12 @@
 							"@mattlewis92/dom-autoscroller",
 							"rxjs/Rx",
 							"rxjs/add/operator/map",
-							"rxjs-compat/add/operator/map"
+							"rxjs-compat/add/operator/map",
+							"angular-react-core.js",
+							"react",
+							"react-dom",
+							"classnames",
+							"stylenames"
 						],
 						"aot": true,
 						"outputPath": "dist",
@@ -42,16 +47,7 @@
 							"node_modules/bootstrap/dist/css/bootstrap.min.css",
 							"node_modules/notosans-fontface/css/notosans-fontface.min.css",
 							"src/styles.scss",
-							{
-								"inject": true,
-								"input": "src/theme.scss",
-								"bundleName": "theme-default-dark"
-							},
-							{
-								"inject": true,
-								"input": "src/theme-light.scss",
-								"bundleName": "theme-default"
-							}
+							"src/theme.scss"
 						],
 						"scripts": []
 					},
@@ -185,9 +181,6 @@
 						"assets": [
 							"src/assets",
 							"src/favicon.ico"
-						],
-						"codeCoverageExclude": [
-							"src/app/cartography/components/experimental-map/**/*"
 						]
 					}
 				},

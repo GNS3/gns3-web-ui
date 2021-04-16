@@ -1,130 +1,131 @@
 @media screen and (max-width: 700px) {
-    .consoleWrapper {
-        visibility: hidden;
-    }
+  .consoleWrapper {
+    visibility: hidden;
+  }
 }
 
 .consoleWrapper {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    height: 180px;
-    width: 600px;
-    background: #000000!important;
-    color: white;
-    overflow: hidden;
-    font-size: 12px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  position: fixed;
+  bottom: 40px;
+  left: 80px;
+  height: 180px;
+  width: 600px;
+  background: #000000 !important;
+  color: white;
+  overflow: hidden;
+  font-size: 12px;
+  border-radius: 8px;
 }
 
 .lightTheme {
-    background: white!important;
-    color: black;
+  background: white !important;
+  color: black;
 }
 
 .filterButton {
-    background: transparent;
-    color: white;
-    border: none;
-    margin-top: 0px;
-    outline: none;
-    color: #dbd5d5;
-    font-weight: bold;
-    padding: 0px;
+  background: transparent;
+  color: white;
+  border: none;
+  margin-top: 0px;
+  outline: none;
+  color: #dbd5d5;
+  font-weight: bold;
+  padding: 0px;
 }
 
 .consoleFiltering {
-    display: flex;
+  display: flex;
 }
 
 .consoleHeader {
-    width: 100%;
-    font-size: 12px;
-    overflow: hidden;
-    display: flex;
-    padding: 2px;
-    justify-content: space-between;
-    background: #263238!important;
+  width: 100%;
+  font-size: 12px;
+  overflow: hidden;
+  display: flex;
+  padding: 2px;
+  justify-content: space-between;
+  background: #263238 !important;
 }
 
 .lightThemeConsoleHeader {
-    background: white!important;
-    color: black!important;
+  background: white !important;
+  color: black !important;
 }
 
 :host ::ng-deep .mat-tab-label {
-    height: 3rem !important;
-    min-width: 8rem !important;
+  height: 3rem !important;
+  min-width: 8rem !important;
 }
 
 :host ::ng-deep .mat-tab-label.mat-tab-label-active {
-    border-bottom: 2px solid #0097a7;
-    box-sizing: border-box;
-    font-weight: 1200;
+  border-bottom: 2px solid #0097a7;
+  box-sizing: border-box;
+  font-weight: 1200;
 }
 
 :host ::ng-deep .mat-ink-bar {
-    display: none !important;
+  display: none !important;
 }
 
 .tabs {
-    width: 80%;
+  width: 80%;
 }
 
 .console {
-    width: 596px;
-    height: 120px;
-    overflow-y: scroll;
-    padding: 2px;
-    color: #dbd5d5;
-    scrollbar-color: darkgrey #263238;
-    scrollbar-width: thin;
+  width: 596px;
+  height: 120px;
+  overflow-y: scroll;
+  padding: 2px;
+  color: #dbd5d5;
+  scrollbar-color: darkgrey #263238;
+  scrollbar-width: thin;
 }
 
 .xterm-console {
-    background: black;
+  background: black;
 }
 
 .consoleInput {
-    width: 100%;
-    height: 30px;
-    padding: 2px;
-    display: flex;
+  width: 100%;
+  height: 30px;
+  padding: 2px;
+  display: flex;
 }
 
 .commandLine {
-    background-color: transparent;
-    color: white;
-    border: none;
+  background-color: transparent;
+  color: white;
+  border: none;
 }
 
 .inputIcon {
-    margin-top: 2px;
+  margin-top: 2px;
 }
 
 mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
-input:focus{
-    outline: none;
+input:focus {
+  outline: none;
 }
 
 ::-webkit-scrollbar {
-    width: 0.5em;
+  width: 0.5em;
 }
- 
+
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
- 
+
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
   outline: 1px solid #263238;
 }
 
 .closeButton {
-    cursor: pointer;
+  cursor: pointer;
 }

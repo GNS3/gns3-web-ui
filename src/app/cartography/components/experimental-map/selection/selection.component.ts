@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, AfterViewInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({
   selector: '[app-selection]',
   templateUrl: './selection.component.html',
-  styleUrls: ['./selection.component.scss']
+  styleUrls: ['./selection.component.scss'],
 })
 export class SelectionComponent implements OnInit, AfterViewInit {
   @Input('app-selection') svg: SVGSVGElement;

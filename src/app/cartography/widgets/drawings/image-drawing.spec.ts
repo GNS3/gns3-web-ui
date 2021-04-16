@@ -1,7 +1,7 @@
-import { TestSVGCanvas } from '../../testing';
-import { ImageDrawingWidget } from './image-drawing';
 import { ImageElement } from '../../models/drawings/image-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { TestSVGCanvas } from '../../testing';
+import { ImageDrawingWidget } from './image-drawing';
 
 describe('ImageDrawingWidget', () => {
   let svg: TestSVGCanvas;
@@ -26,10 +26,7 @@ describe('ImageDrawingWidget', () => {
     drawing.element = image;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

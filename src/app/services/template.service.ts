@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-
+import { Observable, Subject } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
 import { Template } from '../models/template';
-import { Observable, Subject } from 'rxjs';
-import { QemuTemplate } from '../models/templates/qemu-template';
+import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class TemplateService {

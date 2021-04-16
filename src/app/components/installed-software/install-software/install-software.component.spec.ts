@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { InstallSoftwareComponent } from './install-software.component';
 
 describe('InstallSoftwareComponent', () => {
@@ -8,9 +7,8 @@ describe('InstallSoftwareComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InstallSoftwareComponent ]
-    })
-    .compileComponents();
+      declarations: [InstallSoftwareComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,4 +1,4 @@
 export class VmwareVm {
-    vmname: string;
-    vmx_path: string;
+  vmname: string;
+  vmx_path: string;
 }

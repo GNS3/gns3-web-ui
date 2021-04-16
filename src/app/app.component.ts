@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
+import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from './services/settings.service';
 import { ThemeService } from './services/theme.service';
-import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
-import { ProgressService } from './common/progress/progress.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  public darkThemeEnabled: boolean = false;
+
   constructor(
+    private overlayContainer: OverlayContainer,
     iconReg: MatIconRegistry,
     sanitizer: DomSanitizer,
     private settingsService: SettingsService,
@@ -30,28 +34,39 @@ export class AppComponent implements OnInit {
     });
   }
 
+  @HostBinding('class') componentCssClass;
+
   ngOnInit(): void {
     if (this.electronService.isElectronApp) {
-      this.settingsService.subscribe(settings => {
+      this.settingsService.subscribe((settings) => {
         this.electronService.ipcRenderer.send('settings.changed', settings);
       });
     }
-    let theme = localStorage.getItem('theme');
-    if (theme === 'light') {
-      this.themeService.setDarkMode(false);
-    } else {
-      this.themeService.setDarkMode(true);
-    }
+
+    this.applyTheme(this.themeService.savedTheme + '-theme');
+    this.themeService.themeChanged.subscribe((event: string) => {
+      this.applyTheme(event);
+    });
   }
 
-  checkEvent(routerEvent) : void {
+  applyTheme(theme: string) {
+    if (theme === 'dark-theme') {
+      this.darkThemeEnabled = true;
+    } else {
+      this.darkThemeEnabled = false;
+    }
+    this.overlayContainer.getContainerElement().classList.add(theme);
+    this.componentCssClass = theme;
+  }
+
+  checkEvent(routerEvent): void {
     if (routerEvent instanceof NavigationStart) {
       this.progressService.activate();
-    }
- 
-    else if (routerEvent instanceof NavigationEnd ||
-             routerEvent instanceof NavigationCancel ||
-             routerEvent instanceof NavigationError) {
+    } else if (
+      routerEvent instanceof NavigationEnd ||
+      routerEvent instanceof NavigationCancel ||
+      routerEvent instanceof NavigationError
+    ) {
       this.progressService.deactivate();
     }
   }

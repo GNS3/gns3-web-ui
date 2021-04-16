@@ -10,8 +10,8 @@ describe('FontBBoxCalculator', () => {
   it('should calculate font width and height', () => {
     const box = calculator.calculate('My text', 'font-family:Arial; font-size: 12px; font-weight:bold');
 
-    expect(box.height).toEqual(14);
-    expect(box.width).toEqual(41.34375);
+    expect(box.height).toEqual(15);
+    expect(box.width).toEqual(41);
   });
 
   xit('should calculate font width and height for different font', () => {

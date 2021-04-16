@@ -1,14 +1,13 @@
-import { TestBed, inject } from '@angular/core/testing';
-
-import { LinkService } from './link.service';
 import { HttpClient } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpServer } from './http-server.service';
-import { Server } from '../models/server';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
-import { getTestServer } from './testing';
+import { Server } from '../models/server';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { HttpServer } from './http-server.service';
+import { LinkService } from './link.service';
+import { getTestServer } from './testing';
 
 describe('LinkService', () => {
   let httpClient: HttpClient;
@@ -19,7 +18,7 @@ describe('LinkService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, LinkService]
+      providers: [HttpServer, LinkService],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -64,11 +63,11 @@ describe('LinkService', () => {
           adapter_number: 2,
           label: {
             rotation: 0,
-            style: "font-size: 10; font-style: Verdana",
+            style: 'font-size: 10; font-style: Verdana',
             text: sourcePort.short_name,
             x: 0,
-            y: 0
-          }
+            y: 0,
+          },
         },
         {
           node_id: 'targetid',
@@ -76,13 +75,13 @@ describe('LinkService', () => {
           adapter_number: 4,
           label: {
             rotation: 0,
-            style: "font-size: 10; font-style: Verdana",
+            style: 'font-size: 10; font-style: Verdana',
             text: sourcePort.short_name,
             x: 10,
-            y: 10
-          }
-        }
-      ]
+            y: 10,
+          },
+        },
+      ],
     });
   }));
 });

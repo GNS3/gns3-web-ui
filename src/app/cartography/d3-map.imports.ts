@@ -1,22 +1,22 @@
-import { GraphLayout } from './widgets/graph-layout';
-import { LinksWidget } from './widgets/links';
-import { NodesWidget } from './widgets/nodes';
-import { DrawingsWidget } from './widgets/drawings';
-import { DrawingLineWidget } from './widgets/drawing-line';
-import { SelectionTool } from './tools/selection-tool';
 import { MovingTool } from './tools/moving-tool';
-import { LayersWidget } from './widgets/layers';
-import { LinkWidget } from './widgets/link';
-import { InterfaceStatusWidget } from './widgets/interface-status';
-import { InterfaceLabelWidget } from './widgets/interface-label';
+import { SelectionTool } from './tools/selection-tool';
+import { DrawingWidget } from './widgets/drawing';
+import { DrawingLineWidget } from './widgets/drawing-line';
+import { DrawingsWidget } from './widgets/drawings';
 import { EllipseDrawingWidget } from './widgets/drawings/ellipse-drawing';
 import { ImageDrawingWidget } from './widgets/drawings/image-drawing';
+import { LineDrawingWidget } from './widgets/drawings/line-drawing';
 import { RectDrawingWidget } from './widgets/drawings/rect-drawing';
 import { TextDrawingWidget } from './widgets/drawings/text-drawing';
-import { LineDrawingWidget } from './widgets/drawings/line-drawing';
-import { NodeWidget } from './widgets/node';
-import { DrawingWidget } from './widgets/drawing';
+import { GraphLayout } from './widgets/graph-layout';
+import { InterfaceLabelWidget } from './widgets/interface-label';
+import { InterfaceStatusWidget } from './widgets/interface-status';
 import { LabelWidget } from './widgets/label';
+import { LayersWidget } from './widgets/layers';
+import { LinkWidget } from './widgets/link';
+import { LinksWidget } from './widgets/links';
+import { NodeWidget } from './widgets/node';
+import { NodesWidget } from './widgets/nodes';
 
 export const D3_MAP_IMPORTS = [
   GraphLayout,
@@ -37,5 +37,5 @@ export const D3_MAP_IMPORTS = [
   LineDrawingWidget,
   RectDrawingWidget,
   TextDrawingWidget,
-  DrawingWidget
+  DrawingWidget,
 ];

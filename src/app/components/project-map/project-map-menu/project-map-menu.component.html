@@ -1,94 +1,108 @@
 <button
-    matTooltip="Add a note"
-    matTooltipClass="custom-tooltip"
-    mat-icon-button
-    class="menu-button"
-    (click)="addDrawing('text')">
-    <mat-icon [ngClass]="getCssClassForIcon('text')">create</mat-icon>
+  matTooltip="Add a note"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('text')"
+>
+  <mat-icon [ngClass]="getCssClassForIcon('text')">create</mat-icon>
 </button>
 <input
-    type="file"
-    accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
-    class="non-visible"
-    #file
-    (change)="uploadImageFile($event)"/>
+  type="file"
+  accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
+  class="non-visible"
+  #file
+  (change)="uploadImageFile($event)"
+/>
 <button
-    matTooltip="Insert a picture"
-    matTooltipClass="custom-tooltip"
-    mat-icon-button
-    class="menu-button"
-    (click)="file.click()">
-    <mat-icon>image</mat-icon>
+  matTooltip="Insert a picture"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="file.click()"
+>
+  <mat-icon>image</mat-icon>
 </button>
 <button
-    matTooltip="Draw a rectangle"
-    matTooltipClass="custom-tooltip"
-    mat-icon-button
-    class="menu-button"
-    (click)="addDrawing('rectangle')">
-    <mat-icon [ngClass]="getCssClassForIcon('rectangle')">crop_3_2</mat-icon>
+  matTooltip="Draw a rectangle"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('rectangle')"
+>
+  <mat-icon [ngClass]="getCssClassForIcon('rectangle')">crop_3_2</mat-icon>
 </button>
 <button
-    matTooltip="Draw an ellipse"
-    matTooltipClass="custom-tooltip"
-    mat-icon-button
-    class="menu-button"
-    (click)="addDrawing('ellipse')">
-    <mat-icon [ngClass]="getCssClassForIcon('ellipse')">panorama_fish_eye</mat-icon>
+  matTooltip="Draw an ellipse"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('ellipse')"
+>
+  <mat-icon [ngClass]="getCssClassForIcon('ellipse')">panorama_fish_eye</mat-icon>
 </button>
-<button *ngIf="!isLightThemeEnabled"
-    matTooltip="Draw a line" 
-    matTooltipClass="custom-tooltip"
-    mat-icon-button class="menu-button" 
-    (click)="addDrawing('line')">
-    <svg height="40" width="40">
+<button
+  *ngIf="!isLightThemeEnabled"
+  matTooltip="Draw a line"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('line')"
+>
+  <svg height="40" width="40">
     <line
-        [ngClass]="{ selected: drawTools.isLineChosen }"
-        x1="30"
-        y1="10"
-        x2="10"
-        y2="30"
-        style="stroke:white;stroke-width:2"/>
-    </svg>
+      [ngClass]="{ selected: drawTools.isLineChosen }"
+      x1="30"
+      y1="10"
+      x2="10"
+      y2="30"
+      style="stroke: white; stroke-width: 2"
+    />
+  </svg>
 </button>
-<button *ngIf="isLightThemeEnabled"
-    matTooltip="Draw a line" 
-    matTooltipClass="custom-tooltip"
-    mat-icon-button class="menu-button" 
-    (click)="addDrawing('line')">
-    <svg height="40" width="40">
+<button
+  *ngIf="isLightThemeEnabled"
+  matTooltip="Draw a line"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('line')"
+>
+  <svg height="40" width="40">
     <line
-        [ngClass]="{ selected: drawTools.isLineChosen }"
-        x1="30"
-        y1="10"
-        x2="10"
-        y2="30"
-        style="stroke:black;stroke-width:2"/>
-    </svg>
+      [ngClass]="{ selected: drawTools.isLineChosen }"
+      x1="30"
+      y1="10"
+      x2="10"
+      y2="30"
+      style="stroke: black; stroke-width: 2"
+    />
+  </svg>
 </button>
 <button
-    matTooltip="Lock or unlock all items"
-    matTooltipClass="custom-tooltip"
-    mat-icon-button
-    class="menu-button"
-    (click)="changeLockValue()">
-    <mat-icon [ngClass]="{unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked}">lock</mat-icon>
+  matTooltip="Lock or unlock all items"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="changeLockValue()"
+>
+  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">lock</mat-icon>
 </button>
 <button
-    matTooltip="Take a screenshot"
-    matTooltipClass="custom-tooltip"
-    mat-icon-button
-    class="menu-button"
-    (click)="takeScreenshot()"
-    >
-    <mat-icon [ngClass]="{unmarkedLight: !isLocked && isLightThemeEnabled}">photo_camera</mat-icon>
+  matTooltip="Take a screenshot"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button"
+  (click)="takeScreenshot()"
+>
+  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled }">photo_camera</mat-icon>
 </button>
 <app-drawing-added
   [server]="server"
   [project]="project"
   [selectedDrawing]="selectedDrawing"
-  (drawingSaved)="onDrawingSaved()">
+  (drawingSaved)="onDrawingSaved()"
+>
 </app-drawing-added>
 
-<div id="crowbar-workspace">
-</div>
+<div id="crowbar-workspace"></div>

@@ -1,61 +1,63 @@
-import { ElementRef, Directive, OnInit, OnDestroy } from '@angular/core'
+import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
+import { MapScaleService } from '../../services/mapScale.service';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
-import { select } from 'd3-selection';
-import { MapScaleService } from '../../services/mapScale.service';
 
 @Directive({
-    selector: '[zoomingCanvas]',
+  selector: '[zoomingCanvas]',
 })
 export class ZoomingCanvasDirective implements OnInit, OnDestroy {
-    private wheelListener: Function;
-    private movingModeState: Subscription;
-    
-    constructor(
-        private element: ElementRef,
-        private movingEventSource: MovingEventSource,
-        private context: Context,
-        private mapsScaleService: MapScaleService
-    ) {}
+  private wheelListener: Function;
+  private movingModeState: Subscription;
 
-    ngOnInit() {
-        this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
-            event ? this.addListener() : this.removeListener();
-        });
-    }
+  constructor(
+    private element: ElementRef,
+    private movingEventSource: MovingEventSource,
+    private context: Context,
+    private mapsScaleService: MapScaleService
+  ) {}
 
-    ngOnDestroy() {
-        this.movingModeState.unsubscribe();
-    }
+  ngOnInit() {
+    this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
+      event ? this.addListener() : this.removeListener();
+    });
+  }
 
-    addListener() {
-        this.wheelListener = (event: WheelEvent) => {
-            event.stopPropagation();
-            event.preventDefault();
+  ngOnDestroy() {
+    this.movingModeState.unsubscribe();
+  }
 
-            let zoom = event.deltaY;
-            zoom = event.deltaMode === 0 ? zoom/100 : zoom/3;
+  addListener() {
+    this.wheelListener = (event: WheelEvent) => {
+      event.stopPropagation();
+      event.preventDefault();
 
-            const view = select(this.element.nativeElement);
-            const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
-            
-            canvas.attr('transform', () => {
-                this.context.transformation.k = this.context.transformation.k - zoom/10;
+      let zoom = event.deltaY;
+      zoom = event.deltaMode === 0 ? zoom / 100 : zoom / 3;
 
-                const xTrans = this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
-                const yTrans = this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
-                const kTrans = this.context.transformation.k;
-                this.mapsScaleService.setScale(kTrans);
+      const view = select(this.element.nativeElement);
+      const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
 
-                return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
-            });
-        };
+      canvas.attr('transform', () => {
+        this.context.transformation.k = this.context.transformation.k - zoom / 10;
 
-        this.element.nativeElement.addEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject, {passive: false});
-    }
+        const xTrans = this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
+        const yTrans = this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
+        const kTrans = this.context.transformation.k;
+        this.mapsScaleService.setScale(kTrans);
 
-    removeListener() {
-        this.element.nativeElement.removeEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject);
-    }
+        return `translate(${xTrans}, ${yTrans}) scale(${kTrans})`;
+      });
+    };
+
+    this.element.nativeElement.addEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject, {
+      passive: false,
+    });
+  }
+
+  removeListener() {
+    this.element.nativeElement.removeEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject);
+  }
 }

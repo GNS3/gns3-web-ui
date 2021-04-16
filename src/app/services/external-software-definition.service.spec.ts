@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ExternalSoftwareDefinitionService } from './external-software-definition.service';
 import { PlatformService } from './platform.service';
 
@@ -18,7 +17,6 @@ class PlatformServiceMock {
   }
 }
 
-
 describe('ExternalSoftwareDefinitionService', () => {
   let platformServiceMock: PlatformServiceMock;
   let service: ExternalSoftwareDefinitionService;
@@ -27,16 +25,15 @@ describe('ExternalSoftwareDefinitionService', () => {
     platformServiceMock = new PlatformServiceMock();
   });
 
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      ExternalSoftwareDefinitionService,
-      { provide: PlatformService, useValue: platformServiceMock}
-    ]
-  }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [ExternalSoftwareDefinitionService, { provide: PlatformService, useValue: platformServiceMock }],
+    })
+  );
 
   beforeEach(() => {
     service = TestBed.get(ExternalSoftwareDefinitionService);
-  })
+  });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
@@ -91,7 +88,5 @@ describe('ExternalSoftwareDefinitionService', () => {
       expect(darwinSpy).toHaveBeenCalled();
       expect(linuxSpy).not.toHaveBeenCalled();
     });
-
-  })
-
+  });
 });

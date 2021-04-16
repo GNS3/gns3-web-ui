@@ -1,30 +1,38 @@
-import { Component, ViewChild, ElementRef, OnInit, Input, EventEmitter, OnDestroy, Renderer2, NgZone } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
+import { select } from 'd3-selection';
+import { Subscription } from 'rxjs';
+import { StyleProperty } from '../../../components/project-map/drawings-editors/text-editor/text-editor.component';
+import { Link } from '../../../models/link';
+import { Server } from '../../../models/server';
+import { LinkService } from '../../../services/link.service';
+import { MapScaleService } from '../../../services/mapScale.service';
+import { ToolsService } from '../../../services/tools.service';
+import { LinksDataSource } from '../../datasources/links-datasource';
+import { NodesDataSource } from '../../datasources/nodes-datasource';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { TextAddedDataEvent, TextEditedDataEvent } from '../../events/event-source';
-import { ToolsService } from '../../../services/tools.service';
-import { select } from 'd3-selection';
-import { TextElement } from '../../models/drawings/text-element';
-import { Context } from '../../models/context';
-import { Subscription } from 'rxjs';
-import { MapScaleService } from '../../../services/mapScale.service';
-import { MapLabel } from '../../models/map/map-label';
-import { MapNode } from '../../models/map/map-node';
-import { NodesDataSource } from '../../datasources/nodes-datasource';
-import { Node } from '../../models/node';
-import { SelectionManager } from '../../managers/selection-manager';
-import { Server } from '../../../models/server';
-import { MapLinkNode } from '../../models/map/map-link-node';
-import { LinkService } from '../../../services/link.service';
-import { LinksDataSource } from '../../datasources/links-datasource';
-import { Link } from '../../../models/link';
-import { StyleProperty } from '../../../components/project-map/drawings-editors/text-editor/text-editor.component';
 import { FontFixer } from '../../helpers/font-fixer';
+import { SelectionManager } from '../../managers/selection-manager';
+import { Context } from '../../models/context';
+import { TextElement } from '../../models/drawings/text-element';
 import { Font } from '../../models/font';
+import { MapLinkNode } from '../../models/map/map-link-node';
+import { Node } from '../../models/node';
 
 @Component({
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
-  styleUrls: ['./text-editor.component.scss']
+  styleUrls: ['./text-editor.component.scss'],
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
   @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
@@ -73,7 +81,11 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       this.leftPosition = event.pageX.toString() + 'px';
       this.topPosition = event.pageY.toString() + 'px';
       this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
-      this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'transform', `scale(${this.mapScaleService.getScale()})`);
+      this.renderer.setStyle(
+        this.temporaryTextElement.nativeElement,
+        'transform',
+        `scale(${this.mapScaleService.getScale()})`
+      );
       this.temporaryTextElement.nativeElement.focus();
 
       let textListener = () => {
@@ -113,7 +125,11 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         this.selectionManager.setSelected([]);
 
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'transform', `scale(${this.mapScaleService.getScale()})`);
+        this.renderer.setStyle(
+          this.temporaryTextElement.nativeElement,
+          'transform',
+          `scale(${this.mapScaleService.getScale()})`
+        );
         this.editedLink = elem;
 
         select(textElements[index]).attr('visibility', 'hidden');
@@ -121,34 +137,52 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
         this.editedNode = this.nodesDataSource.get(elem.nodeId);
         this.editedLink = elem;
-        let x = ((elem.label.originalX + this.editedNode.x - 1) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
-        let y = ((elem.label.originalY + this.editedNode.y + 4) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
+        let x =
+          (elem.label.originalX + this.editedNode.x - 1) * this.context.transformation.k +
+          this.context.getZeroZeroTransformationPoint().x +
+          this.context.transformation.x;
+        let y =
+          (elem.label.originalY + this.editedNode.y + 4) * this.context.transformation.k +
+          this.context.getZeroZeroTransformationPoint().y +
+          this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
         this.temporaryTextElement.nativeElement.innerText = elem.label.text;
 
         let styleProperties: StyleProperty[] = [];
-        for (let property of elem.label.style.split(";")){
+        for (let property of elem.label.style.split(';')) {
           styleProperties.push({
-            property: property.split(": ")[0],
-            value: property.split(": ")[1]
+            property: property.split(': ')[0],
+            value: property.split(': ')[1],
           });
         }
         let font: Font = {
-          font_family: styleProperties.find(p => p.property === 'font-family') ? styleProperties.find(p => p.property === 'font-family').value : 'TypeWriter',
-          font_size: styleProperties.find(p => p.property === 'font-size') ? Number(styleProperties.find(p => p.property === 'font-size').value) : 10.0,
-          font_weight: styleProperties.find(p => p.property === 'font-weight') ? styleProperties.find(p => p.property === 'font-weight').value : 'normal'
+          font_family: styleProperties.find((p) => p.property === 'font-family')
+            ? styleProperties.find((p) => p.property === 'font-family').value
+            : 'TypeWriter',
+          font_size: styleProperties.find((p) => p.property === 'font-size')
+            ? Number(styleProperties.find((p) => p.property === 'font-size').value)
+            : 10.0,
+          font_weight: styleProperties.find((p) => p.property === 'font-weight')
+            ? styleProperties.find((p) => p.property === 'font-weight').value
+            : 'normal',
         };
         font = this.fontFixer.fix(font);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'color', styleProperties.find(p => p.property === 'fill') ? styleProperties.find(p => p.property === 'fill').value : '#000000');
+        this.renderer.setStyle(
+          this.temporaryTextElement.nativeElement,
+          'color',
+          styleProperties.find((p) => p.property === 'fill')
+            ? styleProperties.find((p) => p.property === 'fill').value
+            : '#000000'
+        );
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', font.font_family);
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', `${font.font_size}pt`);
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', font.font_weight);
-        
+
         let listener = () => {
           let innerText = this.temporaryTextElement.nativeElement.innerText;
           let link: Link = this.linksDataSource.get(this.editedLink.linkId);
-          link.nodes.find(n => n.node_id === this.editedNode.node_id).label.text = innerText;
+          link.nodes.find((n) => n.node_id === this.editedNode.node_id).label.text = innerText;
 
           this.linkService.updateLink(this.server, link).subscribe((link: Link) => {
             rootElement
@@ -177,7 +211,11 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       .selectAll<SVGTextElement, TextElement>('text.text_element')
       .on('dblclick', (elem, index, textElements) => {
         this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'transform', `scale(${this.mapScaleService.getScale()})`);
+        this.renderer.setStyle(
+          this.temporaryTextElement.nativeElement,
+          'transform',
+          `scale(${this.mapScaleService.getScale()})`
+        );
         this.editedElement = elem;
 
         select(textElements[index]).attr('visibility', 'hidden');
@@ -185,8 +223,14 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
         this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute('drawing_id');
         var transformData = textElements[index].parentElement.getAttribute('transform').split(/\(|\)/);
-        var x = (Number(transformData[1].split(/,/)[0]) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
-        var y = (Number(transformData[1].split(/,/)[1]) * this.context.transformation.k) + this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;
+        var x =
+          Number(transformData[1].split(/,/)[0]) * this.context.transformation.k +
+          this.context.getZeroZeroTransformationPoint().x +
+          this.context.transformation.x;
+        var y =
+          Number(transformData[1].split(/,/)[1]) * this.context.transformation.k +
+          this.context.getZeroZeroTransformationPoint().y +
+          this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
         this.temporaryTextElement.nativeElement.innerText = elem.text;

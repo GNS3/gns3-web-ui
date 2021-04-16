@@ -1,20 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DefaultLayoutComponent } from './default-layout.component';
-import { ElectronService } from 'ngx-electron';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ElectronService } from 'ngx-electron';
+import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ServerManagementService, ServerStateEvent } from '../../services/server-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
-import { Subject } from 'rxjs';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-
+import { DefaultLayoutComponent } from './default-layout.component';
 
 class ElectronServiceMock {
   public isElectronApp: boolean;
@@ -41,22 +39,22 @@ describe('DefaultLayoutComponent', () => {
       providers: [
         {
           provide: ElectronService,
-          useValue: electronServiceMock
+          useValue: electronServiceMock,
         },
         {
           provide: ServerManagementService,
-          useValue: serverManagementService
+          useValue: serverManagementService,
         },
         {
           provide: ToasterService,
-          useClass: MockedToasterService
+          useClass: MockedToasterService,
         },
         {
           provide: RecentlyOpenedProjectService,
-          useClass: RecentlyOpenedProjectService
+          useClass: RecentlyOpenedProjectService,
         },
-        ProgressService
-      ]
+        ProgressService,
+      ],
     }).compileComponents();
   }));
 
@@ -86,7 +84,7 @@ describe('DefaultLayoutComponent', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
     serverManagementService.serverStatusChanged.next({
       status: 'errored',
-      message: 'Message'
+      message: 'Message',
     });
     expect(toaster.errors).toEqual(['Message']);
   });
@@ -96,7 +94,7 @@ describe('DefaultLayoutComponent', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
     serverManagementService.serverStatusChanged.next({
       status: 'errored',
-      message: 'Message'
+      message: 'Message',
     });
     expect(toaster.errors).toEqual([]);
   });
@@ -119,6 +117,4 @@ describe('DefaultLayoutComponent', () => {
       expect(isClosed).toBeTruthy();
     });
   });
-
-
 });

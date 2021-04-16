@@ -37,12 +37,12 @@ before_install:
 before_script:
   # greenkeeper-lockfile support
    - greenkeeper-lockfile-update
-   - npm install -g codecov
+  #  - npm install -g codecov
 
 script: yarn coverage
 
 after_success:
-  - codecov
+  # - codecov
 
 after_script:
   # greenkeeper-lockfile support

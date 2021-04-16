@@ -14,7 +14,7 @@ describe('StylesToFontConverter', () => {
     const expectedFont: Font = {
       font_family: 'TypeWriter',
       font_size: 10,
-      font_weight: 'bold'
+      font_weight: 'bold',
     };
 
     expect(converter.convert(styles)).toEqual(expectedFont);

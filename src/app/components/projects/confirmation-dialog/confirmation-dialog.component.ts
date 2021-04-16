@@ -1,11 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Project } from '../../../models/project';
 
 @Component({
   selector: 'app-import-project-dialog',
   templateUrl: 'confirmation-dialog.component.html',
-  styleUrls: ['confirmation-dialog.component.scss']
+  styleUrls: ['confirmation-dialog.component.scss'],
 })
 export class ConfirmationDialogComponent implements OnInit {
   private existingProject: Project;

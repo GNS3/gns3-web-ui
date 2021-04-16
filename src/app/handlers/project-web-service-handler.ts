@@ -1,12 +1,10 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { Subject } from 'rxjs';
-
-import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
-import { LinksDataSource } from '../cartography/datasources/links-datasource';
+import { EventEmitter, Injectable } from '@angular/core';
 import { DrawingsDataSource } from '../cartography/datasources/drawings-datasource';
-import { Link } from '../models/link';
-import { Node } from '../cartography/models/node';
+import { LinksDataSource } from '../cartography/datasources/links-datasource';
+import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
 import { Drawing } from '../cartography/models/drawing';
+import { Node } from '../cartography/models/node';
+import { Link } from '../models/link';
 
 export class WebServiceMessage {
   action: string;

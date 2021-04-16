@@ -1,18 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
-import { Server } from '../../../models/server';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ProjectService } from '../../../services/project.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Router } from '@angular/router';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
-import { Router } from '@angular/router';
-import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
+import { Server } from '../../../models/server';
+import { ProjectService } from '../../../services/project.service';
+import { ToasterService } from '../../../services/toaster.service';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -34,8 +33,8 @@ export class MockedProjectService {
       show_layers: false,
       show_grid: false,
       snap_to_grid: false,
-      variables: []
-    }
+      variables: [],
+    },
   ];
 
   list() {
@@ -46,7 +45,7 @@ export class MockedProjectService {
     return of(this.projects.pop);
   }
 
-  isReadOnly(project: Project){
+  isReadOnly(project: Project) {
     return false;
   }
 }
@@ -56,13 +55,13 @@ describe('AddBlankProjectDialogComponent', () => {
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
   let server: Server;
   let router = {
-    navigate: jasmine.createSpy('navigate')
+    navigate: jasmine.createSpy('navigate'),
   };
   let toaster = {
-    success: jasmine.createSpy('success')
+    success: jasmine.createSpy('success'),
   };
   let dialogRef = {
-    close: jasmine.createSpy('close')
+    close: jasmine.createSpy('close'),
   };
 
   beforeEach(async(() => {
@@ -74,16 +73,16 @@ describe('AddBlankProjectDialogComponent', () => {
         NoopAnimationsModule,
         FormsModule,
         ReactiveFormsModule,
-        MatSnackBarModule
+        MatSnackBarModule,
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ToasterService, useValue: toaster },
-        { provide: Router, useValue: router }
+        { provide: Router, useValue: router },
       ],
-      declarations: [AddBlankProjectDialogComponent]
+      declarations: [AddBlankProjectDialogComponent],
     }).compileComponents();
 
     server = new Server();
@@ -146,7 +145,7 @@ describe('AddBlankProjectDialogComponent', () => {
     component.projectNameForm.controls['projectName'].setValue('validName');
     spyOn(component, 'onAddClick');
 
-    component.onKeyDown({key: 'Enter'});
+    component.onKeyDown({ key: 'Enter' });
 
     expect(component.onAddClick).toHaveBeenCalled();
   });

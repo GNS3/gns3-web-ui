@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ProgressService } from './progress.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { ProgressService } from './progress.service';
 
 @Component({
   selector: 'app-progress',
   templateUrl: './progress.component.html',
-  styleUrls: ['./progress.component.scss']
+  styleUrls: ['./progress.component.scss'],
 })
 export class ProgressComponent implements OnInit, OnDestroy {
   visible = false;
@@ -16,7 +16,7 @@ export class ProgressComponent implements OnInit, OnDestroy {
   constructor(private progressService: ProgressService, private router: Router) {}
 
   ngOnInit() {
-    this.progressService.state.subscribe(state => {
+    this.progressService.state.subscribe((state) => {
       this.visible = state.visible;
 
       // only set error state once; ignore next "correct" states

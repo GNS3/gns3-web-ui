@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CreateSnapshotDialogComponent } from './create-snapshot-dialog.component';
 
 describe('CreateSnapshotDialogComponent', () => {
@@ -8,7 +7,7 @@ describe('CreateSnapshotDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CreateSnapshotDialogComponent]
+      declarations: [CreateSnapshotDialogComponent],
     }).compileComponents();
   }));
 

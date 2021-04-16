@@ -1,7 +1,7 @@
-import { TestSVGCanvas } from '../../testing';
-import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
+import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { MapDrawing } from '../../models/map/map-drawing';
+import { TestSVGCanvas } from '../../testing';
 import { EllipseDrawingWidget } from './ellipse-drawing';
 
 describe('EllipseDrawingWidget', () => {
@@ -33,10 +33,7 @@ describe('EllipseDrawingWidget', () => {
     drawing.element = ellipse;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
-    const drawings_enter = drawings
-      .enter()
-      .append<SVGGElement>('g')
-      .classed('drawing', true);
+    const drawings_enter = drawings.enter().append<SVGGElement>('g').classed('drawing', true);
     const drawings_merge = drawings.merge(drawings_enter);
 
     widget.draw(drawings_merge);

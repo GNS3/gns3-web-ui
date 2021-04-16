@@ -1,19 +1,18 @@
-import { Injectable, EventEmitter } from '@angular/core';
-
-import { Widget } from './widget';
-import { SVGSelection } from '../models/types';
-import { Layer } from '../models/layer';
-import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
-import { Draggable, DraggableDrag, DraggableStart, DraggableEnd } from '../events/draggable';
-import { DrawingWidget } from './drawing';
-import { drag, D3DragEvent } from 'd3-drag';
+import { EventEmitter, Injectable } from '@angular/core';
+import { drag } from 'd3-drag';
 import { event } from 'd3-selection';
-import { MapDrawing } from '../models/map/map-drawing';
+import { Draggable } from '../events/draggable';
+import { ResizingEnd } from '../events/resizing';
+import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
+import { MapSettingsManager } from '../managers/map-settings-manager';
 import { Context } from '../models/context';
 import { EllipseElement } from '../models/drawings/ellipse-element';
-import { ResizingEnd } from '../events/resizing';
 import { LineElement } from '../models/drawings/line-element';
-import { MapSettingsManager } from '../managers/map-settings-manager';
+import { Layer } from '../models/layer';
+import { MapDrawing } from '../models/map/map-drawing';
+import { SVGSelection } from '../models/types';
+import { DrawingWidget } from './drawing';
+import { Widget } from './widget';
 
 @Injectable()
 export class DrawingsWidget implements Widget {

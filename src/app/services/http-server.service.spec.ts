@@ -1,11 +1,10 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Server } from '../models/server';
+import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer, ServerError, ServerErrorHandler } from './http-server.service';
 import { getTestServer } from './testing';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 
 class MyType {
   id: number;
@@ -26,25 +25,25 @@ describe('ServerError', () => {
 });
 
 describe('ServerErrorHandler', () => {
-  it('should handle HttpErrorResponse with status 0', done => {
+  it('should handle HttpErrorResponse with status 0', (done) => {
     const error = new HttpErrorResponse({ status: 0 });
 
     const handler = new ServerErrorHandler();
     const result = handler.handleError(error);
 
-    result.subscribe(null, err => {
+    result.subscribe(null, (err) => {
       expect(err.message).toEqual('Server is unreachable');
       done();
     });
   });
 
-  it('should not handle HttpErrorResponse with status!=0', done => {
+  it('should not handle HttpErrorResponse with status!=0', (done) => {
     const error = new HttpErrorResponse({ status: 499 });
 
     const handler = new ServerErrorHandler();
     const result = handler.handleError(error);
 
-    result.subscribe(null, err => {
+    result.subscribe(null, (err) => {
       expect(err.message).toEqual('Http failure response for (unknown url): 499 undefined');
       done();
     });
@@ -60,7 +59,7 @@ describe('HttpServer', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer]
+      providers: [HttpServer],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -85,7 +84,7 @@ describe('HttpServer', () => {
   it('should make GET query for get method and return instance of type', () => {
     const testData: MyType = { id: 3 };
 
-    service.get<MyType>(server, '/test').subscribe(data => {
+    service.get<MyType>(server, '/test').subscribe((data) => {
       expect(data instanceof MyType).toBeFalsy();
       expect(data).toEqual(testData);
     });
@@ -100,7 +99,7 @@ describe('HttpServer', () => {
   it('HttpClient should make GET query for get method and return instance of type', () => {
     const testData: MyType = { id: 3 };
 
-    httpClient.get<MyType>('http://localhost/test').subscribe(data => {
+    httpClient.get<MyType>('http://localhost/test').subscribe((data) => {
       // when this condition is true, it would be great
       expect(data instanceof MyType).toBeFalsy();
       expect(data).toEqual(testData);
@@ -125,9 +124,9 @@ describe('HttpServer', () => {
     service
       .getText(server, '/test', {
         headers: {
-          CustomHeader: 'value'
+          CustomHeader: 'value',
         },
-        responseType: 'text'
+        responseType: 'text',
       })
       .subscribe();
 
@@ -205,8 +204,8 @@ describe('HttpServer', () => {
     service
       .get(server, '/test', {
         headers: {
-          CustomHeader: 'value'
-        }
+          CustomHeader: 'value',
+        },
       })
       .subscribe();
 
@@ -224,8 +223,8 @@ describe('HttpServer', () => {
     service
       .get(server, '/test', {
         headers: {
-          CustomHeader: 'value'
-        }
+          CustomHeader: 'value',
+        },
       })
       .subscribe();
 

@@ -1,17 +1,17 @@
 import { Component, Input } from '@angular/core';
-import { Server } from '../../../models/server';
+import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
-import { LinkService } from '../../../services/link.service';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
+import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '../../../models/link';
-import { Subscription } from 'rxjs';
-import { LinksEventSource } from '../../../cartography/events/links-event-source';
+import { Server } from '../../../models/server';
+import { LinkService } from '../../../services/link.service';
 
 @Component({
   selector: 'app-interface-label-dragged',
   templateUrl: './interface-label-dragged.component.html',
-  styleUrls: ['./interface-label-dragged.component.scss']
+  styleUrls: ['./interface-label-dragged.component.scss'],
 })
 export class InterfaceLabelDraggedComponent {
   @Input() server: Server;
@@ -24,7 +24,9 @@ export class InterfaceLabelDraggedComponent {
   ) {}
 
   ngOnInit() {
-    this.interfaceDragged = this.linksEventSource.interfaceDragged.subscribe(evt => this.onInterfaceLabelDragged(evt));
+    this.interfaceDragged = this.linksEventSource.interfaceDragged.subscribe((evt) =>
+      this.onInterfaceLabelDragged(evt)
+    );
   }
 
   onInterfaceLabelDragged(draggedEvent: DraggedDataEvent<MapLinkNode>) {

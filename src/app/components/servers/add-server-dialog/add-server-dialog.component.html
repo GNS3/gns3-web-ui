@@ -1,13 +1,13 @@
 <h1 mat-dialog-title>Add server</h1>
 <form [formGroup]="serverForm">
-<div mat-dialog-content>
+  <div mat-dialog-content>
     <mat-form-field>
       <input matInput tabindex="1" formControlName="name" placeholder="Name" />
       <mat-error *ngIf="serverForm.get('name').hasError('required')">You must enter a value</mat-error>
     </mat-form-field>
 
-   <mat-form-field>
-      <mat-select placeholder="Location" formControlName="location" >
+    <mat-form-field>
+      <mat-select placeholder="Location" formControlName="location">
         <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
       </mat-select>
     </mat-form-field>
@@ -29,13 +29,13 @@
     </mat-form-field>
 
     <mat-form-field>
-      <mat-select placeholder="Protocol" formControlName="protocol" >
+      <mat-select placeholder="Protocol" formControlName="protocol">
         <mat-option *ngFor="let protocol of protocols" [value]="protocol.key"> {{ protocol.name }} </mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field *ngIf="serverForm.get('location').value === 'remote'">
-      <mat-select placeholder="Authorization" formControlName="authorization" >
+      <mat-select placeholder="Authorization" formControlName="authorization">
         <mat-option *ngFor="let auth of authorizations" [value]="auth.key"> {{ auth.name }} </mat-option>
       </mat-select>
     </mat-form-field>
@@ -45,9 +45,8 @@
     </mat-form-field>
 
     <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
-      <input matInput tabindex="1" formControlName="password" placeholder="Password" />
+      <input matInput type="password" tabindex="1" formControlName="password" placeholder="Password" />
     </mat-form-field>
-
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">No Thanks</button>

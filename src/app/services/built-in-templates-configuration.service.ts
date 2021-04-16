@@ -1,50 +1,56 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class BuiltInTemplatesConfigurationService {
-    getCategoriesForCloudNodes() {
-        let categories = [["Default", "guest"],
-            ["Routers", "router"],
-            ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+  getCategoriesForCloudNodes() {
+    let categories = [
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ];
 
-        return categories;
-    }
+    return categories;
+  }
 
-    getConsoleTypesForCloudNodes() {
-        return ['telnet', 'none'];
-    }
+  getConsoleTypesForCloudNodes() {
+    return ['telnet', 'none'];
+  }
 
-    getCategoriesForEthernetHubs() {
-        let categories = [["Default", "guest"],
-            ["Routers", "router"],
-            ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+  getCategoriesForEthernetHubs() {
+    let categories = [
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ];
 
-        return categories;
-    }
+    return categories;
+  }
 
-    getCategoriesForEthernetSwitches() {
-        let categories = [["Default", "guest"],
-            ["Routers", "router"],
-            ["Switches", "switch"],
-            ["End devices", "guest"],
-            ["Security devices", "firewall"]];
+  getCategoriesForEthernetSwitches() {
+    let categories = [
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ];
 
-        return categories;
-    }
+    return categories;
+  }
 
-    getConsoleTypesForEthernetSwitches() {
-        return ['telnet', 'none'];
-    }
+  getConsoleTypesForEthernetSwitches() {
+    return ['telnet', 'none'];
+  }
 
-    getPortTypesForEthernetSwitches() {
-        return ['access', 'dot1q', 'qinq'];
-    }
+  getPortTypesForEthernetSwitches() {
+    return ['access', 'dot1q', 'qinq'];
+  }
 
-    getEtherTypesForEthernetSwitches() {
-        return ['0x8100', '0x88A8', '0x9100', '0x9200'];
-    }
+  getEtherTypesForEthernetSwitches() {
+    return ['0x8100', '0x88A8', '0x9100', '0x9200'];
+  }
 }

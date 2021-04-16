@@ -1,56 +1,68 @@
-<h1 mat-dialog-title>Configurator for node {{name}}</h1>
+<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
 
 <div class="modal-form-container">
-    <div class="content">
-        <div class="default-content">
-            <mat-card class="matCard">
-                <mat-tab-group *ngIf="name">
-                    <mat-tab label="General settings">
-                        <br/><form [formGroup]="generalSettingsForm">
-                            <mat-form-field class="form-field">
-                                <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name">
-                            </mat-form-field>
-                        </form>
-                        <mat-form-field class="select">
-                            <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                                <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                                    {{type}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                        <mat-checkbox [(ngModel)]="node.console_auto_start">
-                            Auto start console
-                        </mat-checkbox><br/>
-                        <mat-form-field class="form-field">
-                            <input matInput type="number" [(ngModel)]="node.properties.ram" placeholder="RAM size">
-                            <span matSuffix>MB</span>
-                        </mat-form-field>
-                        <mat-form-field class="form-field">
-                            <input matInput type="number" [(ngModel)]="node.properties.nvram" placeholder="NVRAM size">
-                            <span matSuffix>MB</span>
-                        </mat-form-field>
-                    </mat-tab>
+  <div class="content">
+    <div class="default-content">
+      <mat-card class="matCard">
+        <mat-tab-group *ngIf="name">
+          <mat-tab label="General settings">
+            <br />
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
+              </mat-form-field>
+            </form>
+            <mat-form-field class="select">
+              <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
+                <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="node.console_auto_start"> Auto start console </mat-checkbox><br />
+            <mat-form-field class="form-field">
+              <input matInput type="number" [(ngModel)]="node.properties.ram" placeholder="RAM size" />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input matInput type="number" [(ngModel)]="node.properties.nvram" placeholder="NVRAM size" />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+          </mat-tab>
 
-                    <mat-tab label="Network">
-                        <br/><form [formGroup]="networkForm">
-                            <mat-form-field class="form-field">
-                                <input matInput formControlName="ethernetAdapters" type="number" [(ngModel)]="node.ethernet_adapters" placeholder="Ethernet adapters">
-                            </mat-form-field>
-                            <mat-form-field class="form-field">
-                                <input matInput formControlName="serialAdapters" type="number" [(ngModel)]="node.serial_adapters" placeholder="Serial adapters">
-                            </mat-form-field>
-                        </form>
-                    </mat-tab>
+          <mat-tab label="Network">
+            <br />
+            <form [formGroup]="networkForm">
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  formControlName="ethernetAdapters"
+                  type="number"
+                  [(ngModel)]="node.ethernet_adapters"
+                  placeholder="Ethernet adapters"
+                />
+              </mat-form-field>
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  formControlName="serialAdapters"
+                  type="number"
+                  [(ngModel)]="node.serial_adapters"
+                  placeholder="Serial adapters"
+                />
+              </mat-form-field>
+            </form>
+          </mat-tab>
 
-                    <mat-tab label="Usage">
-                        <mat-form-field class="form-field">
-                            <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-                        </mat-form-field>
-                    </mat-tab>
-                </mat-tab-group>
-            </mat-card>
-        </div>
+          <mat-tab label="Usage">
+            <mat-form-field class="form-field">
+              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
     </div>
+  </div>
 </div>
 
 <div mat-dialog-actions>
