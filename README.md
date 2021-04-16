@@ -3,7 +3,6 @@
 [![Travis CI](https://api.travis-ci.org/GNS3/gns3-web-ui.svg?branch=master)](https://travis-ci.org)
 [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/GNS3/gns3-web-ui?branch=master&svg=true)](https://www.appveyor.com/)
 [![CircleCI](https://circleci.com/gh/GNS3/gns3-web-ui/tree/master.png)](https://circleci.com/gh/GNS3/gns3-web-ui/tree/master.png)
-[![codecov](https://codecov.io/gh/GNS3/gns3-web-ui/branch/master/graph/badge.svg)](https://codecov.io/gh/GNS3/gns3-web-ui)
 
 [![Dependency](https://img.shields.io/librariesio/github/GNS3/gns3-web-ui)](https://libraries.io/github/GNS3/gns3-web-ui)
 [![Packages versions](https://repology.org/badge/latest-versions/gns3.svg)](https://repology.org/metapackage/gns3/versions)
