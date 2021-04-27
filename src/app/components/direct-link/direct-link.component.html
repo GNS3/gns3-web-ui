@@ -1,0 +1,46 @@
+<div [hidden]="!serverOptionsVisibility" class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Add new server</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <mat-card class="matCard">
+            <form [formGroup]="serverForm">
+                <mat-form-field>
+                    <input matInput tabindex="1" formControlName="name" placeholder="Name" />
+                    <mat-error *ngIf="serverForm.get('name').hasError('required')">You must enter a value</mat-error>
+                </mat-form-field>
+    
+                <mat-form-field>
+                    <mat-select placeholder="Location" formControlName="location">
+                      <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+    
+                <mat-form-field>
+                    <mat-select placeholder="Protocol" formControlName="protocol">
+                        <mat-option *ngFor="let protocol of protocols" [value]="protocol.key"> {{ protocol.name }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+    
+                <mat-form-field *ngIf="serverForm.get('location').value === 'remote'">
+                    <mat-select placeholder="Authorization" formControlName="authorization">
+                        <mat-option *ngFor="let auth of authorizations" [value]="auth.key"> {{ auth.name }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+    
+                <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
+                    <input matInput tabindex="1" formControlName="login" placeholder="Login" />
+                </mat-form-field>
+            
+                <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
+                    <input matInput type="password" tabindex="1" formControlName="password" placeholder="Password" />
+                </mat-form-field>
+            </form>
+        </mat-card>
+        <div class="buttons-bar">
+            <button mat-raised-button color="primary" (click)="createServer()">Add server</button>
+        </div>
+    </div>
+</div>
