@@ -163,7 +163,6 @@ export class AddServerDialogComponent implements OnInit {
         }
       },
       (error) => {
-        console.log("error ", error);
         this.toasterService.error('Cannot connect to the server: ' + error);
       }
     );
