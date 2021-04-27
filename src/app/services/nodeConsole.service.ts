@@ -63,7 +63,7 @@ export class NodeConsoleService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/v2/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
+    return `${protocol}://${server.host}:${server.port}/v3/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
   }
 }
 

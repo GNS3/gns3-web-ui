@@ -38,14 +38,14 @@ describe('SymbolService', () => {
   it('should list symbols', inject([SymbolService], (service: SymbolService) => {
     service.list(server).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/symbols');
     expect(req.request.method).toEqual('GET');
   }));
 
   it('should get raw symbol', inject([SymbolService], (service: SymbolService) => {
     service.raw(server, ':my/tested.png').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/symbols/:my/tested.png/raw');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/symbols/:my/tested.png/raw');
     expect(req.request.method).toEqual('GET');
   }));
 

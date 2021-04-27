@@ -90,14 +90,14 @@ describe('ProjectService', () => {
   it('should get the project', () => {
     service.get(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject');
     expect(req.request.method).toEqual('GET');
   });
 
   it('should open the project', () => {
     service.open(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/open');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/open');
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   });
@@ -105,7 +105,7 @@ describe('ProjectService', () => {
   it('should close the project', () => {
     service.close(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/close');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/close');
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   });
@@ -113,42 +113,42 @@ describe('ProjectService', () => {
   it('should list projects', () => {
     service.list(server).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects');
     expect(req.request.method).toEqual('GET');
   });
 
   it('should get nodes of project', () => {
     service.nodes(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/nodes');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/nodes');
     expect(req.request.method).toEqual('GET');
   });
 
   it('should get links of project', () => {
     service.links(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/links');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/links');
     expect(req.request.method).toEqual('GET');
   });
 
   it('should get drawings of project', () => {
     service.drawings(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/drawings');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/drawings');
     expect(req.request.method).toEqual('GET');
   });
 
   it('should delete the project', () => {
     service.delete(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject');
     expect(req.request.method).toEqual('DELETE');
   });
 
   it('should duplicate the project', () => {
     service.duplicate(server, 'projectId', 'projectName').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/projectId/duplicate');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/projectId/duplicate');
     expect(req.request.method).toEqual('POST');
   });
 

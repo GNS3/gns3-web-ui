@@ -22,7 +22,7 @@ export class IouService {
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/v2/compute/iou/images/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/v3/compute/iou/images/${filename}`;
   }
 
   addTemplate(server: Server, iouTemplate: any): Observable<any> {

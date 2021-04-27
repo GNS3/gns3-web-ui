@@ -34,7 +34,7 @@ describe('TemplateService', () => {
 
     service.list(server).subscribe(() => {});
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/templates');
-    expect(req.request.url).toBe('http://127.0.0.1:3080/v2/templates');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates');
+    expect(req.request.url).toBe('http://127.0.0.1:3080/v3/templates');
   });
 });

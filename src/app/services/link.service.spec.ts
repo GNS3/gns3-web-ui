@@ -53,7 +53,7 @@ describe('LinkService', () => {
 
     service.createLink(server, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v2/projects/myproject/links');
+    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/links');
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({
       nodes: [
