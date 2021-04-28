@@ -154,7 +154,7 @@ export class AddServerDialogComponent implements OnInit {
     const server: Server = Object.assign({}, this.serverForm.value);
     this.serverService.checkServerVersion(server).subscribe(
       (serverInfo) => {
-        if (serverInfo.version.split('.')[1] >= 2 && serverInfo.version.split('.')[0] >= 2) {
+        if (serverInfo.version.split('.')[0] >= 3) {
           this.dialogRef.close(server);
           this.toasterService.success(`Server ${server.name} added.`);
         } else {
