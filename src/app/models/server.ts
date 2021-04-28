@@ -1,4 +1,3 @@
-export type ServerAuthorization = 'basic' | 'none';
 export type ServerLocation = 'local' | 'remote' | 'bundled';
 export type ServerStatus = 'stopped' | 'starting' | 'running';
 export type ServerProtocol = 'http:' | 'https:';
@@ -11,9 +10,6 @@ export class Server {
   port: number;
   path: string;
   ubridge_path: string;
-  authorization: ServerAuthorization;
-  login: string;
-  password: string;
   status: ServerStatus;
   protocol: ServerProtocol;
 }

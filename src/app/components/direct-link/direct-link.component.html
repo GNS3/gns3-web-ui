@@ -23,20 +23,6 @@
                         <mat-option *ngFor="let protocol of protocols" [value]="protocol.key"> {{ protocol.name }} </mat-option>
                     </mat-select>
                 </mat-form-field>
-    
-                <mat-form-field *ngIf="serverForm.get('location').value === 'remote'">
-                    <mat-select placeholder="Authorization" formControlName="authorization">
-                        <mat-option *ngFor="let auth of authorizations" [value]="auth.key"> {{ auth.name }} </mat-option>
-                    </mat-select>
-                </mat-form-field>
-    
-                <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
-                    <input matInput tabindex="1" formControlName="login" placeholder="Login" />
-                </mat-form-field>
-            
-                <mat-form-field *ngIf="serverForm.get('authorization').value === 'basic'">
-                    <input matInput type="password" tabindex="1" formControlName="password" placeholder="Password" />
-                </mat-form-field>
             </form>
         </mat-card>
         <div class="buttons-bar">

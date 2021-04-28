@@ -11,10 +11,6 @@ import { ToasterService } from '../../../services/toaster.service';
   templateUrl: 'add-server-dialog.component.html',
 })
 export class AddServerDialogComponent implements OnInit {
-  authorizations = [
-    { key: 'none', name: 'No authorization' },
-    { key: 'basic', name: 'Basic authorization' },
-  ];
   protocols = [
     { key: 'http:', name: 'HTTP' },
     { key: 'https:', name: 'HTTPS' },
@@ -28,10 +24,7 @@ export class AddServerDialogComponent implements OnInit {
     ubridge_path: new FormControl(''),
     host: new FormControl('', [Validators.required]),
     port: new FormControl('', [Validators.required, Validators.min(1)]),
-    protocol: new FormControl('http:'),
-    authorization: new FormControl('none'),
-    login: new FormControl(''),
-    password: new FormControl(''),
+    protocol: new FormControl('http:')
   });
 
   constructor(
@@ -120,30 +113,10 @@ export class AddServerDialogComponent implements OnInit {
       });
     });
 
-    this.serverForm.get('authorization').valueChanges.subscribe((authorization: string) => {
-      const loginControl = this.serverForm.get('login');
-      const passwordControl = this.serverForm.get('password');
-
-      if (authorization === 'none') {
-        loginControl.clearValidators();
-        passwordControl.clearValidators();
-      } else {
-        loginControl.setValidators([Validators.required]);
-        passwordControl.setValidators([Validators.required]);
-      }
-
-      [loginControl, passwordControl].forEach((control) => {
-        control.updateValueAndValidity({
-          onlySelf: true,
-        });
-      });
-    });
-
     const defaultLocation = await this.getDefaultLocation();
     this.serverForm.get('location').setValue(defaultLocation);
     this.serverForm.get('host').setValue(this.getDefaultHost());
     this.serverForm.get('port').setValue(this.getDefaultPort());
-    this.serverForm.get('authorization').setValue('none');
   }
 
   onAddClick(): void {

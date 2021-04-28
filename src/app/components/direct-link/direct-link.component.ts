@@ -18,10 +18,6 @@ export class DirectLinkComponent implements OnInit {
   public serverPort;
   public projectId;
 
-  authorizations = [
-    { key: 'none', name: 'No authorization' },
-    { key: 'basic', name: 'Basic authorization' },
-  ];
   protocols = [
     { key: 'http:', name: 'HTTP' },
     { key: 'https:', name: 'HTTPS' },
@@ -34,10 +30,7 @@ export class DirectLinkComponent implements OnInit {
   serverForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     location: new FormControl(''),
-    protocol: new FormControl('http:'),
-    authorization: new FormControl('none'),
-    login: new FormControl(''),
-    password: new FormControl(''),
+    protocol: new FormControl('http:')
   });
 
   constructor(
@@ -80,11 +73,6 @@ export class DirectLinkComponent implements OnInit {
       return;
     }
 
-    if (this.serverForm.get('authorization').value === 'basic' && !this.serverForm.get('login').value && !this.serverForm.get('password').value) {
-      this.toasterService.error('Please use correct values');
-      return;
-    }
-
     let serverToAdd: Server = new Server();
     serverToAdd.host = this.serverIp;
     serverToAdd.port = this.serverPort;
@@ -92,9 +80,6 @@ export class DirectLinkComponent implements OnInit {
     serverToAdd.name = this.serverForm.get('name').value;
     serverToAdd.location = this.serverForm.get('location').value;
     serverToAdd.protocol = this.serverForm.get('protocol').value;
-    serverToAdd.authorization = this.serverForm.get('authorization').value;
-    serverToAdd.login = this.serverForm.get('login').value;
-    serverToAdd.password = this.serverForm.get('password').value;
 
     this.serverService.create(serverToAdd).then((addedServer: Server) => {
       this.router.navigate(['/server', addedServer.id, 'project', this.projectId]);
