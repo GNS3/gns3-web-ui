@@ -96,11 +96,11 @@ export class LinkService {
   }
 
   startCaptureOnLink(server: Server, link: Link, settings: CapturingSettings) {
-    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/start_capture`, settings);
+    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/capture/start`, settings);
   }
 
   stopCaptureOnLink(server: Server, link: Link) {
-    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/stop_capture`, {});
+    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/capture/stop`, {});
   }
 
   resetLink(server: Server, link: Link) {
@@ -108,6 +108,6 @@ export class LinkService {
   }
 
   streamPcap(server: Server, link: Link) {
-    return this.httpServer.get(server, `/projects/${link.project_id}/links/${link.link_id}/pcap`);
+    return this.httpServer.get(server, `/projects/${link.project_id}/links/${link.link_id}/capture/stream`);
   }
 }
