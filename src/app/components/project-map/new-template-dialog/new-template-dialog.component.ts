@@ -221,7 +221,7 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   getAppliance(url: string) {
-    let str = url.split('/v2');
+    let str = url.split('/v3');
     let appliancePath = str[str.length - 1];
     this.applianceService.getAppliance(this.server, appliancePath).subscribe((appliance: Appliance) => {
       this.applianceToInstall = appliance;

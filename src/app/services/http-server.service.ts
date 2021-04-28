@@ -178,9 +178,9 @@ export class HttpServer {
       if (!server.protocol) {
         server.protocol = location.protocol as ServerProtocol;
       }
-      url = `${server.protocol}//${server.host}:${server.port}/v2${url}`;
+      url = `${server.protocol}//${server.host}:${server.port}/v3${url}`;
     } else {
-      url = `/v2${url}`;
+      url = `/v3${url}`;
     }
 
     if (!options.headers) {
