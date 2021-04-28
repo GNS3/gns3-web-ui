@@ -26,7 +26,6 @@ export class TemplateListDialogComponent implements OnInit {
     'docker',
     'dynamips',
     'vpcs',
-    'traceng',
     'virtualbox',
     'vmware',
     'iou',

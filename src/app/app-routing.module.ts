@@ -158,11 +158,6 @@ const routes: Routes = [
       },
       { path: 'server/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent },
 
-      // { path: 'server/:server_id/preferences/traceng', component: TracengPreferencesComponent },
-      // { path: 'server/:server_id/preferences/traceng/templates', component: TracengTemplatesComponent },
-      // { path: 'server/:server_id/preferences/traceng/templates/:template_id', component: TracengTemplateDetailsComponent },
-      // { path: 'server/:server_id/preferences/traceng/addtemplate', component: AddTracengTemplateComponent },
-
       { path: 'server/:server_id/preferences/docker/templates', component: DockerTemplatesComponent },
       {
         path: 'server/:server_id/preferences/docker/templates/:template_id',

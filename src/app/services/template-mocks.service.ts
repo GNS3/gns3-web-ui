@@ -7,30 +7,12 @@ import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-temp
 import { IosTemplate } from '../models/templates/ios-template';
 import { IouTemplate } from '../models/templates/iou-template';
 import { QemuTemplate } from '../models/templates/qemu-template';
-import { TracengTemplate } from '../models/templates/traceng-template';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
 import { VmwareTemplate } from '../models/templates/vmware-template';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
 
 @Injectable()
 export class TemplateMocksService {
-  getTracengTemplate(): TracengTemplate {
-    let template: TracengTemplate = {
-      builtin: false,
-      category: 'guest',
-      compute_id: 'local',
-      console_type: 'none',
-      default_name_format: 'TraceNG{0}',
-      ip_address: '',
-      name: '',
-      symbol: ':/symbols/classic/traceng.svg',
-      template_id: '',
-      template_type: 'traceng',
-    };
-
-    return template;
-  }
-
   getQemuTemplate(): Observable<QemuTemplate> {
     let template: QemuTemplate = {
       adapter_type: 'e1000',

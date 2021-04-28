@@ -12,7 +12,6 @@ import { ConfiguratorDialogIouComponent } from '../../../node-editors/configurat
 import { ConfiguratorDialogNatComponent } from '../../../node-editors/configurator/nat/configurator-nat.component';
 import { ConfiguratorDialogQemuComponent } from '../../../node-editors/configurator/qemu/configurator-qemu.component';
 import { ConfiguratorDialogSwitchComponent } from '../../../node-editors/configurator/switch/configurator-switch.component';
-import { ConfiguratorDialogTracengComponent } from '../../../node-editors/configurator/traceng/configurator-traceng.component';
 import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/configurator/virtualbox/configurator-virtualbox.component';
 import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configurator/vmware/configurator-vmware.component';
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
@@ -60,8 +59,6 @@ export class ConfigActionComponent {
       this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
     } else if (this.node.node_type === 'atm_switch') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, this.conf);
-    } else if (this.node.node_type === 'traceng') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogTracengComponent, this.conf);
     }
 
     let instance = this.dialogRef.componentInstance;

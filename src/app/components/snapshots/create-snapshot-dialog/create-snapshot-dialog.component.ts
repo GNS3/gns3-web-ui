@@ -51,7 +51,7 @@ export class CreateSnapshotDialogComponent {
   }
 
   isAlwaysRunningNode(nodeType: string) {
-    return !['qemu', 'docker', 'dynamips', 'vpcs', 'vmware', 'virtualbox', 'iou', 'traceng'].includes(nodeType);
+    return !['qemu', 'docker', 'dynamips', 'vpcs', 'vmware', 'virtualbox', 'iou'].includes(nodeType);
   }
 
   onAddClick(): void {

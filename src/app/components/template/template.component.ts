@@ -30,7 +30,6 @@ export class TemplateComponent implements OnInit, OnDestroy {
     'docker',
     'dynamips',
     'vpcs',
-    'traceng',
     'virtualbox',
     'vmware',
     'iou',

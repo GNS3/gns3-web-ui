@@ -23,8 +23,6 @@ export class InfoService {
       infoList.push(`Docker ${node.name} is ${node.status}.`);
     } else if (node.node_type === 'dynamips') {
       infoList.push(`Dynamips ${node.name} is always on.`);
-    } else if (node.node_type === 'traceng') {
-      infoList.push(`TraceNG ${node.name} is always on.`);
     } else if (node.node_type === 'virtualbox') {
       infoList.push(`VirtualBox VM ${node.name} is ${node.status}.`);
     } else if (node.node_type === 'vmware') {
@@ -64,7 +62,6 @@ export class InfoService {
       node.node_type === 'frame_relay_switch' ||
       node.node_type === 'atm_switch' ||
       node.node_type === 'dynamips' ||
-      node.node_type === 'traceng' ||
       node.node_type === 'iou'
     ) {
       return 'Command line information is not supported for this type of node.';

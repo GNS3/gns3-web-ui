@@ -88,10 +88,6 @@ import { CopyQemuVmTemplateComponent } from './components/preferences/qemu/copy-
 import { QemuPreferencesComponent } from './components/preferences/qemu/qemu-preferences/qemu-preferences.component';
 import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
 import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
-import { AddTracengTemplateComponent } from './components/preferences/traceng/add-traceng/add-traceng-template.component';
-import { TracengPreferencesComponent } from './components/preferences/traceng/traceng-preferences/traceng-preferences.component';
-import { TracengTemplateDetailsComponent } from './components/preferences/traceng/traceng-template-details/traceng-template-details.component';
-import { TracengTemplatesComponent } from './components/preferences/traceng/traceng-templates/traceng-templates.component';
 import { AddVirtualBoxTemplateComponent } from './components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
 import { VirtualBoxPreferencesComponent } from './components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component';
 import { VirtualBoxTemplateDetailsComponent } from './components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
@@ -168,7 +164,6 @@ import { ConfiguratorDialogNatComponent } from './components/project-map/node-ed
 import { ConfiguratorDialogQemuComponent } from './components/project-map/node-editors/configurator/qemu/configurator-qemu.component';
 import { QemuImageCreatorComponent } from './components/project-map/node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component';
 import { ConfiguratorDialogSwitchComponent } from './components/project-map/node-editors/configurator/switch/configurator-switch.component';
-import { ConfiguratorDialogTracengComponent } from './components/project-map/node-editors/configurator/traceng/configurator-traceng.component';
 import { ConfiguratorDialogVirtualBoxComponent } from './components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component';
 import { ConfiguratorDialogVmwareComponent } from './components/project-map/node-editors/configurator/vmware/configurator-vmware.component';
 import { ConfiguratorDialogVpcsComponent } from './components/project-map/node-editors/configurator/vpcs/configurator-vpcs.component';
@@ -263,7 +258,6 @@ import { TemplateService } from './services/template.service';
 import { ThemeService } from './services/theme.service';
 import { ToasterService } from './services/toaster.service';
 import { ToolsService } from './services/tools.service';
-import { TracengService } from './services/traceng.service';
 import { UpdatesService } from './services/updates.service';
 import { VersionService } from './services/version.service';
 import { VirtualBoxConfigurationService } from './services/virtual-box-configuration.service';
@@ -424,11 +418,6 @@ import { MarkedDirective } from './directives/marked.directive';
     ConfiguratorDialogIosComponent,
     ConfiguratorDialogDockerComponent,
     ConfiguratorDialogNatComponent,
-    ConfiguratorDialogTracengComponent,
-    AddTracengTemplateComponent,
-    TracengPreferencesComponent,
-    TracengTemplatesComponent,
-    TracengTemplateDetailsComponent,
     QemuImageCreatorComponent,
     ChooseNameDialogComponent,
     StartCaptureOnStartedLinkActionComponent,
@@ -549,7 +538,6 @@ import { MarkedDirective } from './directives/marked.directive';
     MapSettingsService,
     InfoService,
     ComputeService,
-    TracengService,
     PacketCaptureService,
     NotificationService,
     Gns3vmService,
@@ -596,7 +584,6 @@ import { MarkedDirective } from './directives/marked.directive';
     ConfiguratorDialogIosComponent,
     ConfiguratorDialogDockerComponent,
     ConfiguratorDialogNatComponent,
-    ConfiguratorDialogTracengComponent,
     QemuImageCreatorComponent,
     ChooseNameDialogComponent,
     NavigationDialogComponent,
