@@ -24,7 +24,7 @@ export class ProjectService {
   }
 
   getReadmeFile(server: Server, project_id: string) {
-    return this.httpServer.get<any>(server, `/projects/${project_id}/files/README.txt`);
+    return this.httpServer.getText(server, `/projects/${project_id}/files/README.txt`);
   }
 
   postReadmeFile(server: Server, project_id: string, readme: string) {
