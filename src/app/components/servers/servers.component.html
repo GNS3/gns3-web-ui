@@ -15,7 +15,7 @@
           <mat-cell *matCellDef="let row">
             <a
               *ngIf="getServerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
-              [routerLink]="['/server', row.id, 'projects']"
+              [routerLink]="['/server', row.id, 'login']"
               class="table-link"
               >{{ row.name }}</a
             >

@@ -43,6 +43,10 @@ export class LoginComponent implements OnInit {
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
+            if (server.authToken) {
+                this.router.navigate(['/server', this.server.id, 'projects']);
+            }
+
             this.versionService.get(this.server).subscribe((version: Version) => {
                 this.version = version.version;
             });
