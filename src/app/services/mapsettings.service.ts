@@ -14,7 +14,7 @@ export class MapSettingsService {
   public isLayerNumberVisible: boolean = false;
   public logConsoleSubject = new Subject<boolean>();
   public mapRenderedEmitter = new EventEmitter<boolean>();
-  public openReadme: boolean = true;
+  public openReadme: boolean;
   public showInterfaceLabels: boolean = true;
   public integrateLinkLabelsToLinks: boolean = true;
 
@@ -28,6 +28,12 @@ export class MapSettingsService {
       isSymbolScalingEnabled = localStorage.getItem('symbolScaling') === 'true' ? true : false;
     } else {
       localStorage.setItem('symbolScaling', 'true');
+    }
+
+    if (localStorage.getItem('openReadme')) {
+      this.openReadme = localStorage.getItem('openReadme') === 'true' ? true : false;
+    } else {
+      localStorage.setItem('openReadme', 'false');
     }
   }
 
