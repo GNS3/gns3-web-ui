@@ -9,6 +9,7 @@ import { ToasterService } from '../../services/toaster.service';
 import { AuthResponse } from '../../models/authResponse';
 import { VersionService } from '../../services/version.service';
 import { Version } from '../../models/version';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
     selector: 'app-login',
@@ -19,6 +20,7 @@ import { Version } from '../../models/version';
 export class LoginComponent implements OnInit {
     private server: Server;
     public version: string;
+    public isLightThemeEnabled: boolean = false;
 
     loginForm = new FormGroup({
         username: new FormControl('', [Validators.required]),
@@ -32,7 +34,8 @@ export class LoginComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private toasterService: ToasterService,
-        private versionService: VersionService
+        private versionService: VersionService,
+        private themeService: ThemeService
     ) {}
 
     async ngOnInit() {
@@ -44,6 +47,10 @@ export class LoginComponent implements OnInit {
                 this.version = version.version;
             });
         });
+
+        this.themeService.getActualTheme() === 'light'
+            ? (this.isLightThemeEnabled = true)
+            : (this.isLightThemeEnabled = false);
     }
 
     public login() {

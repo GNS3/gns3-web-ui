@@ -3,7 +3,8 @@
         <mat-card class="matCard">
             <div class="loginTitle">
                 <div class="loginIcon">
-                    <mat-icon class="mat-icon-login" svgIcon="gns3"></mat-icon>
+                    <mat-icon class="mat-icon-login" *ngIf="!isLightThemeEnabled" svgIcon="gns3"></mat-icon>
+                    <mat-icon class="mat-icon-login" *ngIf="isLightThemeEnabled" svgIcon="gns3black"></mat-icon>
                     <div>
                         <h1>GNS3</h1>
                         <h6>v{{version}}</h6>
