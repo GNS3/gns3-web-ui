@@ -127,7 +127,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   getImageSourceForTemplate(template: Template) {
-    return `${this.server.protocol}//${this.server.host}:${this.server.port}/v3/symbols/${template.symbol}/raw`;
+    return this.symbolService.getSymbolFromTemplate(this.server, template);
   }
 
   ngOnDestroy() {

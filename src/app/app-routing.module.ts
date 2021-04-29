@@ -5,6 +5,7 @@ import { DirectLinkComponent } from './components/direct-link/direct-link.compon
 import { HelpComponent } from './components/help/help.component';
 import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
+import { LoginComponent } from './components/login/login.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { BuiltInPreferencesComponent } from './components/preferences/built-in/built-in-preferences.component';
 import { CloudNodesAddTemplateComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
@@ -63,6 +64,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'servers', pathMatch: 'full' },
       { path: 'servers', component: ServersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
+      { path: 'server/:server_id/login', component: LoginComponent },
       {
         path: 'server/:server_id/projects',
         component: ProjectsComponent,

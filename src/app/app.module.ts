@@ -269,11 +269,14 @@ import { VpcsService } from './services/vpcs.service';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
 import { MarkedDirective } from './directives/marked.directive';
+import { LoginComponent } from './components/login/login.component';
+import { LoginService } from './services/login.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProjectMapComponent,
+    LoginComponent,
     ServersComponent,
     AddServerDialogComponent,
     CreateSnapshotDialogComponent,
@@ -549,6 +552,7 @@ import { MarkedDirective } from './directives/marked.directive';
     Title,
     ApplianceService,
     UpdatesService,
+    LoginService
   ],
   entryComponents: [
     AddServerDialogComponent,

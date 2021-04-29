@@ -3,6 +3,7 @@ export type ServerStatus = 'stopped' | 'starting' | 'running';
 export type ServerProtocol = 'http:' | 'https:';
 
 export class Server {
+  authToken: string;
   id: number;
   name: string;
   location: ServerLocation;

@@ -1,0 +1,30 @@
+<div class="wrapper">
+    <div class="loginCard">
+        <mat-card class="matCard">
+            <div class="loginTitle">
+                <div class="loginIcon">
+                    <mat-icon class="mat-icon-login" svgIcon="gns3"></mat-icon>
+                    <div>
+                        <h1>GNS3</h1>
+                        <h6>v{{version}}</h6>
+                    </div>
+                </div>
+            </div>
+
+            <form [formGroup]="loginForm">
+                <mat-form-field>
+                    <input matInput formControlName="username" placeholder="Username" />
+                    <mat-error *ngIf="loginForm.get('username').hasError('required')">You must enter username</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput formControlName="password" placeholder="Password" />
+                    <mat-error *ngIf="loginForm.get('password').hasError('required')">You must enter password</mat-error>
+                </mat-form-field>
+            </form>
+
+            <div class="buttons-bar">
+                <button class="loginButton" mat-raised-button color="primary" (click)="login()">Login</button>
+            </div>
+        </mat-card>
+    </div>
+</div>

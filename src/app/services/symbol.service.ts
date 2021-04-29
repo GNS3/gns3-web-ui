@@ -5,6 +5,7 @@ import { Node } from '../cartography/models/node';
 import { Server } from '../models/server';
 import { Symbol } from '../models/symbol';
 import { HttpServer } from './http-server.service';
+import { Template } from '../models/template';
 
 const CACHE_SIZE = 1;
 
@@ -61,6 +62,10 @@ export class SymbolService {
   raw(server: Server, symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpServer.getText(server, `/symbols/${encoded_uri}/raw`);
+  }
+
+  getSymbolFromTemplate(server: Server, template: Template) {
+    return `${server.protocol}//${server.host}:${server.port}/v3/symbols/${template.symbol}/raw`;
   }
 }
 

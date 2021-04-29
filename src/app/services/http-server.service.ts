@@ -187,10 +187,9 @@ export class HttpServer {
       options.headers = {};
     }
 
-    // if (server.authorization === 'basic') {
-    //   const credentials = btoa(`${server.login}:${server.password}`);
-    //   options.headers['Authorization'] = `Basic ${credentials}`;
-    // }
+    if (server.authToken) {
+      options.headers['Authorization'] = `Bearer ${server.authToken}`;
+    }
 
     return {
       url: url,

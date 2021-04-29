@@ -1,0 +1,31 @@
+mat-form-field {
+    width: 100%;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.loginCard {
+    width: 540px;
+}
+
+.mat-icon-login {
+    height: 200px!important;
+    width: 200px!important;
+}
+
+.loginTitle {
+    display: flex;
+    justify-content: center;
+}
+
+.loginIcon {
+    display: flex;
+    align-items: center;
+}
+
+.loginButton {
+    width: 100%;
+}
