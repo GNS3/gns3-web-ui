@@ -2,7 +2,7 @@ import { AngularReactBrowserModule } from '@angular-react/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -272,6 +272,7 @@ import { RotationValidator } from './validators/rotation-validator';
 import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
+import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
 
 @NgModule({
   declarations: [
@@ -483,6 +484,7 @@ import { LoginService } from './services/login.service';
   providers: [
     SettingsService,
     { provide: ErrorHandler, useClass: ToasterErrorHandler },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
     D3Service,
     VersionService,
     ProjectService,
