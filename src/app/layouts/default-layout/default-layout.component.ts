@@ -1,5 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ServerService } from '../../services/server.service';
 import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -7,6 +9,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { ServerManagementService } from '../../services/server-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { version } from './../../version';
+import { Server } from '../../models/server';
 
 @Component({
   selector: 'app-default-layout',
@@ -31,7 +34,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private serverManagement: ServerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private serverService: ServerService
   ) {}
 
   ngOnInit() {
@@ -55,6 +60,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop servers only when in Electron
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
+  }
+
+  logout() {
+    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    this.serverService.get(+serverId).then((server: Server) => {
+      server.authToken = null;
+      this.serverService.update(server).then(val => this.router.navigate(['/server', server.id, 'login']));
+    });
   }
 
   listProjects() {
