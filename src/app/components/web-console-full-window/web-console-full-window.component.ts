@@ -91,7 +91,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
 
       this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
         if (key.code === 'KeyC' || key.code === 'KeyV') {
-          if (key.ctrlKey) {
+          if (key.ctrlKey && key.shiftKey) {
             return false;
           }
         }
