@@ -86,7 +86,7 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.grid_size = this.formGroup.get('nodeGridSize').value;
       this.project.variables = this.variables;
 
-      this.project.auto_close = !this.project.auto_close;
+      this.project.auto_close = !this.auto_close;
 
       this.projectService.update(this.server, this.project).subscribe((project: Project) => {
         this.toasterService.success(`Project ${project.name} updated.`);
