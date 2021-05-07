@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
     public version: string;
     public isLightThemeEnabled: boolean = false;
     public loginError: boolean = false;
+    public returnUrl: string = "";
 
     loginForm = new FormGroup({
         username: new FormControl('', [Validators.required]),
@@ -41,6 +42,7 @@ export class LoginComponent implements OnInit {
 
     async ngOnInit() {
         const server_id = this.route.snapshot.paramMap.get('server_id');
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
         this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
             this.server = server;
 
@@ -72,7 +74,12 @@ export class LoginComponent implements OnInit {
             server.authToken = response.access_token;
             await this.serverService.update(server);
 
-            this.router.navigate(['/server', this.server.id, 'projects']);
+            if (this.returnUrl.length <= 1) {
+                this.router.navigate(['/server', this.server.id, 'projects'])
+            } else {
+                this.router.navigateByUrl(this.returnUrl);
+            }
+
         }, error => {
             this.loginError = true;
         });

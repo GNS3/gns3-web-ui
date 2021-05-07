@@ -21,6 +21,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
   public uiVersion = version;
   public isLoginPage = false;
+  public routeSubscription;
 
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
@@ -41,9 +42,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    if (this.router.url.includes("login")) {
-      this.isLoginPage = true;
-    };
+    this.checkIfUserIsLoginPage();
+    this.routeSubscription = this.router.events.subscribe((val) => {
+      if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
+    });
     
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
@@ -65,6 +67,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop servers only when in Electron
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
+  }
+
+  checkIfUserIsLoginPage() {
+    if (this.router.url.includes("login")) {
+      this.isLoginPage = true;
+    } else {
+      this.isLoginPage = false;
+    }
   }
 
   logout() {
@@ -104,5 +114,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
   }
 }
