@@ -12,8 +12,8 @@ mat-form-field {
 }
 
 .mat-icon-login {
-    height: 200px!important;
-    width: 200px!important;
+    height: 100px!important;
+    width: 100px!important;
 }
 
 .loginTitle {
@@ -28,4 +28,10 @@ mat-form-field {
 
 .loginButton {
     width: 100%;
+}
+
+.errorMessage {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }

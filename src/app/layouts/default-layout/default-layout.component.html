@@ -8,13 +8,13 @@
       Projects
     </button>
 
-    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId" mat-button (click)="backToProject()">
+    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId && !isLoginPage" mat-button (click)="backToProject()">
       Back to project
     </button>
 
     <span class="fill-space"></span>
 
-    <button mat-button [matMenuTriggerFor]="menu">
+    <button mat-button *ngIf="!isLoginPage" [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
 

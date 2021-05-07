@@ -20,6 +20,7 @@ import { Server } from '../../models/server';
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
   public uiVersion = version;
+  public isLoginPage = false;
 
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
@@ -40,6 +41,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    if (this.router.url.includes("login")) {
+      this.isLoginPage = true;
+    };
+    
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();

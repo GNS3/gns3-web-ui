@@ -27,5 +27,9 @@
                 <button class="loginButton" mat-raised-button color="primary" (click)="login()">Login</button>
             </div>
         </mat-card>
+
+        <div class="errorMessage">
+            <mat-error *ngIf="loginError">Authentication was unsuccessful</mat-error>
+        </div>
     </div>
 </div>

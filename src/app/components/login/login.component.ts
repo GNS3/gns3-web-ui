@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
     private server: Server;
     public version: string;
     public isLightThemeEnabled: boolean = false;
+    public loginError: boolean = false;
 
     loginForm = new FormGroup({
         username: new FormControl('', [Validators.required]),
@@ -72,6 +73,8 @@ export class LoginComponent implements OnInit {
             await this.serverService.update(server);
 
             this.router.navigate(['/server', this.server.id, 'projects']);
+        }, error => {
+            this.loginError = true;
         });
     }
 }
