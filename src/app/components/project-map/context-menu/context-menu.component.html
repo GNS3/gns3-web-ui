@@ -13,7 +13,7 @@
       [nodes]="nodes"
     ></app-http-console-action>
     <app-http-console-new-tab-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length > 0"
       [server]="server"
       [nodes]="nodes"
     ></app-http-console-new-tab-action>
