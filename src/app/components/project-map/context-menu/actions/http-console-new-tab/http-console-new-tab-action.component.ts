@@ -23,7 +23,7 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
         let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;
         window.open(urlString);
       } else {
-        this.toasterService.error('To open console please start the node');
+        this.toasterService.error('To open console please start the node ' + n.name);
       }
     });
   }
