@@ -25,9 +25,10 @@ export class HttpConsoleActionComponent implements OnInit {
     this.nodes.forEach((n) => {
       if (n.status === 'started') {
         this.mapSettingsService.logConsoleSubject.next(true);
-        this.consoleService.openConsoleForNode(n);
+        // this timeout is required due to xterm.js implementation
+        setTimeout(() => { this.consoleService.openConsoleForNode(n); }, 500);
       } else {
-        this.toasterService.error('To open console please start the node');
+        this.toasterService.error('To open console please start the node ' + n.name);
       }
     });
   }
