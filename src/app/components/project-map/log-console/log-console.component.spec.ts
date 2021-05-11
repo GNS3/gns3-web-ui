@@ -13,7 +13,6 @@ import { Server } from '../../../models/server';
 import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { MockedNodeConsoleService } from '../console-wrapper/console-wrapper.component.spec';
 import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
 import { LogConsoleComponent } from './log-console.component';
 import { LogEventsDataSource } from './log-events-datasource';
