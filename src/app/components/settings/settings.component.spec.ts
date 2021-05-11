@@ -23,6 +23,7 @@ describe('SettingsComponent', () => {
   let mapSettingsService = {
     integrateLinkLabelsToLinks: true,
     toggleIntegrateInterfaceLabels(val: boolean) {},
+    toggleOpenConsolesInWidget(val: boolean) {}
   };
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
@@ -75,11 +76,19 @@ describe('SettingsComponent', () => {
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');
+    spyOn(mapSettingsService, 'toggleIntegrateInterfaceLabels');
+    spyOn(mapSettingsService, 'toggleOpenConsolesInWidget');
+    
     component.ngOnInit();
+    
     expect(getAll).toHaveBeenCalled();
     expect(component.settings).toEqual(settings);
+    
     component.settings.crash_reports = false;
     component.save();
+    
     expect(setAll).toHaveBeenCalledWith(settings);
+    expect(mapSettingsService.toggleIntegrateInterfaceLabels).toHaveBeenCalled();
+    expect(mapSettingsService.toggleOpenConsolesInWidget).toHaveBeenCalled();
   });
 });
