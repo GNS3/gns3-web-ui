@@ -15,6 +15,7 @@ export class SettingsComponent implements OnInit {
   settings = { ...SettingsService.DEFAULTS };
   consoleCommand: string;
   integrateLinksLabelsToLinks: boolean;
+  openConsolesInWidget: boolean;
 
   constructor(
     private settingsService: SettingsService,
@@ -29,12 +30,14 @@ export class SettingsComponent implements OnInit {
     this.settings = this.settingsService.getAll();
     this.consoleCommand = this.consoleService.command;
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;
+    this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
   }
 
   save() {
     this.settingsService.setAll(this.settings);
     this.toaster.success('Settings have been saved.');
     this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks);
+    this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget);
   }
 
   setDarkMode(value: boolean) {

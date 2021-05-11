@@ -17,12 +17,14 @@ export class MapSettingsService {
 
   public showInterfaceLabels: boolean = true;
   public integrateLinkLabelsToLinks: boolean = true;
+  public openConsolesInWidget: boolean = false;
 
   constructor() {
     this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     if (localStorage.getItem('integrateLinkLabelsToLinks'))
       this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
-
+    if (localStorage.getItem('openConsolesInWidget'))
+      this.openConsolesInWidget = localStorage.getItem('openConsolesInWidget') === 'true' ? true : false;
     let isSymbolScalingEnabled = true;
     if (localStorage.getItem('symbolScaling')) {
       isSymbolScalingEnabled = localStorage.getItem('symbolScaling') === 'true' ? true : false;
@@ -79,6 +81,16 @@ export class MapSettingsService {
       localStorage.setItem('integrateLinkLabelsToLinks', 'true');
     } else {
       localStorage.setItem('integrateLinkLabelsToLinks', 'false');
+    }
+  }
+
+  toggleOpenConsolesInWidget(value: boolean) {
+    this.openConsolesInWidget = value;
+    localStorage.removeItem('openConsolesInWidget');
+    if (value) {
+      localStorage.setItem('openConsolesInWidget', 'true');
+    } else {
+      localStorage.setItem('openConsolesInWidget', 'false');
     }
   }
 }
