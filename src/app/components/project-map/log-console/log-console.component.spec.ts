@@ -4,6 +4,8 @@ import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ToasterService } from '../../../services/toaster.service';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
@@ -11,9 +13,12 @@ import { Server } from '../../../models/server';
 import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { MockedNodeConsoleService } from '../console-wrapper/console-wrapper.component.spec';
 import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
 import { LogConsoleComponent } from './log-console.component';
 import { LogEventsDataSource } from './log-events-datasource';
+import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export class MockedProjectWebServiceHandler {
   public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
@@ -31,23 +36,32 @@ describe('LogConsoleComponent', () => {
   let mockedNodeService: MockedNodeService = new MockedNodeService();
   let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
   let mockedProjectWebServiceHandler: MockedProjectWebServiceHandler = new MockedProjectWebServiceHandler();
+  let nodeConsoleService: NodeConsoleService;
+  let mapSettingsService: MapSettingsService;
+  let toasterService: ToasterService;
 
   let httpServer = new HttpServer({} as HttpClient, {} as ServerErrorHandler);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MatMenuModule, BrowserModule],
+      imports: [HttpClientTestingModule, RouterTestingModule, MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
         { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: LogEventsDataSource, useClass: LogEventsDataSource },
         { provide: HttpServer, useValue: httpServer },
-        { provide: NodeConsoleService },
+        NodeConsoleService,
+        ToasterService,
+        MapSettingsService
       ],
       declarations: [LogConsoleComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
+
+    toasterService = TestBed.inject(ToasterService);
+    mapSettingsService = TestBed.inject(MapSettingsService);
+    nodeConsoleService = TestBed.inject(NodeConsoleService);
   }));
 
   beforeEach(() => {
