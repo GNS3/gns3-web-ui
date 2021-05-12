@@ -273,6 +273,7 @@ import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
+import { UserManagementComponent } from './components/user-management/user-management.component'
 
 @NgModule({
   declarations: [
@@ -458,6 +459,7 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     ConfigureCustomAdaptersDialogComponent,
     EditNetworkConfigurationDialogComponent,
     ReportIssueComponent,
+    UserManagementComponent
   ],
   imports: [
     AngularReactBrowserModule,
