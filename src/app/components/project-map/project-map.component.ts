@@ -74,7 +74,6 @@ import { ImportProjectDialogComponent } from '../projects/import-project-dialog/
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
-import { ContextConsoleMenuComponent } from './context-console-menu/context-console-menu.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
@@ -121,7 +120,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isLightThemeEnabled: boolean = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
-  @ViewChild(ContextConsoleMenuComponent) consoleContextMenu: ContextConsoleMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
 
@@ -514,11 +512,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
     });
 
-    const onContextConsoleMenu = this.nodeWidget.onContextConsoleMenu.subscribe((eventNode: NodeContextMenu) => {
-      const node = this.mapNodeToNode.convert(eventNode.node);
-      this.consoleContextMenu.openMenu(node, eventNode.event.pageY, eventNode.event.pageX);
-    });
-
     this.projectMapSubscription.add(onLinkContextMenu);
     this.projectMapSubscription.add(onEthernetLinkContextMenu);
     this.projectMapSubscription.add(onSerialLinkContextMenu);
@@ -527,7 +520,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(onContextMenu);
     this.projectMapSubscription.add(onLabelContextMenu);
     this.projectMapSubscription.add(onInterfaceLabelContextMenu);
-    this.projectMapSubscription.add(onContextConsoleMenu);
     this.mapChangeDetectorRef.detectChanges();
   }
 

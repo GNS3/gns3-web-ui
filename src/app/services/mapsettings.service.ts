@@ -17,12 +17,14 @@ export class MapSettingsService {
   public openReadme: boolean;
   public showInterfaceLabels: boolean = true;
   public integrateLinkLabelsToLinks: boolean = true;
+  public openConsolesInWidget: boolean = false;
 
   constructor() {
     this.isLayerNumberVisible = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     if (localStorage.getItem('integrateLinkLabelsToLinks'))
       this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
-
+    if (localStorage.getItem('openConsolesInWidget'))
+      this.openConsolesInWidget = localStorage.getItem('openConsolesInWidget') === 'true' ? true : false;
     let isSymbolScalingEnabled = true;
     if (localStorage.getItem('symbolScaling')) {
       isSymbolScalingEnabled = localStorage.getItem('symbolScaling') === 'true' ? true : false;
@@ -89,12 +91,22 @@ export class MapSettingsService {
   }
 
   toggleOpenReadme(value: boolean) {
-      this.openReadme = value;
-      localStorage.removeItem('openReadme');
-      if (value) {
-          localStorage.setItem('openReadme', 'true');
-      } else {
-          localStorage.setItem('openReadme', 'false');
-      }
+    this.openReadme = value;
+    localStorage.removeItem('openReadme');
+    if (value) {
+        localStorage.setItem('openReadme', 'true');
+    } else {
+        localStorage.setItem('openReadme', 'false');
+    }
+  }
+
+  toggleOpenConsolesInWidget(value: boolean) {
+    this.openConsolesInWidget = value;
+    localStorage.removeItem('openConsolesInWidget');
+    if (value) {
+      localStorage.setItem('openConsolesInWidget', 'true');
+    } else {
+      localStorage.setItem('openConsolesInWidget', 'false');
+    }
   }
 }
