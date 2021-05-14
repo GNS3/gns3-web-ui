@@ -43,25 +43,25 @@
         <span *ngIf="i % 4 === 0" class="templateRow">
           <span class="templateIcon">
             <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i])">
-              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i])" />
+              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i]) | authImage: server | async" />
             </div>
             <div class="templateText">{{ filteredTemplates[i].name }}</div>
           </span>
           <span *ngIf="filteredTemplates[i + 1]" class="templateIcon">
             <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i + 1])">
-              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i + 1])" />
+              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i + 1]) | authImage: server | async" />
             </div>
             <div class="templateText">{{ filteredTemplates[i + 1].name }}</div>
           </span>
           <span *ngIf="filteredTemplates[i + 2]" class="templateIcon">
             <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i + 2])">
-              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i + 2])" />
+              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i + 2]) | authImage: server | async" />
             </div>
             <div class="templateText">{{ filteredTemplates[i + 2].name }}</div>
           </span>
           <span *ngIf="filteredTemplates[i + 3]" class="templateIcon">
             <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i + 3])">
-              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i + 3])" />
+              <img class="image" [src]="getImageSourceForTemplate(filteredTemplates[i + 3]) | authImage: server | async" />
             </div>
             <div class="templateText">{{ filteredTemplates[i + 3].name }}</div>
           </span>

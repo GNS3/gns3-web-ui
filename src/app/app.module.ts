@@ -204,6 +204,7 @@ import { TemplateComponent } from './components/template/template.component';
 import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 import { DataSourceFilter } from './filters/dataSourceFilter';
+import { AuthImageFilter } from './filters/authImageFilter';
 import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { ProjectsFilter } from './filters/projectsFilter.pipe';
@@ -381,6 +382,7 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     DataSourceFilter,
     TemplateFilter,
     ProjectsFilter,
+    AuthImageFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
     NodesMenuComponent,

@@ -39,6 +39,23 @@ export type TextOptions = {
   withCredentials?: boolean;
 };
 
+export type BlobOptions = {
+  headers?:
+    | HttpHeaders
+    | {
+        [header: string]: string | string[];
+      };
+  observe?: 'body';
+  params?:
+    | HttpParams
+    | {
+        [param: string]: string | string[];
+      };
+  reportProgress?: boolean;
+  responseType: 'blob';
+  withCredentials?: boolean;
+};
+
 export type HeadersOptions = {
   headers?:
     | HttpHeaders
@@ -98,6 +115,16 @@ export class HttpServer {
 
     return this.http
       .get(intercepted.url, intercepted.options as TextOptions)
+      .pipe(catchError(this.errorHandler.handleError));
+  }
+
+  getBlob(server: Server, url: string, options?: BlobOptions): Observable<Blob> {
+    options = this.getBlobOptions(options);
+    const intercepted = this.getOptionsForServer<BlobOptions>(server, url, options);
+    this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
+
+    return this.http
+      .get(intercepted.url, intercepted.options as BlobOptions)
       .pipe(catchError(this.errorHandler.handleError));
   }
 
@@ -168,6 +195,15 @@ export class HttpServer {
     if (!options) {
       return {
         responseType: 'text',
+      };
+    }
+    return options;
+  }
+
+  private getBlobOptions(options: BlobOptions): BlobOptions {
+    if (!options) {
+      return {
+        responseType: 'blob',
       };
     }
     return options;
