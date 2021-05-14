@@ -59,8 +59,8 @@ export class SymbolService {
     return this.httpServer.getText(server, `/symbols/${encoded_uri}/raw`);
   }
 
-  getSymbolFromTemplate(server: Server, template: Template) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/symbols/${template.symbol}/raw`;
+  getSymbolFromTemplate(template: Template) {
+    return this.symbols.find((symbol: Symbol) => symbol.filename === template.symbol.split('/')[2]);
   }
 }
 

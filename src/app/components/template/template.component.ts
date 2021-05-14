@@ -8,6 +8,7 @@ import { MapScaleService } from '../../services/mapScale.service';
 import { SymbolService } from '../../services/symbol.service';
 import { TemplateService } from '../../services/template.service';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-template',
@@ -49,7 +50,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private templateService: TemplateService,
     private scaleService: MapScaleService,
-    private symbolService: SymbolService
+    private symbolService: SymbolService,
+    private domSanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -127,7 +129,9 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   getImageSourceForTemplate(template: Template) {
-    return this.symbolService.getSymbolFromTemplate(this.server, template);
+    let symbol = this.symbolService.getSymbolFromTemplate(template);
+    if (symbol) return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
+    return this.domSanitizer.bypassSecurityTrustUrl('data:image/svg+xml;base64,');
   }
 
   ngOnDestroy() {
