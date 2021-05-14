@@ -211,13 +211,14 @@ const routes: Routes = [
     canActivate: [LoginGuard]
   },
   {
-    path: '**',
-    component: PageNotFoundComponent,
-  },
-  {
     path: 'user_management',
     component: UserManagementComponent
+  },
+  {
+    path: '**',
+    component: PageNotFoundComponent,
   }
+  
 ];
 
 @NgModule({
