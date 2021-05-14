@@ -37,7 +37,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     private router: Router,
-    private route: ActivatedRoute,
     private serverService: ServerService
   ) {}
 
