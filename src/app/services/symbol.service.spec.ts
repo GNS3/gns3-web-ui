@@ -49,19 +49,11 @@ describe('SymbolService', () => {
     expect(req.request.method).toEqual('GET');
   }));
 
-  it('should load symbols', inject([SymbolService], (service: SymbolService) => {
-    spyOn(service, 'load').and.returnValue(of([]));
+  it('should call load symbols while adding symbol', inject([SymbolService], (service: SymbolService) => {
+    spyOn(service, 'load');
 
-    service.list(server).subscribe();
+    service.add(server, 'symbolName', 'symbol');
 
     expect(service.load).toHaveBeenCalled();
-  }));
-
-  it('should get symbols', inject([SymbolService], (service: SymbolService) => {
-    const symbol = new Symbol();
-    symbol.symbol_id = 'myid';
-    service.symbols.next([symbol]);
-
-    expect(service.get('myid').symbol_id).toEqual('myid');
   }));
 });
