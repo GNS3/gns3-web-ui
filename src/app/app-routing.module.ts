@@ -56,6 +56,7 @@ import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ServerResolve } from './resolvers/server-resolve';
+import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 
 const routes: Routes = [
   {
@@ -66,6 +67,7 @@ const routes: Routes = [
       { path: 'servers', component: ServersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'server/:server_id/login', component: LoginComponent },
+      { path: 'server/:server_id/loggeduser', component: LoggedUserComponent },
       {
         path: 'server/:server_id/projects',
         component: ProjectsComponent,

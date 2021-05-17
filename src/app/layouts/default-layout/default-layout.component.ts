@@ -8,6 +8,7 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ServerManagementService } from '../../services/server-management.service';
 import { ToasterService } from '../../services/toaster.service';
+import { UserService } from '../../services/user.service';
 import { version } from './../../version';
 import { Server } from '../../models/server';
 
@@ -37,7 +38,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     private router: Router,
-    private serverService: ServerService
+    private serverService: ServerService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -66,6 +68,13 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop servers only when in Electron
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
+  }
+
+  goToUserInfo() {
+    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    this.serverService.get(+serverId).then((server: Server) => {
+      this.router.navigate(['/server', server.id, 'loggeduser']);
+    });
   }
 
   checkIfUserIsLoginPage() {

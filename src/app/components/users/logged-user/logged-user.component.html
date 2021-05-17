@@ -1,0 +1,20 @@
+<div class="content">
+    <div class="default-header">
+        <div class="row">
+            <h1 class="col">Logged user info</h1>
+        </div>
+    </div>
+    <div class="default-content">
+        <mat-card *ngIf="user">
+            <mat-list>
+                <mat-list-item> Username: {{user.username}} </mat-list-item>
+                <mat-list-item> Full name: {{user.full_name}} </mat-list-item>
+                <mat-list-item> Email: {{user.email}} </mat-list-item>
+            </mat-list>
+
+            <div class="buttons-bar">
+                <button mat-raised-button color="primary" class="full_width" (click)="copyToken()">Click to copy access token</button><br />
+            </div>
+        </mat-card>
+    </div>
+ </div>

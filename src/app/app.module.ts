@@ -274,10 +274,13 @@ import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
+import { UserService } from './services/user.service';
+import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    LoggedUserComponent,
     ProjectMapComponent,
     LoginComponent,
     ServersComponent,
@@ -558,7 +561,8 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     Title,
     ApplianceService,
     UpdatesService,
-    LoginService
+    LoginService,
+    UserService
   ],
   entryComponents: [
     AddServerDialogComponent,
