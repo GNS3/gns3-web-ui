@@ -8,7 +8,6 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ServerManagementService } from '../../services/server-management.service';
 import { ToasterService } from '../../services/toaster.service';
-import { UserService } from '../../services/user.service';
 import { version } from './../../version';
 import { Server } from '../../models/server';
 
@@ -38,8 +37,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     private router: Router,
-    private serverService: ServerService,
-    private userService: UserService
+    private serverService: ServerService
   ) {}
 
   ngOnInit() {
