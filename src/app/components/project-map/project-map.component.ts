@@ -538,6 +538,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
 
+    nodeAddedEvent.x = nodeAddedEvent.x / this.mapScaleService.getScale();
+    nodeAddedEvent.y = nodeAddedEvent.y / this.mapScaleService.getScale();
+
     this.progressService.activate();
     this.nodeService
       .createFromTemplate(
