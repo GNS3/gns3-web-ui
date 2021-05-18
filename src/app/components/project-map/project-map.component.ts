@@ -383,16 +383,27 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('del', (event: Event) => {
       event.preventDefault();
-      const selected = this.selectionManager.getSelected();
+      this.deleteItems();
+    });
+  }
 
-      selected
-        .filter((item) => item instanceof MapNode)
-        .forEach((item: MapNode) => {
-          const node = this.mapNodeToNode.convert(item);
-          this.nodeService.delete(this.server, node).subscribe((data) => {
-            this.toasterService.success('Node has been deleted');
+  deleteItems() {
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to delete all selected objects?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        const selected = this.selectionManager.getSelected();
+
+        selected
+          .filter((item) => item instanceof MapNode)
+          .forEach((item: MapNode) => {
+            const node = this.mapNodeToNode.convert(item);
+            this.nodeService.delete(this.server, node).subscribe((data) => {
+              this.toasterService.success('Node has been deleted');
+            });
           });
-        });
+        }
     });
   }
 
