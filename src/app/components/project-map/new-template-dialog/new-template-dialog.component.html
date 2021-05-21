@@ -259,6 +259,38 @@
                   </button>
                 </div>
               </div>
+
+              <div class="list-item-inside" *ngIf="version.images.cdrom_image">
+                <span>
+                  {{ version.images.cdrom_image}}
+                </span>
+
+                <div>
+                  <span *ngIf="checkImageFromVersion(version.images.cdrom_image)"
+                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
+                  >
+                  <span *ngIf="!checkImageFromVersion(version.images.cdrom_image)"
+                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
+                  >
+
+                  <input
+                    type="file"
+                    class="non-visible"
+                    #file4
+                    (change)="importImage($event, version.images.cdrom_image)"
+                    ng2FileSelect
+                    [uploader]="uploaderImage"
+                  />
+                  <button class="button" mat-raised-button (click)="file4.click()">Import</button>
+                  <button
+                    class="button"
+                    mat-raised-button
+                    (click)="downloadImageFromVersion(version.images.cdrom_image)"
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
