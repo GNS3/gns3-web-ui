@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { HelpComponent } from './components/help/help.component';
-import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { BuiltInPreferencesComponent } from './components/preferences/built-in/built-in-preferences.component';
@@ -69,7 +68,6 @@ const routes: Routes = [
         resolve: { server: ServerResolve },
       },
       { path: 'help', component: HelpComponent },
-      { path: 'help/reportissue', component: ReportIssueComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
