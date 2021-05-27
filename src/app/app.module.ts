@@ -1,4 +1,3 @@
-import { AngularReactBrowserModule } from '@angular-react/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -9,7 +8,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragAndDropModule } from 'angular-draggable-droppable';
-import { PersistenceModule } from 'angular-persistence';
 import { ResizableModule } from 'angular-resizable-element';
 import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -44,7 +42,6 @@ import { NodeLabelDraggedComponent } from './components/drawings-listeners/node-
 import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
 import { TextEditedComponent } from './components/drawings-listeners/text-edited/text-edited.component';
 import { HelpComponent } from './components/help/help.component';
-import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 import { InstallSoftwareComponent } from './components/installed-software/install-software/install-software.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
@@ -461,11 +458,9 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     InformationDialogComponent,
     TemplateNameDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
-    EditNetworkConfigurationDialogComponent,
-    ReportIssueComponent,
+    EditNetworkConfigurationDialogComponent
   ],
   imports: [
-    AngularReactBrowserModule,
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
@@ -474,7 +469,6 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     BrowserAnimationsModule,
     CdkTableModule,
     CartographyModule,
-    PersistenceModule,
     NgxElectronModule,
     FileUploadModule,
     MatSidenavModule,

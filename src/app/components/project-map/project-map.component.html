@@ -254,12 +254,6 @@
       (closeConsole)="toggleShowConsole($event)"
     ></app-console-wrapper>
   </div>
-  <div [ngClass]="{ visible: !isTopologySummaryVisible }">
-    <app-topology-summary
-      *ngIf="project"
-      [server]="server"
-      [project]="project"
-      (closeTopologySummary)="toggleShowTopologySummary($event)"
-    ></app-topology-summary>
-  </div>
 </div>
+
+<ng-template #topologySummaryContainer></ng-template>

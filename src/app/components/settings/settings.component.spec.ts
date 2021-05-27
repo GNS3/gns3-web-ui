@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { PersistenceModule } from 'angular-persistence';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { SettingsService } from '../../services/settings.service';
 import { ConsoleService } from '../../services/settings/console.service';
@@ -39,7 +38,6 @@ describe('SettingsComponent', () => {
         MatExpansionModule,
         MatCheckboxModule,
         FormsModule,
-        PersistenceModule,
         BrowserAnimationsModule,
         MatIconModule,
         MatFormFieldModule,

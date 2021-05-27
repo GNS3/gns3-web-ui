@@ -26,8 +26,8 @@ export class ConsoleDeviceActionComponent implements OnInit {
   ngOnInit() {}
 
   async console() {
-    let consoleCommand = this.settingsService.get<string>('console_command')
-      ? this.settingsService.get<string>('console_command')
+    let consoleCommand = this.settingsService.getConsoleSettings()
+      ? this.settingsService.getConsoleSettings()
       : this.nodeService.getDefaultCommand();
     const startedNodes = this.nodes.filter((node) => node.status === 'started');
 

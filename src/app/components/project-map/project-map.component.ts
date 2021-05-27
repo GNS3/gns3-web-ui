@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Injector, OnDestroy, OnInit, SimpleChange, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as Mousetrap from 'mousetrap';
 import { from, Observable, Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, takeUntil } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
@@ -74,6 +74,7 @@ import { ImportProjectDialogComponent } from '../projects/import-project-dialog/
 import { NavigationDialogComponent } from '../projects/navigation-dialog/navigation-dialog.component';
 import { SaveProjectDialogComponent } from '../projects/save-project-dialog/save-project-dialog.component';
 import { NodeAddedEvent } from '../template/template-list-dialog/template-list-dialog.component';
+import { TopologySummaryComponent } from '../topology-summary/topology-summary.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
@@ -105,6 +106,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public symbolsLoaded: boolean = false;
+  private instance: ComponentRef<TopologySummaryComponent>;
 
   tools = {
     selection: true,
@@ -123,6 +125,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
+  @ViewChild('topologySummaryContainer', {read: ViewContainerRef}) topologySummaryContainer: ViewContainerRef;
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -172,7 +175,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private title: Title,
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private cfr: ComponentFactoryResolver, 
+    private injector: Injector
   ) {}
 
   ngOnInit() {
@@ -210,12 +215,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.settings = this.settingsService.getAll();
     this.symbolScaling = this.mapSettingsService.getSymbolScaling();
-    this.isTopologySummaryVisible = this.mapSettingsService.isTopologySummaryVisible;
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
     this.mapSettingsService.logConsoleSubject.subscribe((value) => (this.isConsoleVisible = value));
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
+  }
+
+  async lazyLoadTopologySummary() {
+    if (this.isTopologySummaryVisible) {
+      const {TopologySummaryComponent} = await import('../topology-summary/topology-summary.component');
+      const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
+      this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
+      this.instance.instance.server = this.server;
+      this.instance.instance.project = this.project;
+    } else if (this.instance) {
+      if (this.instance.instance)  {
+        this.instance.instance.ngOnDestroy();
+        this.instance.destroy();
+      }
+    } 
   }
 
   addSubscriptions() {
@@ -319,6 +338,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.projectService.open(this.server, this.project.project_id);
             this.title.setTitle(this.project.name); 
             this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
+            this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
 
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
             this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
@@ -809,6 +829,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
+    this.lazyLoadTopologySummary();
   }
 
   public toggleNotifications(visible: boolean) {
