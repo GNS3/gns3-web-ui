@@ -9,7 +9,6 @@ import { HttpServer } from './http-server.service';
 import { ProjectService } from './project.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
-import { MockedSettingsService } from './settings.service.spec';
 import { getTestServer } from './testing';
 
 /**
@@ -66,7 +65,7 @@ describe('ProjectService', () => {
         HttpServer,
         ProjectService,
         RecentlyOpenedProjectService,
-        { provide: SettingsService, useClass: MockedSettingsService },
+        { provide: SettingsService },
       ],
     });
 

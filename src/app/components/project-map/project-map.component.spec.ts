@@ -59,7 +59,6 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
 import { SettingsService } from '../../services/settings.service';
-import { MockedSettingsService } from '../../services/settings.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { ToolsService } from '../../services/tools.service';
@@ -300,7 +299,7 @@ xdescribe('ProjectMapComponent', () => {
         { provide: NodesDataSource, useValue: nodesDataSource },
         { provide: LinksDataSource, useValue: linksDataSource },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
-        { provide: SettingsService, useClass: MockedSettingsService },
+        { provide: SettingsService },
         { provide: ToolsService },
         { provide: SelectionManager },
         { provide: SelectionTool },

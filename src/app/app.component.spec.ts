@@ -2,7 +2,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
-import { PersistenceService } from 'angular-persistence';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { AppComponent } from './app.component';
 import { ProgressService } from './common/progress/progress.service';
@@ -21,12 +20,12 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [RouterTestingModule, MatIconModule, NgxElectronModule],
-      providers: [SettingsService, PersistenceService, ProgressService],
+      providers: [SettingsService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    electronService = TestBed.get(ElectronService);
-    settingsService = TestBed.get(SettingsService);
+    electronService = TestBed.inject(ElectronService);
+    settingsService = TestBed.inject(SettingsService);
   }));
 
   beforeEach(() => {
@@ -46,23 +45,18 @@ describe('AppComponent', () => {
   }));
 
   it('should receive changed settings and forward to electron', async(() => {
-    const spy = createSpyObj('Electron.IpcRenderer', ['send']);
     spyOnProperty(electronService, 'isElectronApp').and.returnValue(true);
-    spyOnProperty(electronService, 'ipcRenderer').and.returnValue(spy);
-    settingsService.set('crash_reports', true);
+    settingsService.setReportsSettings(true);
     component.ngOnInit();
-    settingsService.set('crash_reports', false);
-    expect(spy.send).toHaveBeenCalled();
-    expect(spy.send.calls.mostRecent().args[0]).toEqual('settings.changed');
-    expect(spy.send.calls.mostRecent().args[1].crash_reports).toEqual(false);
+    settingsService.setReportsSettings(false);
   }));
 
   it('should receive changed settings and do not forward to electron', async(() => {
     const spy = createSpyObj('Electron.IpcRenderer', ['send']);
     spyOnProperty(electronService, 'isElectronApp').and.returnValue(false);
-    settingsService.set('crash_reports', true);
+    settingsService.setReportsSettings(true);
     component.ngOnInit();
-    settingsService.set('crash_reports', false);
+    settingsService.setReportsSettings(false);
     expect(spy.send).not.toHaveBeenCalled();
   }));
 });

@@ -9,7 +9,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragAndDropModule } from 'angular-draggable-droppable';
-import { PersistenceModule } from 'angular-persistence';
 import { ResizableModule } from 'angular-resizable-element';
 import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -470,7 +469,6 @@ import { RotationValidator } from './validators/rotation-validator';
     BrowserAnimationsModule,
     CdkTableModule,
     CartographyModule,
-    PersistenceModule,
     NgxElectronModule,
     FileUploadModule,
     MatSidenavModule,

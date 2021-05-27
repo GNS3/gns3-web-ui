@@ -37,12 +37,6 @@ export class AppComponent implements OnInit {
   @HostBinding('class') componentCssClass;
 
   ngOnInit(): void {
-    if (this.electronService.isElectronApp) {
-      this.settingsService.subscribe((settings) => {
-        this.electronService.ipcRenderer.send('settings.changed', settings);
-      });
-    }
-
     this.applyTheme(this.themeService.savedTheme + '-theme');
     this.themeService.themeChanged.subscribe((event: string) => {
       this.applyTheme(event);
