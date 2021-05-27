@@ -225,7 +225,6 @@ import { ExternalSoftwareDefinitionService } from './services/external-software-
 import { Gns3vmService } from './services/gns3vm.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { HttpServer, ServerErrorHandler } from './services/http-server.service';
-import { IndexedDbService } from './services/indexed-db.service';
 import { InfoService } from './services/info.service';
 import { InstalledSoftwareService } from './services/installed-software.service';
 import { IosConfigurationService } from './services/ios-configuration.service';
@@ -488,7 +487,6 @@ import { RotationValidator } from './validators/rotation-validator';
     NodeService,
     LinkService,
     DrawingService,
-    IndexedDbService,
     HttpServer,
     SnapshotService,
     ProgressDialogService,
