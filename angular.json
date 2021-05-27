@@ -18,7 +18,6 @@
 							"css-tree",
 							"save-svg-as-png",
 							"angular-draggable-droppable",
-							"angular2-hotkeys",
 							"dom-set",
 							"dom-plane",
 							"mousetrap",
@@ -26,9 +25,6 @@
 							"rxjs/Rx",
 							"rxjs/add/operator/map",
 							"rxjs-compat/add/operator/map",
-							"angular-react-core.js",
-							"react",
-							"react-dom",
 							"classnames",
 							"stylenames"
 						],
