@@ -21,7 +21,15 @@ export class BundledServerFinderComponent implements OnInit {
   ngOnInit() {
     this.progressService.activate();
     setTimeout(() => {
-      let port = parseInt(this.document.location.port, 10) ? parseInt(this.document.location.port, 10) : 80;
+      let port;
+      
+      if (parseInt(this.document.location.port, 10)) {
+        port = parseInt(this.document.location.port, 10);
+      } else if (location.protocol == "https:") {
+        port = 443;
+      } else {
+        port = 80;
+      }
 
       this.serverService.getLocalServer(this.document.location.hostname, port).then((server: Server) => {
         this.progressService.deactivate();
