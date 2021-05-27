@@ -1,7 +1,6 @@
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { SettingsService } from '../../services/settings.service';
-import { MockedSettingsService } from '../../services/settings.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { SentryErrorHandler } from './sentry-error-handler';
@@ -17,19 +16,21 @@ class MockedToasterErrorHandler extends ToasterErrorHandler {
 describe('ToasterErrorHandler', () => {
   let handler: ToasterErrorHandler;
   let toasterService: MockedToasterService;
+  let settingsService: SettingsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         { provide: ToasterService, useClass: MockedToasterService },
-        { provide: SettingsService, useClass: MockedSettingsService },
+        { provide: SettingsService},
         SentryErrorHandler,
         ToasterErrorHandler,
       ],
     });
 
-    handler = new MockedToasterErrorHandler(TestBed.get(Injector));
+    handler = new MockedToasterErrorHandler(TestBed.inject(Injector));
     toasterService = TestBed.get(ToasterService);
+    settingsService = TestBed.inject(SettingsService);
   });
 
   it('should call toaster with error message', () => {

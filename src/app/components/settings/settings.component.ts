@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapSettingsService } from '../../services/mapsettings.service';
-import { SettingsService } from '../../services/settings.service';
+import { Settings, SettingsService } from '../../services/settings.service';
 import { ConsoleService } from '../../services/settings/console.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToasterService } from '../../services/toaster.service';
@@ -12,7 +12,7 @@ import { UpdatesService } from '../../services/updates.service';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  settings = { ...SettingsService.DEFAULTS };
+  settings: Settings;
   consoleCommand: string;
   integrateLinksLabelsToLinks: boolean;
   openConsolesInWidget: boolean;

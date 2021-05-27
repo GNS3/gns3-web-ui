@@ -33,8 +33,8 @@ export class NodesMenuComponent {
 
   async startConsoleForAllNodes() {
     if (this.electronService.isElectronApp) {
-      let consoleCommand = this.settingsService.get<string>('console_command')
-        ? this.settingsService.get<string>('console_command')
+      let consoleCommand = this.settingsService.getConsoleSettings()
+        ? this.settingsService.getConsoleSettings()
         : this.nodeService.getDefaultCommand();
 
       let nodes = this.nodesDataSource.getItems();

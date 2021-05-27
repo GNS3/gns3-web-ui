@@ -3268,11 +3268,6 @@ angular-draggable-droppable@^4.6.0:
     "@mattlewis92/dom-autoscroller" "^2.4.2"
     tslib "^1.9.0"
 
-angular-persistence@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/angular-persistence/-/angular-persistence-1.0.1.tgz#79ffe7317f1f7aed88e69f07705f0ac32ccdb9da"
-  integrity sha1-ef/nMX8feu2I5p8HcF8KwyzNudo=
-
 angular-resizable-element@^3.3.5:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/angular-resizable-element/-/angular-resizable-element-3.3.5.tgz#e0c86655e53280306c5a6e0ed1d1f60b323b0497"

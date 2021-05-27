@@ -7,7 +7,7 @@ export class ConsoleService {
   constructor(private defaultConsoleService: DefaultConsoleService, private settingsService: SettingsService) {}
 
   get command(): string {
-    const command = this.settingsService.get<string>('console_command');
+    const command = this.settingsService.getConsoleSettings();
     if (command === undefined) {
       return this.defaultConsoleService.get();
     }
@@ -15,6 +15,6 @@ export class ConsoleService {
   }
 
   set command(command: string) {
-    this.settingsService.set<string>('console_command', command);
+    this.settingsService.setConsoleSettings(command);
   }
 }

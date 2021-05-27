@@ -60,7 +60,6 @@
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.3",
     "angular-draggable-droppable": "^4.6.0",
-    "angular-persistence": "^1.0.1",
     "angular-resizable-element": "^3.3.5",
     "angular2-draggable": "^2.3.2",
     "angular2-hotkeys": "^2.2.0",
