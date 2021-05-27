@@ -63,11 +63,7 @@ export class ServerService {
     let promise = new Promise<Server[]>((resolve) => {
       let servers: Server[] = [];
       this.serverIds.forEach((n) => {
-        console.log(n);
-
         let server: Server = JSON.parse(localStorage.getItem(n));
-        console.log(server);
-
         servers.push(server);
       });
       resolve(servers);
