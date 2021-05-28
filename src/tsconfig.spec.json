@@ -15,7 +15,6 @@
   ],
   "include": [
     "**/*.spec.ts",
-    "**/*.d.ts",
-    "../node_modules/angular2-indexeddb/*"
+    "**/*.d.ts"
   ]
 }

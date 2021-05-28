@@ -66,7 +66,6 @@ export class DirectLinkComponent implements OnInit {
     const servers = await this.serverService.findAll();
     const server = servers.filter((server) => server.host === this.serverIp && server.port === this.serverPort)[0];
 
-    console.log(servers);
     if (server) {
       this.router.navigate(['/server', server.id, 'project', this.projectId]);
     } else {
