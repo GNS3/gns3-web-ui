@@ -17,7 +17,6 @@
     "polyfills.ts"
   ],
   "include": [
-    // "../src/**/*",
-    "../node_modules/angular2-indexeddb/*"
+    // "../src/**/*"
   ]
 }
