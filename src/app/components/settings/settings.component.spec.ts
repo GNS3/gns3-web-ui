@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { PersistenceModule } from 'angular-persistence';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { SettingsService } from '../../services/settings.service';
 import { ConsoleService } from '../../services/settings/console.service';
@@ -23,7 +22,8 @@ describe('SettingsComponent', () => {
   let mapSettingsService = {
     integrateLinkLabelsToLinks: true,
     toggleIntegrateInterfaceLabels(val: boolean) {},
-    toggleOpenReadme(val: boolean) {}
+    toggleOpenReadme(val: boolean) {},
+    toggleOpenConsolesInWidget(val: boolean) {}
   };
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
@@ -38,7 +38,6 @@ describe('SettingsComponent', () => {
         MatExpansionModule,
         MatCheckboxModule,
         FormsModule,
-        PersistenceModule,
         BrowserAnimationsModule,
         MatIconModule,
         MatFormFieldModule,
@@ -76,11 +75,19 @@ describe('SettingsComponent', () => {
     };
     const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
     const setAll = spyOn(settingsService, 'setAll');
+    spyOn(mapSettingsService, 'toggleIntegrateInterfaceLabels');
+    spyOn(mapSettingsService, 'toggleOpenConsolesInWidget');
+    
     component.ngOnInit();
+    
     expect(getAll).toHaveBeenCalled();
     expect(component.settings).toEqual(settings);
+    
     component.settings.crash_reports = false;
     component.save();
+    
     expect(setAll).toHaveBeenCalledWith(settings);
+    expect(mapSettingsService.toggleIntegrateInterfaceLabels).toHaveBeenCalled();
+    expect(mapSettingsService.toggleOpenConsolesInWidget).toHaveBeenCalled();
   });
 });

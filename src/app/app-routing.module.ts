@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { HelpComponent } from './components/help/help.component';
-import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 import { LoginComponent } from './components/login/login.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
@@ -57,6 +56,7 @@ import { LoginGuard } from './guards/login-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
+import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 
 const routes: Routes = [
   {
@@ -67,6 +67,7 @@ const routes: Routes = [
       { path: 'servers', component: ServersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'server/:server_id/login', component: LoginComponent },
+      { path: 'server/:server_id/loggeduser', component: LoggedUserComponent },
       {
         path: 'server/:server_id/projects',
         component: ProjectsComponent,
@@ -74,7 +75,6 @@ const routes: Routes = [
         resolve: { server: ServerResolve },
       },
       { path: 'help', component: HelpComponent },
-      { path: 'help/reportissue', component: ReportIssueComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },

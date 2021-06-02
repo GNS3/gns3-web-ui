@@ -3,6 +3,13 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
+    "paths": {
+      "@components/*": ["app/components/*"],
+      "@services/*": ["app/services/*"],
+      "@resolvers/*": ["app/resolvers/*"],
+      "@filters/*": ["app/filters/*"],
+      "@models/*": ["app/models/*"]
+    },
     "types": []
   },
   "files": [
@@ -10,7 +17,6 @@
     "polyfills.ts"
   ],
   "include": [
-    // "../src/**/*",
-    "../node_modules/angular2-indexeddb/*"
+    // "../src/**/*"
   ]
 }

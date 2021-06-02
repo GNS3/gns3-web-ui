@@ -1,6 +1,6 @@
 <div *ngIf="project" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="project-map">
   <app-d3-map
-    *ngIf="!settings.angular_map"
+    *ngIf="!settings.angular_map && symbolsLoaded"
     [server]="server"
     [project]="project"
     [symbols]="symbols"
@@ -64,7 +64,6 @@
       <div class="menu-button-group">
         <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
         <app-context-menu [project]="project" [server]="server"></app-context-menu>
-        <app-context-console-menu [project]="project" [server]="server"></app-context-console-menu>
       </div>
     </div>
     <div>
@@ -255,12 +254,6 @@
       (closeConsole)="toggleShowConsole($event)"
     ></app-console-wrapper>
   </div>
-  <div [ngClass]="{ visible: !isTopologySummaryVisible }">
-    <app-topology-summary
-      *ngIf="project"
-      [server]="server"
-      [project]="project"
-      (closeTopologySummary)="toggleShowTopologySummary($event)"
-    ></app-topology-summary>
-  </div>
 </div>
+
+<ng-template #topologySummaryContainer></ng-template>

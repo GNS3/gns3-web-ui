@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MapSettingsService } from '../../services/mapsettings.service';
-import { SettingsService } from '../../services/settings.service';
+import { Settings, SettingsService } from '../../services/settings.service';
 import { ConsoleService } from '../../services/settings/console.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToasterService } from '../../services/toaster.service';
@@ -12,10 +12,11 @@ import { UpdatesService } from '../../services/updates.service';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  settings = { ...SettingsService.DEFAULTS };
+  settings: Settings;
   consoleCommand: string;
   integrateLinksLabelsToLinks: boolean;
   openReadme: boolean;
+  openConsolesInWidget: boolean;
 
   constructor(
     private settingsService: SettingsService,
@@ -31,6 +32,7 @@ export class SettingsComponent implements OnInit {
     this.consoleCommand = this.consoleService.command;
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;
     this.openReadme = this.mapSettingsService.openReadme;
+    this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
   }
 
   save() {
@@ -39,6 +41,7 @@ export class SettingsComponent implements OnInit {
     
     this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks);
     this.mapSettingsService.toggleOpenReadme(this.openReadme);
+    this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget);
   }
 
   setDarkMode(value: boolean) {

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Server } from '../../../../models/server';
 import { Symbol } from '../../../../models/symbol';
 import { SymbolService } from '../../../../services/symbol.service';
@@ -18,7 +19,7 @@ export class SymbolsComponent implements OnInit {
   isSelected: string = '';
   searchText: string = '';
 
-  constructor(private symbolService: SymbolService) {}
+  constructor(private symbolService: SymbolService, private domSanitizer: DomSanitizer) {}
 
   ngOnInit() {
     this.isSelected = this.symbol;
@@ -74,6 +75,11 @@ export class SymbolsComponent implements OnInit {
   private createSvgFileForImage(image: string | ArrayBuffer, imageToUpload: HTMLImageElement) {
     return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\" 
                 width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`;
+  }
+
+  getImage(symbolFilename: string) {
+    let symbol = this.symbolService.get(symbolFilename);
+    return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
   }
 
   getImageSourceForTemplate(symbol: string) {

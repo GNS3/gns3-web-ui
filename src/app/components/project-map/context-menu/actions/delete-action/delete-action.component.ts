@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ConfirmationBottomSheetComponent } from 'app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { LinksDataSource } from '../../../../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
@@ -26,10 +28,22 @@ export class DeleteActionComponent implements OnInit {
     private linksDataSource: LinksDataSource,
     private nodeService: NodeService,
     private drawingService: DrawingService,
-    private linkService: LinkService
+    private linkService: LinkService,
+    private bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit() {}
+
+  confirmDelete() {
+    this.bottomSheet.open(ConfirmationBottomSheetComponent);
+    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
+    bottomSheetRef.instance.message = 'Do you want to delete all selected objects?';
+    const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.delete();
+      }
+    });
+  }
 
   delete() {
     this.nodes.forEach((node) => {

@@ -7,7 +7,6 @@ import { NodeService } from '../../../../../services/node.service';
 import { ServerService } from '../../../../../services/server.service';
 import { MockedServerService } from '../../../../../services/server.service.spec';
 import { SettingsService } from '../../../../../services/settings.service';
-import { MockedSettingsService } from '../../../../../services/settings.service.spec';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
 import { MockedNodeService } from '../../../project-map.component.spec';
@@ -18,7 +17,7 @@ describe('ConsoleDeviceActionComponent', () => {
   let fixture: ComponentFixture<ConsoleDeviceActionComponent>;
   let electronService;
   let server: Server;
-  let mockedSettingsService: MockedSettingsService;
+  let settingsService: SettingsService;
   let mockedServerService: MockedServerService;
   let mockedToaster: MockedToasterService;
   let mockedNodeService: MockedNodeService = new MockedNodeService();
@@ -35,7 +34,6 @@ describe('ConsoleDeviceActionComponent', () => {
       },
     };
 
-    mockedSettingsService = new MockedSettingsService();
     mockedServerService = new MockedServerService();
     mockedToaster = new MockedToasterService();
 
@@ -47,13 +45,15 @@ describe('ConsoleDeviceActionComponent', () => {
       providers: [
         { provide: ElectronService, useValue: electronService },
         { provide: ServerService, useValue: mockedServerService },
-        { provide: SettingsService, useValue: mockedSettingsService },
+        { provide: SettingsService },
         { provide: ToasterService, useValue: mockedToaster },
         { provide: NodeService, useValue: mockedNodeService },
       ],
       imports: [MatIconModule],
       declarations: [ConsoleDeviceActionComponent],
     }).compileComponents();
+
+    settingsService = TestBed.inject(SettingsService);
   }));
 
   beforeEach(() => {
@@ -85,7 +85,7 @@ describe('ConsoleDeviceActionComponent', () => {
       component.nodes = nodes;
       component.server = server;
 
-      mockedSettingsService.set('console_command', 'command');
+      settingsService.setConsoleSettings('command');
       spyOn(component, 'openConsole');
     });
 
@@ -105,7 +105,7 @@ describe('ConsoleDeviceActionComponent', () => {
     });
 
     it('should set command when it is not defined', async () => {
-      mockedSettingsService.set('console_command', undefined);
+      settingsService.setConsoleSettings(undefined);
       await component.console();
       expect(component.openConsole).toHaveBeenCalled();
     });

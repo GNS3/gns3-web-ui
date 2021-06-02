@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { SymbolService } from '../../services/symbol.service';
 import { event, select } from 'd3-selection';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
@@ -22,7 +23,8 @@ export class NodeWidget implements Widget {
     private selectionManager: SelectionManager,
     private labelWidget: LabelWidget,
     private nodesEventSource: NodesEventSource,
-    private mapSettingsService: MapSettingsService
+    private mapSettingsService: MapSettingsService,
+    private symbolService: SymbolService
   ) {}
 
   public draw(view: SVGSelection) {
@@ -88,7 +90,13 @@ export class NodeWidget implements Widget {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
-      .attr('xnode:href', (n: MapNode) => n.symbolUrl)
+      .attr('xnode:href', (n: MapNode) => {
+        let symbol = this.symbolService.get(n.symbol.split('/')[2]);
+        if (symbol) {
+          return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
+        }
+        return '';
+      })
       .attr('width', (n: MapNode) => {
         if (!n.width) return 60;
         return n.width;

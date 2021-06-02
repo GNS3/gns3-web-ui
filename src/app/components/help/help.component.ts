@@ -28,4 +28,8 @@ export class HelpComponent implements OnInit {
       this.releasenotes = data.replace(new RegExp('\n', 'g'), '<br />');
     });
   }
+
+  goToDocumentation() {
+    window.location.href = "https://docs.gns3.com/docs/";
+  }
 }

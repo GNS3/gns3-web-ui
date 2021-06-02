@@ -1,10 +1,12 @@
 .import-button {
   height: 40px;
+  width: 160px;
   margin: 20px;
 }
 
 .add-button {
   height: 40px;
+  width: 160px;
   margin: 20px;
 }
 
@@ -12,4 +14,8 @@
   width: 940px;
   margin-left: -470px;
   left: 50%;
+}
+
+.row {
+  display: flex;
 }

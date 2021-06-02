@@ -46,9 +46,7 @@ export class DrawingsWidget implements Widget {
         layer.drawings.forEach((d: MapDrawing) => {
           try {
             d.element = this.svgToDrawingConverter.convert(d.svg);
-          } catch (error) {
-            console.log(`Cannot convert due to Error: '${error}'`);
-          }
+          } catch (error) {}
         });
         return layer.drawings;
       },

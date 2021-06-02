@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -24,7 +25,7 @@ describe('DeleteActionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
+      imports: [MatIconModule, MatMenuModule, NoopAnimationsModule, MatBottomSheetModule],
       providers: [
         { provide: NodesDataSource, useClass: NodesDataSource },
         { provide: DrawingsDataSource, useClass: DrawingsDataSource },

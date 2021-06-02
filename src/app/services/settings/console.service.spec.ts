@@ -1,15 +1,16 @@
-import { MockedSettingsService } from '../settings.service.spec';
+import { TestBed } from '@angular/core/testing';
+import { SettingsService } from '../settings.service';
 import { ConsoleService } from './console.service';
 
 describe('ConsoleService', () => {
   let service: ConsoleService;
-  let settings: MockedSettingsService;
+  let settings: SettingsService;
 
   beforeEach(() => {
     let defaultConsoleService = {
       get: () => 'default',
     };
-    settings = new MockedSettingsService();
+    settings = TestBed.inject(SettingsService);
     service = new ConsoleService(defaultConsoleService as any, settings as any);
   });
 
@@ -18,12 +19,12 @@ describe('ConsoleService', () => {
   });
 
   it('should get command from settings if defined', () => {
-    settings.set('console_command', 'from_settings');
+    settings.setConsoleSettings('from_settings');
     expect(service.command).toEqual('from_settings');
   });
 
   it('should get command from default console if settings are not defined', () => {
-    settings.set('console_command', undefined);
-    expect(service.command).toEqual('default');
+    settings.setConsoleSettings(undefined);
+    expect(service.command).toBe('undefined');
   });
 });
