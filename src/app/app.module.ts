@@ -457,7 +457,8 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     InformationDialogComponent,
     TemplateNameDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
-    EditNetworkConfigurationDialogComponent
+    EditNetworkConfigurationDialogComponent,
+    ProjectReadmeComponent
   ],
   imports: [
     BrowserModule,
