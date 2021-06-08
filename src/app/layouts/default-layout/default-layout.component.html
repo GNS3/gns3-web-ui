@@ -23,6 +23,10 @@
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
+      <button mat-menu-item routerLink="/user_management">
+        <mat-icon>groups</mat-icon>
+        <span>User management</span>
+      </button>
       <button mat-menu-item routerLink="/installed-software" [disabled]="!isInstalledSoftwareAvailable">
         <mat-icon>cloud_download</mat-icon>
         <span>Installed software</span>
@@ -30,6 +34,10 @@
       <button mat-menu-item routerLink="/help">
         <mat-icon>help</mat-icon>
         <span>Help</span>
+      </button>
+      <button mat-menu-item (click)="goToUserInfo()">
+        <mat-icon>person</mat-icon>
+        <span>User info</span>
       </button>
       <button mat-menu-item (click)="logout()">
         <mat-icon>highlight_off</mat-icon>

@@ -18,7 +18,7 @@
                     <mat-error *ngIf="loginForm.get('username').hasError('required')">You must enter username</mat-error>
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput formControlName="password" placeholder="Password" />
+                    <input matInput type="password" formControlName="password" placeholder="Password" />
                     <mat-error *ngIf="loginForm.get('password').hasError('required')">You must enter password</mat-error>
                 </mat-form-field>
             </form>

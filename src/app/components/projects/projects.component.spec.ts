@@ -23,7 +23,6 @@ import { MockedProjectService } from '../../services/project.service.spec';
 import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
 import { Settings, SettingsService } from '../../services/settings.service';
-import { MockedSettingsService } from '../../services/settings.service.spec';
 import { ToasterService } from '../../services/toaster.service';
 import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
@@ -70,7 +69,7 @@ xdescribe('ProjectsComponent', () => {
       providers: [
         { provide: ServerService, useClass: MockedServerService },
         { provide: ProjectService, useValue: mockedProjectService },
-        { provide: SettingsService, useClass: MockedSettingsService },
+        { provide: SettingsService},
         { provide: ToasterService },
         { provide: ElectronService, useValue: electronService },
         ProgressService,
@@ -83,10 +82,10 @@ xdescribe('ProjectsComponent', () => {
       })
       .compileComponents();
 
-    serverService = TestBed.get(ServerService);
-    settingsService = TestBed.get(SettingsService);
-    projectService = TestBed.get(ProjectService);
-    progressService = TestBed.get(ProgressService);
+    serverService = TestBed.inject(ServerService);
+    settingsService = TestBed.inject(SettingsService);
+    projectService = TestBed.inject(ProjectService);
+    progressService = TestBed.inject(ProgressService);
 
     server = new Server();
     server.id = 99;

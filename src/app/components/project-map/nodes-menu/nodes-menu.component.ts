@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { ElectronService } from 'ngx-electron';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
@@ -7,6 +8,7 @@ import { NodeService } from '../../../services/node.service';
 import { ServerService } from '../../../services/server.service';
 import { SettingsService } from '../../../services/settings.service';
 import { ToasterService } from '../../../services/toaster.service';
+import { NodeConsoleService } from '../../../services/nodeConsole.service';
 
 @Component({
   selector: 'app-nodes-menu',
@@ -20,17 +22,19 @@ export class NodesMenuComponent {
 
   constructor(
     private nodeService: NodeService,
+    private nodeConsoleService: NodeConsoleService,
     private nodesDataSource: NodesDataSource,
     private toasterService: ToasterService,
     private serverService: ServerService,
     private settingsService: SettingsService,
+    private mapSettingsService: MapSettingsService,
     private electronService: ElectronService
   ) {}
 
   async startConsoleForAllNodes() {
     if (this.electronService.isElectronApp) {
-      let consoleCommand = this.settingsService.get<string>('console_command')
-        ? this.settingsService.get<string>('console_command')
+      let consoleCommand = this.settingsService.getConsoleSettings()
+        ? this.settingsService.getConsoleSettings()
         : this.nodeService.getDefaultCommand();
 
       let nodes = this.nodesDataSource.getItems();
@@ -48,7 +52,11 @@ export class NodesMenuComponent {
         await this.electronService.remote.require('./console-executor.js').openConsole(request);
       }
     } else {
-      this.toasterService.error('Option to start all nodes not available in web browser.');
+      if (this.mapSettingsService.openConsolesInWidget) {
+        this.nodeConsoleService.openConsolesForAllNodesInWidget(this.nodesDataSource.getItems());
+      } else {
+        this.nodeConsoleService.openConsolesForAllNodesInNewTabs(this.nodesDataSource.getItems());
+      }
     }
   }
 

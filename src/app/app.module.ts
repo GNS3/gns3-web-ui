@@ -1,4 +1,3 @@
-import { AngularReactBrowserModule } from '@angular-react/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -9,7 +8,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragAndDropModule } from 'angular-draggable-droppable';
-import { PersistenceModule } from 'angular-persistence';
 import { ResizableModule } from 'angular-resizable-element';
 import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -44,7 +42,6 @@ import { NodeLabelDraggedComponent } from './components/drawings-listeners/node-
 import { TextAddedComponent } from './components/drawings-listeners/text-added/text-added.component';
 import { TextEditedComponent } from './components/drawings-listeners/text-edited/text-edited.component';
 import { HelpComponent } from './components/help/help.component';
-import { ReportIssueComponent } from './components/help/report-issue/report-issue.component';
 import { InstallSoftwareComponent } from './components/installed-software/install-software/install-software.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
@@ -204,6 +201,7 @@ import { TemplateComponent } from './components/template/template.component';
 import { TopologySummaryComponent } from './components/topology-summary/topology-summary.component';
 import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
 import { DataSourceFilter } from './filters/dataSourceFilter';
+import { AuthImageFilter } from './filters/authImageFilter';
 import { DateFilter } from './filters/dateFilter.pipe';
 import { NameFilter } from './filters/nameFilter.pipe';
 import { ProjectsFilter } from './filters/projectsFilter.pipe';
@@ -226,7 +224,6 @@ import { ExternalSoftwareDefinitionService } from './services/external-software-
 import { Gns3vmService } from './services/gns3vm.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { HttpServer, ServerErrorHandler } from './services/http-server.service';
-import { IndexedDbService } from './services/indexed-db.service';
 import { InfoService } from './services/info.service';
 import { InstalledSoftwareService } from './services/installed-software.service';
 import { IosConfigurationService } from './services/ios-configuration.service';
@@ -273,10 +270,14 @@ import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
+import { UserManagementComponent } from './components/user-management/user-management.component'
+import { UserService } from './services/user.service';
+import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    LoggedUserComponent,
     ProjectMapComponent,
     LoginComponent,
     ServersComponent,
@@ -381,6 +382,7 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     DataSourceFilter,
     TemplateFilter,
     ProjectsFilter,
+    AuthImageFilter,
     ListOfSnapshotsComponent,
     CustomAdaptersComponent,
     NodesMenuComponent,
@@ -457,10 +459,10 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     TemplateNameDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
     EditNetworkConfigurationDialogComponent,
-    ReportIssueComponent,
+    UserManagementComponent,
+    ProjectReadmeComponent
   ],
   imports: [
-    AngularReactBrowserModule,
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
@@ -469,7 +471,6 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     BrowserAnimationsModule,
     CdkTableModule,
     CartographyModule,
-    PersistenceModule,
     NgxElectronModule,
     FileUploadModule,
     MatSidenavModule,
@@ -494,7 +495,6 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     NodeService,
     LinkService,
     DrawingService,
-    IndexedDbService,
     HttpServer,
     SnapshotService,
     ProgressDialogService,
@@ -556,7 +556,8 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
     Title,
     ApplianceService,
     UpdatesService,
-    LoginService
+    LoginService,
+    UserService
   ],
   entryComponents: [
     AddServerDialogComponent,

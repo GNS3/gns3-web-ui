@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
@@ -20,7 +21,9 @@ import { ContextConsoleMenuComponent } from './context-console-menu.component';
 describe('ContextConsoleMenuComponent', () => {
   let component: ContextConsoleMenuComponent;
   let fixture: ComponentFixture<ContextConsoleMenuComponent>;
-  let toasterService: MockedToasterService = new MockedToasterService();
+  let nodeConsoleService: NodeConsoleService;
+  let mapSettingsService: MapSettingsService;
+  let toasterService: ToasterService;
   let router = {
     url: '',
     navigate: jasmine.createSpy('navigate'),
@@ -28,7 +31,6 @@ describe('ContextConsoleMenuComponent', () => {
   let node = {
     status: 'started',
   };
-  let mapSettingsService = new MapSettingsService();
 
   beforeEach(async(() => {
     const electronMock = {
@@ -36,20 +38,25 @@ describe('ContextConsoleMenuComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [MatMenuModule, BrowserModule],
+      imports: [MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
         { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ElectronService, useValue: electronMock },
         { provide: MapSettingsService, useValue: mapSettingsService },
-        { provide: NodeConsoleService },
         { provide: ConsoleService },
-        { provide: ToasterService, useValue: toasterService },
         { provide: Router, useValue: router },
+        NodeConsoleService,
+        ToasterService,
+        MapSettingsService
       ],
       declarations: [ContextConsoleMenuComponent, ConsoleDeviceActionComponent, ConsoleDeviceActionBrowserComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
+
+    toasterService = TestBed.inject(ToasterService);
+    mapSettingsService = TestBed.inject(MapSettingsService);
+    nodeConsoleService = TestBed.inject(NodeConsoleService);
   }));
 
   beforeEach(() => {

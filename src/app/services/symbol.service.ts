@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
 import { Server } from '../models/server';
@@ -7,22 +7,29 @@ import { Symbol } from '../models/symbol';
 import { HttpServer } from './http-server.service';
 import { Template } from '../models/template';
 
-const CACHE_SIZE = 1;
-
 @Injectable()
 export class SymbolService {
-  public symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
-  private cache: Observable<Symbol[]>;
+  private symbols: Symbol[] = [];
   private maximumSymbolSize: number = 80;
+  public symbolsLoaded: Subject<boolean> = new Subject<boolean>();
 
   constructor(private httpServer: HttpServer) {}
+
+  async load(server: Server) {
+    let symbols  = await this.httpServer.get<Symbol[]>(server, '/symbols').toPromise();
+    await symbols.forEach(async symbol => {
+      symbol.raw = await this.raw(server, symbol.symbol_id).toPromise();
+      this.symbols.push(symbol);
+    });
+    this.symbolsLoaded.next(true);
+  }
 
   getMaximumSymbolSize() {
     return this.maximumSymbolSize;
   }
 
   get(symbol_id: string): Symbol {
-    return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
+    return this.symbols.find((symbol: Symbol) => symbol.filename === symbol_id);
   }
 
   getDimensions(server: Server, symbol_id: string): Observable<SymbolDimension> {
@@ -38,25 +45,13 @@ export class SymbolService {
     };
   }
 
-  getByFilename(symbol_filename: string) {
-    return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
-  }
-
   add(server: Server, symbolName: string, symbol: string) {
-    this.cache = null;
+    this.load(server);
     return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol);
   }
 
-  load(server: Server): Observable<Symbol[]> {
-    return this.httpServer.get<Symbol[]>(server, '/symbols');
-  }
-
   list(server: Server) {
-    if (!this.cache) {
-      this.cache = this.load(server).pipe(shareReplay(CACHE_SIZE));
-    }
-
-    return this.cache;
+    return this.httpServer.get<Symbol[]>(server, '/symbols');
   }
 
   raw(server: Server, symbol_id: string) {
@@ -64,8 +59,8 @@ export class SymbolService {
     return this.httpServer.getText(server, `/symbols/${encoded_uri}/raw`);
   }
 
-  getSymbolFromTemplate(server: Server, template: Template) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/symbols/${template.symbol}/raw`;
+  getSymbolFromTemplate(template: Template) {
+    return this.symbols.find((symbol: Symbol) => symbol.filename === template.symbol.split('/')[2]);
   }
 }
 

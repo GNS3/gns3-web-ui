@@ -8,11 +8,9 @@
     "declaration": false,
     "module": "esnext",
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es5",
-    "jsx": "react",
     "types": ["jasmine", "jest", "mocha", "node"],
     "typeRoots": [
       "node_modules/@types"
