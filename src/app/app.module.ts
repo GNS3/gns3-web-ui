@@ -74,7 +74,6 @@ import { DynamipsPreferencesComponent } from './components/preferences/dynamips/
 import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
 import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
 import { GeneralPreferencesComponent } from './components/preferences/general/general-preferences.component';
-import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
 import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
@@ -185,7 +184,6 @@ import { NavigationDialogComponent } from './components/projects/navigation-dial
 import { ProjectsComponent } from './components/projects/projects.component';
 import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
 import { AddServerDialogComponent } from './components/servers/add-server-dialog/add-server-dialog.component';
-import { ConfigureGns3VMDialogComponent } from './components/servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
 import { ServersComponent } from './components/servers/servers.component';
 import { ConsoleComponent } from './components/settings/console/console.component';
@@ -221,7 +219,6 @@ import { DockerConfigurationService } from './services/docker-configuration.serv
 import { DockerService } from './services/docker.service';
 import { DrawingService } from './services/drawing.service';
 import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
-import { Gns3vmService } from './services/gns3vm.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { HttpServer, ServerErrorHandler } from './services/http-server.service';
 import { InfoService } from './services/info.service';
@@ -435,8 +432,6 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     AlignVerticallyActionComponent,
     ConfirmationBottomSheetComponent,
     ConfigDialogComponent,
-    Gns3vmComponent,
-    ConfigureGns3VMDialogComponent,
     ImportApplianceComponent,
     DirectLinkComponent,
     SystemStatusComponent,
@@ -544,7 +539,6 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     ComputeService,
     PacketCaptureService,
     NotificationService,
-    Gns3vmService,
     ThemeService,
     GoogleAnalyticsService,
     NodeConsoleService,
@@ -577,7 +571,6 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     InfoDialogComponent,
     ChangeSymbolDialogComponent,
     EditProjectDialogComponent,
-    ConfigureGns3VMDialogComponent,
     ConfiguratorDialogVpcsComponent,
     ConfiguratorDialogEthernetHubComponent,
     ConfiguratorDialogEthernetSwitchComponent,

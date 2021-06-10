@@ -24,7 +24,6 @@ import { AddIosTemplateComponent } from './components/preferences/dynamips/add-i
 import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
 import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
 import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
-import { Gns3vmComponent } from './components/preferences/gns3vm/gns3vm.component';
 import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
 import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
 import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
@@ -87,7 +86,6 @@ const routes: Routes = [
         resolve: { server: ServerResolve },
       },
       { path: 'server/:server_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
-      { path: 'server/:server_id/preferences/gns3vm', component: Gns3vmComponent, canActivate: [LoginGuard] },
       // { path: 'server/:server_id/preferences/general', component: GeneralPreferencesComponent },
       { path: 'server/:server_id/preferences/builtin', component: BuiltInPreferencesComponent, canActivate: [LoginGuard] },
 
