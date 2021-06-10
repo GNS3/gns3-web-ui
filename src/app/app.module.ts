@@ -267,6 +267,7 @@ import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
+import { UserManagementComponent } from './components/user-management/user-management.component'
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 
@@ -453,6 +454,7 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     TemplateNameDialogComponent,
     ConfigureCustomAdaptersDialogComponent,
     EditNetworkConfigurationDialogComponent,
+    UserManagementComponent,
     ProjectReadmeComponent
   ],
   imports: [
