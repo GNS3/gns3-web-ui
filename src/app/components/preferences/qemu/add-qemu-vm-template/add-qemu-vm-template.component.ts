@@ -36,9 +36,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
   nameForm: FormGroup;
   memoryForm: FormGroup;
   diskForm: FormGroup;
-
-  isGns3VmAvailable: boolean = false;
-  isGns3VmChosen: boolean = false;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -105,19 +102,11 @@ export class AddQemuVmTemplateComponent implements OnInit {
       });
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
-
-      this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
-        if (computes.filter((compute) => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
-      });
     });
   }
 
   setServerType(serverType: string) {
-    if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
-      this.isGns3VmChosen = true;
-      this.isLocalComputerChosen = false;
-    } else {
-      this.isGns3VmChosen = false;
+    if (serverType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -154,7 +143,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       }
       this.qemuTemplate.template_id = uuid();
       this.qemuTemplate.name = this.nameForm.get('templateName').value;
-      this.qemuTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+      this.qemuTemplate.compute_id = 'local';
 
       this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();

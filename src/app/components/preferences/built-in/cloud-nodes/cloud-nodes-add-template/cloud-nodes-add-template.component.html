@@ -10,13 +10,6 @@
         <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked
           >Run the cloud node locally</mat-radio-button
         >
-        <mat-radio-button
-          [disabled]="!isGns3VmAvailable"
-          class="radio-button"
-          value="2"
-          (click)="setServerType('gns3 vm')"
-          >Run the cloud node on the GNS3 VM</mat-radio-button
-        >
       </mat-radio-group>
 
       <form [formGroup]="formGroup">

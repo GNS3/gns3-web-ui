@@ -30,9 +30,6 @@ export class AddDockerTemplateComponent implements OnInit {
   virtualMachineForm: FormGroup;
   containerNameForm: FormGroup;
   networkAdaptersForm: FormGroup;
-
-  isGns3VmAvailable: boolean = false;
-  isGns3VmChosen: boolean = false;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -72,10 +69,6 @@ export class AddDockerTemplateComponent implements OnInit {
         this.dockerTemplate = dockerTemplate;
       });
 
-      this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
-        if (computes.filter((compute) => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
-      });
-
       this.dockerService.getImages(server).subscribe((images) => {
         this.dockerImages = images;
       });
@@ -83,11 +76,7 @@ export class AddDockerTemplateComponent implements OnInit {
   }
 
   setServerType(serverType: string) {
-    if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
-      this.isGns3VmChosen = true;
-      this.isLocalComputerChosen = false;
-    } else {
-      this.isGns3VmChosen = false;
+    if (serverType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -116,7 +105,7 @@ export class AddDockerTemplateComponent implements OnInit {
 
       this.dockerTemplate.name = this.containerNameForm.get('templateName').value;
       this.dockerTemplate.adapters = +this.networkAdaptersForm.get('adapters').value;
-      this.dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+      this.dockerTemplate.compute_id = 'local';
 
       this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
         this.goBack();

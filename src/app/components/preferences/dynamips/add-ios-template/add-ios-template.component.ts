@@ -45,9 +45,6 @@ export class AddIosTemplateComponent implements OnInit {
 
   ciscoUrl: string = 'https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp';
   uploader: FileUploader;
-
-  isGns3VmAvailable: boolean = false;
-  isGns3VmChosen: boolean = false;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -114,19 +111,11 @@ export class AddIosTemplateComponent implements OnInit {
         this.chassis = this.iosConfigurationService.getChassis();
         this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
       });
-
-      this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
-        if (computes.filter((compute) => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
-      });
     });
   }
 
   setServerType(serverType: string) {
-    if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
-      this.isGns3VmChosen = true;
-      this.isLocalComputerChosen = false;
-    } else {
-      this.isGns3VmChosen = false;
+    if (serverType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -174,8 +163,7 @@ export class AddIosTemplateComponent implements OnInit {
 
       if (this.networkAdaptersForTemplate.length > 0) this.completeAdaptersData();
       if (this.networkModulesForTemplate.length > 0) this.completeModulesData();
-
-      this.iosTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+      this.iosTemplate.compute_id = 'local';
 
       this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
         this.goBack();

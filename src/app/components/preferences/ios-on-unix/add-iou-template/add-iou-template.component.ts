@@ -30,9 +30,6 @@ export class AddIouTemplateComponent implements OnInit {
 
   templateNameForm: FormGroup;
   imageForm: FormGroup;
-
-  isGns3VmAvailable: boolean = false;
-  isGns3VmChosen: boolean = false;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -82,10 +79,6 @@ export class AddIouTemplateComponent implements OnInit {
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
       });
-
-      this.computeService.getComputes(server).subscribe((computes: Compute[]) => {
-        if (computes.filter((compute) => compute.compute_id === 'vm').length > 0) this.isGns3VmAvailable = true;
-      });
     });
   }
 
@@ -96,11 +89,7 @@ export class AddIouTemplateComponent implements OnInit {
   }
 
   setServerType(serverType: string) {
-    if (serverType === 'gns3 vm' && this.isGns3VmAvailable) {
-      this.isGns3VmChosen = true;
-      this.isLocalComputerChosen = false;
-    } else {
-      this.isGns3VmChosen = false;
+    if (serverType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -134,7 +123,7 @@ export class AddIouTemplateComponent implements OnInit {
       this.iouTemplate.template_id = uuid();
       this.iouTemplate.name = this.templateNameForm.get('templateName').value;
       if (this.newImageSelected) this.iouTemplate.path = this.imageForm.get('imageName').value;
-      this.iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+      this.iouTemplate.compute_id = 'local';
 
       if (this.selectedType === 'L2 image') {
         this.iouTemplate.ethernet_adapters = 4;
