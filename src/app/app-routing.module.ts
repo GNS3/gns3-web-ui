@@ -55,6 +55,7 @@ import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { ServerResolve } from './resolvers/server-resolve';
+import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 
 const routes: Routes = [
@@ -210,9 +211,14 @@ const routes: Routes = [
     canActivate: [LoginGuard]
   },
   {
+    path: 'user_management',
+    component: UserManagementComponent
+  },
+  {
     path: '**',
     component: PageNotFoundComponent,
-  },
+  }
+  
 ];
 
 @NgModule({

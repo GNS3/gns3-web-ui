@@ -14,7 +14,6 @@ import { ServerManagementService, ServerStateEvent } from '../../services/server
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
-import { IndexedDbService } from '../../services/indexed-db.service';
 import { HttpServer, ServerErrorHandler } from '../../services/http-server.service';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -33,7 +32,6 @@ describe('DefaultLayoutComponent', () => {
   let electronServiceMock: ElectronServiceMock;
   let serverManagementService = new MockedServerManagementService();
   let serverService: ServerService;
-  let indexedDbService: IndexedDbService;
   let httpServer: HttpServer;
   let errorHandler: ServerErrorHandler;
 
@@ -62,14 +60,12 @@ describe('DefaultLayoutComponent', () => {
           useClass: RecentlyOpenedProjectService,
         },
         { provide: ServerService },
-        { provide: IndexedDbService },
         { provide: HttpServer },
         { provide: ServerErrorHandler },
         ProgressService,
       ],
     }).compileComponents();
 
-    indexedDbService = TestBed.inject(IndexedDbService);
     errorHandler = TestBed.inject(ServerErrorHandler);
     httpServer = TestBed.inject(HttpServer);
     serverService = TestBed.inject(ServerService);

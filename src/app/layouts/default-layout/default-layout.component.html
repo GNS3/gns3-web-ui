@@ -23,6 +23,10 @@
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
+      <button mat-menu-item routerLink="/user_management">
+        <mat-icon>groups</mat-icon>
+        <span>User management</span>
+      </button>
       <button mat-menu-item routerLink="/installed-software" [disabled]="!isInstalledSoftwareAvailable">
         <mat-icon>cloud_download</mat-icon>
         <span>Installed software</span>
