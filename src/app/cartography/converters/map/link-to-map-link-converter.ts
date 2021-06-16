@@ -15,6 +15,7 @@ export class LinkToMapLinkConverter implements Converter<Link, MapLink> {
     mapLink.captureFilePath = link.capture_file_path;
     mapLink.capturing = link.capturing;
     mapLink.filters = link.filters;
+    mapLink.link_style = link.link_style;
     mapLink.linkType = link.link_type;
     mapLink.nodes = link.nodes.map((linkNode) =>
       this.linkNodeToMapLinkNode.convert(linkNode, { link_id: link.link_id })
