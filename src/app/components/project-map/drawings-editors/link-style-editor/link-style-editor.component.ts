@@ -28,16 +28,26 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     private nonNegativeValidator: NonNegativeValidator
   ) {
     this.formGroup = this.formBuilder.group({
-      color: new FormControl('', [Validators.required, nonNegativeValidator.get]),
+      color: new FormControl('', [Validators.required]),
       width: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      type: new FormControl('', [Validators.required, nonNegativeValidator.get])
+      type: new FormControl('', [Validators.required])
     });
   }
 
   ngOnInit() {
-    this.formGroup.controls['color'].setValue(this.link.link_style.color);
+    if (!this.link.link_style?.color) {
+        this.formGroup.controls['color'].setValue("#000000");
+    } else {
+        this.formGroup.controls['color'].setValue(this.link.link_style.color);
+    }
+
     this.formGroup.controls['width'].setValue(this.link.link_style.width);
-    this.formGroup.controls['type'].setValue(this.link.link_style.width);
+
+    let type = this.borderTypes[0];
+    if (this.link.link_style?.type) {
+        type = this.borderTypes[this.link.link_style.type];
+    }
+    this.formGroup.controls['type'].setValue(type);
   }
 
   onNoClick() {
@@ -48,9 +58,11 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     if (this.formGroup.valid) {
       this.link.link_style.color = this.formGroup.get('color').value;
       this.link.link_style.width = this.formGroup.get('width').value;
-      this.link.link_style.type = this.formGroup.get('type').value;
 
-      this.linkService.updateLink(this.server, this.link).subscribe(() => {
+      let type = this.borderTypes.indexOf(this.formGroup.get('type').value);
+      this.link.link_style.type = type;
+
+      this.linkService.updateLinkStyle(this.server, this.link).subscribe((link) => {
         this.toasterService.success("Link updated");
         this.dialogRef.close();
       });
