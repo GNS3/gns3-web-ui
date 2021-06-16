@@ -1,6 +1,7 @@
 import { Node } from '../cartography/models/node';
 import { Filter } from './filter';
 import { LinkNode } from './link-node';
+import { LinkStyle } from './link-style';
 
 export class Link {
   capture_file_name: string;
@@ -12,6 +13,7 @@ export class Link {
   nodes: LinkNode[];
   project_id: string;
   suspend: boolean;
+  link_style?: LinkStyle;
 
   distance: number; // this is not from server
   length: number; // this is not from server
