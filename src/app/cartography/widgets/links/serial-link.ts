@@ -60,7 +60,7 @@ export class SerialLinkWidget implements Widget {
       angle_source, 
       angle_target, 
       [target.x, target.y], 
-      link.link_style ? link.link_style : this.defaultSerialLinkStyle);
+      link.link_style.color ? link.link_style : this.defaultSerialLinkStyle);
   }
 
   public draw(view: SVGSelection) {

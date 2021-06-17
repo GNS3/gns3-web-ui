@@ -7,6 +7,7 @@ import { Server } from '../../../../models/server';
 import { ToasterService } from '../../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
 import { LinkService } from '../../../../services/link.service';
+import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 
 @Component({
   selector: 'app-link-style-editor',
@@ -25,6 +26,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     private formBuilder: FormBuilder,
     private toasterService: ToasterService,
     private linkService: LinkService,
+    private linksDataSource: LinksDataSource,
     private nonNegativeValidator: NonNegativeValidator
   ) {
     this.formGroup = this.formBuilder.group({
@@ -63,6 +65,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       this.link.link_style.type = type;
 
       this.linkService.updateLinkStyle(this.server, this.link).subscribe((link) => {
+        this.linksDataSource.update(link);
         this.toasterService.success("Link updated");
         this.dialogRef.close();
       });

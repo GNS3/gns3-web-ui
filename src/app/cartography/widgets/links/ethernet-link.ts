@@ -26,7 +26,7 @@ export class EthernetLinkWidget implements Widget {
     return new EthernetLinkPath(
       [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2],
       [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2],
-      link.link_style ? link.link_style : this.defaultEthernetLinkStyle
+      link.link_style.color ? link.link_style : this.defaultEthernetLinkStyle
     );
   }
 
