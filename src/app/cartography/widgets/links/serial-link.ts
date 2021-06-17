@@ -4,19 +4,27 @@ import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
 import { Widget } from '../widget';
+import { LinkStyle } from '../../../models/link-style';
+import { StyleTranslator} from './style-translator';
 
 class SerialLinkPath {
   constructor(
     public source: [number, number],
     public source_angle: [number, number],
     public target_angle: [number, number],
-    public target: [number, number]
+    public target: [number, number],
+    public style: LinkStyle
   ) {}
 }
 
 @Injectable()
 export class SerialLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
+  private defaultSerialLinkStyle : LinkStyle = {
+    color: "#B22222",
+    width: 2,
+    type: 0
+  };
 
   constructor() {}
 
@@ -47,7 +55,12 @@ export class SerialLinkWidget implements Widget {
       target.y - dy / 2.0 - 15 * vect_rot[1],
     ];
 
-    return new SerialLinkPath([source.x, source.y], angle_source, angle_target, [target.x, target.y]);
+    return new SerialLinkPath(
+      [source.x, source.y], 
+      angle_source, 
+      angle_target, 
+      [target.x, target.y], 
+      link.link_style ? link.link_style : this.defaultSerialLinkStyle);
   }
 
   public draw(view: SVGSelection) {
@@ -68,7 +81,16 @@ export class SerialLinkWidget implements Widget {
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });
 
-    link_enter.attr('stroke', '#B22222').attr('fill', 'none').attr('stroke-width', '2');
+    link_enter
+      .attr('stroke', (datum) => {
+        return datum.style.color;
+      })
+      .attr('stroke-width', (datum) => {
+        return datum.style.width;
+      })
+      .attr('stroke-dasharray', (datum) => {
+        return StyleTranslator.getLinkStyle(datum.style);
+      });
 
     const link_merge = link.merge(link_enter);
 
