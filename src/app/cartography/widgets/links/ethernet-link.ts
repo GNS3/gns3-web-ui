@@ -46,24 +46,15 @@ export class EthernetLinkWidget implements Widget {
         let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      });
-
-    link_enter
+      })
       .attr('stroke', (datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
         return datum.style.color;
       })
       .attr('stroke-width', (datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
         return datum.style.width;
       })
       .attr('stroke-dasharray', (datum) => {
         return StyleTranslator.getLinkStyle(datum.style);
-      })
-      .on('contextmenu', (datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
-        const evt = event;
-        this.onContextMenu.emit(new LinkContextMenu(evt, link));
       });
 
     const link_merge = link.merge(link_enter);
