@@ -105,7 +105,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public gridVisibility: boolean = false;
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
-  public symbolsLoaded: boolean = false;
   private instance: ComponentRef<TopologySummaryComponent>;
 
   tools = {
@@ -183,9 +182,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getSettings();
     this.progressService.activate();
-    this.symbolService.symbolsLoaded.subscribe(loaded => {
-      this.symbolsLoaded = true;
-    });
 
     if (this.serverService.isServiceInitialized) {
       this.getData();
@@ -321,10 +317,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           mergeMap((server: Server) => {
             if (!server) this.router.navigate(['/servers']);
             this.server = server;
-
-            // load symbols
-            this.symbolService.load(this.server);
-
             return this.projectService.get(server, paramMap.get('project_id')).pipe(
               map((project) => {
                 return project;

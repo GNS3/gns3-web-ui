@@ -129,9 +129,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   getImageSourceForTemplate(template: Template) {
-    let symbol = this.symbolService.getSymbolFromTemplate(template);
-    if (symbol) return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
-    return this.domSanitizer.bypassSecurityTrustUrl('data:image/svg+xml;base64,');
+    return this.symbolService.getSymbolFromTemplate(this.server, template);
+    // let symbol = this.symbolService.getSymbolFromTemplate(template);
+    // if (symbol) return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
+    // return this.domSanitizer.bypassSecurityTrustUrl('data:image/svg+xml;base64,');
   }
 
   ngOnDestroy() {
