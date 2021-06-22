@@ -32,7 +32,7 @@
         lazyimg
         [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
         class="image"
-        [src]="getImageSourceForTemplate(symbol.symbol_id)| authImage: server | async"
+        [src]="getImageSourceForTemplate(symbol.symbol_id)"
       />
     </button>
   </div>

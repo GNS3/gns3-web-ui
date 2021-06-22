@@ -1,6 +1,6 @@
 <div *ngIf="project" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="project-map">
   <app-d3-map
-    *ngIf="!settings.angular_map && symbolsLoaded"
+    *ngIf="!settings.angular_map"
     [server]="server"
     [project]="project"
     [symbols]="symbols"

@@ -1,11 +1,9 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { SymbolService } from '../../services/symbol.service';
 import { event, select } from 'd3-selection';
 import { MapSettingsService } from '../../services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
 import { NodeClicked, NodeContextMenu } from '../events/nodes';
 import { NodesEventSource } from '../events/nodes-event-source';
-import { GraphDataManager } from '../managers/graph-data-manager';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapNode } from '../models/map/map-node';
 import { SVGSelection } from '../models/types';
@@ -19,12 +17,10 @@ export class NodeWidget implements Widget {
   public onNodeClicked = new EventEmitter<NodeClicked>();
 
   constructor(
-    private graphDataManager: GraphDataManager,
     private selectionManager: SelectionManager,
     private labelWidget: LabelWidget,
     private nodesEventSource: NodesEventSource,
-    private mapSettingsService: MapSettingsService,
-    private symbolService: SymbolService
+    private mapSettingsService: MapSettingsService
   ) {}
 
   public draw(view: SVGSelection) {
@@ -90,13 +86,7 @@ export class NodeWidget implements Widget {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
-      .attr('xnode:href', (n: MapNode) => {
-        let symbol = this.symbolService.get(n.symbol.split('/')[2]);
-        if (symbol) {
-          return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
-        }
-        return '';
-      })
+      .attr('xnode:href', (n: MapNode) => n.symbolUrl)
       .attr('width', (n: MapNode) => {
         if (!n.width) return 60;
         return n.width;

@@ -48,12 +48,4 @@ describe('SymbolService', () => {
     const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/symbols/:my/tested.png/raw');
     expect(req.request.method).toEqual('GET');
   }));
-
-  it('should call load symbols while adding symbol', inject([SymbolService], (service: SymbolService) => {
-    spyOn(service, 'load');
-
-    service.add(server, 'symbolName', 'symbol');
-
-    expect(service.load).toHaveBeenCalled();
-  }));
 });
