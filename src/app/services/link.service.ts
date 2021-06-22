@@ -69,6 +69,10 @@ export class LinkService {
     return this.httpServer.put<Link>(server, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 
+  updateLinkStyle(server: Server, link: Link) {
+    return this.httpServer.put<Link>(server, `/projects/${link.project_id}/links/${link.link_id}`, link);
+  }
+
   getAvailableFilters(server: Server, link: Link) {
     return this.httpServer.get<FilterDescription[]>(
       server,

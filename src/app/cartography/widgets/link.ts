@@ -29,7 +29,8 @@ export class LinkWidget implements Widget {
 
     const link_body_enter = link_body.enter().append<SVGGElement>('g').attr('class', 'link_body');
 
-    const link_body_merge = link_body.merge(link_body_enter).attr('transform', (link) => {
+    const link_body_merge = link_body.merge(link_body_enter)
+    .attr('transform', (link) => {
       const translation = this.multiLinkCalculatorHelper.linkTranslation(link.distance, link.source, link.target);
       return `translate (${translation.dx}, ${translation.dy})`;
     });

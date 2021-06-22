@@ -117,6 +117,7 @@ import { DeleteActionComponent } from './components/project-map/context-menu/act
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
 import { EditConfigActionComponent } from './components/project-map/context-menu/actions/edit-config/edit-config-action.component';
 import { EditStyleActionComponent } from './components/project-map/context-menu/actions/edit-style-action/edit-style-action.component';
+import { EditLinkStyleActionComponent } from './components/project-map/context-menu/actions/edit-link-style-action/edit-link-style-action.component';
 import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
 import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
@@ -141,6 +142,7 @@ import { ContextMenuComponent } from './components/project-map/context-menu/cont
 import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
+import { LinkStyleEditorDialogComponent } from './components/project-map/drawings-editors/link-style-editor/link-style-editor.component';
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
 import { HelpDialogComponent } from './components/project-map/help-dialog/help-dialog.component';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
@@ -292,6 +294,7 @@ import { RotationValidator } from './validators/rotation-validator';
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     EditStyleActionComponent,
+    EditLinkStyleActionComponent,
     EditTextActionComponent,
     DeleteActionComponent,
     DuplicateActionComponent,
@@ -319,6 +322,7 @@ import { RotationValidator } from './validators/rotation-validator';
     InterfaceLabelDraggedComponent,
     InstallSoftwareComponent,
     StyleEditorDialogComponent,
+    LinkStyleEditorDialogComponent,
     TextEditorDialogComponent,
     PacketFiltersDialogComponent,
     QemuPreferencesComponent,

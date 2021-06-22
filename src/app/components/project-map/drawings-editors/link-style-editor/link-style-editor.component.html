@@ -1,0 +1,33 @@
+<h1 mat-dialog-title>Style editor</h1>
+
+<div class="modal-form-container">
+  <form [formGroup]="formGroup">
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        placeholder="Color"
+        formControlName="color" 
+        type="color"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+      <input 
+        matInput 
+        formControlName="width" 
+        placeholder="Width" 
+        type="number" />
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+        <mat-select placeholder="Type" formControlName="type">
+            <mat-option *ngFor="let type of borderTypes" [value]="type"> {{ type }} </mat-option>
+        </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Apply</button>
+</div>

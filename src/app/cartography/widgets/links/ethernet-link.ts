@@ -4,21 +4,29 @@ import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
 import { Widget } from '../widget';
+import { LinkStyle } from '../../../models/link-style';
+import { StyleTranslator} from './style-translator';
 
 class EthernetLinkPath {
-  constructor(public source: [number, number], public target: [number, number]) {}
+  constructor(public source: [number, number], public target: [number, number], public style: LinkStyle) {}
 }
 
 @Injectable()
 export class EthernetLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
+  private defaultEthernetLinkStyle : LinkStyle = {
+    color: "#000",
+    width: 2,
+    type: 0
+  };
 
   constructor() {}
 
   private linktoEthernetLink(link: MapLink) {
     return new EthernetLinkPath(
       [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2],
-      [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2]
+      [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2],
+      link.link_style.color ? link.link_style : this.defaultEthernetLinkStyle
     );
   }
 
@@ -38,15 +46,15 @@ export class EthernetLinkWidget implements Widget {
         let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      });
-
-    link_enter
-      .attr('stroke', '#000')
-      .attr('stroke-width', '2')
-      .on('contextmenu', (datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
-        const evt = event;
-        this.onContextMenu.emit(new LinkContextMenu(evt, link));
+      })
+      .attr('stroke', (datum) => {
+        return datum.style.color;
+      })
+      .attr('stroke-width', (datum) => {
+        return datum.style.width;
+      })
+      .attr('stroke-dasharray', (datum) => {
+        return StyleTranslator.getLinkStyle(datum.style);
       });
 
     const link_merge = link.merge(link_enter);
