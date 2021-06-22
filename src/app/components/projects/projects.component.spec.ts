@@ -24,7 +24,6 @@ import { ServerService } from '../../services/server.service';
 import { MockedServerService } from '../../services/server.service.spec';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
-import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { ProjectsComponent } from './projects.component';
 
@@ -74,11 +73,11 @@ xdescribe('ProjectsComponent', () => {
         { provide: ElectronService, useValue: electronService },
         ProgressService,
       ],
-      declarations: [ProjectsComponent, ChooseNameDialogComponent, ConfigureGns3VMDialogComponent, ProjectsFilter],
+      declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideModule(BrowserDynamicTestingModule, {
-        set: { entryComponents: [ChooseNameDialogComponent, ConfigureGns3VMDialogComponent] },
+        set: { entryComponents: [ChooseNameDialogComponent] },
       })
       .compileComponents();
 

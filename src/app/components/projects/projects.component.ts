@@ -14,7 +14,6 @@ import { ProjectService } from '../../services/project.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
-import { ConfigureGns3VMDialogComponent } from '../servers/configure-gns3vm-dialog/configure-gns3vm-dialog.component';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
@@ -64,23 +63,6 @@ export class ProjectsComponent implements OnInit {
     this.settings = this.settingsService.getAll();
 
     this.projectService.projectListSubject.subscribe(() => this.refresh());
-
-    let gns3vmConfig = localStorage.getItem('gns3vmConfig');
-    if (this.electronService.isElectronApp && gns3vmConfig !== 'configured') {
-      const dialogRef = this.dialog.open(ConfigureGns3VMDialogComponent, {
-        width: '350px',
-        height: '120px',
-        autoFocus: false,
-        disableClose: true,
-      });
-
-      dialogRef.afterClosed().subscribe((answer: boolean) => {
-        if (answer) {
-          localStorage.setItem('gns3vmConfig', 'configured');
-          this.router.navigate(['/server', this.server.id, 'preferences', 'gns3vm']);
-        }
-      });
-    }
   }
 
   goToPreferences() {

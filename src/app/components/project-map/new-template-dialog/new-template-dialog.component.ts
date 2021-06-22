@@ -58,11 +58,7 @@ export class NewTemplateDialogComponent implements OnInit {
   public appliances: Appliance[] = [];
   public applianceToInstall: Appliance;
   public selectedImages: any[];
-
-  public isGns3VmAvailable = false;
   public isLinuxPlatform = false;
-
-  private isGns3VmChosen = false;
   private isLocalComputerChosen = false;
 
   public qemuBinaries: QemuBinary[] = [];
@@ -106,10 +102,6 @@ export class NewTemplateDialogComponent implements OnInit {
 
     this.computeService.getComputes(this.server).subscribe((computes) => {
       computes.forEach((compute) => {
-        if (compute.compute_id === 'vm') {
-          this.isGns3VmAvailable = true;
-          this.isGns3VmChosen = true;
-        }
         if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
       });
     });
@@ -283,13 +275,7 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   setServerType(serverType: string) {
-    if (serverType === 'gns3 vm') {
-      this.isGns3VmChosen = true;
-      this.isLocalComputerChosen = false;
-    } else {
-      this.isGns3VmChosen = false;
-      this.isLocalComputerChosen = true;
-    }
+    this.isLocalComputerChosen = true;
   }
 
   sortData(sort: Sort) {
@@ -487,7 +473,7 @@ export class NewTemplateDialogComponent implements OnInit {
     iouTemplate.category = this.getCategory();
     iouTemplate.default_name_format = this.applianceToInstall.port_name_format;
     iouTemplate.symbol = this.applianceToInstall.symbol;
-    iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+    iouTemplate.compute_id = 'local';
     iouTemplate.template_id = uuid();
     iouTemplate.path = image.filename;
     iouTemplate.template_type = 'iou';
@@ -536,7 +522,7 @@ export class NewTemplateDialogComponent implements OnInit {
     iosTemplate.category = this.getCategory();
     iosTemplate.default_name_format = this.applianceToInstall.port_name_format;
     iosTemplate.symbol = this.applianceToInstall.symbol;
-    iosTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+    iosTemplate.compute_id = 'local';
     iosTemplate.template_id = uuid();
     iosTemplate.image = image.filename;
     iosTemplate.template_type = 'dynamips';
@@ -574,7 +560,7 @@ export class NewTemplateDialogComponent implements OnInit {
     dockerTemplate.category = this.getCategory();
     dockerTemplate.default_name_format = this.applianceToInstall.port_name_format;
     dockerTemplate.symbol = this.applianceToInstall.symbol;
-    dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+    dockerTemplate.compute_id = 'local';
     dockerTemplate.template_id = uuid();
     dockerTemplate.image = this.applianceToInstall.docker.image;
     dockerTemplate.template_type = 'docker';
@@ -631,7 +617,7 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
     qemuTemplate.symbol = this.applianceToInstall.symbol;
     qemuTemplate.qemu_path = this.selectedBinary.path;
-    qemuTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
+    qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = version.images.hda_disk_image;
     qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;

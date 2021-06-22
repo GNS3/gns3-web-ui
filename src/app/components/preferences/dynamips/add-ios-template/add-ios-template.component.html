@@ -7,17 +7,10 @@
   <div class="default-content" *ngIf="iosTemplate">
     <div class="container mat-elevation-z8">
       <mat-vertical-stepper [linear]="true">
-        <mat-step label="Server type" [completed]="isGns3VmChosen || isLocalComputerChosen">
+        <mat-step label="Server type" [completed]="isLocalComputerChosen">
           <mat-radio-group class="radio-group">
             <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked
               >Run this IOS router locally</mat-radio-button
-            >
-            <mat-radio-button
-              [disabled]="!isGns3VmAvailable"
-              class="radio-button"
-              value="2"
-              (click)="setServerType('gns3 vm')"
-              >Run this IOS router on the GNS3 VM</mat-radio-button
             >
           </mat-radio-group>
         </mat-step>
