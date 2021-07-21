@@ -8,6 +8,8 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
 import { LinkService } from '../../../../services/link.service';
 import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
+import { LinksEventSource } from '../../../../cartography/events/links-event-source';
+import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';
 
 @Component({
   selector: 'app-link-style-editor',
@@ -27,6 +29,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     private toasterService: ToasterService,
     private linkService: LinkService,
     private linksDataSource: LinksDataSource,
+    private linksEventSource: LinksEventSource,
+    private linkToMapLink: LinkToMapLinkConverter,
     private nonNegativeValidator: NonNegativeValidator
   ) {
     this.formGroup = this.formBuilder.group({
@@ -66,6 +70,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
       this.linkService.updateLinkStyle(this.server, this.link).subscribe((link) => {
         this.linksDataSource.update(link);
+        this.linksEventSource.edited.next(this.linkToMapLink.convert(link));
         this.toasterService.success("Link updated");
         this.dialogRef.close();
       });
