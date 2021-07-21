@@ -267,6 +267,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
+        console.log('from project map component');
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })

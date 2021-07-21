@@ -5,6 +5,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ANGULAR_MAP_DECLARATIONS } from './angular-map.imports';
 import { D3MapComponent } from './components/d3-map/d3-map.component';
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
+import { LinkEditingComponent } from './components/link-editing/link-editing.component';
 import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
 import { ExperimentalMapComponent } from './components/experimental-map/experimental-map.component';
@@ -73,6 +74,7 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SelectionControlComponent,
     SelectionSelectComponent,
     DraggableSelectionComponent,
+    LinkEditingComponent,
     MovingCanvasDirective,
     ZoomingCanvasDirective,
   ],
