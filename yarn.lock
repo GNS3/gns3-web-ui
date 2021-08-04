@@ -1610,10 +1610,10 @@
     "@sentry/utils" "6.10.0"
     tslib "^1.9.3"
 
-"@sentry/cli@^1.67.2":
-  version "1.67.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli/-/cli-1.67.2.tgz#dbb5631cb3637e10298f67915013592cb22f04ff"
-  integrity sha512-lPn0Sffbjg2UmCkHl2iw8pKlqpPhy85mW0za5kz3LEqC9JGUXHo9eSyyCkiRktlemMXKk+DeS/nyFy/LTRUG2Q==
+"@sentry/cli@^1.68.0":
+  version "1.68.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli/-/cli-1.68.0.tgz#2ced8fac67ee01e746a45e8ee45a518d4526937e"
+  integrity sha512-zc7+cxKDqpHLREGJKRH6KwE8fZW8bnczg3OLibJ0czleXoWPdAuOK1Xm1BTMcOnaXfg3VKAh0rI7S1PTdj+SrQ==
   dependencies:
     https-proxy-agent "^5.0.0"
     mkdirp "^0.5.5"
@@ -1790,25 +1790,27 @@
     js-yaml "^3.13.1"
     tslib "^1.10.0"
 
-"@snyk/code-client@3.9.0":
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/@snyk/code-client/-/code-client-3.9.0.tgz#5cb690327765aa2546c74fa045bf32ac26dd6bd4"
-  integrity sha512-sscrpiODOlQI87B4OFIClnoZmHEHzJ7vULYhikS/R/2KavG4vGPw7Qe2to5rximxR3VFdWQ0wNVFB0RkU2mjPQ==
+"@snyk/code-client@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@snyk/code-client/-/code-client-4.0.0.tgz#e883deff79e3bdda2a163eb143aaf7f2c4029c50"
+  integrity sha512-x6ZsL6jBz6rDSg1cFVnaqg4fVvQEerRaATem7aeq7l+HiPb8VnorJbq/61MlTgO7gWnA1WijzmzfJK5kAUpO1A==
   dependencies:
     "@deepcode/dcignore" "^1.0.2"
     "@snyk/fast-glob" "^3.2.6-patch"
     "@types/flat-cache" "^2.0.0"
     "@types/lodash.chunk" "^4.2.6"
     "@types/lodash.omit" "^4.5.6"
+    "@types/lodash.pick" "^4.4.6"
     "@types/lodash.union" "^4.6.6"
     "@types/sarif" "^2.1.3"
     "@types/uuid" "^8.3.0"
-    axios "^0.21.1"
     ignore "^5.1.8"
     lodash.chunk "^4.2.0"
     lodash.omit "^4.5.0"
+    lodash.pick "^4.4.0"
     lodash.union "^4.6.0"
     multimatch "^5.0.0"
+    needle "^2.8.0"
     queue "^6.0.1"
     uuid "^8.3.2"
 
@@ -2449,6 +2451,13 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.pick@^4.4.6":
+  version "4.4.6"
+  resolved "https://registry.yarnpkg.com/@types/lodash.pick/-/lodash.pick-4.4.6.tgz#ae4e8f109e982786313bb6aac4b1a73aefa6e9be"
+  integrity sha512-u8bzA16qQ+8dY280z3aK7PoWb3fzX5ATJ0rJB6F+uqchOX2VYF02Aqa+8aYiHiHgPzQiITqCgeimlyKFy4OA6g==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.union@^4.6.6":
   version "4.6.6"
   resolved "https://registry.npmjs.org/@types/lodash.union/-/lodash.union-4.6.6.tgz"
@@ -2476,10 +2485,10 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-15.0.2.tgz"
   integrity sha512-p68+a+KoxpoB47015IeYZYRrdqMUcpbK8re/zpFB8Ld46LHC1lPEbp3EXgkEhAYEcPvjJF6ZO+869SQ0aH1dcA==
 
-"@types/node@16.4.7":
-  version "16.4.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.7.tgz#f7afa78769d4b477f5092d7c3468e2e8653d779c"
-  integrity sha512-aDDY54sst8sx47CWT6QQqIZp45yURq4dic0+HCYfYNcY5Ejlb/CLmFnRLfy3wQuYafOeh3lB/DAKaqRKBtcZmA==
+"@types/node@16.4.11":
+  version "16.4.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.11.tgz#245030af802c776c31f00eb0cdde40ee615db462"
+  integrity sha512-nWSFUbuNiPKJEe1IViuodSI+9cM+vpM8SWF/O6dJK7wmGRNq55U7XavJHrlRrPkSMuUZUFzg1xaZ1B+ZZCrRWw==
 
 "@types/node@^13.7.0":
   version "13.13.52"
@@ -2859,6 +2868,11 @@ accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   dependencies:
     mime-types "~2.1.24"
     negotiator "0.6.2"
+
+acorn-import-assertions@^1.7.6:
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/acorn-import-assertions/-/acorn-import-assertions-1.7.6.tgz#580e3ffcae6770eebeec76c3b9723201e9d01f78"
+  integrity sha512-FlVvVFA1TX6l3lp8VjDnYYq7R1nyW6x3svAt4nDgrWQ9SBaSh9CnbwgSUTasgfNfOG5HlM1ehugCvM+hjo56LA==
 
 acorn@^8.4.1:
   version "8.4.1"
@@ -3332,13 +3346,6 @@ aws4@^1.8.0:
   version "1.11.0"
   resolved "https://registry.npmjs.org/aws4/-/aws4-1.11.0.tgz"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
-
-axios@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.21.1.tgz"
-  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
-  dependencies:
-    follow-redirects "^1.10.0"
 
 axobject-query@2.0.2:
   version "2.0.2"
@@ -5379,10 +5386,10 @@ electron@*:
     "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
-electron@^13.1.7:
-  version "13.1.7"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-13.1.7.tgz#7e17f5c93a8d182a2a486884fed3dc34ab101be9"
-  integrity sha512-sVfpP/0s6a82FK32LMuEe9L+aWZw15u3uYn9xUJArPjy4OZHteE6yM5871YCNXNiDnoCLQ5eqQWipiVgHsf8nQ==
+electron@^13.1.8:
+  version "13.1.8"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-13.1.8.tgz#a6def6eca7cafc7b068a8f71a069e521ba803182"
+  integrity sha512-ei2ZyyG81zUOlvm5Zxri668TdH5GNLY0wF+XrC2FRCqa8AABAPjJIWTRkhFEr/H6PDVPNZjMPvSs3XhHyVVk2g==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^14.6.2"
@@ -5883,7 +5890,7 @@ flatten@^1.0.2:
   resolved "https://registry.npmjs.org/flatten/-/flatten-1.0.3.tgz"
   integrity sha512-dVsPA/UwQ8+2uoFe5GHtiBMu48dWLTdsuEd7CKGlZlD78r1TTWBvDuFaFGKCo/ZfEr95Uk56vZoX86OsHkUeIg==
 
-follow-redirects@^1.0.0, follow-redirects@^1.10.0:
+follow-redirects@^1.0.0:
   version "1.14.1"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.1.tgz"
   integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
@@ -7724,6 +7731,11 @@ lodash.orderby@^4.6.0:
   resolved "https://registry.npmjs.org/lodash.orderby/-/lodash.orderby-4.6.0.tgz"
   integrity sha1-5pfwTOXXhSL1TZM4syuBozk+TrM=
 
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+  integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
+
 lodash.reduce@^4.6.0:
   version "4.6.0"
   resolved "https://registry.npmjs.org/lodash.reduce/-/lodash.reduce-4.6.0.tgz"
@@ -8267,6 +8279,15 @@ needle@2.6.0, needle@^2.3.3, needle@^2.5.0, needle@^2.5.2:
   version "2.6.0"
   resolved "https://registry.npmjs.org/needle/-/needle-2.6.0.tgz"
   integrity sha512-KKYdza4heMsEfSWD7VPUIz3zX2XDwOyX2d+geb4vrERZMT5RMU6ujjaD+I5Yr54uZxQ2w6XRTAhHBbSCyovZBg==
+  dependencies:
+    debug "^3.2.6"
+    iconv-lite "^0.4.4"
+    sax "^1.2.4"
+
+needle@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-2.8.0.tgz#1c8ef9c1a2c29dcc1e83d73809d7bc681c80a048"
+  integrity sha512-ZTq6WYkN/3782H1393me3utVYdq2XyqNUFBsprEE3VMAT0+hP/cItpnITpqsY6ep2yeFE4Tqtqwc74VqUlUYtw==
   dependencies:
     debug "^3.2.6"
     iconv-lite "^0.4.4"
@@ -10314,7 +10335,7 @@ rw@1:
   resolved "https://registry.npmjs.org/rw/-/rw-1.3.3.tgz"
   integrity sha1-P4Yt+pGrdmsUiF700BEkv9oHT7Q=
 
-rxjs-compat@^6.5.3:
+rxjs-compat@^6.6.7:
   version "6.6.7"
   resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.6.7.tgz#6eb4ef75c0a58ea672854a701ccc8d49f41e69cb"
   integrity sha512-szN4fK+TqBPOFBcBcsR0g2cmTTUF/vaFEOZNuSdfU8/pGFnNmmn2u8SystYXG1QMrjOPBc6XTKHMVfENDf6hHw==
@@ -10330,9 +10351,9 @@ rxjs-tslint@^0.1.8:
     typescript ">=2.8.3"
     yargs "^15.3.1"
 
-rxjs@6.6.7, rxjs@^6.5.3, rxjs@^6.6.0, rxjs@^6.6.6:
+rxjs@6.6.7, rxjs@^6.5.3, rxjs@^6.6.0, rxjs@^6.6.6, rxjs@^6.6.7:
   version "6.6.7"
-  resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.7.tgz"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
   dependencies:
     tslib "^1.9.0"
@@ -10949,15 +10970,15 @@ snyk-try-require@^2.0.0:
     lodash.clonedeep "^4.3.0"
     lru-cache "^5.1.1"
 
-snyk@^1.671.0:
-  version "1.671.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.671.0.tgz#fe9906a74eba2044b5fd9bb5726122cdb59b1e49"
-  integrity sha512-VxTqViyluEo7ggIecTNkH+OjD/JtF6cHmxHrmMwRZ+FCRCUBmtDtdtT82lMLxTdp+cmx1jwBch7SyVGg3VIDZg==
+snyk@^1.675.0:
+  version "1.675.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.675.0.tgz#fb89421fbd5d3d25f813589ad4bd4396a2a04484"
+  integrity sha512-J5ZvEiaAIRdyFrIjS1OnfQs5vKLG0SNPJmeg/GuTA9z8L/gqtTXUsnCrnmpQ8Y2y7L3LRyjh9VXx7G0QC9rlWA==
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"
     "@snyk/cloud-config-parser" "^1.9.2"
-    "@snyk/code-client" "3.9.0"
+    "@snyk/code-client" "4.0.0"
     "@snyk/dep-graph" "^1.27.1"
     "@snyk/fix" "1.650.0"
     "@snyk/gemfile" "1.2.0"
@@ -11019,7 +11040,7 @@ snyk@^1.671.0:
     snyk-try-require "1.3.1"
     source-map-support "^0.5.11"
     strip-ansi "^5.2.0"
-    tar "^6.1.0"
+    tar "^6.1.2"
     tempy "^1.0.1"
     update-notifier "^5.1.0"
     uuid "^8.3.2"
@@ -11573,6 +11594,18 @@ tar@^6.0.2, tar@^6.1.0:
   version "6.1.0"
   resolved "https://registry.npmjs.org/tar/-/tar-6.1.0.tgz"
   integrity sha512-DUCttfhsnLCjwoDoFcI+B2iJgYa93vBnDUATYEeRx6sntCTdN01VnqsIuTlALXla/LWooNg0yEGeB+Y8WdFxGA==
+  dependencies:
+    chownr "^2.0.0"
+    fs-minipass "^2.0.0"
+    minipass "^3.0.0"
+    minizlib "^2.1.1"
+    mkdirp "^1.0.3"
+    yallist "^4.0.0"
+
+tar@^6.1.2:
+  version "6.1.6"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.6.tgz#c23d797b0a1efe5d479b1490805c5443f3560c5d"
+  integrity sha512-oaWyu5dQbHaYcyZCTfyPpC+VmI62/OM2RTUYavTk1MDr1cwW5Boi3baeYQKiZbY2uSQJGr+iMOzb/JFxLrft+g==
   dependencies:
     chownr "^2.0.0"
     fs-minipass "^2.0.0"
@@ -12337,10 +12370,10 @@ webpack-sources@^2.3.0:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
 
-webpack-sources@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-3.1.1.tgz#586d15bc9a9723765f6a735f672357d6402f9c57"
-  integrity sha512-ztUmIWq0LWaw+1YyR3bXtUPjt8vQedtI9WxGn/q1V1ASHsombnaso7MN9S25lzKS/OuC9Q8lEg3GsZexjDbdlQ==
+webpack-sources@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-3.2.0.tgz#b16973bcf844ebcdb3afde32eda1c04d0b90f89d"
+  integrity sha512-fahN08Et7P9trej8xz/Z7eRu8ltyiygEo/hnRi9KqBUs80KeDcnf96ZJo++ewWd84fEf3xSX9bp4ZS9hbw0OBw==
 
 webpack-subresource-integrity@1.5.2:
   version "1.5.2"
@@ -12378,10 +12411,10 @@ webpack@5.44.0:
     watchpack "^2.2.0"
     webpack-sources "^2.3.0"
 
-webpack@5.47.1:
-  version "5.47.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.47.1.tgz#20fb7d76f68912a2249a6dd7ff16faa178049ad2"
-  integrity sha512-cW+Mzy9SCDapFV4OrkHuP6EFV2mAsiQd+gOa3PKtHNoKg6qPqQXZzBlHH+CnQG1osplBCqwsJZ8CfGO6XWah0g==
+webpack@5.48.0:
+  version "5.48.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.48.0.tgz#06180fef9767a6fd066889559a4c4d49bee19b83"
+  integrity sha512-CGe+nfbHrYzbk7SKoYITCgN3LRAG0yVddjNUecz9uugo1QtYdiyrVD8nP1PhkNqPfdxC2hknmmKpP355Epyn6A==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.50"
@@ -12389,6 +12422,7 @@ webpack@5.47.1:
     "@webassemblyjs/wasm-edit" "1.11.1"
     "@webassemblyjs/wasm-parser" "1.11.1"
     acorn "^8.4.1"
+    acorn-import-assertions "^1.7.6"
     browserslist "^4.14.5"
     chrome-trace-event "^1.0.2"
     enhanced-resolve "^5.8.0"
@@ -12405,7 +12439,7 @@ webpack@5.47.1:
     tapable "^2.1.1"
     terser-webpack-plugin "^5.1.3"
     watchpack "^2.2.0"
-    webpack-sources "^3.1.1"
+    webpack-sources "^3.2.0"
 
 websocket-driver@>=0.5.1, websocket-driver@^0.7.4:
   version "0.7.4"
