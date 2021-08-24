@@ -90,7 +90,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^12.2.2",
+    "@angular-devkit/build-angular": "^0.1102.14",
     "@angular/cli": "^12.2.2",
     "@angular/compiler-cli": "^12.2.2",
     "@angular/language-service": "^12.2.2",
@@ -101,7 +101,7 @@
     "@types/node": "16.7.1",
     "codelyzer": "^6.0.2",
     "electron": "^13.2.2",
-    "electron-builder": "22.11.7",
+    "electron-builder": "^22.9.1",
     "file-loader": "^6.2.0",
     "jasmine-core": "~3.9.0",
     "jasmine-spec-reporter": "~7.0.0",
