@@ -69,6 +69,7 @@ describe('SettingsComponent', () => {
     const settings = {
       crash_reports: true,
       experimental_features: true,
+      anonymous_statistics: true,
       angular_map: false,
       console_command: '',
     };
