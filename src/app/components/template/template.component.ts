@@ -1,7 +1,7 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ThemeService } from '@services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 import { Subscription } from 'rxjs';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
