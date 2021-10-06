@@ -1,5 +1,7 @@
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
@@ -18,7 +20,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
   @Input() server: Server;
   @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
-
+  overlay;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
   searchText: string = '';
@@ -45,13 +47,19 @@ export class TemplateComponent implements OnInit, OnDestroy {
   startY: number;
 
   private subscription: Subscription;
+  private themeSubscription: Subscription;
+  private isLightThemeEnabled: boolean = false;
 
   constructor(
     private dialog: MatDialog,
     private templateService: TemplateService,
     private scaleService: MapScaleService,
-    private symbolService: SymbolService
-  ) {}
+    private symbolService: SymbolService,
+    private themeService: ThemeService,
+    private overlayContainer: OverlayContainer, 
+  ) {
+    this.overlay = overlayContainer.getContainerElement();
+  }
 
   ngOnInit() {
     this.subscription = this.templateService.newTemplateCreated.subscribe((template: Template) => {
@@ -64,6 +72,23 @@ export class TemplateComponent implements OnInit, OnDestroy {
       this.templates = listOfTemplates;
     });
     this.symbolService.list(this.server);
+    if (this.themeService.getActualTheme()  === 'light') this.isLightThemeEnabled = true;
+    this.themeSubscription = this.themeService.themeChanged.subscribe((value: string) => {
+      if (value === 'light-theme') this.isLightThemeEnabled = true;
+      this.toggleTheme();
+    });
+  }
+
+  toggleTheme(): void {
+    if (this.overlay.classList.contains("dark-theme")) {
+        this.overlay.classList.remove("dark-theme");
+        this.overlay.classList.add("light-theme");
+    } else if (this.overlay.classList.contains("light-theme")) {
+        this.overlay.classList.remove("light-theme");
+        this.overlay.classList.add("dark-theme");
+    } else {
+        this.overlay.classList.add("light-theme");
+    }
   }
 
   sortTemplates() {
