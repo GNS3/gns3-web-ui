@@ -33,6 +33,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   qemuTemplate: QemuTemplate;
   uploader: FileUploader;
   uploadedFile: boolean = false;
+  uploadProgress: number = 0;
 
   nameForm: FormGroup;
   memoryForm: FormGroup;
@@ -86,6 +87,9 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.qemuImages = qemuImages;
       });
       this.toasterService.success('Image uploaded');
+    };
+    this.uploader.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress['progress'];
     };
 
     const server_id = this.route.snapshot.paramMap.get('server_id');

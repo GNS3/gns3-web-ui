@@ -111,7 +111,7 @@
                 />
               </mat-form-field>
               <div *ngIf="uploadedFile">
-                <mat-progress-bar mode="determinate" [value]="uploader.progress" ></mat-progress-bar>
+                <mat-progress-bar mode="determinate" [value]="uploadProgress" aria-valuemin="0" aria-valuemax="100"></mat-progress-bar>
               </div>
             </div>
           </form>
