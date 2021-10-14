@@ -32,6 +32,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   chosenImage: string = '';
   qemuTemplate: QemuTemplate;
   uploader: FileUploader;
+  uploadedFile: boolean = false;
 
   nameForm: FormGroup;
   memoryForm: FormGroup;
@@ -127,6 +128,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   uploadImageFile(event) {
+    this.uploadedFile = true;
     let name = event.target.files[0].name;
     this.diskForm.controls['fileName'].setValue(name);
 

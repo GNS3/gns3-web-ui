@@ -110,6 +110,9 @@
                   placeholder="Please enter name"
                 />
               </mat-form-field>
+              <div *ngIf="uploadedFile">
+                <mat-progress-bar mode="determinate" [value]="uploader.progress" ></mat-progress-bar>
+              </div>
             </div>
           </form>
         </mat-step>
