@@ -176,6 +176,7 @@
 							"src/styles.scss",
 							"src/theme.scss"
 						],
+						"sourceMap": false,
 						"assets": [
 							"src/assets",
 							"src/favicon.ico"
