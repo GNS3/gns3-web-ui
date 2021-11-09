@@ -220,7 +220,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   async lazyLoadTopologySummary() {
     if (this.isTopologySummaryVisible) {
       const {TopologySummaryComponent} = await import('../topology-summary/topology-summary.component');
-      this.instance = this.topologySummaryContainer.createComponent(TopologySummaryComponent);
+      const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
+      this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
       this.instance.instance.server = this.server;
       this.instance.instance.project = this.project;
     } else if (this.instance) {
