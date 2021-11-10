@@ -11,6 +11,7 @@
 /scripts/build
 /scripts/dist
 /env
+/.angular
 
 # dependencies
 /node_modules
