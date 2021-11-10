@@ -75,6 +75,13 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     });
   }
 
+  goToDocumentation() {
+    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    this.serverService.get(+serverId).then((server: Server) => {
+      (window as any).open(`http://${server.host}:${server.port}/docs`);
+    });
+  }
+
   checkIfUserIsLoginPage() {
     if (this.router.url.includes("login")) {
       this.isLoginPage = true;
