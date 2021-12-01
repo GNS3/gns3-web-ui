@@ -9524,10 +9524,10 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-snyk@^1.757.0:
-  version "1.757.0"
-  resolved "https://registry.npmjs.org/snyk/-/snyk-1.757.0.tgz"
-  integrity sha512-COB9DYQI/loKY5QQbvFWaIuWkKgP0FyC9JOLK0s9lKm9JeDmcSLCjQnCpH0CaUjqz9gPr8+sZ27iXbevzRPppg==
+snyk@^1.780.0:
+  version "1.780.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.780.0.tgz#687c093f75ba6bfce2595506855b11fac0fff167"
+  integrity sha512-HadbD3tPdIgjDBvesh6JYbJcNgE/AkuCqhvF/kiUQUM/7QOcWgTxTx8hoXkondRR7MDZ3dH+H+ccFdIiM4wcBQ==
 
 socket.io-adapter@~2.3.2:
   version "2.3.2"
