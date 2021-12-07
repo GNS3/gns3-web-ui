@@ -196,6 +196,38 @@
                 </div>
               </div>
 
+              <div class="list-item-inside" *ngIf="version.images.bios_image">
+                <span>
+                  {{ version.images.bios_image }}
+                </span>
+
+                <div>
+                  <span *ngIf="checkImageFromVersion(version.images.bios_image)"
+                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
+                  >
+                  <span *ngIf="!checkImageFromVersion(version.images.bios_image)"
+                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
+                  >
+
+                  <input
+                    type="file"
+                    class="non-visible"
+                    #fileBios
+                    (change)="importImage($event, version.images.bios_image)"
+                    ng2FileSelect
+                    [uploader]="uploaderImage"
+                  />
+                  <button class="button" mat-raised-button (click)="fileBios.click()">Import</button>
+                  <button
+                    class="button"
+                    mat-raised-button
+                    (click)="downloadImageFromVersion(version.images.bios_image)"
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
+
               <div class="list-item-inside" *ngIf="version.images.hda_disk_image">
                 <span>
                   {{ version.images.hda_disk_image }}
