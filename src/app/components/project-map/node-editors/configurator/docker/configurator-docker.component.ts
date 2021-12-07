@@ -39,7 +39,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.generalSettingsForm = this.formBuilder.group({
       name: new FormControl('', Validators.required),
       adapter: new FormControl('', Validators.required),
-      startCommand: new FormControl('', Validators.required),
+      startCommand: new FormControl(''),
       consoleHttpPort: new FormControl('', Validators.required),
       consoleHttpPath: new FormControl('', Validators.required),
     });
