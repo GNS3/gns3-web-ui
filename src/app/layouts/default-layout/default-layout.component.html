@@ -1,42 +1,73 @@
 <header>
   <mat-toolbar color="primary">
     <button mat-icon-button><mat-icon svgIcon="gns3"></mat-icon></button>
-
-    <button mat-button routerLink="/servers">Servers</button>
-
-    <button *ngIf="!recentlyOpenedProjectId && serverIdProjectList" mat-button (click)="listProjects()">
-      Projects
-    </button>
-
     <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId" mat-button (click)="backToProject()">
       Back to project
     </button>
 
     <span class="fill-space"></span>
 
+    <div class="gns3-version">
+       GNS3 Web UI v{{ uiVersion }}
+    </div>
+
     <button mat-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
-      <button mat-menu-item routerLink="/settings">
-        <mat-icon>settings</mat-icon>
-        <span>Settings</span>
-      </button>
       <button mat-menu-item routerLink="/installed-software" [disabled]="!isInstalledSoftwareAvailable">
         <mat-icon>cloud_download</mat-icon>
         <span>Installed software</span>
-      </button>
-      <button mat-menu-item routerLink="/help">
-        <mat-icon>help</mat-icon>
-        <span>Help</span>
       </button>
     </mat-menu>
   </mat-toolbar>
 </header>
 
-<main class="mat-app-background"><router-outlet></router-outlet></main>
+<main class="content-container mat-app-background">
+   <div class="sidebar">
+      <mat-menu #menu="matMenu"></mat-menu>
+      <button
+        *ngIf="recentlyOpenedServerId"
+        mat-menu-item
+        routerLinkActive="mat-accent"
+        [routerLink]="['/server', recentlyOpenedServerId, 'projects']">
+        <mat-icon>work</mat-icon>
+        <span>Projects</span>
+      </button>
+      <button
+        mat-menu-item
+        routerLinkActive="mat-accent"
+        [routerLink]="['/servers']">
+        <mat-icon>developer_board</mat-icon>
+        <span>Servers</span>
+      </button>
+      <button
+        *ngIf="recentlyOpenedServerId"
+        mat-menu-item
+        routerLinkActive="mat-accent"
+        [routerLink]="['/server', recentlyOpenedServerId, 'systemstatus']">
+        <mat-icon>data_usage</mat-icon>
+        <span>System Status</span>
+      </button>
+      <button
+        mat-menu-item
+        routerLinkActive="mat-accent"
+        [routerLink]="['/settings']">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <button
+        mat-menu-item
+        routerLinkActive="mat-accent"
+        [routerLink]="['/help']">
+        <mat-icon>help</mat-icon>
+        <span>Help</span>
+      </button>
+   </div>
+   <div class="main">
+      <router-outlet></router-outlet>
+   </div>
+</main>
 
 <app-progress></app-progress>
-
-<footer class="footer mat-app-background">GNS3 Web UI &copy; 2020 - v{{ uiVersion }}</footer>

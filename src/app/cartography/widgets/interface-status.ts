@@ -90,16 +90,16 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_started_enter)
           .attr('class', 'status_started')
           .attr('width', (ls: LinkStatus) => {
-            return ls.port.length * 8 + 10;
+            return ls.port.length * 8 + 20;
           })
           .attr('height', 20)
-          .attr('x', (ls: LinkStatus) => ls.x - 30)
+          .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
-          .attr('rx', 8)
-          .attr('ry', 8)
-          .style('fill', 'white')
+          .attr('rx', 10)
+          .attr('ry', 10)
+          .style('fill', '#c7ffdf')
           .attr('stroke', '#2ecc71')
-          .attr('stroke-width', 3);
+          .attr('stroke-width', 2);
         status_started.exit().remove();
         const status_started_label = link_group
           .selectAll<SVGTextElement, LinkStatus>('text.status_started_label')
@@ -109,9 +109,9 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_started_label_enter)
           .attr('class', 'status_started_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 25)
+          .attr('x', (ls: LinkStatus) => ls.x - 15)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
-          .attr('fill', `black`);
+          .attr('fill', `#0e9647`);
         status_started_label.exit().remove();
 
         const status_stopped = link_group
@@ -122,16 +122,16 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_stopped_enter)
           .attr('class', 'status_stopped')
           .attr('width', (ls: LinkStatus) => {
-            return ls.port.length * 8 + 10;
+            return ls.port.length * 8 + 20;
           })
           .attr('height', 20)
-          .attr('x', (ls: LinkStatus) => ls.x - 30)
+          .attr('x', (ls: LinkStatus) => ls.x - 60)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
-          .attr('rx', 8)
-          .attr('ry', 8)
-          .style('fill', 'white')
+          .attr('rx', 10)
+          .attr('ry', 10)
+          .style('fill', '#ffe3e3')
           .attr('stroke', 'red')
-          .attr('stroke-width', 3);
+          .attr('stroke-width', 2);
         status_stopped.exit().remove();
         const status_stopped_label = link_group
           .selectAll<SVGTextElement, LinkStatus>('text.status_stopped_label')
@@ -141,9 +141,9 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_stopped_label_enter)
           .attr('class', 'status_stopped_label')
           .text((ls: LinkStatus) => ls.port)
-          .attr('x', (ls: LinkStatus) => ls.x - 25)
+          .attr('x', (ls: LinkStatus) => ls.x - 50)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
-          .attr('fill', `black`);
+          .attr('fill', `red`);
         status_stopped_label.exit().remove();
 
         const status_suspended = link_group
@@ -159,11 +159,11 @@ export class InterfaceStatusWidget implements Widget {
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)
           .attr('y', (ls: LinkStatus) => ls.y - 10)
-          .attr('rx', 8)
-          .attr('ry', 8)
-          .style('fill', 'white')
+          .attr('rx', 10)
+          .attr('ry', 10)
+          .style('fill', '#fffbc3')
           .attr('stroke', '#FFFF00')
-          .attr('stroke-width', 3);
+          .attr('stroke-width', 2);
         status_suspended.exit().remove();
         const status_suspended_label = link_group
           .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label')
@@ -175,7 +175,7 @@ export class InterfaceStatusWidget implements Widget {
           .text((ls: LinkStatus) => ls.port)
           .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
-          .attr('fill', `black`);
+          .attr('fill', `#6b5633`);
         status_suspended_label.exit().remove();
       } else {
         const status_started = link_group
