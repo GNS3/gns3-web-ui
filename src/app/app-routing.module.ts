@@ -76,6 +76,12 @@ const routes: Routes = [
       { path: 'help', component: HelpComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
+      {
+        path: 'server/:server_id/user_management',
+        component: UserManagementComponent,
+        canActivate: [LoginGuard],
+        resolve: { server: ServerResolve },
+      },
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'server/:server_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
 
@@ -209,14 +215,10 @@ const routes: Routes = [
     canActivate: [LoginGuard]
   },
   {
-    path: 'user_management',
-    component: UserManagementComponent
-  },
-  {
     path: '**',
     component: PageNotFoundComponent,
   }
-  
+
 ];
 
 @NgModule({

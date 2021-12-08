@@ -1,3 +1,42 @@
-<p>
-  user-management works!
-</p>
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">User Management</h1>
+      <button class="col" mat-raised-button color="primary" (click)="addUser()" class="add-button">
+        Add User
+      </button>
+    </div>
+  </div>
+
+  <div class="default-content">
+    <div class="mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <a class="table-link">{{ row.username }}</a>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Mail </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="is_active">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Active </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.is_active}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="is_superadmin">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Admin </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.is_superadmin}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="last">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Last Update </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.updated_at ? row.updated_at : row.created_at}}</mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </div>
+  </div>
+</div>

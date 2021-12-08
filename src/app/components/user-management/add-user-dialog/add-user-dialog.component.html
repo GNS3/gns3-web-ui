@@ -1,0 +1,26 @@
+<h1 mat-dialog-title>Create new user</h1>
+<form [formGroup]="addUserForm" class="input-field">
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="username"  placeholder="Username" />
+  </mat-form-field>
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="full_name" placeholder="Full name" />
+  </mat-form-field>
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="email" placeholder="Email" />
+  </mat-form-field>
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="password" placeholder="Password" />
+  </mat-form-field>
+
+  <mat-checkbox formControlName="is_active" class="checkbox-field">Is active</mat-checkbox>
+  <mat-checkbox formControlName="is_superadmin"  class="checkbox-field">Is admin</mat-checkbox>
+
+  <div mat-dialog-actions class="button-div">
+    <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
+            [disabled]="!addUserForm.valid">
+      Add user
+    </button>
+  </div>
+</form>

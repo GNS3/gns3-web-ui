@@ -45,7 +45,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
     });
-    
+
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();
@@ -128,5 +128,12 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
+  }
+
+  goToUserManagement() {
+    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    this.serverService.get(+serverId).then((server: Server) => {
+      this.router.navigate(['/server', server.id, 'user_management']);
+    });
   }
 }

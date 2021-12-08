@@ -272,6 +272,7 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
 import { UserManagementComponent } from './components/user-management/user-management.component'
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
+import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
 
 @NgModule({
   declarations: [
@@ -459,7 +460,8 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     ConfigureCustomAdaptersDialogComponent,
     EditNetworkConfigurationDialogComponent,
     UserManagementComponent,
-    ProjectReadmeComponent
+    ProjectReadmeComponent,
+    AddUserDialogComponent,
   ],
   imports: [
     BrowserModule,
