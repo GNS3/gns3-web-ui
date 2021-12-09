@@ -35,9 +35,14 @@
           <mat-header-cell *matHeaderCellDef mat-sort-header> Admin </mat-header-cell>
           <mat-cell *matCellDef="let row">{{row.is_superadmin}}</mat-cell>
         </ng-container>
-        <ng-container matColumnDef="last">
+        <ng-container matColumnDef="updated_at">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Last Update </mat-header-cell>
           <mat-cell *matCellDef="let row">{{row.updated_at ? row.updated_at : row.created_at}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+          <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+          <mat-cell *matCellDef="let row"><button mat-button (click)="onDelete(row)"><mat-icon>delete</mat-icon></button></mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

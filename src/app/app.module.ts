@@ -273,12 +273,13 @@ import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
+import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
+import { UserFilterPipe } from './filters/user-filter.pipe';
 import { GroupManagementComponent } from './components/group-management/group-management.component';
 import { GroupFilterPipe } from './filters/group-filter.pipe';
 import { AddGroupDialogComponent } from './components/group-management/add-group-dialog/add-group-dialog.component';
 import { DeleteGroupDialogComponent } from './components/group-management/delete-group-dialog/delete-group-dialog.component';
-import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
-import { UserFilterPipe } from './filters/user-filter.pipe';
+import { DeleteUserDialogComponent } from './components/user-management/delete-user-dialog/delete-user-dialog.component';
 
 @NgModule({
   declarations: [
@@ -467,12 +468,13 @@ import { UserFilterPipe } from './filters/user-filter.pipe';
     EditNetworkConfigurationDialogComponent,
     UserManagementComponent,
     ProjectReadmeComponent,
-    DeleteGroupDialogComponent,
     AddGroupDialogComponent,
     GroupFilterPipe,
     GroupManagementComponent,
     AddUserDialogComponent,
     UserFilterPipe,
+    DeleteGroupDialogComponent,
+    DeleteUserDialogComponent
   ],
   imports: [
     BrowserModule,

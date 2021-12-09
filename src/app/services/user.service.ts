@@ -30,4 +30,7 @@ export class UserService {
     });
   }
 
+  delete(server: Server, user_id: string) {
+    return this.httpServer.delete(server, `/users/${user_id}`);
+  }
 }

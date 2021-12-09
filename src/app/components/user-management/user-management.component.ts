@@ -20,9 +20,10 @@ import {User} from "@models/users/user";
 import {BehaviorSubject, merge, Observable} from "rxjs";
 import {DataSource} from "@angular/cdk/collections";
 import {map} from "rxjs/operators";
-import {AddBlankProjectDialogComponent} from "@components/projects/add-blank-project-dialog/add-blank-project-dialog.component";
 import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
+import {ToasterService} from "@services/toaster.service";
 
 @Component({
   selector: 'app-user-management',
@@ -33,7 +34,7 @@ export class UserManagementComponent implements OnInit {
   server: Server;
   dataSource: UserDataSource;
   userDatabase = new UserDatabase();
-  displayedColumns = ['name', 'email', 'is_active', 'is_superadmin', 'last'];
+  displayedColumns = ['name', 'email', 'is_active', 'is_superadmin', 'updated_at', 'delete'];
 
   searchText: string = '';
 
@@ -44,7 +45,8 @@ export class UserManagementComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private progressService: ProgressService,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog,
+    private toasterService: ToasterService) { }
 
   ngOnInit() {
     this.server = this.route.snapshot.data['server'];
@@ -80,6 +82,21 @@ export class UserManagementComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => this.refresh());
   }
 
+  onDelete(user: User) {
+    this.dialog
+      .open(DeleteUserDialogComponent, {width: '500px', data: {user: user}})
+      .afterClosed()
+      .subscribe((isDeletedConfirm) => {
+        if (isDeletedConfirm) {
+          this.userService.delete(this.server, user.user_id)
+            .subscribe(() => {
+              this.refresh()
+            }, (error) => {
+              this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
+            });
+        }
+      });
+  }
 }
 
 export class UserDatabase {
