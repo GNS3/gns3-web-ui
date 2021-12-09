@@ -1,0 +1,43 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Groups management</h1>
+    </div>
+  </div>
+  <div class="default-content">
+    <table mat-table [dataSource]="sortedGroups" class="mat-elevation-z8" matSort (matSortChange)="sort($event)">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name</th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef> Creation date</th>
+        <td mat-cell *matCellDef="let element"> {{element.created_at}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="updated_at">
+        <th mat-header-cell *matHeaderCellDef> last update</th>
+        <td mat-cell *matCellDef="let element"> {{element.updated_at}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="is_builtin">
+        <th mat-header-cell *matHeaderCellDef> is build in</th>
+        <td mat-cell *matCellDef="let element"> {{element.is_builtin}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element"><mat-icon>delete</mat-icon></td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+
+    </table>
+  </div>
+</div>

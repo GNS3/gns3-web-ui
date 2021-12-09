@@ -27,6 +27,10 @@
         <mat-icon>groups</mat-icon>
         <span>User management</span>
       </button>
+      <button mat-menu-item (click)="goToGroupManagement()">
+        <mat-icon>groups</mat-icon>
+        <span>Group management</span>
+      </button>
       <button mat-menu-item routerLink="/installed-software" [disabled]="!isInstalledSoftwareAvailable">
         <mat-icon>cloud_download</mat-icon>
         <span>Installed software</span>

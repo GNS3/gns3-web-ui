@@ -269,9 +269,10 @@ import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
-import { UserManagementComponent } from './components/user-management/user-management.component'
+import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
+import { GroupManagementComponent } from './components/group-management/group-management.component';
 import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
 import { UserFilterPipe } from './filters/user-filter.pipe';
 
@@ -462,6 +463,7 @@ import { UserFilterPipe } from './filters/user-filter.pipe';
     EditNetworkConfigurationDialogComponent,
     UserManagementComponent,
     ProjectReadmeComponent,
+    GroupManagementComponent,
     AddUserDialogComponent,
     UserFilterPipe,
   ],

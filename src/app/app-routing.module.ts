@@ -56,6 +56,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
+import {GroupManagementComponent} from "./components/group-management/group-management.component";
 
 const routes: Routes = [
   {
@@ -196,6 +197,7 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'server/:server_id/group_management', component: GroupManagementComponent},
     ],
   },
   {
