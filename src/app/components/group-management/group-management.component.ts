@@ -20,6 +20,7 @@ import {Group} from "../../models/groups/group";
 import {Sort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
 import {AddGroupDialogComponent} from "@components/group-management/add-group-dialog/add-group-dialog.component";
+import {DeleteGroupDialogComponent} from "@components/group-management/delete-group-dialog/delete-group-dialog.component";
 
 @Component({
   selector: 'app-group-management',
@@ -91,6 +92,25 @@ export class GroupManagementComponent implements OnInit {
               });
             }, (error) => {
               this.toasterService.error(`An error occur while trying to create new group ${name}`);
+            });
+        }
+      });
+  }
+
+  onDelete(group: Group) {
+    this.dialog
+      .open(DeleteGroupDialogComponent, {width: '500px', height: '250px', data: {groupName: group.name}})
+      .afterClosed()
+      .subscribe((isDeletedConfirm) => {
+        if (isDeletedConfirm) {
+          this.groupService.delete(this.server, group.user_group_id)
+            .subscribe(() => {
+              this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
+                this.groups = groups;
+                this.sortedGroups = groups;
+              });
+            }, (error) => {
+              this.toasterService.error(`An error occur while trying to delete group ${group.name}`);
             });
         }
       });

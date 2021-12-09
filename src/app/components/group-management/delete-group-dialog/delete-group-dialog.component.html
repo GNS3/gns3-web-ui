@@ -1,0 +1,7 @@
+<h1 mat-dialog-title>Are you sure to delete group named: '{{data.groupName}}' ?</h1>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()" color="accent">No, cancel</button>
+  <button mat-button (click)="onDelete()" tabindex="2" class="add-project-button" mat-raised-button color="primary">
+    Yes, delete!
+  </button>
+</div>

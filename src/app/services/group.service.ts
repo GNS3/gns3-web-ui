@@ -38,4 +38,8 @@ export class GroupService {
   addGroup(server: Server, name: string): Observable<Group> {
     return this.httpServer.post<Group>(server, `/groups`, {name});
   }
+
+  delete(server: Server, user_group_id: string) {
+    return this.httpServer.delete(server, `/groups/${user_group_id}`);
+  }
 }
