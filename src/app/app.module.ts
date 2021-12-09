@@ -275,6 +275,7 @@ import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { GroupManagementComponent } from './components/group-management/group-management.component';
 import { GroupFilterPipe } from './filters/group-filter.pipe';
+import { AddGroupDialogComponent } from './components/group-management/add-group-dialog/add-group-dialog.component';
 import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
 import { UserFilterPipe } from './filters/user-filter.pipe';
 
@@ -465,6 +466,7 @@ import { UserFilterPipe } from './filters/user-filter.pipe';
     EditNetworkConfigurationDialogComponent,
     UserManagementComponent,
     ProjectReadmeComponent,
+    AddGroupDialogComponent,
     GroupFilterPipe,
     GroupManagementComponent,
     AddUserDialogComponent,

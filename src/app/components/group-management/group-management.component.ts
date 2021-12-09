@@ -18,6 +18,8 @@ import {GroupService} from "../../services/group.service";
 import {Server} from "../../models/server";
 import {Group} from "../../models/groups/group";
 import {Sort} from "@angular/material/sort";
+import {MatDialog} from "@angular/material/dialog";
+import {AddGroupDialogComponent} from "@components/group-management/add-group-dialog/add-group-dialog.component";
 
 @Component({
   selector: 'app-group-management',
@@ -37,6 +39,7 @@ export class GroupManagementComponent implements OnInit {
     private serverService: ServerService,
     private toasterService: ToasterService,
     public groupService: GroupService,
+    public dialog: MatDialog
   ) {
   }
 
@@ -71,5 +74,25 @@ export class GroupManagementComponent implements OnInit {
     function compare(a: number | string, b: number | string, isAsc: boolean) {
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
+  }
+
+
+  addGroup() {
+    this.dialog
+      .open(AddGroupDialogComponent, {width: '250px', height: '250px', data: {server: this.server}})
+      .afterClosed()
+      .subscribe((name: string) => {
+        if (name) {
+          this.groupService.addGroup(this.server, name)
+            .subscribe(() => {
+              this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
+                this.groups = groups;
+                this.sortedGroups = groups;
+              });
+            }, (error) => {
+              this.toasterService.error(`An error occur while trying to create new group ${name}`);
+            });
+        }
+      });
   }
 }

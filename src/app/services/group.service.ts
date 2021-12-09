@@ -10,11 +10,12 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpServer} from "./http-server.service";
 import {Server} from "../models/server";
 import {Group} from "../models/groups/group";
 import {User} from "../models/users/user";
+import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class GroupService {
 
   constructor(
     private httpServer: HttpServer
-  ) { }
+  ) {
+  }
 
   getGroups(server: Server) {
     return this.httpServer.get<Group[]>(server, '/groups');
@@ -31,5 +33,9 @@ export class GroupService {
 
   getGroupMember(server: Server, groupId: string) {
     return this.httpServer.get<User[]>(server, `/groups/${groupId}/members`);
+  }
+
+  addGroup(server: Server, name: string): Observable<Group> {
+    return this.httpServer.post<Group>(server, `/groups`, {name});
   }
 }
