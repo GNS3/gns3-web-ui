@@ -273,6 +273,7 @@ import { UserManagementComponent } from './components/user-management/user-manag
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
+import { UserFilterPipe } from './filters/user-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -462,6 +463,7 @@ import { AddUserDialogComponent } from './components/user-management/add-user-di
     UserManagementComponent,
     ProjectReadmeComponent,
     AddUserDialogComponent,
+    UserFilterPipe,
   ],
   imports: [
     BrowserModule,

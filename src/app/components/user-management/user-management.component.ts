@@ -35,6 +35,8 @@ export class UserManagementComponent implements OnInit {
   userDatabase = new UserDatabase();
   displayedColumns = ['name', 'email', 'is_active', 'is_superadmin', 'last'];
 
+  searchText: string = '';
+
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
@@ -77,6 +79,7 @@ export class UserManagementComponent implements OnInit {
     instance.server = this.server;
     dialogRef.afterClosed().subscribe(() => this.refresh());
   }
+
 }
 
 export class UserDatabase {
