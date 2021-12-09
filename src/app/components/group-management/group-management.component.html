@@ -4,8 +4,15 @@
       <h1 class="col">Groups management</h1>
     </div>
   </div>
+
+  <form>
+    <mat-form-field class="full-width">
+      <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+    </mat-form-field>
+  </form>
+
   <div class="default-content">
-    <table mat-table [dataSource]="sortedGroups" class="mat-elevation-z8" matSort (matSortChange)="sort($event)">
+    <table mat-table [dataSource]="sortedGroups | groupFilter: searchText" class="mat-elevation-z8" matSort (matSortChange)="sort($event)">
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Name</th>

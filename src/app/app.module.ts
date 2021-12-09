@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -273,6 +274,7 @@ import { UserManagementComponent } from './components/user-management/user-manag
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { GroupManagementComponent } from './components/group-management/group-management.component';
+import { GroupFilterPipe } from './filters/group-filter.pipe';
 import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
 import { UserFilterPipe } from './filters/user-filter.pipe';
 
@@ -463,6 +465,7 @@ import { UserFilterPipe } from './filters/user-filter.pipe';
     EditNetworkConfigurationDialogComponent,
     UserManagementComponent,
     ProjectReadmeComponent,
+    GroupFilterPipe,
     GroupManagementComponent,
     AddUserDialogComponent,
     UserFilterPipe,

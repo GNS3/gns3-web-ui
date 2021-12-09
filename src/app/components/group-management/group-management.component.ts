@@ -30,6 +30,7 @@ export class GroupManagementComponent implements OnInit {
   public displayedColumns = ['name', 'created_at', 'updated_at', 'is_builtin', 'delete'];
   groups: Group[];
   sortedGroups: Group[];
+  searchText: string;
 
   constructor(
     private route: ActivatedRoute,
