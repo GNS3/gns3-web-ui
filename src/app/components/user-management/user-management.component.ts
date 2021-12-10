@@ -18,7 +18,7 @@ import {UserService} from "@services/user.service";
 import {ProgressService} from "../../common/progress/progress.service";
 import {User} from "@models/users/user";
 import {BehaviorSubject, merge, Observable} from "rxjs";
-import {DataSource} from "@angular/cdk/collections";
+import {DataSource, SelectionModel} from "@angular/cdk/collections";
 import {map} from "rxjs/operators";
 import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -34,8 +34,8 @@ export class UserManagementComponent implements OnInit {
   server: Server;
   dataSource: UserDataSource;
   userDatabase = new UserDatabase();
-  displayedColumns = ['name', 'email', 'is_active', 'is_superadmin', 'updated_at', 'delete'];
-
+  displayedColumns = ['select', 'name', 'email', 'is_active', 'is_superadmin', 'updated_at', 'delete'];
+  selection = new SelectionModel<User>(true, []);
   searchText: string = '';
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -84,7 +84,7 @@ export class UserManagementComponent implements OnInit {
 
   onDelete(user: User) {
     this.dialog
-      .open(DeleteUserDialogComponent, {width: '500px', data: {user: user}})
+      .open(DeleteUserDialogComponent, {width: '500px', data: {users: [user]}})
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
@@ -96,6 +96,38 @@ export class UserManagementComponent implements OnInit {
             });
         }
       });
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.userDatabase.data.length;
+    return numSelected === numRows;
+  }
+
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.userDatabase.data.forEach(row => this.selection.select(row));
+  }
+
+  deleteMultiple() {
+    this.dialog
+      .open(DeleteUserDialogComponent, {width: '500px', data: {users: this.selection.selected}})
+      .afterClosed()
+      .subscribe((isDeletedConfirm) => {
+        if (isDeletedConfirm) {
+          this.selection.selected.forEach((user: User) => {
+            this.userService.delete(this.server, user.user_id)
+              .subscribe(() => {
+                this.refresh()
+              }, (error) => {
+                this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
+              });
+          })
+          this.selection.clear();
+        }
+      });
+
   }
 }
 

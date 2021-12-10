@@ -20,7 +20,6 @@ export class UserService {
   }
 
   add(server: Server, user: any): Observable<User> {
-    console.log(user)
     return this.httpServer.post<User>(server, `/users`, {
       username: user.username,
       is_active: user.is_active,

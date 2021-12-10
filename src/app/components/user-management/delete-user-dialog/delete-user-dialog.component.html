@@ -1,4 +1,7 @@
-<h1 mat-dialog-title>Are you sure to delete user named: '{{data.user.username}}' ?</h1>
+<h1 mat-dialog-title>Are you sure you want to delete the following users ?</h1>
+<ul>
+  <li *ngFor="let user of data.users">{{ user.username }} {{ user.full_name ? '- ' + user.full_name : '' }}</li>
+</ul>
 <div mat-dialog-actions class="button-div">
   <button mat-button (click)="onCancel()" color="accent">No, cancel</button>
   <button mat-button (click)="onDelete()" tabindex="2" class="add-project-button" mat-raised-button color="primary">
