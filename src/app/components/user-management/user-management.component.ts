@@ -34,7 +34,7 @@ export class UserManagementComponent implements OnInit {
   server: Server;
   dataSource: UserDataSource;
   userDatabase = new UserDatabase();
-  displayedColumns = ['select', 'name', 'email', 'is_active', 'is_superadmin', 'updated_at', 'delete'];
+  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
   selection = new SelectionModel<User>(true, []);
   searchText: string = '';
 

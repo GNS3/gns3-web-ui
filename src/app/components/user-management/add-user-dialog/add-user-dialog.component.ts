@@ -17,6 +17,8 @@ import {UserService} from "@services/user.service";
 import {Server} from "@models/server";
 import {User} from "@models/users/user";
 import {ToasterService} from "@services/toaster.service";
+import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
+import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
 
 @Component({
   selector: 'app-add-user-dialog',
@@ -36,14 +38,20 @@ export class AddUserDialogComponent implements OnInit {
       username: new FormControl(null, [
         Validators.required,
         Validators.minLength(3),
-        Validators.pattern("[a-zA-Z0-9_-]+$")]),
+        Validators.pattern("[a-zA-Z0-9_-]+$")],
+        [userNameAsyncValidator(this.server, this.userService)]),
       full_name: new FormControl(),
-      email: new FormControl(null, [Validators.email, Validators.required]),
+      email: new FormControl(null,
+        [Validators.email, Validators.required],
+        [userEmailAsyncValidator(this.server, this.userService)]),
       password: new FormControl(null,
         [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
-      is_active: new FormControl(true),
-      is_superadmin: new FormControl(false)
+      is_active: new FormControl(true)
     });
+  }
+
+  get form() {
+    return this.addUserForm.controls;
   }
 
   onCancelClick() {

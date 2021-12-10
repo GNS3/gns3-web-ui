@@ -24,6 +24,7 @@ export class UserFilterPipe implements PipeTransform {
     searchText = searchText.toLowerCase();
     return items.userDatabase.data.filter((item) => {
       return (item.username && item.username.toLowerCase().includes(searchText))
+        || (item.full_name && item.full_name.toLowerCase().includes(searchText))
         || (item.email && item.email.toLowerCase().includes(searchText));
     });
   }

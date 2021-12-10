@@ -11,5 +11,20 @@
 }
 
 .small-col {
+  flex-grow: 0.3;
+}
+
+.active-col {
   flex-grow: 0.5;
+}
+
+.overflow-col {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 5px;
+}
+
+.custom-tooltip {
+  font-size:100px;
 }

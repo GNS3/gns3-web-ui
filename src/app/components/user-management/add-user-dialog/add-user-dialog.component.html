@@ -2,19 +2,33 @@
 <form [formGroup]="addUserForm" class="input-field">
   <mat-form-field class="input-field">
     <input matInput type="text" formControlName="username"  placeholder="Username" />
+    <mat-error *ngIf="form.username?.touched && form.username?.errors && form.username?.errors.required"
+    >Username is required</mat-error>
+    <mat-error *ngIf="form.username?.errors && form.username?.errors.pattern"
+    >Username is incorrect</mat-error>
+    <mat-error *ngIf="form.username?.errors && form.username?.errors.userExists"
+    >User with this username exists</mat-error>
   </mat-form-field>
   <mat-form-field class="input-field">
     <input matInput type="text" formControlName="full_name" placeholder="Full name" />
   </mat-form-field>
   <mat-form-field class="input-field">
     <input matInput type="text" formControlName="email" placeholder="Email" />
-  </mat-form-field>
-  <mat-form-field class="input-field">
-    <input matInput type="text" formControlName="password" placeholder="Password" />
+    <mat-error *ngIf="form.email?.touched && form.email?.errors && form.email?.errors.required"
+    >Email is required</mat-error>
+    <mat-error *ngIf="form.email?.errors && form.email?.errors.email"
+    >Email is invalid</mat-error>
   </mat-form-field>
 
-  <mat-checkbox formControlName="is_active" class="checkbox-field">Is active</mat-checkbox>
-  <mat-checkbox formControlName="is_superadmin"  class="checkbox-field">Is admin</mat-checkbox>
+
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="password" placeholder="Password" />
+    <mat-error *ngIf="form.password?.touched && form.password?.errors"
+    >A password between 6 and 100 characters is required.</mat-error>
+  </mat-form-field>
+
+
+  <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
 
   <div mat-dialog-actions class="button-div">
     <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
