@@ -13,7 +13,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Server} from "@models/server";
-import {MatSort, MatSortable} from "@angular/material/sort";
+import {MatSort, MatSortable, Sort} from "@angular/material/sort";
 import {UserService} from "@services/user.service";
 import {ProgressService} from "../../common/progress/progress.service";
 import {User} from "@models/users/user";
@@ -24,6 +24,8 @@ import {AddUserDialogComponent} from "@components/user-management/add-user-dialo
 import {MatDialog} from "@angular/material/dialog";
 import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
 import {ToasterService} from "@services/toaster.service";
+import {MatPaginator} from "@angular/material/paginator";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: 'app-user-management',
@@ -32,12 +34,12 @@ import {ToasterService} from "@services/toaster.service";
 })
 export class UserManagementComponent implements OnInit {
   server: Server;
-  dataSource: UserDataSource;
-  userDatabase = new UserDatabase();
+  dataSource = new MatTableDataSource<User>();
   displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
   selection = new SelectionModel<User>(true, []);
   searchText: string = '';
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
@@ -53,17 +55,27 @@ export class UserManagementComponent implements OnInit {
     if (!this.server) this.router.navigate(['/servers']);
 
     this.refresh();
-    this.sort.sort(<MatSortable>{
-      id: 'name',
-      start: 'asc',
-    });
-    this.dataSource = new UserDataSource(this.userDatabase, this.sort);
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'username':
+        case 'full_name':
+        case 'email':
+          return item[property] ? item[property].toLowerCase() : '';
+        default:
+          return item[property];
+      }
+    }
   }
 
   refresh() {
     this.userService.list(this.server).subscribe(
       (users: User[]) => {
-        this.userDatabase.addUsers(users);
+        this.dataSource.data = users;
       },
       (error) => {
         this.progressService.setError(error);
@@ -98,16 +110,18 @@ export class UserManagementComponent implements OnInit {
       });
   }
 
+
+
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.userDatabase.data.length;
+    const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.userDatabase.data.forEach(row => this.selection.select(row));
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
   deleteMultiple() {
@@ -129,54 +143,4 @@ export class UserManagementComponent implements OnInit {
       });
 
   }
-}
-
-export class UserDatabase {
-  dataChange: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
-
-  get data(): User[] {
-    return this.dataChange.value;
-  }
-
-  public addUsers(users: User[]) {
-    this.dataChange.next(users);
-  }
-
-  public remove(user: User) {
-    const index = this.data.indexOf(user);
-    if (index >= 0) {
-      this.data.splice(index, 1);
-      this.dataChange.next(this.data.slice());
-    }
-  }
-}
-
-export class UserDataSource extends DataSource<any> {
-  constructor(public userDatabase: UserDatabase, private sort: MatSort) {
-    super();
-  }
-
-  connect(): Observable<User[]> {
-    const displayDataChanges = [this.userDatabase.dataChange, this.sort.sortChange];
-
-    return merge(...displayDataChanges).pipe(
-      map(() => {
-        if (!this.sort.active || this.sort.direction === '') {
-          return this.userDatabase.data;
-        }
-
-        return this.userDatabase.data.sort((a, b) => {
-          const propertyA = a[this.sort.active];
-          const propertyB = b[this.sort.active];
-
-          const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
-          const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
-
-          return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
-        });
-      })
-    );
-  }
-
-  disconnect() {}
 }

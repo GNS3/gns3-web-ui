@@ -11,18 +11,19 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import { Pipe, PipeTransform } from '@angular/core';
-import {UserDataSource} from "@components/user-management/user-management.component";
+import {User} from "@models/users/user";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Pipe({
   name: 'userFilter'
 })
 export class UserFilterPipe implements PipeTransform {
 
-  transform(items: UserDataSource, searchText: string) {
+  transform(items: MatTableDataSource<User>, searchText: string) {
     if (!items) return [];
     if (!searchText) return items;
     searchText = searchText.toLowerCase();
-    return items.userDatabase.data.filter((item) => {
+    return items.data.filter((item: User) => {
       return (item.username && item.username.toLowerCase().includes(searchText))
         || (item.full_name && item.full_name.toLowerCase().includes(searchText))
         || (item.email && item.email.toLowerCase().includes(searchText));

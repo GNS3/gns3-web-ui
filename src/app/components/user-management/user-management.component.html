@@ -13,7 +13,7 @@
 
   <form>
     <mat-form-field class="full-width">
-      <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+      <input matInput placeholder="Search by username, full name or email" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
     </mat-form-field>
   </form>
 
@@ -44,7 +44,7 @@
         <ng-container matColumnDef="full_name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Full Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div [matTooltip]="row.full_name" class="overflow-col">{{ row.full_name }}</div>
+            <div [matTooltip]="row.full_name" matTooltipClass="custom-tooltip" class="overflow-col">{{ row.full_name }}</div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="email">
@@ -74,6 +74,11 @@
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                     showFirstLastButtons
+                     aria-label="Select page">
+      </mat-paginator>
     </div>
   </div>
 </div>
