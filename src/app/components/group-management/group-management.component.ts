@@ -66,13 +66,20 @@ export class GroupManagementComponent implements OnInit {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case 'name':
-          return compare(a.name, b.name, isAsc);
+          return compare(a.name.toLowerCase(), b.name.toLowerCase(), isAsc);
+        case 'created_at':
+          return compare(a.created_at, b.created_at, isAsc);
+        case 'updated_at':
+          return compare(a.updated_at, b.updated_at, isAsc);
+        case 'is_builtin':
+          return compare(a.is_builtin.toString(), b.is_builtin.toString(), isAsc);
         default:
           return 0;
       }
     });
 
     function compare(a: number | string, b: number | string, isAsc: boolean) {
+
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
   }
