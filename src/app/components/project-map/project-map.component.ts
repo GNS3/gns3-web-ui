@@ -423,7 +423,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               this.toasterService.success('Node has been deleted');
             });
           });
-        }
+
+        selected
+          .filter((item) => item instanceof MapDrawing)
+          .forEach((item: MapDrawing) => {
+            const drawing = this.mapDrawingToDrawing.convert(item);
+            this.drawingService.delete(this.server, drawing).subscribe((data) => {
+              this.toasterService.success('Drawing has been deleted');
+            });
+          });
+      }
     });
   }
 
