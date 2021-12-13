@@ -334,7 +334,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
 
             this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
-            this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
             if (this.project.status === 'opened') {
               return new Observable<Project>((observer) => {
@@ -438,6 +437,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   onProjectLoad(project: Project) {
     this.readonly = this.projectService.isReadOnly(project);
+    this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
     const subscription = this.projectService
       .nodes(this.server, project.project_id)
