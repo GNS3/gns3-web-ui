@@ -474,7 +474,7 @@ import { DeleteUserDialogComponent } from './components/user-management/delete-u
     AddUserDialogComponent,
     UserFilterPipe,
     DeleteGroupDialogComponent,
-    DeleteUserDialogComponent
+    DeleteUserDialogComponent,
   ],
   imports: [
     BrowserModule,

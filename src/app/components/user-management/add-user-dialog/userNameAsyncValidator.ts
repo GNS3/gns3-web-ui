@@ -16,12 +16,12 @@ import {timer} from "rxjs";
 import {map, switchMap} from "rxjs/operators";
 import {UserService} from "../../../services/user.service";
 
-export const userNameAsyncValidator = (server: Server, userService: UserService) => {
+export const userNameAsyncValidator = (server: Server, userService: UserService, except: string = '') => {
   return (control: FormControl) => {
     return timer(500).pipe(
       switchMap(() => userService.list(server)),
       map((response) => {
-        return (response.find((n) => n.username === control.value) ? { userExists: true } : null);
+        return (response.find((n) => n.username === control.value && control.value !== except) ? { userExists: true } : null);
       })
     );
   };

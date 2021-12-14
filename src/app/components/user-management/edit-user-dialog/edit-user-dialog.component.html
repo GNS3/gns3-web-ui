@@ -1,5 +1,5 @@
-<h1 mat-dialog-title>Create new user</h1>
-<form [formGroup]="addUserForm" class="input-field">
+<h1 mat-dialog-title>Update user</h1>
+<form [formGroup]="editUserForm" class="input-field">
   <mat-form-field class="input-field">
     <input matInput type="text" formControlName="username"  placeholder="Username" />
     <mat-error *ngIf="form.username?.touched && form.username?.errors && form.username?.errors.required"
@@ -18,13 +18,15 @@
     >Email is required</mat-error>
     <mat-error *ngIf="form.email?.errors && form.email?.errors.email"
     >Email is invalid</mat-error>
+    <mat-error *ngIf="form.email?.errors && form.email?.errors.emailExists"
+    >User with this email exists</mat-error>
   </mat-form-field>
 
 
   <mat-form-field class="input-field">
     <input matInput type="password" formControlName="password" placeholder="Password" />
     <mat-error *ngIf="form.password?.touched && form.password?.errors"
-    >A password between 6 and 100 characters is required.</mat-error>
+    >Password must be between 6 and 100 characters</mat-error>
   </mat-form-field>
 
 
@@ -32,9 +34,9 @@
 
   <div mat-dialog-actions class="button-div">
     <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
-            [disabled]="!addUserForm.valid">
-      Add user
+    <button mat-button (click)="onEditClick()" tabindex="2" mat-raised-button color="primary"
+            [disabled]="!editUserForm.valid">
+      Edit user
     </button>
   </div>
 </form>

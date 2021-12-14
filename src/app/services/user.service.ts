@@ -20,16 +20,14 @@ export class UserService {
   }
 
   add(server: Server, user: any): Observable<User> {
-    return this.httpServer.post<User>(server, `/users`, {
-      username: user.username,
-      is_active: user.is_active,
-      email: user.email,
-      full_name: user.full_name,
-      password: user.password
-    });
+    return this.httpServer.post<User>(server, `/users`, user);
   }
 
   delete(server: Server, user_id: string) {
     return this.httpServer.delete(server, `/users/${user_id}`);
+  }
+
+  update(server: Server, user: User): Observable<User> {
+    return this.httpServer.put<User>(server, `/users/${user.user_id}`, user);
   }
 }

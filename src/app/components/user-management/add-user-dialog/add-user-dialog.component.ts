@@ -65,7 +65,6 @@ export class AddUserDialogComponent implements OnInit {
     const newUser = this.addUserForm.value;
     this.userService.add(this.server,  newUser)
       .subscribe((user: User) => {
-        console.log("Done ", user)
         this.toasterService.success(`User ${user.username} added`);
         this.dialogRef.close();
       },

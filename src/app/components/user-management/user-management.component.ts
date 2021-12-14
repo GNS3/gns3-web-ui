@@ -26,6 +26,7 @@ import {DeleteUserDialogComponent} from "@components/user-management/delete-user
 import {ToasterService} from "@services/toaster.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
+import {EditUserDialogComponent} from "@components/user-management/edit-user-dialog/edit-user-dialog.component";
 
 @Component({
   selector: 'app-user-management',
@@ -142,5 +143,14 @@ export class UserManagementComponent implements OnInit {
         }
       });
 
+  }
+
+  onEdit(user: User) {
+    this.dialog
+      .open(EditUserDialogComponent, {width: '500px', data: {user: user, server: this.server}})
+      .afterClosed()
+      .subscribe(() => {
+        this.refresh();
+      });
   }
 }
