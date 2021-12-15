@@ -12,7 +12,7 @@
 */
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Server} from "@models/server";
+import {Group} from "@models/groups/group";
 
 @Component({
   selector: 'app-delete-group-dialog',
@@ -22,7 +22,7 @@ import {Server} from "@models/server";
 export class DeleteGroupDialogComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<DeleteGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { groupName: string }) { }
+              @Inject(MAT_DIALOG_DATA) public data: { groups: Group[] }) { }
 
   ngOnInit(): void {
   }

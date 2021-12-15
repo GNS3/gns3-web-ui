@@ -21,6 +21,10 @@ import {Sort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
 import {AddGroupDialogComponent} from "@components/group-management/add-group-dialog/add-group-dialog.component";
 import {DeleteGroupDialogComponent} from "@components/group-management/delete-group-dialog/delete-group-dialog.component";
+import {SelectionModel} from "@angular/cdk/collections";
+import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
+import {User} from "@models/users/user";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-group-management',
@@ -30,7 +34,8 @@ import {DeleteGroupDialogComponent} from "@components/group-management/delete-gr
 export class GroupManagementComponent implements OnInit {
   server: Server;
 
-  public displayedColumns = ['name', 'created_at', 'updated_at', 'is_builtin', 'delete'];
+  public displayedColumns = ['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'delete'];
+  selection = new SelectionModel<Group>(true, []);
   groups: Group[];
   sortedGroups: Group[];
   searchText: string;
@@ -84,6 +89,17 @@ export class GroupManagementComponent implements OnInit {
     }
   }
 
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.groups.length;
+    return numSelected === numRows;
+  }
+
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.groups.forEach(row => this.selection.select(row));
+  }
 
   addGroup() {
     this.dialog
@@ -93,10 +109,7 @@ export class GroupManagementComponent implements OnInit {
         if (name) {
           this.groupService.addGroup(this.server, name)
             .subscribe(() => {
-              this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
-                this.groups = groups;
-                this.sortedGroups = groups;
-              });
+              this.refresh();
             }, (error) => {
               this.toasterService.error(`An error occur while trying to create new group ${name}`);
             });
@@ -104,21 +117,28 @@ export class GroupManagementComponent implements OnInit {
       });
   }
 
-  onDelete(group: Group) {
+  refresh() {
+    this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
+      this.groups = groups;
+      this.sortedGroups = groups;
+      this.selection.clear();
+    });
+  }
+
+  onDelete(groupsToDelete: Group[]) {
     this.dialog
-      .open(DeleteGroupDialogComponent, {width: '500px', height: '250px', data: {groupName: group.name}})
+      .open(DeleteGroupDialogComponent, {width: '500px', height: '250px', data: {groups: groupsToDelete}})
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.groupService.delete(this.server, group.user_group_id)
+          const observables = groupsToDelete.map((group: Group) => this.groupService.delete(this.server, group.user_group_id));
+          forkJoin(observables)
             .subscribe(() => {
-              this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
-                this.groups = groups;
-                this.sortedGroups = groups;
+                this.refresh();
+              },
+              (error) => {
+                this.toasterService.error(`An error occur while trying to delete group`);
               });
-            }, (error) => {
-              this.toasterService.error(`An error occur while trying to delete group ${group.name}`);
-            });
         }
       });
   }
