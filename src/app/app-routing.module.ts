@@ -57,6 +57,7 @@ import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import {GroupManagementComponent} from "./components/group-management/group-management.component";
+import {UserDetailComponent} from "@components/user-management/user-detail/user-detail.component";
 
 const routes: Routes = [
   {
@@ -80,6 +81,12 @@ const routes: Routes = [
       {
         path: 'server/:server_id/user_management',
         component: UserManagementComponent,
+        canActivate: [LoginGuard],
+        resolve: { server: ServerResolve },
+      },
+      {
+        path: 'server/:server_id/user_management/:user_id',
+        component: UserDetailComponent,
         canActivate: [LoginGuard],
         resolve: { server: ServerResolve },
       },

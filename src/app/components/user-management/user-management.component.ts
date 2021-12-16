@@ -13,20 +13,17 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Server} from "@models/server";
-import {MatSort, MatSortable, Sort} from "@angular/material/sort";
+import {MatSort} from "@angular/material/sort";
 import {UserService} from "@services/user.service";
 import {ProgressService} from "../../common/progress/progress.service";
 import {User} from "@models/users/user";
-import {BehaviorSubject, merge, Observable} from "rxjs";
-import {DataSource, SelectionModel} from "@angular/cdk/collections";
-import {map} from "rxjs/operators";
+import {SelectionModel} from "@angular/cdk/collections";
 import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
 import {ToasterService} from "@services/toaster.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
-import {EditUserDialogComponent} from "@components/user-management/edit-user-dialog/edit-user-dialog.component";
 
 @Component({
   selector: 'app-user-management',
@@ -143,14 +140,5 @@ export class UserManagementComponent implements OnInit {
         }
       });
 
-  }
-
-  onEdit(user: User) {
-    this.dialog
-      .open(EditUserDialogComponent, {width: '500px', data: {user: user, server: this.server}})
-      .afterClosed()
-      .subscribe(() => {
-        this.refresh();
-      });
   }
 }

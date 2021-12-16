@@ -1,0 +1,74 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row align-items-center">
+      <button
+        mat-icon-button
+        matTooltip="Back to user management"
+        matTooltipClass="custom-tooltip"
+        [routerLink]="['/server', server.id, 'user_management']">
+          <mat-icon aria-label="Back to user management">keyboard_arrow_left</mat-icon>
+      </button>
+      <h1 class="col">User Details</h1>
+    </div>
+  </div>
+  <div class="default-content">
+    <div class="user-edit">
+      <h1 mat-dialog-title>Update user</h1>
+      <div *ngIf="user">
+        <form [formGroup]="editUserForm" class="input-field">
+          <mat-form-field class="input-field">
+            <input matInput type="text" formControlName="username"  placeholder="Username" />
+            <mat-error *ngIf="form.username?.touched && form.username?.errors && form.username?.errors.required"
+            >Username is required</mat-error>
+            <mat-error *ngIf="form.username?.errors && form.username?.errors.pattern"
+            >Username is incorrect</mat-error>
+            <mat-error *ngIf="form.username?.errors && form.username?.errors.userExists"
+            >User with this username exists</mat-error>
+          </mat-form-field>
+          <mat-form-field class="input-field">
+            <input matInput type="text" formControlName="full_name" placeholder="Full name" />
+          </mat-form-field>
+          <mat-form-field class="input-field">
+            <input matInput type="text" formControlName="email" placeholder="Email" />
+            <mat-error *ngIf="form.email?.touched && form.email?.errors && form.email?.errors.required"
+            >Email is required</mat-error>
+            <mat-error *ngIf="form.email?.errors && form.email?.errors.email"
+            >Email is invalid</mat-error>
+            <mat-error *ngIf="form.email?.errors && form.email?.errors.emailExists"
+            >User with this email exists</mat-error>
+          </mat-form-field>
+
+
+          <mat-form-field class="input-field">
+            <input matInput type="password" formControlName="password" placeholder="Password" />
+            <mat-error *ngIf="form.password?.touched && form.password?.errors"
+            >Password must be between 6 and 100 characters</mat-error>
+          </mat-form-field>
+
+
+          <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+
+          <div mat-dialog-actions class="button-div">
+            <button mat-button (click)="onEditClick()" tabindex="2" mat-raised-button color="primary"
+                    [disabled]="!editUserForm.valid">
+              Edit user
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <div class="user-groups">
+      <h5>Groups</h5>
+      <ul>
+        <li *ngFor="let group of groups">
+          <a [routerLink]="['/server', server.id, 'group_management', group.user_group_id]"
+             class="table-link">{{ group.name }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+

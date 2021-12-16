@@ -38,7 +38,8 @@
         <ng-container matColumnDef="username">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Username </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a class="table-link" [matTooltip]="row.username" (click)="onEdit(row)">{{ row.username }}</a>
+            <a [routerLink]="['/server', server.id, 'user_management', row.user_id]"
+               class="table-link" [matTooltip]="row.username">{{ row.username }}</a>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="full_name">
