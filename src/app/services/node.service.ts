@@ -16,6 +16,14 @@ export class NodeService {
     return this.httpServer.get(server, `/projects/${projectId}/nodes/${nodeId}`);
   }
 
+  isolate(server: Server, node: Node) {
+    return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/isolate`, {});
+  }
+
+  unisolate(server: Server, node: Node) {
+    return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/unisolate`, {});
+  }
+
   start(server: Server, node: Node) {
     return this.httpServer.post<Node>(server, `/projects/${node.project_id}/nodes/${node.node_id}/start`, {});
   }
