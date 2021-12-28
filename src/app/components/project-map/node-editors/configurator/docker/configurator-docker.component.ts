@@ -43,7 +43,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
           adapter: new FormControl('', Validators.required),
           memory: new FormControl('', nonNegativeValidator.get),
           cpus: new FormControl('', nonNegativeValidator.get),
-          startCommand: new FormControl('', Validators.required),
+          startCommand: new FormControl(''),
           consoleHttpPort: new FormControl('', Validators.required),
           consoleHttpPath: new FormControl('', Validators.required)
       });

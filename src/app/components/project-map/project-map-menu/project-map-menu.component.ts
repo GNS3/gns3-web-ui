@@ -104,6 +104,13 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public addDrawing(selectedObject: string) {
+    if ((selectedObject === 'rectangle' && this.drawTools.isRectangleChosen) || (selectedObject === 'ellipse' && this.drawTools.isEllipseChosen) ||
+    (selectedObject === 'line' && this.drawTools.isLineChosen) || (selectedObject === 'text' && this.drawTools.isTextChosen)) {
+      document.documentElement.style.cursor = "default";
+    } else {
+      document.documentElement.style.cursor = "crosshair";
+    }
+
     switch (selectedObject) {
       case 'rectangle':
         this.drawTools.isTextChosen = false;
@@ -140,6 +147,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public resetDrawToolChoice() {
+    document.documentElement.style.cursor = "default";
+
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
