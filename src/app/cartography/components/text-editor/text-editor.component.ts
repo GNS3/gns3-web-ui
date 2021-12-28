@@ -87,6 +87,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         `scale(${this.mapScaleService.getScale()})`
       );
       this.temporaryTextElement.nativeElement.focus();
+      document.documentElement.style.cursor = "default";
 
       let textListener = () => {
         this.drawingsEventSource.textAdded.emit(

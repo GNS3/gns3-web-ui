@@ -78,7 +78,28 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       this.computes = computes;
     });
 
-    this.style = { top: '60px', right: '0px', width: '320px', height: '400px' };
+    this.revertPosition();
+  }
+
+  revertPosition(){
+    let leftPosition = localStorage.getItem('leftPosition');
+    let rightPosition = localStorage.getItem('rightPosition');
+    let topPosition = localStorage.getItem('topPosition');
+    let widthOfWidget = localStorage.getItem('widthOfWidget');
+    let heightOfWidget = localStorage.getItem('heightOfWidget');
+
+    if (!topPosition) {
+      this.style = { top: '60px', right: '0px', width: '320px', height: '400px' };
+    } else {
+      this.style = {
+        position: 'fixed',
+        left: `${+leftPosition}px`,
+        right: `${+rightPosition}px`,
+        top: `${+topPosition}px`,
+        width: `${+widthOfWidget}px`,
+        height: `${+heightOfWidget}px`,
+      };
+    }
   }
 
   toggleDragging(value: boolean) {
@@ -101,6 +122,12 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         width: `${width}px`,
         height: `${height}px`,
       };
+
+      localStorage.setItem('leftPosition', left.toString());
+      localStorage.setItem('topPosition', top.toString());
+      localStorage.setItem('widthOfWidget', width.toString());
+      localStorage.setItem('heightOfWidget', height.toString());
+
     } else {
       let right: number = Number(this.style['right'].split('px')[0]) - x;
       this.style = {
@@ -110,6 +137,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         width: `${width}px`,
         height: `${height}px`,
       };
+
+      localStorage.setItem('rightPosition', right.toString());
+      localStorage.setItem('topPosition', top.toString());
+      localStorage.setItem('widthOfWidget', width.toString());
+      localStorage.setItem('heightOfWidget', height.toString());
     }
   }
 
@@ -140,6 +172,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
   toggleTopologyVisibility(value: boolean) {
     this.isTopologyVisible = value;
+    this.revertPosition();
   }
 
   compareAsc(first: Node, second: Node) {

@@ -47,10 +47,11 @@
 						"scripts": [],
 						"vendorChunk": true,
 						"extractLicenses": false,
-						"buildOptimizer": false,
+						"buildOptimizer": true,
 						"sourceMap": true,
 						"optimization": false,
-						"namedChunks": true
+						"namedChunks": true,
+						"aot": true
 					},
 					"configurations": {
 						"production": {
@@ -176,6 +177,7 @@
 							"src/styles.scss",
 							"src/theme.scss"
 						],
+						"sourceMap": false,
 						"assets": [
 							"src/assets",
 							"src/favicon.ico"
