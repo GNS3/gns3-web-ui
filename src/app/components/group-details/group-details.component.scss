@@ -1,0 +1,46 @@
+.main {
+  display: flex;
+  justify-content: space-between;
+}
+
+.details {
+  width: 30vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.members {
+  width: 40vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.members > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.members .title {
+  font-size: 2em;
+  text-decoration: underline;
+}
+
+.details > div {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+}
+
+.button-div {
+  float: right;
+}

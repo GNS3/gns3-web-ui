@@ -1,0 +1,40 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Groups {{group.name}} details</h1>
+    </div>
+    <div class="main">
+      <div class="details">
+        <div>
+          <mat-form-field class="input-field">
+            <mat-label>Group name:</mat-label>
+            <input matInput type="text" [ngModel]="group.name">
+          </mat-form-field>
+        </div>
+        <div>Creation date:   {{group.created_at}}</div>
+        <div>Last update Date:   {{group.updated_at}}</div>
+        <div>UUID:   {{group.user_group_id}}</div>
+        <div>
+          <mat-checkbox [checked]="group.is_builtin" disabled>Is build in</mat-checkbox>
+        </div>
+        <div mat-dialog-actions class="button-div">
+          <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
+                  [disabled]="!editGroupForm.valid">
+            Update Group
+          </button>
+        </div>
+      </div>
+      <div class="members">
+        <div>
+          <div class="title"> Members: </div>
+          <mat-icon (click)="openAddUserDialog()" class="clickable">person_add</mat-icon>
+        </div>
+        <div *ngFor="let user of members">
+          <a href="/server/{{server.id}}/user_management/{{user.user_id}}"><div>{{user.username}}</div></a>
+          <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

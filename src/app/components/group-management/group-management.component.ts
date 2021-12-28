@@ -10,21 +10,21 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
 import {ServerService} from "../../services/server.service";
 import {ToasterService} from "../../services/toaster.service";
 import {GroupService} from "../../services/group.service";
 import {Server} from "../../models/server";
 import {Group} from "../../models/groups/group";
-import {Sort} from "@angular/material/sort";
+import {MatSort, Sort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
 import {AddGroupDialogComponent} from "@components/group-management/add-group-dialog/add-group-dialog.component";
 import {DeleteGroupDialogComponent} from "@components/group-management/delete-group-dialog/delete-group-dialog.component";
 import {SelectionModel} from "@angular/cdk/collections";
-import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
-import {User} from "@models/users/user";
 import {forkJoin} from "rxjs";
+import {MatPaginator} from "@angular/material/paginator";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: 'app-group-management',
@@ -34,10 +34,13 @@ import {forkJoin} from "rxjs";
 export class GroupManagementComponent implements OnInit {
   server: Server;
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+
   public displayedColumns = ['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'delete'];
   selection = new SelectionModel<Group>(true, []);
   groups: Group[];
-  sortedGroups: Group[];
+  dataSource = new MatTableDataSource<Group>();
   searchText: string;
 
   constructor(
@@ -49,44 +52,28 @@ export class GroupManagementComponent implements OnInit {
   ) {
   }
 
+
   ngOnInit(): void {
     const serverId = this.route.snapshot.paramMap.get('server_id');
     this.serverService.get(+serverId).then((server: Server) => {
       this.server = server;
-      this.groupService.getGroups(server).subscribe((groups: Group[]) => {
-        this.groups = groups;
-        this.sortedGroups = groups;
-      });
+      this.refresh();
     });
   }
 
-  sort(sort: Sort) {
-    const data = this.groups.slice();
-    if (!sort.active || sort.direction === '') {
-      this.sortedGroups = data;
-      return;
-    }
-
-    this.sortedGroups = data.sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'name':
-          return compare(a.name.toLowerCase(), b.name.toLowerCase(), isAsc);
-        case 'created_at':
-          return compare(a.created_at, b.created_at, isAsc);
-        case 'updated_at':
-          return compare(a.updated_at, b.updated_at, isAsc);
-        case 'is_builtin':
-          return compare(a.is_builtin.toString(), b.is_builtin.toString(), isAsc);
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'username':
+        case 'full_name':
+        case 'email':
+          return item[property] ? item[property].toLowerCase() : '';
         default:
-          return 0;
+          return item[property];
       }
-    });
-
-    function compare(a: number | string, b: number | string, isAsc: boolean) {
-
-      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-    }
+    };
   }
 
   isAllSelected() {
@@ -120,7 +107,7 @@ export class GroupManagementComponent implements OnInit {
   refresh() {
     this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
       this.groups = groups;
-      this.sortedGroups = groups;
+      this.dataSource.data = groups;
       this.selection.clear();
     });
   }

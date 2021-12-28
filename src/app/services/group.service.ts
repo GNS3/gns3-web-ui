@@ -42,4 +42,20 @@ export class GroupService {
   delete(server: Server, user_group_id: string) {
     return this.httpServer.delete(server, `/groups/${user_group_id}`);
   }
+
+  get(server: Server, user_group_id: string) {
+    return this.httpServer.get(server, `/groups/${user_group_id}`);
+  }
+
+  addMemberToGroup(server: Server, group: Group, user: User) {
+    return this.httpServer.put(server, `/groups/${group.user_group_id}/members/${user.user_id}`, {});
+  }
+
+  removeUser(server: Server, group: Group, user: User) {
+    return this.httpServer.delete(server, `/groups/${group.user_group_id}/members/${user.user_id}`);
+  }
+
+  update(server: Server, group: Group) {
+    return this.httpServer.put(server, `/groups/${group.user_group_id}`, {name: group.name});
+  }
 }

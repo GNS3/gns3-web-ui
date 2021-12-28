@@ -57,7 +57,9 @@ import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import {GroupManagementComponent} from "./components/group-management/group-management.component";
+import {GroupDetailsComponent} from "@components/group-details/group-details.component";
 import {UserDetailComponent} from "@components/user-management/user-detail/user-detail.component";
+import {GroupDetailsResolver} from "@resolvers/group-details.resolver";
 
 const routes: Routes = [
   {
@@ -205,6 +207,8 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/group_management', component: GroupManagementComponent},
+      { path: 'server/:server_id/group_management/:user_group_id', component: GroupDetailsComponent, resolve: {group: GroupDetailsResolver}},
+
     ],
   },
   {

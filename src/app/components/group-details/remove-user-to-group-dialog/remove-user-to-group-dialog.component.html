@@ -1,0 +1,9 @@
+<div class="header">
+  <div>Confirm ?</div>
+  <div>Removing user: {{data.user.username}}</div>
+</div>
+<div class="button">
+  <button mat-button mat-raised-button color="primary" (click)="onCancel()">No, cancel</button>
+  <button mat-button mat-raised-button color="warn"(click)="onConfirm()">Yes, remove</button>
+</div>
+

@@ -280,7 +280,10 @@ import { GroupFilterPipe } from './filters/group-filter.pipe';
 import { AddGroupDialogComponent } from './components/group-management/add-group-dialog/add-group-dialog.component';
 import { DeleteGroupDialogComponent } from './components/group-management/delete-group-dialog/delete-group-dialog.component';
 import { DeleteUserDialogComponent } from './components/user-management/delete-user-dialog/delete-user-dialog.component';
+import { GroupDetailsComponent } from './components/group-details/group-details.component';
 import { UserDetailComponent } from './components/user-management/user-detail/user-detail.component';
+import { AddUserToGroupDialogComponent } from './components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
+import { RemoveUserToGroupDialogComponent } from './components/group-details/remove-user-to-group-dialog/remove-user-to-group-dialog.component';
 
 @NgModule({
   declarations: [
@@ -476,7 +479,10 @@ import { UserDetailComponent } from './components/user-management/user-detail/us
     UserFilterPipe,
     DeleteGroupDialogComponent,
     DeleteUserDialogComponent,
-    UserDetailComponent
+    GroupDetailsComponent,
+    UserDetailComponent,
+    AddUserToGroupDialogComponent,
+    RemoveUserToGroupDialogComponent
   ],
   imports: [
     BrowserModule,

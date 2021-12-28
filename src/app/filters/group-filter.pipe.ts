@@ -12,24 +12,22 @@
 */
 import {Pipe, PipeTransform} from '@angular/core';
 import {Group} from "../models/groups/group";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Pipe({
   name: 'groupFilter'
 })
 export class GroupFilterPipe implements PipeTransform {
 
-  transform(groups: Group[], searchText: string): Group[] {
-    if (!groups) {
-      return [];
-    }
+  transform(groups: MatTableDataSource<Group>, searchText: string): MatTableDataSource<Group> {
+
     if (!searchText) {
       return groups;
     }
 
-    searchText = searchText.toLowerCase();
-    return groups.filter((group: Group) => {
-      return group.name.toLowerCase().includes(searchText);
-    });
+    searchText = searchText.trim().toLowerCase();
+    groups.filter = searchText;
+    return groups;
   }
 
 }
