@@ -130,6 +130,7 @@ import { StartCaptureActionComponent } from './components/project-map/context-me
 import { StartNodeActionComponent } from './components/project-map/context-menu/actions/start-node-action/start-node-action.component';
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
 import { IsolateNodeActionComponent } from './components/project-map/context-menu/actions/isolate-node-action/isolate-node-action.component';
+import { UnisolateNodeActionComponent } from './components/project-map/context-menu/actions/unisolate-node-action/unisolate-node-action.component';
 import { StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
@@ -292,6 +293,7 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
     ContextConsoleMenuComponent,
     StartNodeActionComponent,
     IsolateNodeActionComponent,
+    UnisolateNodeActionComponent,
     StopNodeActionComponent,
     TemplateComponent,
     TemplateListDialogComponent,

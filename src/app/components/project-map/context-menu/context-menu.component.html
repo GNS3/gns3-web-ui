@@ -32,9 +32,8 @@
       [server]="server"
       [node]="nodes[0]"
     ></app-open-file-explorer-action>
-
     <app-isolate-node-action *ngIf="nodes.length === 1" [server]="server" [node]="nodes[0]"></app-isolate-node-action>
-
+    <app-unisolate-node-action *ngIf="nodes.length === 1" [server]="server" [node]="nodes[0]"></app-unisolate-node-action>
     <app-change-hostname-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
       [server]="server"
