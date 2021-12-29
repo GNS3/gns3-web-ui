@@ -9,7 +9,7 @@ export class NotificationService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/v3/notifications/ws`;
+    return `${protocol}://${server.host}:${server.port}/v3/notifications/ws?token=${server.authToken}`;
   }
 
   
@@ -19,6 +19,6 @@ export class NotificationService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/v3/projects/${project_id}/notifications/ws`;
+    return `${protocol}://${server.host}:${server.port}/v3/projects/${project_id}/notifications/ws?token=${server.authToken}`;
   }
 }
