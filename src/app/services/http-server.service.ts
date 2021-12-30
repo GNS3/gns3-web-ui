@@ -88,6 +88,10 @@ export class ServerErrorHandler {
       err = ServerError.fromError('Server is unreachable', error);
     }
 
+    if (error.status === 401) {
+      window.location.reload();
+    }
+
     return throwError(err);
   }
 }
@@ -223,7 +227,7 @@ export class HttpServer {
       options.headers = {};
     }
 
-    if (server.authToken) {
+    if (server.authToken && !server.tokenExpired) {
       options.headers['Authorization'] = `Bearer ${server.authToken}`;
     }
 

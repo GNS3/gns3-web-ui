@@ -72,6 +72,8 @@ export class LoginComponent implements OnInit {
         this.loginService.login(this.server, username, password).subscribe(async (response: AuthResponse) => {
             let server = this.server;
             server.authToken = response.access_token;
+            server.username = username;
+            server.password = password;
             await this.serverService.update(server);
 
             if (this.returnUrl.length <= 1) {
