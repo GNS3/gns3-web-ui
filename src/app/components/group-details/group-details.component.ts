@@ -21,6 +21,7 @@ import {AddUserToGroupDialogComponent} from "@components/group-details/add-user-
 import {RemoveUserToGroupDialogComponent} from "@components/group-details/remove-user-to-group-dialog/remove-user-to-group-dialog.component";
 import {GroupService} from "@services/group.service";
 import {ToasterService} from "@services/toaster.service";
+import {PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-group-details',
@@ -32,6 +33,7 @@ export class GroupDetailsComponent implements OnInit {
   group: Group;
   members: User[];
   editGroupForm: FormGroup;
+  pageEvent: PageEvent | undefined;
 
   constructor(private route: ActivatedRoute,
               private dialog: MatDialog,

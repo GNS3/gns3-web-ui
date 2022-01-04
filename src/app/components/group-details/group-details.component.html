@@ -30,10 +30,11 @@
           <div class="title"> Members: </div>
           <mat-icon (click)="openAddUserDialog()" class="clickable">person_add</mat-icon>
         </div>
-        <div *ngFor="let user of members">
+        <div *ngFor="let user of members | paginator: pageEvent">
           <a href="/server/{{server.id}}/user_management/{{user.user_id}}"><div>{{user.username}}</div></a>
           <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
         </div>
+        <mat-paginator [length]="members.length" (page)="pageEvent = $event" [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
       </div>
 
     </div>
