@@ -49,7 +49,7 @@ export class GroupDetailsComponent implements OnInit {
 
       this.server = d.group.server;
       this.group = d.group.group;
-      this.members = d.group.users;
+      this.members = d.group.users.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
       this.editGroupForm.setValue({groupname: this.group.name});
     });
 
