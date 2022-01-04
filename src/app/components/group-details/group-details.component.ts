@@ -34,6 +34,7 @@ export class GroupDetailsComponent implements OnInit {
   members: User[];
   editGroupForm: FormGroup;
   pageEvent: PageEvent | undefined;
+  searchMembers: string;
 
   constructor(private route: ActivatedRoute,
               private dialog: MatDialog,

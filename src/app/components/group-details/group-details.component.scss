@@ -37,10 +37,16 @@
   margin-bottom: 20px;
 }
 
-.input-field {
-  width: 100%;
-}
-
 .button-div {
   float: right;
+}
+
+.members > .search {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  width: 100%;
+}
+mat-form-field {
+  width: 100%;
 }

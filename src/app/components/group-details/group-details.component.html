@@ -6,7 +6,7 @@
     <div class="main">
       <div class="details">
         <div>
-          <mat-form-field class="input-field">
+          <mat-form-field>
             <mat-label>Group name:</mat-label>
             <input matInput type="text" [ngModel]="group.name">
           </mat-form-field>
@@ -27,14 +27,22 @@
       <mat-divider [vertical]="true"></mat-divider>
       <div class="members">
         <div>
-          <div class="title"> Members: </div>
+          <div class="title"> Members:</div>
           <mat-icon (click)="openAddUserDialog()" class="clickable">person_add</mat-icon>
         </div>
-        <div *ngFor="let user of members | paginator: pageEvent">
-          <a href="/server/{{server.id}}/user_management/{{user.user_id}}"><div>{{user.username}}</div></a>
+        <div class="search">
+          <mat-form-field>
+            <input matInput placeholder="filter members" [(ngModel)]="searchMembers"/>
+          </mat-form-field>
+        </div>
+        <div *ngFor="let user of members | membersFilter: searchMembers | paginator: pageEvent">
+          <a href="/server/{{server.id}}/user_management/{{user.user_id}}">
+            <div>{{user.username}}</div>
+          </a>
           <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
         </div>
-        <mat-paginator [length]="members.length" (page)="pageEvent = $event" [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
+        <mat-paginator [length]="members.length" (page)="pageEvent = $event"
+                       [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
       </div>
 
     </div>
