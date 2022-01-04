@@ -1,6 +1,6 @@
 .main {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .details {
@@ -11,7 +11,7 @@
 }
 
 .members {
-  width: 40vw;
+  width: 30vw;
   display: flex;
   flex-direction: column;
   justify-content: stretch;
