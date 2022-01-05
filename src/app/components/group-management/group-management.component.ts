@@ -42,6 +42,7 @@ export class GroupManagementComponent implements OnInit {
   groups: Group[];
   dataSource = new MatTableDataSource<Group>();
   searchText: string;
+  isReady = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -54,7 +55,7 @@ export class GroupManagementComponent implements OnInit {
 
 
   ngOnInit(): void {
-    const serverId = this.route.snapshot.paramMap.get('server_id');
+    const serverId = this.route.parent.snapshot.paramMap.get('server_id');
     this.serverService.get(+serverId).then((server: Server) => {
       this.server = server;
       this.refresh();
@@ -106,6 +107,7 @@ export class GroupManagementComponent implements OnInit {
 
   refresh() {
     this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
+      this.isReady = true;
       this.groups = groups;
       this.dataSource.data = groups;
       this.selection.clear();

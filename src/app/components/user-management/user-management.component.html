@@ -1,8 +1,9 @@
-<div class="content">
+<div class="content" *ngIf="isReady; else loading">
   <div class="default-header">
     <div class="row">
       <h1 class="col">User Management</h1>
-      <button class="col" mat-raised-button color="primary" (click)="deleteMultiple()" class="add-button" [disabled]="selection.selected.length == 0">
+      <button class="col" mat-raised-button color="primary" (click)="deleteMultiple()" class="add-button"
+              [disabled]="selection.selected.length == 0">
         Delete Users
       </button>
       <button class="col" mat-raised-button color="primary" (click)="addUser()" class="add-button">
@@ -13,14 +14,15 @@
 
   <form>
     <mat-form-field class="full-width">
-      <input matInput placeholder="Search by username, full name or email" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+      <input matInput placeholder="Search by username, full name or email" [(ngModel)]="searchText"
+             [ngModelOptions]="{ standalone: true }"/>
     </mat-form-field>
   </form>
 
   <div class="default-content">
     <div class="mat-elevation-z8">
       <mat-table #table [dataSource]="dataSource | userFilter: searchText" matSort>
-        <ng-container matColumnDef="select" >
+        <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef class="small-col">
             <mat-checkbox (change)="$event ? masterToggle() : null"
                           [checked]="selection.hasValue() && isAllSelected()"
@@ -36,40 +38,46 @@
         </ng-container>
 
         <ng-container matColumnDef="username">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Username </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Username</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a [routerLink]="['/server', server.id, 'user_management', row.user_id]"
+            <a [routerLink]="['/server', server.id, 'management','users', row.user_id]"
                class="table-link" [matTooltip]="row.username">{{ row.username }}</a>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="full_name">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Full Name </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Full Name</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div [matTooltip]="row.full_name" matTooltipClass="custom-tooltip" class="overflow-col">{{ row.full_name }}</div>
+            <div [matTooltip]="row.full_name" matTooltipClass="custom-tooltip"
+                 class="overflow-col">{{ row.full_name }}</div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="email">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Mail </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Mail</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <div [matTooltip]="row.email" matTooltipClass="custom-tooltip" class="overflow-col">{{ row.email }}</div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="is_active">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="active-col"> Active </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="active-col"> Active</mat-header-cell>
           <mat-cell *matCellDef="let row" class="active-col">{{row.is_active}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="last_login">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Last Login </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Last Login</mat-header-cell>
           <mat-cell *matCellDef="let row" class="overflow-col">{{row.last_login}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="updated_at">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Last Update </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="overflow-col">{{row.updated_at ? row.updated_at : row.created_at}}</mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Last Update</mat-header-cell>
+          <mat-cell *matCellDef="let row"
+                    class="overflow-col">{{row.updated_at ? row.updated_at : row.created_at}}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="delete">
-          <mat-header-cell *matHeaderCellDef class="small-col"> </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="small-col"><button mat-button (click)="onDelete(row)"><mat-icon>delete</mat-icon></button></mat-cell>
+          <mat-header-cell *matHeaderCellDef class="small-col"></mat-header-cell>
+          <mat-cell *matCellDef="let row" class="small-col">
+            <button mat-button (click)="onDelete(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -83,3 +91,8 @@
     </div>
   </div>
 </div>
+<ng-template #loading>
+  <div>
+    <mat-spinner class="loader"></mat-spinner>
+  </div>
+</ng-template>

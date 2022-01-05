@@ -68,13 +68,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
   }
 
-  goToGroupManagement() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.router.navigate(['/server', server.id, 'group_management']);
-    });
-  }
-
   goToUserInfo() {
     let serverId = this.router.url.split("/server/")[1].split("/")[0];
     this.serverService.get(+serverId).then((server: Server) => {
@@ -137,10 +130,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.routeSubscription.unsubscribe();
   }
 
-  goToUserManagement() {
+  goToManagement() {
     let serverId = this.router.url.split("/server/")[1].split("/")[0];
     this.serverService.get(+serverId).then((server: Server) => {
-      this.router.navigate(['/server', server.id, 'user_management']);
+      this.router.navigate(['/server', server.id, 'management', 'users']);
     });
   }
 }

@@ -286,6 +286,7 @@ import { AddUserToGroupDialogComponent } from './components/group-details/add-us
 import { RemoveUserToGroupDialogComponent } from './components/group-details/remove-user-to-group-dialog/remove-user-to-group-dialog.component';
 import { PaginatorPipe } from './components/group-details/paginator.pipe';
 import { MembersFilterPipe } from './components/group-details/members-filter.pipe';
+import { ManagementComponent } from './components/management/management.component';
 
 @NgModule({
   declarations: [
@@ -486,7 +487,8 @@ import { MembersFilterPipe } from './components/group-details/members-filter.pip
     AddUserToGroupDialogComponent,
     RemoveUserToGroupDialogComponent,
     PaginatorPipe,
-    MembersFilterPipe
+    MembersFilterPipe,
+    ManagementComponent
   ],
   imports: [
     BrowserModule,

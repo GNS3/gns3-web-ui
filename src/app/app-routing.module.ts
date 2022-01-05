@@ -60,6 +60,7 @@ import {GroupManagementComponent} from "./components/group-management/group-mana
 import {GroupDetailsComponent} from "@components/group-details/group-details.component";
 import {UserDetailComponent} from "@components/user-management/user-detail/user-detail.component";
 import {GroupDetailsResolver} from "@resolvers/group-details.resolver";
+import {ManagementComponent} from "@components/management/management.component";
 
 const routes: Routes = [
   {
@@ -81,13 +82,7 @@ const routes: Routes = [
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       {
-        path: 'server/:server_id/user_management',
-        component: UserManagementComponent,
-        canActivate: [LoginGuard],
-        resolve: { server: ServerResolve },
-      },
-      {
-        path: 'server/:server_id/user_management/:user_id',
+        path: 'server/:server_id/management/users/:user_id',
         component: UserDetailComponent,
         canActivate: [LoginGuard],
         resolve: { server: ServerResolve },
@@ -206,8 +201,20 @@ const routes: Routes = [
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent, canActivate: [LoginGuard] },
-      { path: 'server/:server_id/group_management', component: GroupManagementComponent},
-      { path: 'server/:server_id/group_management/:user_group_id', component: GroupDetailsComponent, resolve: {group: GroupDetailsResolver}},
+      {
+        path: 'server/:server_id/management',
+        component: ManagementComponent,
+      children: [
+        {
+          path: 'users',
+          component: UserManagementComponent
+        },
+        {
+          path: 'groups',
+          component: GroupManagementComponent
+        }
+      ]},
+      { path: 'server/:server_id/management/groups/:user_group_id', component: GroupDetailsComponent, resolve: {group: GroupDetailsResolver}},
 
     ],
   },

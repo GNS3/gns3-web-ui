@@ -24,6 +24,7 @@ import {DeleteUserDialogComponent} from "@components/user-management/delete-user
 import {ToasterService} from "@services/toaster.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
+import {ServerService} from "@services/server.service";
 
 @Component({
   selector: 'app-user-management',
@@ -35,24 +36,27 @@ export class UserManagementComponent implements OnInit {
   dataSource = new MatTableDataSource<User>();
   displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
   selection = new SelectionModel<User>(true, []);
-  searchText: string = '';
+  searchText = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  isReady = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private progressService: ProgressService,
+    private serverService: ServerService,
     public dialog: MatDialog,
     private toasterService: ToasterService) { }
 
   ngOnInit() {
-    this.server = this.route.snapshot.data['server'];
-    if (!this.server) this.router.navigate(['/servers']);
-
-    this.refresh();
+    const serverId = this.route.parent.snapshot.paramMap.get('server_id');
+    this.serverService.get(+serverId).then((server: Server) => {
+      this.server = server;
+      this.refresh();
+    });
   }
 
   ngAfterViewInit() {
@@ -67,12 +71,13 @@ export class UserManagementComponent implements OnInit {
         default:
           return item[property];
       }
-    }
+    };
   }
 
   refresh() {
     this.userService.list(this.server).subscribe(
       (users: User[]) => {
+        this.isReady = true;
         this.dataSource.data = users;
       },
       (error) => {
