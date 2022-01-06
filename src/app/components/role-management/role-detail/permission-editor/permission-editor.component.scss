@@ -1,0 +1,47 @@
+.editor {
+  display: flex;
+  justify-content: stretch;
+}
+.column {
+  width: 50vw;
+}
+
+.header {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 20px;
+}
+
+.header > div > button {
+  margin-right: 30px;
+}
+
+.header > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+}
+
+.title {
+  font-size: 20px;
+  margin-left: 20px;
+}
+.box {
+  width: 50px;
+  height: 25px;
+  border: 1px solid;
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
+.allow {
+  background-color: rgba(5, 76, 5, 0.38);
+}
+
+.deny {
+  background-color: rgba(130, 8, 8, 0.36);
+}

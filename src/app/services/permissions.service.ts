@@ -13,7 +13,7 @@
 import { Injectable } from '@angular/core';
 import {HttpServer} from "./http-server.service";
 import {Server} from "../models/server";
-import {Permission} from "../models/permission";
+import {Permission} from "../models/api/permission";
 import {Observable} from "rxjs/Rx";
 
 @Injectable({

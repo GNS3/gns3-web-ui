@@ -23,7 +23,7 @@ import {ServerService} from "@services/server.service";
 export class ManagementComponent implements OnInit {
 
   server: Server;
-  links = ['users', 'groups'];
+  links = ['users', 'groups', 'roles'];
   activeLink: string = this.links[0];
 
   constructor(

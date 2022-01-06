@@ -25,11 +25,11 @@ export enum PermissionActions {
 }
 
 export interface Permission {
-  methods: Methods[],
-  path: string,
-  action: PermissionActions,
-  description: string,
-  created_at: string,
-  updated_at: string,
-  permission_id: string
+  methods: Methods[];
+  path: string;
+  action: PermissionActions;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  permission_id: string;
 }

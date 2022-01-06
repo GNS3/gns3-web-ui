@@ -1,0 +1,62 @@
+<div class="header">
+  <div>
+    <div>
+      <a
+        mat-icon-button
+        matTooltip="Back to role detail"
+        matTooltipClass="custom-tooltip"
+        [routerLink]="['/server', server.id, 'management', 'roles', role.role_id]">
+        <mat-icon aria-label="Back to role detail">keyboard_arrow_left</mat-icon>
+      </a>
+    </div>
+    <div>
+      Edit {{role.name}} role permissions
+    </div>
+  </div>
+  <div>
+    <div>
+      Allow:
+    </div>
+    <div class="box allow"></div>
+    <div>
+      Deny:
+    </div>
+    <div class="box deny"></div>
+  </div>
+  <div>
+    <button
+      mat-button
+      mat-raised-button
+      (click)="reset()">Reset
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      (click)="update()"
+      color="primary">Update
+    </button>
+  </div>
+</div>
+<div class="editor">
+  <div class="column">
+    <div class="title">Owned</div>
+    <app-editable-permission
+      [side]="'LEFT'"
+      [permission]="permission"
+      (click)="remove(permission)"
+      *ngFor="let permission of owned">
+
+    </app-editable-permission>
+  </div>
+  <mat-divider [vertical]="true"></mat-divider>
+  <div class="column">
+    <div class="title">available</div>
+    <app-editable-permission
+      [side]="'RIGHT'"
+      [permission]="permission"
+      (click)="add(permission)"
+      *ngFor="let permission of available">
+
+    </app-editable-permission>
+  </div>
+</div>

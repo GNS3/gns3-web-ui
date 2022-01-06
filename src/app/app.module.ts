@@ -287,6 +287,14 @@ import { RemoveUserToGroupDialogComponent } from './components/group-details/rem
 import { PaginatorPipe } from './components/group-details/paginator.pipe';
 import { MembersFilterPipe } from './components/group-details/members-filter.pipe';
 import { ManagementComponent } from './components/management/management.component';
+import { RoleManagementComponent } from './components/role-management/role-management.component';
+import { RoleFilterPipe } from './components/role-management/role-filter.pipe';
+import { AddRoleDialogComponent } from './components/role-management/add-role-dialog/add-role-dialog.component';
+import { DeleteRoleDialogComponent } from './components/role-management/delete-role-dialog/delete-role-dialog.component';
+import { RoleDetailComponent } from './components/role-management/role-detail/role-detail.component';
+import { PermissionEditorComponent } from './components/role-management/role-detail/permission-editor/permission-editor.component';
+import { EditablePermissionComponent } from './components/role-management/role-detail/permission-editor/editable-permission/editable-permission.component';
+import { PermissionEditorValidateDialogComponent } from './components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component';
 
 @NgModule({
   declarations: [
@@ -488,7 +496,15 @@ import { ManagementComponent } from './components/management/management.componen
     RemoveUserToGroupDialogComponent,
     PaginatorPipe,
     MembersFilterPipe,
-    ManagementComponent
+    ManagementComponent,
+    RoleManagementComponent,
+    RoleFilterPipe,
+    AddRoleDialogComponent,
+    DeleteRoleDialogComponent,
+    RoleDetailComponent,
+    PermissionEditorComponent,
+    EditablePermissionComponent,
+    PermissionEditorValidateDialogComponent,
   ],
   imports: [
     BrowserModule,

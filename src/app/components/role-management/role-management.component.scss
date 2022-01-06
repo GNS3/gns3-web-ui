@@ -25,9 +25,17 @@
   padding-right: 5px;
 }
 
+.permission {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.permission > div {
+  margin-right: 20px;
+  font-size: 10px;
+}
 .custom-tooltip {
   font-size:100px;
-  white-space: pre-line;
 }
 
 .loader {
@@ -39,4 +47,10 @@
   right: 0;
   top: 0;
   width: 175px;
+}
+
+.permissions-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 }
