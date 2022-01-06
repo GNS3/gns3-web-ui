@@ -23,7 +23,9 @@
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
-      <button mat-menu-item (click)="goToManagement()">
+      <button mat-menu-item
+              [disabled]="!serverId"
+              [routerLink]="['server', serverId, 'management', 'users']">
         <mat-icon>groups</mat-icon>
         <span>Management</span>
       </button>
@@ -35,15 +37,18 @@
         <mat-icon>help</mat-icon>
         <span>Help</span>
       </button>
-      <button mat-menu-item (click)="goToUserInfo()">
+      <button
+        [disabled]="!serverId"
+        [routerLink]="['/server', serverId, 'loggeduser']"
+        mat-menu-item>
         <mat-icon>person</mat-icon>
         <span>User info</span>
       </button>
-      <button mat-menu-item (click)="goToDocumentation()">
+      <button [disabled]="!serverId" mat-menu-item (click)="goToDocumentation()">
         <mat-icon>person</mat-icon>
         <span>API documentation</span>
       </button>
-      <button mat-menu-item (click)="logout()">
+      <button mat-menu-item [disabled]="!serverId" (click)="logout()">
         <mat-icon>highlight_off</mat-icon>
         <span>Logout</span>
       </button>

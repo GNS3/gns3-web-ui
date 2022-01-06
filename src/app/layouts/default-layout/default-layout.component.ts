@@ -1,15 +1,15 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { NavigationEnd } from '@angular/router';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../services/server.service';
-import { ElectronService } from 'ngx-electron';
-import { Subscription } from 'rxjs';
-import { ProgressService } from '../../common/progress/progress.service';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ServerManagementService } from '../../services/server-management.service';
-import { ToasterService } from '../../services/toaster.service';
-import { version } from './../../version';
-import { Server } from '../../models/server';
+import {Component, HostListener, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {NavigationEnd} from '@angular/router';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ServerService} from '../../services/server.service';
+import {ElectronService} from 'ngx-electron';
+import {Subscription} from 'rxjs';
+import {ProgressService} from '../../common/progress/progress.service';
+import {RecentlyOpenedProjectService} from '../../services/recentlyOpenedProject.service';
+import {ServerManagementService} from '../../services/server-management.service';
+import {ToasterService} from '../../services/toaster.service';
+import {version} from './../../version';
+import {Server} from '../../models/server';
 
 @Component({
   selector: 'app-default-layout',
@@ -29,6 +29,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   recentlyOpenedServerId: string;
   recentlyOpenedProjectId: string;
   serverIdProjectList: string;
+  serverId: string | undefined | null;
 
   constructor(
     private electronService: ElectronService,
@@ -37,8 +38,15 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     private router: Router,
+    private route: ActivatedRoute,
     private serverService: ServerService
-  ) {}
+  ) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof NavigationEnd) {
+        this.serverId = this.route.children[0].snapshot.paramMap.get("server_id");
+      }
+    });
+  }
 
   ngOnInit() {
     this.checkIfUserIsLoginPage();
@@ -68,16 +76,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
   }
 
-  goToUserInfo() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.router.navigate(['/server', server.id, 'loggeduser']);
-    });
-  }
-
   goToDocumentation() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
+    this.serverService.get(+this.serverId).then((server: Server) => {
       (window as any).open(`http://${server.host}:${server.port}/docs`);
     });
   }
@@ -91,8 +91,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
+    this.serverService.get(+this.serverId).then((server: Server) => {
       server.authToken = null;
       this.serverService.update(server).then(val => this.router.navigate(['/server', server.id, 'login']));
     });
@@ -128,12 +127,5 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
-  }
-
-  goToManagement() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.router.navigate(['/server', server.id, 'management', 'users']);
-    });
   }
 }
