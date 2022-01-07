@@ -12,28 +12,26 @@
 */
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Role} from "@models/api/role";
+import {Permission} from "@models/api/permission";
 
 @Component({
-  selector: 'app-delete-role-dialog',
-  templateUrl: './delete-role-dialog.component.html',
-  styleUrls: ['./delete-role-dialog.component.scss']
+  selector: 'app-delete-permission-dialog',
+  templateUrl: './delete-permission-dialog.component.html',
+  styleUrls: ['./delete-permission-dialog.component.scss']
 })
-export class DeleteRoleDialogComponent implements OnInit {
+export class DeletePermissionDialogComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<DeleteRoleDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { roles: Role[] }) { }
+  constructor(private dialog: MatDialogRef<DeletePermissionDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: Permission) { }
 
   ngOnInit(): void {
   }
 
-  onCancel() {
-    this.dialogRef.close();
+  cancel() {
+    this.dialog.close(false);
   }
 
-  onDelete() {
-    this.dialogRef.close(true);
+  confirm() {
+    this.dialog.close(true);
   }
-
-
 }

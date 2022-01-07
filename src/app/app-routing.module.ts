@@ -66,6 +66,7 @@ import {RoleDetailComponent} from "@components/role-management/role-detail/role-
 import {RoleDetailResolver} from "@resolvers/role-detail.resolver";
 import {PermissionEditorComponent} from "@components/role-management/role-detail/permission-editor/permission-editor.component";
 import {PermissionResolver} from "@resolvers/permission.resolver";
+import {PermissionsManagementComponent} from "@components/permissions-management/permissions-management.component";
 import {GroupResolver} from "@resolvers/group.resolver";
 import {GroupRoleResolver} from "@resolvers/group-role.resolver";
 
@@ -239,6 +240,9 @@ const routes: Routes = [
           {
             path: 'roles',
             component: RoleManagementComponent
+          },
+          {path: 'permissions',
+          component: PermissionsManagementComponent
           }
         ]
       },
@@ -269,6 +273,12 @@ const routes: Routes = [
           permissions: PermissionResolver
         }
       },
+      {
+        path: 'server/:server_id/permission_management',
+        component: PermissionsManagementComponent,
+        canActivate: [LoginGuard],
+        resolve: { server: ServerResolve },
+      }
     ],
   },
   {

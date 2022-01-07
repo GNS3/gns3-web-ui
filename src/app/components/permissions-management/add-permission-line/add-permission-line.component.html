@@ -1,0 +1,19 @@
+<mat-form-field appearance="fill">
+  <mat-label>Type</mat-label>
+  <mat-select [(ngModel)]="selectedType" (ngModelChange)="changeType($event)">
+    <mat-option *ngFor="let type of objectTypes" [value]="type">{{type}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field appearance="fill">
+  <mat-select>
+    <mat-option *ngFor="let elt of elements" [value]="elt">{{elt.name ? elt.name : elt.filename}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<button mat-button matTooltip="Save Changes" (click)="onSave()" color="primary">
+  <mat-icon>check_circle</mat-icon>
+</button>
+<button mat-button matTooltip="Cancel Changes" color="warn" (click)="onCancel()">
+  <mat-icon>cancel</mat-icon>
+</button>

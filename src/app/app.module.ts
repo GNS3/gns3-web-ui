@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* tslint:disable:max-line-length */
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -287,6 +288,7 @@ import { RemoveToGroupDialogComponent } from '@components/group-details/remove-t
 import { PaginatorPipe } from './components/group-details/paginator.pipe';
 import { MembersFilterPipe } from './components/group-details/members-filter.pipe';
 import { ManagementComponent } from './components/management/management.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
 import { RoleManagementComponent } from './components/role-management/role-management.component';
 import { RoleFilterPipe } from './components/role-management/role-filter.pipe';
 import { AddRoleDialogComponent } from './components/role-management/add-role-dialog/add-role-dialog.component';
@@ -295,7 +297,15 @@ import { RoleDetailComponent } from './components/role-management/role-detail/ro
 import { PermissionEditorComponent } from './components/role-management/role-detail/permission-editor/permission-editor.component';
 import { EditablePermissionComponent } from './components/role-management/role-detail/permission-editor/editable-permission/editable-permission.component';
 import { PermissionEditorValidateDialogComponent } from './components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component';
+import { PermissionsManagementComponent } from './components/permissions-management/permissions-management.component';
+import { PermissionEditLineComponent } from '@components/permissions-management/permission-edit-line/permission-edit-line.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { AddPermissionLineComponent } from './components/permissions-management/add-permission-line/add-permission-line.component';
+import { MethodButtonComponent } from './components/permissions-management/method-button/method-button.component';
+import { ActionButtonComponent } from './components/permissions-management/action-button/action-button.component';
+import { DeletePermissionDialogComponent } from './components/permissions-management/delete-permission-dialog/delete-permission-dialog.component';
 import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 @NgModule({
   declarations: [
@@ -506,7 +516,14 @@ import { AddRoleToGroupComponent } from './components/group-details/add-role-to-
     PermissionEditorComponent,
     EditablePermissionComponent,
     PermissionEditorValidateDialogComponent,
+    RemoveToGroupDialogComponent,
+    PermissionsManagementComponent,
     AddRoleToGroupComponent,
+    PermissionEditLineComponent,
+    AddPermissionLineComponent,
+    MethodButtonComponent,
+    ActionButtonComponent,
+    DeletePermissionDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -524,9 +541,12 @@ import { AddRoleToGroupComponent } from './components/group-details/add-role-to-
     DragAndDropModule,
     DragDropModule,
     NgxChildProcessModule,
+    MatFormFieldModule,
     MATERIAL_IMPORTS,
     NgCircleProgressModule.forRoot(),
     OverlayModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
   ],
   providers: [
     SettingsService,
