@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RemoveUserToGroupDialogComponent } from './remove-user-to-group-dialog.component';
+import { RemoveToGroupDialogComponent } from './remove-to-group-dialog.component';
 
 describe('RemoveUserToGroupDialogComponent', () => {
-  let component: RemoveUserToGroupDialogComponent;
-  let fixture: ComponentFixture<RemoveUserToGroupDialogComponent>;
+  let component: RemoveToGroupDialogComponent;
+  let fixture: ComponentFixture<RemoveToGroupDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RemoveUserToGroupDialogComponent ]
+      declarations: [ RemoveToGroupDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RemoveUserToGroupDialogComponent);
+    fixture = TestBed.createComponent(RemoveToGroupDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

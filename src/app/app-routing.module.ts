@@ -59,13 +59,15 @@ import {LoggedUserComponent} from './components/users/logged-user/logged-user.co
 import {GroupManagementComponent} from "./components/group-management/group-management.component";
 import {GroupDetailsComponent} from "@components/group-details/group-details.component";
 import {UserDetailComponent} from "@components/user-management/user-detail/user-detail.component";
-import {GroupDetailsResolver} from "@resolvers/group-details.resolver";
+import {GroupMembersResolver} from "@resolvers/group-members.resolver";
 import {ManagementComponent} from "@components/management/management.component";
 import {RoleManagementComponent} from "@components/role-management/role-management.component";
 import {RoleDetailComponent} from "@components/role-management/role-detail/role-detail.component";
 import {RoleDetailResolver} from "@resolvers/role-detail.resolver";
 import {PermissionEditorComponent} from "@components/role-management/role-detail/permission-editor/permission-editor.component";
 import {PermissionResolver} from "@resolvers/permission.resolver";
+import {GroupResolver} from "@resolvers/group.resolver";
+import {GroupRoleResolver} from "@resolvers/group-role.resolver";
 
 const routes: Routes = [
   {
@@ -244,7 +246,10 @@ const routes: Routes = [
         path: 'server/:server_id/management/groups/:user_group_id',
         component: GroupDetailsComponent,
         resolve: {
-          group: GroupDetailsResolver
+          members: GroupMembersResolver,
+          server: ServerResolve,
+          group: GroupResolver,
+          roles: GroupRoleResolver
         }
       },
       {

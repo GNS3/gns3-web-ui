@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GroupDetailsResolver } from './group-details.resolver';
+import { GroupRoleResolver } from './group-role.resolver';
 
-describe('GroupDetailsResolver', () => {
-  let resolver: GroupDetailsResolver;
+describe('GroupRoleResolver', () => {
+  let resolver: GroupRoleResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    resolver = TestBed.inject(GroupDetailsResolver);
+    resolver = TestBed.inject(GroupRoleResolver);
   });
 
   it('should be created', () => {

@@ -10,18 +10,20 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
 import {Server} from "@models/server";
 import {Group} from "@models/groups/group";
 import {User} from "@models/users/user";
 import {FormControl, FormGroup} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {AddUserToGroupDialogComponent} from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
-import {RemoveUserToGroupDialogComponent} from "@components/group-details/remove-user-to-group-dialog/remove-user-to-group-dialog.component";
+import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
 import {GroupService} from "@services/group.service";
 import {ToasterService} from "@services/toaster.service";
 import {PageEvent} from "@angular/material/paginator";
+import {Role} from "@models/api/role";
+import {AddRoleToGroupComponent} from "@components/group-details/add-role-to-group/add-role-to-group.component";
 
 @Component({
   selector: 'app-group-details',
@@ -35,6 +37,7 @@ export class GroupDetailsComponent implements OnInit {
   editGroupForm: FormGroup;
   pageEvent: PageEvent | undefined;
   searchMembers: string;
+  roles: Role[];
 
   constructor(private route: ActivatedRoute,
               private dialog: MatDialog,
@@ -45,15 +48,14 @@ export class GroupDetailsComponent implements OnInit {
       groupname: new FormControl(''),
     });
 
-    this.route.data.subscribe((d: { group: { server: Server; group: Group, users: User[] } }) => {
+    this.route.data.subscribe((d: { server: Server; group: Group, members: User[], roles: Role[] }) => {
 
-      this.server = d.group.server;
-      this.group = d.group.group;
-      this.members = d.group.users.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
+      this.server = d.server;
+      this.group = d.group;
+      this.roles = d.roles;
+      this.members = d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
       this.editGroupForm.setValue({groupname: this.group.name});
     });
-
-
   }
 
   ngOnInit(): void {
@@ -70,6 +72,18 @@ export class GroupDetailsComponent implements OnInit {
       });
   }
 
+  openAddRoleDialog() {
+    this.dialog
+      .open<AddRoleToGroupComponent>(AddRoleToGroupComponent,
+        {
+          width: '700px', height: '500px',
+          data: {server: this.server, group: this.group}
+        })
+      .afterClosed()
+      .subscribe(() => {
+        this.reloadRoles();
+      });
+  }
   openAddUserDialog() {
     this.dialog
       .open<AddUserToGroupDialogComponent>(AddUserToGroupDialogComponent,
@@ -84,14 +98,12 @@ export class GroupDetailsComponent implements OnInit {
   }
 
   openRemoveUserDialog(user: User) {
-    this.dialog
-      .open<RemoveUserToGroupDialogComponent>(RemoveUserToGroupDialogComponent,
-        {width: '500px', height: '200px', data: {user}})
+    this.dialog.open<RemoveToGroupDialogComponent>(RemoveToGroupDialogComponent,
+        {width: '500px', height: '200px', data: {name: user.username}})
       .afterClosed()
-      .subscribe((userToRemove: User) => {
-        console.log(userToRemove);
-        if (userToRemove) {
-          this.groupService.removeUser(this.server, this.group, userToRemove)
+      .subscribe((confirm: boolean) => {
+        if (confirm) {
+          this.groupService.removeUser(this.server, this.group, user)
             .subscribe(() => {
                 this.toastService.success(`User ${user.username} was removed`);
                 this.reloadMembers();
@@ -104,10 +116,37 @@ export class GroupDetailsComponent implements OnInit {
       });
   }
 
+
+  openRemoveRoleDialog(role: Role) {
+    this.dialog.open<RemoveToGroupDialogComponent>(RemoveToGroupDialogComponent,
+      {width: '500px', height: '200px', data: {name: role.name}})
+      .afterClosed()
+      .subscribe((confirm: string) => {
+        if (confirm) {
+          this.groupService.removeRole(this.server, this.group, role)
+            .subscribe(() => {
+                this.toastService.success(`Role ${role.name} was removed`);
+                this.reloadRoles();
+              },
+              (error) => {
+                this.toastService.error(`Error while removing role ${role.name} from ${this.group.name}`);
+                console.log(error);
+              });
+        }
+      });
+  }
+
   reloadMembers() {
     this.groupService.getGroupMember(this.server, this.group.user_group_id)
       .subscribe((members: User[]) => {
         this.members = members;
+      });
+  }
+
+  reloadRoles() {
+    this.groupService.getGroupRole(this.server, this.group.user_group_id)
+      .subscribe((roles: Role[]) => {
+        this.roles = roles;
       });
   }
 }

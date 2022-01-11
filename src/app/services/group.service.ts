@@ -16,6 +16,7 @@ import {Server} from "../models/server";
 import {Group} from "../models/groups/group";
 import {User} from "../models/users/user";
 import {Observable} from "rxjs";
+import {Role} from "@models/api/role";
 
 @Injectable({
   providedIn: 'root'
@@ -57,5 +58,17 @@ export class GroupService {
 
   update(server: Server, group: Group) {
     return this.httpServer.put(server, `/groups/${group.user_group_id}`, {name: group.name});
+  }
+
+  getGroupRole(server: Server, groupId: string) {
+    return this.httpServer.get<Role[]>(server, `/groups/${groupId}/roles`);
+  }
+
+  removeRole(server: Server, group: Group, role: Role) {
+    return this.httpServer.delete(server, `/groups/${group.user_group_id}/roles/${role.role_id}`);
+  }
+
+  addRoleToGroup(server: Server, group: Group, role: Role) {
+    return this.httpServer.put(server, `/groups/${group.user_group_id}/roles/${role.role_id}`, {});
   }
 }

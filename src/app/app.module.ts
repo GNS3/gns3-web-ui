@@ -283,7 +283,7 @@ import { DeleteUserDialogComponent } from './components/user-management/delete-u
 import { GroupDetailsComponent } from './components/group-details/group-details.component';
 import { UserDetailComponent } from './components/user-management/user-detail/user-detail.component';
 import { AddUserToGroupDialogComponent } from './components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
-import { RemoveUserToGroupDialogComponent } from './components/group-details/remove-user-to-group-dialog/remove-user-to-group-dialog.component';
+import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
 import { PaginatorPipe } from './components/group-details/paginator.pipe';
 import { MembersFilterPipe } from './components/group-details/members-filter.pipe';
 import { ManagementComponent } from './components/management/management.component';
@@ -295,6 +295,7 @@ import { RoleDetailComponent } from './components/role-management/role-detail/ro
 import { PermissionEditorComponent } from './components/role-management/role-detail/permission-editor/permission-editor.component';
 import { EditablePermissionComponent } from './components/role-management/role-detail/permission-editor/editable-permission/editable-permission.component';
 import { PermissionEditorValidateDialogComponent } from './components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component';
+import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
 
 @NgModule({
   declarations: [
@@ -493,7 +494,7 @@ import { PermissionEditorValidateDialogComponent } from './components/role-manag
     GroupDetailsComponent,
     UserDetailComponent,
     AddUserToGroupDialogComponent,
-    RemoveUserToGroupDialogComponent,
+    RemoveToGroupDialogComponent,
     PaginatorPipe,
     MembersFilterPipe,
     ManagementComponent,
@@ -505,6 +506,7 @@ import { PermissionEditorValidateDialogComponent } from './components/role-manag
     PermissionEditorComponent,
     EditablePermissionComponent,
     PermissionEditorValidateDialogComponent,
+    AddRoleToGroupComponent,
   ],
   imports: [
     BrowserModule,
