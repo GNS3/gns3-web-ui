@@ -13,8 +13,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, ReplaySubject} from "rxjs";
-import {map} from "rxjs/operators";
+import {map, switchMap} from "rxjs/operators";
 import {Methods} from "@models/api/permission";
+import {HttpServer} from "@services/http-server.service";
+import {Server} from "@models/server";
 
 export interface IPathDict {
   methods: ('POST' | 'GET' | 'PUT' | 'DELETE' | 'HEAD' | 'PATH')[];
@@ -23,37 +25,93 @@ export interface IPathDict {
   subPaths: string[];
 }
 
+export interface IApiObject {
+  name: string;
+  path: string;
+}
+
+export interface IQueryObject {
+  id: string;
+  text: string[];
+}
+
+export interface IFormatedList {
+  id: string;
+  name?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiInformationService {
-  private data: ReplaySubject<IPathDict[]> = new ReplaySubject<IPathDict[]>(1);
 
-  constructor(private httpClient: HttpClient) {
+  private allowed = ['projects', 'images', 'templates', 'computes', 'symbols', 'notifications'];
+  private data: ReplaySubject<IPathDict[]> = new ReplaySubject<IPathDict[]>(1);
+  private objs: ReplaySubject<IApiObject[]> = new ReplaySubject<IApiObject[]>(1);
+  public readonly bracketIdRegex = new RegExp("\{(.*?)\}");
+  public readonly finalBracketIdRegex = new RegExp("\{(.*?)\}$");
+
+  constructor(private httpClient: HttpClient,
+              private httpServer: HttpServer) {
     this.loadLocalInformation();
 
     this.data.subscribe((data) => {
       localStorage.setItem('api-definition', JSON.stringify(data));
     });
 
+    this.objs.subscribe((data) => {
+      localStorage.setItem('api-definition-objs', JSON.stringify(data));
+    });
+
 
     this.httpClient
       .get(`https://apiv3.gns3.net/openapi.json`)
       .subscribe((openapi: any) => {
-        const data = this.apiModelAdapter(openapi);
+        const objs = this.apiObjectModelAdapter(openapi);
+        const data = this.apiPathModelAdapter(openapi);
         this.data.next(data);
+        this.objs.next(objs);
       });
 
   }
 
-  private apiModelAdapter(openapi: any): IPathDict[] {
+  private apiObjectModelAdapter(openapi: any): IApiObject[] {
 
+    function haveGetMethod(path: string): boolean {
+      const obj = openapi.paths[path];
+      if (obj) {
+        const methods = Object.keys(obj);
+        return methods.includes("get");
+      } else {
+        return false;
+      }
+    }
+
+    function extractId(originalPath: string): IApiObject {
+      const d = originalPath.split('/');
+
+      const name = d.pop();
+      const path = d.join('/');
+
+      return {name, path};
+    }
+
+    const keys = Object.keys(openapi.paths);
+    return keys
+      .filter((path: string) => path.match(this.finalBracketIdRegex))
+      .filter(haveGetMethod)
+      .map(extractId)
+      .filter((object) => haveGetMethod(object.path));
+  }
+
+  private apiPathModelAdapter(openapi: any): IPathDict[] {
     const keys = Object.keys(openapi.paths);
     return keys
       .map(path => {
         const subPaths = path.split('/').filter(elem => !(elem === '' || elem === 'v3'));
         return {originalPath: path, path: subPaths.join('/'), subPaths};
       })
+      .filter(d => this.allowed.includes(d.subPaths[0]))
       .map(path => {
         //FIXME
         // @ts-ignore
@@ -69,7 +127,6 @@ export class ApiInformationService {
       .pipe(
         map((data: IPathDict[]) => {
           const availableMethods = new Set<string>();
-
           data.forEach((p: IPathDict) => {
             p.methods.forEach(method => availableMethods.add(method));
           });
@@ -83,24 +140,24 @@ export class ApiInformationService {
       .asObservable()
       .pipe(
         map((data) => {
+          const splinted = path
+            .split('/')
+            .filter(elem => !(elem === '' || elem === 'v3'));
 
-          const splinted = path.split('/').filter(elem => !(elem === '' || elem === 'v3'));
           let remains = data;
           splinted.forEach((value, index) => {
             if (value === '*') {
-              return remains;
+              return;
             }
-            remains = remains.filter((val => {
-              if (!val.subPaths[index]) {
-                return false;
-              }
-              if (val.subPaths[index].includes('{')) {
-                return true;
-              }
-              return val.subPaths[index] === value;
-            }));
-          });
+            let matchUrl = remains.filter(val => val.subPaths[index]?.includes(value));
 
+            if (matchUrl.length === 0) {
+              matchUrl = remains.filter(val => val.subPaths[index]?.match(this.bracketIdRegex));
+            }
+
+            remains = matchUrl;
+
+          });
           return remains;
         })
       );
@@ -111,5 +168,63 @@ export class ApiInformationService {
     if (data) {
       this.data.next(data);
     }
+    const obj = JSON.parse(localStorage.getItem('api-definition-objs'));
+    if (obj) {
+      this.objs.next(obj);
+    }
+  }
+
+  getPathNextElement(path: string[]): Observable<string[]> {
+
+    return this.getPath(path.join('/'))
+      .pipe(map((paths: IPathDict[]) => {
+        const set = new Set<string>();
+        paths.forEach((p) => {
+          if (p.subPaths[path.length]) {
+            set.add(p.subPaths[path.length]);
+          }
+        });
+
+        return Array.from(set);
+      }));
+  }
+
+  getListByObjectId(server: Server, value: string) {
+
+    function findElement(data: IApiObject[]): IApiObject {
+      const elem = data.find(d => d.name === value);
+      if (!elem) {
+        throw new Error('entry not found');
+      }
+      return elem;
+    }
+
+    return this.objs.pipe(
+      map(findElement),
+      switchMap(elem => {
+          const url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
+          return this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${server.authToken}`}});
+        }
+      ),
+      map(response => {
+
+        if (response.length === 0) {
+          return [];
+        }
+
+        const keys = Object.keys(response[0]);
+        const idKey = keys.find(k => k.match(/_id$|filename/));
+        const nameKey = keys.find(k => k.match(/name/));
+
+        return response.map(o => {
+          return {
+            id: o[idKey],
+            name: o[nameKey]
+          };
+        });
+      }));
+
   }
 }
+
+

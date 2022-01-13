@@ -1,15 +1,13 @@
 <div class="content" *ngIf="isReady; else loading">
-  <div class="default-header">
-    <div class="row">
-      <button class="col" mat-raised-button color="primary" (click)="addPermission()" class="add-button" *ngIf="!newPermissionEdit" >
-        Add Permission
-      </button>
-    </div>
+  <div class="add">
+    <app-add-permission-line
+      [server]="server"
+      (addPermissionEvent)="refresh()"></app-add-permission-line>
   </div>
-
   <div class="permission-content default-content">
     <!--<ng-template #dynamic></ng-template>-->
-    <app-add-permission-line [server]="server" (addPermissionEvent)="updateList($event)" *ngIf="newPermissionEdit"></app-add-permission-line>
+    <app-add-permission-line [server]="server" (addPermissionEvent)="updateList($event)"
+                             *ngIf="newPermissionEdit"></app-add-permission-line>
     <div *ngFor="let permission of permissions">
       <app-permission-add-edit-line
         [permission]="permission"

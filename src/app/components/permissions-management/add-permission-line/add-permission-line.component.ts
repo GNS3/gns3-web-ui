@@ -10,11 +10,12 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Input, OnInit, Output} from '@angular/core';
-import {ProjectService} from "@services/project.service";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Server} from "@models/server";
-import {ComputeService} from "@services/compute.service";
-import EventEmitter from "events";
+import {ApiInformationService} from "@services/api-information.service";
+import {Methods, Permission, PermissionActions} from "@models/api/permission";
+import {PermissionsService} from "@services/permissions.service";
+import {ToasterService} from "@services/toaster.service";
 
 @Component({
   selector: 'app-add-permission-line',
@@ -23,51 +24,56 @@ import EventEmitter from "events";
 })
 export class AddPermissionLineComponent implements OnInit {
 
-  objectTypes = ['projects', 'images', 'templates', 'computes']
-  elements = [];
-  selectedType = 'projects';
   @Input() server: Server;
+  @Output() addPermissionEvent = new EventEmitter<void>();
+  permission: Permission = {
+    action: PermissionActions.ALLOW,
+    description: "",
+    methods: [],
+    path: "/",
+  };
+  edit = false;
 
-  @Output() addPermissionEvent = new EventEmitter();
+  constructor(public apiInformation: ApiInformationService,
+              private permissionService: PermissionsService,
+              private toasterService: ToasterService) {
 
-  constructor(private projectService: ProjectService,
-              private computeService: ComputeService) { }
+  }
 
   ngOnInit(): void {
-    this.projectService.list(this.server)
-      .subscribe(elts => {
-        this.elements = elts;
-      })
+
   }
 
-  changeType(value) {
-    console.log(value);
-    this.selectedType = value;
-    switch (this.selectedType) {
-      case 'projects':
-        this.projectService.list(this.server)
-          .subscribe(elts => {
-            this.elements = elts;
-          })
-        break;
-      case 'computes':
-        this.computeService.getComputes(this.server)
-          .subscribe(elts => {
-            this.elements = elts;
-          })
-        break;
-      default:
-        console.log("TODO");
-        this.elements = [];
 
+  updateMethod(data: { name: Methods; enable: boolean }) {
+    const set = new Set(this.permission.methods);
+    if (data.enable) {
+      set.add(data.name);
+    } else {
+      set.delete(data.name);
     }
+
+    this.permission.methods = Array.from(set);
   }
 
-  onSave() {
-    this.addPermissionEvent.emit('save');
+  reset() {
+    this.permission = {
+      action: PermissionActions.ALLOW,
+      description: "",
+      methods: [],
+      path: "/",
+    };
+
+    this.edit = false;
   }
 
-  onCancel() {
-    this.addPermissionEvent.emit('cancel');
+  save() {
+    this.permissionService.add(this.server, this.permission)
+      .subscribe(() => {
+        this.toasterService.success(`permission was created`);
+        this.reset();
+      }, (error) => {
+        this.toasterService.error(error);
+      });
   }
 }

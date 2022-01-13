@@ -29,7 +29,7 @@ export interface Permission {
   path: string;
   action: PermissionActions;
   description: string;
-  created_at: string;
-  updated_at: string;
-  permission_id: string;
+  created_at?: string;
+  updated_at?: string;
+  permission_id?: string;
 }

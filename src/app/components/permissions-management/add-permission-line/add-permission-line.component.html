@@ -1,19 +1,48 @@
-<mat-form-field appearance="fill">
-  <mat-label>Type</mat-label>
-  <mat-select [(ngModel)]="selectedType" (ngModelChange)="changeType($event)">
-    <mat-option *ngFor="let type of objectTypes" [value]="type">{{type}}</mat-option>
-  </mat-select>
-</mat-form-field>
-
-<mat-form-field appearance="fill">
-  <mat-select>
-    <mat-option *ngFor="let elt of elements" [value]="elt">{{elt.name ? elt.name : elt.filename}}</mat-option>
-  </mat-select>
-</mat-form-field>
-
-<button mat-button matTooltip="Save Changes" (click)="onSave()" color="primary">
-  <mat-icon>check_circle</mat-icon>
-</button>
-<button mat-button matTooltip="Cancel Changes" color="warn" (click)="onCancel()">
-  <mat-icon>cancel</mat-icon>
-</button>
+<div class="box-border">
+  <div *ngIf="edit; else add">
+    <div class="edit-mode">
+      <div class="information-box">
+        <div>
+          <app-path-auto-complete
+            [server]="server"
+          (update)="permission.path = $event"></app-path-auto-complete>
+        </div>
+        <div class="methods">
+          <app-action-button
+          [disabled]="false"
+          [action]="permission.action"></app-action-button>
+          <div *ngFor="let method of apiInformation.getMethods(permission.path) | async">
+            <app-method-button
+            [name]="method"
+            [disabled]="false"
+            (update)="updateMethod($event)"></app-method-button>
+          </div>
+          <div class="description">
+            <mat-form-field>
+              <input
+                [(ngModel)]="permission.description"
+                matInput
+                type="text"
+                placeholder="Description"/>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div class="button-box">
+        <button mat-button (click)="reset()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+        <button mat-button (click)="save()">
+          <mat-icon>done</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <ng-template #add>
+    <div class="not-edit">
+      <button mat-button (click)="edit = true">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </ng-template>
+</div>

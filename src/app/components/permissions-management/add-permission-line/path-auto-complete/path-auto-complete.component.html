@@ -1,0 +1,37 @@
+<div class="path">
+  <div>Path: /</div>
+  <div *ngFor="let p of path">{{p}}/</div>
+  <div class="path-edit-line">
+    <div>
+      <div *ngIf="mode === 'SELECT'">
+        <mat-select (valueChange)="valueChanged($event)" class="edit-area">
+          <mat-option *ngFor="let value of values" value="{{value}}">{{value}}</mat-option>
+        </mat-select>
+      </div>
+      <div *ngIf="mode === 'COMPLETE'">
+        <input matInput
+               autofocus
+               class="complete edit-area"
+               aria-label="find"
+               [(ngModel)]="completeField"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option [value]="'*'">*</mat-option>
+          <mat-option *ngFor="let data of completeData | filterComplete: completeField"
+                      [value]="data.id">
+            <span>{{data.name}}</span> |
+            <small>{{data.id}}</small>
+          </mat-option>
+        </mat-autocomplete>
+      </div>
+    </div>
+    <div class="command-button">
+      <mat-icon (click)="removePrevious()" *ngIf="path.length > 0">cancel</mat-icon>
+      <mat-icon (click)="getNext()" *ngIf="!this.mode">add_circle_outline</mat-icon>
+      <mat-icon
+        matTooltip="validate data"
+        (click)="validComplete()"
+        *ngIf="this.mode === 'COMPLETE'">check_circle</mat-icon>
+    </div>
+  </div>
+</div>
