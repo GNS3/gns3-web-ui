@@ -300,6 +300,8 @@ import { PermissionEditorValidateDialogComponent } from './components/role-manag
 import { PermissionsManagementComponent } from './components/permissions-management/permissions-management.component';
 import { PermissionEditLineComponent } from '@components/permissions-management/permission-edit-line/permission-edit-line.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { RolePermissionsComponent } from './components/role-management/role-detail/role-permissions/role-permissions.component';
+import { UserPermissionsComponent } from './components/user-management/user-detail/user-permissions/user-permissions.component';
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {PathAutoCompleteComponent} from './components/permissions-management/add-permission-line/path-auto-complete/path-auto-complete.component';
 import {FilterCompletePipe} from './components/permissions-management/add-permission-line/path-auto-complete/filter-complete.pipe';
@@ -528,7 +530,9 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     ActionButtonComponent,
     DeletePermissionDialogComponent,
     PathAutoCompleteComponent,
-    FilterCompletePipe
+    FilterCompletePipe,
+    RolePermissionsComponent,
+    UserPermissionsComponent
   ],
   imports: [
     BrowserModule,

@@ -8,6 +8,8 @@ import {Server} from "@models/server";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
 import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Permission} from "@models/api/permission";
+import {Role} from "@models/api/role";
 
 @Component({
   selector: 'app-user-detail',
@@ -21,6 +23,7 @@ export class UserDetailComponent implements OnInit {
   user: User;
   server: Server;
   user_id: string;
+  permissions: Permission[];
 
   constructor(public userService: UserService,
               private toasterService: ToasterService,
@@ -33,16 +36,14 @@ export class UserDetailComponent implements OnInit {
     this.server = this.route.snapshot.data['server'];
     if (!this.server) this.router.navigate(['/servers']);
 
-    this.user_id = this.route.snapshot.paramMap.get('user_id');
-    this.userService.get(this.server, this.user_id).subscribe((user: User) => {
-      console.log(user)
-      this.user = user;
-      this.userService.getGroupsByUserId(this.server, this.user.user_id).subscribe(
-        (groups: Group[]) => {
-          this.groups = groups;
-        });
+    this.route.data.subscribe((d: { server: Server; user: User, groups: Group[], permissions: Permission[]}) => {
+      this.user = d.user;
+      this.user_id = this.user.user_id;
+      this.groups = d.groups;
+      this.permissions = d.permissions;
       this.initForm();
-    })
+    });
+
   }
 
   initForm() {

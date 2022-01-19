@@ -12,9 +12,9 @@
     </div>
   </div>
   <div class="default-content">
-    <div class="user-edit">
-      <h1 mat-dialog-title>Update user</h1>
-      <div *ngIf="user">
+    <mat-tab-group>
+      <mat-tab label="Details" class="details">
+      <div class="user-edit">
         <form [formGroup]="editUserForm" class="input-field">
           <mat-form-field class="input-field">
             <input matInput type="text" formControlName="username" placeholder="Username"/>
@@ -54,6 +54,9 @@
 
 
           <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+          <div>
+            <mat-checkbox [checked]="user.is_superadmin" disabled>Is Superadmin</mat-checkbox>
+          </div>
 
           <div mat-dialog-actions class="button-div">
             <button mat-button (click)="onEditClick()" tabindex="2" mat-raised-button color="primary"
@@ -62,19 +65,40 @@
             </button>
           </div>
         </form>
+        <div>
+          <div>Creation date:   {{user.created_at}}</div>
+          <div>Last update Date:   {{user.updated_at}}</div>
+          <div>Last login: {{user.last_login}}</div>
+          <div>UUID:   {{user.user_id}}</div>
+        </div>
       </div>
 
-    </div>
+      </mat-tab>
+      <mat-tab label="Groups">
+        <div class="user-groups">
+          <ul>
+            <li *ngFor="let group of groups">
+              <a [routerLink]="['/server', server.id, 'management','groups', group.user_group_id]"
+                 class="table-link">{{ group.name }}</a>
+            </li>
+          </ul>
+        </div>
+      </mat-tab>
+      <mat-tab label="Permissions">
+        <div>
+          <button
+            mat-button
+            [routerLink]="['/server', server.id, 'management', 'users', user.user_id, 'permissions']">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+        <app-editable-permission
+          [permission]="permission"
+          *ngFor="let permission of permissions">
+        </app-editable-permission>
+      </mat-tab>
+    </mat-tab-group>
 
-    <div class="user-groups">
-      <h5>Groups</h5>
-      <ul>
-        <li *ngFor="let group of groups">
-          <a [routerLink]="['/server', server.id, 'management','groups', group.user_group_id]"
-             class="table-link">{{ group.name }}</a>
-        </li>
-      </ul>
-    </div>
   </div>
 </div>
 

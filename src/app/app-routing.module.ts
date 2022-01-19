@@ -64,11 +64,15 @@ import {ManagementComponent} from "@components/management/management.component";
 import {RoleManagementComponent} from "@components/role-management/role-management.component";
 import {RoleDetailComponent} from "@components/role-management/role-detail/role-detail.component";
 import {RoleDetailResolver} from "@resolvers/role-detail.resolver";
-import {PermissionEditorComponent} from "@components/role-management/role-detail/permission-editor/permission-editor.component";
 import {PermissionResolver} from "@resolvers/permission.resolver";
-import {PermissionsManagementComponent} from "@components/permissions-management/permissions-management.component";
 import {GroupResolver} from "@resolvers/group.resolver";
 import {GroupRoleResolver} from "@resolvers/group-role.resolver";
+import {PermissionsManagementComponent} from "@components/permissions-management/permissions-management.component";
+import {UserDetailResolver} from "@resolvers/user-detail.resolver";
+import {UserGroupsResolver} from "@resolvers/user-groups.resolver";
+import {UserPermissionsResolver} from "@resolvers/user-permissions.resolver";
+import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
+import {UserPermissionsComponent} from "@components/user-management/user-detail/user-permissions/user-permissions.component";
 
 const routes: Routes = [
   {
@@ -93,7 +97,11 @@ const routes: Routes = [
         path: 'server/:server_id/management/users/:user_id',
         component: UserDetailComponent,
         canActivate: [LoginGuard],
-        resolve: {server: ServerResolve},
+        resolve: {
+          user: UserDetailResolver,
+          groups: UserGroupsResolver,
+          permissions: UserPermissionsResolver,
+          server: ServerResolve},
       },
       {path: 'installed-software', component: InstalledSoftwareComponent},
       {path: 'server/:server_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard]},
@@ -266,7 +274,7 @@ const routes: Routes = [
       },
       {
         path: 'server/:server_id/management/roles/:role_id/permissions',
-        component: PermissionEditorComponent,
+        component: RolePermissionsComponent,
         resolve: {
           role: RoleDetailResolver,
           server: ServerResolve,
@@ -274,10 +282,14 @@ const routes: Routes = [
         }
       },
       {
-        path: 'server/:server_id/permission_management',
-        component: PermissionsManagementComponent,
-        canActivate: [LoginGuard],
-        resolve: { server: ServerResolve },
+        path: 'server/:server_id/management/users/:user_id/permissions',
+        component: UserPermissionsComponent,
+        resolve: {
+          user: UserDetailResolver,
+          userPermissions: UserPermissionsResolver,
+          server: ServerResolve,
+          permissions: PermissionResolver
+        }
       }
     ],
   },

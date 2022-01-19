@@ -3,8 +3,8 @@ import {Observable, Subject} from 'rxjs';
 import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { User } from '../models/users/user';
-import {Project} from "@models/project";
 import {Group} from "@models/groups/group";
+import {Permission} from "@models/api/permission";
 
 @Injectable()
 export class UserService {
@@ -38,5 +38,17 @@ export class UserService {
 
   getGroupsByUserId(server: Server, user_id: string) {
     return this.httpServer.get<Group[]>(server, `/users/${user_id}/groups`);
+  }
+
+  getPermissionsByUserId(server: Server, user_id: string) {
+    return this.httpServer.get<Permission[]>(server, `/users/${user_id}/permissions`);
+  }
+
+  addPermission(server: Server, user_id: string, permission: Permission) {
+    return this.httpServer.put(server, `/users/${user_id}/permissions/${permission.permission_id}`, {});
+  }
+
+  removePermission(server: Server, user_id: string, permission: Permission) {
+    return this.httpServer.delete(server, `/users/${ user_id}/permissions/${permission.permission_id}`);
   }
 }
