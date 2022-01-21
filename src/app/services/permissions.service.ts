@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpServer} from "./http-server.service";
 import {Server} from "../models/server";
 import {Permission} from "../models/api/permission";
@@ -21,7 +21,8 @@ import {Observable} from "rxjs/Rx";
 })
 export class PermissionsService {
 
-  constructor(private httpServer: HttpServer) { }
+  constructor(private httpServer: HttpServer) {
+  }
 
   list(server: Server) {
     return this.httpServer.get<Permission[]>(server, '/permissions');

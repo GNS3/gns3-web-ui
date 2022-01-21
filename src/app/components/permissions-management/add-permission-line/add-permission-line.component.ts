@@ -30,7 +30,7 @@ export class AddPermissionLineComponent implements OnInit {
     action: PermissionActions.ALLOW,
     description: "",
     methods: [],
-    path: "/",
+    path: "/"
   };
   edit = false;
 

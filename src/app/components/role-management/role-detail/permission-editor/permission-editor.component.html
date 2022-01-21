@@ -29,6 +29,7 @@
     <app-editable-permission
       [side]="'LEFT'"
       [permission]="permission"
+      [server]="server"
       (click)="remove(permission)"
       *ngFor="let permission of owned">
 
@@ -40,6 +41,7 @@
     <app-editable-permission
       [side]="'RIGHT'"
       [permission]="permission"
+      [server]="server"
       (click)="add(permission)"
       *ngFor="let permission of available">
 

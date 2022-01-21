@@ -6,7 +6,7 @@
   </button>
   <div class="content">
     <div class="center">{{permission.methods.join(",")}}</div>
-    <div class="center">{{permission.path}}</div>
+    <div class="center">{{permission.path | displayPath: server | async}}</div>
   </div>
   <button *ngIf="side === 'LEFT'" mat-button (click)="onClick()">
     <mat-icon>keyboard_arrow_right</mat-icon>

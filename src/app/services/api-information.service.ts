@@ -197,6 +197,7 @@ export class ApiInformationService {
           .filter(elem => !(elem === '' || elem === 'v3'));
         return paths[0].subPaths.map((elem, index) => {
           if (elem.match(this.bracketIdRegex)) {
+
             return {key: elem, value: splinted[index]};
           }
         });
@@ -205,7 +206,8 @@ export class ApiInformationService {
       }));
   }
 
-  getListByObjectId(server: Server, key: string, value?: string) {
+  getListByObjectId(server: Server, key: string, value?: string, extraParams?: { key: string; value: string }[]) {
+    const idName =  /{([^)]+)}/.exec(key)[1];
     function findElement(data: IApiObject[]): IApiObject {
       const elem = data.find(d => d.name === key);
       if (!elem) {
@@ -218,9 +220,16 @@ export class ApiInformationService {
       map(findElement),
       switchMap(elem => {
           let url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
+          if (extraParams) {
+            extraParams.forEach((param) => {
+              url = url.replace(param.key, param.value);
+            });
+          }
+
           if (value) {
             url = `${url}/${value}`;
           }
+
           return this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${server.authToken}`}});
         }
       ),
@@ -235,21 +244,19 @@ export class ApiInformationService {
           const nameKey = keys.find(k => k.match(/name/));
           response = response.map(o => {
             return {
-              id: o[idKey],
+              id: o[idName] || o[idKey],
               name: o[nameKey]
             };
           });
           response.forEach(elt => {
             this.cache_permissions[elt.id] = elt;
-          })
-          console.log('b', this.cache_permissions)
-
+          });
           return of(response);
         } else {
           const keys = Object.keys(response);
           const idKey = keys.find(k => k.match(/_id$|filename/));
           const nameKey = keys.find(k => k.match(/name/));
-          const ret = {id: response[idKey], name: response[nameKey]};
+          const ret = {id: response[idName] || response[idKey], name: response[nameKey]};
           this.cache_permissions[ret.id] = ret;
           return of([ret]);
         }

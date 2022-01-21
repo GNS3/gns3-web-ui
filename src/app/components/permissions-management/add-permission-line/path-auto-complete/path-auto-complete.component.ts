@@ -13,6 +13,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ApiInformationService, IFormatedList} from "@services/api-information.service";
 import {Server} from "@models/server";
+import {PermissionPath} from "@components/permissions-management/add-permission-line/path-auto-complete/PermissionPath";
+import {SubPath} from "@components/permissions-management/add-permission-line/path-auto-complete/SubPath";
 
 @Component({
   selector: 'app-path-auto-complete',
@@ -24,9 +26,9 @@ export class PathAutoCompleteComponent implements OnInit {
 
   @Output() update = new EventEmitter<string>();
   @Input() server: Server;
-  path: string[] = [];
+  path: PermissionPath = new PermissionPath();
   values: string[] = [];
-  private completeData: IFormatedList[];
+  private completeData: { data: IFormatedList[]; key: string };
   public mode: 'SELECT' | 'COMPLETE' | undefined;
   completeField: string;
 
@@ -34,14 +36,14 @@ export class PathAutoCompleteComponent implements OnInit {
 
   }
 
-  updatePath(value: string) {
-    this.path.push(value);
-    this.update.emit(`/${this.path.join('/')}`);
+  updatePath(name: string, value: string, key?: string) {
+    this.path.add(new SubPath(name, value, key));
+    this.update.emit('/' + this.path.getPath().join("/"));
   }
 
   popPath() {
-    this.path.pop();
-    this.update.emit(`/${this.path.join('/')}`);
+    this.path.removeLast();
+    this.update.emit('/' + this.path.getPath().join("/"));
   }
 
   ngOnInit(): void {
@@ -49,8 +51,11 @@ export class PathAutoCompleteComponent implements OnInit {
 
   getNext() {
     this.apiInformationService
-      .getPathNextElement(this.path)
+      .getPathNextElement(this.path.getPath())
       .subscribe((next: string[]) => {
+        if (this.path.containStar()) {
+          next = next.filter(item => !item.match(this.apiInformationService.bracketIdRegex));
+        }
         this.values = next;
         this.mode = 'SELECT';
       });
@@ -60,27 +65,33 @@ export class PathAutoCompleteComponent implements OnInit {
     if (this.mode) {
       return this.mode = undefined;
     }
-    if (this.path.length > 0) {
+    if (!this.path.isEmpty()) {
       return this.popPath();
     }
   }
 
   valueChanged(value: string) {
-    if (value.match(this.apiInformationService.bracketIdRegex)) {
-      this.apiInformationService.getListByObjectId(this.server, value)
+    if (value.match(this.apiInformationService.bracketIdRegex) && !this.path.containStar()) {
+      this.apiInformationService.getListByObjectId(this.server, value, undefined, this.path.getVariables())
         .subscribe((data) => {
           this.mode = 'COMPLETE';
-          this.completeData = data;
+          this.completeData = {data, key: value};
         });
 
     } else {
-      this.updatePath(value);
+      this.updatePath(value, value);
       this.mode = undefined;
     }
   }
 
   validComplete() {
-    this.updatePath(this.completeField);
+    if (this.completeField === '*') {
+      this.updatePath('*', '*');
+    } else {
+      const data = this.completeData.data.find((d) => this.completeField === d.name);
+      this.updatePath(data.id, data.name, this.completeData.key);
+    }
     this.mode = undefined;
+    this.completeField = undefined;
   }
 }

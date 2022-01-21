@@ -32,7 +32,8 @@
 
     <div *ngFor="let permission of permissions | permissionsTypeFilter: typeFilter?.view | permissionsFilter: searchPermissions?.id | paginator: pageEvent">
       <app-permission-add-edit-line
-        [permission]="permission"
+              [permission]="permission"
+              [server]="server"
         (update)="refresh()"></app-permission-add-edit-line>
     </div>
     <mat-paginator [length]="permissions.length" (page)="pageEvent = $event"

@@ -1,6 +1,6 @@
 <div class="path">
   <div>Path: /</div>
-  <div *ngFor="let p of path">{{p}}/</div>
+  <div *ngFor="let p of path.getDisplayPath()">{{p}}/</div>
   <div class="path-edit-line">
     <div>
       <div *ngIf="mode === 'SELECT'">
@@ -17,21 +17,21 @@
                [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option [value]="'*'">*</mat-option>
-          <mat-option *ngFor="let data of completeData | filterComplete: completeField"
-                      [value]="data.id">
-            <span>{{data.name}}</span> |
-            <small>{{data.id}}</small>
+          <mat-option *ngFor="let data of completeData.data | filterComplete: completeField"
+                      [value]="data.name">
+            <span>{{data.name}}</span>
           </mat-option>
         </mat-autocomplete>
       </div>
     </div>
     <div class="command-button">
-      <mat-icon (click)="removePrevious()" *ngIf="path.length > 0">cancel</mat-icon>
+      <mat-icon (click)="removePrevious()" *ngIf="!path.isEmpty()">cancel</mat-icon>
       <mat-icon (click)="getNext()" *ngIf="!this.mode">add_circle_outline</mat-icon>
       <mat-icon
         matTooltip="validate data"
         (click)="validComplete()"
-        *ngIf="this.mode === 'COMPLETE'">check_circle</mat-icon>
+        *ngIf="this.mode === 'COMPLETE'">check_circle
+      </mat-icon>
     </div>
   </div>
 </div>
