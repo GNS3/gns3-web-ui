@@ -1,5 +1,4 @@
 /* tslint:disable */
-/* tslint:disable:max-line-length */
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CdkTableModule} from '@angular/cdk/table';
@@ -300,7 +299,6 @@ import { PermissionEditorValidateDialogComponent } from './components/role-manag
 import { PermissionsManagementComponent } from './components/permissions-management/permissions-management.component';
 import { PermissionEditLineComponent } from '@components/permissions-management/permission-edit-line/permission-edit-line.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import { RolePermissionsComponent } from './components/role-management/role-detail/role-permissions/role-permissions.component';
 import { UserPermissionsComponent } from './components/user-management/user-detail/user-permissions/user-permissions.component';
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {PathAutoCompleteComponent} from './components/permissions-management/add-permission-line/path-auto-complete/path-auto-complete.component';
@@ -311,6 +309,8 @@ import { ActionButtonComponent } from './components/permissions-management/actio
 import { DeletePermissionDialogComponent } from './components/permissions-management/delete-permission-dialog/delete-permission-dialog.component';
 import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
+import { PermissionsFilterPipe } from './components/permissions-management/permissions-filter.pipe';
+import { PermissionsTypeFilterPipe } from './components/permissions-management/permissions-type-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -531,8 +531,9 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     DeletePermissionDialogComponent,
     PathAutoCompleteComponent,
     FilterCompletePipe,
-    RolePermissionsComponent,
-    UserPermissionsComponent
+    UserPermissionsComponent,
+    PermissionsFilterPipe,
+    PermissionsTypeFilterPipe
   ],
   imports: [
     BrowserModule,

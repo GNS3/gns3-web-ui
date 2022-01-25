@@ -77,7 +77,6 @@ export class UserDetailComponent implements OnInit {
 
     this.userService.update(this.server, updatedUser)
       .subscribe((user: User) => {
-          console.log("Done ", user)
           this.toasterService.success(`User ${user.username} updated`);
         },
         (error) => {

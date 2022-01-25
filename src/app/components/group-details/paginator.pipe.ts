@@ -19,21 +19,21 @@ import {PageEvent} from "@angular/material/paginator";
 })
 export class PaginatorPipe implements PipeTransform {
 
-  transform(members: User[] | undefined, paginatorEvent: PageEvent | undefined): User[] {
-    if (!members) {
+  transform<T>(elements: T[] | undefined, paginatorEvent: PageEvent | undefined): T[] {
+    if (!elements) {
       return [];
     }
 
     if (!paginatorEvent) {
       paginatorEvent = {
-        length: members.length,
+        length: elements.length,
         pageIndex: 0,
         pageSize: 5
       };
     }
 
 
-    return members.slice(
+    return elements.slice(
       paginatorEvent.pageIndex * paginatorEvent.pageSize,
       (paginatorEvent.pageIndex + 1) * paginatorEvent.pageSize);
   }

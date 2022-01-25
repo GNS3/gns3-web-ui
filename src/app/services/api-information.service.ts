@@ -12,8 +12,8 @@
 */
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, ReplaySubject} from "rxjs";
-import {map, switchMap} from "rxjs/operators";
+import {Observable, of, ReplaySubject} from "rxjs";
+import {map, switchMap, take} from "rxjs/operators";
 import {Methods} from "@models/api/permission";
 import {HttpServer} from "@services/http-server.service";
 import {Server} from "@models/server";
@@ -40,19 +40,22 @@ export interface IFormatedList {
   name?: string;
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiInformationService {
 
+  private cache_permissions:  { [key: string]: IFormatedList; } = {};
   private allowed = ['projects', 'images', 'templates', 'computes', 'symbols', 'notifications'];
   private data: ReplaySubject<IPathDict[]> = new ReplaySubject<IPathDict[]>(1);
   private objs: ReplaySubject<IApiObject[]> = new ReplaySubject<IApiObject[]>(1);
-  public readonly bracketIdRegex = new RegExp("\{(.*?)\}");
+  public readonly bracketIdRegex = new RegExp("\{(.*?)\}", 'g');
+  public readonly uuidRegex = new RegExp("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
   public readonly finalBracketIdRegex = new RegExp("\{(.*?)\}$");
 
-  constructor(private httpClient: HttpClient,
-              private httpServer: HttpServer) {
+
+  constructor(private httpClient: HttpClient) {
     this.loadLocalInformation();
 
     this.data.subscribe((data) => {
@@ -143,7 +146,6 @@ export class ApiInformationService {
           const splinted = path
             .split('/')
             .filter(elem => !(elem === '' || elem === 'v3'));
-
           let remains = data;
           splinted.forEach((value, index) => {
             if (value === '*') {
@@ -154,9 +156,7 @@ export class ApiInformationService {
             if (matchUrl.length === 0) {
               matchUrl = remains.filter(val => val.subPaths[index]?.match(this.bracketIdRegex));
             }
-
             remains = matchUrl;
-
           });
           return remains;
         })
@@ -189,10 +189,25 @@ export class ApiInformationService {
       }));
   }
 
-  getListByObjectId(server: Server, value: string) {
+  getKeysForPath(path: string): Observable<{ key: string; value: string }[]> {
+    return this.getPath(path)
+      .pipe(map((paths: IPathDict[]) => {
+        const splinted = path
+          .split('/')
+          .filter(elem => !(elem === '' || elem === 'v3'));
+        return paths[0].subPaths.map((elem, index) => {
+          if (elem.match(this.bracketIdRegex)) {
+            return {key: elem, value: splinted[index]};
+          }
+        });
+      }), map((values) => {
+        return values.filter((v) => v !== undefined);
+      }));
+  }
 
+  getListByObjectId(server: Server, key: string, value?: string) {
     function findElement(data: IApiObject[]): IApiObject {
-      const elem = data.find(d => d.name === value);
+      const elem = data.find(d => d.name === key);
       if (!elem) {
         throw new Error('entry not found');
       }
@@ -202,28 +217,53 @@ export class ApiInformationService {
     return this.objs.pipe(
       map(findElement),
       switchMap(elem => {
-          const url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
+          let url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
+          if (value) {
+            url = `${url}/${value}`;
+          }
           return this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${server.authToken}`}});
         }
       ),
-      map(response => {
+      switchMap(response => {
 
-        if (response.length === 0) {
-          return [];
+        if (response instanceof Array) {
+          if (response.length === 0) {
+            return of([]);
+          }
+          const keys = Object.keys(response[0]);
+          const idKey = keys.find(k => k.match(/_id$|filename/));
+          const nameKey = keys.find(k => k.match(/name/));
+          response = response.map(o => {
+            return {
+              id: o[idKey],
+              name: o[nameKey]
+            };
+          });
+          response.forEach(elt => {
+            this.cache_permissions[elt.id] = elt;
+          })
+          console.log('b', this.cache_permissions)
+
+          return of(response);
+        } else {
+          const keys = Object.keys(response);
+          const idKey = keys.find(k => k.match(/_id$|filename/));
+          const nameKey = keys.find(k => k.match(/name/));
+          const ret = {id: response[idKey], name: response[nameKey]};
+          this.cache_permissions[ret.id] = ret;
+          return of([ret]);
         }
+      }), take(1));
+  }
 
-        const keys = Object.keys(response[0]);
-        const idKey = keys.find(k => k.match(/_id$|filename/));
-        const nameKey = keys.find(k => k.match(/name/));
-
-        return response.map(o => {
-          return {
-            id: o[idKey],
-            name: o[nameKey]
-          };
-        });
-      }));
-
+  getIdByObjNameFromCache(name: string): IFormatedList[] {
+    const ret: IFormatedList[] = [];
+    for (let [key, value] of Object.entries(this.cache_permissions)) {
+      if (value.name.includes(name)) {
+        ret.push(value);
+      }
+    }
+    return ret;
   }
 }
 

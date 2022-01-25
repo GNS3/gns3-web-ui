@@ -5,14 +5,38 @@
       (addPermissionEvent)="refresh()"></app-add-permission-line>
   </div>
   <div class="permission-content default-content">
-    <!--<ng-template #dynamic></ng-template>-->
-    <app-add-permission-line [server]="server" (addPermissionEvent)="updateList($event)"
-                             *ngIf="newPermissionEdit"></app-add-permission-line>
-    <div *ngFor="let permission of permissions">
+
+
+      Filter :
+
+        <mat-select [(ngModel)]="typeFilter" name="type"  placeholder="Type"
+                    (selectionChange)="changeType($event)"
+                    class="permission-filter">
+          <mat-option [value]="{value:'/', view:'/'}" selected>All</mat-option>
+          <mat-option *ngFor="let elt of typeValues" [value]="elt">{{elt.view}}</mat-option>
+        </mat-select>
+
+        <input type="text"
+               matInput
+               name="typeInput"
+               placeholder="Search by name"
+               [(ngModel)]="searchPermissions"
+               [matAutocomplete]="auto"
+               class="permission-filter"
+               (input)="changeAutocomplete($event.target.value)">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filteredOptions | filterComplete: searchPermissions" [value]="option">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+
+    <div *ngFor="let permission of permissions | permissionsTypeFilter: typeFilter?.view | permissionsFilter: searchPermissions?.id | paginator: pageEvent">
       <app-permission-add-edit-line
         [permission]="permission"
         (update)="refresh()"></app-permission-add-edit-line>
     </div>
+    <mat-paginator [length]="permissions.length" (page)="pageEvent = $event"
+                   [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
   </div>
 </div>
 <ng-template #loading>

@@ -18,6 +18,8 @@ import {ProgressService} from "../../common/progress/progress.service";
 import {Permission} from "@models/api/permission";
 import {AddPermissionLineComponent} from "@components/permissions-management/add-permission-line/add-permission-line.component";
 import {ServerService} from "@services/server.service";
+import {PageEvent} from "@angular/material/paginator";
+import {ApiInformationService, IFormatedList} from "@services/api-information.service";
 
 @Component({
   selector: 'app-permissions-management',
@@ -29,6 +31,16 @@ export class PermissionsManagementComponent implements OnInit {
   permissions: Permission[];
   addPermissionLineComp = AddPermissionLineComponent;
   newPermissionEdit = false;
+  searchPermissions: any;
+  pageEvent: PageEvent | undefined;
+  filteredOptions: IFormatedList[];
+  options: string[] = [];
+  typeFilter: any;
+  typeValues = [
+    {value: '{project_id}', view:'projects'},
+    {value: '{image_path}', view:'images'},
+    {value: '{template_id}', view:'templates'},
+    {value: '{compute_id}', view:'computes'}]
 
   @ViewChild('dynamic', {
     read: ViewContainerRef
@@ -39,11 +51,11 @@ export class PermissionsManagementComponent implements OnInit {
               private router: Router,
               private permissionService: PermissionsService,
               private progressService: ProgressService,
-              private serverService: ServerService) { }
+              private serverService: ServerService,
+              private apiInformationService: ApiInformationService) { }
 
   ngOnInit(): void {
     const serverId = this.route.parent.snapshot.paramMap.get('server_id');
-    console.log(serverId);
     this.serverService.get(+serverId).then((server: Server) => {
       this.server = server;
       this.refresh();
@@ -62,15 +74,24 @@ export class PermissionsManagementComponent implements OnInit {
     );
   }
 
-  addPermission() {
-    //const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.addPermissionLineComp);
-    //const component = this.viewContainerRef.createComponent(componentFactory);
-    //component.instance.server = this.server;
-    this.newPermissionEdit = true;
+  changeType(typeValue: any) {
+    if (typeValue.value.value.match(this.apiInformationService.bracketIdRegex)) {
+      this.apiInformationService.getListByObjectId(this.server, typeValue.value.value)
+        .subscribe((data) => {
+          this.filteredOptions = data;
+        });
+    } else {
+      this.filteredOptions = this.apiInformationService.getIdByObjNameFromCache('');
+    }
 
   }
 
-  updateList($event: any) {
-    this.newPermissionEdit = false;
+  displayFn(value): string {
+    return value && value.name ? value.name : '';
   }
+
+  changeAutocomplete(inputText) {
+    this.filteredOptions = this.apiInformationService.getIdByObjNameFromCache(inputText);
+  }
+
 }
