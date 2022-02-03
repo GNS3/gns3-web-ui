@@ -26,6 +26,8 @@ import {forkJoin} from "rxjs";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 
+import {User} from "@models/users/user";
+
 @Component({
   selector: 'app-group-management',
   templateUrl: './group-management.component.html',
@@ -91,16 +93,11 @@ export class GroupManagementComponent implements OnInit {
 
   addGroup() {
     this.dialog
-      .open(AddGroupDialogComponent, {width: '250px', height: '250px', data: {server: this.server}})
+      .open(AddGroupDialogComponent, {width: '1000px', height: '700px', data: {server: this.server}})
       .afterClosed()
-      .subscribe((name: string) => {
-        if (name) {
-          this.groupService.addGroup(this.server, name)
-            .subscribe(() => {
-              this.refresh();
-            }, (error) => {
-              this.toasterService.error(`An error occur while trying to create new group ${name}`);
-            });
+      .subscribe((added: boolean) => {
+        if (added) {
+          this.refresh();
         }
       });
   }

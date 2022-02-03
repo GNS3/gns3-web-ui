@@ -5,3 +5,20 @@
 .project-snackbar {
   background: #2196f3;
 }
+
+.userList {
+  display: flex;
+  margin: 10px;
+  justify-content: space-between;
+  flex: 1 1 auto
+}
+
+.users {
+  display: flex;
+  height: 350px;
+  overflow: auto;
+}
+
+.button-div {
+  float: right;
+}
