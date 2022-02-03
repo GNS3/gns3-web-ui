@@ -35,12 +35,6 @@ export class PermissionsManagementComponent implements OnInit {
   pageEvent: PageEvent | undefined;
   filteredOptions: IFormatedList[];
   options: string[] = [];
-  typeFilter: any;
-  typeValues = [
-    {value: '{project_id}', view:'projects'},
-    {value: '{image_path}', view:'images'},
-    {value: '{template_id}', view:'templates'},
-    {value: '{compute_id}', view:'computes'}]
 
   @ViewChild('dynamic', {
     read: ViewContainerRef
@@ -72,18 +66,6 @@ export class PermissionsManagementComponent implements OnInit {
         this.progressService.setError(error);
       }
     );
-  }
-
-  changeType(typeValue: any) {
-    if (typeValue.value.value.match(this.apiInformationService.bracketIdRegex)) {
-      this.apiInformationService.getListByObjectId(this.server, typeValue.value.value)
-        .subscribe((data) => {
-          this.filteredOptions = data;
-        });
-    } else {
-      this.filteredOptions = this.apiInformationService.getIdByObjNameFromCache('');
-    }
-
   }
 
   displayFn(value): string {

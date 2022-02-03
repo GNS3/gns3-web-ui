@@ -9,6 +9,19 @@
     </div>
     <div class="box deny"></div>
   </div>
+  <input type="text"
+         matInput
+         name="typeInput"
+         placeholder="Search by name"
+         [(ngModel)]="searchPermissions"
+         [matAutocomplete]="auto"
+         class="permission-filter"
+         (input)="changeAutocomplete($event.target.value)">
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-option *ngFor="let option of filteredOptions | filterComplete: searchPermissions" [value]="option">
+      {{option.name}}
+    </mat-option>
+  </mat-autocomplete>
   <div>
     <button
       mat-button
@@ -23,6 +36,8 @@
     </button>
   </div>
 </div>
+
+
 <div class="editor">
   <div class="column">
     <div class="title">Owned</div>
@@ -31,9 +46,11 @@
       [permission]="permission"
       [server]="server"
       (click)="remove(permission)"
-      *ngFor="let permission of owned">
+      *ngFor="let permission of ownedArray | permissionsFilter: searchPermissions?.id | paginator: pageEventOwned">
 
     </app-editable-permission>
+    <mat-paginator [length]="ownedArray.length" (page)="pageEventOwned = $event"
+                   [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
   </div>
   <mat-divider [vertical]="true"></mat-divider>
   <div class="column">
@@ -43,8 +60,10 @@
       [permission]="permission"
       [server]="server"
       (click)="add(permission)"
-      *ngFor="let permission of available">
+      *ngFor="let permission of availableArray | permissionsFilter: searchPermissions?.id | paginator: pageEventAvailable">
 
     </app-editable-permission>
+    <mat-paginator [length]="availableArray.length" (page)="pageEventAvailable = $event"
+                   [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
   </div>
 </div>

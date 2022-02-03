@@ -92,8 +92,10 @@
             <mat-icon>edit</mat-icon>
           </button>
         </div>
+
         <app-editable-permission
           [permission]="permission"
+          [server]="server"
           *ngFor="let permission of permissions">
         </app-editable-permission>
       </mat-tab>

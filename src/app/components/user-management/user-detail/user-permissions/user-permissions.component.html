@@ -12,5 +12,5 @@
     Edit {{user.username}} role permissions
   </div>
 </div>
-<app-permission-editor [ownedPermissions]="userPermissions" [availablePermissions]="permissions"
+<app-permission-editor [ownedPermissions]="userPermissions" [availablePermissions]="permissions" [server]="server"
                        (updatedPermissions)="updatePermissions($event)"></app-permission-editor>

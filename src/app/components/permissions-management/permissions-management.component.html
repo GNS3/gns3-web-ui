@@ -5,32 +5,21 @@
       (addPermissionEvent)="refresh()"></app-add-permission-line>
   </div>
   <div class="permission-content default-content">
+    <input type="text"
+             matInput
+             name="typeInput"
+             placeholder="Search by name"
+             [(ngModel)]="searchPermissions"
+             [matAutocomplete]="auto"
+             class="permission-filter"
+             (input)="changeAutocomplete($event.target.value)">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+      <mat-option *ngFor="let option of filteredOptions | filterComplete: searchPermissions" [value]="option">
+        {{option.name}}
+      </mat-option>
+    </mat-autocomplete>
 
-
-      Filter :
-
-        <mat-select [(ngModel)]="typeFilter" name="type"  placeholder="Type"
-                    (selectionChange)="changeType($event)"
-                    class="permission-filter">
-          <mat-option [value]="{value:'/', view:'/'}" selected>All</mat-option>
-          <mat-option *ngFor="let elt of typeValues" [value]="elt">{{elt.view}}</mat-option>
-        </mat-select>
-
-        <input type="text"
-               matInput
-               name="typeInput"
-               placeholder="Search by name"
-               [(ngModel)]="searchPermissions"
-               [matAutocomplete]="auto"
-               class="permission-filter"
-               (input)="changeAutocomplete($event.target.value)">
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-          <mat-option *ngFor="let option of filteredOptions | filterComplete: searchPermissions" [value]="option">
-            {{option.name}}
-          </mat-option>
-        </mat-autocomplete>
-
-    <div *ngFor="let permission of permissions | permissionsTypeFilter: typeFilter?.view | permissionsFilter: searchPermissions?.id | paginator: pageEvent">
+    <div *ngFor="let permission of permissions | permissionsFilter: searchPermissions?.id | paginator: pageEvent">
       <app-permission-add-edit-line
               [permission]="permission"
               [server]="server"

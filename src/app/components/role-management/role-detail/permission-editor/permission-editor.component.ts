@@ -17,6 +17,8 @@ import {Permission} from "@models/api/permission";
 import {MatDialog} from "@angular/material/dialog";
 import {PermissionEditorValidateDialogComponent} from "@components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component";
 import { EventEmitter } from '@angular/core';
+import {ApiInformationService, IFormatedList} from "@services/api-information.service";
+import {PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-permission-editor',
@@ -24,16 +26,22 @@ import { EventEmitter } from '@angular/core';
   styleUrls: ['./permission-editor.component.scss']
 })
 export class PermissionEditorComponent implements OnInit {
-  server: Server;
+
   owned: Set<Permission>;
   available: Set<Permission>;
+  searchPermissions: any;
+  filteredOptions: IFormatedList[];
+  pageEventOwned: PageEvent | undefined;
+  pageEventAvailable: PageEvent | undefined;
 
+  @Input() server: Server;
   @Input() ownedPermissions: Permission[];
   @Input() availablePermissions: Permission[];
   @Output() updatedPermissions: EventEmitter<any> = new EventEmitter();
 
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog,
+              private apiInformationService: ApiInformationService) {}
 
   ngOnInit(): void {
     this.reset();
@@ -87,5 +95,21 @@ export class PermissionEditorComponent implements OnInit {
     });
 
     return {add, remove};
+  }
+
+  displayFn(value): string {
+    return value && value.name ? value.name : '';
+  }
+
+  changeAutocomplete(inputText) {
+    this.filteredOptions = this.apiInformationService.getIdByObjNameFromCache(inputText);
+  }
+
+  get ownedArray() {
+    return Array.from(this.owned.values())
+  }
+
+  get availableArray() {
+    return Array.from(this.available.values())
   }
 }

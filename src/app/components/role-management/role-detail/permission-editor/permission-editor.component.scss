@@ -7,7 +7,7 @@
 }
 
 .header {
-  margin-top: 5px;
+  margin: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -44,4 +44,11 @@
 
 .deny {
   background-color: rgba(130, 8, 8, 0.36);
+}
+
+
+.permission-filter {
+  border-bottom: 1px solid;
+  margin: 5px;
+  border-bottom-color: #b0bec5;
 }

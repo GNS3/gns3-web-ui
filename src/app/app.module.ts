@@ -310,7 +310,6 @@ import { DeletePermissionDialogComponent } from './components/permissions-manage
 import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { PermissionsFilterPipe } from './components/permissions-management/permissions-filter.pipe';
-import { PermissionsTypeFilterPipe } from './components/permissions-management/permissions-type-filter.pipe';
 import { DisplayPathPipe } from './components/permissions-management/display-path.pipe';
 import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
 
@@ -535,10 +534,11 @@ import {RolePermissionsComponent} from "@components/role-management/role-detail/
     FilterCompletePipe,
     UserPermissionsComponent,
     PermissionsFilterPipe,
-    PermissionsTypeFilterPipe,
     FilterCompletePipe,
     DisplayPathPipe,
-    RolePermissionsComponent
+    RolePermissionsComponent,
+    DisplayPathPipe,
+    PermissionsFilterPipe,
   ],
   imports: [
     BrowserModule,

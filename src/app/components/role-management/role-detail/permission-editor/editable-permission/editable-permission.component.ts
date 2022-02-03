@@ -28,8 +28,7 @@ export class EditablePermissionComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
 
   onClick() {
