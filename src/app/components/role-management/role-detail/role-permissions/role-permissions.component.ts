@@ -20,6 +20,7 @@ import {Role} from "@models/api/role";
 import {Permission} from "@models/api/permission";
 import {Observable} from "rxjs/Rx";
 import {forkJoin} from "rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-role-permissions',
@@ -61,8 +62,9 @@ export class RolePermissionsComponent implements OnInit {
           this.toastService.success(`permissions updated`);
           this.router.navigate(['/server', this.server.id, 'management', 'roles', this.role.role_id]);
         },
-        (error) => {
-          this.toastService.error(error);
+        (error: HttpErrorResponse) => {
+          this.toastService.error(`${error.message}
+          ${error.error.message}`);
         });
   }
 }

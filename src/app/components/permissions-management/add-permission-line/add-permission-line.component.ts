@@ -16,6 +16,7 @@ import {ApiInformationService} from "@services/api-information.service";
 import {Methods, Permission, PermissionActions} from "@models/api/permission";
 import {PermissionsService} from "@services/permissions.service";
 import {ToasterService} from "@services/toaster.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-add-permission-line',
@@ -72,8 +73,10 @@ export class AddPermissionLineComponent implements OnInit {
       .subscribe(() => {
         this.toasterService.success(`permission was created`);
         this.reset();
-      }, (error) => {
-        this.toasterService.error(error);
+      }, (error: HttpErrorResponse) => {
+        this.toasterService.error(`
+        ${error.message}
+        ${error.error.message}`);
       });
   }
 }

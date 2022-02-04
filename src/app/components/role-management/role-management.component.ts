@@ -26,6 +26,7 @@ import {RoleService} from "@services/role.service";
 import {AddRoleDialogComponent} from "@components/role-management/add-role-dialog/add-role-dialog.component";
 import {DeleteRoleDialogComponent} from "@components/role-management/delete-role-dialog/delete-role-dialog.component";
 import {forkJoin} from "rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
 
 
 @Component({
@@ -95,7 +96,8 @@ export class RoleManagementComponent implements OnInit {
                 this.toasterService.success(`${role.name} role created`);
                 this.refresh();
               },
-              (error) => this.toasterService.error(error));
+              (error: HttpErrorResponse) => this.toasterService.error(`${error.message}
+              ${error.error.message}`));
         }
       });
   }

@@ -18,6 +18,7 @@ import {ServerService} from "@services/server.service";
 import {Role} from "@models/api/role";
 import {FormControl, FormGroup} from "@angular/forms";
 import {ToasterService} from "@services/toaster.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-role-detail',
@@ -50,10 +51,11 @@ export class RoleDetailComponent implements OnInit {
   onUpdate() {
     this.roleService.update(this.server, this.role)
       .subscribe(() => {
-        this.toastService.success(`role: ${this.role.name} was updated`);
-      },
-        (error) => {
-        this.toastService.error(error);
+          this.toastService.success(`role: ${this.role.name} was updated`);
+        },
+        (error: HttpErrorResponse) => {
+          this.toastService.error(`${error.message}
+        ${error.error.message}`);
         });
   }
 }

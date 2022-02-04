@@ -10,6 +10,7 @@ import {forkJoin} from "rxjs";
 import {Observable} from "rxjs/Rx";
 import {UserService} from "@services/user.service";
 import {User} from "@models/users/user";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-user-permissions',
@@ -54,8 +55,9 @@ export class UserPermissionsComponent implements OnInit {
           this.toastService.success(`permissions updated`);
           this.router.navigate(['/server', this.server.id, 'management', 'users', this.user.user_id]);
         },
-        (error) => {
-          this.toastService.error(error);
+        (error: HttpErrorResponse) => {
+          this.toastService.error(`${error.message}
+          ${error.error.message}`);
         });
   }
 
