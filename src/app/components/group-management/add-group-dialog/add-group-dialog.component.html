@@ -22,39 +22,27 @@
 </form>
 
   <h5>Add users to group: </h5>
-  <div class="filter">
-    <mat-form-field class="input-field">
-      <mat-label>Search user </mat-label>
-      <input matInput  type="text" [(ngModel)]="searchText" >
-    </mat-form-field>
-  </div>
+  <mat-form-field class="input-field">
+    <mat-label>Users</mat-label>
+    <input type="text"
+           matInput
+           [matAutocomplete]="auto"
+           [formControl]="autocompleteControl">
+    <mat-autocomplete #auto="matAutocomplete"[displayWith]="displayFn" (optionSelected)='selectedUser($event.option.value)'>
+      <mat-option *ngFor="let user of filteredUsers | async" [value]="user" >
+        {{user.username}} - {{user.email}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
 
   <div class="users">
-    <div class="col">
-      Users available :
-      <div *ngFor="let user of users">
-        <div class="userList" *ngIf="toDisplay(user)">
-          <div>{{user.username}}</div>
-          <div>{{user.email}}</div>
-          <mat-icon (click)="addUser(user)">add</mat-icon>
-        </div>
+    <div *ngFor="let user of usersToAdd">
+      <div class="userList">
+        <div>{{user.username}}</div>
+        <div>{{user.email}}</div>
+        <mat-icon (click)="delUser(user)">delete</mat-icon>
       </div>
     </div>
-
-    <mat-divider [vertical]="true"></mat-divider>
-
-    <div class="col">
-      Users to add :
-      <div *ngFor="let user of usersToAdd">
-        <div class="userList" *ngIf="toDisplay(user)">
-          <div>{{user.username}}</div>
-          <div>{{user.email}}</div>
-          <mat-icon (click)="delUser(user)">delete</mat-icon>
-        </div>
-      </div>
-    </div>
-
-
   </div>
 
 

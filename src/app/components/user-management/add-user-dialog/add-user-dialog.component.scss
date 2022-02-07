@@ -6,3 +6,17 @@
 .button-div {
   float: right;
 }
+
+.groupList {
+  display: flex;
+  margin: 10px;
+  justify-content: space-between;
+  flex: 1 1 auto
+}
+
+.groups {
+  display: flex;
+  height: 180px;
+  overflow: auto;
+  flex-direction: column;
+}

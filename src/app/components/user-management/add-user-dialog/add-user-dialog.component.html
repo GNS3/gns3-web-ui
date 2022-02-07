@@ -29,6 +29,31 @@
 
 
   <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+  <mat-divider class="my-2"></mat-divider>
+  <h6> Add user to groups : </h6>
+
+  <mat-form-field class="input-field">
+    <mat-label>Groups</mat-label>
+    <input type="text"
+           matInput
+           [matAutocomplete]="auto"
+           [formControl]="autocompleteControl">
+    <mat-autocomplete #auto="matAutocomplete"[displayWith]="displayFn" (optionSelected)='selectedGroup($event.option.value)'>
+      <mat-option *ngFor="let group of filteredGroups | async" [value]="group" >
+        {{group.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <div class="groups">
+    <div  *ngFor="let group of groupsToAdd">
+      <div class="groupList">
+        <div>{{group.name}}</div>
+        <mat-icon (click)="deleteGroup(group)" >delete</mat-icon>
+      </div>
+    </div>
+  </div>
+
 
   <div mat-dialog-actions class="button-div">
     <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>

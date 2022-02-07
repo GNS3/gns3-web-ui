@@ -93,7 +93,7 @@ export class GroupManagementComponent implements OnInit {
 
   addGroup() {
     this.dialog
-      .open(AddGroupDialogComponent, {width: '1000px', height: '700px', data: {server: this.server}})
+      .open(AddGroupDialogComponent, {width: '600px', height: '500px', data: {server: this.server}})
       .afterClosed()
       .subscribe((added: boolean) => {
         if (added) {

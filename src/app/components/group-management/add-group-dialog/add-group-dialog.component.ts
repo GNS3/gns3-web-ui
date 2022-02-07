@@ -22,6 +22,9 @@ import {User} from "@models/users/user";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
 import {PageEvent} from "@angular/material/paginator";
+import {Observable} from "rxjs/Rx";
+import {Group} from "@models/groups/group";
+import {map, startWith} from "rxjs/operators";
 
 @Component({
   selector: 'app-add-group-dialog',
@@ -34,11 +37,12 @@ export class AddGroupDialogComponent implements OnInit {
   groupNameForm: FormGroup;
   server: Server;
 
-  users: Set<User>;
+  users: User[];
   usersToAdd: Set<User> = new Set([]);
-
-  searchText: string;
+  filteredUsers: Observable<User[]>
   loading = false;
+  autocompleteControl = new FormControl();
+
 
 
   constructor(private dialogRef: MatDialogRef<AddGroupDialogComponent>,
@@ -59,7 +63,14 @@ export class AddGroupDialogComponent implements OnInit {
         [groupNameAsyncValidator(this.data.server, this.groupService)]
       ),
     });
-    this.getUsers();
+    this.userService.list(this.server)
+      .subscribe((users: User[]) => {
+        this.users = users;
+        this.filteredUsers = this.autocompleteControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value)),
+        );
+      })
   }
 
   onKeyDown(event) {
@@ -102,33 +113,25 @@ export class AddGroupDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  get toDisplay() {
-    return (user: User) => !this.searchText || user.username.includes(this.searchText) || user.email?.includes(this.searchText);
-  }
-
-  getUsers() {
-
-    this.userService.list(this.data.server)
-    .subscribe((users) => {
-      if (this.usersToAdd) {
-        users = users.filter((user: User) => {
-          return !this.usersToAdd.has(user);
-        });
-      }
-      this.users = new Set(users);
-
-    });
-
-  }
-
-  addUser(user: User) {
+  selectedUser(user: User) {
     this.usersToAdd.add(user);
-    this.users.delete(user);
   }
 
   delUser(user: User) {
     this.usersToAdd.delete(user);
-    this.users.add(user);
+  }
+
+  private _filter(value: string): User[] {
+    if (typeof value === 'string') {
+      const filterValue = value.toLowerCase();
+
+      return this.users.filter(option => option.username.toLowerCase().includes(filterValue)
+        || (option.email?.toLowerCase().includes(filterValue)));
+    }
+  }
+
+  displayFn(value): string {
+    return value && value.username ? value.username : '';
   }
 
 }
