@@ -16,8 +16,8 @@ describe('FontFixer', () => {
     };
 
     expect(fixer.fix(font)).toEqual({
-      font_family: 'Noto Sans',
-      font_size: 11,
+      font_family: 'Arial',
+      font_size: 12,
       font_weight: 'bold',
     });
   });
@@ -39,12 +39,12 @@ describe('FontFixer', () => {
   it('should fix TypeWriter font and 10px size in styles', () => {
     const styles = 'font-family: TypeWriter; font-size: 10px; font-weight: bold';
 
-    expect(fixer.fixStyles(styles)).toEqual('font-family:Noto Sans;font-size:11px;font-weight:bold');
+    expect(fixer.fixStyles(styles)).toEqual('font-family:Arial;font-size:12px;font-weight:bold');
   });
 
   it('should fix TypeWriter font and 10px size in styles with quotes', () => {
     const styles = 'font-family: "TypeWriter"; font-size: 10px; font-weight: bold';
 
-    expect(fixer.fixStyles(styles)).toEqual('font-family:Noto Sans;font-size:11px;font-weight:bold');
+    expect(fixer.fixStyles(styles)).toEqual('font-family:Arial;font-size:12px;font-weight:bold');
   });
 });
