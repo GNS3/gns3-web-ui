@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Server} from "@models/server";
 import {MatTableDataSource} from "@angular/material/table";
 import {SelectionModel} from "@angular/cdk/collections";
@@ -41,9 +41,10 @@ export class RoleManagementComponent implements OnInit {
   selection = new SelectionModel<Role>(true, []);
   searchText = '';
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChildren('rolesPaginator') rolesPaginator: QueryList<MatPaginator>;
+  @ViewChildren('rolesSort') rolesSort: QueryList<MatSort>;
   isReady = false;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -61,11 +62,25 @@ export class RoleManagementComponent implements OnInit {
       this.server = server;
       this.refresh();
     });
+
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.rolesPaginator.changes.subscribe((comps: QueryList <MatPaginator>) =>
+    {
+      this.dataSource.paginator = comps.first;
+    });
+    this.rolesSort.changes.subscribe((comps: QueryList<MatSort>) => {
+      this.dataSource.sort = comps.first;
+    });
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'name':
+          return item[property] ? item[property].toLowerCase() : '';
+        default:
+          return item[property];
+      }
+    };
 
   }
 

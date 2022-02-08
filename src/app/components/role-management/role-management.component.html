@@ -21,7 +21,7 @@
 
   <div class="default-content">
     <div class="mat-elevation-z8">
-      <mat-table #table [dataSource]="dataSource | roleFilter: searchText" matSort>
+      <mat-table #table [dataSource]="dataSource | roleFilter: searchText" matSort #rolesSort="matSort">
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef class="small-col">
             <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -76,7 +76,8 @@
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+      <mat-paginator #rolesPaginator="matPaginator"
+        [pageSizeOptions]="[5, 10, 20]"
                      showFirstLastButtons
                      aria-label="Select page">
       </mat-paginator>

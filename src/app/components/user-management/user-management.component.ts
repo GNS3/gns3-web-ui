@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Server} from "@models/server";
 import {MatSort} from "@angular/material/sort";
@@ -38,8 +38,8 @@ export class UserManagementComponent implements OnInit {
   selection = new SelectionModel<User>(true, []);
   searchText = '';
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChildren('usersPaginator') usersPaginator: QueryList<MatPaginator>;
+  @ViewChildren('usersSort') usersSort: QueryList<MatSort>;
   isReady = false;
 
   constructor(
@@ -60,8 +60,14 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.usersPaginator.changes.subscribe((comps: QueryList <MatPaginator>) =>
+    {
+      this.dataSource.paginator = comps.first;
+    });
+    this.usersSort.changes.subscribe((comps: QueryList<MatSort>) => {
+      this.dataSource.sort = comps.first;
+    })
+
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case 'username':

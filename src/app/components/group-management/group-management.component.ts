@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {ServerService} from "../../services/server.service";
 import {ToasterService} from "../../services/toaster.service";
@@ -26,7 +26,6 @@ import {forkJoin} from "rxjs";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 
-import {User} from "@models/users/user";
 
 @Component({
   selector: 'app-group-management',
@@ -36,8 +35,8 @@ import {User} from "@models/users/user";
 export class GroupManagementComponent implements OnInit {
   server: Server;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChildren('groupsPaginator') groupsPaginator: QueryList<MatPaginator>;
+  @ViewChildren('groupsSort') groupsSort: QueryList<MatSort>;
 
   public displayedColumns = ['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'delete'];
   selection = new SelectionModel<Group>(true, []);
@@ -65,13 +64,16 @@ export class GroupManagementComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.groupsPaginator.changes.subscribe((comps: QueryList <MatPaginator>) =>
+    {
+      this.dataSource.paginator = comps.first;
+    });
+    this.groupsSort.changes.subscribe((comps: QueryList<MatSort>) => {
+      this.dataSource.sort = comps.first;
+    });
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
-        case 'username':
-        case 'full_name':
-        case 'email':
+        case 'name':
           return item[property] ? item[property].toLowerCase() : '';
         default:
           return item[property];

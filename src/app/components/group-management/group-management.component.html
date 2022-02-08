@@ -18,7 +18,7 @@
   </form>
 
   <div class="default-content">
-    <table mat-table [dataSource]="dataSource | groupFilter: searchText" class="mat-elevation-z8" matSort>
+    <table mat-table [dataSource]="dataSource | groupFilter: searchText" class="mat-elevation-z8" matSort #groupsSort="matSort">
 
       <ng-container matColumnDef="select" >
         <th mat-header-cell *matHeaderCellDef class="small-col">
@@ -67,7 +67,8 @@
 
 
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+    <mat-paginator #groupsPaginator="matPaginator"
+      [pageSizeOptions]="[5, 10, 20]"
                    showFirstLastButtons
                    aria-label="Select page">
     </mat-paginator>
