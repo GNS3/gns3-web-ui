@@ -68,6 +68,14 @@
     </div>
     <div>
       <button
+        class="map-settings-button"
+        matTooltip="Project Map Settings"
+        matTooltipClass="custom-tooltip"
+        mat-icon-button
+        [matMenuTriggerFor]="viewMenu">
+        <mat-icon>view_module</mat-icon>
+      </button>
+      <button
         matTooltip="Toggle topology/servers summary"
         matTooltipClass="custom-tooltip"
         [ngClass]="{
@@ -83,39 +91,27 @@
 
     <!-- GNS3 menu -->
     <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
+      <button mat-menu-item [matMenuTriggerFor]="projectMenu">
+        <mat-icon>insert_drive_file</mat-icon>
+        <span>Project settings</span>
+      </button>
       <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
         <mat-icon>work</mat-icon>
-        <span>Go to projects</span>
+        <span>Projects</span>
       </button>
       <button mat-menu-item [routerLink]="['/servers']">
         <mat-icon>developer_board</mat-icon>
-        <span>Go to servers</span>
-      </button>
-      <button mat-menu-item routerLink="/server/{{ server.id }}/preferences">
-        <mat-icon>settings_applications</mat-icon>
-        <span>Go to preferences</span>
+        <span>Servers</span>
       </button>
       <button mat-menu-item routerLink="/server/{{ server.id }}/systemstatus">
-        <mat-icon>info</mat-icon>
-        <span>Go to system status</span>
+        <mat-icon>data_usage</mat-icon>
+        <span>System Status</span>
       </button>
       <button mat-menu-item routerLink="/settings">
         <mat-icon>settings</mat-icon>
-        <span>Go to settings</span>
-      </button>
-      <button mat-menu-item (click)="addNewTemplate()">
-        <mat-icon>control_point</mat-icon>
-        <span>New template</span>
+        <span>Settings</span>
       </button>
       <app-import-appliance [server]="server" [project]="project"></app-import-appliance>
-      <button mat-menu-item [matMenuTriggerFor]="projectMenu">
-        <mat-icon>settings</mat-icon>
-        <span>Project settings</span>
-      </button>
-      <button mat-menu-item [matMenuTriggerFor]="viewMenu">
-        <mat-icon>view_module</mat-icon>
-        <span>Map settings</span>
-      </button>
     </mat-menu>
 
     <!-- Project Settings sub-menu -->
