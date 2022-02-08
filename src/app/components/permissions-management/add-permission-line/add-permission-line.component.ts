@@ -12,7 +12,7 @@
 */
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Server} from "@models/server";
-import {ApiInformationService} from "@services/api-information.service";
+import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {Methods, Permission, PermissionActions} from "@models/api/permission";
 import {PermissionsService} from "@services/permissions.service";
 import {ToasterService} from "@services/toaster.service";

@@ -11,10 +11,11 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ApiInformationService, IFormatedList} from "@services/api-information.service";
+import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {Server} from "@models/server";
 import {PermissionPath} from "@components/permissions-management/add-permission-line/path-auto-complete/PermissionPath";
 import {SubPath} from "@components/permissions-management/add-permission-line/path-auto-complete/SubPath";
+import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
 @Component({
   selector: 'app-path-auto-complete',
@@ -28,7 +29,7 @@ export class PathAutoCompleteComponent implements OnInit {
   @Input() server: Server;
   path: PermissionPath = new PermissionPath();
   values: string[] = [];
-  private completeData: { data: IFormatedList[]; key: string };
+  private completeData: { data: IGenericApiObject[]; key: string };
   public mode: 'SELECT' | 'COMPLETE' | undefined;
   completeField: string;
 

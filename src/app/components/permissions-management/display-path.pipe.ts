@@ -13,7 +13,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {map, switchMap} from "rxjs/operators";
 import {forkJoin, Observable, of} from "rxjs";
-import {ApiInformationService} from "@services/api-information.service";
+import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {Server} from "@models/server";
 
 @Pipe({

@@ -13,7 +13,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Methods, Permission} from "@models/api/permission";
 import {Server} from '@models/server';
-import {ApiInformationService} from "@services/api-information.service";
+import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {PermissionsService} from "@services/permissions.service";
 import {ToasterService} from "@services/toaster.service";
 import {MatDialog} from "@angular/material/dialog";

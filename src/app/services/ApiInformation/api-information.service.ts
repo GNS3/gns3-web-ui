@@ -13,10 +13,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, of, ReplaySubject} from "rxjs";
-import {map, switchMap, take} from "rxjs/operators";
-import {Methods} from "@models/api/permission";
-import {HttpServer} from "@services/http-server.service";
-import {Server} from "@models/server";
+import {map, switchMap, take, tap} from "rxjs/operators";
+import {Methods} from "app/models/api/permission";
+import {HttpServer} from "app/services/http-server.service";
+import {Server} from "app/models/server";
+import {GetObjectIdHelper} from "@services/ApiInformation/GetObjectIdHelper";
+import {IExtraParams} from "@services/ApiInformation/IExtraParams";
+import {ApiInformationCache} from "@services/ApiInformation/ApiInformationCache";
+import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
 export interface IPathDict {
   methods: ('POST' | 'GET' | 'PUT' | 'DELETE' | 'HEAD' | 'PATH')[];
@@ -35,18 +39,12 @@ export interface IQueryObject {
   text: string[];
 }
 
-export interface IFormatedList {
-  id: string;
-  name?: string;
-}
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class ApiInformationService {
 
-  private cache_permissions:  { [key: string]: IFormatedList; } = {};
+  private cache = new ApiInformationCache();
   private allowed = ['projects', 'images', 'templates', 'computes', 'symbols', 'notifications'];
   private data: ReplaySubject<IPathDict[]> = new ReplaySubject<IPathDict[]>(1);
   private objs: ReplaySubject<IApiObject[]> = new ReplaySubject<IApiObject[]>(1);
@@ -206,71 +204,24 @@ export class ApiInformationService {
       }));
   }
 
-  getListByObjectId(server: Server, key: string, value?: string, extraParams?: { key: string; value: string }[]) {
-    const idName =  /{([^)]+)}/.exec(key)[1];
-    function findElement(data: IApiObject[]): IApiObject {
-      const elem = data.find(d => d.name === key);
-      if (!elem) {
-        throw new Error('entry not found');
-      }
-      return elem;
+  getListByObjectId(server: Server, key: string, value?: string, extraParams?: IExtraParams[]) {
+
+    const cachedData = this.cache.get(server, key, value, extraParams);
+    if (cachedData) {
+      return of(cachedData);
     }
 
     return this.objs.pipe(
-      map(findElement),
-      switchMap(elem => {
-          let url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
-          if (extraParams) {
-            extraParams.forEach((param) => {
-              url = url.replace(param.key, param.value);
-            });
-          }
-
-          if (value) {
-            url = `${url}/${value}`;
-          }
-
-          return this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${server.authToken}`}});
-        }
-      ),
-      switchMap(response => {
-
-        if (response instanceof Array) {
-          if (response.length === 0) {
-            return of([]);
-          }
-          const keys = Object.keys(response[0]);
-          const idKey = keys.find(k => k.match(/_id$|filename/));
-          const nameKey = keys.find(k => k.match(/name/));
-          response = response.map(o => {
-            return {
-              id: o[idName] || o[idKey],
-              name: o[nameKey]
-            };
-          });
-          response.forEach(elt => {
-            this.cache_permissions[elt.id] = elt;
-          });
-          return of(response);
-        } else {
-          const keys = Object.keys(response);
-          const idKey = keys.find(k => k.match(/_id$|filename/));
-          const nameKey = keys.find(k => k.match(/name/));
-          const ret = {id: response[idName] || response[idKey], name: response[nameKey]};
-          this.cache_permissions[ret.id] = ret;
-          return of([ret]);
-        }
-      }), take(1));
+      map(GetObjectIdHelper.findElementInObjectListFn(key)),
+      map(GetObjectIdHelper.buildRequestURL(server, value, extraParams)),
+      switchMap(url => this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${server.authToken}`}})),
+      switchMap(GetObjectIdHelper.createResponseObject(key, extraParams, this, server)),
+      tap(data => this.cache.update(server, key, value, extraParams, data)),
+      take(1));
   }
 
-  getIdByObjNameFromCache(name: string): IFormatedList[] {
-    const ret: IFormatedList[] = [];
-    for (let [key, value] of Object.entries(this.cache_permissions)) {
-      if (value.name.includes(name)) {
-        ret.push(value);
-      }
-    }
-    return ret;
+  getIdByObjNameFromCache(name: string): IGenericApiObject[] {
+    return this.cache.searchByName(name);
   }
 }
 

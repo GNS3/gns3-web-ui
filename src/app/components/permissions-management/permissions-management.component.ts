@@ -19,7 +19,8 @@ import {Permission} from "@models/api/permission";
 import {AddPermissionLineComponent} from "@components/permissions-management/add-permission-line/add-permission-line.component";
 import {ServerService} from "@services/server.service";
 import {PageEvent} from "@angular/material/paginator";
-import {ApiInformationService, IFormatedList} from "@services/api-information.service";
+import {ApiInformationService} from "@services/ApiInformation/api-information.service";
+import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
 @Component({
   selector: 'app-permissions-management',
@@ -33,7 +34,7 @@ export class PermissionsManagementComponent implements OnInit {
   newPermissionEdit = false;
   searchPermissions: any;
   pageEvent: PageEvent | undefined;
-  filteredOptions: IFormatedList[];
+  filteredOptions: IGenericApiObject[];
   options: string[] = [];
 
   @ViewChild('dynamic', {

@@ -10,15 +10,14 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, Input, OnInit, Output} from '@angular/core';
-import {Role} from "@models/api/role";
+import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
 import {Server} from "@models/server";
 import {Permission} from "@models/api/permission";
 import {MatDialog} from "@angular/material/dialog";
 import {PermissionEditorValidateDialogComponent} from "@components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component";
-import { EventEmitter } from '@angular/core';
-import {ApiInformationService, IFormatedList} from "@services/api-information.service";
+import {ApiInformationService } from "@services/ApiInformation/api-information.service";
 import {PageEvent} from "@angular/material/paginator";
+import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
 @Component({
   selector: 'app-permission-editor',
@@ -30,7 +29,7 @@ export class PermissionEditorComponent implements OnInit {
   owned: Set<Permission>;
   available: Set<Permission>;
   searchPermissions: any;
-  filteredOptions: IFormatedList[];
+  filteredOptions: IGenericApiObject[];
   pageEventOwned: PageEvent | undefined;
   pageEventAvailable: PageEvent | undefined;
 
@@ -106,10 +105,10 @@ export class PermissionEditorComponent implements OnInit {
   }
 
   get ownedArray() {
-    return Array.from(this.owned.values())
+    return Array.from(this.owned.values());
   }
 
   get availableArray() {
-    return Array.from(this.available.values())
+    return Array.from(this.available.values());
   }
 }

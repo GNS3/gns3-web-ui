@@ -11,14 +11,14 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import { Pipe, PipeTransform } from '@angular/core';
-import {IFormatedList} from "@services/api-information.service";
+import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
 @Pipe({
   name: 'filterComplete'
 })
 export class FilterCompletePipe implements PipeTransform {
 
-  transform(value: IFormatedList[], searchText: string): IFormatedList[] {
+  transform(value: IGenericApiObject[], searchText: string): IGenericApiObject[] {
     if (!searchText || searchText === '') { return value; }
 
     return value.filter((v) => {
