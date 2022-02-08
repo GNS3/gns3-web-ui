@@ -25,6 +25,7 @@ import {GroupService} from "@services/group.service";
 import {Observable} from "rxjs/Rx";
 import {startWith} from "rxjs/operators";
 import {map} from "rxjs//operators";
+import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
 
 @Component({
   selector: 'app-add-user-dialog',
@@ -58,7 +59,11 @@ export class AddUserDialogComponent implements OnInit {
         [userEmailAsyncValidator(this.server, this.userService)]),
       password: new FormControl(null,
         [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
+      confirmPassword: new FormControl(null,
+        [Validators.minLength(6), Validators.maxLength(100), Validators.required] ),
       is_active: new FormControl(true)
+    },{
+      validators: [matchingPassword]
     });
     this.groupService.getGroups(this.server)
       .subscribe((groups: Group[]) => {

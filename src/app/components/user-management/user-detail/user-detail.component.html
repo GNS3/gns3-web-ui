@@ -44,15 +44,6 @@
             </mat-error>
           </mat-form-field>
 
-
-          <mat-form-field class="input-field">
-            <input matInput type="password" formControlName="password" placeholder="Password"/>
-            <mat-error *ngIf="form.password?.touched && form.password?.errors"
-            >Password must be between 6 and 100 characters
-            </mat-error>
-          </mat-form-field>
-
-
           <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
           <div>
             <mat-checkbox [checked]="user.is_superadmin" disabled>Is Superadmin</mat-checkbox>
@@ -65,6 +56,11 @@
             </button>
           </div>
         </form>
+
+        <button mat-button (click)="onChangePassword()" tabindex="2" mat-raised-button color="primary">
+          Change Password
+        </button>
+
         <div>
           <div>Creation date:   {{user.created_at}}</div>
           <div>Last update Date:   {{user.updated_at}}</div>

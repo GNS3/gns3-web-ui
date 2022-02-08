@@ -312,6 +312,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import { PermissionsFilterPipe } from './components/permissions-management/permissions-filter.pipe';
 import { DisplayPathPipe } from './components/permissions-management/display-path.pipe';
 import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
+import { ChangeUserPasswordComponent } from './components/user-management/user-detail/change-user-password/change-user-password.component';
 
 @NgModule({
   declarations: [
@@ -534,11 +535,9 @@ import {RolePermissionsComponent} from "@components/role-management/role-detail/
     FilterCompletePipe,
     UserPermissionsComponent,
     PermissionsFilterPipe,
-    FilterCompletePipe,
-    DisplayPathPipe,
     RolePermissionsComponent,
     DisplayPathPipe,
-    PermissionsFilterPipe,
+    ChangeUserPasswordComponent,
   ],
   imports: [
     BrowserModule,

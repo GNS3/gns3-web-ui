@@ -26,7 +26,12 @@
     <mat-error *ngIf="form.password?.touched && form.password?.errors"
     >A password between 6 and 100 characters is required.</mat-error>
   </mat-form-field>
-
+  <mat-form-field class="input-field">
+    <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm Password"/>
+    <mat-error *ngIf="form.confirmPassword?.touched && form.confirmPassword?.errors"
+    >Password and Confirm password must be the same.
+    </mat-error>
+  </mat-form-field>
 
   <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
   <mat-divider class="my-2"></mat-divider>

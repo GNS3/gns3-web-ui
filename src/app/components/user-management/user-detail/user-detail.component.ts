@@ -10,6 +10,10 @@ import {userEmailAsyncValidator} from "@components/user-management/add-user-dial
 import {ActivatedRoute, Router} from "@angular/router";
 import {Permission} from "@models/api/permission";
 import {Role} from "@models/api/role";
+import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ChangeUserPasswordComponent} from "@components/user-management/user-detail/change-user-password/change-user-password.component";
+import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
 
 @Component({
   selector: 'app-user-detail',
@@ -24,11 +28,13 @@ export class UserDetailComponent implements OnInit {
   server: Server;
   user_id: string;
   permissions: Permission[];
+  changingPassword: boolean = false;
 
   constructor(public userService: UserService,
               private toasterService: ToasterService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              public dialog: MatDialog) {
 
   }
 
@@ -57,8 +63,6 @@ export class UserDetailComponent implements OnInit {
       email: new FormControl(this.user.email,
         [Validators.email, Validators.required],
         [userEmailAsyncValidator(this.server, this.userService, this.user.email)]),
-      password: new FormControl(null,
-        [Validators.minLength(6), Validators.maxLength(100)]),
       is_active: new FormControl(this.user.is_active)
     });
   }
@@ -91,7 +95,7 @@ export class UserDetailComponent implements OnInit {
       .forEach(key => {
         const currentControl = this.editUserForm.get(key);
 
-        if (currentControl.dirty && currentControl.value !== this.user[key] && currentControl.value !== '') {
+        if (currentControl.dirty && currentControl.value !== this.user[key]) {
             dirtyValues[key] = currentControl.value;
         }
       });
@@ -99,5 +103,8 @@ export class UserDetailComponent implements OnInit {
     return dirtyValues;
   }
 
-
+  onChangePassword() {
+    this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent,
+      {width: '400px', height: '300px', data: {user: this.user, server: this.server}});
+  }
 }
