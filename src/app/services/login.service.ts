@@ -20,4 +20,8 @@ export class LoginService {
 
     return this.httpServer.post<AuthResponse>(server, '/users/login', payload, options);
   }
+
+  getLoggedUser(server: Server) {
+    return this.httpServer.get(server, "/users/me");
+  }
 }

@@ -13,4 +13,7 @@ export class Server {
   ubridge_path: string;
   status: ServerStatus;
   protocol: ServerProtocol;
+  username: string;
+  password: string;
+  tokenExpired: boolean;
 }
