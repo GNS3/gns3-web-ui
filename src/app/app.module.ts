@@ -313,6 +313,7 @@ import { PermissionsFilterPipe } from './components/permissions-management/permi
 import { DisplayPathPipe } from './components/permissions-management/display-path.pipe';
 import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
 import { ChangeUserPasswordComponent } from './components/user-management/user-detail/change-user-password/change-user-password.component';
+import {MatMenuModule} from "@angular/material/menu";
 
 @NgModule({
   declarations: [
@@ -538,6 +539,9 @@ import { ChangeUserPasswordComponent } from './components/user-management/user-d
     RolePermissionsComponent,
     DisplayPathPipe,
     ChangeUserPasswordComponent,
+    FilterCompletePipe,
+    DisplayPathPipe,
+    ChangeUserPasswordComponent,
   ],
   imports: [
     BrowserModule,
@@ -552,6 +556,7 @@ import { ChangeUserPasswordComponent } from './components/user-management/user-d
     FileUploadModule,
     MatSidenavModule,
     MatFormFieldModule,
+    MatMenuModule,
     ResizableModule,
     DragAndDropModule,
     DragDropModule,
