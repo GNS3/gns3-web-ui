@@ -4,6 +4,13 @@
     "outDir": "../out-tsc/spec",
     "baseUrl": "./",
     "target": "es5",
+    "paths": {
+      "@components/*": ["app/components/*"],
+      "@services/*": ["app/services/*"],
+      "@resolvers/*": ["app/resolvers/*"],
+      "@filters/*": ["app/filters/*"],
+      "@models/*": ["app/models/*"]
+    },
     "types": [
       "jasmine",
       "node"
