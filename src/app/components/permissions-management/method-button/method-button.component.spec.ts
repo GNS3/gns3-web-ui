@@ -2,7 +2,7 @@ import {async, fakeAsync, TestBed} from "@angular/core/testing";
 import {MethodButtonComponent} from "@components/permissions-management/method-button/method-button.component";
 import {Methods} from "@models/api/permission";
 
-fdescribe('MethodButtonComponent', () => {
+describe('MethodButtonComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({declarations: [MethodButtonComponent]});
   }));
