@@ -1,61 +1,57 @@
-import { DisplayPathPipe } from './display-path.pipe';
-import {fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {ApiInformationService} from "../../services/ApiInformation/api-information.service";
-import {Observable, of} from "rxjs";
-import {getTestServer} from "@services/testing";
+import {async, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {DisplayPathPipe} from "@components/permissions-management/display-path.pipe";
+import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {Server} from "@models/server";
+import {Observable, of} from "rxjs";
+import {IExtraParams} from "@services/ApiInformation/IExtraParams";
+import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
-describe('DisplayPathPipe', () => {
-  let pipe: DisplayPathPipe;
-  let apiInfoServiceSpy: jasmine.SpyObj<ApiInformationService>;
-  let server: Server;
+class MockApiInformationService {
 
-  beforeEach(() => {
-    const spy = jasmine.createSpyObj('ApiInformationService', ['getKeysForPath', 'getListByObjectId']);
+}
 
+
+fdescribe('DisplayPathPipe', () => {
+
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      providers: [DisplayPathPipe, {provide: ApiInformationService, useValue: spy}],
+      providers: [
+        DisplayPathPipe,
+        {provide: ApiInformationService, useClass: MockApiInformationService}]
     });
-    pipe = TestBed.inject(DisplayPathPipe);
-    apiInfoServiceSpy = TestBed.inject(ApiInformationService) as jasmine.SpyObj<ApiInformationService>;
-
-    server = getTestServer();
-  });
-
-  it('create an instance', () => {
-    expect(pipe).toBeTruthy();
-  });
-
-  it('Should return path with project name if it exists',fakeAsync(() => {
-    let res: string;
-    const mockGetKeysForPath = [{key: '{project_id}', value: 'idtralala'}]
-    const mockGetListByObjectId = [{id: 'idtralala', name: 'tralala-project'}]
-    apiInfoServiceSpy.getKeysForPath.and.returnValue(of(mockGetKeysForPath))
-    apiInfoServiceSpy.getListByObjectId.and.returnValue(of(mockGetListByObjectId))
-
-    pipe.transform('/project/idtralala', server).subscribe(data => {
-      res = data;
-    });
-    tick();
-    expect(res)
-      .toBe('/project/tralala-project');
-
   }));
 
-  it('Should return original path', fakeAsync(() => {
-    let res: string;
-    const mockGetKeysForPath = []
-    const mockGetListByObjectId = [{id: 'idtralala', name: 'tralala-project'}]
-    apiInfoServiceSpy.getKeysForPath.and.returnValue(of(mockGetKeysForPath))
-    apiInfoServiceSpy.getListByObjectId.and.returnValue(of(mockGetListByObjectId))
+  it('Should display human readable path', fakeAsync(() => {
+    const comp = TestBed.inject(DisplayPathPipe);
+    const apiService = TestBed.inject(ApiInformationService);
 
-    pipe.transform('/project/idtralala', server).subscribe(data => {
-      res = data;
-    });
+    apiService.getKeysForPath = (path: string): Observable<{ key: string; value: string }[]> => {
+      return of([
+        {key: 'project_id', value: '1111-2222-3333'},
+        {key: 'node_id', value: '2222-2222-2222'}
+      ]);
+    };
+
+    apiService
+      .getListByObjectId = (server: Server, key: string, value?: string, extraParams?: IExtraParams[]): Observable<IGenericApiObject[]> => {
+      if (key === 'project_id') {
+        return of([{id: '1111-2222-3333', name: 'myProject'}]);
+      }
+      if (key === 'node_id') {
+        return of([{id: '2222-2222-2222', name: 'node1'}]);
+      }
+    };
+
+    let result: string;
+
+    const server = new Server();
+    comp
+      .transform('/project/1111-2222-3333/nodes/2222-2222-2222', server)
+      .subscribe((res: string) => {
+        result = res;
+      });
+
     tick();
-    expect(res)
-      .toBe('/project/idtralala');
+    expect(result).toEqual('/project/myProject/nodes/node1');
   }));
-
-
 });
