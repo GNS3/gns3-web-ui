@@ -11,6 +11,12 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 export class SubPath {
+
+  /**
+   * @param {value} original subPath value from gns3 api
+   * @param {displayValue} displayed value can replace a UUID from original URL
+   * @param {key} associate key ex: 'project_id'
+   */
   constructor(public value: string,
               public displayValue: string,
               public key?: string) {
