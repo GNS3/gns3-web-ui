@@ -11,7 +11,7 @@ class MockApiInformationService {
 }
 
 
-fdescribe('DisplayPathPipe', () => {
+describe('DisplayPathPipe', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
