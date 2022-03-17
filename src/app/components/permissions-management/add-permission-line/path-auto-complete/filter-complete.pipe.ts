@@ -13,6 +13,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
+/**
+ *  Pipe to filter autocomplete proposals
+ */
 @Pipe({
   name: 'filterComplete'
 })
