@@ -3,6 +3,10 @@ import {Server} from "../../models/server";
 import {IExtraParams} from "./IExtraParams";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
+/**
+ * create cache to keep server information on client side
+ * reduce number of requests to the server
+ */
 export class ApiInformationCache {
 
   private cache = new Map<string, IApiData>();

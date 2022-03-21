@@ -22,6 +22,15 @@ import {IExtraParams} from "@services/ApiInformation/IExtraParams";
 import {ApiInformationCache} from "@services/ApiInformation/ApiInformationCache";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
+/**
+ * representation of an APi endpoint
+ * {
+ *   methods: ['GET', 'DELETE', 'PUT'],
+ *   originalPath: '/v3/projects/{project_id}',
+ *   path: '/projects/{project_id}',
+ *   subPaths: ['projects', '{project_id}'],
+ }
+ */
 export interface IPathDict {
   methods: ('POST' | 'GET' | 'PUT' | 'DELETE' | 'HEAD' | 'PATH')[];
   originalPath: string;
@@ -29,6 +38,10 @@ export interface IPathDict {
   subPaths: string[];
 }
 
+/**
+ * name: 'node_id',
+ * path: '/projects/{project_id}/nodes/{node_id}
+ */
 export interface IApiObject {
   name: string;
   path: string;
@@ -76,6 +89,11 @@ export class ApiInformationService {
 
   }
 
+  /**
+   * Generate a list of object from the OpenAPi GNS3 documentation with the GET path to query it
+   * @param openapi GNS3 openapi json data
+   * @private
+   */
   private apiObjectModelAdapter(openapi: any): IApiObject[] {
 
     function haveGetMethod(path: string): boolean {
@@ -105,6 +123,11 @@ export class ApiInformationService {
       .filter((object) => haveGetMethod(object.path));
   }
 
+  /**
+   * Convert OpenAPi json file from GNS3 api documentations to usable information schema
+   * @param openapi GNS3 openapi definition
+   * @private
+   */
   private apiPathModelAdapter(openapi: any): IPathDict[] {
     const keys = Object.keys(openapi.paths);
     return keys
@@ -122,7 +145,10 @@ export class ApiInformationService {
       }) as unknown as IPathDict[];
   }
 
-
+  /**
+   * Return availables methods for a path
+   * @param path '/v3/projects/{project_id} => ['GET', 'POST', 'PUT']
+   */
   getMethods(path: string): Observable<Methods[]> {
     return this.getPath(path)
       .pipe(
@@ -136,6 +162,10 @@ export class ApiInformationService {
       );
   }
 
+  /**
+   * return a list of matching path
+   * @param path '/v3/projects/{project_id}'
+   */
   getPath(path: string): Observable<IPathDict[]> {
     return this.data
       .asObservable()
@@ -172,6 +202,11 @@ export class ApiInformationService {
     }
   }
 
+  /**
+   * Return all available next child for a given path
+   * @param path api path
+   */
+
   getPathNextElement(path: string[]): Observable<string[]> {
 
     return this.getPath(path.join('/'))
@@ -187,6 +222,14 @@ export class ApiInformationService {
       }));
   }
 
+  /**
+   * return all keys which composed a path
+   * @param path '/v3/projects/7fed4f19-0c45-4461-a45b-93ff11ccdae6/nodes/62f3e04b-a22c-452a-a026-1971122d9d8a
+   * return: [
+   *          {key:'project_id', value: '7fed4f19-0c45-4461-a45b-93ff11ccdae6'},
+   *          {key:'node_id', value: '62f3e04b-a22c-452a-a026-1971122d9d8a'}
+   *         ]
+   */
   getKeysForPath(path: string): Observable<{ key: string; value: string }[]> {
     return this.getPath(path)
       .pipe(map((paths: IPathDict[]) => {
@@ -204,7 +247,14 @@ export class ApiInformationService {
       }));
   }
 
-  getListByObjectId(server: Server, key: string, value?: string, extraParams?: IExtraParams[]) {
+  /**
+   * get the value of specific object with his ID
+   * @param {server} the server object to query
+   * @param {key} to query ex :'node_id'
+   * @param {value} generally the object uuid
+   * @param {extraParams} somes params like the project_id if you query specific node_id
+   */
+  getListByObjectId(server: Server, key: string, value?: string, extraParams?: IExtraParams[]): Observable<IGenericApiObject[]> {
 
     const cachedData = this.cache.get(server, key, value, extraParams);
     if (cachedData) {

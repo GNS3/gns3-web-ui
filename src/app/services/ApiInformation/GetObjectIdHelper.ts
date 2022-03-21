@@ -11,6 +11,10 @@ export class GetObjectIdHelper {
     return /{([^)]+)}/.exec(key)[1];
   }
 
+  /**
+   * find the GET query corresponding to the key in Object list
+   * @param key
+   */
   public static findElementInObjectListFn(key): (data: IApiObject[]) => IApiObject {
     return function findElement(data: IApiObject[]): IApiObject {
       const elem = data.find(d => d.name === key);
@@ -21,6 +25,12 @@ export class GetObjectIdHelper {
     };
   }
 
+  /**
+   * Build the request, append the value if required
+   * @param server
+   * @param value
+   * @param extraParams
+   */
   public static buildRequestURL(server: Server, value: string, extraParams: IExtraParams[]): (elem) => string {
     return (elem): string => {
       let url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
@@ -37,6 +47,13 @@ export class GetObjectIdHelper {
     };
   }
 
+  /**
+   * Map the data from server to a generic response object
+   * @param key
+   * @param extraParams
+   * @param service
+   * @param server
+   */
   public static createResponseObject(key: string,
                                      extraParams: IExtraParams[],
                                      service: ApiInformationService,
