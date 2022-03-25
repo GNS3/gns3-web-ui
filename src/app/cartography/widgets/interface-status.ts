@@ -52,13 +52,13 @@ export class InterfaceStatusWidget implements Widget {
               new LinkStatus(
                 start_point.x,
                 start_point.y,
-                !l.capturing && l.suspend ? 'suspended' : l.source.status,
+               (( !l.capturing && l.suspend) || ( l.capturing && l.suspend)) ? 'suspended' : l.source.status,
                 sourcePort
               ),
               new LinkStatus(
                 end_point.x,
                 end_point.y,
-                !l.capturing && l.suspend ? 'suspended' : l.target.status,
+                (( !l.capturing && l.suspend) || ( l.capturing && l.suspend)) ? 'suspended' : l.target.status,
                 destinationPort
               ),
             ];
