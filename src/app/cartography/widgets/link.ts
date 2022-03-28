@@ -22,7 +22,7 @@ export class LinkWidget implements Widget {
     private selectionManager: SelectionManager,
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget
-  ) {}
+  ) { }
 
   public draw(view: SVGSelection) {
     const link_body = view.selectAll<SVGGElement, MapLink>('g.link_body').data((l) => [l]);
@@ -50,9 +50,8 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'capture-icon')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
-          (link.source.y + link.target.y) / 2 + 24
-        }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
+          }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
@@ -74,9 +73,8 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'filter-capture-icon')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
-          (link.source.y + link.target.y) / 2 + 24
-        }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
+          }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
@@ -99,9 +97,8 @@ export class LinkWidget implements Widget {
       .attr('width', '48px')
       .attr('height', '48px')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
-          (link.source.y + link.target.y) / 2 + 24
-        }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
+          }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
@@ -113,8 +110,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
-          l.capturing &&
-          l.suspend &&
+          ((!l.capturing && l.suspend)|| l.capturing && l.suspend) &&
           !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
         );
       })
@@ -125,9 +121,8 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'pause-icon')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
-          (link.source.y + link.target.y) / 2 + 24
-        }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
+          }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
