@@ -42,7 +42,7 @@ import { TemplateNameDialogComponent } from './template-name-dialog/template-nam
     ]),
   ],
 })
-export class NewTemplateDialogComponent implements OnInit {
+export class  NewTemplateDialogComponent implements OnInit {
   @Input() server: Server;
   @Input() project: Project;
 
@@ -96,6 +96,7 @@ export class NewTemplateDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    if(!this.server.authToken){
     this.templateService.list(this.server).subscribe((templates) => {
       this.templates = templates;
     });
@@ -105,7 +106,6 @@ export class NewTemplateDialogComponent implements OnInit {
         if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
       });
     });
-
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -181,6 +181,7 @@ export class NewTemplateDialogComponent implements OnInit {
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
+  }
   }
 
   updateAppliances() {
