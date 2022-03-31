@@ -92,7 +92,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
     const server_id = this.route.snapshot.paramMap.get('server_id');
     this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
       this.server = server;
-
+    
+      if(!this.server.authToken){
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
       });
@@ -106,8 +107,9 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.qemuImages = qemuImages;
       });
 
-      this.consoleTypes = this.configurationService.getConsoleTypes();
+      this.consoleTypes = this.configurationService.getConsoleTypes();}
     });
+  
   }
 
   setServerType(serverType: string) {
