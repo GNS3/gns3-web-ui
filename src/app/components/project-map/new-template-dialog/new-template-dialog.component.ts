@@ -131,10 +131,6 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
 
-    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
-      this.qemuBinaries = binaries;
-    });
-
     this.uploader = new FileUploader({});
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
@@ -182,6 +178,9 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.clearQueue();
     };
   }
+  this.qemuService.getBinaries(this.server).subscribe((binaries) => {
+    this.qemuBinaries = binaries;
+  });
   }
 
   updateAppliances() {
