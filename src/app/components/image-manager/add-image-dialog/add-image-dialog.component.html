@@ -1,0 +1,27 @@
+<div class="row" style="display: flex;">
+  <div class="col-md-6">
+    <mat-label>Please Select Image</mat-label>
+    
+  </div>
+  <div class="col-md-4 txt-align">
+      <input type="file" accept=".qcow2, .bin,.image,.qcow2,.vmdk,.img" multiple #file class="non-visible"
+        (change)="uploadImageFile($event)"  />
+      <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+  </div>
+  <div class="col-md-2 txt-align">
+    <button mat-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>    
+    </button>
+  </div>
+</div>
+<div class="row"  *ngFor="let img of selectFile; let i = index">
+  <mat-title> {{i+1}}. {{img?.name}} </mat-title> 
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div *ngIf="uploadedFile">
+      <mat-progress-bar mode="indeterminate" [value]="uploadProgress" aria-valuemin="0" aria-valuemax="100">
+      </mat-progress-bar>
+    </div>
+  </div>
+</div>

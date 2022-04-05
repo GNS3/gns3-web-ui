@@ -56,6 +56,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
+import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
 
 const routes: Routes = [
   {
@@ -67,6 +68,7 @@ const routes: Routes = [
       { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'server/:server_id/login', component: LoginComponent },
       { path: 'server/:server_id/loggeduser', component: LoggedUserComponent },
+      {path : 'server/:server_id/image-manager', component: ImageManagerComponent},
       {
         path: 'server/:server_id/projects',
         component: ProjectsComponent,

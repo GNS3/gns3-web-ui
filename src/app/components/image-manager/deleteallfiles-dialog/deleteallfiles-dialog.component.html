@@ -1,0 +1,19 @@
+<div *ngIf="!isDelete">
+    <h1 mat-dialog-title>Do you want delete all files ?.</h1>
+    <div mat-dialog-content >
+        <p>Your selected files</p>
+        <p *ngFor="let file of deleteData?.deleteFilesPaths; let i = index">{{i+1}}. {{file?.filename}}</p>
+    </div>
+    <div mat-dialog-actions align="end">
+        <button mat-button (click)="deleteAll()">Delete</button>
+        <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
+    </div>
+</div>
+<div *ngIf="isDelete">
+    <h1 align="center" mat-dialog-title>Please wait.</h1>
+
+    <div mat-dialog-content align="center">
+        <mat-spinner color="accent"></mat-spinner>
+
+    </div>
+</div>

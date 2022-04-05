@@ -1,0 +1,22 @@
+.non-visible {
+    display: none;
+  }
+
+.img-btn{
+    margin: auto;
+  }
+.btn-box{
+    display: flex; 
+    margin-top: 10px;
+}
+
+.fb-btn{
+  background-color: #263238 !important;
+  box-shadow: none !important;
+  height: 45px;
+}
+mat-header-cell, mat-cell {
+  justify-content: center;
+}
+
+  

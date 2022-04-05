@@ -1,0 +1,65 @@
+.progress-bar {
+    padding: 0;
+  }
+  .progress {
+    width: 50px;
+    background-color: #263238;
+    height: 28px;
+    margin-left: 13px;
+  }
+  .mat-input-element {
+    font-size: medium;
+    font-weight: 200;
+  }
+  #fileInput {
+    position: absolute;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+  }
+  .mat-toolbar-single-row {
+    height: auto !important;
+    background: transparent;
+    padding: 0;
+  }
+  .mat-toolbar-single-row button {
+    width: 100px;
+  }
+  .mat-form-field {
+    width: 100%;
+  }
+  .message {
+    background-color: #ddd;
+    padding: 15px;
+    color: #333;
+    border: #aaa solid 1px;
+    border-radius: 4px;
+    margin: 15px 0;
+  }
+  .preview {
+    max-width: 200px;
+    vertical-align: middle;
+  }
+  .list-card {
+    margin-top: 20px;
+  }
+  .list-item {
+    margin-bottom: 20px;
+  }
+
+  .non-visible {
+    display: none;
+  }
+
+  mat-progress-bar{
+    margin-top: 10px;
+  }
+  .txt-align{
+    text-align: end;
+
+  }
+ 
+  
