@@ -21,7 +21,7 @@
     top: 0px;
   }
   .mat-toolbar-single-row {
-    height: auto !important;
+    height: auto;
     background: transparent;
     padding: 0;
   }
@@ -59,7 +59,25 @@
   }
   .txt-align{
     text-align: end;
-
   }
- 
+  .uploaded-text{
+    color: #0ca8c7;
+    font-size: 17px;
+  }
+  .uploaded-error-text{
+      color: #d52435;
+      font-weight: 600;
+  }
+
+  .choose-instal-appliance {
+    display: flex;
+    flex-direction: row;
+    margin: 15px 0px 11px 0px;
+    align-items: flex-start;
+  }
+  
+  .instal-appliances-button {
+    margin: 11px;
+  }
+  
   

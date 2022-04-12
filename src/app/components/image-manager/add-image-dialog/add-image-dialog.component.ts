@@ -3,7 +3,9 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Server } from '../../../models/server';
 import { ImageManagerService } from '../../../services/image-manager.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ImageData } from '../../../models/images';
 
 @Component({
   selector: 'app-add-image-dialog',
@@ -21,10 +23,11 @@ import { Observable } from 'rxjs';
 export class AddImageDialogComponent implements OnInit {
   server: Server;
   uploadedFile: boolean = false;
-  uploadProgress: number = 0;
+  isExistImage: boolean = false;
+  isInstallAppliance: boolean = false
+  install_appliance: boolean = false
   selectFile: any = [];
-
-
+  uploadFileMessage: ImageData = []
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -37,34 +40,28 @@ export class AddImageDialogComponent implements OnInit {
     this.server = this.data
   }
 
+  selectInstallApplianceOption(ev) {
+    this.install_appliance = ev.value
+  }
+
   async uploadImageFile(event) {
     for (let imgFile of event.target.files) {
       this.selectFile.push(imgFile)
     }
-
-    await this.upload().subscribe((_) => {
-      console.log(_)
-      this.dialogRef.close('file uploaded');
-    })
+    await this.upload()
   }
 
   // files uploading 
   upload() {
-    return new Observable<any>(observe => {
-      this.selectFile.forEach((img, i) => {
-        let resCount = 1
-        try {
-          resCount = resCount + i
-          this.uploadedFile = true;
-          this.imageService.uploadedImage(this.server, img.name, img)
-            .subscribe(() => {
-              this.selectFile.length == resCount ? observe.next() : ''
-            }, (error) => {
-              observe.error(error)
-            })
-        } catch (error) {
-        }
-      })
-    })
+    const calls = [];
+    this.uploadedFile = true;
+    this.selectFile.forEach(imgElement => {
+      calls.push(this.imageService.uploadedImage(this.server, this.install_appliance, imgElement.name, imgElement).pipe(catchError(error => of(error))))
+    });
+    Observable.forkJoin(calls).subscribe(responses => {
+      this.uploadFileMessage = responses
+      this.uploadedFile = false;
+      this.isExistImage = true;
+    });
   }
 }

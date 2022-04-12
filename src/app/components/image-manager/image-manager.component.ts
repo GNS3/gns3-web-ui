@@ -1,21 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ServerService } from '../../services/server.service';
 import { VersionService } from '../../services/version.service';
 import { ProgressService } from 'app/common/progress/progress.service';
-import { Images } from '../../models/images';
+import { Image } from '../../models/images';
 import { Server } from '../../models/server';
 import { ImageManagerService } from "../../services/image-manager.service";
-import { Version } from '../../models/version';
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { MatSort } from '@angular/material/sort';
-import { BehaviorSubject, Observable, Subscription, merge } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ToasterService } from '../../services/toaster.service';
-import { NotificationService } from '@services/notification.service';
-import { DeleteallfilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
+import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
+import { imageDataSource, imageDatabase } from "./image-database-file";
 
 @Component({
   selector: 'app-image-manager',
@@ -30,7 +26,7 @@ export class ImageManagerComponent implements OnInit {
   isAllDelete: boolean = false
   selection = new SelectionModel(true, []);
 
-  displayedColumns = ['select', 'filename', 'image_type', 'image_size', 'delete'];
+  displayedColumns = ['select', 'filename', 'image_type', 'image_size','delete'];
 
   constructor(
     private imageService: ImageManagerService,
@@ -50,33 +46,36 @@ export class ImageManagerComponent implements OnInit {
       if (server.authToken) {
         this.getImages()
       }
-      this.versionService.get(this.server).subscribe((version: Version) => {
-        this.version = version.version;
-      });
+      // this.versionService.get(this.server).subscribe((version: Version) => {
+      //   this.version = version.version;
+      // });
     });
     this.dataSource = new imageDataSource(this.imageDatabase);
   }
 
   getImages() {
-    this.imageService.getSavedImgList(this.server).subscribe(
-      (images: Images[]) => {
+    this.imageService.getImages(this.server).subscribe(
+      (images: Image[]) => {
         this.imageDatabase.addImages(images)
       },
       (error) => {
-        this.progressService.setError(error);
+        this.toasterService.error(error.error.message)
+      
       }
     );
   }
 
   deleteFile(path) {
-    this.imageService.deleteImage(this.server, path).subscribe(
+    this.imageService.deleteFile(this.server, path).subscribe(
       (res) => {
         this.getImages()
         this.unChecked()
         this.toasterService.success('File deleted');
       },
       (error) => {
-        this.toasterService.error(error)
+        this.getImages()
+        this.unChecked()
+        this.toasterService.error(error.error.message)
       }
     );
   }
@@ -87,7 +86,7 @@ export class ImageManagerComponent implements OnInit {
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  selectAllImages() {
     this.isAllSelected() ? this.unChecked() : this.allChecked()
   }
 
@@ -102,30 +101,30 @@ export class ImageManagerComponent implements OnInit {
   }
 
   public addImageDialog() {
-    console.log(this.server)
     const dialogRef = this.dialog.open(AddImageDialogComponent, {
-      width: '750px',
+      width: '600px',
       maxHeight: '550px',
       autoFocus: false,
       disableClose: true,
       data: this.server
     });
 
-    dialogRef.afterClosed().subscribe((answer: string) => {
-      if (answer) {
+    dialogRef.afterClosed().subscribe((isAddes: boolean) => {
+      if (isAddes) {
         this.getImages()
-        this.toasterService.success('File added');
+        this.unChecked()
       } else {
+        this.getImages()
+        this.unChecked()
         return false;
       }
     });
   }
 
   deleteAllFiles() {
-    console.log(this.server)
-    const dialogRef = this.dialog.open(DeleteallfilesDialogComponent, {
-      width: '400px',
-      maxHeight: '350px',
+    const dialogRef = this.dialog.open(DeleteAllImageFilesDialogComponent, {
+      width: '500px',
+      maxHeight: '650px',
       autoFocus: false,
       disableClose: true,
       data: {
@@ -140,38 +139,11 @@ export class ImageManagerComponent implements OnInit {
         this.getImages()
         this.toasterService.success('All files deleted');
       } else {
+        this.unChecked()
+        this.getImages()
         return false;
       }
     });
-
   }
-}
-
-export class imageDatabase {
-  dataChange: BehaviorSubject<Images[]> = new BehaviorSubject<Images[]>([]);
-  get data(): Images[] {
-    return this.dataChange.value;
-  }
-
-  public addImages(fliesData: Images[]) {
-    this.dataChange.next(fliesData);
-  }
-
-}
-
-export class imageDataSource extends DataSource<Images> {
-  constructor(private serverDatabase: imageDatabase) {
-    super();
-  }
-
-  connect(): Observable<Images[]> {
-    return merge(this.serverDatabase.dataChange).pipe(
-      map(() => {
-        return this.serverDatabase.data;
-      })
-    );
-  }
-
-  disconnect() { }
 }
 

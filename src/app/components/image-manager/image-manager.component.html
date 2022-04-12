@@ -21,7 +21,7 @@
       <mat-table #table [dataSource]="dataSource">
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+            <mat-checkbox (change)="$event ? selectAllImages() : null" [checked]="selection.hasValue() && isAllSelected()"
               [indeterminate]="selection.hasValue() && !isAllSelected()">
             </mat-checkbox>
           </mat-header-cell>
@@ -49,14 +49,15 @@
           <mat-header-cell *matHeaderCellDef> Image Size </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ (row.image_size/1000000).toFixed()}} MB </mat-cell>
         </ng-container>
+       
         <ng-container matColumnDef="delete" >
           <mat-header-cell *matHeaderCellDef> 
-            <button mat-fab  color="primary" *ngIf="selection.hasValue() && isAllSelected()" class="fb-btn" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+            <button mat-button *ngIf="selection.hasValue() && isAllSelected()" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-header-cell>
           <mat-cell *matCellDef="let row" >
-            <button mat-fab  color="primary" *ngIf="selection.isSelected(row)" class="fb-btn" (click)="deleteFile(row.path)" aria-label="Example icon button with a delete icon">
+            <button mat-button  *ngIf="selection.isSelected(row)" (click)="deleteFile(row.path)" aria-label="Example icon button with a delete icon">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-cell>

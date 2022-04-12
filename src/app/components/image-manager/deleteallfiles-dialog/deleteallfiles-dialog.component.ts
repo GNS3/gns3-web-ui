@@ -1,19 +1,25 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ImageManagerService } from '@services/image-manager.service';
-import { ToasterService } from '@services/toaster.service';
-import { Observable } from 'rxjs';
+import { ImageManagerService } from '../../../services/image-manager.service';
+import { ToasterService } from '../../../services/toaster.service';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ImageData } from '../../../models/images';
 
 @Component({
   selector: 'app-deleteallfiles-dialog',
   templateUrl: './deleteallfiles-dialog.component.html',
   styleUrls: ['./deleteallfiles-dialog.component.scss']
 })
-export class DeleteallfilesDialogComponent implements OnInit {
+export class DeleteAllImageFilesDialogComponent implements OnInit {
   isDelete: boolean = false;
+  isUsedFiles: boolean = false;
+  deleteFliesDetails: ImageData = []
+  fileNotDeleted: ImageData = []
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public deleteData: any,
-    public dialogRef: MatDialogRef<DeleteallfilesDialogComponent>,
+    public dialogRef: MatDialogRef<DeleteAllImageFilesDialogComponent>,
     private imageService: ImageManagerService,
     private toasterService: ToasterService
   ) { }
@@ -23,30 +29,21 @@ export class DeleteallfilesDialogComponent implements OnInit {
 
   async deleteAll() {
     this.isDelete = true
-    await this.delete().subscribe((_) => {
-      this.dialogRef.close(true);
-      this.isDelete = false
-    })
+    await this.deleteFile()
   }
-  delete() {
-    return new Observable<any>(observe => {
-      this.deleteData.deleteFilesPaths.forEach((_, i) => {
-        let imgDeleteCount = 1
-        try {
-          imgDeleteCount = imgDeleteCount + i
-          this.imageService.deleteImage(this.deleteData.server, _.filename).subscribe(
-            () => {
-              this.deleteData.deleteFilesPaths.length === imgDeleteCount ? observe.next() : ''
-            },
-            (error) => {
-              this.toasterService.error(error)
-            }
-          );
-        } catch (error) {
-          this.toasterService.error(error)
-        }
-      })
-    })
+
+  deleteFile() {
+    const calls = [];
+    this.deleteData.deleteFilesPaths.forEach(pathElement => {
+      calls.push(this.imageService.deleteFile(this.deleteData.server, pathElement.filename).pipe(catchError(error => of(error))))
+    });
+    Observable.forkJoin(calls).subscribe(responses => {
+      this.deleteFliesDetails = responses.filter(x => x !== null)
+      this.fileNotDeleted = responses.filter(x => x === null)
+      this.isUsedFiles = true;
+      this.isDelete = true
+    });
+
   }
 
 

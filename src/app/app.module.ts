@@ -274,7 +274,7 @@ import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
 import { AddImageDialogComponent } from './components/image-manager/add-image-dialog/add-image-dialog.component';
-import { DeleteallfilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
+import { DeleteAllImageFilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
 
 @NgModule({
   declarations: [
@@ -465,7 +465,7 @@ import { DeleteallfilesDialogComponent } from './components/image-manager/delete
     ProjectReadmeComponent,
     ImageManagerComponent,
     AddImageDialogComponent,
-    DeleteallfilesDialogComponent,
+    DeleteAllImageFilesDialogComponent,
   ],
   imports: [
     BrowserModule,
