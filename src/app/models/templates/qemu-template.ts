@@ -27,7 +27,6 @@ export class QemuTemplate {
   initrd: string;
   kernel_command_line: string;
   kernel_image: string;
-  legacy_networking: boolean;
   linked_clone: boolean;
   mac_address: string;
   name: string;

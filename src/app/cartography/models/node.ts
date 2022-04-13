@@ -45,7 +45,6 @@ export class Properties {
   kernel_command_line: string;
   kernel_image: string;
   kernel_image_md5sum?: any;
-  legacy_networking: boolean;
   mac_address: string;
   options: string;
   platform: string;
