@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { FileItem, FileUploader, FileUploaderOptions, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
@@ -23,6 +23,8 @@ import { ToasterService } from '../../../../services/toaster.service';
 export class AddQemuVmTemplateComponent implements OnInit {
   server: Server;
   qemuBinaries: QemuBinary[] = [];
+  selectPlatform: string[] = [];
+  selectedPlatform: string;
   selectedBinary: QemuBinary;
   ramMemory: number;
   consoleTypes: string[] = [];
@@ -68,6 +70,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   ngOnInit() {
     this.uploader = new FileUploader({});
+
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -85,6 +88,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       });
       this.toasterService.success('Image uploaded');
     };
+
     this.uploader.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
     };
@@ -97,16 +101,18 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.qemuTemplate = qemuTemplate;
       });
 
-      this.qemuService.getBinaries(server).subscribe((qemuBinaries: QemuBinary[]) => {
+
+      this.qemuService.getBinaries(this.server).subscribe((qemuBinaries: QemuBinary[]) => {
         this.qemuBinaries = qemuBinaries;
         if (this.qemuBinaries[0]) this.selectedBinary = this.qemuBinaries[0];
       });
 
-      if (!this.server.authToken) {
-        this.qemuService.getImages(server).subscribe((qemuImages: QemuImage[]) => {
-          this.qemuImages = qemuImages;
-        });
-      }
+      this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+        this.qemuImages = qemuImages;
+      });
+
+      this.selectPlatform = this.configurationService.getPlatform();
+      this.selectedPlatform = this.selectPlatform[0];
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
     });
@@ -124,17 +130,19 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   uploadImageFile(event) {
+
     this.uploadedFile = true;
     let name = event.target.files[0].name;
     this.diskForm.controls['fileName'].setValue(name);
 
     const url = this.qemuService.getImagePath(this.server, name);
     this.uploader.queue.forEach((elem) => (elem.url = url));
-
+  
     const itemToUpload = this.uploader.queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
-
+    
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.server.authToken}]) 
     this.uploader.uploadItem(itemToUpload);
+
   }
 
   goBack() {
@@ -142,9 +150,12 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   addTemplate() {
+    debugger
     if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
       this.qemuTemplate.ram = +this.memoryForm.get('ramMemory').value;
       this.qemuTemplate.qemu_path = this.selectedBinary.path;
+      this.qemuTemplate.platform = this.selectedPlatform;
+
       if (this.newImageSelected) {
         this.qemuTemplate.hda_disk_image = this.diskForm.get('fileName').value;
       } else {

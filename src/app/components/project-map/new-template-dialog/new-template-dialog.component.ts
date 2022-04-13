@@ -106,6 +106,11 @@ export class  NewTemplateDialogComponent implements OnInit {
         if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
       });
     });
+
+    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
+      this.qemuBinaries = binaries;
+    });
+    
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -178,9 +183,7 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.clearQueue();
     };
   }
-  this.qemuService.getBinaries(this.server).subscribe((binaries) => {
-    this.qemuBinaries = binaries;
-  });
+  
   }
 
   updateAppliances() {

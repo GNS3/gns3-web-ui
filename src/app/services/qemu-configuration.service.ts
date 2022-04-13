@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class QemuConfigurationService {
+  getPlatform() {
+    return  ['x86_64', 'aarch64', 'alpha', 'arm', 'cris', 'i386', 'lm32', 'm68k', 'microblaze', 'microblazeel', 'mips', 'mips64', 'mips64el', 'mipsel', 'moxie', 'or32', 'ppc', 'ppc64', 'ppcemb', 's390x', 'sh4', 'sh4eb', 'sparc', 'sparc64', 'tricore', 'unicore32', 'xtensa', 'xtensaeb'];
+  }
+
   getConsoleTypes() {
     return ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
   }
