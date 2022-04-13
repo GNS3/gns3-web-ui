@@ -29,16 +29,16 @@
           </form>
         </mat-step>
 
-        <mat-step label="QEMU binary and memory" [completed]="memoryForm.get('ramMemory').value && selectedBinary">
+        <mat-step label="Platform and memory" [completed]="memoryForm.get('ramMemory').value && selectedPlatform">
           <form [formGroup]="memoryForm">
             <mat-form-field class="form-field">
               <mat-select
-                placeholder="Qemu binary"
-                [(ngModel)]="selectedBinary"
+                placeholder="Platform"
+                [(ngModel)]="selectedPlatform"
                 [ngModelOptions]="{ standalone: true }"
               >
-                <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
-                  {{ binary.path }}
+                <mat-option *ngFor="let platform of selectPlatform " [value]="platform">
+                  {{ platform }}
                 </mat-option>
               </mat-select> </mat-form-field
             ><br />

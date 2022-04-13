@@ -119,6 +119,11 @@ export class  NewTemplateDialogComponent implements OnInit {
         if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
       });
     });
+
+    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
+      this.qemuBinaries = binaries;
+    });
+    
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -142,10 +147,6 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
       this.dataSource.paginator = this.paginator;
-    });
-
-    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
-      this.qemuBinaries = binaries;
     });
 
     this.uploader = new FileUploader({});
@@ -195,6 +196,7 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.clearQueue();
     };
   }
+  
   }
 
   updateAppliances() {
