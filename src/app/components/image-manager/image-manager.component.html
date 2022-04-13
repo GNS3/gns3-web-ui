@@ -52,7 +52,7 @@
        
         <ng-container matColumnDef="delete" >
           <mat-header-cell *matHeaderCellDef> 
-            <button mat-button *ngIf="selection.hasValue() && isAllSelected()" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+            <button mat-button *ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-header-cell>

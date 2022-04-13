@@ -129,7 +129,7 @@ export class ImageManagerComponent implements OnInit {
       disableClose: true,
       data: {
         server: this.server,
-        deleteFilesPaths: this.imageDatabase.data
+        deleteFilesPaths: this.selection.selected
       }
     });
 
