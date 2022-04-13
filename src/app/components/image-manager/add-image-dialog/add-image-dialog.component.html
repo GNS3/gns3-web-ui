@@ -1,0 +1,70 @@
+<div *ngIf="!isInstallAppliance">
+  <div class="row">
+    <div class="col-md-10">
+      <h5>Would you like to automatically install appliances for this image?</h5>
+    </div>
+    <div class="col-md-2 txt-align">
+      <button mat-button (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+<div mat-dialog-content>
+    <mat-radio-group name="install_appliances" class="choose-instal-appliance"  [value]="install_appliance"  (change)="selectInstallApplianceOption($event)">
+        <mat-radio-button value="true" class="instal-appliances-button" [checked]="install_appliance">
+          Yes
+        </mat-radio-button>
+        <mat-radio-button value="false" class="instal-appliances-button" [checked]="!install_appliance">
+          No
+        </mat-radio-button>
+    </mat-radio-group>
+</div>
+<div mat-dialog-actions align="end">
+    <button  mat-raised-button color="primary" (click)="isInstallAppliance =!isInstallAppliance">Next</button>
+</div>
+</div>
+
+
+
+
+<div *ngIf="!isExistImage && isInstallAppliance">
+  <div class="row" style="display: flex;">
+    <div class="col-md-6">
+      <h5>Please Select image</h5>
+
+    </div>
+    <div class="col-md-4 txt-align">
+      <input type="file" accept=".qcow2, .bin,.image,.qcow2,.vmdk,.img,.tmp" multiple #file class="non-visible"
+        (change)="uploadImageFile($event)" />
+      <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+    </div>
+    <div class="col-md-2 txt-align">
+      <button mat-button (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="row" *ngFor="let img of selectFile; let i = index">
+    <mat-title> {{i+1}}. {{img?.name}} </mat-title>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div *ngIf="uploadedFile">
+        <mat-progress-bar mode="indeterminate" [value]="uploadProgress" aria-valuemin="0" aria-valuemax="100">
+        </mat-progress-bar>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="isExistImage">
+  <div mat-dialog-content>
+    <div *ngIf="uploadFileMessage.length > 0">
+      <p class="uploaded-text">Uploaded image details</p>
+      <p *ngFor="let uploadFile of uploadFileMessage; let i = index" [ngClass]="{'uploaded-error-text': uploadFile?.error?.message}">{{i+1}}. {{uploadFile?.filename ?? uploadFile?.error?.message}}</p>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+    <button  mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
+</div>
+</div>
