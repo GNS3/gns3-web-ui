@@ -41,7 +41,6 @@ export class TemplateMocksService {
       initrd: '',
       kernel_command_line: '',
       kernel_image: '',
-      legacy_networking: false,
       linked_clone: true,
       mac_address: '',
       name: '',
