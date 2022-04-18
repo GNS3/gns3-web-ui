@@ -129,13 +129,13 @@
   <mat-step *ngIf="applianceToInstall">
     <ng-template matStepLabel>{{ secondActionTitle }}</ng-template>
 
-    <mat-card [hidden]="!(!isLinuxPlatform && !applianceToInstall.dynamips)">
-      Please configure GNS3 VM to install selected appliance
-    </mat-card>
+    <!-- <mat-card [hidden]="!(!isLinuxPlatform && !applianceToInstall.dynamips)">
+      Please configure GNS3 VM to install selected appliance 
+    </mat-card> -->
 
-    <mat-card [hidden]="!(isLinuxPlatform || applianceToInstall.dynamips)">
+    <mat-card [hidden]="!(!isLinuxPlatform || applianceToInstall.dynamips)">
       <div *ngIf="applianceToInstall.qemu">
-        <div>
+        <!-- <div>
           Server type<br />
           <mat-radio-group class="radio-group">
             <mat-radio-button
@@ -147,7 +147,7 @@
               >Install the appliance locally</mat-radio-button
             >
           </mat-radio-group>
-        </div>
+        </div>  -->
         <div>
           Qemu binary<br />
           <mat-select
@@ -321,7 +321,7 @@
       </div>
 
       <div *ngIf="applianceToInstall.docker">
-        <div>
+        <!-- <div>
           Server type<br />
           <mat-radio-group class="radio-group">
             <mat-radio-button
@@ -333,14 +333,14 @@
               >Install the appliance locally</mat-radio-button
             >
           </mat-radio-group>
-        </div>
+        </div> -->
         <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">
           Create docker template
         </button>
       </div>
 
       <div *ngIf="applianceToInstall.dynamips">
-        <div>
+        <!-- <div>
           Server type<br />
           <mat-radio-group class="radio-group">
             <mat-radio-button
@@ -351,7 +351,7 @@
               >Install the appliance locally</mat-radio-button
             >
           </mat-radio-group>
-        </div>
+        </div> -->
         <div>
           Install required files
           <button
@@ -389,7 +389,7 @@
       </div>
 
       <div *ngIf="applianceToInstall.iou">
-        <div>
+        <!-- <div>
           Server type<br />
           <mat-radio-group class="radio-group">
             <mat-radio-button
@@ -401,7 +401,7 @@
               >Install the appliance locally</mat-radio-button
             >
           </mat-radio-group>
-        </div>
+        </div> -->
         <div>
           Install required files
           <button
