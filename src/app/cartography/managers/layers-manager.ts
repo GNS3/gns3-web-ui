@@ -38,6 +38,7 @@ export class LayersManager {
   }
 
   public setLinks(links: MapLink[]) {
+    console.log('from set links 2');
     links
       .filter((link: MapLink) => link.source && link.target)
       .forEach((link: MapLink) => {

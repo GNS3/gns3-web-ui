@@ -180,6 +180,18 @@
       [server]="server"
       [link]="links[0]"
     ></app-reset-link-action>
+    <app-edit-link-style-action
+      *ngIf="
+        !projectService.isReadOnly(project) &&
+        drawings.length === 0 &&
+        nodes.length === 0 &&
+        links.length === 1 &&
+        linkNodes.length === 0
+      "
+      [server]="server"
+      [project]="project"
+      [link]="links[0]"
+    ></app-edit-link-style-action>
     <app-lock-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length > 0 || nodes.length > 0)"
       [server]="server"
