@@ -71,7 +71,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       this.linkService.updateLinkStyle(this.server, this.link).subscribe((link) => {
         this.linksDataSource.update(link);
         this.linksEventSource.edited.next(this.linkToMapLink.convert(link));
-        this.toasterService.success("Link updated");
+        location.reload()
+        // this.toasterService.success("Link updated");
         this.dialogRef.close();
       });
     } else {
