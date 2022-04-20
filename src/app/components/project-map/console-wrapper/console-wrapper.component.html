@@ -16,11 +16,6 @@
   (resizeStart)="toggleDragging(false)"
   (resizeEnd)="onResizeEnd($event)"
 >
-  <!-- <div 
-    class="consoleWrapper"
-    [ngClass]="{lightTheme: isLightThemeEnabled}"
-    (mousedown)="toggleDragging(true)"
-    [ngStyle]="style"> -->
 
   <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }">
     <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
