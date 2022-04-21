@@ -56,7 +56,7 @@ export class StartCaptureDialogComponent implements OnInit {
     const sourcePort = sourceNode.ports[this.link.nodes[0].port_number];
     const targetPort = targetNode.ports[this.link.nodes[1].port_number];
     this.inputForm.controls['fileName'].setValue(
-      `${sourceNode.name}_${sourcePort.name}_to_${targetNode.name}_${targetPort.name}`
+      `${sourceNode.name}_${sourcePort.name}_to_${targetNode.name}_${targetPort.name}`.replace(new RegExp('[^0-9A-Za-z_-]', 'g'), '')
     );
   }
 
