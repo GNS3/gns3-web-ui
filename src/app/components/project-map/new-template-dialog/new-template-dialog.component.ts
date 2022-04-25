@@ -42,7 +42,7 @@ import { TemplateNameDialogComponent } from './template-name-dialog/template-nam
     ]),
   ],
 })
-export class NewTemplateDialogComponent implements OnInit {
+export class  NewTemplateDialogComponent implements OnInit {
   @Input() server: Server;
   @Input() project: Project;
 
@@ -96,6 +96,20 @@ export class NewTemplateDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.applianceService.getAppliances(this.server).subscribe((appliances) => {
+      this.appliances = appliances;
+      this.appliances.forEach((appliance) => {
+        if (appliance.docker) appliance.emulator = 'Docker';
+        if (appliance.dynamips) appliance.emulator = 'Dynamips';
+        if (appliance.iou) appliance.emulator = 'Iou';
+        if (appliance.qemu) appliance.emulator = 'Qemu';
+      });
+      this.allAppliances = appliances;
+      this.dataSource = new MatTableDataSource(this.allAppliances);
+      this.dataSource.paginator = this.paginator;
+    });
+
+    if(!this.server.authToken){
     this.templateService.list(this.server).subscribe((templates) => {
       this.templates = templates;
     });
@@ -106,6 +120,10 @@ export class NewTemplateDialogComponent implements OnInit {
       });
     });
 
+    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
+      this.qemuBinaries = binaries;
+    });
+    
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -129,10 +147,6 @@ export class NewTemplateDialogComponent implements OnInit {
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
       this.dataSource.paginator = this.paginator;
-    });
-
-    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
-      this.qemuBinaries = binaries;
     });
 
     this.uploader = new FileUploader({});
@@ -181,6 +195,8 @@ export class NewTemplateDialogComponent implements OnInit {
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
+  }
+  
   }
 
   updateAppliances() {

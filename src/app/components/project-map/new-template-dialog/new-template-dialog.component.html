@@ -129,25 +129,8 @@
   <mat-step *ngIf="applianceToInstall">
     <ng-template matStepLabel>{{ secondActionTitle }}</ng-template>
 
-    <mat-card [hidden]="!(!isLinuxPlatform && !applianceToInstall.dynamips)">
-      Please configure GNS3 VM to install selected appliance
-    </mat-card>
-
-    <mat-card [hidden]="!(isLinuxPlatform || applianceToInstall.dynamips)">
+    <mat-card [hidden]="!(!isLinuxPlatform || applianceToInstall.dynamips)">
       <div *ngIf="applianceToInstall.qemu">
-        <div>
-          Server type<br />
-          <mat-radio-group class="radio-group">
-            <mat-radio-button
-              [disabled]="!isLinuxPlatform"
-              [checked]="isLocalComputerChosen"
-              class="radio-button"
-              value="1"
-              (click)="setServerType('local')"
-              >Install the appliance locally</mat-radio-button
-            >
-          </mat-radio-group>
-        </div>
         <div>
           Qemu binary<br />
           <mat-select
@@ -321,37 +304,13 @@
       </div>
 
       <div *ngIf="applianceToInstall.docker">
-        <div>
-          Server type<br />
-          <mat-radio-group class="radio-group">
-            <mat-radio-button
-              [disabled]="!isLinuxPlatform"
-              [checked]="isLocalComputerChosen"
-              class="radio-button"
-              value="1"
-              (click)="setServerType('local')"
-              >Install the appliance locally</mat-radio-button
-            >
-          </mat-radio-group>
-        </div>
+        
         <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">
           Create docker template
         </button>
       </div>
 
       <div *ngIf="applianceToInstall.dynamips">
-        <div>
-          Server type<br />
-          <mat-radio-group class="radio-group">
-            <mat-radio-button
-              [checked]="isLocalComputerChosen"
-              class="radio-button"
-              value="1"
-              (click)="setServerType('local')"
-              >Install the appliance locally</mat-radio-button
-            >
-          </mat-radio-group>
-        </div>
         <div>
           Install required files
           <button
@@ -389,19 +348,6 @@
       </div>
 
       <div *ngIf="applianceToInstall.iou">
-        <div>
-          Server type<br />
-          <mat-radio-group class="radio-group">
-            <mat-radio-button
-              [disabled]="!isLinuxPlatform"
-              [checked]="isLocalComputerChosen"
-              class="radio-button"
-              value="1"
-              (click)="setServerType('local')"
-              >Install the appliance locally</mat-radio-button
-            >
-          </mat-radio-group>
-        </div>
         <div>
           Install required files
           <button

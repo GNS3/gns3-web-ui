@@ -1,0 +1,70 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <div class="col-md-9">
+        <h1>Image Manager</h1>
+      </div>
+      <div class="col-md-3 btn-box">
+        <button class="img-btn" mat-button
+          (click)="addImageDialog()">
+          <mat-icon>add</mat-icon> Add Image
+        </button>
+      </div>
+    </div>
+
+
+  </div>
+  <div class="default-content">
+    <app-server-discovery></app-server-discovery>
+
+    <div class="mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource">
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? selectAllImages() : null" [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+              [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </mat-cell>
+
+        </ng-container>
+
+        <ng-container matColumnDef="filename">
+          <mat-header-cell *matHeaderCellDef> File Name </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <a class="table-link">{{ row.filename }}</a>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="image_type">
+          <mat-header-cell *matHeaderCellDef> Image Type </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.image_type }} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="image_size">
+          <mat-header-cell *matHeaderCellDef> Image Size </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ (row.image_size/1000000).toFixed()}} MB </mat-cell>
+        </ng-container>
+       
+        <ng-container matColumnDef="delete" >
+          <mat-header-cell *matHeaderCellDef> 
+            <button mat-button *ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" >
+            <button mat-button  *ngIf="selection.isSelected(row)" (click)="deleteFile(row.path)" aria-label="Example icon button with a delete icon">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </div>
+  </div>
+</div>

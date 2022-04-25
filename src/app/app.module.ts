@@ -113,6 +113,7 @@ import { DeleteActionComponent } from './components/project-map/context-menu/act
 import { DuplicateActionComponent } from './components/project-map/context-menu/actions/duplicate-action/duplicate-action.component';
 import { EditConfigActionComponent } from './components/project-map/context-menu/actions/edit-config/edit-config-action.component';
 import { EditStyleActionComponent } from './components/project-map/context-menu/actions/edit-style-action/edit-style-action.component';
+import { EditLinkStyleActionComponent } from './components/project-map/context-menu/actions/edit-link-style-action/edit-link-style-action.component';
 import { EditTextActionComponent } from './components/project-map/context-menu/actions/edit-text-action/edit-text-action.component';
 import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
@@ -139,6 +140,7 @@ import { ContextMenuComponent } from './components/project-map/context-menu/cont
 import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
+import { LinkStyleEditorDialogComponent } from './components/project-map/drawings-editors/link-style-editor/link-style-editor.component';
 import { TextEditorDialogComponent } from './components/project-map/drawings-editors/text-editor/text-editor.component';
 import { HelpDialogComponent } from './components/project-map/help-dialog/help-dialog.component';
 import { NodeCreatedLabelStylesFixer } from './components/project-map/helpers/node-created-label-styles-fixer';
@@ -314,6 +316,9 @@ import { DisplayPathPipe } from './components/permissions-management/display-pat
 import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
 import { ChangeUserPasswordComponent } from './components/user-management/user-detail/change-user-password/change-user-password.component';
 import {MatMenuModule} from "@angular/material/menu";
+import { ImageManagerComponent } from './components/image-manager/image-manager.component';
+import { AddImageDialogComponent } from './components/image-manager/add-image-dialog/add-image-dialog.component';
+import { DeleteAllImageFilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
 
 @NgModule({
   declarations: [
@@ -342,6 +347,7 @@ import {MatMenuModule} from "@angular/material/menu";
     MoveLayerDownActionComponent,
     MoveLayerUpActionComponent,
     EditStyleActionComponent,
+    EditLinkStyleActionComponent,
     EditTextActionComponent,
     DeleteActionComponent,
     DuplicateActionComponent,
@@ -369,6 +375,7 @@ import {MatMenuModule} from "@angular/material/menu";
     InterfaceLabelDraggedComponent,
     InstallSoftwareComponent,
     StyleEditorDialogComponent,
+    LinkStyleEditorDialogComponent,
     TextEditorDialogComponent,
     PacketFiltersDialogComponent,
     QemuPreferencesComponent,
@@ -542,6 +549,10 @@ import {MatMenuModule} from "@angular/material/menu";
     FilterCompletePipe,
     DisplayPathPipe,
     ChangeUserPasswordComponent,
+    ProjectReadmeComponent,
+    ImageManagerComponent,
+    AddImageDialogComponent,
+    DeleteAllImageFilesDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -694,6 +705,5 @@ import {MatMenuModule} from "@angular/material/menu";
   bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(protected _googleAnalyticsService: GoogleAnalyticsService) {
-  }
+  constructor(protected _googleAnalyticsService: GoogleAnalyticsService) {}
 }

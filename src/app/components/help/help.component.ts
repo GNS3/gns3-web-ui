@@ -19,7 +19,7 @@ export class HelpComponent implements OnInit {
       },
       (error) => {
         if (error.status === 404) {
-          this.thirdpartylicenses = 'File not found';
+          this.thirdpartylicenses = 'Download Solar-PuTTY';
         }
       }
     );
