@@ -57,6 +57,23 @@ import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
+import {UserDetailComponent} from "@components/user-management/user-detail/user-detail.component";
+import {UserDetailResolver} from "@resolvers/user-detail.resolver";
+import {ManagementComponent} from "@components/management/management.component";
+import {PermissionResolver} from "@resolvers/permission.resolver";
+import {UserGroupsResolver} from "@resolvers/user-groups.resolver";
+import {UserPermissionsResolver} from "@resolvers/user-permissions.resolver";
+import {GroupManagementComponent} from "@components/group-management/group-management.component";
+import {RoleManagementComponent} from "@components/role-management/role-management.component";
+import {PermissionsManagementComponent} from "@components/permissions-management/permissions-management.component";
+import {GroupDetailsComponent} from "@components/group-details/group-details.component";
+import {GroupMembersResolver} from "@resolvers/group-members.resolver";
+import {GroupResolver} from "@resolvers/group.resolver";
+import {GroupRoleResolver} from "@resolvers/group-role.resolver";
+import {RoleDetailComponent} from "@components/role-management/role-detail/role-detail.component";
+import {RoleDetailResolver} from "@resolvers/role-detail.resolver";
+import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
+import {UserPermissionsComponent} from "@components/user-management/user-detail/user-permissions/user-permissions.component";
 
 const routes: Routes = [
   {
