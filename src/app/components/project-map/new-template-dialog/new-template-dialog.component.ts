@@ -42,7 +42,7 @@ import { TemplateNameDialogComponent } from './template-name-dialog/template-nam
     ]),
   ],
 })
-export class  NewTemplateDialogComponent implements OnInit {
+export class NewTemplateDialogComponent implements OnInit {
   @Input() server: Server;
   @Input() project: Project;
 
@@ -93,7 +93,7 @@ export class  NewTemplateDialogComponent implements OnInit {
     private computeService: ComputeService,
     private changeDetectorRef: ChangeDetectorRef,
     private progressService: ProgressService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.applianceService.getAppliances(this.server).subscribe((appliances) => {
@@ -109,7 +109,6 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
 
-    if(!this.server.authToken){
     this.templateService.list(this.server).subscribe((templates) => {
       this.templates = templates;
     });
@@ -123,19 +122,19 @@ export class  NewTemplateDialogComponent implements OnInit {
     this.qemuService.getBinaries(this.server).subscribe((binaries) => {
       this.qemuBinaries = binaries;
     });
-    
+
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
 
-    this.iosService.getImages(this.server).subscribe((iosImages) => {
-      this.iosImages = iosImages;
-    });
+      this.iosService.getImages(this.server).subscribe((iosImages) => {
+        this.iosImages = iosImages;
+      });
 
-    this.iouService.getImages(this.server).subscribe((iouImages) => {
-      this.iouImages = iouImages;
-    });
-
+      this.iouService.getImages(this.server).subscribe((iouImages) => {
+        this.iouImages = iouImages;
+      });
+    
     this.applianceService.getAppliances(this.server).subscribe((appliances) => {
       this.appliances = appliances;
       this.appliances.forEach((appliance) => {
@@ -195,8 +194,7 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
-  }
-  
+
   }
 
   updateAppliances() {
@@ -215,17 +213,19 @@ export class  NewTemplateDialogComponent implements OnInit {
   }
 
   refreshImages() {
+
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
+    
+      this.iosService.getImages(this.server).subscribe((iosImages) => {
+        this.iosImages = iosImages;
+      });
 
-    this.iosService.getImages(this.server).subscribe((iosImages) => {
-      this.iosImages = iosImages;
-    });
-
-    this.iouService.getImages(this.server).subscribe((iouImages) => {
-      this.iouImages = iouImages;
-    });
+      this.iouService.getImages(this.server).subscribe((iouImages) => {
+        this.iouImages = iouImages;
+      });
+    
   }
 
   getAppliance(url: string) {
@@ -246,7 +246,7 @@ export class  NewTemplateDialogComponent implements OnInit {
     let fileReader: FileReader = new FileReader();
     let emulator;
 
-    fileReader.onloadend = () => {
+    fileReader.onloadend= () => {
       let appliance = JSON.parse(fileReader.result as string);
 
       if (appliance.docker) emulator = 'docker';
@@ -256,9 +256,9 @@ export class  NewTemplateDialogComponent implements OnInit {
 
       const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
       this.uploader.queue.forEach((elem) => (elem.url = url));
-
+      
       const itemToUpload = this.uploader.queue[0];
-      (itemToUpload as any).options.disableMultipart = true;
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
 
       this.uploader.uploadItem(itemToUpload);
     };
@@ -388,7 +388,7 @@ export class  NewTemplateDialogComponent implements OnInit {
     let fileReader: FileReader = new FileReader();
     let emulator;
 
-    fileReader.onloadend = () => {
+    fileReader.onloadend = () => {  
       if (this.applianceToInstall.qemu) emulator = 'qemu';
       if (this.applianceToInstall.dynamips) emulator = 'dynamips';
       if (this.applianceToInstall.iou) emulator = 'iou';
@@ -397,8 +397,8 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];
-      (itemToUpload as any).options.disableMultipart = true;
-
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
+      
       this.uploaderImage.uploadItem(itemToUpload);
       this.progressService.activate();
     };

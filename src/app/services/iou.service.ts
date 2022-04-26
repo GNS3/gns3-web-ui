@@ -18,11 +18,11 @@ export class IouService {
   }
 
   getImages(server: Server): Observable<any> {
-    return this.httpServer.get<IouImage[]>(server, '/compute/iou/images') as Observable<IouImage[]>;
+    return this.httpServer.get<IouImage[]>(server, '/images') as Observable<IouImage[]>;
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/v3/compute/iou/images/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${filename}`;
   }
 
   addTemplate(server: Server, iouTemplate: any): Observable<any> {
