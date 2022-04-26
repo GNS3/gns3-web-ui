@@ -13,7 +13,6 @@ import { UpdatesService } from '../../services/updates.service';
 })
 export class SettingsComponent implements OnInit {
   settings: Settings;
-  consoleCommand: string;
   integrateLinksLabelsToLinks: boolean;
   openReadme: boolean;
   openConsolesInWidget: boolean;
@@ -29,7 +28,6 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
-    this.consoleCommand = this.consoleService.command;
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;
     this.openReadme = this.mapSettingsService.openReadme;
     this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
