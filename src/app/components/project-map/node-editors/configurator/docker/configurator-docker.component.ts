@@ -27,6 +27,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     disableClose: true,
   };
   dialogRef;
+  additionalDirectories: string = "";
 
   constructor(
     public dialogReference: MatDialogRef<ConfiguratorDialogDockerComponent>,
@@ -50,6 +51,12 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
+      if (this.node.properties.extra_volumes) {
+        for (let index = 0; index < this.node.properties.extra_volumes.length - 1; index++) {
+          this.additionalDirectories = this.additionalDirectories + this.node.properties.extra_volumes[index] + "\n";
+        }
+      }
+      this.additionalDirectories = this.additionalDirectories + this.node.properties.extra_volumes[this.node.properties.extra_volumes.length - 1];
     });
   }
 
@@ -73,6 +80,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
+      var extraVolumes = this.additionalDirectories.split("\n").filter(elem => elem != "");
+      this.node.properties.extra_volumes = extraVolumes;
       this.nodeService.updateNode(this.server, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

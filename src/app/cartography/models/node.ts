@@ -53,6 +53,7 @@ export class Properties {
   qemu_path: string;
   environment: string;
   extra_hosts: string;
+  extra_volumes: string[];
   replicate_network_connection_state: boolean;
 }
 
