@@ -150,7 +150,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   addTemplate() {
-    debugger
     if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
       this.qemuTemplate.ram = +this.memoryForm.get('ramMemory').value;
       this.qemuTemplate.qemu_path = this.selectedBinary.path;

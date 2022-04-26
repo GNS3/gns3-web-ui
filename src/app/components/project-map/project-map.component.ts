@@ -480,7 +480,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     };
 
     this.projectws.onerror = (event: MessageEvent) => {
-      debugger
       this.toasterService.error(`Connection to host lost. Error: ${event.data}`);
     };
   }
