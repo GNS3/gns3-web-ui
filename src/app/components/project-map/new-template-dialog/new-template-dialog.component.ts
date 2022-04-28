@@ -127,14 +127,14 @@ export class NewTemplateDialogComponent implements OnInit {
       this.qemuImages = qemuImages;
     });
 
-      this.iosService.getImages(this.server).subscribe((iosImages) => {
-        this.iosImages = iosImages;
-      });
+    this.iosService.getImages(this.server).subscribe((iosImages) => {
+      this.iosImages = iosImages;
+    });
 
-      this.iouService.getImages(this.server).subscribe((iouImages) => {
-        this.iouImages = iouImages;
-      });
-    
+    this.iouService.getImages(this.server).subscribe((iouImages) => {
+      this.iouImages = iouImages;
+    });
+
     this.applianceService.getAppliances(this.server).subscribe((appliances) => {
       this.appliances = appliances;
       this.appliances.forEach((appliance) => {
@@ -217,15 +217,15 @@ export class NewTemplateDialogComponent implements OnInit {
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
-    
-      this.iosService.getImages(this.server).subscribe((iosImages) => {
-        this.iosImages = iosImages;
-      });
 
-      this.iouService.getImages(this.server).subscribe((iouImages) => {
-        this.iouImages = iouImages;
-      });
-    
+    this.iosService.getImages(this.server).subscribe((iosImages) => {
+      this.iosImages = iosImages;
+    });
+
+    this.iouService.getImages(this.server).subscribe((iouImages) => {
+      this.iouImages = iouImages;
+    });
+
   }
 
   getAppliance(url: string) {
@@ -246,7 +246,7 @@ export class NewTemplateDialogComponent implements OnInit {
     let fileReader: FileReader = new FileReader();
     let emulator;
 
-    fileReader.onloadend= () => {
+    fileReader.onloadend = () => {
       let appliance = JSON.parse(fileReader.result as string);
 
       if (appliance.docker) emulator = 'docker';
@@ -256,7 +256,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
       const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
       this.uploader.queue.forEach((elem) => (elem.url = url));
-      
+
       const itemToUpload = this.uploader.queue[0];
       if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
 
@@ -388,7 +388,7 @@ export class NewTemplateDialogComponent implements OnInit {
     let fileReader: FileReader = new FileReader();
     let emulator;
 
-    fileReader.onloadend = () => {  
+    fileReader.onloadend = () => {
       if (this.applianceToInstall.qemu) emulator = 'qemu';
       if (this.applianceToInstall.dynamips) emulator = 'dynamips';
       if (this.applianceToInstall.iou) emulator = 'iou';
@@ -398,7 +398,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
       const itemToUpload = this.uploaderImage.queue[0];
       if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
-      
+
       this.uploaderImage.uploadItem(itemToUpload);
       this.progressService.activate();
     };
@@ -409,11 +409,11 @@ export class NewTemplateDialogComponent implements OnInit {
   checkImageFromVersion(image: string): boolean {
     let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image)[0];
     if (this.applianceToInstall.qemu) {
-      if (this.qemuImages.filter((n) => n.md5sum === imageToInstall.md5sum).length > 0) return true;
+      if (this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     } else if (this.applianceToInstall.dynamips) {
-      if (this.iosImages.filter((n) => n.md5sum === imageToInstall.md5sum).length > 0) return true;
+      if (this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     } else if (this.applianceToInstall.iou) {
-      if (this.iouImages.filter((n) => n.md5sum === imageToInstall.md5sum).length > 0) return true;
+      if (this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     }
 
     return false;
@@ -429,8 +429,11 @@ export class NewTemplateDialogComponent implements OnInit {
       return false;
     }
 
-    if (this.checkImageFromVersion(version.images.hda_disk_image)) return true;
-    return false;
+    if (this.checkImageFromVersion(version.images.hda_disk_image)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   openConfirmationDialog(message: string, link: string) {
@@ -607,6 +610,7 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createQemuTemplateFromVersion(version: Version) {
+    debugger
     if (!this.checkImages(version)) {
       this.toasterService.error('Please install required images first');
       return;
