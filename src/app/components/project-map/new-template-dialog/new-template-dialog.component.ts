@@ -610,7 +610,6 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createQemuTemplateFromVersion(version: Version) {
-    debugger
     if (!this.checkImages(version)) {
       this.toasterService.error('Please install required images first');
       return;
