@@ -20,7 +20,7 @@ export class QemuService {
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/images/upload/${filename}`;
   }
 
   getBinaries(server: Server): Observable<QemuBinary[]> {
@@ -28,7 +28,7 @@ export class QemuService {
   }
 
   getImages(server: Server): Observable<any> {
-    return this.httpServer.get<QemuImage[]>(server, '/images') as Observable<QemuImage[]>;
+    return this.httpServer.get<QemuImage[]>(server, '/images?image_type=qemu') as Observable<QemuImage[]>;
   }
 
   addImage(server: Server, qemuImg: QemuImg): Observable<QemuImg> {

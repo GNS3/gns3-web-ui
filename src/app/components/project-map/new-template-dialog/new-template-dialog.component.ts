@@ -42,7 +42,7 @@ import { TemplateNameDialogComponent } from './template-name-dialog/template-nam
     ]),
   ],
 })
-export class  NewTemplateDialogComponent implements OnInit {
+export class NewTemplateDialogComponent implements OnInit {
   @Input() server: Server;
   @Input() project: Project;
 
@@ -93,7 +93,7 @@ export class  NewTemplateDialogComponent implements OnInit {
     private computeService: ComputeService,
     private changeDetectorRef: ChangeDetectorRef,
     private progressService: ProgressService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.applianceService.getAppliances(this.server).subscribe((appliances) => {
@@ -109,7 +109,6 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
 
-    if(!this.server.authToken){
     this.templateService.list(this.server).subscribe((templates) => {
       this.templates = templates;
     });
@@ -123,7 +122,7 @@ export class  NewTemplateDialogComponent implements OnInit {
     this.qemuService.getBinaries(this.server).subscribe((binaries) => {
       this.qemuBinaries = binaries;
     });
-    
+
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -195,8 +194,7 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
-  }
-  
+
   }
 
   updateAppliances() {
@@ -215,6 +213,7 @@ export class  NewTemplateDialogComponent implements OnInit {
   }
 
   refreshImages() {
+
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -226,6 +225,7 @@ export class  NewTemplateDialogComponent implements OnInit {
     this.iouService.getImages(this.server).subscribe((iouImages) => {
       this.iouImages = iouImages;
     });
+
   }
 
   getAppliance(url: string) {
@@ -258,7 +258,7 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.uploader.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploader.queue[0];
-      (itemToUpload as any).options.disableMultipart = true;
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
 
       this.uploader.uploadItem(itemToUpload);
     };
@@ -397,7 +397,7 @@ export class  NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];
-      (itemToUpload as any).options.disableMultipart = true;
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
 
       this.uploaderImage.uploadItem(itemToUpload);
       this.progressService.activate();
@@ -409,11 +409,11 @@ export class  NewTemplateDialogComponent implements OnInit {
   checkImageFromVersion(image: string): boolean {
     let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image)[0];
     if (this.applianceToInstall.qemu) {
-      if (this.qemuImages.filter((n) => n.md5sum === imageToInstall.md5sum).length > 0) return true;
+      if (this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     } else if (this.applianceToInstall.dynamips) {
-      if (this.iosImages.filter((n) => n.md5sum === imageToInstall.md5sum).length > 0) return true;
+      if (this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     } else if (this.applianceToInstall.iou) {
-      if (this.iouImages.filter((n) => n.md5sum === imageToInstall.md5sum).length > 0) return true;
+      if (this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum).length > 0) return true;
     }
 
     return false;
@@ -429,8 +429,11 @@ export class  NewTemplateDialogComponent implements OnInit {
       return false;
     }
 
-    if (this.checkImageFromVersion(version.images.hda_disk_image)) return true;
-    return false;
+    if (this.checkImageFromVersion(version.images.hda_disk_image)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   openConfirmationDialog(message: string, link: string) {

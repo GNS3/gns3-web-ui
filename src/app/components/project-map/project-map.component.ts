@@ -106,6 +106,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   private instance: ComponentRef<TopologySummaryComponent>;
+  // private instance: any
 
   tools = {
     selection: true,
@@ -175,9 +176,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
     private cd: ChangeDetectorRef,
-    private cfr: ComponentFactoryResolver, 
-    private injector: Injector
+    // private cfr: ComponentFactoryResolver, 
+    // private injector: Injector,
+    private viewContainerRef: ViewContainerRef
   ) {}
+
+
+
+  // constructor(private viewContainerRef: ViewContainerRef) {}
+  // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
 
   ngOnInit() {
     this.getSettings();
@@ -221,8 +228,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   async lazyLoadTopologySummary() {
     if (this.isTopologySummaryVisible) {
       const {TopologySummaryComponent} = await import('../topology-summary/topology-summary.component');
-      const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
-      this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
+      this.instance =   this.viewContainerRef.createComponent(TopologySummaryComponent)
+
+      // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
+      // this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
       this.instance.instance.server = this.server;
       this.instance.instance.project = this.project;
     } else if (this.instance) {

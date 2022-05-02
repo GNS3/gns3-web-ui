@@ -5,6 +5,7 @@ export interface Image {
   filename: string;
   filesize: any;
   md5sum: string;
+  checksum: string;
   version: string;
 }
 
