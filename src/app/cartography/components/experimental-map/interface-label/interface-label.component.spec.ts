@@ -1,15 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InterfaceLabelComponent } from './interface-label.component';
 
 describe('InterfaceLabelComponent', () => {
   let component: InterfaceLabelComponent;
   let fixture: ComponentFixture<InterfaceLabelComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       declarations: [InterfaceLabelComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(InterfaceLabelComponent);
@@ -17,7 +17,7 @@ describe('InterfaceLabelComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });
