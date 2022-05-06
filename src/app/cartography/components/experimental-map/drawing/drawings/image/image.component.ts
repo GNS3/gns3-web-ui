@@ -8,6 +8,7 @@ import { ImageElement } from '../../../../../models/drawings/image-element';
 })
 export class ImageComponent implements OnInit {
   @Input('app-image') image: ImageElement;
+  data:any
 
   constructor() {}
 

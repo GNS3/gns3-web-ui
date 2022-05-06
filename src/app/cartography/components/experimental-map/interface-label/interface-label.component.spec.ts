@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CssFixer } from 'app/cartography/helpers/css-fixer';
 import { InterfaceLabelComponent } from './interface-label.component';
 
 describe('InterfaceLabelComponent', () => {
@@ -8,6 +9,7 @@ describe('InterfaceLabelComponent', () => {
   beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [InterfaceLabelComponent],
+      providers:[CssFixer]
     }).compileComponents();
   });
 
@@ -18,6 +20,6 @@ describe('InterfaceLabelComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component)
   });
 });

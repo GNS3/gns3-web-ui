@@ -19,10 +19,12 @@ export class TextComponent implements OnInit, DoCheck {
 
   transformation = '';
 
-  constructor(private fontFixer: FontFixer, private sanitizer: DomSanitizer) {}
+  constructor(private fontFixer: FontFixer, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    this.lines = this.getLines(this.text.text);
+    if (this.text) {
+      this.lines = this.getLines(this.text.text);
+    }
   }
 
   ngDoCheck() {
@@ -50,12 +52,12 @@ export class TextComponent implements OnInit, DoCheck {
   }
 
   calculateTransformation() {
-    const tspans = this.textRef.nativeElement.getElementsByTagName('tspan');
+   if(this.textRef !=undefined){ const tspans = this.textRef.nativeElement.getElementsByTagName('tspan');
     if (tspans.length > 0) {
       const height = this.textRef.nativeElement.getBBox().height / tspans.length;
       return `translate(${TextComponent.MARGIN}, ${height - TextComponent.MARGIN})`;
     }
-    return '';
+    return '';}
   }
 
   getLines(text: string) {

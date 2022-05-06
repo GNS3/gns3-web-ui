@@ -56,7 +56,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
-import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
+import { ImageManagerComponent } from './components/image-manager/image-manager.component';
 
 const routes: Routes = [
   {

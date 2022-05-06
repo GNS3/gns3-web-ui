@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FontFixer } from 'app/cartography/helpers/font-fixer';
 import { TextComponent } from './text.component';
 
 describe('TextComponent', () => {
@@ -8,6 +9,7 @@ describe('TextComponent', () => {
   beforeEach(async() => {
    await TestBed.configureTestingModule({
       declarations: [TextComponent],
+      providers:[FontFixer]
     }).compileComponents();
   });
 

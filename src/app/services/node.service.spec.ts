@@ -21,7 +21,10 @@ describe('NodeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, NodeService],
+      providers: [
+        HttpServer,
+        NodeService,
+      ],
     });
 
     httpClient = TestBed.get(HttpClient);

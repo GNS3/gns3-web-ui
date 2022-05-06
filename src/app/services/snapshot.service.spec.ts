@@ -18,7 +18,7 @@ describe('SnapshotService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SnapshotService],
+      providers: [HttpServer, HttpClient,SnapshotService],
     });
 
     httpClient = TestBed.get(HttpClient);

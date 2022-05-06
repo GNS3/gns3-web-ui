@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed } from '@angular/core/testing';
+import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { RectComponent } from './rect.component';
 
 describe('RectComponent', () => {
@@ -8,6 +9,7 @@ describe('RectComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [RectComponent],
+      providers:[QtDasharrayFixer]
     }).compileComponents();
   });
 

@@ -37,17 +37,21 @@ export class CreateSnapshotDialogComponent {
       snapshotName: new FormControl('', Validators.required),
     });
 
-    this.snapshotService.list(this.server, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
-      snapshots.forEach((snapshot: Snapshot) => {
-        this.snapshots.push(snapshot.name);
+    if (this.project && this.project.project_id) {
+      this.snapshotService.list(this.server, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
+        snapshots.forEach((snapshot: Snapshot) => {
+          this.snapshots.push(snapshot.name);
+        });
       });
-    });
+    }
 
-    this.nodesDataSource.getItems().forEach((node: Node) => {
-      if (node.status !== 'stopped' && !this.isAlwaysRunningNode(node.node_type)) {
-        this.isInRunningState = true;
-      }
-    });
+    if (this.nodesDataSource) {
+      this.nodesDataSource.getItems().forEach((node: Node) => {
+        if (node.status !== 'stopped' && !this.isAlwaysRunningNode(node.node_type)) {
+          this.isInRunningState = true;
+        }
+      });
+    }
   }
 
   isAlwaysRunningNode(nodeType: string) {

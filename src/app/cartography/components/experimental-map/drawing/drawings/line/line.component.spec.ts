@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed } from '@angular/core/testing';
+import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { LineComponent } from './line.component';
 
 describe('LineComponent', () => {
@@ -8,6 +9,7 @@ describe('LineComponent', () => {
   beforeEach(async() => {
     TestBed.configureTestingModule({
       declarations: [LineComponent],
+      providers:[QtDasharrayFixer]
     }).compileComponents();
   });
 

@@ -49,7 +49,7 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
     protected element: ElementRef,
     private cd: ChangeDetectorRef,
     private nodesEventSource: NodesEventSource
-  ) {}
+  ) { }
 
   ngOnInit() {
     // this.nodeChangedSubscription = this.nodeChanged.subscribe((node: Node) => {
@@ -85,42 +85,52 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
   }
 
   get symbol(): string {
-    const symbol = this.symbols.find((s: Symbol) => s.symbol_id === this.node.symbol);
-    if (symbol) {
-      return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
+    if (this.symbols) {
+      const symbol = this.symbols.find((s: Symbol) => s.symbol_id === this.node.symbol);
+      if (symbol) {
+        return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
+      }
+      // @todo; we need to have default image
+      return 'data:image/svg+xml;base64,none';
     }
-    // @todo; we need to have default image
-    return 'data:image/svg+xml;base64,none';
   }
 
   get label_style() {
-    let styles = this.cssFixer.fix(this.node.label.style);
-    styles = this.fontFixer.fixStyles(styles);
-    return this.sanitizer.bypassSecurityTrustStyle(styles);
+    if (this.node != undefined) {
+      let styles = this.cssFixer.fix(this.node.label.style);
+      styles = this.fontFixer.fixStyles(styles);
+      return this.sanitizer.bypassSecurityTrustStyle(styles);
+    }
   }
 
   get label_x(): number {
-    if (this.node.label.x === null) {
-      // center
-      const bbox = this.label.nativeElement.getBBox();
+    if (this.node != undefined) {
+      if (this.node.label.x === null) {
+        // center
+        const bbox = this.label.nativeElement.getBBox();
 
-      return -bbox.width / 2;
+        return -bbox.width / 2;
+      }
+      return this.node.label.x + NodeComponent.NODE_LABEL_MARGIN;
     }
-    return this.node.label.x + NodeComponent.NODE_LABEL_MARGIN;
   }
 
   get label_y(): number {
     this.labelHeight = this.getLabelHeight();
 
-    if (this.node.label.x === null) {
-      // center
-      return -this.node.height / 2 - this.labelHeight;
+    if (this.node != undefined) {
+      if (this.node.label.x === null) {
+        // center
+        return -this.node.height / 2 - this.labelHeight;
+      }
+      return this.node.label.y + this.labelHeight - NodeComponent.NODE_LABEL_MARGIN;
     }
-    return this.node.label.y + this.labelHeight - NodeComponent.NODE_LABEL_MARGIN;
   }
 
   private getLabelHeight() {
-    const bbox = this.label.nativeElement.getBBox();
-    return bbox.height;
+    if (this.label != undefined) {
+      const bbox = this.label.nativeElement.getBBox();
+      return bbox.height;
+    }
   }
 }

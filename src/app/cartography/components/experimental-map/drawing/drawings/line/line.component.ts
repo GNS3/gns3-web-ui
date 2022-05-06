@@ -15,14 +15,14 @@ export class LineComponent implements OnInit {
   ngOnInit() {}
 
   get stroke_width() {
-    if (isFinite(this.line.stroke_width)) {
+    if (this.line && isFinite(this.line.stroke_width)) {
       return this.line.stroke_width;
     }
     return null;
   }
 
   get stroke_dasharray() {
-    if (this.line.stroke_dasharray) {
+    if ( this.line && this.line.stroke_dasharray) {
       return this.qtDasharrayFixer.fix(this.line.stroke_dasharray);
     }
     return null;

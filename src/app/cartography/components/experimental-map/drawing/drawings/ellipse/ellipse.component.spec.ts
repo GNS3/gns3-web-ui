@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { EllipseComponent } from './ellipse.component';
 
 describe('EllipseComponent', () => {
@@ -8,6 +9,7 @@ describe('EllipseComponent', () => {
   beforeEach(async() => {
    await TestBed.configureTestingModule({
       declarations: [EllipseComponent],
+      providers:[QtDasharrayFixer]
     }).compileComponents();
   });
 

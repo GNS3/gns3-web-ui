@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MultiLinkCalculatorHelper } from 'app/cartography/helpers/multi-link-calculator-helper';
 import { LinkComponent } from './link.component';
 
 describe('LinkComponent', () => {
@@ -8,6 +9,7 @@ describe('LinkComponent', () => {
   beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [LinkComponent],
+      providers:[MultiLinkCalculatorHelper]
     }).compileComponents();
   });
 

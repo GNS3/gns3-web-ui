@@ -1,15 +1,40 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Overlay } from '@angular/cdk/overlay';
+import { HttpClient, HttpHandler } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { Context } from 'app/cartography/models/context';
+import { HttpServer, ServerErrorHandler } from 'app/services/http-server.service';
+import { MapScaleService } from 'app/services/mapScale.service';
+import { SymbolService } from 'app/services/symbol.service';
+import { TemplateService } from 'app/services/template.service';
+import { MockedSymbolService } from '../preferences/common/symbols/symbols.component.spec';
 import { TemplateComponent } from './template.component';
 
 describe('TemplateComponent', () => {
   let component: TemplateComponent;
   let fixture: ComponentFixture<TemplateComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  let mockedSymbolService: MockedSymbolService
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [TemplateComponent],
+      imports: [MatDialogModule,MatMenuModule],
+      providers: [
+        MatDialog,
+        Overlay,
+        TemplateService,
+        HttpServer,
+        MapScaleService,
+        HttpClient,
+        HttpHandler,
+        ServerErrorHandler,
+        Context, 
+        { provide: SymbolService, useClass: mockedSymbolService },
+      ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TemplateComponent);
@@ -17,7 +42,8 @@ describe('TemplateComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
 });
