@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,8 +21,8 @@ describe('DuplicateActionComponent', () => {
   let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
   let mockedToasterService = new MockedToasterService();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
       providers: [
         { provide: NodesDataSource, useClass: NodesDataSource },
@@ -33,7 +33,7 @@ describe('DuplicateActionComponent', () => {
       ],
       declarations: [DuplicateActionComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DuplicateActionComponent);

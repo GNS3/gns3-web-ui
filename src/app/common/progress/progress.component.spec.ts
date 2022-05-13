@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
@@ -23,8 +23,8 @@ describe('ProgressComponent', () => {
   let progressService: ProgressService;
   let router: MockedRouter = new MockedRouter();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
       providers: [ProgressService, { provide: Router, useValue: router }],
       declarations: [ProgressComponent],
@@ -32,7 +32,7 @@ describe('ProgressComponent', () => {
 
     progressService = TestBed.get(ProgressService);
     router = TestBed.get(Router);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProgressComponent);

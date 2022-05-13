@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -35,11 +35,11 @@ describe('DefaultLayoutComponent', () => {
   let httpServer: HttpServer;
   let errorHandler: ServerErrorHandler;
 
-  beforeEach(async(() => {
+  beforeEach(async() => {
     electronServiceMock = new ElectronServiceMock();
     serverManagementService.serverStatusChanged = new Subject<ServerStateEvent>();
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
       imports: [MatIconModule, MatMenuModule, MatToolbarModule, HttpClientModule, RouterTestingModule, MatProgressSpinnerModule],
       providers: [
@@ -69,7 +69,7 @@ describe('DefaultLayoutComponent', () => {
     errorHandler = TestBed.inject(ServerErrorHandler);
     httpServer = TestBed.inject(HttpServer);
     serverService = TestBed.inject(ServerService);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DefaultLayoutComponent);

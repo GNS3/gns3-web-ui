@@ -40,8 +40,8 @@ describe('AddVirtualBoxTemplateComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule,
@@ -65,7 +65,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
       declarations: [AddVirtualBoxTemplateComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);

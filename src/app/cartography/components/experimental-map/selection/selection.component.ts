@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, Subscription, fromEvent} from 'rxjs';
+import { Observable, Subscription} from 'rxjs';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({
@@ -29,7 +29,7 @@ export class SelectionComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     const down = Observable.fromEvent(this.svg, 'mousedown').do((e: MouseEvent) => e.preventDefault());
     down.subscribe((e: MouseEvent) => {
-      if (e?.target !== this.svg) {
+      if (e.target !== this.svg) {
         return;
       }
 
@@ -80,7 +80,6 @@ export class SelectionComponent implements OnInit, AfterViewInit {
             this.height = e.clientY - this.startY + window.scrollY;
 
             this.ref.detectChanges();
-
             this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
           })
         )

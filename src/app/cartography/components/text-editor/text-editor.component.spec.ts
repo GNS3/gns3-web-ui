@@ -1,5 +1,5 @@
 import { Renderer2 } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MockedLinkService } from '../../../components/project-map/project-map.component.spec';
 import { LinkService } from '../../../services/link.service';
@@ -18,7 +18,7 @@ describe('TextEditorComponent', () => {
   let fixture: ComponentFixture<TextEditorComponent>;
   let mockedLinkService: MockedLinkService = new MockedLinkService();
 
-  beforeEach(async(() => {
+  beforeEach(async() => {
     TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
@@ -35,7 +35,7 @@ describe('TextEditorComponent', () => {
       ],
       declarations: [TextEditorComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TextEditorComponent);

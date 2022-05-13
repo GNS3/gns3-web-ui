@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -38,19 +38,19 @@ xdescribe('ProjectsComponent', () => {
   let mockedProjectService: MockedProjectService = new MockedProjectService();
   let electronService;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     electronService = {
       isElectronApp: true,
       remote: {
         require: (file) => {
           return {
-            openConsole() {},
+            openConsole() { },
           };
         },
       },
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -68,7 +68,7 @@ xdescribe('ProjectsComponent', () => {
       providers: [
         { provide: ServerService, useClass: MockedServerService },
         { provide: ProjectService, useValue: mockedProjectService },
-        { provide: SettingsService},
+        { provide: SettingsService },
         { provide: ToasterService },
         { provide: ElectronService, useValue: electronService },
         ProgressService,
@@ -97,75 +97,75 @@ xdescribe('ProjectsComponent', () => {
 
     spyOn(progressService, 'activate');
     spyOn(progressService, 'deactivate');
-  }));
+  });
+
+beforeEach(() => {
+  fixture = TestBed.createComponent(ProjectsComponent);
+  component = fixture.componentInstance;
+  fixture.detectChanges();
+});
+
+it('should create', () => {
+  expect(component).toBeTruthy();
+});
+
+it('should remove item after delete action', () => {
+  spyOn(mockedProjectService, 'delete').and.returnValue(of());
+  let project = new Project();
+  project.project_id = '1';
+
+  component.delete(project);
+
+  expect(mockedProjectService.delete).toHaveBeenCalled();
+});
+
+it('should call list on refresh', () => {
+  mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
+
+  component.refresh();
+
+  expect(mockedProjectService.list).toHaveBeenCalled();
+});
+
+describe('ProjectComponent open', () => {
+  let project: Project;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ProjectsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should remove item after delete action', () => {
-    spyOn(mockedProjectService, 'delete').and.returnValue(of());
-    let project = new Project();
+    project = new Project();
     project.project_id = '1';
 
-    component.delete(project);
+    spyOn(projectService, 'open').and.returnValue(of(project));
 
-    expect(mockedProjectService.delete).toHaveBeenCalled();
+    component.server = server;
   });
 
-  it('should call list on refresh', () => {
-    mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
+  it('should open project', () => {
+    component.open(project);
+    expect(projectService.open).toHaveBeenCalledWith(server, project.project_id);
 
-    component.refresh();
+    expect(progressService.activate).toHaveBeenCalled();
+    expect(progressService.deactivate).toHaveBeenCalled();
+  });
+});
 
-    expect(mockedProjectService.list).toHaveBeenCalled();
+describe('ProjectComponent close', () => {
+  let project: Project;
+
+  beforeEach(() => {
+    project = new Project();
+    project.project_id = '1';
+
+    spyOn(projectService, 'close').and.returnValue(of(project));
+
+    component.server = server;
   });
 
-  describe('ProjectComponent open', () => {
-    let project: Project;
+  xit('should close project', () => {
+    component.close(project);
+    expect(projectService.close).toHaveBeenCalledWith(server, project.project_id);
 
-    beforeEach(() => {
-      project = new Project();
-      project.project_id = '1';
-
-      spyOn(projectService, 'open').and.returnValue(of(project));
-
-      component.server = server;
-    });
-
-    it('should open project', () => {
-      component.open(project);
-      expect(projectService.open).toHaveBeenCalledWith(server, project.project_id);
-
-      expect(progressService.activate).toHaveBeenCalled();
-      expect(progressService.deactivate).toHaveBeenCalled();
-    });
+    expect(progressService.activate).toHaveBeenCalled();
+    expect(progressService.deactivate).toHaveBeenCalled();
   });
-
-  describe('ProjectComponent close', () => {
-    let project: Project;
-
-    beforeEach(() => {
-      project = new Project();
-      project.project_id = '1';
-
-      spyOn(projectService, 'close').and.returnValue(of(project));
-
-      component.server = server;
-    });
-
-    xit('should close project', () => {
-      component.close(project);
-      expect(projectService.close).toHaveBeenCalledWith(server, project.project_id);
-
-      expect(progressService.activate).toHaveBeenCalled();
-      expect(progressService.deactivate).toHaveBeenCalled();
-    });
-  });
+});
 });

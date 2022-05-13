@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
 import { ElectronService } from 'ngx-electron';
@@ -15,12 +15,12 @@ describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
   let fixture: ComponentFixture<ContextMenuComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(async() => {
     const electronMock = {
       isElectronApp: true,
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
       providers: [
         { provide: ChangeDetectorRef },
@@ -30,7 +30,7 @@ describe('ContextMenuComponent', () => {
       declarations: [ContextMenuComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ContextMenuComponent);

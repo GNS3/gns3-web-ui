@@ -40,8 +40,8 @@ describe('VpcsTemplateDetailsComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule,
@@ -66,7 +66,7 @@ describe('VpcsTemplateDetailsComponent', () => {
       declarations: [VpcsTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VpcsTemplateDetailsComponent);

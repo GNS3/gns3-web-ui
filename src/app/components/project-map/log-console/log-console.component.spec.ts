@@ -41,8 +41,8 @@ describe('LogConsoleComponent', () => {
 
   let httpServer = new HttpServer({} as HttpClient, {} as ServerErrorHandler);
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule, MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
         { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler },
@@ -61,7 +61,7 @@ describe('LogConsoleComponent', () => {
     toasterService = TestBed.inject(ToasterService);
     mapSettingsService = TestBed.inject(MapSettingsService);
     nodeConsoleService = TestBed.inject(NodeConsoleService);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LogConsoleComponent);

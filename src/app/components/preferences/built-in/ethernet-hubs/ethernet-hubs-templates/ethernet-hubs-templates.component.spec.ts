@@ -31,8 +31,8 @@ describe('EthernetHubsTemplatesComponent', () => {
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+   await TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -53,15 +53,15 @@ describe('EthernetHubsTemplatesComponent', () => {
       declarations: [EthernetHubsTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EthernetHubsTemplatesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+beforeEach(() => {
+  fixture = TestBed.createComponent(EthernetHubsTemplatesComponent);
+  component = fixture.componentInstance;
+  fixture.detectChanges();
+});
+
+it('should create', () => {
+  expect(component).toBeTruthy();
+});
 });

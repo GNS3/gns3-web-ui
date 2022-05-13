@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MapScaleService } from '../../services/mapScale.service';
 import { MovingEventSource } from '../events/moving-event-source';
@@ -20,8 +20,8 @@ describe('ZoomingCanvasDirective', () => {
   let fixture: ComponentFixture<DummyComponent>;
   let movingEventSource = new MovingEventSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
         { provide: MovingEventSource, useValue: movingEventSource },
@@ -30,7 +30,7 @@ describe('ZoomingCanvasDirective', () => {
       ],
       declarations: [DummyComponent, ZoomingCanvasDirective],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DummyComponent);

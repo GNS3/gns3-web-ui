@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -27,8 +27,8 @@ describe('DrawingAddedComponent', () => {
     new LineElementFactory()
   );
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       providers: [
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
@@ -38,7 +38,7 @@ describe('DrawingAddedComponent', () => {
       ],
       declarations: [DrawingAddedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingAddedComponent);

@@ -18,8 +18,8 @@ describe('DrawingResizedComponent', () => {
   let mockedDrawingsEventSource = new DrawingsEventSource();
   let mockedMapDrawingToSvgConverter = new MapDrawingToSvgConverter();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       providers: [
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
@@ -28,7 +28,7 @@ describe('DrawingResizedComponent', () => {
       ],
       declarations: [DrawingResizedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingResizedComponent);

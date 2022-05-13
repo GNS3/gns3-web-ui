@@ -18,8 +18,8 @@ describe('ToasterErrorHandler', () => {
   let toasterService: MockedToasterService;
   let settingsService: SettingsService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: SettingsService},

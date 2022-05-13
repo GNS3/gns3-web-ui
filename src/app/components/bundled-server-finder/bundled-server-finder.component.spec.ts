@@ -1,6 +1,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressService } from '../../common/progress/progress.service';
 import { Server } from '../../models/server';
 import { ServerService } from '../../services/server.service';
@@ -12,24 +14,30 @@ describe('BundledServerFinderComponent', () => {
   let component: BundledServerFinderComponent;
   let fixture: ComponentFixture<BundledServerFinderComponent>;
   let router: any;
-  let serverService: any;
+  let service: ServerService;
   let progressService: MockedProgressService = new MockedProgressService();
+  let serverServiceMock: jasmine.SpyObj<ServerService>;
 
-  beforeEach(async(() => {
+
+  beforeEach(async () => {
     router = {
       navigate: jasmine.createSpy('navigate'),
     };
 
-    const server = new Server();
-    server.id = 99;
+    
 
-    serverService = new MockedServerService();
-    spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
+    serverServiceMock = jasmine.createSpyObj<ServerService>([
+      "getLocalServer"
+    ]);
 
-    TestBed.configureTestingModule({
+
+    // serverService = new MockedServerService();
+    // spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
+
+    await TestBed.configureTestingModule({
       providers: [
         { provide: Router, useValue: router },
-        { provide: ServerService, useValue: serverService },
+        { provide: ServerService, useValue: serverServiceMock },
         { provide: ProgressService, useValue: progressService },
       ],
       declarations: [BundledServerFinderComponent],
@@ -39,12 +47,21 @@ describe('BundledServerFinderComponent', () => {
     fixture = TestBed.createComponent(BundledServerFinderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create and redirect to server', fakeAsync(() => {
+    const server = new Server();
+    server.id = 99;
+    serverServiceMock.getLocalServer.and.returnValue(
+      Promise.resolve(server)
+    );
     expect(component).toBeTruthy();
-    expect(serverService.getLocalServer).toHaveBeenCalled();
-    tick();
-    expect(router.navigate).toHaveBeenCalledWith(['/server', 99, 'projects']);
+    tick(101)
+    fixture.detectChanges()
+    fixture.whenStable().then(() => {
+      expect(serverServiceMock.getLocalServer).toHaveBeenCalledWith('vps3.gns3.net',3000);
+      expect(router.navigate).toHaveBeenCalledWith(['/server', 99, 'projects']);
+    })
+    service = TestBed.inject(ServerService);
   }));
 });
