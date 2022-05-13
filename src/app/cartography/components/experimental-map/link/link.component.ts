@@ -56,7 +56,7 @@ export class LinkComponent implements OnInit, OnDestroy {
   }
 
   get transform() {
-    if (this.link != undefined && this.link != null && this.link.source) {
+    if (this.link) {
       const translation = this.multiLinkCalculatorHelper.linkTranslation(
         this.link.distance,
         this.link.source,

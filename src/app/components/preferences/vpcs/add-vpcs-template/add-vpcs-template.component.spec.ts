@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {  ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,7 +44,7 @@ describe('AddVpcsTemplateComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
   let mockedComputeService = new MockedComputeService();
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
@@ -70,7 +70,7 @@ describe('AddVpcsTemplateComponent', () => {
       declarations: [AddVpcsTemplateComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddVpcsTemplateComponent);
@@ -96,7 +96,7 @@ describe('AddVpcsTemplateComponent', () => {
   it('should not call add template when template name is empty', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     spyOn(mockedToasterService, 'error');
-    component.templateName = '';
+    component.templateName = ' ';
     component.server = { id: 1 } as Server;
 
     component.addTemplate();

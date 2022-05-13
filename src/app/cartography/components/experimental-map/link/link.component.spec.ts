@@ -5,11 +5,12 @@ import { LinkComponent } from './link.component';
 describe('LinkComponent', () => {
   let component: LinkComponent;
   let fixture: ComponentFixture<LinkComponent>;
-
-  beforeEach(async() => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LinkComponent],
-      providers:[MultiLinkCalculatorHelper]
+      providers: [
+        { provide: MultiLinkCalculatorHelper, useValue: {} }
+      ]
     }).compileComponents();
   });
 

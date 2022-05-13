@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { Context } from '../../models/context';
@@ -9,8 +9,8 @@ describe('DrawingAddingComponent', () => {
   let fixture: ComponentFixture<DrawingAddingComponent>;
   let drawingsEventSource = new DrawingsEventSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
         { provide: DrawingsEventSource, useValue: drawingsEventSource },
@@ -18,7 +18,7 @@ describe('DrawingAddingComponent', () => {
       ],
       declarations: [DrawingAddingComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingAddingComponent);

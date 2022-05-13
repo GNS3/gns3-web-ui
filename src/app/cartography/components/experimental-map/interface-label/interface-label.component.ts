@@ -89,8 +89,8 @@ export class InterfaceLabelComponent implements OnInit {
   }
 
   get transform() {
-    if (this.elementRef != undefined && this.elementRef != null) {
-      const bbox = this.elementRef.nativeElement.getBBox();
+    if (this.elementRef.nativeElement.getBBox) {
+      const bbox = this.elementRef.nativeElement.getBBox()
       const x = this.label.x;
       const y = this.label.y + bbox.height;
       return `translate(${x}, ${y}) rotate(${this.label.rotation}, ${x}, ${y})`;

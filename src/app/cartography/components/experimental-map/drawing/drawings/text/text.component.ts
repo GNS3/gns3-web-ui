@@ -32,32 +32,38 @@ export class TextComponent implements OnInit, DoCheck {
   }
 
   get style() {
-    const font = this.fontFixer.fix(this.text);
+    if (this.text) {
+      const font = this.fontFixer.fix(this.text);
 
-    const styles: string[] = [];
-    if (font.font_family) {
-      styles.push(`font-family: "${this.text.font_family}"`);
+      const styles: string[] = [];
+      if (font.font_family) {
+        styles.push(`font-family: "${this.text.font_family}"`);
+      }
+      if (font.font_size) {
+        styles.push(`font-size: ${this.text.font_size}pt`);
+      }
+      if (font.font_weight) {
+        styles.push(`font-weight: ${this.text.font_weight}`);
+      }
+      return this.sanitizer.bypassSecurityTrustStyle(styles.join('; '));
     }
-    if (font.font_size) {
-      styles.push(`font-size: ${this.text.font_size}pt`);
-    }
-    if (font.font_weight) {
-      styles.push(`font-weight: ${this.text.font_weight}`);
-    }
-    return this.sanitizer.bypassSecurityTrustStyle(styles.join('; '));
   }
 
   get textDecoration() {
-    return this.text.text_decoration;
+    if (this.text) {
+      return this.text.text_decoration;
+    }
   }
 
   calculateTransformation() {
-   if(this.textRef !=undefined){ const tspans = this.textRef.nativeElement.getElementsByTagName('tspan');
-    if (tspans.length > 0) {
-      const height = this.textRef.nativeElement.getBBox().height / tspans.length;
-      return `translate(${TextComponent.MARGIN}, ${height - TextComponent.MARGIN})`;
+    if (this.textRef != undefined) {
+      const tspans = this.textRef.nativeElement.getElementsByTagName('tspan');
+      if (tspans.length > 0) {
+        const height = this.textRef.nativeElement.getBBox().height / tspans.length;
+        return `translate(${TextComponent.MARGIN}, ${height - TextComponent.MARGIN})`;
+      }
+      return '';
     }
-    return '';}
   }
 
   getLines(text: string) {

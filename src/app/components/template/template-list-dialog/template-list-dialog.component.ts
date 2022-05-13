@@ -52,8 +52,7 @@ export class TemplateListDialogComponent implements OnInit {
     this.server = data['server'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
-      // name: new FormControl('new node', Validators.required),
-      numberOfNodes: new FormControl(1, [Validators.required, this.nonNegativeValidator.get]),
+      numberOfNodes: new FormControl(1, [ Validators.compose([Validators.required, nonNegativeValidator.get])]),
     });
     this.positionForm = this.formBuilder.group({
       top: new FormControl(0, Validators.required),

@@ -16,12 +16,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChangeDetectorRef } from '@angular/core';
+import { MockedRouter } from 'app/common/progress/progress.component.spec';
 
 describe('ServersComponent', () => {
   let component: ServersComponent;
   let fixture: ComponentFixture<ServersComponent>;
   let serverMockedService: MockedServerService
   let mockedActivatedRoute: MockedActivatedRoute
+  let mockedRouter  : MockedRouter
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -33,15 +35,15 @@ describe('ServersComponent', () => {
       ],
       providers: [
         MatDialog,
-        { provide: ServerService, useValue: serverMockedService },
-        { provide: ActivatedRoute, useValue:mockedActivatedRoute  },
         ServerDatabase,
         ServerManagementService,
         ElectronService,
         MatBottomSheet,
-        Router,
         ChildProcessService,
-        ChangeDetectorRef
+        ChangeDetectorRef,
+        { provide: ServerService, useValue: serverMockedService },
+        { provide: ActivatedRoute, useValue: mockedActivatedRoute },
+        { provide: Router, useValue: mockedRouter },
       ]
     }).compileComponents();
   });
