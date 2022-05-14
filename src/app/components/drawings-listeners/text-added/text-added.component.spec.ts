@@ -28,8 +28,8 @@ describe('TextAddedComponent', () => {
     new LineElementFactory()
   );
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
@@ -40,7 +40,7 @@ describe('TextAddedComponent', () => {
       ],
       declarations: [TextAddedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TextAddedComponent);

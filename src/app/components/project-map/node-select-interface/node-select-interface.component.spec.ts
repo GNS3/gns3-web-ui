@@ -1,15 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NodeSelectInterfaceComponent } from './node-select-interface.component';
 
 describe('NodeSelectInterfaceComponent', () => {
   let component: NodeSelectInterfaceComponent;
   let fixture: ComponentFixture<NodeSelectInterfaceComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       declarations: [NodeSelectInterfaceComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NodeSelectInterfaceComponent);
@@ -17,7 +17,7 @@ describe('NodeSelectInterfaceComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

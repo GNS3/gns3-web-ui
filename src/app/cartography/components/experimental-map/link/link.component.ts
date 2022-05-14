@@ -33,7 +33,7 @@ export class LinkComponent implements OnInit, OnDestroy {
 
   private nodeChangedSubscription: Subscription;
 
-  constructor(private multiLinkCalculatorHelper: MultiLinkCalculatorHelper, private ref: ChangeDetectorRef) {}
+  constructor(private multiLinkCalculatorHelper: MultiLinkCalculatorHelper, private ref: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.ref.detectChanges();
@@ -49,19 +49,21 @@ export class LinkComponent implements OnInit, OnDestroy {
   }
 
   get strategy(): LinkStrategy {
-    if (this.link.linkType === 'serial') {
+    if (this.link && this.link != undefined && this.link.linkType === 'serial') {
       return this.serialLinkStrategy;
     }
     return this.ethernetLinkStrategy;
   }
 
   get transform() {
-    const translation = this.multiLinkCalculatorHelper.linkTranslation(
-      this.link.distance,
-      this.link.source,
-      this.link.target
-    );
-    return `translate (${translation.dx}, ${translation.dy})`;
+    if (this.link) {
+      const translation = this.multiLinkCalculatorHelper.linkTranslation(
+        this.link.distance,
+        this.link.source,
+        this.link.target
+      );
+      return `translate (${translation.dx}, ${translation.dy})`;
+    }
   }
 
   get d() {

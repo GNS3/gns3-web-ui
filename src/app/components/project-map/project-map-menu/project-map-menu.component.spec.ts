@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,8 +25,8 @@ describe('ProjectMapMenuComponent', () => {
   let mapSettingService = new MapSettingsService();
   let mockedSymbolService = new MockedSymbolService();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatDialogModule,
@@ -46,7 +46,7 @@ describe('ProjectMapMenuComponent', () => {
       declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapMenuComponent);

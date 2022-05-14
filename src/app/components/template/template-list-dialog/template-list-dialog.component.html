@@ -1,11 +1,11 @@
-<div class="title-container">
+<!-- <div class="title-container">
   <h1 mat-dialog-title>Add a node</h1>
   <button
     mat-button
     class="top-button"
     color="accent"
     (click)="onNoClick()"
-    routerLink="/server/{{ server.id }}/preferences"
+    routerLink="/server/{{ server?.id }}/preferences"
   >
     Go to template preferences
   </button>
@@ -46,9 +46,6 @@
     <h6>Configuration</h6>
   </div>
   <form [formGroup]="configurationForm">
-    <!-- <mat-form-field class="form-field">
-      <input type="text" matInput formControlName="name" placeholder="Enter name (default is taken from template)" />
-    </mat-form-field> -->
     <mat-form-field class="form-field">
       <input
         type="number"
@@ -83,4 +80,4 @@
   <button class="addButton" mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">
     Add
   </button>
-</div>
+</div> -->

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -23,8 +23,8 @@ describe('DeleteActionComponent', () => {
   let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
   let mockedLinkService: MockedLinkService = new MockedLinkService();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [MatIconModule, MatMenuModule, NoopAnimationsModule, MatBottomSheetModule],
       providers: [
         { provide: NodesDataSource, useClass: NodesDataSource },
@@ -36,7 +36,7 @@ describe('DeleteActionComponent', () => {
       ],
       declarations: [DeleteActionComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DeleteActionComponent);

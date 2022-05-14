@@ -46,8 +46,8 @@ xdescribe('AddDockerTemplateComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [
         MatStepperModule,
         MatAutocompleteModule,
@@ -81,7 +81,7 @@ xdescribe('AddDockerTemplateComponent', () => {
       ],
       declarations: [AddDockerTemplateComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddDockerTemplateComponent);
@@ -92,27 +92,27 @@ xdescribe('AddDockerTemplateComponent', () => {
     fixture.destroy();
   });
 
-  it('should open first step at start', async(() => {
+  it('should open first step at start', async () => {
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
+   await fixture.whenStable().then(() => {
       let stepperComponent = fixture.debugElement.query(By.css('mat-vertical-stepper')).componentInstance;
 
       expect(stepperComponent.selectedIndex).toBe(0);
     });
-  }));
+  });
 
-  it('should display correct label at start', async(() => {
+  it('should display correct label at start', async() => {
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
+   await fixture.whenStable().then(() => {
       let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
 
       expect(selectedLabel.textContent).toMatch('Server type');
     });
-  }));
+  });
 
-  it('should not call add template when required fields are empty', async(() => {
+  it('should not call add template when required fields are empty', async() => {
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
+    await fixture.whenStable().then(() => {
       let addButton = fixture.debugElement.nativeElement.querySelector('.add-button');
       spyOn(mockedDockerService, 'addTemplate').and.returnValue(of({} as DockerTemplate));
 
@@ -124,11 +124,11 @@ xdescribe('AddDockerTemplateComponent', () => {
 
       expect(mockedDockerService.addTemplate).not.toHaveBeenCalled();
     });
-  }));
+  });
 
-  it('should call add template when required fields are filled', async(() => {
+  it('should call add template when required fields are filled', async () => {
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
+   await  fixture.whenStable().then(() => {
       let stepperComponent = fixture.debugElement.query(By.css('mat-vertical-stepper')).componentInstance;
       stepperComponent.selectedIndex = 1;
       component.newImageSelected = true;
@@ -197,5 +197,5 @@ xdescribe('AddDockerTemplateComponent', () => {
         });
       });
     });
-  }));
+  });
 });

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
@@ -40,8 +40,8 @@ describe('ConsoleDeviceActionComponent', () => {
     server = { host: 'localhost', port: 222 } as Server;
   });
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       providers: [
         { provide: ElectronService, useValue: electronService },
         { provide: ServerService, useValue: mockedServerService },
@@ -54,7 +54,7 @@ describe('ConsoleDeviceActionComponent', () => {
     }).compileComponents();
 
     settingsService = TestBed.inject(SettingsService);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ConsoleDeviceActionComponent);

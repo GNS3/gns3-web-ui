@@ -30,9 +30,9 @@ export class InterfaceLabelComponent implements OnInit {
     private ref: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     private cssFixer: CssFixer
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   @Input('x')
   set x(value) {
@@ -89,9 +89,11 @@ export class InterfaceLabelComponent implements OnInit {
   }
 
   get transform() {
-    const bbox = this.elementRef.nativeElement.getBBox();
-    const x = this.label.x;
-    const y = this.label.y + bbox.height;
-    return `translate(${x}, ${y}) rotate(${this.label.rotation}, ${x}, ${y})`;
+    if (this.elementRef.nativeElement.getBBox) {
+      const bbox = this.elementRef.nativeElement.getBBox()
+      const x = this.label.x;
+      const y = this.label.y + bbox.height;
+      return `translate(${x}, ${y}) rotate(${this.label.rotation}, ${x}, ${y})`;
+    }
   }
 }

@@ -31,8 +31,8 @@ describe('QemuTemplatesComponent', () => {
   let mockedQemuService = new MockedQemuService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -53,7 +53,7 @@ describe('QemuTemplatesComponent', () => {
       declarations: [QemuVmTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(QemuVmTemplatesComponent);

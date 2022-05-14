@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
@@ -19,8 +19,8 @@ describe('MovingCanvasDirective', () => {
   let fixture: ComponentFixture<DummyComponent>;
   let movingEventSource = new MovingEventSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
         { provide: MovingEventSource, useValue: movingEventSource },
@@ -28,7 +28,7 @@ describe('MovingCanvasDirective', () => {
       ],
       declarations: [DummyComponent, MovingCanvasDirective],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DummyComponent);

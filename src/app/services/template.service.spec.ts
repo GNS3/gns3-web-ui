@@ -14,7 +14,7 @@ describe('TemplateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [TemplateService, HttpServer],
+      providers: [TemplateService, HttpServer, HttpClient],
     });
 
     httpClient = TestBed.get(HttpClient);

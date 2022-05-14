@@ -16,8 +16,8 @@ describe('ConsoleWrapperComponent', () => {
   let mapSettingsService: MapSettingsService;
   let toasterService: ToasterService;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatSnackBarModule],
       providers: [NodeConsoleService, ThemeService, MapSettingsService, ToasterService]
     }).compileComponents();
@@ -26,7 +26,7 @@ describe('ConsoleWrapperComponent', () => {
     nodeConsoleService = TestBed.inject(NodeConsoleService);
     themeService = TestBed.inject(ThemeService);
     mapSettingsService = TestBed.inject(MapSettingsService);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ConsoleWrapperComponent);

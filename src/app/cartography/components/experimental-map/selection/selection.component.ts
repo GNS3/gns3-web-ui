@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription} from 'rxjs';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({
@@ -28,15 +28,14 @@ export class SelectionComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const down = Observable.fromEvent(this.svg, 'mousedown').do((e: MouseEvent) => e.preventDefault());
-
     down.subscribe((e: MouseEvent) => {
       if (e.target !== this.svg) {
         return;
       }
 
       this.started = true;
-      this.startX = e.clientX + window.scrollX;
-      this.startY = e.clientY + window.scrollY;
+      this.startX = e?.clientX + window?.scrollX;
+      this.startY = e?.clientY + window?.scrollY;
       this.width = 0;
       this.height = 0;
       this.visible = true;
@@ -51,7 +50,7 @@ export class SelectionComponent implements OnInit, AfterViewInit {
 
     const scrollWindow = Observable.fromEvent(document, 'scroll').startWith({});
 
-    const move = Observable.combineLatest(mouseMove, scrollWindow);
+    const move = Observable.combineLatest([mouseMove, scrollWindow]);
 
     const drag = down.mergeMap((md: MouseEvent) => {
       return move
@@ -76,11 +75,11 @@ export class SelectionComponent implements OnInit, AfterViewInit {
             this.visible = false;
             this.started = false;
 
+            
             this.width = e.clientX - this.startX + window.scrollX;
             this.height = e.clientY - this.startY + window.scrollY;
 
             this.ref.detectChanges();
-
             this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
           })
         )

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
@@ -16,8 +16,8 @@ describe('DrawingDraggedComponent', () => {
   let mockedDrawingsDataSource = new MockedDrawingsDataSource();
   let mockedDrawingsEventSource = new DrawingsEventSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
@@ -25,7 +25,7 @@ describe('DrawingDraggedComponent', () => {
       ],
       declarations: [DrawingDraggedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingDraggedComponent);

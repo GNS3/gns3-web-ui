@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,8 +26,8 @@ describe('ConfigEditorDialogComponent', () => {
   };
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         MatFormFieldModule,
@@ -51,7 +51,7 @@ describe('ConfigEditorDialogComponent', () => {
 
     node = new Node();
     node.name = 'sample name';
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ConfigEditorDialogComponent);

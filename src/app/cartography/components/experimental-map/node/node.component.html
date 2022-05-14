@@ -1,8 +1,8 @@
-<svg:g class="node" [attr.transform]="'translate(' + node.x + ',' + node.y + ')'">
+<svg:g class="node" [attr.transform]="'translate(' + node?.x + ',' + node?.y + ')'">
   <svg:image
     #image
-    [attr.width]="node.width"
-    [attr.height]="node.height"
+    [attr.width]="node?.width"
+    [attr.height]="node?.height"
     [attr.x]="0"
     [attr.y]="0"
     [attr.xlink:href]="symbol"
@@ -11,6 +11,6 @@
     (dragged)="OnDragged($event)"
   />
   <svg:text #label class="label" [attr.style]="label_style" [attr.x]="label_x" [attr.y]="label_y">
-    {{ node.label.text }}
+    {{ node?.label?.text }}
   </svg:text>
 </svg:g>

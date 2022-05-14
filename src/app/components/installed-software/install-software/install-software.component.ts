@@ -17,17 +17,21 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   public readyToInstall = true;
   public buttonText: string;
 
-  constructor(private electronService: ElectronService) {}
+  constructor(private electronService: ElectronService) { }
 
   ngOnInit() {
-    this.electronService.ipcRenderer.on(this.responseChannel, (event, data) => {
-      this.updateButton();
-      this.installedChanged.emit(data);
-    });
+    if (this.electronService && this.electronService.ipcRenderer) {
+      this.electronService.ipcRenderer.on(this.responseChannel, (event, data) => {
+        this.updateButton();
+        this.installedChanged.emit(data);
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.electronService.ipcRenderer.removeAllListeners(this.responseChannel);
+    if (this.electronService && this.electronService.ipcRenderer) {
+      this.electronService.ipcRenderer.removeAllListeners(this.responseChannel);
+    }
   }
 
   ngOnChanges() {

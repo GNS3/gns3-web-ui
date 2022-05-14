@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,7 +17,7 @@ describe('ConsoleComponent', () => {
   let router;
   let toaster: MockedToasterService;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     consoleService = {
       command: 'command',
     };
@@ -28,7 +28,7 @@ describe('ConsoleComponent', () => {
 
     toaster = new MockedToasterService();
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       providers: [
         { provide: ConsoleService, useValue: consoleService },
         { provide: ToasterService, useValue: toaster },
@@ -44,33 +44,33 @@ describe('ConsoleComponent', () => {
       ],
       declarations: [ConsoleComponent],
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ConsoleComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+beforeEach(() => {
+  fixture = TestBed.createComponent(ConsoleComponent);
+  component = fixture.componentInstance;
+  fixture.detectChanges();
+});
 
-  it('should set default command', () => {
-    component.ngOnInit();
-    expect(component.consoleForm.value.command).toEqual('command');
-  });
+it('should create', () => {
+  expect(component).toBeTruthy();
+});
 
-  it('should go back', () => {
-    component.goBack();
-    expect(router.navigate).toHaveBeenCalledWith(['/settings']);
-  });
+it('should set default command', () => {
+  component.ngOnInit();
+  expect(component.consoleForm.value.command).toEqual('command');
+});
 
-  it('should update console command', () => {
-    component.consoleForm.get('command').setValue('newCommand');
-    spyOn(component, 'goBack');
-    component.save();
-    expect(toaster.success.length).toEqual(1);
-    expect(component.goBack).toHaveBeenCalled();
-  });
+it('should go back', () => {
+  component.goBack();
+  expect(router.navigate).toHaveBeenCalledWith(['/settings']);
+});
+
+it('should update console command', () => {
+  component.consoleForm.get('command').setValue('newCommand');
+  spyOn(component, 'goBack');
+  component.save();
+  expect(toaster.success.length).toEqual(1);
+  expect(component.goBack).toHaveBeenCalled();
+});
 });

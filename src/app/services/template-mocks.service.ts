@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Template } from '../models/template';
 import { Observable, of } from 'rxjs';
 import { CloudTemplate } from '../models/templates/cloud-template';
 import { DockerTemplate } from '../models/templates/docker-template';
@@ -13,6 +14,7 @@ import { VpcsTemplate } from '../models/templates/vpcs-template';
 
 @Injectable()
 export class TemplateMocksService {
+
   getQemuTemplate(): Observable<QemuTemplate> {
     let template: QemuTemplate = {
       adapter_type: 'e1000',
@@ -275,5 +277,9 @@ export class TemplateMocksService {
     };
 
     return of(template);
+  }
+
+  list(): Observable<Template[]> {
+    return of([])
   }
 }

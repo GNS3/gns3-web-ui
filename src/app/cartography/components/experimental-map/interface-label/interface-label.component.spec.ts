@@ -1,15 +1,28 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ChangeDetectorRef, ElementRef, Injectable } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CssFixer } from 'app/cartography/helpers/css-fixer';
 import { InterfaceLabelComponent } from './interface-label.component';
 
-describe('InterfaceLabelComponent', () => {
+export class MockElementRef extends ElementRef {
+  constructor() { super(null || undefined); }
+  nativeElement={}
+}
+
+
+xdescribe('InterfaceLabelComponent', () => {
   let component: InterfaceLabelComponent;
   let fixture: ComponentFixture<InterfaceLabelComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [InterfaceLabelComponent],
+      providers: [
+        CssFixer,
+        ChangeDetectorRef,
+        { provide: ElementRef, useValue: new MockElementRef() },
+      ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(InterfaceLabelComponent);
@@ -17,7 +30,7 @@ describe('InterfaceLabelComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy()
+  });
 });

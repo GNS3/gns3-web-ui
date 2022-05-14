@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -18,8 +18,8 @@ describe('InterfaceLabelDraggedComponent', () => {
   let mockedLinksEventSource = new LinksEventSource();
   let mockedLinksDataSource = new LinksDataSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: LinkService, useValue: mockedLinkService },
         { provide: LinksDataSource, useValue: mockedLinksDataSource },
@@ -27,7 +27,7 @@ describe('InterfaceLabelDraggedComponent', () => {
       ],
       declarations: [InterfaceLabelDraggedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(InterfaceLabelDraggedComponent);

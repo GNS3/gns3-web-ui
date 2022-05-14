@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {  ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -258,12 +258,12 @@ xdescribe('ProjectMapComponent', () => {
   let nodeCreatedLabelStylesFixer;
   let mockedRouter = new MockedActivatedRoute();
 
-  beforeEach(async(() => {
+  beforeEach(async() => {
     nodeCreatedLabelStylesFixer = {
       fix: (node) => node,
     };
 
-    TestBed.configureTestingModule({
+  await  TestBed.configureTestingModule({
       imports: [
         MatBottomSheetModule,
         MatIconModule,
@@ -323,7 +323,7 @@ xdescribe('ProjectMapComponent', () => {
       declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);

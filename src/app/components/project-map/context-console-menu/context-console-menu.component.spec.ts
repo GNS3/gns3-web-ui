@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
@@ -32,12 +32,12 @@ describe('ContextConsoleMenuComponent', () => {
     status: 'started',
   };
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     const electronMock = {
       isElectronApp: true,
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
         { provide: ChangeDetectorRef },
@@ -57,56 +57,56 @@ describe('ContextConsoleMenuComponent', () => {
     toasterService = TestBed.inject(ToasterService);
     mapSettingsService = TestBed.inject(MapSettingsService);
     nodeConsoleService = TestBed.inject(NodeConsoleService);
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ContextConsoleMenuComponent);
-    component = fixture.componentInstance;
-    component.server = { location: 'local' } as Server;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+beforeEach(() => {
+  fixture = TestBed.createComponent(ContextConsoleMenuComponent);
+  component = fixture.componentInstance;
+  component.server = { location: 'local' } as Server;
+  fixture.detectChanges();
+});
 
-  it('should define property if running in electron ', () => {
-    expect(component.isElectronApp).toBeTruthy();
-  });
+it('should create', () => {
+  expect(component).toBeTruthy();
+});
 
-  it('should open menu if there is no default settings', () => {
-    let spy = spyOn(component.contextConsoleMenu, 'openMenu');
-    localStorage.removeItem('consoleContextMenu');
+it('should define property if running in electron ', () => {
+  expect(component.isElectronApp).toBeTruthy();
+});
 
-    component.openMenu((node as unknown) as Node, 0, 0);
+it('should open menu if there is no default settings', () => {
+  let spy = spyOn(component.contextConsoleMenu, 'openMenu');
+  localStorage.removeItem('consoleContextMenu');
 
-    expect(spy.calls.any()).toBeTruthy();
-  });
+  component.openMenu((node as unknown) as Node, 0, 0);
 
-  it('should call open web console when web console action in settings', () => {
-    let spy = spyOn(component, 'openWebConsole');
-    mapSettingsService.setConsoleContextMenuAction('web console');
+  expect(spy.calls.any()).toBeTruthy();
+});
 
-    component.openMenu((node as unknown) as Node, 0, 0);
+it('should call open web console when web console action in settings', () => {
+  let spy = spyOn(component, 'openWebConsole');
+  mapSettingsService.setConsoleContextMenuAction('web console');
 
-    expect(spy.calls.any()).toBeTruthy();
-  });
+  component.openMenu((node as unknown) as Node, 0, 0);
 
-  it('should call open web console in new tab when web console in new tab action in settings', () => {
-    let spy = spyOn(component, 'openWebConsoleInNewTab');
-    mapSettingsService.setConsoleContextMenuAction('web console in new tab');
+  expect(spy.calls.any()).toBeTruthy();
+});
 
-    component.openMenu((node as unknown) as Node, 0, 0);
+it('should call open web console in new tab when web console in new tab action in settings', () => {
+  let spy = spyOn(component, 'openWebConsoleInNewTab');
+  mapSettingsService.setConsoleContextMenuAction('web console in new tab');
 
-    expect(spy.calls.any()).toBeTruthy();
-  });
+  component.openMenu((node as unknown) as Node, 0, 0);
 
-  it('should call open console when console action in settings', () => {
-    let spy = spyOn(component, 'openConsole');
-    mapSettingsService.setConsoleContextMenuAction('console');
+  expect(spy.calls.any()).toBeTruthy();
+});
 
-    component.openMenu((node as unknown) as Node, 0, 0);
+it('should call open console when console action in settings', () => {
+  let spy = spyOn(component, 'openConsole');
+  mapSettingsService.setConsoleContextMenuAction('console');
 
-    expect(spy.calls.any()).toBeTruthy();
-  });
+  component.openMenu((node as unknown) as Node, 0, 0);
+
+  expect(spy.calls.any()).toBeTruthy();
+});
 });

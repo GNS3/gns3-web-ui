@@ -33,8 +33,8 @@ describe('TopologySummaryComponent', () => {
   let mockedComputeService: MockedComputeService = new MockedComputeService();
   let mockedLinksDataSource: MockedLinksDataSource = new MockedLinksDataSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -53,7 +53,7 @@ describe('TopologySummaryComponent', () => {
       declarations: [TopologySummaryComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TopologySummaryComponent);

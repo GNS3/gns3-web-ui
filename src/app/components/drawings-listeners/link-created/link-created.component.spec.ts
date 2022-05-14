@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
@@ -30,8 +30,8 @@ describe('LinkCreatedComponent', () => {
   let mockedLinksEventSource = new LinksEventSource();
   let project = new Project();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       providers: [
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: LinkService, useValue: mockedLinkService },
@@ -42,7 +42,7 @@ describe('LinkCreatedComponent', () => {
       ],
       declarations: [LinkCreatedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LinkCreatedComponent);

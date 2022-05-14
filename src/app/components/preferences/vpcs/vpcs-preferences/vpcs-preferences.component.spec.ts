@@ -20,8 +20,8 @@ describe('VpcsPreferencesComponent', () => {
   let mockedServerService = new MockedServerService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -41,7 +41,7 @@ describe('VpcsPreferencesComponent', () => {
       declarations: [VpcsPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VpcsPreferencesComponent);

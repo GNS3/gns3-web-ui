@@ -23,8 +23,8 @@ describe('PacketFiltersDialogComponent', () => {
     close: jasmine.createSpy('close'),
   };
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         FormsModule,
@@ -44,7 +44,7 @@ describe('PacketFiltersDialogComponent', () => {
       declarations: [PacketFiltersDialogComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PacketFiltersDialogComponent);

@@ -1,5 +1,5 @@
 import { DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -66,8 +66,8 @@ describe('ImportProjectDialogComponent', () => {
     close: jasmine.createSpy('close'),
   };
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -93,7 +93,7 @@ describe('ImportProjectDialogComponent', () => {
     server = new Server();
     server.host = 'localhost';
     server.port = 80;
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ImportProjectDialogComponent);

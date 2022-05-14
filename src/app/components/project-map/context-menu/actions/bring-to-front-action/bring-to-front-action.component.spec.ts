@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -28,8 +28,8 @@ describe('BringToFrontActionComponent', () => {
   let nodeService = new MockedNodeService();
   let nodesDataSource = new MockedNodesDataSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
         { provide: DrawingService, useValue: drawingService },
@@ -39,35 +39,35 @@ describe('BringToFrontActionComponent', () => {
       ],
       declarations: [BringToFrontActionComponent],
     }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BringToFrontActionComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+beforeEach(() => {
+  fixture = TestBed.createComponent(BringToFrontActionComponent);
+  component = fixture.componentInstance;
+  fixture.detectChanges();
+});
 
-  it('should call node service when bring to front action called', () => {
-    spyOn(nodeService, 'update').and.returnValue(of());
-    component.nodes = [{ z: 0 } as Node];
-    component.drawings = [];
+it('should create', () => {
+  expect(component).toBeTruthy();
+});
 
-    component.bringToFront();
+it('should call node service when bring to front action called', () => {
+  spyOn(nodeService, 'update').and.returnValue(of());
+  component.nodes = [{ z: 0 } as Node];
+  component.drawings = [];
 
-    expect(nodeService.update).toHaveBeenCalled();
-  });
+  component.bringToFront();
 
-  it('should call drawing service when bring to front action called', () => {
-    spyOn(drawingService, 'update').and.returnValue(of());
-    component.nodes = [];
-    component.drawings = [{ z: 0 } as Drawing];
+  expect(nodeService.update).toHaveBeenCalled();
+});
 
-    component.bringToFront();
+it('should call drawing service when bring to front action called', () => {
+  spyOn(drawingService, 'update').and.returnValue(of());
+  component.nodes = [];
+  component.drawings = [{ z: 0 } as Drawing];
 
-    expect(drawingService.update).toHaveBeenCalled();
-  });
+  component.bringToFront();
+
+  expect(drawingService.update).toHaveBeenCalled();
+});
 });

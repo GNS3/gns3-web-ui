@@ -21,17 +21,17 @@ export class DrawingComponent implements OnInit {
     private svgToDrawingConverter: SvgToDrawingConverter,
     private drawingsEventSource: DrawingsEventSource,
     private cd: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     try {
       this.drawing.element = this.svgToDrawingConverter.convert(this.drawing.svg);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   OnDragging(evt) {
-    this.drawing.x = evt.x;
-    this.drawing.y = evt.y;
+    this.drawing.x = evt ? evt.x : '';
+    this.drawing.y = evt ? evt.y : '';
     this.cd.detectChanges();
   }
 
@@ -64,6 +64,8 @@ export class DrawingComponent implements OnInit {
   }
 
   get transformation() {
-    return `translate(${this.drawing.x},${this.drawing.y}) rotate(${this.drawing.rotation})`;
+    if (this.drawing) {
+      return `translate(${this.drawing.x},${this.drawing.y}) rotate(${this.drawing.rotation})`;
+    }
   }
 }

@@ -39,7 +39,7 @@ export class SnapshotMenuItemComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((snapshot) => {
-      if (snapshot) {
+      if (snapshot && this.project.project_id) {
         const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
 
         const progress = this.progressDialogService.open();

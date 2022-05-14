@@ -15,21 +15,21 @@ export class RectComponent implements OnInit {
   ngOnInit() {}
 
   get fill_opacity() {
-    if (isFinite(this.rect.fill_opacity)) {
-      return this.rect.fill_opacity;
+    if (this.rect && isFinite(this.rect.fill_opacity)) {
+      return this.rect.fill_opacity ? this.rect.fill_opacity : null;
     }
     return null;
   }
 
   get stroke_width() {
-    if (isFinite(this.rect.stroke_width)) {
-      return this.rect.stroke_width;
+    if (this.rect && isFinite(this.rect.stroke_width)) {
+      return this.rect.stroke_width ? this.rect.stroke_width : null;
     }
     return null;
   }
 
   get stroke_dasharray() {
-    if (this.rect.stroke_dasharray) {
+    if (this.rect && this.rect.stroke_dasharray) {
       return this.qtDasharrayFixer.fix(this.rect.stroke_dasharray);
     }
     return null;

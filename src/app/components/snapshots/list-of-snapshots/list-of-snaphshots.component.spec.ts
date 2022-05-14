@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -67,8 +67,8 @@ describe('ListOfSnapshotsComponent', () => {
   let mockedSnapshotService = new MockedSnapshotService();
   let mockedToasterService = new MockedToasterService();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+   await TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         MatTableModule,
@@ -95,7 +95,7 @@ describe('ListOfSnapshotsComponent', () => {
       declarations: [ListOfSnapshotsComponent, DateFilter, NameFilter],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ListOfSnapshotsComponent);

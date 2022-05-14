@@ -43,7 +43,10 @@ describe('ServerManagementService', () => {
 
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [{ provide: ElectronService, useValue: electronService }, ServerManagementService],
+      providers: [
+        ServerManagementService,
+        { provide: ElectronService, useValue: electronService },
+      ],
     })
   );
 

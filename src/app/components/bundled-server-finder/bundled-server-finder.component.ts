@@ -32,8 +32,8 @@ export class BundledServerFinderComponent implements OnInit {
       }
 
       this.serverService.getLocalServer(this.document.location.hostname, port).then((server: Server) => {
-        this.progressService.deactivate();
         this.router.navigate(['/server', server.id, 'projects']);
+        this.progressService.deactivate();
       });
     }, 100);
   }

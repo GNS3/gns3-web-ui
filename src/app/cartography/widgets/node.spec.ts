@@ -31,19 +31,21 @@ describe('NodesWidget', () => {
       const drew = svg.canvas.selectAll<SVGGElement, MapNode>('g.node');
       const drewNode = drew.nodes()[0];
 
-      drewNode.dispatchEvent(
-        new MouseEvent('mousedown', {
-          clientX: 150,
-          clientY: 250,
-          relatedTarget: drewNode,
-          screenY: 1024,
-          screenX: 1024,
-          view: window,
-        })
-      );
+      if (drewNode != undefined && drewNode != null) {
+        drewNode.dispatchEvent(
+          new MouseEvent('mousedown', {
+            clientX: 150,
+            clientY: 250,
+            relatedTarget: drewNode,
+            screenY: 1024,
+            screenX: 1024,
+            view: window,
+          })
+        );
 
-      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 300, clientY: 300 }));
-      window.dispatchEvent(new MouseEvent('mouseup', { clientX: 300, clientY: 300, view: window }));
+        window.dispatchEvent(new MouseEvent('mousemove', { clientX: 300, clientY: 300 }));
+        window.dispatchEvent(new MouseEvent('mouseup', { clientX: 300, clientY: 300, view: window }));
+      }
     };
 
     beforeEach(() => {
@@ -54,6 +56,9 @@ describe('NodesWidget', () => {
       node.height = 100;
       node.label = new MapLabel();
     });
+    it('draggable behaviour', () => {
+      tryToDrag()
+    })
 
     // it('should be draggable when enabled', () => {
     //   widget.setDraggingEnabled(true);

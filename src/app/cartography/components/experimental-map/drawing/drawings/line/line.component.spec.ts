@@ -1,15 +1,17 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed } from '@angular/core/testing';
+import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { LineComponent } from './line.component';
 
 describe('LineComponent', () => {
   let component: LineComponent;
   let fixture: ComponentFixture<LineComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(async() => {
     TestBed.configureTestingModule({
       declarations: [LineComponent],
+      providers:[QtDasharrayFixer]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LineComponent);
@@ -17,7 +19,7 @@ describe('LineComponent', () => {
     fixture.detectChanges();
   });
 
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -24,8 +24,8 @@ describe('NodeLabelDraggedComponent', () => {
     new FontFixer()
   );
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+    await TestBed.configureTestingModule({
       providers: [
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: NodeService, useValue: mockedNodeService },
@@ -34,7 +34,7 @@ describe('NodeLabelDraggedComponent', () => {
       ],
       declarations: [NodeLabelDraggedComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NodeLabelDraggedComponent);

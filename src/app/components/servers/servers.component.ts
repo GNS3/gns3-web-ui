@@ -36,7 +36,7 @@ export class ServersComponent implements OnInit, OnDestroy {
     private bottomSheet: MatBottomSheet,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   getServers() {
     const runningServersNames = this.serverManagement.getRunningServers();
@@ -57,7 +57,7 @@ export class ServersComponent implements OnInit, OnDestroy {
               if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
             }
           },
-          (error) => {}
+          (error) => { }
         );
       });
     });
@@ -66,13 +66,15 @@ export class ServersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isElectronApp = this.electronService.isElectronApp;
 
-    if (this.serverService.isServiceInitialized) this.getServers();
+    if (this.serverService && this.serverService.isServiceInitialized) this.getServers();
 
-    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
-      if (value) {
-        this.getServers();
-      }
-    });
+    if (this.serverService && this.serverService.isServiceInitialized) {
+      this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+        if (value) {
+          this.getServers();
+        }
+      });
+    }
 
     this.dataSource = new ServerDataSource(this.serverDatabase);
 
@@ -171,5 +173,5 @@ export class ServerDataSource extends DataSource<Server> {
     );
   }
 
-  disconnect() {}
+  disconnect() { }
 }

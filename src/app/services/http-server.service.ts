@@ -214,7 +214,7 @@ export class HttpServer {
   }
 
   private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
-    if (server.host && server.port) {
+    if (server && server.host && server.port) {
       if (!server.protocol) {
         server.protocol = location.protocol as ServerProtocol;
       }
@@ -227,7 +227,7 @@ export class HttpServer {
       options.headers = {};
     }
 
-    if (server.authToken && !server.tokenExpired) {
+    if (server && server.authToken && !server.tokenExpired) {
       options.headers['Authorization'] = `Bearer ${server.authToken}`;
     }
 

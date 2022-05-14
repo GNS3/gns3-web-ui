@@ -42,7 +42,7 @@ describe('DraggableSelectionComponent', () => {
   let interfaceLabelDragEventEmitter: EventEmitter<DraggableDrag<MapLinkNode>>;
   let interfaceLabelEndEventEmitter: EventEmitter<DraggableEnd<MapLinkNode>>;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     mockedGraphDataManager = new MockedGraphDataManager();
 
     nodesStartEventEmitter = new EventEmitter<DraggableStart<MapNode>>();
@@ -110,7 +110,7 @@ describe('DraggableSelectionComponent', () => {
       interfaceDragged: { emit: () => {} },
     };
 
-    TestBed.configureTestingModule({
+   await TestBed.configureTestingModule({
       providers: [
         { provide: NodesWidget, useValue: nodesWidgetStub },
         { provide: DrawingsWidget, useValue: drawingsWidgetStub },
@@ -126,7 +126,7 @@ describe('DraggableSelectionComponent', () => {
       ],
       declarations: [DraggableSelectionComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DraggableSelectionComponent);

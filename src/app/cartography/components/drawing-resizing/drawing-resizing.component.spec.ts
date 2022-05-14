@@ -1,5 +1,5 @@
 import { EventEmitter } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { ResizingEnd } from '../../events/resizing';
@@ -30,8 +30,8 @@ describe('DrawingResizingComponent', () => {
   let drawingsWidgetMock = new DrawingWidgetMock();
   let drawingsEventSource = new DrawingsEventSource();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
         { provide: DrawingsWidget, useValue: drawingsWidgetMock },
@@ -39,7 +39,7 @@ describe('DrawingResizingComponent', () => {
       ],
       declarations: [DrawingResizingComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DrawingResizingComponent);
