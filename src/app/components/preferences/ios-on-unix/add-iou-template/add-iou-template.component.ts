@@ -106,10 +106,12 @@ export class AddIouTemplateComponent implements OnInit {
     this.uploader.queue.forEach((elem) => (elem.url = url));
 
     const itemToUpload = this.uploader.queue[0];
-    (itemToUpload as any).options.disableMultipart = true;
-
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
     this.uploader.uploadItem(itemToUpload);
+
   }
+
+
 
   goBack() {
     this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
