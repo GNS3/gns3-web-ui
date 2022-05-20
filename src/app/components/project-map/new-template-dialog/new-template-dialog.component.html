@@ -154,7 +154,7 @@
           >
             <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
           ><br />
-          <div>
+          <div> 
             <div *ngFor="let version of applianceToInstall.versions">
               <div class="list-item">
                 <span>{{ applianceToInstall.name }} version {{ version.name }}</span>
@@ -225,6 +225,7 @@
                     [uploader]="uploaderImage"
                   />
                   <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                 
                   <button
                     class="button"
                     mat-raised-button

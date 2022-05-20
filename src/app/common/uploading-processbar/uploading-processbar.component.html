@@ -1,0 +1,10 @@
+    <p>Image Uploading please wait .... {{uploadProgress}}%</p>
+    <div class="row proccessBar-row ">
+        <div class="col-md-9 proccessBar-col">
+            <mat-progress-bar mode="determinate" [value]="uploadProgress" aria-valuemin="0" aria-valuemax="100">
+            </mat-progress-bar>
+        </div>
+        <div class="col-md-3 proccessBar-col">
+            <button mat-button color="primary" (click)="cancelItem()" class="file-button">Cancel</button>
+        </div>
+    </div>

@@ -2,9 +2,11 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
 import { MatTableDataSource } from '@angular/material/table';
+import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import * as SparkMD5 from 'spark-md5';
 import { v4 as uuid } from 'uuid';
@@ -29,6 +31,7 @@ import { TemplateService } from '../../../services/template.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
 import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
+import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 
 @Component({
   selector: 'app-new-template-dialog',
@@ -75,6 +78,7 @@ export class NewTemplateDialogComponent implements OnInit {
   private iouImages: Image[] = [];
 
   private templates: Template[] = [];
+  uploadProgress: number = 0;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild('stepper', { static: true }) stepper: MatStepper;
@@ -92,7 +96,9 @@ export class NewTemplateDialogComponent implements OnInit {
     public dialog: MatDialog,
     private computeService: ComputeService,
     private changeDetectorRef: ChangeDetectorRef,
-    private progressService: ProgressService
+    private progressService: ProgressService,
+    public snackBar: MatSnackBar,
+    private uploadServiceService: UploadServiceService
   ) { }
 
   ngOnInit() {
@@ -195,6 +201,18 @@ export class NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.clearQueue();
     };
 
+    this.uploaderImage.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress['progress'];
+      this.uploadServiceService.processBarCount(this.uploadProgress)
+    };
+
+    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+      if (isCancel) {
+        this.cancelUploading()
+      }
+
+    })
+
   }
 
   updateAppliances() {
@@ -213,7 +231,6 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   refreshImages() {
-
     this.qemuService.getImages(this.server).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
@@ -353,8 +370,9 @@ export class NewTemplateDialogComponent implements OnInit {
     dialogRef.componentInstance.appliance = object;
   }
 
+
+
   importImage(event, imageName) {
-    this.progressService.activate();
     this.computeChecksumMd5(event.target.files[0], false).then((output) => {
       let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === imageName)[0];
 
@@ -371,12 +389,14 @@ export class NewTemplateDialogComponent implements OnInit {
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {
             this.importImageFile(event);
+            this.openSnackBar()
           } else {
             this.uploaderImage.clearQueue();
           }
         });
       } else {
         this.importImageFile(event);
+        this.openSnackBar()
       }
     });
   }
@@ -400,10 +420,15 @@ export class NewTemplateDialogComponent implements OnInit {
       if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
 
       this.uploaderImage.uploadItem(itemToUpload);
-      this.progressService.activate();
     };
 
     fileReader.readAsText(file);
+  }
+
+  cancelUploading() {
+    this.uploaderImage.clearQueue();
+    this.uploadServiceService.processBarCount(100)
+    this.toasterService.warning('Image imported canceled');
   }
 
   checkImageFromVersion(image: string): boolean {
@@ -510,7 +535,6 @@ export class NewTemplateDialogComponent implements OnInit {
     dialogRef.afterClosed().subscribe((answer: string) => {
       if (answer) {
         iouTemplate.name = answer;
-
         this.iouService.addTemplate(this.server, iouTemplate).subscribe((template) => {
           this.templateService.newTemplateCreated.next(template);
           this.toasterService.success('Template added');
@@ -697,6 +721,13 @@ export class NewTemplateDialogComponent implements OnInit {
       processChunk(0);
     });
   }
+
+  openSnackBar() {
+    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
+      panelClass: 'uplaoding-file-snackabar',
+    });
+  }
+
 }
 
 function compareNames(a: string, b: string, isAsc: boolean) {

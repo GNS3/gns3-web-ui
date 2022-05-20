@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UploadServiceService } from '../../../../common/uploading-processbar/upload-service.service';
+import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { FileItem, FileUploader, FileUploaderOptions, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
@@ -51,7 +54,9 @@ export class AddQemuVmTemplateComponent implements OnInit {
     private formBuilder: FormBuilder,
     private templateMocksService: TemplateMocksService,
     private configurationService: QemuConfigurationService,
-    private computeService: ComputeService
+    private computeService: ComputeService,
+    private snackBar : MatSnackBar,
+    private uploadServiceService  : UploadServiceService
   ) {
     this.qemuTemplate = new QemuTemplate();
 
@@ -91,6 +96,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
     this.uploader.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
+      this.uploadServiceService.processBarCount(this.uploadProgress)
+
     };
 
     const server_id = this.route.snapshot.paramMap.get('server_id');
@@ -117,6 +124,14 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.consoleTypes = this.configurationService.getConsoleTypes();
     });
 
+    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+      if (isCancel) {
+        this.cancelUploading()
+      }
+
+    })
+
+
   }
 
   setServerType(serverType: string) {
@@ -131,7 +146,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   uploadImageFile(event) {
 
-    this.uploadedFile = true;
+    // this.uploadedFile = true;
     let name = event.target.files[0].name;
     this.diskForm.controls['fileName'].setValue(name);
 
@@ -142,7 +157,13 @@ export class AddQemuVmTemplateComponent implements OnInit {
     
     if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.server.authToken}]) 
     this.uploader.uploadItem(itemToUpload);
+    this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar',});
+  }
 
+  cancelUploading() {
+    this.uploader.clearQueue();
+    this.uploadServiceService.processBarCount(100)
+    this.toasterService.warning('Image Uploading canceled');
   }
 
   goBack() {
@@ -171,4 +192,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.toasterService.error(`Fill all required fields`);
     }
   }
+  
+
 }
