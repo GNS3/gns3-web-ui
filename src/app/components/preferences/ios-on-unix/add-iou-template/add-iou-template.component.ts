@@ -75,7 +75,6 @@ export class AddIouTemplateComponent implements OnInit {
     this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
       this.server = server;
       this.getImages();
-
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
       });
@@ -136,6 +135,7 @@ export class AddIouTemplateComponent implements OnInit {
       }
 
       this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
+        debugger
         this.goBack();
       });
     } else {
