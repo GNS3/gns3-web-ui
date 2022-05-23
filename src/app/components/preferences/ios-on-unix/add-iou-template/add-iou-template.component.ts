@@ -135,7 +135,6 @@ export class AddIouTemplateComponent implements OnInit {
       }
 
       this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
-        debugger
         this.goBack();
       });
     } else {

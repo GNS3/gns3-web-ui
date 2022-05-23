@@ -15,7 +15,7 @@ export class IosService {
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_Version}/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
   getTemplates(server: Server): Observable<IosTemplate[]> {

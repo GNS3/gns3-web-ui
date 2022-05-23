@@ -18,7 +18,7 @@ export class ApplianceService {
   }
 
   getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_Version}/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
   updateAppliances(server: Server): Observable<Appliance[]> {
