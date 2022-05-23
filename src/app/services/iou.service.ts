@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { IouImage } from '../models/iou/iou-image';
 import { Server } from '../models/server';
@@ -22,7 +23,7 @@ export class IouService {
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
   addTemplate(server: Server, iouTemplate: any): Observable<any> {
