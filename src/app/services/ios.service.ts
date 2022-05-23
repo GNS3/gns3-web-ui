@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { IosImage } from '../models/images/ios-image';
 import { Server } from '../models/server';
@@ -14,7 +15,7 @@ export class IosService {
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_Version}/images/upload/${filename}`;
   }
 
   getTemplates(server: Server): Observable<IosTemplate[]> {

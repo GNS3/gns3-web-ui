@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Appliance } from '../models/appliance';
 import { Server } from '../models/server';
@@ -17,7 +18,7 @@ export class ApplianceService {
   }
 
   getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_Version}/images/upload/${filename}`;
   }
 
   updateAppliances(server: Server): Observable<Appliance[]> {
