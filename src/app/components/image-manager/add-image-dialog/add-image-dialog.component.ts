@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DoCheck, Inject, OnInit } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Server } from '../../../models/server';
@@ -20,7 +20,7 @@ import { ImageData } from '../../../models/images';
   ],
 })
 
-export class AddImageDialogComponent implements OnInit {
+export class AddImageDialogComponent implements OnInit,DoCheck {
   server: Server;
   uploadedFile: boolean = false;
   isExistImage: boolean = false;
@@ -28,7 +28,7 @@ export class AddImageDialogComponent implements OnInit {
   install_appliance: boolean = false
   selectFile: any = [];
   uploadFileMessage: ImageData = []
-
+  uploadProgress:number = 0
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<AddImageDialogComponent>,
@@ -58,10 +58,19 @@ export class AddImageDialogComponent implements OnInit {
     this.selectFile.forEach(imgElement => {
       calls.push(this.imageService.uploadedImage(this.server, this.install_appliance, imgElement.name, imgElement).pipe(catchError(error => of(error))))
     });
+    this.uploadProgress = calls.length
     Observable.forkJoin(calls).subscribe(responses => {
       this.uploadFileMessage = responses
       this.uploadedFile = false;
       this.isExistImage = true;
     });
+  }
+  ngDoCheck(){
+    setTimeout(() => {
+      if(this.uploadProgress < 95){
+        this.uploadProgress = this.uploadProgress + 1
+      }
+    }, 100000);
+   
   }
 }

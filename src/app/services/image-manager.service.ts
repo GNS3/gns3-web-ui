@@ -15,6 +15,14 @@ export class ImageManagerService {
     return this.httpServer.get<Image[]>(server, '/images') as Observable<Image[]>;
   }
 
+  getImagePath(server:Server, install_appliance, image_path){
+    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${image_path}?install_appliances=${install_appliance}`;
+  }
+
+  getUploadPath(server: Server, emulator: string, filename: string) {
+    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${filename}`;
+  }
+
   uploadedImage(server:Server, install_appliance, image_path, flie){
     return this.httpServer.post<Image[]>(server, `/images/upload/${image_path}?install_appliances=${install_appliance}`,flie) as Observable<Image[]>;
   }

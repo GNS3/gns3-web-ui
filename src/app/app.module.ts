@@ -277,6 +277,7 @@ import { LoggedUserComponent } from './components/users/logged-user/logged-user.
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
 import { AddImageDialogComponent } from './components/image-manager/add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
+import { UploadingProcessbarComponent } from './common/uploading-processbar/uploading-processbar.component';
 
 @NgModule({
   declarations: [
@@ -470,6 +471,7 @@ import { DeleteAllImageFilesDialogComponent } from './components/image-manager/d
     ImageManagerComponent,
     AddImageDialogComponent,
     DeleteAllImageFilesDialogComponent,
+    UploadingProcessbarComponent,
   ],
   imports: [
     BrowserModule,

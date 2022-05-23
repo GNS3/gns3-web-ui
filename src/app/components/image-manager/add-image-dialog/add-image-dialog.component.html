@@ -51,7 +51,7 @@
   <div class="row">
     <div class="col-md-12">
       <div *ngIf="uploadedFile">
-        <mat-progress-bar mode="indeterminate" [value]="uploadProgress" aria-valuemin="0" aria-valuemax="100">
+        <mat-progress-bar mode="determinate" [value]="uploadProgress" aria-valuemin="0" aria-valuemax="100">
         </mat-progress-bar>
       </div>
     </div>
