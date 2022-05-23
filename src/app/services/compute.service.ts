@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Compute } from '../models/compute';
 import { ComputeStatistics } from '../models/computeStatistics';
@@ -14,7 +15,7 @@ export class ComputeService {
   }
 
   getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/${emulator}/images/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/${emulator}/images/${filename}`;
   }
 
   getStatistics(server: Server): Observable<ComputeStatistics[]> {

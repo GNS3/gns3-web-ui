@@ -3,6 +3,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
 import { from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, takeUntil } from 'rxjs/operators';
@@ -260,7 +261,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
         nodes.forEach(async (node: Node) => {
-          node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/v3/symbols/${node.symbol}/raw`;
+          node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/${environment.current_version}/symbols/${node.symbol}/raw`;
 
           if (node.width == 0 && node.height == 0) {
             let symbolDimensions = await this.symbolService.getDimensions(this.server, node.symbol).toPromise();

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { Server } from '../models/server';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
@@ -33,7 +34,7 @@ describe('TemplateService', () => {
 
     service.list(server).subscribe(() => {});
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates');
-    expect(req.request.url).toBe('http://127.0.0.1:3080/v3/templates');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
+    expect(req.request.url).toBe(`http://127.0.0.1:3080/${environment.current_version}/templates`);
   });
 });

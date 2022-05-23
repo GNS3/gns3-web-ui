@@ -6,6 +6,7 @@ import { Node } from '../cartography/models/node';
 import { Server } from '../models/server';
 import { Symbol } from '../models/symbol';
 import { HttpServer } from './http-server.service';
+import { environment } from 'environments/environment';
 
 const CACHE_SIZE = 1;
 
@@ -65,7 +66,7 @@ export class SymbolService {
   }
 
   getSymbolFromTemplate(server: Server, template: Template) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/symbols/${template.symbol}/raw`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/symbols/${template.symbol}/raw`;
   }
 }
 

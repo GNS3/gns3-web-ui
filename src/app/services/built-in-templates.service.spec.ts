@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { Server } from '../models/server';
 import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
@@ -51,7 +52,7 @@ describe('BuiltInTemplatesService', () => {
 
     service.saveTemplate(server, cloudtemplate).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates/1');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual(cloudtemplate);
   }));
@@ -71,7 +72,7 @@ describe('BuiltInTemplatesService', () => {
 
     service.saveTemplate(server, ethernethubtemplate).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates/2');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/2`);
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual(ethernethubtemplate);
   }));
@@ -91,7 +92,7 @@ describe('BuiltInTemplatesService', () => {
 
     service.saveTemplate(server, ethernetswitchtemplate).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates/3');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/3`);
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual(ethernetswitchtemplate);
   }));
@@ -112,7 +113,7 @@ describe('BuiltInTemplatesService', () => {
 
     service.addTemplate(server, cloudtemplate).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(cloudtemplate);
   }));
@@ -132,7 +133,7 @@ describe('BuiltInTemplatesService', () => {
 
     service.addTemplate(server, ethernethubtemplate).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(ethernethubtemplate);
   }));
@@ -152,7 +153,7 @@ describe('BuiltInTemplatesService', () => {
 
     service.addTemplate(server, ethernetswitchtemplate).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(ethernetswitchtemplate);
   }));

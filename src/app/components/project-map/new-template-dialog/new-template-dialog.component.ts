@@ -32,6 +32,7 @@ import { ToasterService } from '../../../services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
 import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-new-template-dialog',
@@ -246,7 +247,7 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   getAppliance(url: string) {
-    let str = url.split('/v3');
+    let str = url.split(`/${environment.current_version}`);
     let appliancePath = str[str.length - 1];
     this.applianceService.getAppliance(this.server, appliancePath).subscribe((appliance: Appliance) => {
       this.applianceToInstall = appliance;

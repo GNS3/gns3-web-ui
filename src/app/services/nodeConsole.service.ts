@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ToasterService } from './toaster.service';
 import { MapSettingsService } from './mapsettings.service';
 import { node } from 'prop-types';
+import { environment } from 'environments/environment';
 
 @Injectable()
 export class NodeConsoleService {
@@ -71,7 +72,7 @@ export class NodeConsoleService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/v3/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
+    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
   }
 
   openConsolesForAllNodesInWidget(nodes: Node[]) {

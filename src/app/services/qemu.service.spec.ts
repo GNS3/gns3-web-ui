@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { Server } from '../models/server';
 import { QemuTemplate } from '../models/templates/qemu-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
@@ -81,7 +82,7 @@ describe('QemuService', () => {
 
     service.saveTemplate(server, template).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates/1');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual(template);
   }));
@@ -133,7 +134,7 @@ describe('QemuService', () => {
 
     service.addTemplate(server, template).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/templates');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(template);
   }));
