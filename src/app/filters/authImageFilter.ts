@@ -9,12 +9,12 @@ import { environment } from 'environments/environment';
     name: 'authImage'
 })
 export class AuthImageFilter implements PipeTransform {
-  
+
     constructor(
         private httpServer: HttpServer,
         private domSanitizer: DomSanitizer
-    ) {}
-  
+    ) { }
+
     async transform(src: string, server: Server) {
         let url = src.split(`${environment.current_version}`)[1];
         const imageBlob: Blob = await this.httpServer.getBlob(server, url).toPromise();
