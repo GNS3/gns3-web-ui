@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Server } from '../../../../models/server';
 import { Symbol } from '../../../../models/symbol';
 import { SymbolService } from '../../../../services/symbol.service';
@@ -77,6 +78,6 @@ export class SymbolsComponent implements OnInit {
   }
 
   getImageSourceForTemplate(symbol: string) {
-    return `${this.server.protocol}//${this.server.host}:${this.server.port}/v3/symbols/${symbol}/raw`;
+    return `${this.server.protocol}//${this.server.host}:${this.server.port}/${environment.current_version}/symbols/${symbol}/raw`;
   }
 }

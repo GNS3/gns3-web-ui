@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
@@ -149,6 +150,6 @@ export class ImportApplianceComponent implements OnInit {
   }
 
   private getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/${emulator}/images/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/${emulator}/images/${filename}`;
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Server } from '../models/server';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class NotificationService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/v3/notifications/ws?token=${server.authToken}`;
+    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/notifications/ws?token=${server.authToken}`;
   }
 
   
@@ -19,6 +20,6 @@ export class NotificationService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/v3/projects/${project_id}/notifications/ws?token=${server.authToken}`;
+    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${server.authToken}`;
   }
 }

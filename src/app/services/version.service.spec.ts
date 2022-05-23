@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs/Rx';
 import { Server } from '../models/server';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
@@ -47,7 +48,7 @@ describe('VersionService', () => {
   it('should get version', inject([VersionService], (service: VersionService) => {
     service.get(server).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/version');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/version`);
     expect(req.request.method).toEqual('GET');
   }));
 });

@@ -3,6 +3,7 @@ import { Server } from '../models/server';
 import { HttpServer } from './http-server.service';
 import { Observable } from 'rxjs';
 import { Image } from "../models/images";
+import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +17,11 @@ export class ImageManagerService {
   }
 
   getImagePath(server:Server, install_appliance, image_path){
-    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${image_path}?install_appliances=${install_appliance}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${image_path}?install_appliances=${install_appliance}`;
   }
 
   getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/images/upload/${filename}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
   uploadedImage(server:Server, install_appliance, image_path, flie){

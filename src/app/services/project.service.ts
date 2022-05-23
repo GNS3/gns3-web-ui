@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable, Subject } from 'rxjs';
 import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
@@ -83,11 +84,11 @@ export class ProjectService {
   }
 
   getUploadPath(server: Server, uuid: string, project_name: string) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/projects/${uuid}/import?name=${project_name}`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
   }
 
   getExportPath(server: Server, project: Project) {
-    return `${server.protocol}//${server.host}:${server.port}/v3/projects/${project.project_id}/export`;
+    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${project.project_id}/export`;
   }
 
   export(server: Server, project_id: string): Observable<any> {

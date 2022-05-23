@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
 import { Server } from '../models/server';
@@ -53,7 +54,7 @@ describe('LinkService', () => {
 
     service.createLink(server, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/links');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links`);
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({
       nodes: [

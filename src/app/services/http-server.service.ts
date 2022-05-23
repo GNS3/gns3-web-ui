@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Server, ServerProtocol } from '../models/server';
@@ -218,9 +219,9 @@ export class HttpServer {
       if (!server.protocol) {
         server.protocol = location.protocol as ServerProtocol;
       }
-      url = `${server.protocol}//${server.host}:${server.port}/v3${url}`;
+      url = `${server.protocol}//${server.host}:${server.port}/${environment.current_version}${url}`;
     } else {
-      url = `/v3${url}`;
+      url = `/${environment.current_version}${url}`;
     }
 
     if (!options.headers) {

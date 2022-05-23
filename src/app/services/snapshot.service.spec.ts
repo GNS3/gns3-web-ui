@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { Server } from '../models/server';
 import { Snapshot } from '../models/snapshot';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
@@ -40,7 +41,7 @@ describe('SnapshotService', () => {
     const snapshot = new Snapshot();
     service.create(server, 'myproject', snapshot).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/snapshots');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`);
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(snapshot);
   }));
@@ -48,7 +49,7 @@ describe('SnapshotService', () => {
   it('should list snapshots', inject([SnapshotService], (service: SnapshotService) => {
     service.list(server, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/projects/myproject/snapshots');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`);
     expect(req.request.method).toEqual('GET');
   }));
 });

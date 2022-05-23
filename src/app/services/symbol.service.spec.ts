@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
+import { environment } from 'environments/environment';
 import { of } from 'rxjs';
 import { Server } from '../models/server';
 import { Symbol } from '../models/symbol';
@@ -38,14 +39,14 @@ describe('SymbolService', () => {
   it('should list symbols', inject([SymbolService], (service: SymbolService) => {
     service.list(server).subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/symbols');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols`);
     expect(req.request.method).toEqual('GET');
   }));
 
   it('should get raw symbol', inject([SymbolService], (service: SymbolService) => {
     service.raw(server, ':my/tested.png').subscribe();
 
-    const req = httpTestingController.expectOne('http://127.0.0.1:3080/v3/symbols/:my/tested.png/raw');
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols/:my/tested.png/raw`);
     expect(req.request.method).toEqual('GET');
   }));
 });

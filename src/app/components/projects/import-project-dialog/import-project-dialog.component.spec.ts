@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { environment } from 'environments/environment';
 import { FileItem, FileSelectDirective, FileUploadModule } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
@@ -47,11 +48,11 @@ export class MockedProjectService {
   }
 
   getUploadPath(server: Server, uuid: string, project_name: string) {
-    return `http://${server.host}:${server.port}/v3/projects/${uuid}/import?name=${project_name}`;
+    return `http://${server.host}:${server.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
   }
 
   getExportPath(server: Server, project: Project) {
-    return `http://${server.host}:${server.port}/v3/projects/${project.project_id}/export`;
+    return `http://${server.host}:${server.port}/${environment.current_version}/projects/${project.project_id}/export`;
   }
 }
 
