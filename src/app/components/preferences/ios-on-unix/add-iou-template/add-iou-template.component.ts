@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,7 +22,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
 })
-export class AddIouTemplateComponent implements OnInit {
+export class AddIouTemplateComponent implements OnInit, OnDestroy {
   server: Server;
   iouTemplate: IouTemplate;
   isRemoteComputerChosen: boolean = false;
@@ -68,7 +68,6 @@ export class AddIouTemplateComponent implements OnInit {
     };
     this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.toasterService.error('An error occured: ' + response);
-      this.setDiskImage('existingImage')
     };
     this.uploader.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
@@ -93,7 +92,7 @@ export class AddIouTemplateComponent implements OnInit {
         this.iouTemplate = iouTemplate;
       });
     });
-    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+   this.subscription =  this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
         this.cancelUploading()
       }
@@ -138,9 +137,8 @@ export class AddIouTemplateComponent implements OnInit {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(100)
     this.toasterService.warning('Image upload cancelled');
-    this.uploadServiceService.cancelFileUploading(false)
-    window.location.reload()
-
+    // this.uploadServiceService.cancelFileUploading(false)
+    // window.location.reload()
   }
 
 
@@ -173,5 +171,9 @@ export class AddIouTemplateComponent implements OnInit {
     } else {
       this.toasterService.error(`Fill all required fields`);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
