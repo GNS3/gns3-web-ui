@@ -35,7 +35,7 @@ export class UploadingProcessbarComponent implements OnInit {
     this._snackRef.dismiss();
   }
   cancelItem() {
-    this._US.cancelFileUploading()
+    this._US.cancelFileUploading(true)
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

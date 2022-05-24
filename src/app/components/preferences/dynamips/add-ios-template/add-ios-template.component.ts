@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -62,7 +63,7 @@ export class AddIosTemplateComponent implements OnInit {
     private iosConfigurationService: IosConfigurationService,
     private computeService: ComputeService,
     private uploadServiceService: UploadServiceService,
-    private snackBar : MatSnackBar
+    private snackBar : MatSnackBar,
   ) {
     this.iosTemplate = new IosTemplate();
 
@@ -156,7 +157,6 @@ export class AddIosTemplateComponent implements OnInit {
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
     });
-
   }
 
   addTemplate() {
@@ -273,6 +273,9 @@ export class AddIosTemplateComponent implements OnInit {
   cancelUploading() {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(100)
-    this.toasterService.warning('Image imported canceled');
+    this.toasterService.warning('Image upload cancelled');
+    this.uploadServiceService.cancelFileUploading(false)
+    window.location.reload()
+
   }
 }

@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IouImage } from '../../../../models/iou/iou-image';
@@ -34,7 +35,9 @@ export class AddIouTemplateComponent implements OnInit {
   templateNameForm: FormGroup;
   imageForm: FormGroup;
   isLocalComputerChosen: boolean = true;
-  uploadProgress:number = 0
+  uploadProgress: number = 0
+  subscription: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private serverService: ServerService,
@@ -44,8 +47,8 @@ export class AddIouTemplateComponent implements OnInit {
     private formBuilder: FormBuilder,
     private templateMocksService: TemplateMocksService,
     private computeService: ComputeService,
-    private uploadServiceService : UploadServiceService,
-    private snackBar : MatSnackBar
+    private uploadServiceService: UploadServiceService,
+    private snackBar: MatSnackBar
   ) {
     this.iouTemplate = new IouTemplate();
 
@@ -65,6 +68,7 @@ export class AddIouTemplateComponent implements OnInit {
     };
     this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.toasterService.error('An error occured: ' + response);
+      this.setDiskImage('existingImage')
     };
     this.uploader.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
@@ -80,7 +84,7 @@ export class AddIouTemplateComponent implements OnInit {
       this.getImages();
       this.toasterService.success('Image uploaded');
     };
-   
+
     const server_id = this.route.snapshot.paramMap.get('server_id');
     this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
       this.server = server;
@@ -95,7 +99,7 @@ export class AddIouTemplateComponent implements OnInit {
       }
 
     })
-    
+
   }
 
   getImages() {
@@ -133,7 +137,10 @@ export class AddIouTemplateComponent implements OnInit {
   cancelUploading() {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(100)
-    this.toasterService.warning('Image imported canceled');
+    this.toasterService.warning('Image upload cancelled');
+    this.uploadServiceService.cancelFileUploading(false)
+    window.location.reload()
+
   }
 
 

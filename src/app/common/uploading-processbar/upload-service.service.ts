@@ -16,8 +16,8 @@ export class UploadServiceService {
   processBarCount(processCount:number) {
     this.countSource.next(processCount)
   }
-  cancelFileUploading(){
-    this.cancelItem.next(true)
+  cancelFileUploading(isCancel){
+    this.cancelItem.next(isCancel)
   }
   
 }

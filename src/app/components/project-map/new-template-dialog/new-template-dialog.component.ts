@@ -429,7 +429,9 @@ export class NewTemplateDialogComponent implements OnInit {
   cancelUploading() {
     this.uploaderImage.clearQueue();
     this.uploadServiceService.processBarCount(100)
-    this.toasterService.warning('Image imported canceled');
+    this.toasterService.warning('Image upload cancelled');
+    this.uploadServiceService.cancelFileUploading(false)
+
   }
 
   checkImageFromVersion(image: string): boolean {
