@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
+import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IouImage } from '../../../../models/iou/iou-image';
@@ -18,7 +22,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
 })
-export class AddIouTemplateComponent implements OnInit {
+export class AddIouTemplateComponent implements OnInit, OnDestroy {
   server: Server;
   iouTemplate: IouTemplate;
   isRemoteComputerChosen: boolean = false;
@@ -31,6 +35,8 @@ export class AddIouTemplateComponent implements OnInit {
   templateNameForm: FormGroup;
   imageForm: FormGroup;
   isLocalComputerChosen: boolean = true;
+  uploadProgress: number = 0
+  subscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,7 +46,9 @@ export class AddIouTemplateComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private templateMocksService: TemplateMocksService,
-    private computeService: ComputeService
+    private computeService: ComputeService,
+    private uploadServiceService: UploadServiceService,
+    private snackBar: MatSnackBar
   ) {
     this.iouTemplate = new IouTemplate();
 
@@ -61,6 +69,11 @@ export class AddIouTemplateComponent implements OnInit {
     this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.toasterService.error('An error occured: ' + response);
     };
+    this.uploader.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress['progress'];
+      this.uploadServiceService.processBarCount(this.uploadProgress)
+    };
+
     this.uploader.onSuccessItem = (
       item: FileItem,
       response: string,
@@ -79,6 +92,13 @@ export class AddIouTemplateComponent implements OnInit {
         this.iouTemplate = iouTemplate;
       });
     });
+   this.subscription =  this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+      if (isCancel) {
+        this.cancelUploading()
+      }
+
+    })
+
   }
 
   getImages() {
@@ -107,7 +127,18 @@ export class AddIouTemplateComponent implements OnInit {
     const itemToUpload = this.uploader.queue[0];
     if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
     this.uploader.uploadItem(itemToUpload);
+    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
+      panelClass: 'uplaoding-file-snackabar',
+    });
 
+  }
+
+  cancelUploading() {
+    this.uploader.clearQueue();
+    this.uploadServiceService.processBarCount(100)
+    this.toasterService.warning('Image upload cancelled');
+    // this.uploadServiceService.cancelFileUploading(false)
+    // window.location.reload()
   }
 
 
@@ -140,5 +171,9 @@ export class AddIouTemplateComponent implements OnInit {
     } else {
       this.toasterService.error(`Fill all required fields`);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

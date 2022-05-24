@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UploadServiceService {
 
-  private countSource = new BehaviorSubject(0);
+  private countSource = new Subject();
   currentCount = this.countSource.asObservable();
-  private cancelItem = new BehaviorSubject(false);
+  private cancelItem = new Subject();
   currentCancelItemDetails = this.cancelItem.asObservable();
 
   constructor() { }
@@ -16,8 +16,8 @@ export class UploadServiceService {
   processBarCount(processCount:number) {
     this.countSource.next(processCount)
   }
-  cancelFileUploading(){
-    this.cancelItem.next(true)
+  cancelFileUploading(isCancel){
+    this.cancelItem.next(isCancel)
   }
   
 }

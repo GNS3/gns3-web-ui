@@ -1,7 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
+import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IosImage } from '../../../../models/images/ios-image';
@@ -19,7 +24,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
 })
-export class AddIosTemplateComponent implements OnInit {
+export class AddIosTemplateComponent implements OnInit, OnDestroy {
   server: Server;
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
@@ -46,6 +51,8 @@ export class AddIosTemplateComponent implements OnInit {
   ciscoUrl: string = 'https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp';
   uploader: FileUploader;
   isLocalComputerChosen: boolean = true;
+  uploadProgress:number = 0;
+  subscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,7 +63,9 @@ export class AddIosTemplateComponent implements OnInit {
     private router: Router,
     private templateMocksService: TemplateMocksService,
     private iosConfigurationService: IosConfigurationService,
-    private computeService: ComputeService
+    private computeService: ComputeService,
+    private uploadServiceService: UploadServiceService,
+    private snackBar : MatSnackBar,
   ) {
     this.iosTemplate = new IosTemplate();
 
@@ -92,6 +101,16 @@ export class AddIosTemplateComponent implements OnInit {
       this.getImages();
       this.toasterService.success('Image uploaded');
     };
+    this.uploader.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress['progress'];
+      this.uploadServiceService.processBarCount(this.uploadProgress)
+    };
+   this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+      if (isCancel) {
+        this.cancelUploading()
+      }
+
+    })
 
     const server_id = this.route.snapshot.paramMap.get('server_id');
     this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
@@ -137,7 +156,9 @@ export class AddIosTemplateComponent implements OnInit {
     const itemToUpload = this.uploader.queue[0];
     if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
     this.uploader.uploadItem(itemToUpload);
-
+    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
+      panelClass: 'uplaoding-file-snackabar',
+    });
   }
 
   addTemplate() {
@@ -249,5 +270,17 @@ export class AddIosTemplateComponent implements OnInit {
 
   onChassisChosen() {
     this.networkAdaptersForTemplate = [];
+  }
+
+  cancelUploading() {
+    this.uploader.clearQueue();
+    this.uploadServiceService.processBarCount(100)
+    this.toasterService.warning('Image upload cancelled');
+    // this.uploadServiceService.cancelFileUploading(false)
+    // window.location.reload()
+
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
