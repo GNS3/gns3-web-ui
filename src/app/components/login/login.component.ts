@@ -74,6 +74,7 @@ export class LoginComponent implements OnInit {
             server.authToken = response.access_token;
             server.username = username;
             server.password = password;
+            server.tokenExpired = false;
             await this.serverService.update(server);
 
             if (this.returnUrl.length <= 1) {

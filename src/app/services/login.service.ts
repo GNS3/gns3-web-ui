@@ -7,6 +7,7 @@ import { AuthResponse } from '../models/authResponse';
 
 @Injectable()
 export class LoginService {
+  server_id:string =''
   constructor(private httpServer: HttpServer) {}
 
   login(server: Server, username: string, password: string) {
@@ -22,6 +23,9 @@ export class LoginService {
   }
 
   getLoggedUser(server: Server) {
-    return this.httpServer.get(server, "/users/me");
+    return this.httpServer.get(server, "/users/me").toPromise()
+  }
+  async getLoggedUserRefToken(server: Server):Promise<any> {
+    return await this.httpServer.post<AuthResponse>(server, "/users/authenticate", {"username":server.username,"password":server.password}).toPromise()
   }
 }
