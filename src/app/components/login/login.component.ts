@@ -63,8 +63,6 @@ export class LoginComponent implements OnInit, DoCheck {
 
     let getCurrentUser = JSON.parse(localStorage.getItem(`isRememberMe`)) ?? null;
     if (getCurrentUser && getCurrentUser.isRememberMe) {
-      this.loginForm.get('username').setValue(getCurrentUser.username);
-      this.loginForm.get('password').setValue(getCurrentUser.password);
       this.isRememberMeCheked = getCurrentUser.isRememberMe;
     }
   }

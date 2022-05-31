@@ -25,7 +25,7 @@ export class LoginService {
   getLoggedUser(server: Server) {
     return this.httpServer.get(server, "/users/me").toPromise()
   }
-  async getLoggedUserRefToken(server: Server):Promise<any> {
-    return await this.httpServer.post<AuthResponse>(server, "/users/authenticate", {"username":server.username,"password":server.password}).toPromise()
+  async getLoggedUserRefToken(server: Server,current_user):Promise<any> {
+    return await this.httpServer.post<AuthResponse>(server, "/users/authenticate", {"username":current_user.username,"password":current_user.password}).toPromise()
   }
 }
