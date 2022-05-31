@@ -116,7 +116,7 @@ export class LoginComponent implements OnInit, DoCheck {
   }
 
   ngDoCheck() {
-    if (this.loginForm.get('username').valid || this.loginForm.get('password').valid) {
+    if (this.loginForm.get('username').valid && this.loginForm.get('password').valid) {
       this.isRememberMe = true;
     }
   }
