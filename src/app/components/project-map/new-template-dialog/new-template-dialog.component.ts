@@ -185,7 +185,7 @@ export class NewTemplateDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.error('An error has occured');
+      this.toasterService.error('An error has occured because image already exists');
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
@@ -374,6 +374,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
 
   importImage(event, imageName) {
+    debugger
     this.computeChecksumMd5(event.target.files[0], false).then((output) => {
       let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === imageName)[0];
 
