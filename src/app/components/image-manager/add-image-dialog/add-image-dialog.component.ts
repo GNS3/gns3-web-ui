@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, DoCheck, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ToasterService } from '@services/toaster.service';
+import { ToasterService } from '../../../services/toaster.service';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { Observable, of } from 'rxjs';
