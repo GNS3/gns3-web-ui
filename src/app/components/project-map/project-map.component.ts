@@ -1,12 +1,22 @@
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Injector, OnDestroy, OnInit, SimpleChange, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
 import { from, Observable, Subscription } from 'rxjs';
-import { map, mergeMap, takeUntil } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
@@ -126,7 +136,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
-  @ViewChild('topologySummaryContainer', {read: ViewContainerRef}) topologySummaryContainer: ViewContainerRef;
+  @ViewChild('topologySummaryContainer', { read: ViewContainerRef }) topologySummaryContainer: ViewContainerRef;
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -177,12 +187,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
     private cd: ChangeDetectorRef,
-    // private cfr: ComponentFactoryResolver, 
+    // private cfr: ComponentFactoryResolver,
     // private injector: Injector,
     private viewContainerRef: ViewContainerRef
   ) {}
-
-
 
   // constructor(private viewContainerRef: ViewContainerRef) {}
   // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
@@ -228,19 +236,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   async lazyLoadTopologySummary() {
     if (this.isTopologySummaryVisible) {
-      const {TopologySummaryComponent} = await import('../topology-summary/topology-summary.component');
-      this.instance =   this.viewContainerRef.createComponent(TopologySummaryComponent)
+      const { TopologySummaryComponent } = await import('../topology-summary/topology-summary.component');
+      this.instance = this.viewContainerRef.createComponent(TopologySummaryComponent);
 
       // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
       // this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
       this.instance.instance.server = this.server;
       this.instance.instance.project = this.project;
     } else if (this.instance) {
-      if (this.instance.instance)  {
+      if (this.instance.instance) {
         this.instance.instance.ngOnDestroy();
         this.instance.destroy();
       }
-    } 
+    }
   }
 
   addSubscriptions() {
@@ -339,7 +347,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             if (!project) this.router.navigate(['/servers']);
 
             this.projectService.open(this.server, this.project.project_id);
-            this.title.setTitle(this.project.name); 
+            this.title.setTitle(this.project.name);
             this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
 
@@ -986,8 +994,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     ) {
       this.toasterService.error('Project with running nodes cannot be exported.');
     } else {
-      location.assign(this.projectService.getExportPath(this.server, this.project));
+      // location.assign(this.projectService.getExportPath(this.server, this.project));
+      this.exportPortableProjectDialog();
     }
+  }
+  exportPortableProjectDialog() {
+    const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
+      width: '700px',
+      maxHeight: '850px',
+      autoFocus: false,
+      disableClose: true,
+      data: this.server,
+    });
+
+    dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
   }
 
   public uploadImageFile(event) {
@@ -1058,7 +1078,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       width: '600px',
       height: '650px',
       autoFocus: false,
-      disableClose: true
+      disableClose: true,
     });
     let instance = dialogRef.componentInstance;
     instance.server = this.server;

@@ -1,0 +1,58 @@
+<div class="row">
+  <div class="col-md-10">
+    <h1 mat-dialog-title>Export Project</h1>
+  </div>
+  <div class="col-md-2 txt-align">
+    <button mat-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<p mat-dialog-subtitle>Please select the location, whether to include base images or not and the compression type.</p>
+<mat-divider></mat-divider>
+<div mat-dialog-content>
+  <div class="row">
+    <div class="col-md-4">Path:</div>
+    <div class="col-md-6"></div>
+    <div class="col-md-2"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">Compression:</div>
+    <div class="col-md-6"></div>
+    <div class="col-md-2"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">Compression level:</div>
+    <div class="col-md-6"></div>
+    <div class="col-md-2"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <section class="checkBox-section">
+        <mat-checkbox class="checkBox-margin"> Include base images </mat-checkbox>
+      </section>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <section class="checkBox-section">
+        <mat-checkbox class="checkBox-margin"> Include snapshots </mat-checkbox>
+      </section>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <section class="checkBox-section">
+        <mat-checkbox class="checkBox-margin"> Reset MAC addresses </mat-checkbox>
+      </section>
+    </div>
+  </div>
+</div>
+<mat-divider></mat-divider>
+<div mat-dialog-actions>
+  <button mat-button>Help</button>
+  <button mat-button cdkFocusInitial>Back</button>
+  <button mat-button cdkFocusInitial>Next</button>
+  <button mat-button cdkFocusInitial>Cancel</button>
+</div>
