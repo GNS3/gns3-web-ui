@@ -2,14 +2,14 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, DoCheck, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ToasterService } from '../../../services/toaster.service';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ImageData } from '../../../models/images';
 import { Server } from '../../../models/server';
 import { ImageManagerService } from '../../../services/image-manager.service';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-add-image-dialog',
@@ -32,8 +32,8 @@ export class AddImageDialogComponent implements OnInit, DoCheck {
   selectFile: any = [];
   uploadFileMessage: ImageData = [];
   uploadProgress: number = 0;
-
-  cancelRequsts = new Map();
+  cancelRequsts: any;
+  forkObservable: Observable<any>[] = [];
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<AddImageDialogComponent>,
@@ -72,13 +72,11 @@ export class AddImageDialogComponent implements OnInit, DoCheck {
     this.selectFile.forEach((imgElement) => {
       const object = this.imageService
         .uploadedImage(this.server, this.install_appliance, imgElement.name, imgElement)
-        .pipe(catchError((error) => of(error)))
-        .subscribe();
-      this.cancelRequsts.set(imgElement.name, object);
+        .pipe(catchError((error) => of(error)));
+      this.forkObservable.push(object);
     });
-
-    this.uploadProgress = this.cancelRequsts.size;
-    Observable.forkJoin(this.cancelRequsts.values).subscribe((responses) => {
+    this.uploadProgress = this.forkObservable.length;
+    this.cancelRequsts = forkJoin(this.forkObservable).subscribe((responses) => {
       this.uploadFileMessage = responses;
       this.uploadServiceService.processBarCount(100);
       this.uploadedFile = false;
@@ -95,9 +93,7 @@ export class AddImageDialogComponent implements OnInit, DoCheck {
     }, 10000);
   }
   cancelUploading() {
-    this.cancelRequsts.forEach((obj) => {
-      obj.unsubscribe();
-    });
+    this.cancelRequsts.unsubscribe();
     this.dialogRef.close();
     this.uploadServiceService.processBarCount(100);
     this.toasterService.warning('Image upload cancelled');
