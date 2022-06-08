@@ -75,6 +75,7 @@ export class AddImageDialogComponent implements OnInit, DoCheck {
         .pipe(catchError((error) => of(error)));
       this.forkObservable.push(object);
     });
+    
     this.uploadProgress = this.forkObservable.length;
     this.cancelRequsts = forkJoin(this.forkObservable).subscribe((responses) => {
       this.uploadFileMessage = responses;
@@ -86,11 +87,11 @@ export class AddImageDialogComponent implements OnInit, DoCheck {
 
   ngDoCheck() {
     setTimeout(() => {
-      if (this.uploadProgress < 95) {
+      if (this.uploadProgress < 100 - this.forkObservable.length) {
         this.uploadProgress = this.uploadProgress + 1;
         this.uploadServiceService.processBarCount(this.uploadProgress);
       }
-    }, 10000);
+    }, this.forkObservable.length * 10000);
   }
   cancelUploading() {
     this.cancelRequsts.unsubscribe();
