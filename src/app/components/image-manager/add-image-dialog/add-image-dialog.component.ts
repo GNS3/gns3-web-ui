@@ -1,12 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, DoCheck, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
-import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
-import { forkJoin, Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ImageData } from '../../../models/images';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { ImageManagerService } from '../../../services/image-manager.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -23,33 +19,65 @@ import { ToasterService } from '../../../services/toaster.service';
     ]),
   ],
 })
-export class AddImageDialogComponent implements OnInit, DoCheck {
+export class AddImageDialogComponent implements OnInit {
   server: Server;
-  uploadedFile: boolean = false;
-  isExistImage: boolean = false;
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
   selectFile: any = [];
-  uploadFileMessage: ImageData = [];
+  uploaderImage: FileUploader;
   uploadProgress: number = 0;
-  cancelRequsts: any;
-  forkObservable: Observable<any>[] = [];
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<AddImageDialogComponent>,
     private imageService: ImageManagerService,
-    public snackBar: MatSnackBar,
-    private uploadServiceService: UploadServiceService,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private uploadServiceService: UploadServiceService
   ) {}
 
-  public ngOnInit(): void {
+  public ngOnInit() {
     this.server = this.data;
-    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
-      if (isCancel) {
-        this.cancelUploading();
-      }
-    });
+
+    this.uploaderImage = new FileUploader({});
+    this.uploaderImage.onAfterAddingFile = (file) => {
+      file.withCredentials = false;
+    };
+
+    this.uploaderImage.onErrorItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      let responseData = {
+        name: item.file.name,
+        message: JSON.parse(response),
+      };
+      this.toasterService.error(responseData?.message.message);
+    };
+
+    this.uploaderImage.onSuccessItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      let responseData = {
+        filename: item.file.name,
+        message: JSON.parse(response),
+      };
+      this.toasterService.success('Image ' + responseData?.message.filename + ' imported succesfully' );
+    };
+    this.uploaderImage.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress;
+    };
+  }
+
+  cancelUploading() {
+    this.uploaderImage.clearQueue();
+    this.dialogRef.close();
+    this.uploadServiceService.processBarCount(null);
+    this.toasterService.warning('Image file Uploading canceled');
   }
 
   selectInstallApplianceOption(ev) {
@@ -57,47 +85,27 @@ export class AddImageDialogComponent implements OnInit, DoCheck {
   }
 
   async uploadImageFile(event) {
-    for (let imgFile of event.target.files) {
+    for (let imgFile of event) {
       this.selectFile.push(imgFile);
     }
-    await this.upload();
+    await this.importImageFile();
   }
 
   // files uploading
-  upload() {
-    this.uploadedFile = true;
-    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
-      panelClass: 'uplaoding-file-snackabar',
+  importImageFile() {
+    this.selectFile.forEach((event, i) => {
+      let fileName = event.name;
+      let file = event;
+      let fileReader: FileReader = new FileReader();
+      fileReader.onloadend = () => {
+        const url = this.imageService.getImagePath(this.server, this.install_appliance, fileName);
+        const itemToUpload = this.uploaderImage.queue[i];
+        itemToUpload.url = url;
+        if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+        (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }];
+        this.uploaderImage.uploadItem(itemToUpload);
+      };
+      fileReader.readAsText(file);
     });
-    this.selectFile.forEach((imgElement) => {
-      const object = this.imageService
-        .uploadedImage(this.server, this.install_appliance, imgElement.name, imgElement)
-        .pipe(catchError((error) => of(error)));
-      this.forkObservable.push(object);
-    });
-    
-    this.uploadProgress = this.forkObservable.length;
-    this.cancelRequsts = forkJoin(this.forkObservable).subscribe((responses) => {
-      this.uploadFileMessage = responses;
-      this.uploadServiceService.processBarCount(100);
-      this.uploadedFile = false;
-      this.isExistImage = true;
-    });
-  }
-
-  ngDoCheck() {
-    setTimeout(() => {
-      if (this.uploadProgress < 100 - this.forkObservable.length) {
-        this.uploadProgress = this.uploadProgress + 1;
-        this.uploadServiceService.processBarCount(this.uploadProgress);
-      }
-    }, this.forkObservable.length * 10000);
-  }
-  cancelUploading() {
-    this.cancelRequsts.unsubscribe();
-    this.dialogRef.close();
-    this.uploadServiceService.processBarCount(100);
-    this.toasterService.warning('Image upload cancelled');
-    this.uploadServiceService.cancelFileUploading(false);
   }
 }

@@ -30,45 +30,76 @@
   </div>
 </div>
 
-<div *ngIf="!isExistImage && isInstallAppliance">
+<div *ngIf="isInstallAppliance">
   <div class="row" style="display: flex">
     <div class="col-md-6">
-      <h5>Please Select image</h5>
+      <h5 *ngIf="uploaderImage.queue.length <= 0">Please Select image</h5>
+      <p *ngIf="uploaderImage.queue.length > 0"class="uploaded-text">Uploaded image details</p>
     </div>
-    <div class="col-md-4 txt-align">
+    <div class="col-md-4 txt-align" *ngIf="uploaderImage.queue.length <= 0">
       <input
         type="file"
         accept=".qcow2, .bin,.image,.qcow2,.vmdk,.img,.tmp"
         multiple
         #file
         class="non-visible"
-        (change)="uploadImageFile($event)"
+        ng2FileSelect
+        [uploader]="uploaderImage"
+        (onFileSelected)="uploadImageFile($event)"
       />
       <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
     </div>
-    <div class="col-md-2 txt-align">
+    <div class="{{uploaderImage.queue.length > 0 ? 'col-md-6 txt-align' : 'col-md-2 txt-align'}}  ">
       <button mat-button (click)="dialogRef.close()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
   </div>
-  <div class="row" *ngFor="let img of selectFile; let i = index">
-    <mat-title> {{ i + 1 }}. {{ img?.name }} </mat-title>
-  </div>
-</div>
-<div *ngIf="isExistImage">
-  <div mat-dialog-content>
-    <div *ngIf="uploadFileMessage.length > 0">
-      <p class="uploaded-text">Uploaded image details</p>
-      <p
-        *ngFor="let uploadFile of uploadFileMessage; let i = index"
-        [ngClass]="{ 'uploaded-error-text': uploadFile?.error?.message }"
+
+ 
+  <div class="row" *ngFor="let img of uploaderImage.queue; let i = index">
+    <div class="{{img.isError || img.isUploaded ? 'col-md-10' : 'col-md-6'}}">
+      <mat-title [ngClass]="{ 'uploaded-error-text': img.isError }">
+        {{ i + 1 }}. {{ img.isError ? 'Image ' : '' }} {{ img?.some?.name }}
+        {{ img.isError ? ' already exists' : '' }}
+      </mat-title>
+    </div>
+    <div class="{{img.isError || img.isUploaded ? 'col-md-1' : 'col-md-4'}}"  *ngIf="!img.isUploaded">
+      <mat-progress-bar
+        mode="determinate"
+        *ngIf="img?.some?.name === uploadProgress.some?.name"
+        [value]="uploadProgress.progress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      ></mat-progress-bar>
+      <mat-progress-bar
+        mode="determinate"
+        *ngIf="img?.some?.name !== uploadProgress.some?.name && !img.isUploaded"
+        [value]="0"
+        aria-valuemin="0"
+        aria-valuemax="100"
       >
-        {{ i + 1 }}. {{ uploadFile?.filename ?? uploadFile?.error?.message }}
-      </p>
+      </mat-progress-bar>
+    </div>
+    <div class="{{img.isError || img.isUploaded ? 'col-md-1' : 'col-md-2'}}"
+      *ngIf="img?.some?.name === uploadProgress.some?.name && img.isReady && !img.isUploaded"
+    >
+      {{ uploadProgress.progress + ' %' }}
+    </div>
+    <div
+      class="col-md-2"
+      *ngIf="img?.some?.name !== uploadProgress.some?.name && img.isReady && !uploadProgress.isUploaded"
+    >
+      {{ '0 %' }}
     </div>
   </div>
-  <div mat-dialog-actions align="end">
-    <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
+  <div mat-dialog-actions align="end" *ngIf="uploaderImage.queue.length > 0 && !uploadProgress.isUploaded">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="uploaderImage.queue.length > 0 ? cancelUploading() : dialogRef.close(false)"
+    >
+      Cancel
+    </button>
   </div>
 </div>
