@@ -14,6 +14,7 @@ import { AddImageDialogComponent } from './add-image-dialog.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export class MockedImageManagerService {
   public getImages(server: Server) {
@@ -37,7 +38,8 @@ describe('AddImageDialogComponent', () => {
         MatToolbarModule,
         MatMenuModule,
         MatCheckboxModule,
-        MatDialogModule
+        MatDialogModule,
+        MatSnackBarModule
       ],
       providers: [
         { provide: ServerService, useValue: mockedServerService },

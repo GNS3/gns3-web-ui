@@ -1,11 +1,11 @@
-import { Component, DoCheck, Inject, OnInit } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Server } from '../../../models/server';
 import { ImageManagerService } from '../../../services/image-manager.service';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ImageData } from '../../../models/images';
+import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
   selector: 'app-add-image-dialog',
@@ -19,58 +19,93 @@ import { ImageData } from '../../../models/images';
     ]),
   ],
 })
-
-export class AddImageDialogComponent implements OnInit,DoCheck {
+export class AddImageDialogComponent implements OnInit {
   server: Server;
-  uploadedFile: boolean = false;
-  isExistImage: boolean = false;
-  isInstallAppliance: boolean = false
-  install_appliance: boolean = false
+  isInstallAppliance: boolean = false;
+  install_appliance: boolean = false;
   selectFile: any = [];
-  uploadFileMessage: ImageData = []
-  uploadProgress:number = 0
+  uploaderImage: FileUploader;
+  uploadProgress: number = 0;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<AddImageDialogComponent>,
     private imageService: ImageManagerService,
+    private toasterService: ToasterService,
+    private uploadServiceService: UploadServiceService
+  ) {}
 
-  ) { }
+  public ngOnInit() {
+    this.server = this.data;
 
-  public ngOnInit(): void {
-    this.server = this.data
+    this.uploaderImage = new FileUploader({});
+    this.uploaderImage.onAfterAddingFile = (file) => {
+      file.withCredentials = false;
+    };
+
+    this.uploaderImage.onErrorItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      let responseData = {
+        name: item.file.name,
+        message: JSON.parse(response),
+      };
+      this.toasterService.error(responseData?.message.message);
+    };
+
+    this.uploaderImage.onSuccessItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      let responseData = {
+        filename: item.file.name,
+        message: JSON.parse(response),
+      };
+      this.toasterService.success('Image ' + responseData?.message.filename + ' imported succesfully' );
+    };
+    this.uploaderImage.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress;
+    };
+  }
+
+  cancelUploading() {
+    this.uploaderImage.clearQueue();
+    this.dialogRef.close();
+    this.uploadServiceService.processBarCount(null);
+    this.toasterService.warning('Image file Uploading canceled');
   }
 
   selectInstallApplianceOption(ev) {
-    this.install_appliance = ev.value
+    this.install_appliance = ev.value;
   }
 
   async uploadImageFile(event) {
-    for (let imgFile of event.target.files) {
-      this.selectFile.push(imgFile)
+    for (let imgFile of event) {
+      this.selectFile.push(imgFile);
     }
-    await this.upload()
+    await this.importImageFile();
   }
 
-  // files uploading 
-  upload() {
-    const calls = [];
-    this.uploadedFile = true;
-    this.selectFile.forEach(imgElement => {
-      calls.push(this.imageService.uploadedImage(this.server, this.install_appliance, imgElement.name, imgElement).pipe(catchError(error => of(error))))
+  // files uploading
+  importImageFile() {
+    this.selectFile.forEach((event, i) => {
+      let fileName = event.name;
+      let file = event;
+      let fileReader: FileReader = new FileReader();
+      fileReader.onloadend = () => {
+        const url = this.imageService.getImagePath(this.server, this.install_appliance, fileName);
+        const itemToUpload = this.uploaderImage.queue[i];
+        itemToUpload.url = url;
+        if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+        (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }];
+        this.uploaderImage.uploadItem(itemToUpload);
+      };
+      fileReader.readAsText(file);
     });
-    this.uploadProgress = calls.length
-    Observable.forkJoin(calls).subscribe(responses => {
-      this.uploadFileMessage = responses
-      this.uploadedFile = false;
-      this.isExistImage = true;
-    });
-  }
-  ngDoCheck(){
-    setTimeout(() => {
-      if(this.uploadProgress < 95){
-        this.uploadProgress = this.uploadProgress + 1
-      }
-    }, 100000);
-   
   }
 }

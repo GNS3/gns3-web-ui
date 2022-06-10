@@ -162,7 +162,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   cancelUploading() {
     this.uploader.clearQueue();
-    this.uploadServiceService.processBarCount(100)
+    this.uploadServiceService.processBarCount(null)
     this.toasterService.warning('Image Uploading canceled');
     this.uploadServiceService.cancelFileUploading(false)
 

@@ -23,7 +23,7 @@ export class UploadingProcessbarComponent implements OnInit {
   ngOnInit() {
     this.subscription = this._US.currentCount.subscribe((count:number) => {
       this.uploadProgress = count;
-      if (this.uploadProgress === 100) {
+      if (this.uploadProgress === 100 || this.uploadProgress == null ) {
         this.dismiss()
       }
     })

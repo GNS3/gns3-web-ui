@@ -370,7 +370,7 @@
                     type="file"
                     class="non-visible"
                     #file2
-                    (change)="importImage($, image.filename)"
+                    (change)="importImage($event, image.filename)"
                     ng2FileSelect
                     [uploader]="uploaderImage"
                   />

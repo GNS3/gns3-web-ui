@@ -185,7 +185,7 @@ export class NewTemplateDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.error('An error has occured');
+      this.toasterService.error('An error has occured because image already exists');
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
@@ -428,7 +428,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
   cancelUploading() {
     this.uploaderImage.clearQueue();
-    this.uploadServiceService.processBarCount(100)
+    this.uploadServiceService.processBarCount(null)
     this.toasterService.warning('Image upload cancelled');
     this.uploadServiceService.cancelFileUploading(false)
 
