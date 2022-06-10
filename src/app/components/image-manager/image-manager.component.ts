@@ -123,7 +123,7 @@ export class ImageManagerComponent implements OnInit {
 
   deleteAllFiles() {
     const dialogRef = this.dialog.open(DeleteAllImageFilesDialogComponent, {
-      width: '500px',
+      width: '550px',
       maxHeight: '650px',
       autoFocus: false,
       disableClose: true,
