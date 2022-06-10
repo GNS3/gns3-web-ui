@@ -1,58 +1,105 @@
-<div class="row">
-  <div class="col-md-10">
-    <h1 mat-dialog-title>Export Project</h1>
+<form
+  [formGroup]="export_project_form"
+  (ngSubmit)="export_project_form.valid && exportPortableProject()"
+>
+  <div class="row">
+    <div class="col-md-10">
+      <h1 mat-dialog-title>Export Project</h1>
+    </div>
+    <div class="col-md-2 txt-align">
+      <button mat-button class="close-btn" (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
-  <div class="col-md-2 txt-align">
-    <button mat-button (click)="dialogRef.close()">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-</div>
 
-<p mat-dialog-subtitle>Please select the location, whether to include base images or not and the compression type.</p>
-<mat-divider></mat-divider>
-<div mat-dialog-content>
-  <div class="row">
-    <div class="col-md-4">Path:</div>
-    <div class="col-md-6"></div>
-    <div class="col-md-2"></div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">Compression:</div>
-    <div class="col-md-6"></div>
-    <div class="col-md-2"></div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">Compression level:</div>
-    <div class="col-md-6"></div>
-    <div class="col-md-2"></div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <section class="checkBox-section">
-        <mat-checkbox class="checkBox-margin"> Include base images </mat-checkbox>
-      </section>
+  <p mat-dialog-subtitle>
+    Please select the location, whether to include base images or not and the compression <br />type.
+  </p>
+  <mat-divider></mat-divider>
+
+  <div class="mat-data">
+    <div class="row">
+      <div class="col-md-4 col-data">
+        <div mat-title>Path:</div>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field class="input-full-width">
+          <input matInput type="text" formControlName="file_path" required />
+        </mat-form-field>
+      </div>
+      <div class="col-md-2">
+        <input
+          type="file"
+          accept=".qcow2"
+          #file
+          class="non-visible"
+          (change)="uploadImageFile($event)"
+          ng2FileSelect
+          [uploader]="uploader"
+        />
+        <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 col-data">Compression:</div>
+      <div class="col-md-8">
+        <mat-form-field class="input-full-width">
+          <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
+            <mat-option *ngFor="let compressionValue of compression_methods" [value]="compressionValue.name">{{
+              compressionValue.name
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 col-data">Compression level:</div>
+      <div class="col-md-8">
+        <mat-form-field class="input-full-width">
+          <mat-select formControlName="compression_level" required>
+            <mat-option *ngFor="let compressionLevel of compression_filter_value" [value]="compressionLevel">{{
+              compressionLevel
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 checkbox-row">
+        <section  class="checkBox-section">
+          <mat-checkbox formControlName="include_base_image" class="checkBox-margin"> Include base images </mat-checkbox>
+        </section>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 checkbox-row">
+        <section class="checkBox-section" >
+          <mat-checkbox class="checkBox-margin" formControlName="include_snapshots"> Include snapshots </mat-checkbox>
+        </section>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 checkbox-row">
+        <section class="checkBox-section">
+          <mat-checkbox  formControlName="reset_mac_address" class="checkBox-margin"> Reset MAC addresses</mat-checkbox>
+        </section>
+      </div>
     </div>
   </div>
+  <mat-divider></mat-divider>
   <div class="row">
-    <div class="col-md-12">
-      <section class="checkBox-section">
-        <mat-checkbox class="checkBox-margin"> Include snapshots </mat-checkbox>
-      </section>
+    <div class="col-md-4">
+      <div mat-dialog-actions align="start">
+        <button type="button" mat-button>Help</button>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div mat-dialog-actions align="end">
+        <button type="button" mat-button (click)="dialogRef.close()" cdkFocusInitial>Back</button>
+        <button mat-button type="submit" cdkFocusInitial>Next</button>
+        <button type="button" mat-button (click)="dialogRef.close()" cdkFocusInitial>Cancel</button>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <section class="checkBox-section">
-        <mat-checkbox class="checkBox-margin"> Reset MAC addresses </mat-checkbox>
-      </section>
-    </div>
-  </div>
-</div>
-<mat-divider></mat-divider>
-<div mat-dialog-actions>
-  <button mat-button>Help</button>
-  <button mat-button cdkFocusInitial>Back</button>
-  <button mat-button cdkFocusInitial>Next</button>
-  <button mat-button cdkFocusInitial>Cancel</button>
-</div>
+</form>
