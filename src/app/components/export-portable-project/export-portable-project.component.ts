@@ -19,6 +19,7 @@ export class ExportPortableProjectComponent implements OnInit {
   compression_level: any = [];
   compression_filter_value: any = [];
   server: Server;
+  index: number = 4;
 
   constructor(
     public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
@@ -28,10 +29,9 @@ export class ExportPortableProjectComponent implements OnInit {
     private _fb: FormBuilder
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.server = this.data;
-
-    this.formControls();
+    await this.formControls();
     this.compression_methods = this.projectService.getCompression();
     this.compression_level = this.projectService.getCompressionLevel();
     this.uploader = new FileUploader({});
@@ -52,9 +52,8 @@ export class ExportPortableProjectComponent implements OnInit {
     };
 
     this.uploader.onProgressItem = (progress: any) => {};
-
-    this.selectCompression({ value: this.compression_methods[4] });
-    this.export_project_form.get('compression').setValue(this.compression_methods[4]);
+    this.selectCompression({ value: this.compression_methods[this.index] });
+    this.export_project_form.get('compression').setValue(this.compression_methods[this.index]);
   }
 
   formControls() {
@@ -72,20 +71,21 @@ export class ExportPortableProjectComponent implements OnInit {
   uploadImageFile(event) {}
 
   selectCompression(event) {
-    this.compression_level.map((_) => {
-      if (event.value.value === _.name) {
-        this.export_project_form.get('compression_level').setValue(_.value);
-        this.compression_filter_value = _.selectionValues;
-      }
-    });
+    if (this.compression_level.length > 0) {
+      this.compression_level.map((_) => {
+        if (event.value.value === _.name) {
+          this.export_project_form.get('compression_level').setValue(_.value);
+          this.compression_filter_value = _.selectionValues;
+        }
+      });
+    }
   }
 
   exportPortableProject() {
-    let response
+    let response;
     this.export_project_form.value.compression = this.export_project_form.value.compression.value;
-    this.projectService.exportPortableProject(this.server, this.export_project_form.value)
-    .subscribe((res) => {
-     response = res
+    this.projectService.exportPortableProject(this.server, this.export_project_form.value).subscribe((res) => {
+      response = res;
     });
   }
 }

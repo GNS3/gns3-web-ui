@@ -129,10 +129,10 @@ export class ProjectService {
     return false;
   }
 
-  getCompression = () => {
+  getCompression() {
     return this.compression_methods;
   };
-  getCompressionLevel = () => {
+  getCompressionLevel() {
     return this.compression_level_default_value;
   };
   exportPortableProject(server:Server,formData:any={}) {
