@@ -12,7 +12,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
+import { ExportPortableProjectComponent } from '../../components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
 import { from, Observable, Subscription } from 'rxjs';

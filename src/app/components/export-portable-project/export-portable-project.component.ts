@@ -1,9 +1,8 @@
-import { Inject } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Server } from '../../models/server';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Server } from '../../models/server';
 import { ProjectService } from '../../services/project.service';
 import { ToasterService } from '../../services/toaster.service';
 
@@ -56,7 +55,6 @@ export class ExportPortableProjectComponent implements OnInit {
 
     this.selectCompression({ value: this.compression_methods[4] });
     this.export_project_form.get('compression').setValue(this.compression_methods[4]);
-  
   }
 
   formControls() {
@@ -74,7 +72,6 @@ export class ExportPortableProjectComponent implements OnInit {
   uploadImageFile(event) {}
 
   selectCompression(event) {
-    console.log(event);
     this.compression_level.map((_) => {
       if (event.value.value === _.name) {
         this.export_project_form.get('compression_level').setValue(_.value);
@@ -84,9 +81,11 @@ export class ExportPortableProjectComponent implements OnInit {
   }
 
   exportPortableProject() {
-    this.projectService.exportPortableProject(this.server,this.export_project_form.value).subscribe((res)=>{
-
-    })
-    console.log(this.export_project_form.value);
+    let response
+    this.export_project_form.value.compression = this.export_project_form.value.compression.value;
+    this.projectService.exportPortableProject(this.server, this.export_project_form.value)
+    .subscribe((res) => {
+     response = res
+    });
   }
 }

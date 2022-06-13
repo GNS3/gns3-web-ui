@@ -38,7 +38,7 @@
           ng2FileSelect
           [uploader]="uploader"
         />
-        <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+        <button type="button" mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
       </div>
     </div>
     <div class="row">
@@ -46,7 +46,7 @@
       <div class="col-md-8">
         <mat-form-field class="input-full-width">
           <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
-            <mat-option *ngFor="let compressionValue of compression_methods" [value]="compressionValue.name">{{
+            <mat-option *ngFor="let compressionValue of compression_methods" [value]="compressionValue">{{
               compressionValue.name
             }}</mat-option>
           </mat-select>

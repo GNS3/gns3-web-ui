@@ -14,19 +14,19 @@ import { SettingsService } from './settings.service';
 export class ProjectService {
   compression_methods: any = [
     { id: 1, value: 'none', name: 'None' },
-    { id: 2, value: 'zip compression (deflate)', name: 'Zip compression (deflate)' },
-    { id: 3, value: 'bzip2 compression', name: 'Bzip2 compression' },
-    { id: 4, value: 'lzma compression', name: 'Lzma compression' },
-    { id: 5, value: 'zstandard compression', name: 'Zstandard compression' },
+    { id: 2, value: 'zip', name: 'Zip compression (deflate)' },
+    { id: 3, value: 'bzip2', name: 'Bzip2 compression' },
+    { id: 4, value: 'lzma', name: 'Lzma compression' },
+    { id: 5, value: 'zstd', name: 'Zstandard compression' },
   ];
   compression_level_default_value: any = [
     { id: 1, name: 'none', value: 'None', selectionValues: ['None'] },
-    { id: 2, name: 'zip compression (deflate)', value: 6, selectionValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
-    { id: 3, name: 'bzip2 compression', value: 9, selectionValues: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
-    { id: 4, name: 'lzma compression', value: 'None', selectionValues: ['None'] },
+    { id: 2, name: 'zip', value: 6, selectionValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
+    { id: 3, name: 'bzip2', value: 9, selectionValues: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+    { id: 4, name: 'lzma', value: 'None', selectionValues: ['None'] },
     {
       id: 5,
-      name: 'zstandard compression',
+      name: 'zstd',
       value: 3,
       selectionValues: [1, 2, 3, 4, 5, 6, 7, 8, 9.1, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
     },
@@ -136,6 +136,6 @@ export class ProjectService {
     return this.compression_level_default_value;
   };
   exportPortableProject(server:Server,formData:any={}) {
-    return this.httpServer.get(server,`projects/${formData.file_path}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
+    return this.httpServer.get(server,`/projects/${formData.file_path}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
   }
 }
