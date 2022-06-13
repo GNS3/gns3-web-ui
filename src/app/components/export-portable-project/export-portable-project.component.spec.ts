@@ -30,7 +30,7 @@ describe('ExportPortableProjectComponent', () => {
         MatCheckboxModule,
         MatFormFieldModule,
         MatInputModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
       providers: [
         { provide: MatDialogRef, useValue: {} },
