@@ -1004,7 +1004,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: this.server,
+      data: {serverDetails:this.server,projectDetails:this.project},
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});

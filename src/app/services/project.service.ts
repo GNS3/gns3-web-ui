@@ -135,7 +135,7 @@ export class ProjectService {
   getCompressionLevel() {
     return this.compression_level_default_value;
   };
-  exportPortableProject(server:Server,formData:any={}) {
-    return this.httpServer.get(server,`/projects/${formData.file_path}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
+  exportPortableProject(server:Server, project_id: string,formData:any={}) {
+    return this.httpServer.getBlob(server,`/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
   }
 }

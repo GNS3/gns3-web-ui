@@ -1,5 +1,5 @@
 <form
-  [formGroup]="export_project_form"
+  [formGroup]="export_project_form" *ngIf="export_project_form"
   (ngSubmit)="export_project_form.valid && exportPortableProject()"
 >
   <div class="row">
@@ -19,28 +19,6 @@
   <mat-divider></mat-divider>
 
   <div class="mat-data">
-    <div class="row">
-      <div class="col-md-4 col-data">
-        <div mat-title>Path:</div>
-      </div>
-      <div class="col-md-6">
-        <mat-form-field class="input-full-width">
-          <input matInput type="text" formControlName="file_path" required />
-        </mat-form-field>
-      </div>
-      <div class="col-md-2">
-        <input
-          type="file"
-          accept=".qcow2"
-          #file
-          class="non-visible"
-          (change)="uploadImageFile($event)"
-          ng2FileSelect
-          [uploader]="uploader"
-        />
-        <button type="button" mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
-      </div>
-    </div>
     <div class="row">
       <div class="col-md-4 col-data">Compression:</div>
       <div class="col-md-8">

@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { ProjectService } from '../../services/project.service';
 import { ToasterService } from '../../services/toaster.service';
@@ -19,18 +20,22 @@ export class ExportPortableProjectComponent implements OnInit {
   compression_level: any = [];
   compression_filter_value: any = [];
   server: Server;
+  project: Project;
   index: number = 4;
+  fileName: string;
 
   constructor(
     public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private toasterService: ToasterService,
     private projectService: ProjectService,
-    private _fb: FormBuilder
+    private _fb: FormBuilder,
   ) {}
 
   async ngOnInit() {
-    this.server = this.data;
+    this.server = this.data.serverDetails;
+    this.project = this.data.projectDetails;
+    this.fileName = this.project.name + '.zip';
     await this.formControls();
     this.compression_methods = this.projectService.getCompression();
     this.compression_level = this.projectService.getCompressionLevel();
@@ -58,7 +63,6 @@ export class ExportPortableProjectComponent implements OnInit {
 
   formControls() {
     this.export_project_form = this._fb.group({
-      file_path: ['', Validators.required],
       compression: ['', Validators.required],
       compression_level: ['', Validators.required],
       include_base_image: [false, Validators.required],
@@ -83,9 +87,19 @@ export class ExportPortableProjectComponent implements OnInit {
 
   exportPortableProject() {
     let response;
-    this.export_project_form.value.compression = this.export_project_form.value.compression.value;
-    this.projectService.exportPortableProject(this.server, this.export_project_form.value).subscribe((res) => {
-      response = res;
-    });
+    this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
+    this.projectService
+      .exportPortableProject(this.server, this.project.project_id, this.export_project_form.value)
+      .subscribe((res) => {
+        response = res;
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', this.fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.dialogRef.close()
+      });
   }
 }
