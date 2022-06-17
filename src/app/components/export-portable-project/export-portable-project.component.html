@@ -12,10 +12,6 @@
       </button>
     </div>
   </div>
-
-  <p mat-dialog-subtitle>
-    Please select the location, whether to include base images or not and the compression <br />type.
-  </p>
   <mat-divider></mat-divider>
 
   <div class="mat-data">
@@ -67,15 +63,9 @@
   </div>
   <mat-divider></mat-divider>
   <div class="row">
-    <div class="col-md-4">
-      <div mat-dialog-actions align="start">
-        <button type="button" mat-button>Help</button>
-      </div>
-    </div>
-    <div class="col-md-8">
+    <div class="col-md-12">
       <div mat-dialog-actions align="end">
-        <button type="button" mat-button (click)="dialogRef.close()" cdkFocusInitial>Back</button>
-        <button mat-button type="submit" cdkFocusInitial>Next</button>
+        <button mat-button type="submit" cdkFocusInitial>Export</button>
         <button type="button" mat-button (click)="dialogRef.close()" cdkFocusInitial>Cancel</button>
       </div>
     </div>
