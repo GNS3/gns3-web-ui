@@ -2,6 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { ProjectService } from '../../services/project.service';
@@ -23,6 +25,7 @@ export class ExportPortableProjectComponent implements OnInit {
   project: Project;
   index: number = 4;
   fileName: string;
+  isExport:boolean = false
 
   constructor(
     public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
@@ -64,7 +67,7 @@ export class ExportPortableProjectComponent implements OnInit {
   formControls() {
     this.export_project_form = this._fb.group({
       compression: ['', Validators.required],
-      compression_level: ['', Validators.required],
+      compression_level: [''],
       include_base_image: [false, Validators.required],
       include_snapshots: [false, Validators.required],
       reset_mac_address: [false, Validators.required],
@@ -86,20 +89,21 @@ export class ExportPortableProjectComponent implements OnInit {
   }
 
   exportPortableProject() {
-    let response;
+    this.isExport = true
     this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
-    this.projectService
+    const object =  this.projectService
       .exportPortableProject(this.server, this.project.project_id, this.export_project_form.value)
-      .subscribe((res) => {
-        response = res;
-        const url = window.URL.createObjectURL(new Blob([response]));
+      .pipe(catchError((error) => of(error)));
+      object.subscribe((res)=>{
+        const url = window.URL.createObjectURL(new Blob([res]));
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', this.fileName);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        this.isExport = false
         this.dialogRef.close()
-      });
+      })
   }
 }

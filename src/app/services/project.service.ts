@@ -20,10 +20,10 @@ export class ProjectService {
     { id: 5, value: 'zstd', name: 'Zstandard compression' },
   ];
   compression_level_default_value: any = [
-    { id: 1, name: 'none', value: 'None', selectionValues: ['None'] },
+    { id: 1, name: 'none', value: '', selectionValues: [] },
     { id: 2, name: 'zip', value: 6, selectionValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
     { id: 3, name: 'bzip2', value: 9, selectionValues: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
-    { id: 4, name: 'lzma', value: 'None', selectionValues: ['None'] },
+    { id: 4, name: 'lzma', value: ' ', selectionValues: [] },
     {
       id: 5,
       name: 'zstd',
@@ -136,6 +136,11 @@ export class ProjectService {
     return this.compression_level_default_value;
   };
   exportPortableProject(server:Server, project_id: string,formData:any={}) {
-    return this.httpServer.getBlob(server,`/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
+    if (formData.compression_level != null && formData.compression_level !='') {
+      return this.httpServer.getBlob(server,`/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
+    } else {
+      return this.httpServer.getBlob(server,`/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}`)
+
+    }
   }
 }

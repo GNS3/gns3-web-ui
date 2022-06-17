@@ -31,7 +31,7 @@
       <div class="col-md-4 col-data">Compression level:</div>
       <div class="col-md-8">
         <mat-form-field class="input-full-width">
-          <mat-select formControlName="compression_level" required>
+          <mat-select formControlName="compression_level">
             <mat-option *ngFor="let compressionLevel of compression_filter_value" [value]="compressionLevel">{{
               compressionLevel
             }}</mat-option>
@@ -65,7 +65,7 @@
   <div class="row">
     <div class="col-md-12">
       <div mat-dialog-actions align="end">
-        <button mat-button type="submit" cdkFocusInitial>Export</button>
+        <button mat-button type="submit" [disabled]="isExport" cdkFocusInitial>Export</button>
         <button type="button" mat-button (click)="dialogRef.close()" cdkFocusInitial>Cancel</button>
       </div>
     </div>
