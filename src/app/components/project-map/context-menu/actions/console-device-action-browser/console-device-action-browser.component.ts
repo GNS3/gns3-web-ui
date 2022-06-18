@@ -33,20 +33,24 @@ export class ConsoleDeviceActionBrowserComponent {
         this.node.console_host = this.server.host;
       }
 
-      if (
-        this.node.console_type === 'telnet' ||
-        this.node.console_type === 'vnc' ||
-        this.node.console_type === 'spice'
-      ) {
-        try {
+      try {
+        if (this.node.console_type === 'telnet') {
           location.assign(
-            `gns3+${this.node.console_type}://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
+            `gns3+telnet://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
           );
-        } catch (e) {
-          this.toasterService.error(e);
+        } else if (this.node.console_type === 'vnc') {
+          location.assign(
+            `gns3+vnc://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
+          );
+        } else if (this.node.console_type.startsWith('spice')) {
+          location.assign(
+            `gns3+spice://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
+          );
+        } else {
+          this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
         }
-      } else {
-        this.toasterService.error('Supported console types: telnet, vnc, spice.');
+      } catch (e) {
+          this.toasterService.error(e);
       }
     }
   }
