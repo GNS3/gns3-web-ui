@@ -29,7 +29,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
     let consoleCommand = this.settingsService.getConsoleSettings()
       ? this.settingsService.getConsoleSettings()
       : this.nodeService.getDefaultCommand();
-    const startedNodes = this.nodes.filter((node) => node.status === 'started');
+    const startedNodes = this.nodes.filter((node) => node.status === 'started' && node.console_type !== 'none');
 
     if (startedNodes.length === 0) {
       this.toasterService.error('Device needs to be started in order to console to it.');
@@ -37,7 +37,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
     }
 
     for (var node of this.nodes) {
-      if (node.status !== 'started') {
+      if (node.status !== 'started' && node.console_type !== 'none') {
         continue;
       }
 
