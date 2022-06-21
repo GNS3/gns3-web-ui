@@ -1,8 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
@@ -15,7 +14,6 @@ import { ToasterService } from '../../services/toaster.service';
   styleUrls: ['./export-portable-project.component.scss'],
 })
 export class ExportPortableProjectComponent implements OnInit {
-  uploader: FileUploader;
   export_project_form: FormGroup;
   chosenImage: string = '';
   compression_methods: any = [];
@@ -25,14 +23,14 @@ export class ExportPortableProjectComponent implements OnInit {
   project: Project;
   index: number = 4;
   fileName: string;
-  isExport:boolean = false
+  isExport: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private toasterService: ToasterService,
     private projectService: ProjectService,
-    private _fb: FormBuilder,
+    private _fb: FormBuilder
   ) {}
 
   async ngOnInit() {
@@ -42,24 +40,6 @@ export class ExportPortableProjectComponent implements OnInit {
     await this.formControls();
     this.compression_methods = this.projectService.getCompression();
     this.compression_level = this.projectService.getCompressionLevel();
-    this.uploader = new FileUploader({});
-
-    this.uploader.onAfterAddingFile = (file) => {
-      file.withCredentials = false;
-    };
-    this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-      this.toasterService.error('An error occured: ' + response);
-    };
-    this.uploader.onSuccessItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
-      this.toasterService.success('Image uploaded');
-    };
-
-    this.uploader.onProgressItem = (progress: any) => {};
     this.selectCompression({ value: this.compression_methods[this.index] });
     this.export_project_form.get('compression').setValue(this.compression_methods[this.index]);
   }
@@ -75,8 +55,6 @@ export class ExportPortableProjectComponent implements OnInit {
     this.export_project_form.valueChanges.subscribe(() => {});
   }
 
-  uploadImageFile(event) {}
-
   selectCompression(event) {
     if (this.compression_level.length > 0) {
       this.compression_level.map((_) => {
@@ -89,21 +67,26 @@ export class ExportPortableProjectComponent implements OnInit {
   }
 
   exportPortableProject() {
-    this.isExport = true
+    this.isExport = true;
     this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
-    const object =  this.projectService
+    const object = this.projectService
       .exportPortableProject(this.server, this.project.project_id, this.export_project_form.value)
       .pipe(catchError((error) => of(error)));
-      object.subscribe((res)=>{
-        const url = window.URL.createObjectURL(new Blob([res]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', this.fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        this.isExport = false
-        this.dialogRef.close()
-      })
+    object.subscribe((res) => {
+      const url = window.URL.createObjectURL(new Blob([res]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', this.fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      console.log(document.cookie.search(this.fileName));
+      this.isExport = false;
+      setTimeout(() => {
+        this.dialogRef.close();   
+      }, 9000);
+    });
+    
   }
+  
 }
