@@ -3,6 +3,5 @@ export const environment = {
   production: true,
   electron: true,
   current_version:'v3',
-  compute_id:'local',
-  vm_compute_id:'vm'
+  compute_id:'local'
 };

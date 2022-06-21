@@ -31,6 +31,6 @@ export class VmwareService {
   }
 
   getVirtualMachines(server: Server): Observable<VmwareVm[]> {
-    return this.httpServer.get<VmwareVm[]>(server, `/computes/${environment.vm_compute_id}/vmware/vms`) as Observable<VmwareVm[]>;
+    return this.httpServer.get<VmwareVm[]>(server, `/computes/${environment.compute_id}/vmware/vms`) as Observable<VmwareVm[]>;
   }
 }
