@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { DockerImage } from '../models/docker/docker-image';
 import { Server } from '../models/server';
@@ -18,7 +19,7 @@ export class DockerService {
   }
 
   getImages(server: Server): Observable<DockerImage[]> {
-    return this.httpServer.get<DockerImage[]>(server, '/compute/docker/images') as Observable<DockerImage[]>;
+    return this.httpServer.get<DockerImage[]>(server, `/computes/${environment.compute_id}/docker/images`) as Observable<DockerImage[]>;
   }
 
   addTemplate(server: Server, dockerTemplate: any): Observable<any> {

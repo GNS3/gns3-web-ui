@@ -104,7 +104,7 @@ describe('VmwareService', () => {
   it('should get available virtual machines', inject([VmwareService], (service: VmwareService) => {
     service.getVirtualMachines(server).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/compute/vmware/vms`);
+    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/computes/${environment.compute_id}/vmware/vms`);
     expect(req.request.method).toEqual('GET');
   }));
 });
