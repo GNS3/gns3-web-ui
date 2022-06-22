@@ -68,6 +68,7 @@ export class ExportPortableProjectComponent implements OnInit {
 
   exportPortableProject() {
     this.isExport = true;
+    this.dialogRef.close();
     this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
     const object = this.projectService
       .exportPortableProject(this.server, this.project.project_id, this.export_project_form.value)
@@ -82,11 +83,9 @@ export class ExportPortableProjectComponent implements OnInit {
       document.body.removeChild(link);
       console.log(document.cookie.search(this.fileName));
       this.isExport = false;
-      setTimeout(() => {
-        this.dialogRef.close();   
-      }, 9000);
+      // setTimeout(() => {
+      //   this.dialogRef.close();
+      // }, 8000);
     });
-    
   }
-  
 }
