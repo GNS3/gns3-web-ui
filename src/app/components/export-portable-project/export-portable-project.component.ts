@@ -36,7 +36,7 @@ export class ExportPortableProjectComponent implements OnInit {
   async ngOnInit() {
     this.server = this.data.serverDetails;
     this.project = this.data.projectDetails;
-    this.fileName = this.project.name + '.zip';
+    this.fileName = this.project.name + '.gns3project';
     await this.formControls();
     this.compression_methods = this.projectService.getCompression();
     this.compression_level = this.projectService.getCompressionLevel();
@@ -68,7 +68,6 @@ export class ExportPortableProjectComponent implements OnInit {
 
   exportPortableProject() {
     this.isExport = true;
-    this.dialogRef.close();
     this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
     const object = this.projectService
       .exportPortableProject(this.server, this.project.project_id, this.export_project_form.value)
@@ -83,9 +82,9 @@ export class ExportPortableProjectComponent implements OnInit {
       document.body.removeChild(link);
       console.log(document.cookie.search(this.fileName));
       this.isExport = false;
-      // setTimeout(() => {
-      //   this.dialogRef.close();
-      // }, 8000);
+      setTimeout(() => {
+        this.dialogRef.close();
+      });
     });
   }
 }
