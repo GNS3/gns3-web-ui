@@ -135,11 +135,19 @@ export class ProjectService {
   getCompressionLevel() {
     return this.compression_level_default_value;
   };
+
   exportPortableProject(server:Server, project_id: string,formData:any={}) {
     if (formData.compression_level != null && formData.compression_level !='') {
       return this.httpServer.getBlob(server,`/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`)
     } else {
       return this.httpServer.getBlob(server,`/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}`)
+    }
+  }
+  getexportPortableProjectPath(server:Server, project_id: string,formData:any={}) {
+    if (formData.compression_level != null && formData.compression_level !='') {
+      return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}`;
+    } else {
+      return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}`;
 
     }
   }
