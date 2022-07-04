@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-md-10">
+    <h5>Confirm {{ confirmActionData.actionType | titlecase }} All</h5>
+  </div>
+  <div class="col-md-2 txt-align">
+    <button mat-mini-fab color="warn" class="close-btn" mat-dialog-close>
+      <mat-icon class="close-icon">close</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-divider></mat-divider>
+<mat-dialog-content> 
+    <p class="text-padding">Are you sure you want to {{confirmActionData.actionType}} all devices?</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>No</button>
+  <button mat-button (click)="confirmAction()"  cdkFocusInitial>Yes</button>
+</mat-dialog-actions>
