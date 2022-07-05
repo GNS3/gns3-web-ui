@@ -1,14 +1,16 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MatDialog } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
+import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeService } from '../../../services/node.service';
+import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ServerService } from '../../../services/server.service';
 import { SettingsService } from '../../../services/settings.service';
 import { ToasterService } from '../../../services/toaster.service';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 
 @Component({
   selector: 'app-nodes-menu',
@@ -28,7 +30,8 @@ export class NodesMenuComponent {
     private serverService: ServerService,
     private settingsService: SettingsService,
     private mapSettingsService: MapSettingsService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private dialog: MatDialog
   ) {}
 
   async startConsoleForAllNodes() {
@@ -81,6 +84,36 @@ export class NodesMenuComponent {
   reloadNodes() {
     this.nodeService.reloadAll(this.server, this.project).subscribe(() => {
       this.toasterService.success('All nodes successfully reloaded');
+    });
+  }
+
+  resetNodes() {
+    this.nodeService.resetAllNodes(this.server, this.project).subscribe(() => {
+      this.toasterService.success('Successfully reset all console connections');
+    });
+  }
+
+  public confirmControlsActions(type) {
+    const dialogRef = this.dialog.open(NodesMenuConfirmationDialogComponent, {
+      width: '500px',
+      maxHeight: '200px',
+      autoFocus: false,
+      disableClose: true,
+      data: type,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmAction_result) => {
+      if (confirmAction_result.isAction && confirmAction_result.actionType == 'start') {
+        this.startNodes();
+      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'stop') {
+        this.stopNodes();
+      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'reload') {
+        this.reloadNodes();
+      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'suspend') {
+        this.suspendNodes();
+      } else {
+        this.resetNodes()
+      }
     });
   }
 }

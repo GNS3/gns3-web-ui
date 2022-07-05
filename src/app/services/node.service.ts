@@ -55,6 +55,9 @@ export class NodeService {
   reloadAll(server: Server, project: Project) {
     return this.httpServer.post(server, `/projects/${project.project_id}/nodes/reload`, {});
   }
+  resetAllNodes(server: Server, project: Project) {
+    return this.httpServer.post(server, `/projects/${project.project_id}/nodes/console/reset`, {});
+  }
 
   createFromTemplate(
     server: Server,

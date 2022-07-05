@@ -12,7 +12,7 @@
     matTooltip="Start/Resume all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
-    (click)="startNodes()"
+    (click)="confirmControlsActions('start')"
     class="menu-button"
   >
     <mat-icon>play_arrow</mat-icon>
@@ -21,7 +21,7 @@
     matTooltip="Suspend all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
-    (click)="suspendNodes()"
+    (click)="confirmControlsActions('suspend')"
     class="menu-button"
   >
     <mat-icon>pause</mat-icon>
@@ -30,7 +30,7 @@
     matTooltip="Stop all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
-    (click)="stopNodes()"
+    (click)="confirmControlsActions('stop')"
     class="menu-button"
   >
     <mat-icon>stop</mat-icon>
@@ -39,9 +39,19 @@
     matTooltip="Reload all nodes"
     matTooltipClass="custom-tooltip"
     mat-icon-button
-    (click)="reloadNodes()"
+    (click)="confirmControlsActions('reload')"
     class="menu-button"
   >
     <mat-icon>replay</mat-icon>
+  </button>
+
+  <button
+    matTooltip="Reset all console connections"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="confirmControlsActions('reset')"
+    class="menu-button"
+  >
+    <mat-icon>compare_arrows</mat-icon>
   </button>
 </div>
