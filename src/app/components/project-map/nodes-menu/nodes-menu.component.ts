@@ -86,6 +86,13 @@ export class NodesMenuComponent {
       this.toasterService.success('All nodes successfully reloaded');
     });
   }
+
+  resetNodes() {
+    this.nodeService.resetAllNodes(this.server, this.project).subscribe(() => {
+      this.toasterService.success('Successfully reset all console connections');
+    });
+  }
+
   public confirmControlsActions(type) {
     const dialogRef = this.dialog.open(NodesMenuConfirmationDialogComponent, {
       width: '500px',
@@ -105,6 +112,7 @@ export class NodesMenuComponent {
       } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'suspend') {
         this.suspendNodes();
       } else {
+        this.resetNodes()
       }
     });
   }
