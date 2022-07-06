@@ -96,9 +96,8 @@ export class ImportProjectDialogComponent implements OnInit {
   importProject() {
     const url = this.prepareUploadPath();
     this.uploader.queue.forEach((elem) => (elem.url = url));
-
+    this.uploader.authToken = `Bearer ${this.server.authToken.toString()}`
     this.isFirstStepCompleted = true;
-
     const itemToUpload = this.uploader.queue[0];
     this.uploader.uploadItem(itemToUpload);
   }
