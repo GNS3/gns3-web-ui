@@ -38,7 +38,7 @@
     <button class="delete-button" [hidden]="!isDeleteVisible">
       <mat-icon color="primary" (click)="onDeleteClick()" class="delete-icon">clear</mat-icon>
     </button>
-    <div mat-dialog-actions>
+    <div mat-dialog-actions  align="end">
       <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
       <button
         mat-button
@@ -54,13 +54,13 @@
   </form>
 </div>
 <div [hidden]="!isFirstStepCompleted">
-  <div class="progress">
+  <!-- <div class="progress">
     <div class="progress-bar" role="progressbar" [ngStyle]="{ width: uploader.progress + '%' }"></div>
-  </div>
-  <div class="result-message-box">
+  </div> -->
+  <div class="">
     <span>{{ resultMessage }}</span>
   </div>
-  <div mat-dialog-actions>
+  <div mat-dialog-actions  align="end">
     <button
       mat-button
       [disabled]="!isFinishEnabled"

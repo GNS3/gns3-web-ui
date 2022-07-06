@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ToasterService } from '../../../services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Project } from '../../../models/project';
@@ -9,6 +10,9 @@ import { ServerResponse } from '../../../models/serverResponse';
 import { ProjectService } from '../../../services/project.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
+import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
+import { UploadingProcessbarComponent } from '../../../common/uploading-processbar/uploading-processbar.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-import-project-dialog',
@@ -18,6 +22,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 })
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
+  uploadProgress: number = 0;
   server: Server;
   isImportEnabled: boolean = false;
   isFinishEnabled: boolean = false;
@@ -35,7 +40,11 @@ export class ImportProjectDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private formBuilder: FormBuilder,
     private projectService: ProjectService,
-    private projectNameValidator: ProjectNameValidator
+    private projectNameValidator: ProjectNameValidator,
+    private toasterService : ToasterService,
+    private uploadServiceService: UploadServiceService,
+    private snackBar : MatSnackBar,
+
   ) {
     this.projectNameForm = this.formBuilder.group({
       projectName: new FormControl(null, [Validators.required, projectNameValidator.get]),
@@ -64,6 +73,16 @@ export class ImportProjectDialogComponent implements OnInit {
       this.resultMessage = 'Project was imported succesfully!';
       this.isFinishEnabled = true;
     };
+    this.uploader.onProgressItem = (progress: any) => {
+      this.uploadProgress = progress['progress'];
+      this.uploadServiceService.processBarCount(this.uploadProgress)
+    };
+
+    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+      if (isCancel) {
+        this.cancelUploading()
+      }
+    })
   }
 
   get form() {
@@ -96,10 +115,12 @@ export class ImportProjectDialogComponent implements OnInit {
   importProject() {
     const url = this.prepareUploadPath();
     this.uploader.queue.forEach((elem) => (elem.url = url));
-    this.uploader.authToken = `Bearer ${this.server.authToken.toString()}`
+    this.uploader.authToken = `Bearer ${this.server.authToken}`
     this.isFirstStepCompleted = true;
     const itemToUpload = this.uploader.queue[0];
     this.uploader.uploadItem(itemToUpload);
+    this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar',data:{upload_file_type:'Project'}});
+
   }
 
   openConfirmationDialog(existingProject: Project) {
@@ -126,11 +147,11 @@ export class ImportProjectDialogComponent implements OnInit {
 
   onNoClick(): void {
     this.uploader.cancelAll();
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   onFinishClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   onDeleteClick(): void {
@@ -144,5 +165,15 @@ export class ImportProjectDialogComponent implements OnInit {
     this.uuid = uuid();
     const projectName = this.projectNameForm.controls['projectName'].value;
     return this.projectService.getUploadPath(this.server, this.uuid, projectName);
+  }
+
+  cancelUploading() {
+    this.uploader.clearQueue();
+    this.uploadServiceService.processBarCount(null)
+    this.toasterService.warning('Image upload cancelled');
+    this.uploadServiceService.cancelFileUploading(false)
+    this.isFirstStepCompleted = false
+    this.uploader.cancelAll();
+    this.dialogRef.close(true);
   }
 }

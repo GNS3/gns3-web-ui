@@ -158,6 +158,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
+      data:{upload_file_type:'Image'}
     });
   }
 

@@ -13,7 +13,7 @@ import { UploadServiceService } from './upload-service.service';
 export class UploadingProcessbarComponent implements OnInit {
   uploadProgress: number = 0
   subscription: Subscription;
-
+  upload_file_type:string
   constructor(
     @Inject(MAT_SNACK_BAR_DATA) public data,
     private _snackRef: MatSnackBarRef<UploadingProcessbarComponent>,
@@ -21,6 +21,8 @@ export class UploadingProcessbarComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+   this.upload_file_type =  this.data.upload_file_type 
+    debugger
     this.subscription = this._US.currentCount.subscribe((count:number) => {
       this.uploadProgress = count;
       if (this.uploadProgress === 100 || this.uploadProgress == null ) {
