@@ -170,7 +170,7 @@ export class ImportProjectDialogComponent implements OnInit {
   cancelUploading() {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(null)
-    this.toasterService.warning('Image upload cancelled');
+    this.toasterService.warning('File upload cancelled');
     this.uploadServiceService.cancelFileUploading(false)
     this.isFirstStepCompleted = false
     this.uploader.cancelAll();

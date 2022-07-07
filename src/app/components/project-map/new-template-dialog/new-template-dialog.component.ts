@@ -429,7 +429,7 @@ export class NewTemplateDialogComponent implements OnInit {
   cancelUploading() {
     this.uploaderImage.clearQueue();
     this.uploadServiceService.processBarCount(null)
-    this.toasterService.warning('Image upload cancelled');
+    this.toasterService.warning('File upload cancelled');
     this.uploadServiceService.cancelFileUploading(false)
 
   }

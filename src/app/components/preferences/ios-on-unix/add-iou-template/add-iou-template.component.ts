@@ -137,7 +137,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   cancelUploading() {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(100)
-    this.toasterService.warning('Image upload cancelled');
+    this.toasterService.warning('File upload cancelled');
     // this.uploadServiceService.cancelFileUploading(false)
     // window.location.reload()
   }
