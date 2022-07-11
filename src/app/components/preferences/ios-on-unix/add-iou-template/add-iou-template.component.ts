@@ -129,6 +129,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
+      data:{upload_file_type:'Image'}
     });
 
   }
@@ -136,7 +137,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   cancelUploading() {
     this.uploader.clearQueue();
     this.uploadServiceService.processBarCount(100)
-    this.toasterService.warning('Image upload cancelled');
+    this.toasterService.warning('File upload cancelled');
     // this.uploadServiceService.cancelFileUploading(false)
     // window.location.reload()
   }

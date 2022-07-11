@@ -18,6 +18,10 @@ import { Project } from '../../../models/project';
 import { Server } from '../../../models/server';
 import { ProjectService } from '../../../services/project.service';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
+import { ToasterService } from '../../../services/toaster.service';
+import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 export class MockedProjectService {
   public projects: Project[] = [
@@ -62,6 +66,7 @@ describe('ImportProjectDialogComponent', () => {
   let server: Server;
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
+  let mockedToasterService = new MockedToasterService()
 
   let dialogRef = {
     close: jasmine.createSpy('close'),
@@ -77,6 +82,7 @@ describe('ImportProjectDialogComponent', () => {
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSnackBarModule,
         NoopAnimationsModule,
         FileUploadModule,
         FormsModule,
@@ -87,6 +93,8 @@ describe('ImportProjectDialogComponent', () => {
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
+        { provide: ToasterService, useValue: mockedToasterService },
+
       ],
       declarations: [ImportProjectDialogComponent],
     }).compileComponents();

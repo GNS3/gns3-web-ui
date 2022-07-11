@@ -429,7 +429,7 @@ export class NewTemplateDialogComponent implements OnInit {
   cancelUploading() {
     this.uploaderImage.clearQueue();
     this.uploadServiceService.processBarCount(null)
-    this.toasterService.warning('Image upload cancelled');
+    this.toasterService.warning('File upload cancelled');
     this.uploadServiceService.cancelFileUploading(false)
 
   }
@@ -728,6 +728,7 @@ export class NewTemplateDialogComponent implements OnInit {
   openSnackBar() {
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
+      data:{upload_file_type:'Image'}
     });
   }
 

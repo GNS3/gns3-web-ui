@@ -157,7 +157,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     
     if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.server.authToken}]) 
     this.uploader.uploadItem(itemToUpload);
-    this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar',});
+    this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar', data:{upload_file_type:'Image'}});
   }
 
   cancelUploading() {

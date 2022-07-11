@@ -943,6 +943,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   importProject() {
+    debugger
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',
@@ -955,9 +956,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       uuid = projectId;
     });
 
-    dialogRef.afterClosed().subscribe(() => {
+    dialogRef.afterClosed().subscribe((isCancel:boolean) => {
       subscription.unsubscribe();
-      if (uuid) {
+      if (uuid && !isCancel) {
         this.bottomSheet.open(NavigationDialogComponent);
         let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
         bottomSheetRef.instance.projectMessage = 'imported project';
