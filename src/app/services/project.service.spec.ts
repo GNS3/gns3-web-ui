@@ -49,6 +49,15 @@ export class MockedProjectService {
   getStatistics(server: Server, project_id: string) {
     return of({});
   }
+  exportPortableProject(server: Server, formData:{}) {
+    return of({});
+  }
+  getCompression() {
+    return of([]);
+  }
+  getCompressionLevel() {
+    return of([]);
+  }
 }
 
 describe('ProjectService', () => {

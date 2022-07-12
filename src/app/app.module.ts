@@ -278,6 +278,7 @@ import { ImageManagerComponent } from './components/image-manager/image-manager.
 import { AddImageDialogComponent } from './components/image-manager/add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { UploadingProcessbarComponent } from './common/uploading-processbar/uploading-processbar.component';
+import { ExportPortableProjectComponent } from './components/export-portable-project/export-portable-project.component';
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 
 @NgModule({
@@ -473,6 +474,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     AddImageDialogComponent,
     DeleteAllImageFilesDialogComponent,
     UploadingProcessbarComponent,
+    ExportPortableProjectComponent,
     NodesMenuConfirmationDialogComponent,
   ],
   imports: [
