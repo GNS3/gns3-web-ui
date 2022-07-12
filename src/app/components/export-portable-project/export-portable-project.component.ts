@@ -1,12 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { Project } from '../../models/project';
 import { Server } from '../../models/server';
 import { ProjectService } from '../../services/project.service';
-import { ToasterService } from '../../services/toaster.service';
 
 @Component({
   selector: 'app-export-portable-project',
@@ -28,7 +25,6 @@ export class ExportPortableProjectComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private toasterService: ToasterService,
     private projectService: ProjectService,
     private _fb: FormBuilder
   ) {}
@@ -69,22 +65,7 @@ export class ExportPortableProjectComponent implements OnInit {
   exportPortableProject() {
     this.isExport = true;
     this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
-    const object = this.projectService
-      .exportPortableProject(this.server, this.project.project_id, this.export_project_form.value)
-      .pipe(catchError((error) => of(error)));
-    object.subscribe((res) => {
-      const url = window.URL.createObjectURL(new Blob([res]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', this.fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      console.log(document.cookie.search(this.fileName));
-      this.isExport = false;
-      setTimeout(() => {
-        this.dialogRef.close();
-      });
-    });
+     window.location.assign(this.projectService.getexportPortableProjectPath(this.server, this.project.project_id, this.export_project_form.value))
+     this.dialogRef.close();
   }
 }
