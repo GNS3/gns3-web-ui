@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Server } from '../models/server';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
@@ -37,6 +38,6 @@ export class VirtualBoxService {
   }
 
   getVirtualMachines(server: Server): Observable<VirtualBoxVm[]> {
-    return this.httpServer.get<VirtualBoxVm[]>(server, '/compute/virtualbox/vms') as Observable<VirtualBoxVm[]>;
+    return this.httpServer.get<VirtualBoxVm[]>(server, `/computes/${environment.compute_id}/virtualbox/vms`) as Observable<VirtualBoxVm[]>;
   }
 }

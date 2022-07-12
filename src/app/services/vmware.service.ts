@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Server } from '../models/server';
 import { VmwareTemplate } from '../models/templates/vmware-template';
@@ -30,6 +31,6 @@ export class VmwareService {
   }
 
   getVirtualMachines(server: Server): Observable<VmwareVm[]> {
-    return this.httpServer.get<VmwareVm[]>(server, '/compute/vmware/vms') as Observable<VmwareVm[]>;
+    return this.httpServer.get<VmwareVm[]>(server, `/computes/${environment.compute_id}/vmware/vms`) as Observable<VmwareVm[]>;
   }
 }
