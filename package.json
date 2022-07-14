@@ -36,7 +36,7 @@
     "generate-licenses-file": "yarn license-checker --production --csv --out licenses.csv",
     "prebuildforelectron": "node set-variables-in-env.js --set src/environments/environment.electron.prod.ts",
     "postbuildforelectron": "node set-variables-in-env.js --unset src/environments/environment.electron.prod.ts",
-    "postinstall": "ngcc --properties es5 browser module main --first-only --create-ivy-entry-points && ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
+    "postinstall": "ngcc --properties es5 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\" && ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\"",
     "snyk-protect": "snyk-protect",
     "prepare": "yarn run snyk-protect"
   },

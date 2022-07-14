@@ -12,9 +12,6 @@
     },
     {
       "path": "./src/tsconfig.spec.json"
-    },
-    {
-      "path": "tsconfig.base.json"
     }
   ]
 }
