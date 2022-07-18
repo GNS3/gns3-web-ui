@@ -187,9 +187,9 @@ import { ProjectNameValidator } from './components/projects/models/projectNameVa
 import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
-import { AddServerDialogComponent } from './components/servers/add-server-dialog/add-server-dialog.component';
-import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
-import { ServersComponent } from './components/servers/servers.component';
+import { AddControllerDialogComponent } from './components/controllers/add-controller-dialog/add-controller-dialog.component';
+import { ControllerDiscoveryComponent } from './components/controllers/controller-discovery/controller-discovery.component';
+import { ControllersComponent } from './components/controllers/controllers.component';
 import { ConsoleComponent } from './components/settings/console/console.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
@@ -287,8 +287,8 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     LoggedUserComponent,
     ProjectMapComponent,
     LoginComponent,
-    ServersComponent,
-    AddServerDialogComponent,
+    ControllersComponent,
+    AddControllerDialogComponent,
     CreateSnapshotDialogComponent,
     SnapshotMenuItemComponent,
     ProjectsComponent,
@@ -321,7 +321,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     PreferencesComponent,
     BundledServerFinderComponent,
     ProgressComponent,
-    ServerDiscoveryComponent,
+    ControllerDiscoveryComponent,
     NodeSelectInterfaceComponent,
     DrawLinkToolComponent,
     InstalledSoftwareComponent,
@@ -574,7 +574,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     UserService
   ],
   entryComponents: [
-    AddServerDialogComponent,
+    AddControllerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
     TemplateListDialogComponent,

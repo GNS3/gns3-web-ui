@@ -7,10 +7,10 @@ import { ServerService } from '../../../services/server.service';
 import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
-  selector: 'app-add-server-dialog',
-  templateUrl: 'add-server-dialog.component.html',
+  selector: 'app-add-controller-dialog',
+  templateUrl: 'add-controller-dialog.component.html',
 })
-export class AddServerDialogComponent implements OnInit {
+export class AddControllerDialogComponent implements OnInit {
   protocols = [
     { key: 'http:', name: 'HTTP' },
     { key: 'https:', name: 'HTTPS' },
@@ -28,7 +28,7 @@ export class AddServerDialogComponent implements OnInit {
   });
 
   constructor(
-    public dialogRef: MatDialogRef<AddServerDialogComponent>,
+    public dialogRef: MatDialogRef<AddControllerDialogComponent>,
     private electronService: ElectronService,
     private serverService: ServerService,
     private toasterService: ToasterService,

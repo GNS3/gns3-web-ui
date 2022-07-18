@@ -10,11 +10,11 @@ import { ServerService } from '../../../services/server.service';
 import { VersionService } from '../../../services/version.service';
 
 @Component({
-  selector: 'app-server-discovery',
-  templateUrl: './server-discovery.component.html',
-  styleUrls: ['./server-discovery.component.scss'],
+  selector: 'app-controller-discovery',
+  templateUrl: './controller-discovery.component.html',
+  styleUrls: ['./controller-discovery.component.scss'],
 })
-export class ServerDiscoveryComponent implements OnInit {
+export class ControllerDiscoveryComponent implements OnInit {
   private defaultServers = [
     {
       host: '127.0.0.1',

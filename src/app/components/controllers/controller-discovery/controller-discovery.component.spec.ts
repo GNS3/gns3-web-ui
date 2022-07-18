@@ -9,11 +9,11 @@ import { ServerService } from '../../../services/server.service';
 import { MockedServerService } from '../../../services/server.service.spec';
 import { VersionService } from '../../../services/version.service';
 import { MockedVersionService } from '../../../services/version.service.spec';
-import { ServerDiscoveryComponent } from './server-discovery.component';
+import { ControllerDiscoveryComponent } from './controller-discovery.component';
 
-xdescribe('ServerDiscoveryComponent', () => {
-  let component: ServerDiscoveryComponent;
-  let fixture: ComponentFixture<ServerDiscoveryComponent>;
+xdescribe('ControllerDiscoveryComponent', () => {
+  let component: ControllerDiscoveryComponent;
+  let fixture: ComponentFixture<ControllerDiscoveryComponent>;
   let mockedVersionService: MockedVersionService;
   let mockedServerService: MockedServerService;
 
@@ -27,12 +27,12 @@ xdescribe('ServerDiscoveryComponent', () => {
         { provide: ServerService, useFactory: () => mockedServerService },
         ServerDatabase,
       ],
-      declarations: [ServerDiscoveryComponent],
+      declarations: [ControllerDiscoveryComponent],
     }).compileComponents();
   });
 
 beforeEach(() => {
-  fixture = TestBed.createComponent(ServerDiscoveryComponent);
+  fixture = TestBed.createComponent(ControllerDiscoveryComponent);
 
   component = fixture.componentInstance;
 

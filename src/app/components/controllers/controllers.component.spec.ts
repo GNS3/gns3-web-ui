@@ -7,7 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ServerDatabase } from '../../services/server.database';
 import { ServerService } from '../../services/server.service';
 import { MockedServerService } from 'app/services/server.service.spec';
-import { ServersComponent } from './servers.component';
+import { ControllersComponent } from './controllers.component';
 import { ServerManagementService } from 'app/services/server-management.service';
 import { ElectronService } from 'ngx-electron';
 import { ChildProcessService } from 'ngx-childprocess';
@@ -18,16 +18,16 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ChangeDetectorRef } from '@angular/core';
 import { MockedRouter } from 'app/common/progress/progress.component.spec';
 
-describe('ServersComponent', () => {
-  let component: ServersComponent;
-  let fixture: ComponentFixture<ServersComponent>;
+describe('ControllersComponent', () => {
+  let component: ControllersComponent;
+  let fixture: ComponentFixture<ControllersComponent>;
   let serverMockedService: MockedServerService
   let mockedActivatedRoute: MockedActivatedRoute
   let mockedRouter  : MockedRouter
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ServersComponent],
+      declarations: [ControllersComponent],
       imports: [
         MatDialogModule,
         RouterTestingModule,
@@ -49,7 +49,7 @@ describe('ServersComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ServersComponent);
+    fixture = TestBed.createComponent(ControllersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

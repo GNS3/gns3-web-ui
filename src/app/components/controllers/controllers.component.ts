@@ -12,14 +12,14 @@ import { ServerManagementService } from '../../services/server-management.servic
 import { ServerDatabase } from '../../services/server.database';
 import { ServerService } from '../../services/server.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
-import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.component';
+import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 
 @Component({
-  selector: 'app-server-list',
-  templateUrl: './servers.component.html',
-  styleUrls: ['./servers.component.scss'],
+  selector: 'app-controller-list',
+  templateUrl: './controllers.component.html',
+  styleUrls: ['./controllers.component.scss'],
 })
-export class ServersComponent implements OnInit, OnDestroy {
+export class ControllersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
   serverStatusSubscription: Subscription;
@@ -114,7 +114,7 @@ export class ServersComponent implements OnInit, OnDestroy {
   }
 
   createModal() {
-    const dialogRef = this.dialog.open(AddServerDialogComponent, {
+    const dialogRef = this.dialog.open(AddControllerDialogComponent, {
       width: '350px',
       autoFocus: false,
       disableClose: true,

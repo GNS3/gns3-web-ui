@@ -44,7 +44,7 @@ import { VpcsTemplateDetailsComponent } from './components/preferences/vpcs/vpcs
 import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 import { ProjectMapComponent } from './components/project-map/project-map.component';
 import { ProjectsComponent } from './components/projects/projects.component';
-import { ServersComponent } from './components/servers/servers.component';
+import { ControllersComponent } from './components/controllers/controllers.component';
 import { ConsoleComponent } from './components/settings/console/console.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
@@ -64,7 +64,7 @@ const routes: Routes = [
     component: DefaultLayoutComponent,
     children: [
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
-      { path: 'controllers', component: ServersComponent },
+      { path: 'controllers', component: ControllersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
       { path: 'controller/:server_id/login', component: LoginComponent },
       { path: 'controller/:server_id/loggeduser', component: LoggedUserComponent },
