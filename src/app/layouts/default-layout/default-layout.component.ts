@@ -36,11 +36,12 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private serverManagement: ServerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService,
-    private router: Router,
+    public router: Router,
     private serverService: ServerService
   ) {}
 
   ngOnInit() {
+   
     this.checkIfUserIsLoginPage();
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();

@@ -2,7 +2,7 @@
   <mat-toolbar color="primary">
     <button mat-icon-button><mat-icon svgIcon="gns3"></mat-icon></button>
 
-    <button mat-button routerLink="/servers">Servers</button>
+    <button mat-button routerLink="/servers">Controllers</button>
 
     <button *ngIf="!recentlyOpenedProjectId && serverIdProjectList" mat-button (click)="listProjects()">
       Projects
@@ -14,7 +14,7 @@
 
     <span class="fill-space"></span>
 
-    <button mat-button *ngIf="!isLoginPage" [matMenuTriggerFor]="menu">
+    <button mat-button *ngIf="!isLoginPage && router.url !='/servers'" [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
 

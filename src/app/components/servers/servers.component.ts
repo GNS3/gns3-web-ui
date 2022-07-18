@@ -21,7 +21,7 @@ import { AddServerDialogComponent } from './add-server-dialog/add-server-dialog.
 })
 export class ServersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;
-  displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
+  displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
   serverStatusSubscription: Subscription;
   isElectronApp: boolean = false;
 

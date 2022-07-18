@@ -1,5 +1,5 @@
 <div class="content">
-  <div class="default-header"><h1>Servers</h1></div>
+  <div class="default-header"><h1>Controllers</h1></div>
   <div class="default-content">
     <app-server-discovery></app-server-discovery>
 
@@ -26,10 +26,7 @@
           </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="location">
-          <mat-header-cell *matHeaderCellDef> Location </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.location }} </mat-cell>
-        </ng-container>
+  
 
         <ng-container matColumnDef="ip">
           <mat-header-cell *matHeaderCellDef> Host </mat-header-cell>
@@ -99,7 +96,7 @@
       <button *ngIf="isElectronApp" mat-raised-button class="button" (click)="startLocalServer()">
         Start local server
       </button>
-      <button mat-raised-button class="button" color="primary" (click)="createModal()">Add server</button>
+      <button mat-raised-button class="button" color="primary" (click)="createModal()">Add Controller</button>
     </div>
   </div>
 </div>
