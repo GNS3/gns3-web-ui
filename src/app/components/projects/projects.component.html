@@ -30,8 +30,8 @@
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-          <mat-cell *matCellDef="let row" style="text-align: right">
+          <mat-header-cell *matHeaderCellDef class="action"> Actions </mat-header-cell>
+          <mat-cell  class="action" *matCellDef="let row" style="text-align: right">
             <button
               mat-icon-button
               matTooltip="Open project"
