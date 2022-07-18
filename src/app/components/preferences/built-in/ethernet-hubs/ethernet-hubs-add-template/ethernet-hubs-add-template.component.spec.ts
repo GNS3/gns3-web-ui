@@ -51,7 +51,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/builtin/ethernet-hubs', component: EthernetHubsAddTemplateComponent },
+          { path: 'controller/1/preferences/builtin/ethernet-hubs', component: EthernetHubsAddTemplateComponent },
         ]),
       ],
       providers: [

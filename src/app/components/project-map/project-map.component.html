@@ -68,7 +68,7 @@
     </div>
     <div>
       <button
-        matTooltip="Toggle topology/servers summary"
+        matTooltip="Toggle topology/controllers summary"
         matTooltipClass="custom-tooltip"
         [ngClass]="{
           unmarkedLight: !isTopologySummaryVisible && isLightThemeEnabled,
@@ -83,19 +83,19 @@
 
     <!-- GNS3 menu -->
     <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item [routerLink]="['/server', server.id, 'projects']">
+      <button mat-menu-item [routerLink]="['/controller', server.id, 'projects']">
         <mat-icon>work</mat-icon>
         <span>Go to projects</span>
       </button>
-      <button mat-menu-item [routerLink]="['/servers']">
+      <button mat-menu-item [routerLink]="['/controllers']">
         <mat-icon>developer_board</mat-icon>
-        <span>Go to servers</span>
+        <span>Go to controllers</span>
       </button>
-      <button mat-menu-item routerLink="/server/{{ server.id }}/preferences">
+      <button mat-menu-item routerLink="/controller/{{ server.id }}/preferences">
         <mat-icon>settings_applications</mat-icon>
         <span>Go to preferences</span>
       </button>
-      <button mat-menu-item routerLink="/server/{{ server.id }}/systemstatus">
+      <button mat-menu-item routerLink="/controller/{{ server.id }}/systemstatus">
         <mat-icon>info</mat-icon>
         <span>Go to system status</span>
       </button>
@@ -103,7 +103,7 @@
         <mat-icon>settings</mat-icon>
         <span>Go to settings</span>
       </button>
-      <button mat-menu-item [routerLink]="['/server', server.id, 'image-manager']">
+      <button mat-menu-item [routerLink]="['/controller', server.id, 'image-manager']">
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
       </button>
@@ -166,7 +166,7 @@
           Show console </mat-checkbox
         ><br />
         <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
-          Show topology/servers summary </mat-checkbox
+          Show topology/controllers summary </mat-checkbox
         ><br />
         <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
           Show notifications </mat-checkbox

@@ -70,7 +70,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
   }
 
   getConfiguration() {

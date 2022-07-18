@@ -46,7 +46,7 @@ export class CopyIosTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'dynamips', 'templates']);
   }
 
   addTemplate() {

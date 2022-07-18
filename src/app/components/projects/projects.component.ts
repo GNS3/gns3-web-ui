@@ -51,7 +51,7 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.server = this.route.snapshot.data['server'];
-    if (!this.server) this.router.navigate(['/servers']);
+    if (!this.server) this.router.navigate(['/controllers']);
     this.recentlyOpenedProjectService.setServerIdProjectList(this.server.id.toString());
 
     this.refresh();
@@ -67,13 +67,13 @@ export class ProjectsComponent implements OnInit {
 
   goToPreferences() {
     this.router
-      .navigate(['/server', this.server.id, 'preferences'])
+      .navigate(['/controller', this.server.id, 'preferences'])
       .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
   }
 
   goToSystemStatus() {
     this.router
-      .navigate(['/server', this.server.id, 'systemstatus'])
+      .navigate(['/controller', this.server.id, 'systemstatus'])
       .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
   }
 
@@ -181,7 +181,7 @@ export class ProjectsComponent implements OnInit {
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.server, uuid).subscribe(() => {
-              this.router.navigate(['/server', this.server.id, 'project', uuid]);
+              this.router.navigate(['/controller', this.server.id, 'project', uuid]);
             });
           }
         });

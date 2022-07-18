@@ -6,7 +6,7 @@
         *ngIf="server"
         class="top-button"
         class="cancel-button"
-        routerLink="/server/{{ server.id }}/preferences"
+        routerLink="/controller/{{ server.id }}/preferences"
         mat-button
       >
         Back
@@ -14,7 +14,7 @@
       <button
         *ngIf="server"
         class="top-button"
-        routerLink="/server/{{ server.id }}/preferences/iou/addtemplate"
+        routerLink="/controller/{{ server.id }}/preferences/iou/addtemplate"
         mat-raised-button
         color="primary"
       >

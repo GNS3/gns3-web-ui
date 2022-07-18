@@ -48,7 +48,7 @@ export class IosTemplatesComponent implements OnInit {
 
   copyTemplate(template: IosTemplate) {
     this.router.navigate([
-      '/server',
+      '/controller',
       this.server.id,
       'preferences',
       'dynamips',

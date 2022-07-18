@@ -52,7 +52,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'virtualbox', 'templates']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'virtualbox', 'templates']);
   }
 
   addTemplate() {

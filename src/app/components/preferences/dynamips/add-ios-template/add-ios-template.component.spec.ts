@@ -62,7 +62,7 @@ xdescribe('AddIosTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/dynamips/templates', component: AddIosTemplateComponent },
+          { path: 'controller/1/preferences/dynamips/templates', component: AddIosTemplateComponent },
         ]),
       ],
       providers: [

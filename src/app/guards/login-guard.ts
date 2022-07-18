@@ -19,7 +19,7 @@ export class LoginGuard implements CanActivate {
       if (server.authToken && !server.tokenExpired) {
         return true;
       }
-      this.router.navigate(['/server', server.id, 'login'], { queryParams: { returnUrl: state.url } });
+      this.router.navigate(['/controller', server.id, 'login'], { queryParams: { returnUrl: state.url } });
     });
   }
 }

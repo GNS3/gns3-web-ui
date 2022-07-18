@@ -46,6 +46,6 @@ export class IouTemplatesComponent implements OnInit {
   }
 
   copyTemplate(template: IouTemplate) {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates', template.template_id, 'copy']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'iou', 'templates', template.template_id, 'copy']);
   }
 }

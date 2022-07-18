@@ -60,7 +60,7 @@ describe('BundledServerFinderComponent', () => {
     fixture.detectChanges()
     fixture.whenStable().then(() => {
       expect(serverServiceMock.getLocalServer).toHaveBeenCalledWith('vps3.gns3.net',3000);
-      expect(router.navigate).toHaveBeenCalledWith(['/server', 99, 'projects']);
+      expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
     })
     service = TestBed.inject(ServerService);
   }));

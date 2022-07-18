@@ -62,7 +62,7 @@ xdescribe('AddIouTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/iou/templates', component: AddIouTemplateComponent },
+          { path: 'controller/1/preferences/iou/templates', component: AddIouTemplateComponent },
         ]),
       ],
       providers: [

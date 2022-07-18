@@ -51,7 +51,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/builtin/ethernet-switches', component: EthernetSwitchesAddTemplateComponent },
+          { path: 'controller/1/preferences/builtin/ethernet-switches', component: EthernetSwitchesAddTemplateComponent },
         ]),
       ],
       providers: [

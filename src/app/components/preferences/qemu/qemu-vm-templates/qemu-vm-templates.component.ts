@@ -46,6 +46,6 @@ export class QemuVmTemplatesComponent implements OnInit {
   }
 
   copyTemplate(template: QemuTemplate) {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates', template.template_id, 'copy']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'qemu', 'templates', template.template_id, 'copy']);
   }
 }

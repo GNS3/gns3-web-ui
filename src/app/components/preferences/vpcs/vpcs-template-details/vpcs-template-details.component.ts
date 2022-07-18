@@ -57,7 +57,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'vpcs', 'templates']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'vpcs', 'templates']);
   }
 
   onSave() {

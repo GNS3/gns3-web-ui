@@ -56,7 +56,7 @@ describe('AddVpcsTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/vpcs/templates', component: AddVpcsTemplateComponent },
+          { path: 'controller/1/preferences/vpcs/templates', component: AddVpcsTemplateComponent },
         ]),
       ],
       providers: [

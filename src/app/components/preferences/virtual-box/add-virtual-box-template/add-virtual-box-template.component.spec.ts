@@ -52,7 +52,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/virtualbox/templates', component: AddVirtualBoxTemplateComponent },
+          { path: 'controller/1/preferences/virtualbox/templates', component: AddVirtualBoxTemplateComponent },
         ]),
       ],
       providers: [

@@ -9,7 +9,7 @@ export class ServersPage {
   }
 
   navigateToServersPage() {
-    return browser.get('/servers');
+    return browser.get('/controllers');
   }
 
   getAddServerNotificationText() {

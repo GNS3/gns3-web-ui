@@ -60,7 +60,7 @@ export class DirectLinkComponent implements OnInit {
     const server = servers.filter((server) => server.host === this.serverIp && server.port === this.serverPort)[0];
 
     if (server) {
-      this.router.navigate(['/server', server.id, 'project', this.projectId]);
+      this.router.navigate(['/controller', server.id, 'project', this.projectId]);
     } else {
       this.serverOptionsVisibility = true;
     }
@@ -81,7 +81,7 @@ export class DirectLinkComponent implements OnInit {
     serverToAdd.protocol = this.serverForm.get('protocol').value;
 
     this.serverService.create(serverToAdd).then((addedServer: Server) => {
-      this.router.navigate(['/server', addedServer.id, 'project', this.projectId]);
+      this.router.navigate(['/controller', addedServer.id, 'project', this.projectId]);
     });
   }
 }

@@ -52,7 +52,7 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
   }
 
   addTemplate() {

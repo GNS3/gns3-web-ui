@@ -47,7 +47,7 @@ export class DockerTemplatesComponent implements OnInit {
 
   copyTemplate(template: DockerTemplate) {
     this.router.navigate([
-      '/server',
+      '/controller',
       this.server.id,
       'preferences',
       'docker',

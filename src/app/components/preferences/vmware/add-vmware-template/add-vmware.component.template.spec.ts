@@ -53,7 +53,7 @@ describe('AddVmwareTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/vmware/templates', component: AddVmwareTemplateComponent },
+          { path: 'controller/1/preferences/vmware/templates', component: AddVmwareTemplateComponent },
         ]),
       ],
       providers: [

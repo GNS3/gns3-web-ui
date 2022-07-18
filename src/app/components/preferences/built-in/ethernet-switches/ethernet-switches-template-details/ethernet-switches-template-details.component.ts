@@ -60,7 +60,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'ethernet-switches']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'ethernet-switches']);
   }
 
   onSave() {

@@ -74,7 +74,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
       .subscribe((project: Project) => {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);
-        this.router.navigate(['/server', this.server.id, 'project', project.project_id]);
+        this.router.navigate(['/controller', this.server.id, 'project', project.project_id]);
       });
   }
 

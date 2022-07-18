@@ -110,7 +110,7 @@ export class ServersComponent implements OnInit, OnDestroy {
   }
 
   openProjects(server) {
-    this.router.navigate(['/server', server.id, 'projects']);
+    this.router.navigate(['/controller', server.id, 'projects']);
   }
 
   createModal() {

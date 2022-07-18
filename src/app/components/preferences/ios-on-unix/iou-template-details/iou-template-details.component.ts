@@ -69,7 +69,7 @@ export class IouTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.server.id, 'preferences', 'iou', 'templates']);
   }
 
   onSave() {

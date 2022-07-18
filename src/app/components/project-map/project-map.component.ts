@@ -334,7 +334,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       from(this.serverService.get(server_id))
         .pipe(
           mergeMap((server: Server) => {
-            if (!server) this.router.navigate(['/servers']);
+            if (!server) this.router.navigate(['/controllers']);
             this.server = server;
             return this.projectService.get(server, paramMap.get('project_id')).pipe(
               map((project) => {
@@ -344,7 +344,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
-            if (!project) this.router.navigate(['/servers']);
+            if (!project) this.router.navigate(['/controllers']);
 
             this.projectService.open(this.server, this.project.project_id);
             this.title.setTitle(this.project.name);
@@ -416,7 +416,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('ctrl+shift+s', (event: Event) => {
       event.preventDefault();
-      this.router.navigate(['/server', this.server.id, 'preferences']);
+      this.router.navigate(['/controller', this.server.id, 'preferences']);
     });
 
     Mousetrap.bind('del', (event: Event) => {
@@ -974,7 +974,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
             this.projectService.open(this.server, uuid).subscribe(() => {
-              this.router.navigate(['/server', this.server.id, 'project', uuid]);
+              this.router.navigate(['/controller', this.server.id, 'project', uuid]);
             });
           }
         });
@@ -1043,7 +1043,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.close(this.server, this.project.project_id).subscribe(() => {
-          this.router.navigate(['/server', this.server.id, 'projects']);
+          this.router.navigate(['/controller', this.server.id, 'projects']);
         });
       }
     });
@@ -1056,7 +1056,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
-          this.router.navigate(['/server', this.server.id, 'projects']);
+          this.router.navigate(['/controller', this.server.id, 'projects']);
         });
       }
     });

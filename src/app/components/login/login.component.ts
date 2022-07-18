@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit, DoCheck {
       this.server = server;
 
       if (server.authToken) {
-        this.router.navigate(['/server', this.server.id, 'projects']);
+        this.router.navigate(['/controller', this.server.id, 'projects']);
       }
 
       this.versionService.get(this.server).subscribe((version: Version) => {
@@ -88,7 +88,7 @@ export class LoginComponent implements OnInit, DoCheck {
         await this.serverService.update(server);
 
         if (this.returnUrl.length <= 1) {
-          this.router.navigate(['/server', this.server.id, 'projects']);
+          this.router.navigate(['/controller', this.server.id, 'projects']);
         } else {
           this.router.navigateByUrl(this.returnUrl);
         }

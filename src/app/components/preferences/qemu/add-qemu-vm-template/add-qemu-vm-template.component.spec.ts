@@ -71,7 +71,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/qemu/templates', component: AddQemuVmTemplateComponent },
+          { path: 'controller/1/preferences/qemu/templates', component: AddQemuVmTemplateComponent },
         ]),
       ],
       providers: [

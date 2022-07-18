@@ -28,6 +28,6 @@ describe('Projects page', () => {
     helper.sleep(2000);
 
     //assert
-    expect(helper.getCurrentUrl()).toMatch('server/1/project/');
+    expect(helper.getCurrentUrl()).toMatch('controller/1/project/');
   });
 });

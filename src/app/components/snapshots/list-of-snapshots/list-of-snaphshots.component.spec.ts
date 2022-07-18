@@ -80,7 +80,7 @@ describe('ListOfSnapshotsComponent', () => {
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
           {
-            path: 'server/:server_id/project/:project_id/snapshots',
+            path: 'controller/:server_id/project/:project_id/snapshots',
             component: ListOfSnapshotsComponent,
             resolve: { server: ServerResolve },
           },

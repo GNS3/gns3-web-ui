@@ -67,7 +67,7 @@ xdescribe('AddDockerTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/docker/templates', component: AddDockerTemplateComponent },
+          { path: 'controller/1/preferences/docker/templates', component: AddDockerTemplateComponent },
         ]),
       ],
       providers: [
