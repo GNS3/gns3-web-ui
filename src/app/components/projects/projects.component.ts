@@ -1,9 +1,10 @@
-import { DataSource } from '@angular/cdk/collections';
+import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { ElectronService } from 'ngx-electron';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs//operators';
@@ -17,6 +18,7 @@ import { ToasterService } from '../../services/toaster.service';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 
@@ -29,10 +31,12 @@ export class ProjectsComponent implements OnInit {
   server: Server;
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
-  displayedColumns = ['name', 'actions'];
+  displayedColumns = ['select', 'name', 'actions', 'delete'];
   settings: Settings;
-
+  project: Project;
   searchText: string = '';
+  isAllDelete: boolean = false;
+  selection = new SelectionModel(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -188,6 +192,70 @@ export class ProjectsComponent implements OnInit {
       }
     });
   }
+
+  deleteAllFiles() {
+    const dialogRef = this.dialog.open(ConfirmationDeleteAllProjectsComponent, {
+      width: '550px',
+      maxHeight: '650px',
+      autoFocus: false,
+      disableClose: true,
+      data: {
+        server: this.server,
+        deleteFilesPaths: this.selection.selected
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((isAllfilesdeleted: boolean) => {
+      if (isAllfilesdeleted) {
+        this.unChecked()
+        this.refresh()
+        this.toasterService.success('All files deleted');
+      } else {
+        this.unChecked()
+        this.refresh()
+        return false;
+      }
+    });
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.projectDatabase.data.length;
+    return numSelected === numRows;
+  }
+
+  selectAllImages() {
+    this.isAllSelected() ? this.unChecked() : this.allChecked();
+  }
+
+  unChecked() {
+    this.selection.clear();
+    this.isAllDelete = false;
+  }
+
+  allChecked() {
+    this.projectDatabase.data.forEach((row) => this.selection.select(row));
+    this.isAllDelete = true;
+  }
+
+exportSelectProject(project: Project){
+  this.project = project
+  if(this.project.project_id){
+    this.exportPortableProjectDialog()
+  }
+
+}
+  exportPortableProjectDialog() {
+    const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
+      width: '700px',
+      maxHeight: '850px',
+      autoFocus: false,
+      disableClose: true,
+      data: {serverDetails:this.server,projectDetails:this.project},
+    });
+
+    dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
+  }
 }
 
 export class ProjectDatabase {
@@ -208,6 +276,8 @@ export class ProjectDatabase {
       this.dataChange.next(this.data.slice());
     }
   }
+
+  
 }
 
 export class ProjectDataSource extends DataSource<any> {

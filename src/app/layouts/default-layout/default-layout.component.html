@@ -19,6 +19,19 @@
     </button>
 
     <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="goToSystemStatus()">
+        <mat-icon>info</mat-icon>
+        <span>System status</span>
+      </button>
+      <button mat-menu-item (click)="goToPreferences()">
+        <mat-icon>settings_applications</mat-icon>
+        <span>Template preferences</span>
+      </button>
+      <button mat-menu-item>
+        <!-- [routerLink]="['/controller', controller.id, 'image-manager']" -->
+        <mat-icon>collections</mat-icon>
+        <span>Image manager</span>
+      </button>
       <button mat-menu-item routerLink="/settings">
         <mat-icon>settings</mat-icon>
         <span>Settings</span>

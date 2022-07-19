@@ -29,6 +29,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   recentlyOpenedServerId: string;
   recentlyOpenedProjectId: string;
   serverIdProjectList: string;
+  controller: Server;
 
   constructor(
     private electronService: ElectronService,
@@ -37,11 +38,15 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     private router: Router,
-    private serverService: ServerService
+    private serverService: ServerService,
+    private route: ActivatedRoute,
+
   ) {}
 
   ngOnInit() {
     this.checkIfUserIsLoginPage();
+    this.controller = this.route.snapshot.data['server'];
+
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
     });
@@ -110,6 +115,18 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 
+  goToPreferences() {
+    this.router
+      .navigate(['/controller', this.controller.id, 'preferences'])
+      .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
+  }
+
+  goToSystemStatus() {
+    this.router
+      .navigate(['/controller', this.controller.id, 'systemstatus'])
+      .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
+  }
+
   @HostListener('window:beforeunload', ['$event'])
   async onBeforeUnload($event) {
     if (!this.shouldStopServersOnClosing) {
@@ -124,6 +141,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     window.close();
     return false;
   }
+ 
 
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
