@@ -4,7 +4,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
+import { ExportPortableProjectComponent } from '../../components/export-portable-project/export-portable-project.component';
 import { ElectronService } from 'ngx-electron';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs//operators';
