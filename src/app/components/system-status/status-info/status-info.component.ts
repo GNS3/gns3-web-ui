@@ -24,7 +24,7 @@ export class StatusInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.serverId = this.route.snapshot.paramMap.get('server_id');
+    this.serverId = this.route.snapshot.paramMap.get('controller_id');
     this.getStatistics();
   }
 

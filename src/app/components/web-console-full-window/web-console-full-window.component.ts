@@ -51,7 +51,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
   }
 
   getData() {
-    this.serverId = this.route.snapshot.paramMap.get('server_id');
+    this.serverId = this.route.snapshot.paramMap.get('controller_id');
     this.projectId = this.route.snapshot.paramMap.get('project_id');
     this.nodeId = this.route.snapshot.paramMap.get('node_id');
 

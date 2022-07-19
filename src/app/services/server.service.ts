@@ -5,18 +5,18 @@ import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class ServerService {
-  private serverIds: string[] = [];
+  private controllerIds: string[] = [];
   public serviceInitialized: Subject<boolean> = new Subject<boolean>();
   public isServiceInitialized: boolean;
 
   constructor(private httpServer: HttpServer) {
-    this.serverIds = this.getServerIds();
+    this.controllerIds = this.getServerIds();
     this.isServiceInitialized = true;
     this.serviceInitialized.next(this.isServiceInitialized);
   }
 
   getServerIds() : string[]{
-    let str = localStorage.getItem("serverIds");
+    let str = localStorage.getItem("controllerIds");
     if (str?.length > 0) {
       return str.split(",");
     }
@@ -24,12 +24,12 @@ export class ServerService {
   }
 
   updateServerIds() {
-    localStorage.removeItem("serverIds");
-    localStorage.setItem("serverIds", this.serverIds.toString());
+    localStorage.removeItem("controllerIds");
+    localStorage.setItem("controllerIds", this.controllerIds.toString());
   }
 
   public get(id: number): Promise<Server> {
-    let server: Server = JSON.parse(localStorage.getItem(`server-${id}`));
+    let server: Server = JSON.parse(localStorage.getItem(`controller-${id}`));
     let promise = new Promise<Server>((resolve) => {
       resolve(server);
     });
@@ -37,10 +37,10 @@ export class ServerService {
   }
 
   public create(server: Server) {
-    server.id = this.serverIds.length + 1;
-    localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
+    server.id = this.controllerIds.length + 1;
+    localStorage.setItem(`controller-${server.id}`, JSON.stringify(server));
 
-    this.serverIds.push(`server-${server.id}`);
+    this.controllerIds.push(`controller-${server.id}`);
     this.updateServerIds();
 
     let promise = new Promise<Server>((resolve) => {
@@ -50,8 +50,8 @@ export class ServerService {
   }
 
   public update(server: Server) {
-    localStorage.removeItem(`server-${server.id}`);
-    localStorage.setItem(`server-${server.id}`, JSON.stringify(server));
+    localStorage.removeItem(`controller-${server.id}`);
+    localStorage.setItem(`controller-${server.id}`, JSON.stringify(server));
 
     let promise = new Promise<Server>((resolve) => {
       resolve(server);
@@ -62,7 +62,7 @@ export class ServerService {
   public findAll() {
     let promise = new Promise<Server[]>((resolve) => {
       let servers: Server[] = [];
-      this.serverIds.forEach((n) => {
+      this.controllerIds.forEach((n) => {
         let server: Server = JSON.parse(localStorage.getItem(n));
         servers.push(server);
       });
@@ -72,8 +72,8 @@ export class ServerService {
   }
 
   public delete(server: Server) {
-    localStorage.removeItem(`server-${server.id}`);
-    this.serverIds = this.serverIds.filter((n) => n !== `server-${server.id}`);
+    localStorage.removeItem(`controller-${server.id}`);
+    this.controllerIds = this.controllerIds.filter((n) => n !== `controller-${server.id}`);
     this.updateServerIds();
 
     let promise = new Promise((resolve) => {

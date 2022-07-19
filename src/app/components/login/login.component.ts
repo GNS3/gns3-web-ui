@@ -43,9 +43,9 @@ export class LoginComponent implements OnInit, DoCheck {
   ) {}
 
   async ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
       this.server = server;
 
       if (server.authToken) {

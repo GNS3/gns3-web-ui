@@ -35,9 +35,9 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
       this.server = server;
 
       this.qemuService.getTemplate(this.server, template_id).subscribe((qemuTemplate: QemuTemplate) => {

@@ -8,6 +8,6 @@ export class ServerResolve implements Resolve<Server> {
   constructor(private serverService: ServerService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.serverService.get(parseInt(route.params['server_id']));
+    return this.serverService.get(parseInt(route.params['controller_id']));
   }
 }

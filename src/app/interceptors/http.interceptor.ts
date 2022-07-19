@@ -22,8 +22,8 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
   async call() {
     let getCurrentUser = JSON.parse(localStorage.getItem(`isRememberMe`)) ?? null;
-    const server_id = this.loginService.server_id;
-    let server = await this.serverService.get(parseInt(server_id, 10));
+    const controller_id = this.loginService.controller_id;
+    let server = await this.serverService.get(parseInt(controller_id, 10));
     server.tokenExpired = true;
     await this.serverService.update(server);
     try {

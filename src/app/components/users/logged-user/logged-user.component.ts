@@ -23,7 +23,7 @@ export class LoggedUserComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        let serverId = this.route.snapshot.paramMap.get('server_id');
+        let serverId = this.route.snapshot.paramMap.get('controller_id');
         this.serverService.get(+serverId).then((server: Server) => {
             this.server = server;
             this.userService.getInformationAboutLoggedUser(server).subscribe((response: any) => {

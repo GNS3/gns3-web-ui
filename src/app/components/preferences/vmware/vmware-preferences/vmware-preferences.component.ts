@@ -15,9 +15,9 @@ export class VmwarePreferencesComponent implements OnInit {
   constructor(private route: ActivatedRoute, private serverService: ServerService) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
 
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
       this.server = server;
     });
   }

@@ -329,9 +329,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   getData() {
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const server_id = parseInt(paramMap.get('server_id'), 10);
+      const controller_id = parseInt(paramMap.get('controller_id'), 10);
 
-      from(this.serverService.get(server_id))
+      from(this.serverService.get(controller_id))
         .pipe(
           mergeMap((server: Server) => {
             if (!server) this.router.navigate(['/controllers']);

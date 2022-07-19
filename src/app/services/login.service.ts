@@ -7,7 +7,7 @@ import { AuthResponse } from '../models/authResponse';
 
 @Injectable()
 export class LoginService {
-  server_id:string =''
+  controller_id:string =''
   constructor(private httpServer: HttpServer) {}
 
   login(server: Server, username: string, password: string) {

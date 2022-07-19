@@ -66,11 +66,11 @@ const routes: Routes = [
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'controllers', component: ControllersComponent },
       { path: 'bundled', component: BundledServerFinderComponent },
-      { path: 'controller/:server_id/login', component: LoginComponent },
-      { path: 'controller/:server_id/loggeduser', component: LoggedUserComponent },
-      {path : 'controller/:server_id/image-manager', component: ImageManagerComponent},
+      { path: 'controller/:controller_id/login', component: LoginComponent },
+      { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
+      {path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
       {
-        path: 'controller/:server_id/projects',
+        path: 'controller/:controller_id/projects',
         component: ProjectsComponent,
         canActivate: [LoginGuard],
         resolve: { server: ServerResolve },
@@ -79,134 +79,134 @@ const routes: Routes = [
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
       { path: 'installed-software', component: InstalledSoftwareComponent },
-      { path: 'controller/:server_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
 
       { path: 'controller/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/project/:project_id/snapshots',
+        path: 'controller/:controller_id/project/:project_id/snapshots',
         component: ListOfSnapshotsComponent,
         canActivate: [LoginGuard],
         resolve: { server: ServerResolve },
       },
-      { path: 'controller/:server_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
-      // { path: 'controller/:server_id/preferences/general', component: GeneralPreferencesComponent },
-      { path: 'controller/:server_id/preferences/builtin', component: BuiltInPreferencesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
+      // { path: 'controller/:controller_id/preferences/general', component: GeneralPreferencesComponent },
+      { path: 'controller/:controller_id/preferences/builtin', component: BuiltInPreferencesComponent, canActivate: [LoginGuard] },
 
-      { path: 'controller/:server_id/preferences/builtin/ethernet-hubs', component: EthernetHubsTemplatesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/builtin/ethernet-hubs', component: EthernetHubsTemplatesComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/builtin/ethernet-hubs/addtemplate',
+        path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/addtemplate',
         component: EthernetHubsAddTemplateComponent,
         canActivate: [LoginGuard]
       },
       {
-        path: 'controller/:server_id/preferences/builtin/ethernet-hubs/:template_id',
+        path: 'controller/:controller_id/preferences/builtin/ethernet-hubs/:template_id',
         component: EthernetHubsTemplateDetailsComponent,
         canActivate: [LoginGuard]
       },
 
       {
-        path: 'controller/:server_id/preferences/builtin/ethernet-switches',
+        path: 'controller/:controller_id/preferences/builtin/ethernet-switches',
         component: EthernetSwitchesTemplatesComponent,
         canActivate: [LoginGuard]
       },
       {
-        path: 'controller/:server_id/preferences/builtin/ethernet-switches/addtemplate',
+        path: 'controller/:controller_id/preferences/builtin/ethernet-switches/addtemplate',
         component: EthernetSwitchesAddTemplateComponent,
         canActivate: [LoginGuard]
       },
       {
-        path: 'controller/:server_id/preferences/builtin/ethernet-switches/:template_id',
+        path: 'controller/:controller_id/preferences/builtin/ethernet-switches/:template_id',
         component: EthernetSwitchesTemplateDetailsComponent,
         canActivate: [LoginGuard]
       },
 
-      { path: 'controller/:server_id/preferences/builtin/cloud-nodes', component: CloudNodesTemplatesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/builtin/cloud-nodes', component: CloudNodesTemplatesComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/builtin/cloud-nodes/addtemplate',
+        path: 'controller/:controller_id/preferences/builtin/cloud-nodes/addtemplate',
         component: CloudNodesAddTemplateComponent,
         canActivate: [LoginGuard]
       },
       {
-        path: 'controller/:server_id/preferences/builtin/cloud-nodes/:template_id',
+        path: 'controller/:controller_id/preferences/builtin/cloud-nodes/:template_id',
         component: CloudNodesTemplateDetailsComponent,
         canActivate: [LoginGuard]
       },
 
-      //{ path: 'controller/:server_id/preferences/dynamips', component: DynamipsPreferencesComponent },
-      { path: 'controller/:server_id/preferences/dynamips/templates', component: IosTemplatesComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/dynamips/templates/addtemplate', component: AddIosTemplateComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/dynamips/templates/:template_id', component: IosTemplateDetailsComponent, canActivate: [LoginGuard] },
+      //{ path: 'controller/:controller_id/preferences/dynamips', component: DynamipsPreferencesComponent },
+      { path: 'controller/:controller_id/preferences/dynamips/templates', component: IosTemplatesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/dynamips/templates/addtemplate', component: AddIosTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/dynamips/templates/:template_id', component: IosTemplateDetailsComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/dynamips/templates/:template_id/copy',
+        path: 'controller/:controller_id/preferences/dynamips/templates/:template_id/copy',
         component: CopyIosTemplateComponent,
         canActivate: [LoginGuard]
       },
 
-      // { path: 'controller/:server_id/preferences/qemu', component: QemuPreferencesComponent },
-      { path: 'controller/:server_id/preferences/qemu/templates', component: QemuVmTemplatesComponent, canActivate: [LoginGuard] },
+      // { path: 'controller/:controller_id/preferences/qemu', component: QemuPreferencesComponent },
+      { path: 'controller/:controller_id/preferences/qemu/templates', component: QemuVmTemplatesComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/qemu/templates/:template_id/copy',
+        path: 'controller/:controller_id/preferences/qemu/templates/:template_id/copy',
         component: CopyQemuVmTemplateComponent,
         canActivate: [LoginGuard]
       },
-      { path: 'controller/:server_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/qemu/templates/:template_id', component: QemuVmTemplateDetailsComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/qemu/addtemplate', component: AddQemuVmTemplateComponent, canActivate: [LoginGuard] },
 
-      // { path: 'controller/:server_id/preferences/vpcs', component: VpcsPreferencesComponent },
-      { path: 'controller/:server_id/preferences/vpcs/templates', component: VpcsTemplatesComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent, canActivate: [LoginGuard] },
+      // { path: 'controller/:controller_id/preferences/vpcs', component: VpcsPreferencesComponent },
+      { path: 'controller/:controller_id/preferences/vpcs/templates', component: VpcsTemplatesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/vpcs/templates/:template_id', component: VpcsTemplateDetailsComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/vpcs/addtemplate', component: AddVpcsTemplateComponent, canActivate: [LoginGuard] },
 
-      // { path: 'controller/:server_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent },
-      { path: 'controller/:server_id/preferences/virtualbox/templates', component: VirtualBoxTemplatesComponent, canActivate: [LoginGuard] },
+      // { path: 'controller/:controller_id/preferences/virtualbox', component: VirtualBoxPreferencesComponent },
+      { path: 'controller/:controller_id/preferences/virtualbox/templates', component: VirtualBoxTemplatesComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/virtualbox/templates/:template_id',
+        path: 'controller/:controller_id/preferences/virtualbox/templates/:template_id',
         component: VirtualBoxTemplateDetailsComponent,
         canActivate: [LoginGuard]
       },
-      { path: 'controller/:server_id/preferences/virtualbox/addtemplate', component: AddVirtualBoxTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/virtualbox/addtemplate', component: AddVirtualBoxTemplateComponent, canActivate: [LoginGuard] },
 
-      // { path: 'controller/:server_id/preferences/vmware', component: VmwarePreferencesComponent },
-      { path: 'controller/:server_id/preferences/vmware/templates', component: VmwareTemplatesComponent, canActivate: [LoginGuard] },
+      // { path: 'controller/:controller_id/preferences/vmware', component: VmwarePreferencesComponent },
+      { path: 'controller/:controller_id/preferences/vmware/templates', component: VmwareTemplatesComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/vmware/templates/:template_id',
+        path: 'controller/:controller_id/preferences/vmware/templates/:template_id',
         component: VmwareTemplateDetailsComponent,
         canActivate: [LoginGuard]
       },
-      { path: 'controller/:server_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/vmware/addtemplate', component: AddVmwareTemplateComponent, canActivate: [LoginGuard] },
 
-      { path: 'controller/:server_id/preferences/docker/templates', component: DockerTemplatesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/docker/templates', component: DockerTemplatesComponent, canActivate: [LoginGuard] },
       {
-        path: 'controller/:server_id/preferences/docker/templates/:template_id',
+        path: 'controller/:controller_id/preferences/docker/templates/:template_id',
         component: DockerTemplateDetailsComponent,
         canActivate: [LoginGuard]
       },
       {
-        path: 'controller/:server_id/preferences/docker/templates/:template_id/copy',
+        path: 'controller/:controller_id/preferences/docker/templates/:template_id/copy',
         component: CopyDockerTemplateComponent,
         canActivate: [LoginGuard]
       },
-      { path: 'controller/:server_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent, canActivate: [LoginGuard] },
 
-      { path: 'controller/:server_id/preferences/iou/templates', component: IouTemplatesComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/iou/templates', component: IouTemplatesComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/iou/addtemplate', component: AddIouTemplateComponent, canActivate: [LoginGuard] },
     ],
   },
   {
-    path: 'controller/:server_id/project/:project_id',
+    path: 'controller/:controller_id/project/:project_id',
     component: ProjectMapComponent,
     canActivate: [LoginGuard],
     canDeactivate: [ConsoleGuard],
   },
   {
-    path: 'controller/:server_id/project/:project_id/nodes/:node_id',
+    path: 'controller/:controller_id/project/:project_id/nodes/:node_id',
     component: WebConsoleFullWindowComponent,
     canActivate: [LoginGuard]
   },
   {
-    path: 'static/web-ui/controller/:server_id/project/:project_id/nodes/:node_id',
+    path: 'static/web-ui/controller/:controller_id/project/:project_id/nodes/:node_id',
     component: WebConsoleFullWindowComponent,
     canActivate: [LoginGuard]
   },

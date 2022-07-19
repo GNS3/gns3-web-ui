@@ -40,8 +40,8 @@ export class ImageManagerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    let server_id = parseInt(this.route.snapshot.paramMap.get('server_id'));
-    this.serverService.get(server_id).then((server: Server) => {
+    let controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'));
+    this.serverService.get(controller_id).then((server: Server) => {
       this.server = server;
       if (server.authToken) {
         this.getImages()

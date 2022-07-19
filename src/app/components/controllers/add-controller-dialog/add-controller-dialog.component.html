@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Add server</h1>
+<h1 mat-dialog-title>Add controller</h1>
 <form [formGroup]="serverForm">
   <div mat-dialog-content>
     <mat-form-field>
@@ -6,19 +6,19 @@
       <mat-error *ngIf="serverForm.get('name').hasError('required')">You must enter a value</mat-error>
     </mat-form-field>
 
-    <mat-form-field>
+    <!-- <mat-form-field>
       <mat-select placeholder="Location" formControlName="location">
         <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
       </mat-select>
-    </mat-form-field>
+    </mat-form-field> -->
 
-    <mat-form-field *ngIf="serverForm.get('location').value === 'local'">
+    <!-- <mat-form-field *ngIf="serverForm.get('location').value === 'local'">
       <input matInput tabindex="1" formControlName="path" placeholder="Local server path" />
     </mat-form-field>
 
     <mat-form-field *ngIf="serverForm.get('location').value === 'local'">
       <input matInput tabindex="1" formControlName="ubridge_path" placeholder="Ubridge path" />
-    </mat-form-field>
+    </mat-form-field> -->
 
     <mat-form-field>
       <input matInput tabindex="1" formControlName="host" placeholder="Host" />

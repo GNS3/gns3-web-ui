@@ -10,9 +10,9 @@ export class MockedServerService {
     });
   }
 
-  public get(server_id: number) {
+  public get(controller_id: number) {
     const server = new Server();
-    server.id = server_id;
+    server.id = controller_id;
     return Promise.resolve(server);
   }
 

@@ -12,6 +12,6 @@ export class BuiltInPreferencesComponent implements OnInit {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.serverId = this.route.snapshot.paramMap.get('server_id');
+    this.serverId = this.route.snapshot.paramMap.get('controller_id');
   }
 }
