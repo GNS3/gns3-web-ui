@@ -27,8 +27,7 @@
         <mat-icon>settings_applications</mat-icon>
         <span>Template preferences</span>
       </button>
-      <button mat-menu-item>
-        <!-- [routerLink]="['/controller', controller.id, 'image-manager']" -->
+      <button mat-menu-item (click)="goToImageManager()">
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
       </button>

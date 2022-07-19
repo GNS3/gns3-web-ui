@@ -1,15 +1,14 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { NavigationEnd } from '@angular/router';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../services/server.service';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
+import { Server } from '../../models/server';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ServerManagementService } from '../../services/server-management.service';
+import { ServerService } from '../../services/server.service';
 import { ToasterService } from '../../services/toaster.service';
 import { version } from './../../version';
-import { Server } from '../../models/server';
 
 @Component({
   selector: 'app-default-layout',
@@ -39,8 +38,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private progressService: ProgressService,
     private router: Router,
     private serverService: ServerService,
-    private route: ActivatedRoute,
-
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -50,7 +48,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
     });
-    
+
     this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();
@@ -74,21 +72,21 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   goToUserInfo() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    let serverId = this.router.url.split('/server/')[1].split('/')[0];
     this.serverService.get(+serverId).then((server: Server) => {
       this.router.navigate(['/server', server.id, 'loggeduser']);
     });
   }
 
   goToDocumentation() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    let serverId = this.router.url.split('/server/')[1].split('/')[0];
     this.serverService.get(+serverId).then((server: Server) => {
       (window as any).open(`http://${server.host}:${server.port}/docs`);
     });
   }
 
   checkIfUserIsLoginPage() {
-    if (this.router.url.includes("login")) {
+    if (this.router.url.includes('login')) {
       this.isLoginPage = true;
     } else {
       this.isLoginPage = false;
@@ -96,10 +94,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    let serverId = this.router.url.split("/server/")[1].split("/")[0];
+    let serverId = this.router.url.split('/server/')[1].split('/')[0];
     this.serverService.get(+serverId).then((server: Server) => {
       server.authToken = null;
-      this.serverService.update(server).then(val => this.router.navigate(['/server', server.id, 'login']));
+      this.serverService.update(server).then((val) => this.router.navigate(['/server', server.id, 'login']));
     });
   }
 
@@ -116,14 +114,22 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   goToPreferences() {
+    let controllerId = this.router.url.split('/server/')[1].split('/')[0];
     this.router
-      .navigate(['/controller', this.controller.id, 'preferences'])
+      .navigate(['/server', controllerId, 'preferences'])
       .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
   }
 
   goToSystemStatus() {
+    let controllerId = this.router.url.split('/server/')[1].split('/')[0];
     this.router
-      .navigate(['/controller', this.controller.id, 'systemstatus'])
+      .navigate(['/server', controllerId, 'systemstatus'])
+      .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
+  }
+  goToImageManager() {
+    let controllerId = this.router.url.split('/server/')[1].split('/')[0];
+    this.router
+      .navigate(['/server', controllerId, 'image-manager'])
       .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
   }
 
@@ -141,7 +147,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     window.close();
     return false;
   }
- 
 
   ngOnDestroy() {
     this.serverStatusSubscription.unsubscribe();
