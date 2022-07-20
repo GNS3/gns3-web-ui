@@ -8,12 +8,12 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './stop-capture-action.component.html',
 })
 export class StopCaptureActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}
 
   stopCapture() {
-    this.linkService.stopCaptureOnLink(this.server, this.link).subscribe(() => {});
+    this.linkService.stopCaptureOnLink(this.controller, this.link).subscribe(() => {});
   }
 }

@@ -47,7 +47,7 @@ it('should create', () => {
 });
 
 describe('isAvailable', () => {
-  it('should return server object when server is available', () => {
+  it('should return controller object when controller is available', () => {
     const version = new Version();
     version.version = '2.1.8';
 
@@ -58,20 +58,20 @@ describe('isAvailable', () => {
       expect(s.port).toEqual(3080);
     });
 
-    const server = new Server();
-    server.host = '127.0.0.1';
-    server.port = 3080;
+    const controller = new Server();
+    controller.host = '127.0.0.1';
+    controller.port = 3080;
 
-    expect(getVersionSpy).toHaveBeenCalledWith(server);
+    expect(getVersionSpy).toHaveBeenCalledWith(controller);
   });
 
-  it('should throw error once server is not available', () => {
-    const server = new Server();
-    server.host = '127.0.0.1';
-    server.port = 3080;
+  it('should throw error once controller is not available', () => {
+    const controller = new Server();
+    controller.host = '127.0.0.1';
+    controller.port = 3080;
 
     const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(
-      Observable.throwError(new Error('server is unavailable'))
+      Observable.throwError(new Error('controller is unavailable'))
     );
     let hasExecuted = false;
 
@@ -79,11 +79,11 @@ describe('isAvailable', () => {
       (ver) => { },
       (err) => {
         hasExecuted = true;
-        expect(err.toString()).toEqual('Error: server is unavailable');
+        expect(err.toString()).toEqual('Error: controller is unavailable');
       }
     );
 
-    expect(getVersionSpy).toHaveBeenCalledWith(server);
+    expect(getVersionSpy).toHaveBeenCalledWith(controller);
     expect(hasExecuted).toBeTruthy();
   });
 });
@@ -94,10 +94,10 @@ describe('discovery', () => {
     version.version = '2.1.8';
 
     spyOn(component, 'isServerAvailable').and.callFake((ip, port) => {
-      const server = new Server();
-      server.host = ip;
-      server.port = port;
-      return Observable.of(server);
+      const controller = new Server();
+      controller.host = ip;
+      controller.port = port;
+      return Observable.of(controller);
     });
 
     component.discovery().subscribe((discovered) => {
@@ -112,18 +112,18 @@ describe('discovery', () => {
 });
 
 describe('discoverFirstAvailableServer', () => {
-  let server: Server;
+  let controller: Server;
 
   beforeEach(function () {
-    server = new Server();
-    (server.host = '199.111.111.1'), (server.port = 3333);
+    controller = new Server();
+    (controller.host = '199.111.111.1'), (controller.port = 3333);
 
     spyOn(component, 'discovery').and.callFake(() => {
-      return Observable.of([server]);
+      return Observable.of([controller]);
     });
   });
 
-  it('should get first server from discovered and with no added before', fakeAsync(() => {
+  it('should get first controller from discovered and with no added before', fakeAsync(() => {
     expect(component.discoveredServer).toBeUndefined();
     component.discoverFirstAvailableServer();
     tick();
@@ -131,8 +131,8 @@ describe('discoverFirstAvailableServer', () => {
     expect(component.discoveredServer.port).toEqual(3333);
   }));
 
-  it('should get first server from discovered and with already added', fakeAsync(() => {
-    mockedServerService.servers.push(server);
+  it('should get first controller from discovered and with already added', fakeAsync(() => {
+    mockedServerService.servers.push(controller);
 
     expect(component.discoveredServer).toBeUndefined();
     component.discoverFirstAvailableServer();
@@ -141,17 +141,17 @@ describe('discoverFirstAvailableServer', () => {
   }));
 });
 
-describe('accepting and ignoring found server', () => {
-  let server: Server;
+describe('accepting and ignoring found controller', () => {
+  let controller: Server;
   beforeEach(() => {
-    server = new Server();
-    (server.host = '199.111.111.1'), (server.port = 3333);
-    component.discoveredServer = server;
+    controller = new Server();
+    (controller.host = '199.111.111.1'), (controller.port = 3333);
+    component.discoveredServer = controller;
   });
 
   describe('accept', () => {
-    it('should add new server', fakeAsync(() => {
-      component.accept(server);
+    it('should add new controller', fakeAsync(() => {
+      component.accept(controller);
       tick();
       expect(component.discoveredServer).toBeNull();
       expect(mockedServerService.servers[0].host).toEqual('199.111.111.1');
@@ -161,8 +161,8 @@ describe('accepting and ignoring found server', () => {
   });
 
   describe('ignore', () => {
-    it('should reject server', fakeAsync(() => {
-      component.ignore(server);
+    it('should reject controller', fakeAsync(() => {
+      component.ignore(controller);
       tick();
       expect(component.discoveredServer).toBeNull();
     }));

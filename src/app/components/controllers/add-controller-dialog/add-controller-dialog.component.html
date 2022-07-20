@@ -1,9 +1,9 @@
 <h1 mat-dialog-title>Add controller</h1>
-<form [formGroup]="serverForm">
+<form [formGroup]="controllerForm">
   <div mat-dialog-content>
     <mat-form-field>
       <input matInput tabindex="1" formControlName="name" placeholder="Name" />
-      <mat-error *ngIf="serverForm.get('name').hasError('required')">You must enter a value</mat-error>
+      <mat-error *ngIf="controllerForm.get('name').hasError('required')">You must enter a value</mat-error>
     </mat-form-field>
 
     <!-- <mat-form-field>
@@ -12,11 +12,11 @@
       </mat-select>
     </mat-form-field> -->
 
-    <!-- <mat-form-field *ngIf="serverForm.get('location').value === 'local'">
-      <input matInput tabindex="1" formControlName="path" placeholder="Local server path" />
+    <!-- <mat-form-field *ngIf="controllerForm.get('location').value === 'local'">
+      <input matInput tabindex="1" formControlName="path" placeholder="Local controller path" />
     </mat-form-field>
 
-    <mat-form-field *ngIf="serverForm.get('location').value === 'local'">
+    <mat-form-field *ngIf="controllerForm.get('location').value === 'local'">
       <input matInput tabindex="1" formControlName="ubridge_path" placeholder="Ubridge path" />
     </mat-form-field> -->
 

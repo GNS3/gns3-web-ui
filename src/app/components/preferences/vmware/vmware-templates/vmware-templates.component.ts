@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./vmware-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VmwareTemplatesComponent implements OnInit {
-  server: Server;
+  controller: Server;
   vmwareTemplates: VmwareTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -24,14 +24,14 @@ export class VmwareTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.vmwareService.getTemplates(this.server).subscribe((vmwareTemplates: VmwareTemplate[]) => {
+    this.vmwareService.getTemplates(this.controller).subscribe((vmwareTemplates: VmwareTemplate[]) => {
       this.vmwareTemplates = vmwareTemplates.filter((elem) => elem.template_type === 'vmware' && !elem.builtin);
     });
   }

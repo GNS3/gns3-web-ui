@@ -13,7 +13,7 @@ describe('VmwareService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,7 +24,7 @@ describe('VmwareService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -61,7 +61,7 @@ describe('VmwareService', () => {
       vmx_path: '',
     };
 
-    service.saveTemplate(server, template).subscribe();
+    service.saveTemplate(controller, template).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
     expect(req.request.method).toEqual('PUT');
@@ -94,7 +94,7 @@ describe('VmwareService', () => {
       vmx_path: '',
     };
 
-    service.addTemplate(server, template).subscribe();
+    service.addTemplate(controller, template).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
     expect(req.request.method).toEqual('POST');
@@ -102,7 +102,7 @@ describe('VmwareService', () => {
   }));
 
   it('should get available virtual machines', inject([VmwareService], (service: VmwareService) => {
-    service.getVirtualMachines(server).subscribe();
+    service.getVirtualMachines(controller).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/computes/${environment.compute_id}/vmware/vms`);
     expect(req.request.method).toEqual('GET');

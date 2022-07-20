@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuVmTemplatesComponent } from './qemu-vm-templates.component';
 
 export class MockedQemuService {
-  public getTemplates(server: Server) {
+  public getTemplates(controller: Server) {
     return of([{} as QemuTemplate]);
   }
 }

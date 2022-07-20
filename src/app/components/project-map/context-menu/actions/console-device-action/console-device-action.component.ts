@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './console-device-action.component.html',
 })
 export class ConsoleDeviceActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
 
   constructor(
@@ -49,7 +49,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
         name: node.name,
         project_id: node.project_id,
         node_id: node.node_id,
-        server_url: this.serverService.getServerUrl(this.server),
+        server_url: this.serverService.getServerUrl(this.controller),
       };
       await this.openConsole(consoleRequest);
     }

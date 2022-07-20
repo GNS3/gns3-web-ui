@@ -8,13 +8,13 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './suspend-link-action.component.html',
 })
 export class SuspendLinkActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}
 
   suspendLink() {
     this.link.suspend = true;
-    this.linkService.updateLink(this.server, this.link).subscribe(() => {});
+    this.linkService.updateLink(this.controller, this.link).subscribe(() => {});
   }
 }

@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./qemu-preferences.component.scss'],
 })
 export class QemuPreferencesComponent implements OnInit {
-  server: Server;
+  controller: Server;
   settings: QemuSettings;
 
   constructor(
@@ -24,10 +24,10 @@ export class QemuPreferencesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.serverSettingsService.getSettingsForQemu(this.server).subscribe((settings: QemuSettings) => {
+      this.serverSettingsService.getSettingsForQemu(this.controller).subscribe((settings: QemuSettings) => {
         this.settings = settings;
       });
     });
@@ -39,7 +39,7 @@ export class QemuPreferencesComponent implements OnInit {
     }
 
     this.serverSettingsService
-      .updateSettingsForQemu(this.server, this.settings)
+      .updateSettingsForQemu(this.controller, this.settings)
       .subscribe((qemuSettings: QemuSettings) => {
         this.toasterService.success(`Changes applied`);
       });
@@ -52,7 +52,7 @@ export class QemuPreferencesComponent implements OnInit {
     };
 
     this.serverSettingsService
-      .updateSettingsForQemu(this.server, defaultSettings)
+      .updateSettingsForQemu(this.controller, defaultSettings)
       .subscribe((qemuSettings: QemuSettings) => {
         this.settings = qemuSettings;
         this.toasterService.success(`Restored to default settings`);

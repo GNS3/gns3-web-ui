@@ -16,13 +16,13 @@ export class MapLink implements Indexed {
   suspend: boolean;
   link_style?: LinkStyle;
 
-  distance: number; // this is not from server
-  length: number; // this is not from server
-  source: MapNode; // this is not from server
-  target: MapNode; // this is not from server
+  distance: number; // this is not from controller
+  length: number; // this is not from controller
+  source: MapNode; // this is not from controller
+  target: MapNode; // this is not from controller
 
-  isSelected = false; // this is not from server
-  isMultiplied = false; // this is not from server
-  x: number; // this is not from server
-  y: number; // this is not from server
+  isSelected = false; // this is not from controller
+  isMultiplied = false; // this is not from controller
+  x: number; // this is not from controller
+  y: number; // this is not from controller
 }

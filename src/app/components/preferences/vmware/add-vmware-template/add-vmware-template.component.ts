@@ -16,7 +16,7 @@ import { VmwareService } from '../../../../services/vmware.service';
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVmwareTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   virtualMachines: VmwareVm[];
   selectedVM: VmwareVm;
   vmwareTemplate: VmwareTemplate;
@@ -38,10 +38,10 @@ export class AddVmwareTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.vmwareService.getVirtualMachines(this.server).subscribe((virtualMachines: VmwareVm[]) => {
+      this.vmwareService.getVirtualMachines(this.controller).subscribe((virtualMachines: VmwareVm[]) => {
         this.virtualMachines = virtualMachines;
 
         this.templateMocksService.getVmwareTemplate().subscribe((template: VmwareTemplate) => {
@@ -52,7 +52,7 @@ export class AddVmwareTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'vmware', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vmware', 'templates']);
   }
 
   addTemplate() {
@@ -61,7 +61,7 @@ export class AddVmwareTemplateComponent implements OnInit {
       this.vmwareTemplate.vmx_path = this.selectedVM.vmx_path;
       this.vmwareTemplate.template_id = uuid();
 
-      this.vmwareService.addTemplate(this.server, this.vmwareTemplate).subscribe(() => {
+      this.vmwareService.addTemplate(this.controller, this.vmwareTemplate).subscribe(() => {
         this.goBack();
       });
     } else {

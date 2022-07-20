@@ -16,7 +16,7 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
-  server: Server;
+  controller: Server;
   node: Node;
   name: string;
   generalSettingsForm: FormGroup;
@@ -50,7 +50,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+      this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
           this.node = node;
           this.name = node.name;
           this.getConfiguration();
@@ -65,20 +65,20 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   configureCustomAdapters() {
     this.dialogRef = this.dialog.open(ConfigureCustomAdaptersDialogComponent, this.conf);
     let instance = this.dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.node = this.node;
   }
 
   editNetworkConfiguration() {
     this.dialogRef = this.dialog.open(EditNetworkConfigurationDialogComponent, this.conf);
     let instance = this.dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.node = this.node;
   }
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

@@ -10,29 +10,29 @@ import { HttpServer } from './http-server.service';
 export class IosService {
   constructor(private httpServer: HttpServer) {}
 
-  getImages(server: Server): Observable<any> {
-    return this.httpServer.get<IosImage[]>(server, '/images?image_type=ios') as Observable<IosImage[]>;
+  getImages(controller: Server): Observable<any> {
+    return this.httpServer.get<IosImage[]>(controller, '/images?image_type=ios') as Observable<IosImage[]>;
   }
 
-  getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
+  getImagePath(controller: Server, filename: string): string {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-  getTemplates(server: Server): Observable<IosTemplate[]> {
-    return this.httpServer.get<IosTemplate[]>(server, '/templates') as Observable<IosTemplate[]>;
+  getTemplates(controller: Server): Observable<IosTemplate[]> {
+    return this.httpServer.get<IosTemplate[]>(controller, '/templates') as Observable<IosTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<IosTemplate> {
-    return this.httpServer.get<IosTemplate>(server, `/templates/${template_id}`) as Observable<IosTemplate>;
+  getTemplate(controller: Server, template_id: string): Observable<IosTemplate> {
+    return this.httpServer.get<IosTemplate>(controller, `/templates/${template_id}`) as Observable<IosTemplate>;
   }
 
-  addTemplate(server: Server, iosTemplate: IosTemplate): Observable<IosTemplate> {
-    return this.httpServer.post<IosTemplate>(server, `/templates`, iosTemplate) as Observable<IosTemplate>;
+  addTemplate(controller: Server, iosTemplate: IosTemplate): Observable<IosTemplate> {
+    return this.httpServer.post<IosTemplate>(controller, `/templates`, iosTemplate) as Observable<IosTemplate>;
   }
 
-  saveTemplate(server: Server, iosTemplate: IosTemplate): Observable<IosTemplate> {
+  saveTemplate(controller: Server, iosTemplate: IosTemplate): Observable<IosTemplate> {
     return this.httpServer.put<IosTemplate>(
-      server,
+      controller,
       `/templates/${iosTemplate.template_id}`,
       iosTemplate
     ) as Observable<IosTemplate>;

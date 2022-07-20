@@ -17,7 +17,7 @@ describe('NodeService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: NodeService;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -32,7 +32,7 @@ describe('NodeService', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
     service = TestBed.get(NodeService);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -48,7 +48,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.start(server, node).subscribe();
+    service.start(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/start`);
     expect(req.request.method).toEqual('POST');
@@ -60,7 +60,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.stop(server, node).subscribe();
+    service.stop(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/stop`);
     expect(req.request.method).toEqual('POST');
@@ -72,7 +72,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.suspend(server, node).subscribe();
+    service.suspend(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/suspend`);
     expect(req.request.method).toEqual('POST');
@@ -84,7 +84,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.reload(server, node).subscribe();
+    service.reload(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/reload`);
     expect(req.request.method).toEqual('POST');
@@ -96,7 +96,7 @@ describe('NodeService', () => {
       project_id: '1',
     } as Project;
 
-    service.startAll(server, project).subscribe();
+    service.startAll(controller, project).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/start`);
     expect(req.request.method).toEqual('POST');
@@ -108,7 +108,7 @@ describe('NodeService', () => {
       project_id: '1',
     } as Project;
 
-    service.stopAll(server, project).subscribe();
+    service.stopAll(controller, project).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/stop`);
     expect(req.request.method).toEqual('POST');
@@ -120,7 +120,7 @@ describe('NodeService', () => {
       project_id: '1',
     } as Project;
 
-    service.suspendAll(server, project).subscribe();
+    service.suspendAll(controller, project).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/suspend`);
     expect(req.request.method).toEqual('POST');
@@ -132,7 +132,7 @@ describe('NodeService', () => {
       project_id: '1',
     } as Project;
 
-    service.reloadAll(server, project).subscribe();
+    service.reloadAll(controller, project).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/reload`);
     expect(req.request.method).toEqual('POST');
@@ -145,7 +145,7 @@ describe('NodeService', () => {
     const template = new Template();
     template.template_id = 'mytemplate';
 
-    service.createFromTemplate(server, project, template, 10, 20, 'compute').subscribe();
+    service.createFromTemplate(controller, project, template, 10, 20, 'compute').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/templates/mytemplate`);
     expect(req.request.method).toEqual('POST');
@@ -164,7 +164,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.updatePosition(server, project, node, 10, 20).subscribe();
+    service.updatePosition(controller, project, node, 10, 20).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
     expect(req.request.method).toEqual('PUT');
@@ -182,7 +182,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.updatePosition(server, project, node, 10.1, 20.6).subscribe();
+    service.updatePosition(controller, project, node, 10.1, 20.6).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
     expect(req.request.method).toEqual('PUT');
@@ -204,7 +204,7 @@ describe('NodeService', () => {
     label.x = 10;
     label.y = 20;
 
-    service.updateLabel(server, node, label).subscribe();
+    service.updateLabel(controller, node, label).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
     expect(req.request.method).toEqual('PUT');
@@ -227,7 +227,7 @@ describe('NodeService', () => {
     node.y = 20;
     node.z = 30;
 
-    service.update(server, node).subscribe();
+    service.update(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
     expect(req.request.method).toEqual('PUT');
@@ -243,7 +243,7 @@ describe('NodeService', () => {
     node.project_id = 'myproject';
     node.node_id = 'id';
 
-    service.delete(server, node).subscribe();
+    service.delete(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
     expect(req.request.method).toEqual('DELETE');
@@ -254,7 +254,7 @@ describe('NodeService', () => {
     node.project_id = 'project_id_1';
     node.node_id = 'node_id_1';
 
-    service.duplicate(server, node).subscribe();
+    service.duplicate(controller, node).subscribe();
 
     const req = httpTestingController.expectOne(
       `http://127.0.0.1:3080/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/duplicate`

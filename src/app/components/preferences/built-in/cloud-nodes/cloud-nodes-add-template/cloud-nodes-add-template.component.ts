@@ -17,7 +17,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesAddTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   formGroup: FormGroup;
   isLocalComputerChosen: boolean = true;
@@ -39,8 +39,8 @@ export class CloudNodesAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
     });
   }
 
@@ -51,7 +51,7 @@ export class CloudNodesAddTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'cloud-nodes']);
   }
 
   addTemplate() {
@@ -66,7 +66,7 @@ export class CloudNodesAddTemplateComponent implements OnInit {
       cloudTemplate.name = this.formGroup.get('templateName').value;
       cloudTemplate.compute_id = 'local';
 
-      this.builtInTemplatesService.addTemplate(this.server, cloudTemplate).subscribe((cloudNodeTemplate) => {
+      this.builtInTemplatesService.addTemplate(this.controller, cloudTemplate).subscribe((cloudNodeTemplate) => {
         this.goBack();
       });
     } else {

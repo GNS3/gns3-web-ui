@@ -14,7 +14,7 @@ import { ViewChild } from '@angular/core';
   styleUrls: ['./project-readme.component.scss']
 })
 export class ProjectReadmeComponent implements AfterViewInit {
-  server: Server;
+  controller: Server;
   project: Project;
   @ViewChild('text', {static: false}) text: ElementRef;
   
@@ -28,7 +28,7 @@ export class ProjectReadmeComponent implements AfterViewInit {
   ngAfterViewInit() {
     let markdown = ``;
 
-    this.projectService.getReadmeFile(this.server, this.project.project_id).subscribe(file => {
+    this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe(file => {
         if (file) {
             markdown = file;
             setTimeout(function(){

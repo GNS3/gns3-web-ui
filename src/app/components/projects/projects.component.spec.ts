@@ -33,7 +33,7 @@ xdescribe('ProjectsComponent', () => {
   let settingsService: SettingsService;
   let projectService: ProjectService;
   let serverService: ServerService;
-  let server: Server;
+  let controller: Server;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
   let electronService;
@@ -86,12 +86,12 @@ xdescribe('ProjectsComponent', () => {
     projectService = TestBed.inject(ProjectService);
     progressService = TestBed.inject(ProgressService);
 
-    server = new Server();
-    server.id = 99;
+    controller = new Server();
+    controller.id = 99;
 
     const settings = {} as Settings;
 
-    spyOn(serverService, 'get').and.returnValue(Promise.resolve(server));
+    spyOn(serverService, 'get').and.returnValue(Promise.resolve(controller));
     spyOn(settingsService, 'getAll').and.returnValue(settings);
     spyOn(projectService, 'list').and.returnValue(of([]));
 
@@ -136,12 +136,12 @@ describe('ProjectComponent open', () => {
 
     spyOn(projectService, 'open').and.returnValue(of(project));
 
-    component.server = server;
+    component.controller = controller;
   });
 
   it('should open project', () => {
     component.open(project);
-    expect(projectService.open).toHaveBeenCalledWith(server, project.project_id);
+    expect(projectService.open).toHaveBeenCalledWith(controller, project.project_id);
 
     expect(progressService.activate).toHaveBeenCalled();
     expect(progressService.deactivate).toHaveBeenCalled();
@@ -157,12 +157,12 @@ describe('ProjectComponent close', () => {
 
     spyOn(projectService, 'close').and.returnValue(of(project));
 
-    component.server = server;
+    component.controller = controller;
   });
 
   xit('should close project', () => {
     component.close(project);
-    expect(projectService.close).toHaveBeenCalledWith(server, project.project_id);
+    expect(projectService.close).toHaveBeenCalledWith(controller, project.project_id);
 
     expect(progressService.activate).toHaveBeenCalled();
     expect(progressService.deactivate).toHaveBeenCalled();

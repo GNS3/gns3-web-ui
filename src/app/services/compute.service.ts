@@ -10,15 +10,15 @@ import { HttpServer } from './http-server.service';
 export class ComputeService {
   constructor(private httpServer: HttpServer) {}
 
-  getComputes(server: Server): Observable<Compute[]> {
-    return this.httpServer.get<Compute[]>(server, '/computes') as Observable<Compute[]>;
+  getComputes(controller: Server): Observable<Compute[]> {
+    return this.httpServer.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
   }
 
-  getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/${emulator}/images/${filename}`;
+  getUploadPath(controller: Server, emulator: string, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
   }
 
-  getStatistics(server: Server): Observable<ComputeStatistics[]> {
-    return this.httpServer.get(server, `/statistics`);
+  getStatistics(controller: Server): Observable<ComputeStatistics[]> {
+    return this.httpServer.get(controller, `/statistics`);
   }
 }

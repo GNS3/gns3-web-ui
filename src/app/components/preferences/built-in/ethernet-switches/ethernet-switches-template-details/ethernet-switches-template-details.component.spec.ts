@@ -24,11 +24,11 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetSwitchesTemplateDetailsComponent } from './ethernet-switches-template-details.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller: Server, template_id: string) {
     return of({ ports_mapping: [] } as EthernetSwitchTemplate);
   }
 
-  public saveTemplate(server: Server, cloudTemplate: EthernetSwitchTemplate) {
+  public saveTemplate(controller: Server, cloudTemplate: EthernetSwitchTemplate) {
     return of(cloudTemplate);
   }
 }

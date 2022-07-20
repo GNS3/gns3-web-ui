@@ -17,7 +17,7 @@ import { ProjectService } from '../../../services/project.service';
   styleUrls: ['./link-created.component.scss'],
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   private linkCreated: Subscription;
 
@@ -87,7 +87,7 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
 
     this.linkService
       .createLink(
-        this.server,
+        this.controller,
         sourceNode,
         sourcePort,
         targetNode,
@@ -98,7 +98,7 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
         yLabelTargetNode
       )
       .subscribe(() => {
-        this.projectService.links(this.server, this.project.project_id).subscribe((links: Link[]) => {
+        this.projectService.links(this.controller, this.project.project_id).subscribe((links: Link[]) => {
           this.linksDataSource.set(links);
         });
       });

@@ -3,18 +3,18 @@
     <div class="row">
       <h1 class="col">Ethernet hubs templates</h1>
       <button
-        *ngIf="server"
+        *ngIf="controller"
         class="top-button"
         class="cancel-button"
-        routerLink="/controller/{{ server.id }}/preferences/builtin"
+        routerLink="/controller/{{ controller.id }}/preferences/builtin"
         mat-button
       >
         Back
       </button>
       <button
-        *ngIf="server"
+        *ngIf="controller"
         class="top-button"
-        routerLink="/controller/{{ server.id }}/preferences/builtin/ethernet-hubs/addtemplate"
+        routerLink="/controller/{{ controller.id }}/preferences/builtin/ethernet-hubs/addtemplate"
         mat-raised-button
         color="primary"
       >
@@ -25,7 +25,7 @@
   <app-empty-templates-list *ngIf="!ethernetHubsTemplates.length"></app-empty-templates-list>
   <div class="default-content" *ngIf="ethernetHubsTemplates.length">
     <div class="listcontainer mat-elevation-z8">
-      <mat-nav-list *ngIf="server">
+      <mat-nav-list *ngIf="controller">
         <div class="list-item" *ngFor="let template of ethernetHubsTemplates">
           <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
             template.name
@@ -43,4 +43,4 @@
     </div>
   </div>
 </div>
-<app-delete-template #deleteComponent [server]="server" (deleteEvent)="onDeleteEvent()"> </app-delete-template>
+<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"> </app-delete-template>

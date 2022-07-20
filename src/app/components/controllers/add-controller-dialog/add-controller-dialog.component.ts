@@ -17,7 +17,7 @@ export class AddControllerDialogComponent implements OnInit {
   ];
   locations = [];
 
-  serverForm = new FormGroup({
+  controllerForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     location: new FormControl(''),
     path: new FormControl(''),
@@ -57,7 +57,7 @@ export class AddControllerDialogComponent implements OnInit {
   async numberOfLocalServers() {
     const servers = await this.serverService.findAll();
 
-    return servers.filter((server) => server.location === 'local').length;
+    return servers.filter((controller) => controller.location === 'local').length;
   }
 
   getDefaultHost() {
@@ -88,9 +88,9 @@ export class AddControllerDialogComponent implements OnInit {
     const defaultLocalServerPath = await this.getDefaultLocalServerPath();
     const defaultUbridgePath = await this.getDefaultUbridgePath();
 
-    this.serverForm.get('location').valueChanges.subscribe((location: string) => {
-      const pathControl = this.serverForm.get('path');
-      const ubridgePathControl = this.serverForm.get('ubridge_path');
+    this.controllerForm.get('location').valueChanges.subscribe((location: string) => {
+      const pathControl = this.controllerForm.get('path');
+      const ubridgePathControl = this.controllerForm.get('ubridge_path');
 
       if (location === 'local') {
         pathControl.setValue(defaultLocalServerPath);
@@ -114,29 +114,29 @@ export class AddControllerDialogComponent implements OnInit {
     });
 
     const defaultLocation = await this.getDefaultLocation();
-    this.serverForm.get('location').setValue(defaultLocation);
-    this.serverForm.get('host').setValue(this.getDefaultHost());
-    this.serverForm.get('port').setValue(this.getDefaultPort());
+    this.controllerForm.get('location').setValue(defaultLocation);
+    this.controllerForm.get('host').setValue(this.getDefaultHost());
+    this.controllerForm.get('port').setValue(this.getDefaultPort());
   }
 
   onAddClick(): void {
-    if (!this.serverForm.valid) {
+    if (!this.controllerForm.valid) {
       return;
     }
 
-    const server: Server = Object.assign({}, this.serverForm.value);
-    this.serverService.checkServerVersion(server).subscribe(
+    const controller: Server = Object.assign({}, this.controllerForm.value);
+    this.serverService.checkServerVersion(controller).subscribe(
       (serverInfo) => {
         if (serverInfo.version.split('.')[0] >= 3) {
-          this.dialogRef.close(server);
-          this.toasterService.success(`Server ${server.name} added.`);
+          this.dialogRef.close(controller);
+          this.toasterService.success(`Server ${controller.name} added.`);
         } else {
           this.dialogRef.close();
           this.toasterService.error(`Server version is not supported.`);
         }
       },
       (error) => {
-        this.toasterService.error('Cannot connect to the server: ' + error);
+        this.toasterService.error('Cannot connect to the controller: ' + error);
       }
     );
   }

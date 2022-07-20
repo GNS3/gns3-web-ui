@@ -21,7 +21,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   styleUrls: ['./style-editor.component.scss'],
 })
 export class StyleEditorDialogComponent implements OnInit {
-  server: Server;
+  controller: Server;
   project: Project;
   drawing: Drawing;
   element: ElementData;
@@ -88,7 +88,7 @@ export class StyleEditorDialogComponent implements OnInit {
 
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-      this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
+      this.drawingService.update(this.controller, this.drawing).subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
         this.dialogRef.close();
       });

@@ -89,55 +89,55 @@ export class MockedNodeService {
     return of(this.node);
   }
 
-  delete(server: Server, node: Node) {
+  delete(controller: Server, node: Node) {
     return of();
   }
 
-  startAll(server: Server, project: Project) {
+  startAll(controller: Server, project: Project) {
     return of();
   }
 
-  stopAll(server: Server, project: Project) {
+  stopAll(controller: Server, project: Project) {
     return of();
   }
 
-  suspendAll(server: Server, project: Project) {
+  suspendAll(controller: Server, project: Project) {
     return of();
   }
 
-  reloadAll(server: Server, project: Project) {
+  reloadAll(controller: Server, project: Project) {
     return of();
   }
 
-  start(server: Server, node: Node) {
+  start(controller: Server, node: Node) {
     return of();
   }
 
-  stop(server: Server, node: Node) {
+  stop(controller: Server, node: Node) {
     return of();
   }
 
-  suspend(server: Server, node: Node) {
+  suspend(controller: Server, node: Node) {
     return of();
   }
 
-  reload(server: Server, node: Node) {
+  reload(controller: Server, node: Node) {
     return of();
   }
 
-  duplicate(server: Server, node: Node) {
+  duplicate(controller: Server, node: Node) {
     return of(node);
   }
 
-  getStartupConfiguration(server: Server, node: Node) {
+  getStartupConfiguration(controller: Server, node: Node) {
     return of('sample config');
   }
 
-  saveConfiguration(server: Server, node: Node, configuration: string) {
+  saveConfiguration(controller: Server, node: Node, configuration: string) {
     return of(configuration);
   }
 
-  update(server: Server, node: Node) {
+  update(controller: Server, node: Node) {
     return of(node);
   }
 }
@@ -150,7 +150,7 @@ export class MockedDrawingService {
     return of(this.drawing);
   }
 
-  duplicate(server: Server, project_id: string, drawing: Drawing) {
+  duplicate(controller: Server, project_id: string, drawing: Drawing) {
     return of(drawing);
   }
 
@@ -178,7 +178,7 @@ export class MockedDrawingService {
 export class MockedLinkService {
   constructor() {}
 
-  getLink(server: Server, projectId: string, linkId: string) {
+  getLink(controller: Server, projectId: string, linkId: string) {
     return of({});
   }
 
@@ -186,7 +186,7 @@ export class MockedLinkService {
     return of({});
   }
 
-  updateLink(server: Server, link: Link) {
+  updateLink(controller: Server, link: Link) {
     return of({});
   }
 
@@ -198,11 +198,11 @@ export class MockedLinkService {
     return of({});
   }
 
-  startCaptureOnLink(server: Server, link: Link, settings: CapturingSettings) {
+  startCaptureOnLink(controller: Server, link: Link, settings: CapturingSettings) {
     return of({});
   }
 
-  getAvailableFilters(server: Server, link: Link) {
+  getAvailableFilters(controller: Server, link: Link) {
     return of({});
   }
 }

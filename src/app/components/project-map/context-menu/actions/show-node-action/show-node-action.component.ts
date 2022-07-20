@@ -10,7 +10,7 @@ import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component'
 })
 export class ShowNodeActionComponent {
   @Input() node: Node;
-  @Input() server: Server;
+  @Input() controller: Server;
 
   constructor(private dialog: MatDialog) {}
 
@@ -23,6 +23,6 @@ export class ShowNodeActionComponent {
     });
     let instance = dialogRef.componentInstance;
     instance.node = this.node;
-    instance.server = this.server;
+    instance.controller = this.controller;
   }
 }

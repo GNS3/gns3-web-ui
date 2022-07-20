@@ -14,7 +14,7 @@ describe('LinkService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('LinkService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -52,7 +52,7 @@ describe('LinkService', () => {
     targetPort.port_number = 3;
     targetPort.adapter_number = 4;
 
-    service.createLink(server, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
+    service.createLink(controller, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links`);
     expect(req.request.method).toEqual('POST');

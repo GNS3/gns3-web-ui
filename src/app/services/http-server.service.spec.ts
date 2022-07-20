@@ -55,7 +55,7 @@ describe('HttpServer', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: HttpServer;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -67,7 +67,7 @@ describe('HttpServer', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     service = TestBed.get(HttpServer);
 
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -75,7 +75,7 @@ describe('HttpServer', () => {
   });
 
   it('should make GET query for get method', () => {
-    service.get(server, '/test').subscribe();
+    service.get(controller, '/test').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('GET');
@@ -85,7 +85,7 @@ describe('HttpServer', () => {
   it('should make GET query for get method and return instance of type', () => {
     const testData: MyType = { id: 3 };
 
-    service.get<MyType>(server, '/test').subscribe((data) => {
+    service.get<MyType>(controller, '/test').subscribe((data) => {
       expect(data instanceof MyType).toBeFalsy();
       expect(data).toEqual(testData);
     });
@@ -114,7 +114,7 @@ describe('HttpServer', () => {
   });
 
   it('should make GET query for getText method', () => {
-    service.getText(server, '/test').subscribe();
+    service.getText(controller, '/test').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('GET');
@@ -123,7 +123,7 @@ describe('HttpServer', () => {
 
   it('should make GET query for getText method and preserve options', () => {
     service
-      .getText(server, '/test', {
+      .getText(controller, '/test', {
         headers: {
           CustomHeader: 'value',
         },
@@ -137,7 +137,7 @@ describe('HttpServer', () => {
   });
 
   it('should make POST query for post method', () => {
-    service.post(server, '/test', { test: '1' }).subscribe();
+    service.post(controller, '/test', { test: '1' }).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('POST');
@@ -145,7 +145,7 @@ describe('HttpServer', () => {
   });
 
   it('should make PUT query for put method', () => {
-    service.put(server, '/test', { test: '1' }).subscribe();
+    service.put(controller, '/test', { test: '1' }).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('PUT');
@@ -153,7 +153,7 @@ describe('HttpServer', () => {
   });
 
   it('should make DELETE query for delete method', () => {
-    service.delete(server, '/test').subscribe();
+    service.delete(controller, '/test').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('DELETE');
@@ -161,7 +161,7 @@ describe('HttpServer', () => {
   });
 
   it('should make PATCH query for patch method', () => {
-    service.patch(server, '/test', { test: '1' }).subscribe();
+    service.patch(controller, '/test', { test: '1' }).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('PATCH');
@@ -169,7 +169,7 @@ describe('HttpServer', () => {
   });
 
   it('should make HEAD query for head method', () => {
-    service.head(server, '/test').subscribe();
+    service.head(controller, '/test').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('HEAD');
@@ -177,7 +177,7 @@ describe('HttpServer', () => {
   });
 
   it('should make OPTIONS query for options method', () => {
-    service.options(server, '/test').subscribe();
+    service.options(controller, '/test').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
     expect(req.request.method).toEqual('OPTIONS');
@@ -185,11 +185,11 @@ describe('HttpServer', () => {
   });
 
   it('should make local call when ip and port is not defined', () => {
-    server.host = null;
-    server.port = null;
+    controller.host = null;
+    controller.port = null;
 
     service
-      .get(server, '/test', {
+      .get(controller, '/test', {
         headers: {
           CustomHeader: 'value',
         },

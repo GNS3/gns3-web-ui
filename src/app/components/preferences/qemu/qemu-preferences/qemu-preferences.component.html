@@ -3,9 +3,9 @@
     <div class="row">
       <h1 class="col">QEMU preferences</h1>
       <button
-        *ngIf="server"
+        *ngIf="controller"
         class="top-button"
-        routerLink="/controller/{{ server.id }}/preferences/qemu/templates"
+        routerLink="/controller/{{ controller.id }}/preferences/qemu/templates"
         mat-raised-button
         color="primary"
       >

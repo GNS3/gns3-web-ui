@@ -1,7 +1,7 @@
 <div *ngIf="project" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="project-map">
   <app-d3-map
     *ngIf="!settings.angular_map"
-    [server]="server"
+    [controller]="controller"
     [project]="project"
     [symbols]="symbols"
     [nodes]="nodes"
@@ -48,7 +48,7 @@
     </button>
     <div class="project-titlebar-controls">
       <div *ngIf="!readonly" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="menu-button-group primary-controls">
-        <app-template [server]="server" [project]="project" (onNodeCreation)="onNodeCreation($event)"> </app-template>
+        <app-template [controller]="controller" [project]="project" (onNodeCreation)="onNodeCreation($event)"> </app-template>
         <button
           matTooltip="Add a link"
           matTooltipClass="custom-tooltip"
@@ -62,8 +62,8 @@
         </button>
       </div>
       <div class="menu-button-group">
-        <app-nodes-menu [server]="server" [project]="project"></app-nodes-menu>
-        <app-context-menu [project]="project" [server]="server"></app-context-menu>
+        <app-nodes-menu [controller]="controller" [project]="project"></app-nodes-menu>
+        <app-context-menu [project]="project" [controller]="controller"></app-context-menu>
       </div>
     </div>
     <div>
@@ -83,7 +83,7 @@
 
     <!-- GNS3 menu -->
     <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item [routerLink]="['/controller', server.id, 'projects']">
+      <button mat-menu-item [routerLink]="['/controller', controller.id, 'projects']">
         <mat-icon>work</mat-icon>
         <span>Go to projects</span>
       </button>
@@ -91,11 +91,11 @@
         <mat-icon>developer_board</mat-icon>
         <span>Go to controllers</span>
       </button>
-      <button mat-menu-item routerLink="/controller/{{ server.id }}/preferences">
+      <button mat-menu-item routerLink="/controller/{{ controller.id }}/preferences">
         <mat-icon>settings_applications</mat-icon>
         <span>Go to preferences</span>
       </button>
-      <button mat-menu-item routerLink="/controller/{{ server.id }}/systemstatus">
+      <button mat-menu-item routerLink="/controller/{{ controller.id }}/systemstatus">
         <mat-icon>info</mat-icon>
         <span>Go to system status</span>
       </button>
@@ -103,7 +103,7 @@
         <mat-icon>settings</mat-icon>
         <span>Go to settings</span>
       </button>
-      <button mat-menu-item [routerLink]="['/controller', server.id, 'image-manager']">
+      <button mat-menu-item [routerLink]="['/controller', controller.id, 'image-manager']">
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
       </button>
@@ -111,7 +111,7 @@
         <mat-icon>control_point</mat-icon>
         <span>New template</span>
       </button>
-      <app-import-appliance [server]="server" [project]="project"></app-import-appliance>
+      <app-import-appliance [controller]="controller" [project]="project"></app-import-appliance>
       <button mat-menu-item [matMenuTriggerFor]="projectMenu">
         <mat-icon>settings</mat-icon>
         <span>Project settings</span>
@@ -233,27 +233,27 @@
       </button>
     </div>
     <div class="section">
-      <app-project-map-menu [server]="server" [project]="project"></app-project-map-menu>
+      <app-project-map-menu [controller]="controller" [project]="project"></app-project-map-menu>
     </div>
     <div *ngIf="!readonly" class="section">
-      <app-snapshot-menu-item [server]="server" [project]="project"> </app-snapshot-menu-item>
+      <app-snapshot-menu-item [controller]="controller" [project]="project"> </app-snapshot-menu-item>
     </div>
   </div>
 
   <app-progress></app-progress>
   <app-draw-link-tool [links]="links" *ngIf="tools.draw_link"></app-draw-link-tool>
-  <app-drawing-dragged [server]="server" [project]="project"></app-drawing-dragged>
-  <app-drawing-resized [server]="server"></app-drawing-resized>
-  <app-interface-label-dragged [server]="server"></app-interface-label-dragged>
-  <app-link-created [server]="server" [project]="project"></app-link-created>
-  <app-node-dragged [server]="server" [project]="project"></app-node-dragged>
-  <app-node-label-dragged [server]="server"></app-node-label-dragged>
-  <app-text-added [server]="server" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
-  <app-text-edited [server]="server"></app-text-edited>
+  <app-drawing-dragged [controller]="controller" [project]="project"></app-drawing-dragged>
+  <app-drawing-resized [controller]="controller"></app-drawing-resized>
+  <app-interface-label-dragged [controller]="controller"></app-interface-label-dragged>
+  <app-link-created [controller]="controller" [project]="project"></app-link-created>
+  <app-node-dragged [controller]="controller" [project]="project"></app-node-dragged>
+  <app-node-label-dragged [controller]="controller"></app-node-label-dragged>
+  <app-text-added [controller]="controller" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
+  <app-text-edited [controller]="controller"></app-text-edited>
   <div [ngClass]="{ visible: !isConsoleVisible }">
     <app-console-wrapper
       *ngIf="project"
-      [server]="server"
+      [controller]="controller"
       [project]="project"
       (closeConsole)="toggleShowConsole($event)"
     ></app-console-wrapper>

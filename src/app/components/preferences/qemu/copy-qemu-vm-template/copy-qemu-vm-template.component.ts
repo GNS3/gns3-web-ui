@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyQemuVmTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   qemuBinaries: QemuBinary[] = [];
   templateName: string = '';
   qemuTemplate: QemuTemplate;
@@ -37,10 +37,10 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.qemuService.getTemplate(this.server, template_id).subscribe((qemuTemplate: QemuTemplate) => {
+      this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
         this.templateName = `Copy of ${this.qemuTemplate.name}`;
       });
@@ -48,7 +48,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'qemu', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates']);
   }
 
   addTemplate() {
@@ -56,7 +56,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
       this.qemuTemplate.template_id = uuid();
       this.qemuTemplate.name = this.templateName;
 
-      this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
+      this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();
       });
     } else {

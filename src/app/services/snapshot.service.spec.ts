@@ -14,7 +14,7 @@ describe('SnapshotService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: SnapshotService;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -26,7 +26,7 @@ describe('SnapshotService', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
     service = TestBed.get(SnapshotService);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -39,7 +39,7 @@ describe('SnapshotService', () => {
 
   it('should create snapshot', inject([SnapshotService], (service: SnapshotService) => {
     const snapshot = new Snapshot();
-    service.create(server, 'myproject', snapshot).subscribe();
+    service.create(controller, 'myproject', snapshot).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`);
     expect(req.request.method).toEqual('POST');
@@ -47,7 +47,7 @@ describe('SnapshotService', () => {
   }));
 
   it('should list snapshots', inject([SnapshotService], (service: SnapshotService) => {
-    service.list(server, 'myproject').subscribe();
+    service.list(controller, 'myproject').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`);
     expect(req.request.method).toEqual('GET');

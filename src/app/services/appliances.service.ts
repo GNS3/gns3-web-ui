@@ -9,19 +9,19 @@ import { HttpServer } from './http-server.service';
 export class ApplianceService {
   constructor(private httpServer: HttpServer) {}
 
-  getAppliances(server: Server): Observable<Appliance[]> {
-    return this.httpServer.get<Appliance[]>(server, '/appliances') as Observable<Appliance[]>;
+  getAppliances(controller: Server): Observable<Appliance[]> {
+    return this.httpServer.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;
   }
 
-  getAppliance(server: Server, url): Observable<Appliance> {
-    return this.httpServer.get<Appliance>(server, url) as Observable<Appliance>;
+  getAppliance(controller: Server, url): Observable<Appliance> {
+    return this.httpServer.get<Appliance>(controller, url) as Observable<Appliance>;
   }
 
-  getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
+  getUploadPath(controller: Server, emulator: string, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-  updateAppliances(server: Server): Observable<Appliance[]> {
-    return this.httpServer.get<Appliance[]>(server, '/appliances?update=yes') as Observable<Appliance[]>;
+  updateAppliances(controller: Server): Observable<Appliance[]> {
+    return this.httpServer.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
   }
 }

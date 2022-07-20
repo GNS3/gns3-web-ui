@@ -9,7 +9,7 @@ import { PacketCaptureService } from '../../../../../services/packet-capture.ser
   templateUrl: './start-capture-on-started-link.component.html',
 })
 export class StartCaptureOnStartedLinkActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Input() link: Link;
 
@@ -17,6 +17,6 @@ export class StartCaptureOnStartedLinkActionComponent {
 
   startCapture() {
     var splittedFileName = this.link.capture_file_name.split('.');
-    this.packetCaptureService.startCapture(this.server, this.project, this.link, splittedFileName[0]);
+    this.packetCaptureService.startCapture(this.controller, this.project, this.link, splittedFileName[0]);
   }
 }

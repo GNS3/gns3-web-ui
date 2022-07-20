@@ -17,7 +17,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
   styleUrls: ['./add-vpcs-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVpcsTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   templateNameForm: FormGroup;
   isLocalComputerChosen: boolean = true;
@@ -39,8 +39,8 @@ export class AddVpcsTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
     });
   }
 
@@ -51,7 +51,7 @@ export class AddVpcsTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'vpcs', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vpcs', 'templates']);
   }
 
   addTemplate() {
@@ -68,7 +68,7 @@ export class AddVpcsTemplateComponent implements OnInit {
       (vpcsTemplate.name = this.templateName),
       (vpcsTemplate.compute_id = 'local');
 
-      this.vpcsService.addTemplate(this.server, vpcsTemplate).subscribe(() => {
+      this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe(() => {
         this.goBack();
       });
     } else {

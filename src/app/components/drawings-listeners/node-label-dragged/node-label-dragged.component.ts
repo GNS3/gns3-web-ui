@@ -15,7 +15,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./node-label-dragged.component.scss'],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   private nodeLabelDragged: Subscription;
 
   constructor(
@@ -38,7 +38,7 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
-    this.nodeService.updateLabel(this.server, node, node.label).subscribe((serverNode: Node) => {
+    this.nodeService.updateLabel(this.controller, node, node.label).subscribe((serverNode: Node) => {
       this.nodesDataSource.update(serverNode);
     });
   }

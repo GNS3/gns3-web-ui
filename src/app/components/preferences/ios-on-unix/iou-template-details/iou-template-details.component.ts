@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IouTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   iouTemplate: IouTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -53,11 +53,11 @@ export class IouTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.iouService.getTemplate(this.server, template_id).subscribe((iouTemplate: IouTemplate) => {
+      this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
       });
     });
@@ -69,14 +69,14 @@ export class IouTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates']);
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid || this.networkForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
-      this.iouService.saveTemplate(this.server, this.iouTemplate).subscribe(() => {
+      this.iouService.saveTemplate(this.controller, this.iouTemplate).subscribe(() => {
         this.toasterService.success('Changes saved');
       });
     }

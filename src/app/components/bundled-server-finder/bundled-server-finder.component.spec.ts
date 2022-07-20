@@ -16,7 +16,7 @@ describe('BundledServerFinderComponent', () => {
   let router: any;
   let service: ServerService;
   let progressService: MockedProgressService = new MockedProgressService();
-  let serverServiceMock: jasmine.SpyObj<ServerService>;
+  let controllerServiceMock: jasmine.SpyObj<ServerService>;
 
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('BundledServerFinderComponent', () => {
 
     
 
-    serverServiceMock = jasmine.createSpyObj<ServerService>([
+    controllerServiceMock = jasmine.createSpyObj<ServerService>([
       "getLocalServer"
     ]);
 
@@ -37,7 +37,7 @@ describe('BundledServerFinderComponent', () => {
     await TestBed.configureTestingModule({
       providers: [
         { provide: Router, useValue: router },
-        { provide: ServerService, useValue: serverServiceMock },
+        { provide: ServerService, useValue: controllerServiceMock },
         { provide: ProgressService, useValue: progressService },
       ],
       declarations: [BundledServerFinderComponent],
@@ -49,17 +49,17 @@ describe('BundledServerFinderComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create and redirect to server', fakeAsync(() => {
-    const server = new Server();
-    server.id = 99;
-    serverServiceMock.getLocalServer.and.returnValue(
-      Promise.resolve(server)
+  it('should create and redirect to controller', fakeAsync(() => {
+    const controller = new Server();
+    controller.id = 99;
+    controllerServiceMock.getLocalServer.and.returnValue(
+      Promise.resolve(controller)
     );
     expect(component).toBeTruthy();
     tick(101)
     fixture.detectChanges()
     fixture.whenStable().then(() => {
-      expect(serverServiceMock.getLocalServer).toHaveBeenCalledWith('vps3.gns3.net',3000);
+      expect(controllerServiceMock.getLocalServer).toHaveBeenCalledWith('vps3.gns3.net',3000);
       expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
     })
     service = TestBed.inject(ServerService);

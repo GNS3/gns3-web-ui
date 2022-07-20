@@ -17,7 +17,7 @@ import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export class MockedImageManagerService {
-  public getImages(server: Server) {
+  public getImages(controller: Server) {
     return of();
   }
 

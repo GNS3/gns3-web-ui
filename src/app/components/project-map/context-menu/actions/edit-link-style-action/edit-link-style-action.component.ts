@@ -11,7 +11,7 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
   templateUrl: './edit-link-style-action.component.html',
 })
 export class EditLinkStyleActionComponent implements OnChanges {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Input() link: Link;
 
@@ -26,7 +26,7 @@ export class EditLinkStyleActionComponent implements OnChanges {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.link = this.link;
   }

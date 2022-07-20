@@ -21,7 +21,7 @@ import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configura
   templateUrl: './config-action.component.html',
 })
 export class ConfigActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() node: Node;
   private conf = {
     autoFocus: false,
@@ -62,7 +62,7 @@ export class ConfigActionComponent {
     }
 
     let instance = this.dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.node = this.node;
   }
 }

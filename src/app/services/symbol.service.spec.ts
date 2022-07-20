@@ -14,7 +14,7 @@ describe('SymbolService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('SymbolService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -37,14 +37,14 @@ describe('SymbolService', () => {
   }));
 
   it('should list symbols', inject([SymbolService], (service: SymbolService) => {
-    service.list(server).subscribe();
+    service.list(controller).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols`);
     expect(req.request.method).toEqual('GET');
   }));
 
   it('should get raw symbol', inject([SymbolService], (service: SymbolService) => {
-    service.raw(server, ':my/tested.png').subscribe();
+    service.raw(controller, ':my/tested.png').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols/:my/tested.png/raw`);
     expect(req.request.method).toEqual('GET');

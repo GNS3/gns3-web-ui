@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
 })
 export class ConfiguratorDialogSwitchComponent implements OnInit {
-  server: Server;
+  controller: Server;
   node: Node;
   name: string;
   nameForm: FormGroup;
@@ -48,7 +48,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
 
@@ -115,7 +115,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
         {}
       );
 
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

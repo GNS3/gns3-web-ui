@@ -10,7 +10,7 @@ import { ProjectService } from '../../../services/project.service';
   styleUrls: ['./choose-name-dialog.component.scss'],
 })
 export class ChooseNameDialogComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   name: string;
 
@@ -25,7 +25,7 @@ export class ChooseNameDialogComponent implements OnInit {
   }
 
   onSaveClick() {
-    this.projectService.duplicate(this.server, this.project.project_id, this.name).subscribe(() => {
+    this.projectService.duplicate(this.controller, this.project.project_id, this.name).subscribe(() => {
       this.dialogRef.close();
     });
   }

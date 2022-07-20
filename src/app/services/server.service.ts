@@ -10,12 +10,12 @@ export class ServerService {
   public isServiceInitialized: boolean;
 
   constructor(private httpServer: HttpServer) {
-    this.controllerIds = this.getServerIds();
+    this.controllerIds = this.getcontrollerIds();
     this.isServiceInitialized = true;
     this.serviceInitialized.next(this.isServiceInitialized);
   }
 
-  getServerIds() : string[]{
+  getcontrollerIds() : string[]{
     let str = localStorage.getItem("controllerIds");
     if (str?.length > 0) {
       return str.split(",");
@@ -23,38 +23,38 @@ export class ServerService {
     return [];
   }
 
-  updateServerIds() {
+  updatecontrollerIds() {
     localStorage.removeItem("controllerIds");
     localStorage.setItem("controllerIds", this.controllerIds.toString());
   }
 
   public get(id: number): Promise<Server> {
-    let server: Server = JSON.parse(localStorage.getItem(`controller-${id}`));
+    let controller: Server = JSON.parse(localStorage.getItem(`controller-${id}`));
     let promise = new Promise<Server>((resolve) => {
-      resolve(server);
+      resolve(controller);
     });
     return promise;
   }
 
-  public create(server: Server) {
-    server.id = this.controllerIds.length + 1;
-    localStorage.setItem(`controller-${server.id}`, JSON.stringify(server));
+  public create(controller: Server) {
+    controller.id = this.controllerIds.length + 1;
+    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
 
-    this.controllerIds.push(`controller-${server.id}`);
-    this.updateServerIds();
+    this.controllerIds.push(`controller-${controller.id}`);
+    this.updatecontrollerIds();
 
     let promise = new Promise<Server>((resolve) => {
-      resolve(server);
+      resolve(controller);
     });
     return promise;
   }
 
-  public update(server: Server) {
-    localStorage.removeItem(`controller-${server.id}`);
-    localStorage.setItem(`controller-${server.id}`, JSON.stringify(server));
+  public update(controller: Server) {
+    localStorage.removeItem(`controller-${controller.id}`);
+    localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
 
     let promise = new Promise<Server>((resolve) => {
-      resolve(server);
+      resolve(controller);
     });
     return promise;
   }
@@ -63,37 +63,37 @@ export class ServerService {
     let promise = new Promise<Server[]>((resolve) => {
       let servers: Server[] = [];
       this.controllerIds.forEach((n) => {
-        let server: Server = JSON.parse(localStorage.getItem(n));
-        servers.push(server);
+        let controller: Server = JSON.parse(localStorage.getItem(n));
+        servers.push(controller);
       });
       resolve(servers);
     });
     return promise;
   }
 
-  public delete(server: Server) {
-    localStorage.removeItem(`controller-${server.id}`);
-    this.controllerIds = this.controllerIds.filter((n) => n !== `controller-${server.id}`);
-    this.updateServerIds();
+  public delete(controller: Server) {
+    localStorage.removeItem(`controller-${controller.id}`);
+    this.controllerIds = this.controllerIds.filter((n) => n !== `controller-${controller.id}`);
+    this.updatecontrollerIds();
 
     let promise = new Promise((resolve) => {
-      resolve(server.id);
+      resolve(controller.id);
     });
     return promise;
   }
 
-  public getServerUrl(server: Server) {
-    return `${server.protocol}//${server.host}:${server.port}/`;
+  public getServerUrl(controller: Server) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/`;
   }
 
-  public checkServerVersion(server: Server): Observable<any> {
-    return this.httpServer.get(server, '/version');
+  public checkServerVersion(controller: Server): Observable<any> {
+    return this.httpServer.get(controller, '/version');
   }
 
   public getLocalServer(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
       this.findAll().then((servers: Server[]) => {
-        const local = servers.find((server) => server.location === 'bundled');
+        const local = servers.find((controller) => controller.location === 'bundled');
         if (local) {
           local.host = host;
           local.port = port;
@@ -102,13 +102,13 @@ export class ServerService {
             resolve(updated);
           }, reject);
         } else {
-          const server = new Server();
-          server.name = 'local';
-          server.host = host;
-          server.port = port;
-          server.location = 'bundled';
-          server.protocol = location.protocol as ServerProtocol;
-          this.create(server).then((created) => {
+          const controller = new Server();
+          controller.name = 'local';
+          controller.host = host;
+          controller.port = port;
+          controller.location = 'bundled';
+          controller.protocol = location.protocol as ServerProtocol;
+          this.create(controller).then((created) => {
             resolve(created);
           }, reject);
         }

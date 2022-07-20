@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
   styleUrls: ['./cloud-nodes-templates.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesTemplatesComponent implements OnInit {
-  server: Server;
+  controller: Server;
   cloudNodesTemplates: CloudTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -24,14 +24,14 @@ export class CloudNodesTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.builtInTemplatesService.getTemplates(this.server).subscribe((cloudNodesTemplates: CloudTemplate[]) => {
+    this.builtInTemplatesService.getTemplates(this.controller).subscribe((cloudNodesTemplates: CloudTemplate[]) => {
       this.cloudNodesTemplates = cloudNodesTemplates.filter((elem) => elem.template_type === 'cloud' && !elem.builtin);
     });
   }

@@ -30,7 +30,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
 export class TextEditorDialogComponent implements OnInit {
   @ViewChild('textArea', { static: true }) textArea: ElementRef;
 
-  server: Server;
+  controller: Server;
   project: Project;
   drawing: Drawing;
   node: Node;
@@ -140,7 +140,7 @@ export class TextEditorDialogComponent implements OnInit {
         this.node.label.style = this.getStyleFromTextElement();
         this.node.label.rotation = +this.rotation;
 
-        this.nodeService.updateLabel(this.server, this.node, this.node.label).subscribe((node: Node) => {
+        this.nodeService.updateLabel(this.controller, this.node, this.node.label).subscribe((node: Node) => {
           this.nodesDataSource.update(node);
           this.dialogRef.close();
         });
@@ -149,7 +149,7 @@ export class TextEditorDialogComponent implements OnInit {
         this.label.rotation = +this.rotation;
         this.label.text = this.element.text;
 
-        this.linkService.updateLink(this.server, this.link).subscribe((link: Link) => {
+        this.linkService.updateLink(this.controller, this.link).subscribe((link: Link) => {
           this.linksDataSource.update(link);
           this.dialogRef.close();
         });
@@ -162,7 +162,7 @@ export class TextEditorDialogComponent implements OnInit {
 
         this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-        this.drawingService.update(this.server, this.drawing).subscribe((serverDrawing: Drawing) => {
+        this.drawingService.update(this.controller, this.drawing).subscribe((serverDrawing: Drawing) => {
           this.drawingsDataSource.update(serverDrawing);
           this.dialogRef.close();
         });

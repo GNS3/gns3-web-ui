@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  server: Server;
+  controller: Server;
   node: Node;
   name: string;
   inputForm: FormGroup;
@@ -34,7 +34,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = this.node.name;
       this.getConfiguration();
@@ -48,7 +48,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   onSaveClick() {
     if (this.inputForm.valid) {
       this.node.properties.ports_mapping = this.portsComponent.ethernetPorts;
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

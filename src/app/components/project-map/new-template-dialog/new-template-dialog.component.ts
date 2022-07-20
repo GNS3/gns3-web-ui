@@ -47,14 +47,14 @@ import { environment } from 'environments/environment';
   ],
 })
 export class NewTemplateDialogComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
 
   uploader: FileUploader;
   uploaderImage: FileUploader;
 
   public action: string = 'install';
-  public actionTitle: string = 'Install appliance from server';
+  public actionTitle: string = 'Install appliance from controller';
   public secondActionTitle: string = 'Appliance settings';
 
   public searchText: string = '';
@@ -103,7 +103,7 @@ export class NewTemplateDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.applianceService.getAppliances(this.server).subscribe((appliances) => {
+    this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
       this.appliances = appliances;
       this.appliances.forEach((appliance) => {
         if (appliance.docker) appliance.emulator = 'Docker';
@@ -116,33 +116,33 @@ export class NewTemplateDialogComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
 
-    this.templateService.list(this.server).subscribe((templates) => {
+    this.templateService.list(this.controller).subscribe((templates) => {
       this.templates = templates;
     });
 
-    this.computeService.getComputes(this.server).subscribe((computes) => {
+    this.computeService.getComputes(this.controller).subscribe((computes) => {
       computes.forEach((compute) => {
         if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
       });
     });
 
-    this.qemuService.getBinaries(this.server).subscribe((binaries) => {
+    this.qemuService.getBinaries(this.controller).subscribe((binaries) => {
       this.qemuBinaries = binaries;
     });
 
-    this.qemuService.getImages(this.server).subscribe((qemuImages) => {
+    this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
 
-    this.iosService.getImages(this.server).subscribe((iosImages) => {
+    this.iosService.getImages(this.controller).subscribe((iosImages) => {
       this.iosImages = iosImages;
     });
 
-    this.iouService.getImages(this.server).subscribe((iouImages) => {
+    this.iouService.getImages(this.controller).subscribe((iouImages) => {
       this.iouImages = iouImages;
     });
 
-    this.applianceService.getAppliances(this.server).subscribe((appliances) => {
+    this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
       this.appliances = appliances;
       this.appliances.forEach((appliance) => {
         if (appliance.docker) appliance.emulator = 'Docker';
@@ -218,7 +218,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
   updateAppliances() {
     this.progressService.activate();
-    this.applianceService.updateAppliances(this.server).subscribe(
+    this.applianceService.updateAppliances(this.controller).subscribe(
       (appliances) => {
         this.appliances = appliances;
         this.progressService.deactivate();
@@ -232,15 +232,15 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   refreshImages() {
-    this.qemuService.getImages(this.server).subscribe((qemuImages) => {
+    this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });
 
-    this.iosService.getImages(this.server).subscribe((iosImages) => {
+    this.iosService.getImages(this.controller).subscribe((iosImages) => {
       this.iosImages = iosImages;
     });
 
-    this.iouService.getImages(this.server).subscribe((iouImages) => {
+    this.iouService.getImages(this.controller).subscribe((iouImages) => {
       this.iouImages = iouImages;
     });
 
@@ -249,7 +249,7 @@ export class NewTemplateDialogComponent implements OnInit {
   getAppliance(url: string) {
     let str = url.split(`/${environment.current_version}`);
     let appliancePath = str[str.length - 1];
-    this.applianceService.getAppliance(this.server, appliancePath).subscribe((appliance: Appliance) => {
+    this.applianceService.getAppliance(this.controller, appliancePath).subscribe((appliance: Appliance) => {
       this.applianceToInstall = appliance;
       setTimeout(() => {
         this.stepper.next();
@@ -272,11 +272,11 @@ export class NewTemplateDialogComponent implements OnInit {
       if (appliance.iou) emulator = 'iou';
       if (appliance.qemu) emulator = 'qemu';
 
-      const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
+      const url = this.applianceService.getUploadPath(this.controller, emulator, fileName);
       this.uploader.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploader.queue[0];
-      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
 
       this.uploader.uploadItem(itemToUpload);
     };
@@ -302,7 +302,7 @@ export class NewTemplateDialogComponent implements OnInit {
   setAction(action: string) {
     this.action = action;
     if (action === 'install') {
-      this.actionTitle = 'Install appliance from server';
+      this.actionTitle = 'Install appliance from controller';
     } else if (action === 'import') {
       this.actionTitle = 'Import an appliance file';
     }
@@ -414,11 +414,11 @@ export class NewTemplateDialogComponent implements OnInit {
       if (this.applianceToInstall.dynamips) emulator = 'dynamips';
       if (this.applianceToInstall.iou) emulator = 'iou';
 
-      const url = this.applianceService.getUploadPath(this.server, emulator, fileName);
+      const url = this.applianceService.getUploadPath(this.controller, emulator, fileName);
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];
-      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
 
       this.uploaderImage.uploadItem(itemToUpload);
     };
@@ -534,11 +534,11 @@ export class NewTemplateDialogComponent implements OnInit {
         name: this.applianceToInstall.name,
       },
     });
-    dialogRef.componentInstance.server = this.server;
+    dialogRef.componentInstance.controller = this.controller;
     dialogRef.afterClosed().subscribe((answer: string) => {
       if (answer) {
         iouTemplate.name = answer;
-        this.iouService.addTemplate(this.server, iouTemplate).subscribe((template) => {
+        this.iouService.addTemplate(this.controller, iouTemplate).subscribe((template) => {
           this.templateService.newTemplateCreated.next(template);
           this.toasterService.success('Template added');
           this.dialogRef.close();
@@ -582,12 +582,12 @@ export class NewTemplateDialogComponent implements OnInit {
         name: this.applianceToInstall.name,
       },
     });
-    dialogRef.componentInstance.server = this.server;
+    dialogRef.componentInstance.controller = this.controller;
     dialogRef.afterClosed().subscribe((answer: string) => {
       if (answer) {
         iosTemplate.name = answer;
 
-        this.iosService.addTemplate(this.server, iosTemplate).subscribe((template) => {
+        this.iosService.addTemplate(this.controller, iosTemplate).subscribe((template) => {
           this.templateService.newTemplateCreated.next((template as any) as Template);
           this.toasterService.success('Template added');
           this.dialogRef.close();
@@ -620,12 +620,12 @@ export class NewTemplateDialogComponent implements OnInit {
         name: this.applianceToInstall.name,
       },
     });
-    dialogRef.componentInstance.server = this.server;
+    dialogRef.componentInstance.controller = this.controller;
     dialogRef.afterClosed().subscribe((answer: string) => {
       if (answer) {
         dockerTemplate.name = answer;
 
-        this.dockerService.addTemplate(this.server, dockerTemplate).subscribe((template) => {
+        this.dockerService.addTemplate(this.controller, dockerTemplate).subscribe((template) => {
           this.templateService.newTemplateCreated.next((template as any) as Template);
           this.toasterService.success('Template added');
           this.dialogRef.close();
@@ -679,12 +679,12 @@ export class NewTemplateDialogComponent implements OnInit {
         name: this.applianceToInstall.name,
       },
     });
-    dialogRef.componentInstance.server = this.server;
+    dialogRef.componentInstance.controller = this.controller;
     dialogRef.afterClosed().subscribe((answer: string) => {
       if (answer) {
         qemuTemplate.name = answer;
 
-        this.qemuService.addTemplate(this.server, qemuTemplate).subscribe((template) => {
+        this.qemuService.addTemplate(this.controller, qemuTemplate).subscribe((template) => {
           this.templateService.newTemplateCreated.next((template as any) as Template);
           this.toasterService.success('Template added');
           this.dialogRef.close();

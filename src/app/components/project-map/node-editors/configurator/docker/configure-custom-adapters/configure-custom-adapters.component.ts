@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['./configure-custom-adapters.component.scss'],
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
-  server: Server;
+  controller: Server;
   node: Node;
   displayedColumns: string[] = ['adapter_number', 'port_name'];
   adapters: CustomAdapter[] = [];
@@ -42,7 +42,7 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
 
   onSaveClick() {
     this.node.custom_adapters = this.adapters;
-    this.nodeService.updateNodeWithCustomAdapters(this.server, this.node).subscribe(() => {
+    this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
       this.onCancelClick();
       this.toasterService.success(`Configuration saved for node ${this.node.name}`);
     });

@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './start-node-action.component.html',
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
 
@@ -29,8 +29,9 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
   }
 
   startNodes() {
+    debugger
     this.nodes.forEach((node) => {
-      this.nodeService.start(this.server, node).subscribe(
+      this.nodeService.start(this.controller, node).subscribe(
         (n: Node) => {},
         (error) => {
           this.toasterService.error(error.error.message);

@@ -11,11 +11,11 @@ export class TemplateService {
 
   constructor(private httpServer: HttpServer) {}
 
-  list(server: Server): Observable<Template[]> {
-    return this.httpServer.get<Template[]>(server, '/templates') as Observable<Template[]>;
+  list(controller: Server): Observable<Template[]> {
+    return this.httpServer.get<Template[]>(controller, '/templates') as Observable<Template[]>;
   }
 
-  deleteTemplate(server: Server, templateId: string): Observable<any> {
-    return this.httpServer.delete(server, `/templates/${templateId}`, { observe: 'body' });
+  deleteTemplate(controller: Server, templateId: string): Observable<any> {
+    return this.httpServer.delete(controller, `/templates/${templateId}`, { observe: 'body' });
   }
 }

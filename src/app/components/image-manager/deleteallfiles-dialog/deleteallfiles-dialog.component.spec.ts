@@ -17,7 +17,7 @@ import { ImageManagerComponent } from '../image-manager.component';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
 
 export class MockedImageManagerService {
-  public deleteALLFile(server: Server, image_path) {
+  public deleteALLFile(controller: Server, image_path) {
     return of();
   }
 }

@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IosTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   iosTemplate: IosTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -71,11 +71,11 @@ export class IosTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.iosService.getTemplate(this.server, template_id).subscribe((iosTemplate: IosTemplate) => {
+      this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate = iosTemplate;
 
         this.fillAdaptersData();
@@ -123,14 +123,14 @@ export class IosTemplateDetailsComponent implements OnInit {
     } else {
       this.completeAdaptersData();
 
-      this.iosService.saveTemplate(this.server, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
+      this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
         this.toasterService.success('Changes saved');
       });
     }
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'dynamips', 'templates']);
   }
 
   chooseSymbol() {

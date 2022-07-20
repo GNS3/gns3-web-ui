@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   cloudNodeTemplate: CloudTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -49,12 +49,12 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
       this.builtInTemplatesService
-        .getTemplate(this.server, template_id)
+        .getTemplate(this.controller, template_id)
         .subscribe((cloudNodeTemplate: CloudTemplate) => {
           this.cloudNodeTemplate = cloudNodeTemplate;
 
@@ -70,7 +70,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'cloud-nodes']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'cloud-nodes']);
   }
 
   getConfiguration() {
@@ -114,7 +114,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     this.cloudNodeTemplate.ports_mapping = [...this.portsMappingEthernet, ...this.portsMappingTap];
 
     this.builtInTemplatesService
-      .saveTemplate(this.server, this.cloudNodeTemplate)
+      .saveTemplate(this.controller, this.cloudNodeTemplate)
       .subscribe((cloudNodeTemplate: CloudTemplate) => {
         this.toasterService.success('Changes saved');
       });

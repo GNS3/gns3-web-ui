@@ -18,7 +18,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   providers: [ProjectNameValidator],
 })
 export class AddBlankProjectDialogComponent implements OnInit {
-  server: Server;
+  controller: Server;
   projectNameForm: FormGroup;
   uuid: string;
   onAddProject = new EventEmitter<string>();
@@ -38,7 +38,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
       projectName: new FormControl(
         null,
         [Validators.required, this.projectNameValidator.get],
-        [projectNameAsyncValidator(this.server, this.projectService)]
+        [projectNameAsyncValidator(this.controller, this.projectService)]
       ),
     });
   }
@@ -51,7 +51,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
     if (this.projectNameForm.invalid) {
       return;
     }
-    this.projectService.list(this.server).subscribe((projects: Project[]) => {
+    this.projectService.list(this.controller).subscribe((projects: Project[]) => {
       const projectName = this.projectNameForm.controls['projectName'].value;
       let existingProject = projects.find((project) => project.name === projectName);
 
@@ -70,11 +70,11 @@ export class AddBlankProjectDialogComponent implements OnInit {
   addProject(): void {
     this.uuid = uuid();
     this.projectService
-      .add(this.server, this.projectNameForm.controls['projectName'].value, this.uuid)
+      .add(this.controller, this.projectNameForm.controls['projectName'].value, this.uuid)
       .subscribe((project: Project) => {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);
-        this.router.navigate(['/controller', this.server.id, 'project', project.project_id]);
+        this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
       });
   }
 
@@ -97,8 +97,8 @@ export class AddBlankProjectDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {
       if (answer) {
-        this.projectService.close(this.server, existingProject.project_id).subscribe(() => {
-          this.projectService.delete(this.server, existingProject.project_id).subscribe(() => {
+        this.projectService.close(this.controller, existingProject.project_id).subscribe(() => {
+          this.projectService.delete(this.controller, existingProject.project_id).subscribe(() => {
             this.addProject();
           });
         });

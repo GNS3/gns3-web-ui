@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './unisolate-node-action.component.html',
 })
 export class UnisolateNodeActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private toasterService: ToasterService) {}
@@ -17,7 +17,7 @@ export class UnisolateNodeActionComponent implements OnInit {
   ngOnInit() {}
 
   unisolate() {
-    this.nodeService.unisolate(this.server, this.node).subscribe(
+    this.nodeService.unisolate(this.controller, this.node).subscribe(
         (n: Node) => {},
         (error) => {
           this.toasterService.error(error.error.message);

@@ -8,20 +8,20 @@ import { HttpServer } from './http-server.service';
 export class ServerSettingsService {
   constructor(private httpServer: HttpServer) {}
 
-  get(server: Server) {
-    return this.httpServer.get<ServerSettings>(server, `/settings`);
+  get(controller: Server) {
+    return this.httpServer.get<ServerSettings>(controller, `/settings`);
   }
 
-  update(server: Server, serverSettings: ServerSettings) {
-    return this.httpServer.post<ServerSettings>(server, `/settings`, serverSettings);
+  update(controller: Server, serverSettings: ServerSettings) {
+    return this.httpServer.post<ServerSettings>(controller, `/settings`, serverSettings);
   }
 
-  getSettingsForQemu(server: Server) {
-    return this.httpServer.get<QemuSettings>(server, `/settings/qemu`);
+  getSettingsForQemu(controller: Server) {
+    return this.httpServer.get<QemuSettings>(controller, `/settings/qemu`);
   }
 
-  updateSettingsForQemu(server: Server, qemuSettings: QemuSettings) {
-    return this.httpServer.put<QemuSettings>(server, `/settings/qemu`, {
+  updateSettingsForQemu(controller: Server, qemuSettings: QemuSettings) {
+    return this.httpServer.put<QemuSettings>(controller, `/settings/qemu`, {
       enable_hardware_acceleration: qemuSettings.enable_hardware_acceleration,
       require_hardware_acceleration: qemuSettings.require_hardware_acceleration,
     });

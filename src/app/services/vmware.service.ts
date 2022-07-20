@@ -10,27 +10,27 @@ import { HttpServer } from './http-server.service';
 export class VmwareService {
   constructor(private httpServer: HttpServer) {}
 
-  getTemplates(server: Server): Observable<VmwareTemplate[]> {
-    return this.httpServer.get<VmwareTemplate[]>(server, '/templates') as Observable<VmwareTemplate[]>;
+  getTemplates(controller: Server): Observable<VmwareTemplate[]> {
+    return this.httpServer.get<VmwareTemplate[]>(controller, '/templates') as Observable<VmwareTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<VmwareTemplate> {
-    return this.httpServer.get<VmwareTemplate>(server, `/templates/${template_id}`) as Observable<VmwareTemplate>;
+  getTemplate(controller: Server, template_id: string): Observable<VmwareTemplate> {
+    return this.httpServer.get<VmwareTemplate>(controller, `/templates/${template_id}`) as Observable<VmwareTemplate>;
   }
 
-  addTemplate(server: Server, vmwareTemplate: VmwareTemplate): Observable<VmwareTemplate> {
-    return this.httpServer.post<VmwareTemplate>(server, `/templates`, vmwareTemplate) as Observable<VmwareTemplate>;
+  addTemplate(controller: Server, vmwareTemplate: VmwareTemplate): Observable<VmwareTemplate> {
+    return this.httpServer.post<VmwareTemplate>(controller, `/templates`, vmwareTemplate) as Observable<VmwareTemplate>;
   }
 
-  saveTemplate(server: Server, vmwareTemplate: VmwareTemplate): Observable<VmwareTemplate> {
+  saveTemplate(controller: Server, vmwareTemplate: VmwareTemplate): Observable<VmwareTemplate> {
     return this.httpServer.put<VmwareTemplate>(
-      server,
+      controller,
       `/templates/${vmwareTemplate.template_id}`,
       vmwareTemplate
     ) as Observable<VmwareTemplate>;
   }
 
-  getVirtualMachines(server: Server): Observable<VmwareVm[]> {
-    return this.httpServer.get<VmwareVm[]>(server, `/computes/${environment.compute_id}/vmware/vms`) as Observable<VmwareVm[]>;
+  getVirtualMachines(controller: Server): Observable<VmwareVm[]> {
+    return this.httpServer.get<VmwareVm[]>(controller, `/computes/${environment.compute_id}/vmware/vms`) as Observable<VmwareVm[]>;
   }
 }

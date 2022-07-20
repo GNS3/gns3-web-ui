@@ -8,21 +8,21 @@ import { HttpServer } from './http-server.service';
 export class VpcsService {
   constructor(private httpServer: HttpServer) {}
 
-  getTemplates(server: Server): Observable<VpcsTemplate[]> {
-    return this.httpServer.get<VpcsTemplate[]>(server, '/templates') as Observable<VpcsTemplate[]>;
+  getTemplates(controller: Server): Observable<VpcsTemplate[]> {
+    return this.httpServer.get<VpcsTemplate[]>(controller, '/templates') as Observable<VpcsTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<VpcsTemplate> {
-    return this.httpServer.get<VpcsTemplate>(server, `/templates/${template_id}`) as Observable<VpcsTemplate>;
+  getTemplate(controller: Server, template_id: string): Observable<VpcsTemplate> {
+    return this.httpServer.get<VpcsTemplate>(controller, `/templates/${template_id}`) as Observable<VpcsTemplate>;
   }
 
-  addTemplate(server: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
-    return this.httpServer.post<VpcsTemplate>(server, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
+  addTemplate(controller: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
+    return this.httpServer.post<VpcsTemplate>(controller, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
   }
 
-  saveTemplate(server: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
+  saveTemplate(controller: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
     return this.httpServer.put<VpcsTemplate>(
-      server,
+      controller,
       `/templates/${vpcsTemplate.template_id}`,
       vpcsTemplate
     ) as Observable<VpcsTemplate>;

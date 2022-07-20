@@ -12,7 +12,7 @@ import { VersionService } from './version.service';
 export class MockedVersionService {
   public response: Observable<any>;
 
-  public get(server: Server) {
+  public get(controller: Server) {
     return this.response;
   }
 }
@@ -22,7 +22,7 @@ describe('VersionService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: VersionService;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,7 +34,7 @@ describe('VersionService', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
     service = TestBed.get(VersionService);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -46,7 +46,7 @@ describe('VersionService', () => {
   }));
 
   it('should get version', inject([VersionService], (service: VersionService) => {
-    service.get(server).subscribe();
+    service.get(controller).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/version`);
     expect(req.request.method).toEqual('GET');

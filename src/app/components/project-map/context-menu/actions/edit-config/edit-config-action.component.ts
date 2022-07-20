@@ -10,7 +10,7 @@ import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor
   templateUrl: './edit-config-action.component.html',
 })
 export class EditConfigActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Input() node: Node;
 
@@ -24,7 +24,7 @@ export class EditConfigActionComponent {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.node = this.node;
   }

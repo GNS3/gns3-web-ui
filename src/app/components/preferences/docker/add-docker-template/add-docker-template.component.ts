@@ -19,7 +19,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddDockerTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   dockerTemplate: DockerTemplate;
   consoleTypes: string[] = [];
   isRemoteComputerChosen: boolean = false;
@@ -60,8 +60,8 @@ export class AddDockerTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
 
@@ -69,7 +69,7 @@ export class AddDockerTemplateComponent implements OnInit {
         this.dockerTemplate = dockerTemplate;
       });
 
-      this.dockerService.getImages(server).subscribe((images) => {
+      this.dockerService.getImages(controller).subscribe((images) => {
         this.dockerImages = images;
       });
     });
@@ -86,7 +86,7 @@ export class AddDockerTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'docker', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
   }
 
   addTemplate() {
@@ -107,7 +107,7 @@ export class AddDockerTemplateComponent implements OnInit {
       this.dockerTemplate.adapters = +this.networkAdaptersForm.get('adapters').value;
       this.dockerTemplate.compute_id = 'local';
 
-      this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
+      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe((template: DockerTemplate) => {
         this.goBack();
       });
     } else {

@@ -34,7 +34,7 @@ import { LogEventsDataSource } from './log-events-datasource';
   styleUrls: ['./log-console.component.scss'],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
 
   @ViewChild('console') console: ElementRef;
@@ -49,7 +49,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private infoSubscription: Subscription;
 
   public command: string = '';
-  public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'server requests'];
+  public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   public selectedFilter: string = 'all';
   public filteredEvents: LogEvent[] = [];
 
@@ -121,7 +121,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.serverRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((message) => {
       this.showMessage({
-        type: 'server request',
+        type: 'controller request',
         message: message,
       });
     });
@@ -180,22 +180,22 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showCommand('Current version: ' + this.version);
     } else if (this.command === 'start all') {
       this.showCommand('Starting all nodes...');
-      this.nodeService.startAll(this.server, this.project).subscribe(() => {
+      this.nodeService.startAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes started.');
       });
     } else if (this.command === 'stop all') {
       this.showCommand('Stopping all nodes...');
-      this.nodeService.stopAll(this.server, this.project).subscribe(() => {
+      this.nodeService.stopAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes stopped.');
       });
     } else if (this.command === 'suspend all') {
       this.showCommand('Suspending all nodes...');
-      this.nodeService.suspendAll(this.server, this.project).subscribe(() => {
+      this.nodeService.suspendAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes suspended.');
       });
     } else if (this.command === 'reload all') {
       this.showCommand('Reloading all nodes...');
-      this.nodeService.reloadAll(this.server, this.project).subscribe(() => {
+      this.nodeService.reloadAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes reloaded.');
       });
     } else if (
@@ -211,16 +211,16 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       if (node) {
         if (this.regexStart.test(this.command)) {
           this.showCommand(`Starting node ${splittedCommand[1]}...`);
-          this.nodeService.start(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
+          this.nodeService.start(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
         } else if (this.regexStop.test(this.command)) {
           this.showCommand(`Stopping node ${splittedCommand[1]}...`);
-          this.nodeService.stop(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
+          this.nodeService.stop(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
         } else if (this.regexSuspend.test(this.command)) {
           this.showCommand(`Suspending node ${splittedCommand[1]}...`);
-          this.nodeService.suspend(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
+          this.nodeService.suspend(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
         } else if (this.regexReload.test(this.command)) {
           this.showCommand(`Reloading node ${splittedCommand[1]}...`);
-          this.nodeService.reload(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
+          this.nodeService.reload(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
         } else if (this.regexConsole.test(this.command)) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
@@ -280,8 +280,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getFilteredEvents(): LogEvent[] {
-    if (this.selectedFilter === 'server requests') {
-      return this.logEventsDataSource.getItems().filter((n) => n.type === 'server request');
+    if (this.selectedFilter === 'controller requests') {
+      return this.logEventsDataSource.getItems().filter((n) => n.type === 'controller request');
     } else if (this.selectedFilter === 'errors') {
       return this.logEventsDataSource.getItems().filter((n) => n.type === 'error');
     } else if (this.selectedFilter === 'warnings') {

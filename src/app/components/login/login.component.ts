@@ -18,7 +18,7 @@ import { VersionService } from '../../services/version.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit, DoCheck {
-  private server: Server;
+  private controller: Server;
   public version: string;
   public isLightThemeEnabled: boolean = false;
   public loginError: boolean = false;
@@ -45,14 +45,14 @@ export class LoginComponent implements OnInit, DoCheck {
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      if (server.authToken) {
-        this.router.navigate(['/controller', this.server.id, 'projects']);
+      if (controller.authToken) {
+        this.router.navigate(['/controller', this.controller.id, 'projects']);
       }
 
-      this.versionService.get(this.server).subscribe((version: Version) => {
+      this.versionService.get(this.controller).subscribe((version: Version) => {
         this.version = version.version;
       });
     });
@@ -78,17 +78,17 @@ export class LoginComponent implements OnInit, DoCheck {
     let username = this.loginForm.get('username').value;
     let password = this.loginForm.get('password').value;
 
-    this.loginService.login(this.server, username, password).subscribe(
+    this.loginService.login(this.controller, username, password).subscribe(
       async (response: AuthResponse) => {
-        let server = this.server;
-        server.authToken = response.access_token;
-        server.username = username;
-        server.password = password;
-        server.tokenExpired = false;
-        await this.serverService.update(server);
+        let controller = this.controller;
+        controller.authToken = response.access_token;
+        controller.username = username;
+        controller.password = password;
+        controller.tokenExpired = false;
+        await this.serverService.update(controller);
 
         if (this.returnUrl.length <= 1) {
-          this.router.navigate(['/controller', this.server.id, 'projects']);
+          this.router.navigate(['/controller', this.controller.id, 'projects']);
         } else {
           this.router.navigateByUrl(this.returnUrl);
         }

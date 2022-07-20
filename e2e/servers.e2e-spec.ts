@@ -10,7 +10,7 @@ describe('Servers page', () => {
     helper = new TestHelper();
   });
 
-  xit('user should have possibility to add server', async () => {
+  xit('user should have possibility to add controller', async () => {
     // arrange
     page.maximizeWindow();
     await page.navigateToServersPage();
@@ -19,10 +19,10 @@ describe('Servers page', () => {
     let text = await page.getAddServerNotificationText();
 
     // assert
-    expect(text).toBe("We've discovered GNS3 server on 127.0.0.1:3080, would you like to add to the list?");
+    expect(text).toBe("We've discovered GNS3 controller on 127.0.0.1:3080, would you like to add to the list?");
   });
 
-  it('user should see added server in the list', async () => {
+  it('user should see added controller in the list', async () => {
     // arrange
     page.maximizeWindow();
     await page.navigateToServersPage();
@@ -30,7 +30,7 @@ describe('Servers page', () => {
     helper.sleep(1000);
 
     // act
-    let firstRowOfServersTable = await page.checkServersTable();
+    let firstRowOfServersTable = await page.checkControllersTable();
     let serverData = [];
     await helper.asyncForEach(firstRowOfServersTable, async (element) => {
       serverData.push(await element.getText());

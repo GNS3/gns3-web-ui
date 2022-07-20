@@ -11,7 +11,7 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
   styleUrls: ['./delete-template.component.scss'],
 })
 export class DeleteTemplateComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Output() deleteEvent = new EventEmitter<string>();
 
   constructor(
@@ -33,7 +33,7 @@ export class DeleteTemplateComponent {
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {
       if (answer) {
-        this.templateService.deleteTemplate(this.server, templateId).subscribe((answer) => {
+        this.templateService.deleteTemplate(this.controller, templateId).subscribe((answer) => {
           this.deleteEvent.emit(templateId);
           this.toasterService.success(`Template ${templateName} deleted.`);
         });

@@ -26,9 +26,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
-  recentlyOpenedServerId: string;
+  recentlyOpenedcontrollerId: string;
   recentlyOpenedProjectId: string;
-  serverIdProjectList: string;
+  controllerIdProjectList: string;
 
   constructor(
     private electronService: ElectronService,
@@ -47,9 +47,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
     });
     
-    this.recentlyOpenedServerId = this.recentlyOpenedProjectService.getServerId();
+    this.recentlyOpenedcontrollerId = this.recentlyOpenedProjectService.getcontrollerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
-    this.serverIdProjectList = this.recentlyOpenedProjectService.getServerIdProjectList();
+    this.controllerIdProjectList = this.recentlyOpenedProjectService.getcontrollerIdProjectList();
 
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
@@ -70,16 +70,16 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   goToUserInfo() {
-    let serverId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.router.navigate(['/controller', server.id, 'loggeduser']);
+    let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
+    this.serverService.get(+controllerId).then((controller: Server) => {
+      this.router.navigate(['/controller', controller.id, 'loggeduser']);
     });
   }
 
   goToDocumentation() {
-    let serverId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
-      (window as any).open(`http://${server.host}:${server.port}/docs`);
+    let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
+    this.serverService.get(+controllerId).then((controller: Server) => {
+      (window as any).open(`http://${controller.host}:${controller.port}/docs`);
     });
   }
 
@@ -92,22 +92,22 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    let serverId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+serverId).then((server: Server) => {
-      server.authToken = null;
-      this.serverService.update(server).then(val => this.router.navigate(['/controller', server.id, 'login']));
+    let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
+    this.serverService.get(+controllerId).then((controller: Server) => {
+      controller.authToken = null;
+      this.serverService.update(controller).then(val => this.router.navigate(['/controller', controller.id, 'login']));
     });
   }
 
   listProjects() {
     this.router
-      .navigate(['/controller', this.serverIdProjectList, 'projects'])
+      .navigate(['/controller', this.controllerIdProjectList, 'projects'])
       .catch((error) => this.toasterService.error('Cannot list projects'));
   }
 
   backToProject() {
     this.router
-      .navigate(['/controller', this.recentlyOpenedServerId, 'project', this.recentlyOpenedProjectId])
+      .navigate(['/controller', this.recentlyOpenedcontrollerId, 'project', this.recentlyOpenedProjectId])
       .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 

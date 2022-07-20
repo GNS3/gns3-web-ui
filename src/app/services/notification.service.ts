@@ -4,22 +4,22 @@ import { Server } from '../models/server';
 
 @Injectable()
 export class NotificationService {
-  notificationsPath(server: Server): string {
+  notificationsPath(controller: Server): string {
     let protocol:string = "ws"
-	  if (server.protocol === "https:") {
+	  if (controller.protocol === "https:") {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/notifications/ws?token=${server.authToken}`;
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/notifications/ws?token=${controller.authToken}`;
   }
 
   
-  projectNotificationsPath(server: Server, project_id: string): string {
+  projectNotificationsPath(controller: Server, project_id: string): string {
     let protocol:string = "ws"
-	  if (server.protocol === "https:") {
+	  if (controller.protocol === "https:") {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${server.authToken}`;
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${controller.authToken}`;
   }
 }

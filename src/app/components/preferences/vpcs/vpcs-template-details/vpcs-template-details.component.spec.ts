@@ -22,11 +22,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsTemplateDetailsComponent } from './vpcs-template-details.component';
 
 export class MockedVpcsService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller: Server, template_id: string) {
     return of({} as VpcsTemplate);
   }
 
-  public saveTemplate(server: Server, vpcsTemplate: VpcsTemplate) {
+  public saveTemplate(controller: Server, vpcsTemplate: VpcsTemplate) {
     return of(vpcsTemplate);
   }
 }

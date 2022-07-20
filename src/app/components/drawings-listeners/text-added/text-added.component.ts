@@ -18,7 +18,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./text-added.component.scss'],
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Output() drawingSaved = new EventEmitter<boolean>();
   private textAdded: Subscription;
@@ -43,7 +43,7 @@ export class TextAddedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .add(
-        this.server,
+        this.controller,
         this.project.project_id,
         (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) /
           this.context.transformation.k,

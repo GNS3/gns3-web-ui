@@ -8,7 +8,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './suspend-node-action.component.html',
 })
 export class SuspendNodeActionComponent implements OnInit, OnChanges {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
   isNodeWithStartedStatus: boolean;
 
@@ -29,7 +29,7 @@ export class SuspendNodeActionComponent implements OnInit, OnChanges {
 
   suspendNodes() {
     this.nodes.forEach((node) => {
-      this.nodeService.suspend(this.server, node).subscribe((n: Node) => {});
+      this.nodeService.suspend(this.controller, node).subscribe((n: Node) => {});
     });
   }
 }

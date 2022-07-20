@@ -104,7 +104,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
   public project: Project;
-  public server: Server;
+  public controller: Server;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -241,7 +241,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
       // this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
-      this.instance.instance.server = this.server;
+      this.instance.instance.controller = this.controller;
       this.instance.instance.project = this.project;
     } else if (this.instance) {
       if (this.instance.instance) {
@@ -267,12 +267,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
-        if (!this.server) return;
+        if (!this.controller) return;
         nodes.forEach(async (node: Node) => {
-          node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/${environment.current_version}/symbols/${node.symbol}/raw`;
+          node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`;
 
           if (node.width == 0 && node.height == 0) {
-            let symbolDimensions = await this.symbolService.getDimensions(this.server, node.symbol).toPromise();
+            let symbolDimensions = await this.symbolService.getDimensions(this.controller, node.symbol).toPromise();
             node.width = symbolDimensions.width;
             node.height = symbolDimensions.height;
           }
@@ -333,10 +333,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       from(this.serverService.get(controller_id))
         .pipe(
-          mergeMap((server: Server) => {
-            if (!server) this.router.navigate(['/controllers']);
-            this.server = server;
-            return this.projectService.get(server, paramMap.get('project_id')).pipe(
+          mergeMap((controller: Server) => {
+            if (!controller) this.router.navigate(['/controllers']);
+            this.controller = controller;
+            return this.projectService.get(controller, paramMap.get('project_id')).pipe(
               map((project) => {
                 return project;
               })
@@ -346,19 +346,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.project = project;
             if (!project) this.router.navigate(['/controllers']);
 
-            this.projectService.open(this.server, this.project.project_id);
+            this.projectService.open(this.controller, this.project.project_id);
             this.title.setTitle(this.project.name);
             this.isInterfaceLabelVisible = this.mapSettingsService.showInterfaceLabels;
             this.toggleShowTopologySummary(this.mapSettingsService.isTopologySummaryVisible);
 
-            this.recentlyOpenedProjectService.setServerId(this.server.id.toString());
+            this.recentlyOpenedProjectService.setcontrollerId(this.controller.id.toString());
 
             if (this.project.status === 'opened') {
               return new Observable<Project>((observer) => {
                 observer.next(this.project);
               });
             } else {
-              return this.projectService.open(this.server, this.project.project_id);
+              return this.projectService.open(this.controller, this.project.project_id);
             }
           })
         )
@@ -416,7 +416,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('ctrl+shift+s', (event: Event) => {
       event.preventDefault();
-      this.router.navigate(['/controller', this.server.id, 'preferences']);
+      this.router.navigate(['/controller', this.controller.id, 'preferences']);
     });
 
     Mousetrap.bind('del', (event: Event) => {
@@ -437,7 +437,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           .filter((item) => item instanceof MapNode)
           .forEach((item: MapNode) => {
             const node = this.mapNodeToNode.convert(item);
-            this.nodeService.delete(this.server, node).subscribe((data) => {
+            this.nodeService.delete(this.controller, node).subscribe((data) => {
               this.toasterService.success('Node has been deleted');
             });
           });
@@ -446,7 +446,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           .filter((item) => item instanceof MapDrawing)
           .forEach((item: MapDrawing) => {
             const drawing = this.mapDrawingToDrawing.convert(item);
-            this.drawingService.delete(this.server, drawing).subscribe((data) => {
+            this.drawingService.delete(this.controller, drawing).subscribe((data) => {
               this.toasterService.success('Drawing has been deleted');
             });
           });
@@ -459,15 +459,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
     const subscription = this.projectService
-      .nodes(this.server, project.project_id)
+      .nodes(this.controller, project.project_id)
       .pipe(
         mergeMap((nodes: Node[]) => {
           this.nodesDataSource.set(nodes);
-          return this.projectService.links(this.server, project.project_id);
+          return this.projectService.links(this.controller, project.project_id);
         }),
         mergeMap((links: Link[]) => {
           this.linksDataSource.set(links);
-          return this.projectService.drawings(this.server, project.project_id);
+          return this.projectService.drawings(this.controller, project.project_id);
         })
       )
       .subscribe((drawings: Drawing[]) => {
@@ -482,7 +482,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpProjectWS(project: Project) {
-    this.projectws = new WebSocket(this.notificationService.projectNotificationsPath(this.server, project.project_id));
+    this.projectws = new WebSocket(this.notificationService.projectNotificationsPath(this.controller, project.project_id));
 
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
@@ -494,7 +494,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpWS() {
-    this.ws = new WebSocket(this.notificationService.notificationsPath(this.server));
+    this.ws = new WebSocket(this.notificationService.notificationsPath(this.controller));
   }
 
   setUpMapCallbacks() {
@@ -592,25 +592,25 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.progressService.activate();
     this.nodeService
       .createFromTemplate(
-        this.server,
+        this.controller,
         this.project,
         nodeAddedEvent.template,
         nodeAddedEvent.x,
         nodeAddedEvent.y,
-        nodeAddedEvent.server
+        nodeAddedEvent.controller
       )
       .subscribe(
         (node: Node) => {
           // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
           //   node.name = nodeAddedEvent.name;
-          //   this.nodeService.updateNode(this.server, node).subscribe(()=>{});
+          //   this.nodeService.updateNode(this.controller, node).subscribe(()=>{});
           // }
-          this.projectService.nodes(this.server, this.project.project_id).subscribe((nodes: Node[]) => {
+          this.projectService.nodes(this.controller, this.project.project_id).subscribe((nodes: Node[]) => {
             nodes
               .filter((node) => node.label.style === null)
               .forEach((node) => {
                 const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
-                this.nodeService.updateLabel(this.server, node, fixedNode.label).subscribe();
+                this.nodeService.updateLabel(this.controller, node, fixedNode.label).subscribe();
               });
 
             this.nodesDataSource.set(nodes);
@@ -925,7 +925,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
   }
 
   saveProject() {
@@ -935,7 +935,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
   }
 
@@ -946,7 +946,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
   }
 
@@ -959,7 +959,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     const subscription = dialogRef.componentInstance.onImportProject.subscribe((projectId: string) => {
       uuid = projectId;
     });
@@ -973,8 +973,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
-            this.projectService.open(this.server, uuid).subscribe(() => {
-              this.router.navigate(['/controller', this.server.id, 'project', uuid]);
+            this.projectService.open(this.controller, uuid).subscribe(() => {
+              this.router.navigate(['/controller', this.controller.id, 'project', uuid]);
             });
           }
         });
@@ -995,7 +995,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     ) {
       this.toasterService.error('Project with running nodes cannot be exported.');
     } else {
-      // location.assign(this.projectService.getExportPath(this.server, this.project));
+      // location.assign(this.projectService.getExportPath(this.controller, this.project));
       this.exportPortableProjectDialog();
     }
   }
@@ -1005,7 +1005,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: {serverDetails:this.server,projectDetails:this.project},
+      data: {serverDetails:this.controller,projectDetails:this.project},
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
@@ -1026,7 +1026,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
                 height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
                 xlink:href=\"${image}\"/>\n</svg>`;
       this.drawingService
-        .add(this.server, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
+        .add(this.controller, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
         .subscribe(() => {});
     };
 
@@ -1042,8 +1042,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     bottomSheetRef.instance.message = 'Do you want to close the project?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.close(this.server, this.project.project_id).subscribe(() => {
-          this.router.navigate(['/controller', this.server.id, 'projects']);
+        this.projectService.close(this.controller, this.project.project_id).subscribe(() => {
+          this.router.navigate(['/controller', this.controller.id, 'projects']);
         });
       }
     });
@@ -1055,8 +1055,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     bottomSheetRef.instance.message = 'Do you want to delete the project?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.delete(this.server, this.project.project_id).subscribe(() => {
-          this.router.navigate(['/controller', this.server.id, 'projects']);
+        this.projectService.delete(this.controller, this.project.project_id).subscribe(() => {
+          this.router.navigate(['/controller', this.controller.id, 'projects']);
         });
       }
     });
@@ -1070,7 +1070,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
   }
 
@@ -1082,7 +1082,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
   }
 

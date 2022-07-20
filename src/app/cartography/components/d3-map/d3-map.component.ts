@@ -43,7 +43,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
   @Input() project: Project;
-  @Input() server: Server;
+  @Input() controller: Server;
 
   @Input() width = 1500;
   @Input() height = 600;

@@ -10,7 +10,7 @@ import { SymbolService } from '../../../../services/symbol.service';
   styleUrls: ['./symbols.component.scss'],
 })
 export class SymbolsComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() symbol: string;
   @Output() symbolChanged = new EventEmitter<string>();
 
@@ -42,7 +42,7 @@ export class SymbolsComponent implements OnInit {
   }
 
   loadSymbols() {
-    this.symbolService.list(this.server).subscribe((symbols: Symbol[]) => {
+    this.symbolService.list(this.controller).subscribe((symbols: Symbol[]) => {
       this.symbols = symbols;
       this.filteredSymbols = symbols;
     });
@@ -61,7 +61,7 @@ export class SymbolsComponent implements OnInit {
     fileReader.onloadend = () => {
       let image = fileReader.result;
       let svg = this.createSvgFileForImage(image, imageToUpload);
-      this.symbolService.add(this.server, fileName, svg).subscribe(() => {
+      this.symbolService.add(this.controller, fileName, svg).subscribe(() => {
         this.loadSymbols();
       });
     };
@@ -78,6 +78,6 @@ export class SymbolsComponent implements OnInit {
   }
 
   getImageSourceForTemplate(symbol: string) {
-    return `${this.server.protocol}//${this.server.host}:${this.server.port}/${environment.current_version}/symbols/${symbol}/raw`;
+    return `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${symbol}/raw`;
   }
 }

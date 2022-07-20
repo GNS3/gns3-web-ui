@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-docker-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyDockerTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   dockerTemplate: DockerTemplate;
   templateNameForm: FormGroup;
@@ -35,10 +35,10 @@ export class CopyDockerTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.dockerService.getTemplate(this.server, template_id).subscribe((dockerTemplate: DockerTemplate) => {
+      this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {
         this.dockerTemplate = dockerTemplate;
         this.templateName = `Copy of ${this.dockerTemplate.name}`;
       });
@@ -46,7 +46,7 @@ export class CopyDockerTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'docker', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
   }
 
   addTemplate() {
@@ -54,7 +54,7 @@ export class CopyDockerTemplateComponent implements OnInit {
       this.dockerTemplate.template_id = uuid();
       this.dockerTemplate.name = this.templateName;
 
-      this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
+      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe((template: DockerTemplate) => {
         this.goBack();
       });
     } else {

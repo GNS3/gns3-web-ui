@@ -17,25 +17,25 @@ export class ServersPage {
   }
 
   async clickAddServer() {
-    let serversTable = await this.checkServersTable();
-    if (serversTable.length === 0) {
+    let controllerTable = await this.checkControllersTable();
+    if (controllerTable.length === 0) {
       let buttons = await browser.driver.findElements(by.className('mat-button mat-button-base'));
       await buttons[3].click();
     }
   }
 
-  checkServersTable() {
+  checkControllersTable() {
     return browser.driver.findElements(by.css('mat-cell'));
   }
 
   async navigateToServerProjects() {
     this.helper.sleep(2000);
     let hyperlinks = await browser.driver.findElements(by.css('a.table-link'));
-    let serverLink;
+    let controllerLink;
     await this.helper.asyncForEach(hyperlinks, async (element) => {
       let text = await element.getText();
-      if (text === '127.0.0.1') serverLink = element;
+      if (text === '127.0.0.1') controllerLink = element;
     });
-    await serverLink.click();
+    await controllerLink.click();
   }
 }

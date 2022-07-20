@@ -19,7 +19,7 @@ import { imageDataSource, imageDatabase } from "./image-database-file";
   styleUrls: ['./image-manager.component.scss']
 })
 export class ImageManagerComponent implements OnInit {
-  server: Server;
+  controller: Server;
   public version: string;
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
@@ -41,12 +41,12 @@ export class ImageManagerComponent implements OnInit {
 
   ngOnInit(): void {
     let controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'));
-    this.serverService.get(controller_id).then((server: Server) => {
-      this.server = server;
-      if (server.authToken) {
+    this.serverService.get(controller_id).then((controller: Server) => {
+      this.controller = controller;
+      if (controller.authToken) {
         this.getImages()
       }
-      // this.versionService.get(this.server).subscribe((version: Version) => {
+      // this.versionService.get(this.controller).subscribe((version: Version) => {
       //   this.version = version.version;
       // });
     });
@@ -54,7 +54,7 @@ export class ImageManagerComponent implements OnInit {
   }
 
   getImages() {
-    this.imageService.getImages(this.server).subscribe(
+    this.imageService.getImages(this.controller).subscribe(
       (images: Image[]) => {
         this.imageDatabase.addImages(images)
       },
@@ -66,7 +66,7 @@ export class ImageManagerComponent implements OnInit {
   }
 
   deleteFile(path) {
-    this.imageService.deleteFile(this.server, path).subscribe(
+    this.imageService.deleteFile(this.controller, path).subscribe(
       (res) => {
         this.getImages()
         this.unChecked()
@@ -106,7 +106,7 @@ export class ImageManagerComponent implements OnInit {
       maxHeight: '550px',
       autoFocus: false,
       disableClose: true,
-      data: this.server
+      data: this.controller
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {
@@ -128,7 +128,7 @@ export class ImageManagerComponent implements OnInit {
       autoFocus: false,
       disableClose: true,
       data: {
-        server: this.server,
+        controller: this.controller,
         deleteFilesPaths: this.selection.selected
       }
     });

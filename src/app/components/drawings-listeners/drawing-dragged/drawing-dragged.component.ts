@@ -15,7 +15,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-dragged.component.scss'],
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   private drawingDragged: Subscription;
 
@@ -35,7 +35,7 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
     drawing.y += draggedEvent.dy;
 
     this.drawingService
-      .updatePosition(this.server, this.project, drawing, drawing.x, drawing.y)
+      .updatePosition(this.controller, this.project, drawing, drawing.x, drawing.y)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
       });

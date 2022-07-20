@@ -3,22 +3,22 @@ import { ProjectsPage } from './helpers/project.po';
 import { ServersPage } from './helpers/server.po';
 
 describe('Projects page', () => {
-  let serversPage: ServersPage;
+  let controllersPage: ServersPage;
   let projectsPage: ProjectsPage;
   let helper: TestHelper;
 
   beforeEach(() => {
-    serversPage = new ServersPage();
+    controllersPage = new ServersPage();
     projectsPage = new ProjectsPage();
     helper = new TestHelper();
   });
 
   it('user should have possibility to create new project', async () => {
     // arrange
-    serversPage.maximizeWindow();
-    await serversPage.navigateToServersPage();
-    await serversPage.clickAddServer();
-    await serversPage.navigateToServerProjects();
+    controllersPage.maximizeWindow();
+    await controllersPage.navigateToServersPage();
+    await controllersPage.clickAddServer();
+    await controllersPage.navigateToServerProjects();
     helper.sleep(2000);
 
     //act

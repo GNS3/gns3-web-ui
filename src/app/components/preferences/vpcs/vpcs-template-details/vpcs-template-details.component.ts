@@ -14,7 +14,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   vpcsTemplate: VpcsTemplate;
   inputForm: FormGroup;
   isSymbolSelectionOpened: boolean = false;
@@ -41,11 +41,11 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.vpcsService.getTemplate(this.server, template_id).subscribe((vpcsTemplate: VpcsTemplate) => {
+      this.vpcsService.getTemplate(this.controller, template_id).subscribe((vpcsTemplate: VpcsTemplate) => {
         this.vpcsTemplate = vpcsTemplate;
       });
     });
@@ -57,14 +57,14 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'vpcs', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vpcs', 'templates']);
   }
 
   onSave() {
     if (this.inputForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
-      this.vpcsService.saveTemplate(this.server, this.vpcsTemplate).subscribe((vpcsTemplate: VpcsTemplate) => {
+      this.vpcsService.saveTemplate(this.controller, this.vpcsTemplate).subscribe((vpcsTemplate: VpcsTemplate) => {
         this.toasterService.success('Changes saved');
       });
     }

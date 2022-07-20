@@ -10,7 +10,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./change-symbol-dialog.component.scss'],
 })
 export class ChangeSymbolDialogComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() node: Node;
   symbol: string;
 
@@ -29,7 +29,7 @@ export class ChangeSymbolDialogComponent implements OnInit {
   }
 
   onSelectClick() {
-    this.nodeService.updateSymbol(this.server, this.node, this.symbol).subscribe(() => {
+    this.nodeService.updateSymbol(this.controller, this.node, this.symbol).subscribe(() => {
       this.onCloseClick();
     });
   }

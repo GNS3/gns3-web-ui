@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class DockerTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   dockerTemplate: DockerTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -48,11 +48,11 @@ export class DockerTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.dockerService.getTemplate(this.server, template_id).subscribe((dockerTemplate: DockerTemplate) => {
+      this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {
         this.dockerTemplate = dockerTemplate;
       });
     });
@@ -65,14 +65,14 @@ export class DockerTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'docker', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
-      this.dockerService.saveTemplate(this.server, this.dockerTemplate).subscribe((savedTemplate: DockerTemplate) => {
+      this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe((savedTemplate: DockerTemplate) => {
         this.toasterService.success('Changes saved');
       });
     }

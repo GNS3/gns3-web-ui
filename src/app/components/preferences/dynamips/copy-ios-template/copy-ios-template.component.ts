@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-ios-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyIosTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   iosTemplate: IosTemplate;
   formGroup: FormGroup;
@@ -35,10 +35,10 @@ export class CopyIosTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.iosService.getTemplate(this.server, template_id).subscribe((iosTemplate: IosTemplate) => {
+      this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate = iosTemplate;
         this.templateName = `Copy of ${this.iosTemplate.name}`;
       });
@@ -46,7 +46,7 @@ export class CopyIosTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'dynamips', 'templates']);
   }
 
   addTemplate() {
@@ -54,7 +54,7 @@ export class CopyIosTemplateComponent implements OnInit {
       this.iosTemplate.template_id = uuid();
       this.iosTemplate.name = this.templateName;
 
-      this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
+      this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
         this.goBack();
       });
     } else {

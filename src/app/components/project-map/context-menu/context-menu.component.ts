@@ -19,7 +19,7 @@ import { ProjectService } from '../../../services/project.service';
 })
 export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
-  @Input() server: Server;
+  @Input() controller: Server;
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -47,7 +47,7 @@ export class ContextMenuComponent implements OnInit {
     this.setPosition(0, 0);
 
     this.isElectronApp = this.electronService.isElectronApp;
-    this.isBundledServer = this.server.location === 'bundled';
+    this.isBundledServer = this.controller.location === 'bundled';
   }
 
   public setPosition(top: number, left: number) {

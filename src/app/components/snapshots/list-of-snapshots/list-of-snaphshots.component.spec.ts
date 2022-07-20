@@ -39,7 +39,7 @@ export class MockedActivatedRoute {
           },
         },
         data: {
-          server: new Server(),
+          controller: new Server(),
         },
       },
     };
@@ -47,15 +47,15 @@ export class MockedActivatedRoute {
 }
 
 export class MockedSnapshotService {
-  public list(server: Server, project_id: string) {
+  public list(controller: Server, project_id: string) {
     return of([]);
   }
 
-  public delete(server: Server, project_id: string, snapshot_id: string) {
+  public delete(controller: Server, project_id: string, snapshot_id: string) {
     return of({});
   }
 
-  public restore(server: Server, project_id: string, snapshot_id: string) {
+  public restore(controller: Server, project_id: string, snapshot_id: string) {
     return of({});
   }
 }
@@ -82,7 +82,7 @@ describe('ListOfSnapshotsComponent', () => {
           {
             path: 'controller/:controller_id/project/:project_id/snapshots',
             component: ListOfSnapshotsComponent,
-            resolve: { server: ServerResolve },
+            resolve: { controller: ServerResolve },
           },
         ]),
       ],

@@ -12,9 +12,9 @@ export class ServerDatabase {
     return this.dataChange.value;
   }
 
-  public addServer(server: Server) {
+  public addServer(controller: Server) {
     const servers = this.data.slice();
-    servers.push(server);
+    servers.push(controller);
     this.dataChange.next(servers);
   }
 
@@ -22,8 +22,8 @@ export class ServerDatabase {
     this.dataChange.next(servers);
   }
 
-  public remove(server: Server) {
-    const index = this.data.indexOf(server);
+  public remove(controller: Server) {
+    const index = this.data.indexOf(controller);
     if (index >= 0) {
       this.data.splice(index, 1);
       this.dataChange.next(this.data.slice());
@@ -31,17 +31,17 @@ export class ServerDatabase {
   }
 
   public find(serverName: string) {
-    return this.data.find((server) => server.name === serverName);
+    return this.data.find((controller) => controller.name === serverName);
   }
 
   public findIndex(serverName: string) {
-    return this.data.findIndex((server) => server.name === serverName);
+    return this.data.findIndex((controller) => controller.name === serverName);
   }
 
-  public update(server: Server) {
-    const index = this.findIndex(server.name);
+  public update(controller: Server) {
+    const index = this.findIndex(controller.name);
     if (index >= 0) {
-      this.data[index] = server;
+      this.data[index] = controller;
       this.dataChange.next(this.data.slice());
     }
   }

@@ -8,7 +8,7 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './reset-link-action.component.html'
 })
 export class ResetLinkActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() link: Link;
 
   constructor(
@@ -16,6 +16,6 @@ export class ResetLinkActionComponent {
   ) {}
 
   resetLink() {
-    this.linkService.resetLink(this.server, this.link).subscribe(() => {});
+    this.linkService.resetLink(this.controller, this.link).subscribe(() => {});
   }
 }

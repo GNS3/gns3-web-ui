@@ -14,7 +14,7 @@ import { LinkService } from '../../../services/link.service';
   styleUrls: ['./interface-label-dragged.component.scss'],
 })
 export class InterfaceLabelDraggedComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   private interfaceDragged: Subscription;
 
   constructor(
@@ -40,7 +40,7 @@ export class InterfaceLabelDraggedComponent {
       link.nodes[1].label.y += draggedEvent.dy;
     }
 
-    this.linkService.updateNodes(this.server, link, link.nodes).subscribe((serverLink: Link) => {
+    this.linkService.updateNodes(this.controller, link, link.nodes).subscribe((serverLink: Link) => {
       this.linksDataSource.update(serverLink);
     });
   }

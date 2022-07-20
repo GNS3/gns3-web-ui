@@ -10,14 +10,14 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   templateUrl: './export-config-action.component.html',
 })
 export class ExportConfigActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private dialog: MatDialog) {}
 
   exportConfig() {
     if (this.node.node_type === 'vpcs') {
-      this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
+      this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
         this.downloadByHtmlTag(config);
       });
     } else {
@@ -29,11 +29,11 @@ export class ExportConfigActionComponent {
       let instance = dialogRef.componentInstance;
       dialogRef.afterClosed().subscribe((configType: string) => {
         if (configType === 'startup-config') {
-          this.nodeService.getStartupConfiguration(this.server, this.node).subscribe((config: any) => {
+          this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
             this.downloadByHtmlTag(config);
           });
         } else if (configType === 'private-config') {
-          this.nodeService.getPrivateConfiguration(this.server, this.node).subscribe((config: any) => {
+          this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe((config: any) => {
             this.downloadByHtmlTag(config);
           });
         }

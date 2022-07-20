@@ -7,19 +7,19 @@ import { HttpServer } from './http-server.service';
 export class SnapshotService {
   constructor(private httpServer: HttpServer) {}
 
-  create(server: Server, project_id: string, snapshot: Snapshot) {
-    return this.httpServer.post<Snapshot>(server, `/projects/${project_id}/snapshots`, snapshot);
+  create(controller: Server, project_id: string, snapshot: Snapshot) {
+    return this.httpServer.post<Snapshot>(controller, `/projects/${project_id}/snapshots`, snapshot);
   }
 
-  delete(server: Server, project_id: string, snapshot_id: string) {
-    return this.httpServer.delete(server, `/projects/${project_id}/snapshots/${snapshot_id}`);
+  delete(controller: Server, project_id: string, snapshot_id: string) {
+    return this.httpServer.delete(controller, `/projects/${project_id}/snapshots/${snapshot_id}`);
   }
 
-  list(server: Server, project_id: string) {
-    return this.httpServer.get<Snapshot[]>(server, `/projects/${project_id}/snapshots`);
+  list(controller: Server, project_id: string) {
+    return this.httpServer.get<Snapshot[]>(controller, `/projects/${project_id}/snapshots`);
   }
 
-  restore(server: Server, project_id: string, snapshot_id: string) {
-    return this.httpServer.post(server, `/projects/${project_id}/snapshots/${snapshot_id}/restore`, {});
+  restore(controller: Server, project_id: string, snapshot_id: string) {
+    return this.httpServer.post(controller, `/projects/${project_id}/snapshots/${snapshot_id}/restore`, {});
   }
 }

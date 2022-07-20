@@ -8,13 +8,13 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './resume-link-action.component.html',
 })
 export class ResumeLinkActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}
 
   resumeLink() {
     this.link.suspend = false;
-    this.linkService.updateLink(this.server, this.link).subscribe(() => {});
+    this.linkService.updateLink(this.controller, this.link).subscribe(() => {});
   }
 }

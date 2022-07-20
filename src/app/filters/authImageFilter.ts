@@ -15,9 +15,9 @@ export class AuthImageFilter implements PipeTransform {
         private domSanitizer: DomSanitizer
     ) { }
 
-    async transform(src: string, server: Server) {
+    async transform(src: string, controller: Server) {
         let url = src.split(`${environment.current_version}`)[1];
-        const imageBlob: Blob = await this.httpServer.getBlob(server, url).toPromise();
+        const imageBlob: Blob = await this.httpServer.getBlob(controller, url).toPromise();
         const reader = new FileReader();
         return new Promise((resolve, reject) => {
             reader.onloadend = () => resolve(this.domSanitizer.bypassSecurityTrustUrl(reader.result as string));

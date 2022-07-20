@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsTemplatesComponent } from './ethernet-hubs-templates.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplates(server: Server) {
+  public getTemplates(controller: Server) {
     return of([{} as EthernetHubTemplate]);
   }
 }

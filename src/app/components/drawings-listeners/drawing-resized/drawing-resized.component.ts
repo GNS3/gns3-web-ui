@@ -15,7 +15,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-resized.component.scss'],
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   private drawingResized: Subscription;
 
   constructor(
@@ -34,7 +34,7 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
     let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
 
     this.drawingService
-      .updateSizeAndPosition(this.server, drawing, resizedEvent.x, resizedEvent.y, svgString)
+      .updateSizeAndPosition(this.controller, drawing, resizedEvent.x, resizedEvent.y, svgString)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.update(serverDrawing);
       });

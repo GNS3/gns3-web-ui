@@ -11,8 +11,8 @@ import { HttpServer } from './http-server.service';
 export class DrawingService {
   constructor(private httpServer: HttpServer, private svgToDrawingConverter: SvgToDrawingConverter) {}
 
-  add(server: Server, project_id: string, x: number, y: number, svg: string) {
-    return this.httpServer.post<Drawing>(server, `/projects/${project_id}/drawings`, {
+  add(controller: Server, project_id: string, x: number, y: number, svg: string) {
+    return this.httpServer.post<Drawing>(controller, `/projects/${project_id}/drawings`, {
       svg: svg,
       x: Math.round(x),
       y: Math.round(y),
@@ -20,8 +20,8 @@ export class DrawingService {
     });
   }
 
-  duplicate(server: Server, project_id: string, drawing: Drawing) {
-    return this.httpServer.post<Drawing>(server, `/projects/${project_id}/drawings`, {
+  duplicate(controller: Server, project_id: string, drawing: Drawing) {
+    return this.httpServer.post<Drawing>(controller, `/projects/${project_id}/drawings`, {
       svg: drawing.svg,
       rotation: drawing.rotation,
       x: drawing.x + 10,
@@ -30,7 +30,7 @@ export class DrawingService {
     });
   }
 
-  updatePosition(server: Server, project: Project, drawing: Drawing, x: number, y: number): Observable<Drawing> {
+  updatePosition(controller: Server, project: Project, drawing: Drawing, x: number, y: number): Observable<Drawing> {
     let xPosition: number = Math.round(x);
     let yPosition: number = Math.round(y);
 
@@ -46,22 +46,22 @@ export class DrawingService {
       yPosition = Math.round(yPosition - drawing.element.height / 2);
     }
 
-    return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+    return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       x: xPosition,
       y: yPosition,
     });
   }
 
-  updateSizeAndPosition(server: Server, drawing: Drawing, x: number, y: number, svg: string): Observable<Drawing> {
-    return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+  updateSizeAndPosition(controller: Server, drawing: Drawing, x: number, y: number, svg: string): Observable<Drawing> {
+    return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       svg: svg,
       x: Math.round(x),
       y: Math.round(y),
     });
   }
 
-  updateText(server: Server, drawing: Drawing, svg: string): Observable<Drawing> {
-    return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+  updateText(controller: Server, drawing: Drawing, svg: string): Observable<Drawing> {
+    return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       svg: svg,
       x: Math.round(drawing.x),
       y: Math.round(drawing.y),
@@ -69,8 +69,8 @@ export class DrawingService {
     });
   }
 
-  update(server: Server, drawing: Drawing): Observable<Drawing> {
-    return this.httpServer.put<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
+  update(controller: Server, drawing: Drawing): Observable<Drawing> {
+    return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       locked: drawing.locked,
       svg: drawing.svg,
       rotation: drawing.rotation,
@@ -80,7 +80,7 @@ export class DrawingService {
     });
   }
 
-  delete(server: Server, drawing: Drawing) {
-    return this.httpServer.delete<Drawing>(server, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`);
+  delete(controller: Server, drawing: Drawing) {
+    return this.httpServer.delete<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`);
   }
 }

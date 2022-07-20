@@ -103,9 +103,9 @@ export class HttpServer {
 
   constructor(private http: HttpClient, private errorHandler: ServerErrorHandler) {}
 
-  get<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+  get<T>(controller: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer<JsonOptions>(server, url, options);
+    const intercepted = this.getOptionsForServer<JsonOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
 
     return this.http
@@ -113,9 +113,9 @@ export class HttpServer {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  getText(server: Server, url: string, options?: TextOptions): Observable<string> {
+  getText(controller: Server, url: string, options?: TextOptions): Observable<string> {
     options = this.getTextOptions(options);
-    const intercepted = this.getOptionsForServer<TextOptions>(server, url, options);
+    const intercepted = this.getOptionsForServer<TextOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
 
     return this.http
@@ -123,9 +123,9 @@ export class HttpServer {
       .pipe(catchError(this.errorHandler.handleError));
   }
 
-  getBlob(server: Server, url: string, options?: BlobOptions): Observable<Blob> {
+  getBlob(controller: Server, url: string, options?: BlobOptions): Observable<Blob> {
     options = this.getBlobOptions(options);
-    const intercepted = this.getOptionsForServer<BlobOptions>(server, url, options);
+    const intercepted = this.getOptionsForServer<BlobOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
 
     return this.http
@@ -133,9 +133,9 @@ export class HttpServer {
       .pipe(catchError(this.errorHandler.handleError));
   }
 
-  post<T>(server: Server, url: string, body: any | null, options?: JsonOptions): Observable<T> {
+  post<T>(controller: Server, url: string, body: any | null, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(server, url, options);
+    const intercepted = this.getOptionsForServer(controller, url, options);
     this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
 
     return this.http
@@ -143,9 +143,9 @@ export class HttpServer {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  put<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
+  put<T>(controller: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(server, url, options);
+    const intercepted = this.getOptionsForServer(controller, url, options);
     this.requestsNotificationEmitter.emit(`PUT ${intercepted.url}`);
 
     return this.http
@@ -153,9 +153,9 @@ export class HttpServer {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  delete<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+  delete<T>(controller: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(server, url, options);
+    const intercepted = this.getOptionsForServer(controller, url, options);
     this.requestsNotificationEmitter.emit(`DELETE ${intercepted.url}`);
 
     return this.http
@@ -163,25 +163,25 @@ export class HttpServer {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  patch<T>(server: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
+  patch<T>(controller: Server, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(server, url, options);
+    const intercepted = this.getOptionsForServer(controller, url, options);
     return this.http
       .patch<T>(intercepted.url, body, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  head<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+  head<T>(controller: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(server, url, options);
+    const intercepted = this.getOptionsForServer(controller, url, options);
     return this.http
       .head<T>(intercepted.url, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  options<T>(server: Server, url: string, options?: JsonOptions): Observable<T> {
+  options<T>(controller: Server, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(server, url, options);
+    const intercepted = this.getOptionsForServer(controller, url, options);
     return this.http
       .options<T>(intercepted.url, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -214,12 +214,12 @@ export class HttpServer {
     return options;
   }
 
-  private getOptionsForServer<T extends HeadersOptions>(server: Server, url: string, options: T) {
-    if (server && server.host && server.port) {
-      if (!server.protocol) {
-        server.protocol = location.protocol as ServerProtocol;
+  private getOptionsForServer<T extends HeadersOptions>(controller: Server, url: string, options: T) {
+    if (controller && controller.host && controller.port) {
+      if (!controller.protocol) {
+        controller.protocol = location.protocol as ServerProtocol;
       }
-      url = `${server.protocol}//${server.host}:${server.port}/${environment.current_version}${url}`;
+      url = `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}${url}`;
     } else {
       url = `/${environment.current_version}${url}`;
     }
@@ -228,8 +228,8 @@ export class HttpServer {
       options.headers = {};
     }
 
-    if (server && server.authToken && !server.tokenExpired) {
-      options.headers['Authorization'] = `Bearer ${server.authToken}`;
+    if (controller && controller.authToken && !controller.tokenExpired) {
+      options.headers['Authorization'] = `Bearer ${controller.authToken}`;
     }
 
     return {

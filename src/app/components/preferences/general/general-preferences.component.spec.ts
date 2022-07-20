@@ -48,7 +48,7 @@ describe('GeneralPreferencesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set correct server id', () => {
-    expect(component.serverId).toBe('1');
+  it('should set correct controller id', () => {
+    expect(component.controllerId).toBe('1');
   });
 });

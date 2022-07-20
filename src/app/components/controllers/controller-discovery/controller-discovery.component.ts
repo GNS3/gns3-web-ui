@@ -45,8 +45,8 @@ export class ControllerDiscoveryComponent implements OnInit {
     let local = await this.serverService.findAll();
 
     local.forEach((added) => {
-      discovered = discovered.filter((server) => {
-        return !(server.host == added.host && server.port == added.port);
+      discovered = discovered.filter((controller) => {
+        return !(controller.host == added.host && controller.port == added.port);
       });
     });
 
@@ -58,14 +58,14 @@ export class ControllerDiscoveryComponent implements OnInit {
   async discoverServers() {
     let discoveredServers: Server[] = [];
     this.defaultServers.forEach(async (testServer) => {
-      const server = new Server();
-      server.host = testServer.host;
-      server.port = testServer.port;
+      const controller = new Server();
+      controller.host = testServer.host;
+      controller.port = testServer.port;
       let version = await this.versionService
-        .get(server)
+        .get(controller)
         .toPromise()
         .catch((error) => null);
-      if (version) discoveredServers.push(server);
+      if (version) discoveredServers.push(controller);
     });
     return discoveredServers;
   }
@@ -74,8 +74,8 @@ export class ControllerDiscoveryComponent implements OnInit {
     forkJoin([from(this.serverService.findAll()).pipe(map((s: Server[]) => s)), this.discovery()]).subscribe(
       ([local, discovered]) => {
         local.forEach((added) => {
-          discovered = discovered.filter((server) => {
-            return !(server.host == added.host && server.port == added.port);
+          discovered = discovered.filter((controller) => {
+            return !(controller.host == added.host && controller.port == added.port);
           });
         });
         if (discovered.length > 0) {
@@ -106,25 +106,25 @@ export class ControllerDiscoveryComponent implements OnInit {
   }
 
   isServerAvailable(ip: string, port: number): Observable<Server> {
-    const server = new Server();
-    server.host = ip;
-    server.port = port;
-    return this.versionService.get(server).flatMap((version: Version) => Observable.of(server));
+    const controller = new Server();
+    controller.host = ip;
+    controller.port = port;
+    return this.versionService.get(controller).flatMap((version: Version) => Observable.of(controller));
   }
 
-  ignore(server: Server) {
+  ignore(controller: Server) {
     this.discoveredServer = null;
   }
 
-  accept(server: Server) {
-    if (server.name == null) {
-      server.name = server.host;
+  accept(controller: Server) {
+    if (controller.name == null) {
+      controller.name = controller.host;
     }
 
-    server.location = 'remote';
-    server.protocol = location.protocol as ServerProtocol;
+    controller.location = 'remote';
+    controller.protocol = location.protocol as ServerProtocol;
 
-    this.serverService.create(server).then((created: Server) => {
+    this.serverService.create(controller).then((created: Server) => {
       this.serverDatabase.addServer(created);
       this.discoveredServer = null;
     });

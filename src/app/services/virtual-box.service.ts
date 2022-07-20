@@ -10,34 +10,34 @@ import { HttpServer } from './http-server.service';
 export class VirtualBoxService {
   constructor(private httpServer: HttpServer) {}
 
-  getTemplates(server: Server): Observable<VirtualBoxTemplate[]> {
-    return this.httpServer.get<VirtualBoxTemplate[]>(server, '/templates') as Observable<VirtualBoxTemplate[]>;
+  getTemplates(controller: Server): Observable<VirtualBoxTemplate[]> {
+    return this.httpServer.get<VirtualBoxTemplate[]>(controller, '/templates') as Observable<VirtualBoxTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<VirtualBoxTemplate> {
+  getTemplate(controller: Server, template_id: string): Observable<VirtualBoxTemplate> {
     return this.httpServer.get<VirtualBoxTemplate>(
-      server,
+      controller,
       `/templates/${template_id}`
     ) as Observable<VirtualBoxTemplate>;
   }
 
-  addTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
+  addTemplate(controller: Server, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
     return this.httpServer.post<VirtualBoxTemplate>(
-      server,
+      controller,
       `/templates`,
       virtualBoxTemplate
     ) as Observable<VirtualBoxTemplate>;
   }
 
-  saveTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
+  saveTemplate(controller: Server, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
     return this.httpServer.put<VirtualBoxTemplate>(
-      server,
+      controller,
       `/templates/${virtualBoxTemplate.template_id}`,
       virtualBoxTemplate
     ) as Observable<VirtualBoxTemplate>;
   }
 
-  getVirtualMachines(server: Server): Observable<VirtualBoxVm[]> {
-    return this.httpServer.get<VirtualBoxVm[]>(server, `/computes/${environment.compute_id}/virtualbox/vms`) as Observable<VirtualBoxVm[]>;
+  getVirtualMachines(controller: Server): Observable<VirtualBoxVm[]> {
+    return this.httpServer.get<VirtualBoxVm[]>(controller, `/computes/${environment.compute_id}/virtualbox/vms`) as Observable<VirtualBoxVm[]>;
   }
 }

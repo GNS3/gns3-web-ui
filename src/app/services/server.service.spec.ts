@@ -3,24 +3,24 @@ import { Server } from '../models/server';
 export class MockedServerService {
   public servers: Server[] = [];
 
-  public create(server: Server) {
+  public create(controller: Server) {
     return new Promise((resolve, reject) => {
-      this.servers.push(server);
-      resolve(server);
+      this.servers.push(controller);
+      resolve(controller);
     });
   }
 
   public get(controller_id: number) {
-    const server = new Server();
-    server.id = controller_id;
-    return Promise.resolve(server);
+    const controller = new Server();
+    controller.id = controller_id;
+    return Promise.resolve(controller);
   }
 
   public getLocalServer(hostname: string, port: number) {
     return new Promise((resolve, reject) => {
-      const server = new Server();
-      server.id = 99;
-      resolve(server);
+      const controller = new Server();
+      controller.id = 99;
+      resolve(controller);
     });
   }
 
@@ -30,7 +30,7 @@ export class MockedServerService {
     });
   }
 
-  public getServerUrl(server: Server) {
-    return `${server.host}:${server.port}`;
+  public getServerUrl(controller: Server) {
+    return `${controller.host}:${controller.port}`;
   }
 }

@@ -31,7 +31,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddDockerTemplateComponent } from './add-docker-template.component';
 
 export class MockedDockerService {
-  public addTemplate(server: Server, dockerTemplate: DockerTemplate) {
+  public addTemplate(controller: Server, dockerTemplate: DockerTemplate) {
     return of(dockerTemplate);
   }
 }

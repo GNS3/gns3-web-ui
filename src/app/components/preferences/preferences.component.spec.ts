@@ -69,6 +69,6 @@ describe('PreferencesComponent', () => {
   });
 
   it('should save correct server id', () => {
-    expect(component.serverId).toBe('1');
+    expect(component.controllerId).toBe('1');
   });
 });

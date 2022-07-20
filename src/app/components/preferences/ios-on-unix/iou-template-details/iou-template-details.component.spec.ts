@@ -22,11 +22,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplateDetailsComponent } from './iou-template-details.component';
 
 export class MockedIouService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller: Server, template_id: string) {
     return of({} as IouTemplate);
   }
 
-  public saveTemplate(server: Server, iouTemplate: IouTemplate) {
+  public saveTemplate(controller: Server, iouTemplate: IouTemplate) {
     return of(iouTemplate);
   }
 }

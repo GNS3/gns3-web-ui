@@ -5,7 +5,7 @@ import { Server } from '../models/server';
 
 @Injectable()
 export class InfoService {
-  getInfoAboutNode(node: Node, server: Server): string[] {
+  getInfoAboutNode(node: Node, controller: Server): string[] {
     let infoList: string[] = [];
     if (node.node_type === 'cloud') {
       infoList.push(`Cloud ${node.name} is always on.`);
@@ -34,8 +34,8 @@ export class InfoService {
     } else if (node.node_type === 'vpcs') {
       infoList.push(`Node ${node.name} is ${node.status}.`);
     }
-    infoList.push(`Running on server ${server.name} with port ${server.port}.`);
-    infoList.push(`Server ID is ${server.id}.`);
+    infoList.push(`Running on controller ${controller.name} with port ${controller.port}.`);
+    infoList.push(`Server ID is ${controller.id}.`);
     if (node.console_type !== 'none' && node.console_type !== 'null') {
       infoList.push(`Console is on port ${node.console} and type is ${node.console_type}.`);
     }

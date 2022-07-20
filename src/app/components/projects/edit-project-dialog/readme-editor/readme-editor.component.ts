@@ -11,7 +11,7 @@ import { Project } from '../../../../models/project';
     styleUrls: ['./readme-editor.component.scss']
 })
 export class ReadmeEditorComponent implements OnInit {
-    @Input() server: Server;
+    @Input() controller: Server;
     @Input() project: Project;
 
     public markdown = ``;
@@ -21,7 +21,7 @@ export class ReadmeEditorComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.projectService.getReadmeFile(this.server, this.project.project_id).subscribe(file => {
+        this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe(file => {
             if (file) this.markdown = file;
         });
     }

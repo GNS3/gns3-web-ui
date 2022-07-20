@@ -22,21 +22,21 @@ export class ServerManagementService implements OnDestroy {
   }
 
   get statusChannel() {
-    return 'local-server-status-events';
+    return 'local-controller-status-events';
   }
 
-  async start(server: Server) {
+  async start(controller: Server) {
     var startingEvent: ServerStateEvent = {
-      serverName: server.name,
+      serverName: controller.name,
       status: 'starting',
       message: '',
     };
     this.serverStatusChanged.next(startingEvent);
-    return await this.electronService.remote.require('./local-server.js').startLocalServer(server);
+    return await this.electronService.remote.require('./local-server.js').startLocalServer(controller);
   }
 
-  async stop(server: Server) {
-    return await this.electronService.remote.require('./local-server.js').stopLocalServer(server);
+  async stop(controller: Server) {
+    return await this.electronService.remote.require('./local-server.js').stopLocalServer(controller);
   }
 
   async stopAll() {

@@ -16,7 +16,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   virtualBoxTemplate: VirtualBoxTemplate;
   isSymbolSelectionOpened: boolean = false;
   consoleTypes: string[] = [];
@@ -57,12 +57,12 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
       this.virtualBoxService
-        .getTemplate(this.server, template_id)
+        .getTemplate(this.controller, template_id)
         .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
           this.virtualBoxTemplate = virtualBoxTemplate;
           this.fillCustomAdapters();
@@ -115,7 +115,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'virtualbox', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'virtualbox', 'templates']);
   }
 
   onSave() {
@@ -125,7 +125,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
       this.fillCustomAdapters();
 
       this.virtualBoxService
-        .saveTemplate(this.server, this.virtualBoxTemplate)
+        .saveTemplate(this.controller, this.virtualBoxTemplate)
         .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
           this.toasterService.success('Changes saved');
         });

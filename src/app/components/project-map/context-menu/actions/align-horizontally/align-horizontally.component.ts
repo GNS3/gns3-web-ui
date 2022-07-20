@@ -9,7 +9,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './align-horizontally.component.html',
 })
 export class AlignHorizontallyActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
 
   constructor(private nodesDataSource: NodesDataSource, private nodeService: NodeService) {}
@@ -27,7 +27,7 @@ export class AlignHorizontallyActionComponent implements OnInit {
       node.y = averageY;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.server, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
     });
   }
 }

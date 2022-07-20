@@ -25,7 +25,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
-  server: Server;
+  controller: Server;
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
 
@@ -113,8 +113,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     })
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getImages();
 
@@ -140,7 +140,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   getImages() {
-    this.iosService.getImages(this.server).subscribe((images: IosImage[]) => {
+    this.iosService.getImages(this.controller).subscribe((images: IosImage[]) => {
       this.iosImages = images;
     });
   }
@@ -150,11 +150,11 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.iosNameForm.controls['templateName'].setValue(name);
     let fileName = event.target.files[0].name;
 
-    const url = this.iosService.getImagePath(this.server, fileName);
+    const url = this.iosService.getImagePath(this.controller, fileName);
     this.uploader.queue.forEach((elem) => (elem.url = url));
 
     const itemToUpload = this.uploader.queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
@@ -187,7 +187,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       if (this.networkModulesForTemplate.length > 0) this.completeModulesData();
       this.iosTemplate.compute_id = 'local';
 
-      this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
+      this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
         this.goBack();
       });
     } else {
@@ -237,7 +237,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'dynamips', 'templates']);
   }
 
   onImageChosen() {

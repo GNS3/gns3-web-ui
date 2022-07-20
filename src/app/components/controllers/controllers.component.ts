@@ -38,23 +38,23 @@ export class ControllersComponent implements OnInit, OnDestroy {
     private router: Router
   ) { }
 
-  getServers() {
+  getControllers() {
     const runningServersNames = this.serverManagement.getRunningServers();
 
-    this.serverService.findAll().then((servers: Server[]) => {
-      servers.forEach((server) => {
-        const serverIndex = runningServersNames.findIndex((serverName) => server.name === serverName);
+    this.serverService.findAll().then((controllers: Server[]) => {
+      controllers.forEach((controller) => {
+        const serverIndex = runningServersNames.findIndex((controllerName) => controller.name === controllerName);
         if (serverIndex >= 0) {
-          server.status = 'running';
+          controller.status = 'running';
         }
       });
 
-      servers.forEach((server) => {
-        this.serverService.checkServerVersion(server).subscribe(
+      controllers.forEach((controller) => {
+        this.serverService.checkServerVersion(controller).subscribe(
           (serverInfo) => {
             if (serverInfo.version.split('.')[0] >= 3) {
-              if (!server.protocol) server.protocol = location.protocol as ServerProtocol;
-              if (!this.serverDatabase.find(server.name)) this.serverDatabase.addServer(server);
+              if (!controller.protocol) controller.protocol = location.protocol as ServerProtocol;
+              if (!this.serverDatabase.find(controller.name)) this.serverDatabase.addServer(controller);
             }
           },
           (error) => { }
@@ -66,12 +66,12 @@ export class ControllersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isElectronApp = this.electronService.isElectronApp;
 
-    if (this.serverService && this.serverService.isServiceInitialized) this.getServers();
+    if (this.serverService && this.serverService.isServiceInitialized) this.getControllers();
 
     if (this.serverService && this.serverService.isServiceInitialized) {
       this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
         if (value) {
-          this.getServers();
+          this.getControllers();
         }
       });
     }
@@ -79,23 +79,23 @@ export class ControllersComponent implements OnInit, OnDestroy {
     this.dataSource = new ServerDataSource(this.serverDatabase);
 
     this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
-      const server = this.serverDatabase.find(serverStatus.serverName);
-      if (!server) {
+      const controller = this.serverDatabase.find(serverStatus.serverName);
+      if (!controller) {
         return;
       }
       if (serverStatus.status === 'starting') {
-        server.status = 'starting';
+        controller.status = 'starting';
       }
       if (serverStatus.status === 'stopped') {
-        server.status = 'stopped';
+        controller.status = 'stopped';
       }
       if (serverStatus.status === 'errored') {
-        server.status = 'stopped';
+        controller.status = 'stopped';
       }
       if (serverStatus.status === 'started') {
-        server.status = 'running';
+        controller.status = 'running';
       }
-      this.serverDatabase.update(server);
+      this.serverDatabase.update(controller);
       this.changeDetector.detectChanges();
     });
   }
@@ -105,12 +105,12 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   startLocalServer() {
-    const server = this.serverDatabase.data.find((n) => n.location === 'bundled' || 'local');
-    this.startServer(server);
+    const controller = this.serverDatabase.data.find((n) => n.location === 'bundled' || 'local');
+    this.startServer(controller);
   }
 
-  openProjects(server) {
-    this.router.navigate(['/controller', server.id, 'projects']);
+  openProjects(controller) {
+    this.router.navigate(['/controller', controller.id, 'projects']);
   }
 
   createModal() {
@@ -120,43 +120,43 @@ export class ControllersComponent implements OnInit, OnDestroy {
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe((server) => {
-      if (server) {
-        this.serverService.create(server).then((created: Server) => {
+    dialogRef.afterClosed().subscribe((controller) => {
+      if (controller) {
+        this.serverService.create(controller).then((created: Server) => {
           this.serverDatabase.addServer(created);
         });
       }
     });
   }
 
-  getServerStatus(server: Server) {
-    if (server.location === 'local') {
-      if (server.status === undefined) {
+  getServerStatus(controller: Server) {
+    if (controller.location === 'local') {
+      if (controller.status === undefined) {
         return 'stopped';
       }
-      return server.status;
+      return controller.status;
     }
   }
 
-  deleteServer(server: Server) {
+  deleteServer(controller: Server) {
     this.bottomSheet.open(ConfirmationBottomSheetComponent);
     let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete the server?';
+    bottomSheetRef.instance.message = 'Do you want to delete the controller?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.serverService.delete(server).then(() => {
-          this.serverDatabase.remove(server);
+        this.serverService.delete(controller).then(() => {
+          this.serverDatabase.remove(controller);
         });
       }
     });
   }
 
-  async startServer(server: Server) {
-    await this.serverManagement.start(server);
+  async startServer(controller: Server) {
+    await this.serverManagement.start(controller);
   }
 
-  async stopServer(server: Server) {
-    await this.serverManagement.stop(server);
+  async stopServer(controller: Server) {
+    await this.serverManagement.stop(controller);
   }
 }
 

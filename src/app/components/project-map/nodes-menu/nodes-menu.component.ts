@@ -20,7 +20,7 @@ import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-
 })
 export class NodesMenuComponent {
   @Input('project') project: Project;
-  @Input('server') server: Server;
+  @Input('controller') controller: Server;
 
   constructor(
     private nodeService: NodeService,
@@ -50,7 +50,7 @@ export class NodesMenuComponent {
           name: node.name,
           project_id: node.project_id,
           node_id: node.node_id,
-          server_url: this.serverService.getServerUrl(this.server),
+          server_url: this.serverService.getServerUrl(this.controller),
         };
         await this.electronService.remote.require('./console-executor.js').openConsole(request);
       }
@@ -64,31 +64,32 @@ export class NodesMenuComponent {
   }
 
   startNodes() {
-    this.nodeService.startAll(this.server, this.project).subscribe(() => {
+    this.nodeService.startAll(this.controller, this.project).subscribe(() => {
       this.toasterService.success('All nodes successfully started');
     });
   }
 
   stopNodes() {
-    this.nodeService.stopAll(this.server, this.project).subscribe(() => {
+    this.nodeService.stopAll(this.controller, this.project).subscribe(() => {
       this.toasterService.success('All nodes successfully stopped');
     });
   }
 
   suspendNodes() {
-    this.nodeService.suspendAll(this.server, this.project).subscribe(() => {
+    this.nodeService.suspendAll(this.controller, this.project).subscribe(() => {
       this.toasterService.success('All nodes successfully suspended');
     });
   }
 
   reloadNodes() {
-    this.nodeService.reloadAll(this.server, this.project).subscribe(() => {
+    this.nodeService.reloadAll(this.controller, this.project).subscribe(() => {
       this.toasterService.success('All nodes successfully reloaded');
     });
   }
 
   resetNodes() {
-    this.nodeService.resetAllNodes(this.server, this.project).subscribe(() => {
+    debugger
+    this.nodeService.resetAllNodes(this.controller, this.project).subscribe(() => {
       this.toasterService.success('Successfully reset all console connections');
     });
   }

@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   ethernetHubTemplate: EthernetHubTemplate;
   numberOfPorts: number;
   inputForm: FormGroup;
@@ -41,12 +41,12 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
       this.builtInTemplatesService
-        .getTemplate(this.server, template_id)
+        .getTemplate(this.controller, template_id)
         .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
           this.ethernetHubTemplate = ethernetHubTemplate;
           this.numberOfPorts = this.ethernetHubTemplate.ports_mapping.length;
@@ -55,7 +55,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-hubs']);
   }
 
   onSave() {
@@ -71,7 +71,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
       }
 
       this.builtInTemplatesService
-        .saveTemplate(this.server, this.ethernetHubTemplate)
+        .saveTemplate(this.controller, this.ethernetHubTemplate)
         .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
           this.toasterService.success('Changes saved');
         });

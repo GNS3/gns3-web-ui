@@ -20,7 +20,7 @@ import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/scre
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   @Input() project: Project;
-  @Input() server: Server;
+  @Input() controller: Server;
 
   public selectedDrawing: string;
   public drawTools = {
@@ -85,7 +85,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         let splittedImage = splittedSvg[i].split('"');
         let splittedUrl = splittedImage[1].split('/');
 
-        let elem = await this.symbolService.raw(this.server, splittedUrl[7]).toPromise();
+        let elem = await this.symbolService.raw(this.controller, splittedUrl[7]).toPromise();
         let splittedElement = elem.split('-->');
         splittedSvg[i] = splittedElement[1].substring(2);
         i += 2;
@@ -175,7 +175,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       let image = fileReader.result;
       let svg = this.createSvgFileForImage(image, imageToUpload);
       this.drawingService
-        .add(this.server, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
+        .add(this.controller, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
         .subscribe(() => {});
     };
 

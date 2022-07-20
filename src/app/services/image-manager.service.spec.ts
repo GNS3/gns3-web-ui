@@ -14,7 +14,7 @@ describe('ImageManagerService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('ImageManagerService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    controller = getTestServer();
     // service = TestBed.inject(ImageManagerService);
   });
   afterEach(() => {
@@ -34,7 +34,7 @@ describe('ImageManagerService', () => {
 
 
   it('should be get Images', inject([ImageManagerService], (service: ImageManagerService) => {
-    service.getImages(server).subscribe();
+    service.getImages(controller).subscribe();
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/images`);
     expect(req.request.method).toEqual('GET');
     expect(service).toBeTruthy();
@@ -53,7 +53,7 @@ describe('ImageManagerService', () => {
       updated_at: '',
     };
 
-    service.uploadedImage(server, install_appliance, image.filename, image).subscribe();
+    service.uploadedImage(controller, install_appliance, image.filename, image).subscribe();
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/images/upload/?install_appliances=true`);
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(image);

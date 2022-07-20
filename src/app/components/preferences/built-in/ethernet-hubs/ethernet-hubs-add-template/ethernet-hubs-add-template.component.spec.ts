@@ -24,7 +24,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsAddTemplateComponent } from './ethernet-hubs-add-template.component';
 
 export class MockedBuiltInTemplatesService {
-  public addTemplate(server: Server, ethernetHubTemplate: EthernetHubTemplate) {
+  public addTemplate(controller: Server, ethernetHubTemplate: EthernetHubTemplate) {
     return of(ethernetHubTemplate);
   }
 }
@@ -83,7 +83,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
   it('should call add template', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
     component.templateName = 'sample name';
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Server;
     component.formGroup.controls['templateName'].setValue('template name');
     component.formGroup.controls['numberOfPorts'].setValue('1');
 
@@ -96,7 +96,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = '';
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Server;
 
     component.addTemplate();
 
@@ -108,7 +108,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = 'sample name';
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Server;
 
     component.addTemplate();
 

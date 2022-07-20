@@ -12,7 +12,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './bring-to-front-action.component.html',
 })
 export class BringToFrontActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
 
@@ -35,14 +35,14 @@ export class BringToFrontActionComponent implements OnInit {
       node.z = maxZValue;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.server, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
     });
 
     this.drawings.forEach((drawing) => {
       drawing.z = maxZValue;
       this.drawingsDataSource.update(drawing);
 
-      this.drawingService.update(this.server, drawing).subscribe((drawing: Drawing) => {});
+      this.drawingService.update(this.controller, drawing).subscribe((drawing: Drawing) => {});
     });
   }
 }

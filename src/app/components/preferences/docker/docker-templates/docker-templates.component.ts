@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./docker-templates.component.scss', '../../preferences.component.scss'],
 })
 export class DockerTemplatesComponent implements OnInit {
-  server: Server;
+  controller: Server;
   dockerTemplates: DockerTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -25,14 +25,14 @@ export class DockerTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.dockerService.getTemplates(this.server).subscribe((dockerTemplates: DockerTemplate[]) => {
+    this.dockerService.getTemplates(this.controller).subscribe((dockerTemplates: DockerTemplate[]) => {
       this.dockerTemplates = dockerTemplates.filter((elem) => elem.template_type === 'docker' && !elem.builtin);
     });
   }
@@ -48,7 +48,7 @@ export class DockerTemplatesComponent implements OnInit {
   copyTemplate(template: DockerTemplate) {
     this.router.navigate([
       '/controller',
-      this.server.id,
+      this.controller.id,
       'preferences',
       'docker',
       'templates',

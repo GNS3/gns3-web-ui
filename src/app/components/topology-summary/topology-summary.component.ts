@@ -19,7 +19,7 @@ import { ThemeService } from '../../services/theme.service';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
 
   @Output() closeTopologySummary = new EventEmitter<boolean>();
@@ -59,7 +59,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.nodes = nodes;
         this.nodes.forEach((n) => {
           if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
-            n.console_host = this.server.host;
+            n.console_host = this.controller.host;
           }
         });
         if (this.sortingOrder === 'asc') {
@@ -70,11 +70,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.projectService.getStatistics(this.server, this.project.project_id).subscribe((stats) => {
+    this.projectService.getStatistics(this.controller, this.project.project_id).subscribe((stats) => {
       this.projectsStatistics = stats;
     });
 
-    this.computeService.getComputes(this.server).subscribe((computes) => {
+    this.computeService.getComputes(this.controller).subscribe((computes) => {
       this.computes = computes;
     });
 

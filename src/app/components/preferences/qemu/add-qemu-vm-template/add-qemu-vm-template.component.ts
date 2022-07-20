@@ -24,7 +24,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddQemuVmTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   qemuBinaries: QemuBinary[] = [];
   selectPlatform: string[] = [];
   selectedPlatform: string;
@@ -88,7 +88,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+      this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
         this.qemuImages = qemuImages;
       });
       this.toasterService.success('Image uploaded');
@@ -101,20 +101,20 @@ export class AddQemuVmTemplateComponent implements OnInit {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
       });
 
 
-      this.qemuService.getBinaries(this.server).subscribe((qemuBinaries: QemuBinary[]) => {
+      this.qemuService.getBinaries(this.controller).subscribe((qemuBinaries: QemuBinary[]) => {
         this.qemuBinaries = qemuBinaries;
         if (this.qemuBinaries[0]) this.selectedBinary = this.qemuBinaries[0];
       });
 
-      this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+      this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
         this.qemuImages = qemuImages;
       });
 
@@ -150,12 +150,12 @@ export class AddQemuVmTemplateComponent implements OnInit {
     let name = event.target.files[0].name;
     this.diskForm.controls['fileName'].setValue(name);
 
-    const url = this.qemuService.getImagePath(this.server, name);
+    const url = this.qemuService.getImagePath(this.controller, name);
     this.uploader.queue.forEach((elem) => (elem.url = url));
   
     const itemToUpload = this.uploader.queue[0];
     
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.server.authToken}]) 
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller.authToken}]) 
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar', data:{upload_file_type:'Image'}});
   }
@@ -169,7 +169,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'qemu', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates']);
   }
 
   addTemplate() {
@@ -187,7 +187,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.qemuTemplate.name = this.nameForm.get('templateName').value;
       this.qemuTemplate.compute_id = 'local';
 
-      this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
+      this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();
       });
     } else {

@@ -11,7 +11,7 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
   templateUrl: './edit-style-action.component.html',
 })
 export class EditStyleActionComponent implements OnChanges {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Input() drawing: Drawing;
   isImageDrawing: boolean = false;
@@ -29,7 +29,7 @@ export class EditStyleActionComponent implements OnChanges {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.drawing = this.drawing;
   }

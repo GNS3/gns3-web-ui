@@ -10,29 +10,29 @@ import { HttpServer } from './http-server.service';
 export class IouService {
   constructor(private httpServer: HttpServer) {}
 
-  getTemplates(server: Server): Observable<IouTemplate[]> {
-    return this.httpServer.get<IouTemplate[]>(server, '/templates') as Observable<IouTemplate[]>;
+  getTemplates(controller: Server): Observable<IouTemplate[]> {
+    return this.httpServer.get<IouTemplate[]>(controller, '/templates') as Observable<IouTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<any> {
-    return this.httpServer.get<IouTemplate>(server, `/templates/${template_id}`) as Observable<IouTemplate>;
+  getTemplate(controller: Server, template_id: string): Observable<any> {
+    return this.httpServer.get<IouTemplate>(controller, `/templates/${template_id}`) as Observable<IouTemplate>;
   }
 
-  getImages(server: Server): Observable<any> {
-    return this.httpServer.get<IouImage[]>(server, '/images?image_type=iou') as Observable<IouImage[]>;
+  getImages(controller: Server): Observable<any> {
+    return this.httpServer.get<IouImage[]>(controller, '/images?image_type=iou') as Observable<IouImage[]>;
   }
 
-  getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
+  getImagePath(controller: Server, filename: string): string {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-  addTemplate(server: Server, iouTemplate: any): Observable<any> {
-    return this.httpServer.post<IouTemplate>(server, `/templates`, iouTemplate) as Observable<IouTemplate>;
+  addTemplate(controller: Server, iouTemplate: any): Observable<any> {
+    return this.httpServer.post<IouTemplate>(controller, `/templates`, iouTemplate) as Observable<IouTemplate>;
   }
 
-  saveTemplate(server: Server, iouTemplate: any): Observable<any> {
+  saveTemplate(controller: Server, iouTemplate: any): Observable<any> {
     return this.httpServer.put<IouTemplate>(
-      server,
+      controller,
       `/templates/${iouTemplate.template_id}`,
       iouTemplate
     ) as Observable<IouTemplate>;

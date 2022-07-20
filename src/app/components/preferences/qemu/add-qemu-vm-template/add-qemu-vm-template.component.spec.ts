@@ -28,15 +28,15 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 
 export class MockedQemuService {
-  public addTemplate(server: Server, qemuTemplate: QemuTemplate) {
+  public addTemplate(controller: Server, qemuTemplate: QemuTemplate) {
     return of(qemuTemplate);
   }
 
-  public getBinaries(server: Server) {
+  public getBinaries(controller: Server) {
     return of([]);
   }
 
-  public getImages(server: Server) {
+  public getImages(controller: Server) {
     return of([]);
   }
 }
@@ -110,7 +110,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       version: 'version',
     };
     component.newImageSelected = true;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Server;
 
     component.addTemplate();
 
@@ -129,7 +129,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       version: 'version',
     };
     component.newImageSelected = true;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Server;
 
     component.addTemplate();
 
@@ -147,7 +147,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       version: 'version',
     };
     component.newImageSelected = true;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Server;
 
     component.addTemplate();
 

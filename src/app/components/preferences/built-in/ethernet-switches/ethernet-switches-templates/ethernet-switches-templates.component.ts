@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
   styleUrls: ['./ethernet-switches-templates.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetSwitchesTemplatesComponent implements OnInit {
-  server: Server;
+  controller: Server;
   ethernetSwitchesTemplates: EthernetSwitchTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -24,15 +24,15 @@ export class EthernetSwitchesTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
     this.builtInTemplatesService
-      .getTemplates(this.server)
+      .getTemplates(this.controller)
       .subscribe((ethernetSwitchesTemplates: EthernetSwitchTemplate[]) => {
         this.ethernetSwitchesTemplates = ethernetSwitchesTemplates.filter(
           (elem) => elem.template_type === 'ethernet_switch' && !elem.builtin

@@ -13,7 +13,7 @@ describe('VpcsService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let server: Server;
+  let controller: Server;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,7 +24,7 @@ describe('VpcsService', () => {
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
     httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    controller = getTestServer();
   });
 
   afterEach(() => {
@@ -50,7 +50,7 @@ describe('VpcsService', () => {
       template_type: 'vpcs',
     };
 
-    service.saveTemplate(server, template).subscribe();
+    service.saveTemplate(controller, template).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
     expect(req.request.method).toEqual('PUT');
@@ -72,7 +72,7 @@ describe('VpcsService', () => {
       template_type: 'vpcs',
     };
 
-    service.addTemplate(server, template).subscribe();
+    service.addTemplate(controller, template).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
     expect(req.request.method).toEqual('POST');

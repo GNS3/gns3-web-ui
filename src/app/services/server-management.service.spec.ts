@@ -7,12 +7,12 @@ describe('ServerManagementService', () => {
   let electronService;
   let callbacks;
   let removed;
-  let server;
+  let controller;
 
   beforeEach(() => {
     callbacks = [];
     removed = [];
-    server = undefined;
+    controller = undefined;
     electronService = {
       isElectronApp: true,
       ipcRenderer: {
@@ -30,10 +30,10 @@ describe('ServerManagementService', () => {
         require: (file) => {
           return {
             startLocalServer: (serv) => {
-              server = serv;
+              controller = serv;
             },
             stopLocalServer: (serv) => {
-              server = serv;
+              controller = serv;
             },
           };
         },
@@ -58,7 +58,7 @@ describe('ServerManagementService', () => {
   it('should attach when running as electron app', () => {
     TestBed.get(ServerManagementService);
     expect(callbacks.length).toEqual(1);
-    expect(callbacks[0].channel).toEqual('local-server-status-events');
+    expect(callbacks[0].channel).toEqual('local-controller-status-events');
   });
 
   it('should not attach when running as not electron app', () => {
@@ -70,7 +70,7 @@ describe('ServerManagementService', () => {
   it('should deattach when running as electron app', () => {
     const service: ServerManagementService = TestBed.get(ServerManagementService);
     service.ngOnDestroy();
-    expect(removed).toEqual(['local-server-status-events']);
+    expect(removed).toEqual(['local-controller-status-events']);
   });
 
   it('should not deattach when running as not electron app', () => {
@@ -80,15 +80,15 @@ describe('ServerManagementService', () => {
     expect(removed).toEqual([]);
   });
 
-  it('should start local server', async () => {
+  it('should start local controller', async () => {
     const service: ServerManagementService = TestBed.get(ServerManagementService);
     await service.start({ name: 'test' } as Server);
-    expect(server).toEqual({ name: 'test' });
+    expect(controller).toEqual({ name: 'test' });
   });
 
-  it('should stop local server', async () => {
+  it('should stop local controller', async () => {
     const service: ServerManagementService = TestBed.get(ServerManagementService);
     await service.stop({ name: 'test2' } as Server);
-    expect(server).toEqual({ name: 'test2' });
+    expect(controller).toEqual({ name: 'test2' });
   });
 });

@@ -37,7 +37,7 @@ import { Node } from '../../models/node';
 export class TextEditorComponent implements OnInit, OnDestroy {
   @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
   @Input('svg') svg: SVGSVGElement;
-  @Input('server') server: Server;
+  @Input('controller') controller: Server;
 
   leftPosition: string = '0px';
   topPosition: string = '0px';
@@ -185,7 +185,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           let link: Link = this.linksDataSource.get(this.editedLink.linkId);
           link.nodes.find((n) => n.node_id === this.editedNode.node_id).label.text = innerText;
 
-          this.linkService.updateLink(this.server, link).subscribe((link: Link) => {
+          this.linkService.updateLink(this.controller, link).subscribe((link: Link) => {
             rootElement
               .selectAll<SVGTextElement, TextElement>('text.editingMode')
               .attr('visibility', 'visible')

@@ -23,7 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
   uploadProgress: number = 0;
-  server: Server;
+  controller: Server;
   isImportEnabled: boolean = false;
   isFinishEnabled: boolean = false;
   isDeleteVisible: boolean = false;
@@ -99,7 +99,7 @@ export class ImportProjectDialogComponent implements OnInit {
     if (this.projectNameForm.invalid) {
       this.submitted = true;
     } else {
-      this.projectService.list(this.server).subscribe((projects: Project[]) => {
+      this.projectService.list(this.controller).subscribe((projects: Project[]) => {
         const projectName = this.projectNameForm.controls['projectName'].value;
         let existingProject = projects.find((project) => project.name === projectName);
 
@@ -115,7 +115,7 @@ export class ImportProjectDialogComponent implements OnInit {
   importProject() {
     const url = this.prepareUploadPath();
     this.uploader.queue.forEach((elem) => (elem.url = url));
-    this.uploader.authToken = `Bearer ${this.server.authToken}`
+    this.uploader.authToken = `Bearer ${this.controller.authToken}`
     this.isFirstStepCompleted = true;
     const itemToUpload = this.uploader.queue[0];
     this.uploader.uploadItem(itemToUpload);
@@ -136,8 +136,8 @@ export class ImportProjectDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {
       if (answer) {
-        this.projectService.close(this.server, existingProject.project_id).subscribe(() => {
-          this.projectService.delete(this.server, existingProject.project_id).subscribe(() => {
+        this.projectService.close(this.controller, existingProject.project_id).subscribe(() => {
+          this.projectService.delete(this.controller, existingProject.project_id).subscribe(() => {
             this.importProject();
           });
         });
@@ -164,7 +164,7 @@ export class ImportProjectDialogComponent implements OnInit {
   prepareUploadPath(): string {
     this.uuid = uuid();
     const projectName = this.projectNameForm.controls['projectName'].value;
-    return this.projectService.getUploadPath(this.server, this.uuid, projectName);
+    return this.projectService.getUploadPath(this.controller, this.uuid, projectName);
   }
 
   cancelUploading() {

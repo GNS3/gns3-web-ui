@@ -23,7 +23,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
-  server: Server;
+  controller: Server;
   iouTemplate: IouTemplate;
   isRemoteComputerChosen: boolean = false;
   newImageSelected: boolean = false;
@@ -85,8 +85,8 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
       this.getImages();
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
@@ -102,7 +102,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   }
 
   getImages() {
-    this.iouService.getImages(this.server).subscribe((images: IouImage[]) => {
+    this.iouService.getImages(this.controller).subscribe((images: IouImage[]) => {
       this.iouImages = images;
     });
   }
@@ -121,11 +121,11 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     let name = event.target.files[0].name;
     this.imageForm.controls['imageName'].setValue(name);
 
-    const url = this.iouService.getImagePath(this.server, name);
+    const url = this.iouService.getImagePath(this.controller, name);
     this.uploader.queue.forEach((elem) => (elem.url = url));
 
     const itemToUpload = this.uploader.queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
@@ -145,7 +145,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
 
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates']);
   }
 
   addTemplate() {
@@ -166,7 +166,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
         this.iouTemplate.serial_adapters = 2;
       }
 
-      this.iouService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
+      this.iouService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
         this.goBack();
       });
     } else {

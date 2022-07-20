@@ -16,7 +16,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VmwareTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller: Server;
   vmwareTemplate: VmwareTemplate;
   generalSettingsForm: FormGroup;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
@@ -49,11 +49,11 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.vmwareService.getTemplate(this.server, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
+      this.vmwareService.getTemplate(this.controller, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
         this.vmwareTemplate = vmwareTemplate;
         this.fillCustomAdapters();
       });
@@ -68,7 +68,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'vmware', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vmware', 'templates']);
   }
 
   onSave() {
@@ -77,7 +77,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     } else {
       this.fillCustomAdapters();
 
-      this.vmwareService.saveTemplate(this.server, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
+      this.vmwareService.saveTemplate(this.controller, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
         this.toasterService.success('Changes saved');
       });
     }

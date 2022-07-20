@@ -17,7 +17,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./ethernet-hubs-add-template.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetHubsAddTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   formGroup: FormGroup;
   isLocalComputerChosen: boolean = true;
@@ -40,8 +40,8 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
     });
   }
 
@@ -52,7 +52,7 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-hubs']);
   }
 
   addTemplate() {
@@ -74,7 +74,7 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
         });
       }
 
-      this.builtInTemplatesService.addTemplate(this.server, ethernetHubTemplate).subscribe(() => {
+      this.builtInTemplatesService.addTemplate(this.controller, ethernetHubTemplate).subscribe(() => {
         this.goBack();
       });
     } else {

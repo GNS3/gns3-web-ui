@@ -11,15 +11,15 @@ export class LoginGuard implements CanActivate {
   async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const controller_id = next.paramMap.get('controller_id');
     this.loginService.controller_id = controller_id;
-    let server = await this.serverService.get(parseInt(controller_id, 10));
+    let controller = await this.serverService.get(parseInt(controller_id, 10));
     try {
-      await this.loginService.getLoggedUser(server);
+      await this.loginService.getLoggedUser(controller);
     } catch (e) {}
-    return this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      if (server.authToken && !server.tokenExpired) {
+    return this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      if (controller.authToken && !controller.tokenExpired) {
         return true;
       }
-      this.router.navigate(['/controller', server.id, 'login'], { queryParams: { returnUrl: state.url } });
+      this.router.navigate(['/controller', controller.id, 'login'], { queryParams: { returnUrl: state.url } });
     });
   }
 }

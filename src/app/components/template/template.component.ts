@@ -18,7 +18,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./template.component.scss'],
 })
 export class TemplateComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
   overlay;
@@ -67,12 +67,12 @@ export class TemplateComponent implements OnInit, OnDestroy {
       this.templates.push(template);
     });
 
-    this.templateService.list(this.server).subscribe((listOfTemplates: Template[]) => {
+    this.templateService.list(this.controller).subscribe((listOfTemplates: Template[]) => {
       this.filteredTemplates = listOfTemplates;
       this.sortTemplates();
       this.templates = listOfTemplates;
     });
-    this.symbolService.list(this.server);
+    this.symbolService.list(this.controller);
     if (this.themeService.getActualTheme()  === 'light') this.isLightThemeEnabled = true;
     this.themeSubscription = this.themeService.themeChanged.subscribe((value: string) => {
       if (value === 'light-theme') this.isLightThemeEnabled = true;
@@ -120,13 +120,13 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   dragEnd(ev, template: Template) {
-    this.symbolService.raw(this.server, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
+    this.symbolService.raw(this.controller, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
       let width = +symbolSvg.split('width="')[1].split('"')[0] ? +symbolSvg.split('width="')[1].split('"')[0] : 0;
       let scale = this.scaleService.getScale();
 
       let nodeAddedEvent: NodeAddedEvent = {
         template: template,
-        server: 'local',
+        controller: 'local',
         numberOfNodes: 1,
         x: (this.startX + ev.x - this.project.scene_width / 2 - width / 2) * scale + window.scrollX,
         y: (this.startY + ev.y - this.project.scene_height / 2) * scale + window.scrollY,
@@ -139,7 +139,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(TemplateListDialogComponent, {
       width: '600px',
       data: {
-        server: this.server,
+        controller: this.controller,
         project: this.project,
       },
       autoFocus: false,
@@ -154,7 +154,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   getImageSourceForTemplate(template: Template) {
-    return this.symbolService.getSymbolFromTemplate(this.server, template);
+    return this.symbolService.getSymbolFromTemplate(this.controller, template);
     // let symbol = this.symbolService.getSymbolFromTemplate(template);
     // if (symbol) return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
     // return this.domSanitizer.bypassSecurityTrustUrl('data:image/svg+xml;base64,');

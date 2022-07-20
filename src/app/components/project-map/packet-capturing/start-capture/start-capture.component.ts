@@ -18,7 +18,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
   styleUrls: ['./start-capture.component.scss'],
 })
 export class StartCaptureDialogComponent implements OnInit {
-  server: Server;
+  controller: Server;
   project: Project;
   link: Link;
   linkTypes = [];
@@ -78,10 +78,10 @@ export class StartCaptureDialogComponent implements OnInit {
       };
 
       if (this.startProgram) {
-        this.packetCaptureService.startCapture(this.server, this.project, this.link, captureSettings.capture_file_name);
+        this.packetCaptureService.startCapture(this.controller, this.project, this.link, captureSettings.capture_file_name);
       }
 
-      this.linkService.startCaptureOnLink(this.server, this.link, captureSettings).subscribe(() => {
+      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe(() => {
         this.dialogRef.close();
       });
     }

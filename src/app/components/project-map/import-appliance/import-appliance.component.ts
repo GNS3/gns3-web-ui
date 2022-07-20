@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
 })
 export class ImportApplianceComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('server') server: Server;
+  @Input('controller') controller: Server;
   uploader: FileUploader;
   template;
 
@@ -49,13 +49,13 @@ export class ImportApplianceComponent implements OnInit {
       headers: ParsedResponseHeaders
     ) => {
       if (this.template.template_type === 'qemu') {
-        this.qemuService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+        this.qemuService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'iou') {
-        this.iouService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+        this.iouService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'dynamips') {
-        this.iosService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+        this.iosService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'docker') {
-        this.dockerService.addTemplate(this.server, this.template).subscribe(() => this.onUploadComplete());
+        this.dockerService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
       }
     };
   }
@@ -130,8 +130,8 @@ export class ImportApplianceComponent implements OnInit {
       template.default_name_format = '{name}-{0}';
       template.compute_id = 'vm';
       // qemu - VM
-      // iou - VM + main server
-      // dynamips - vm + main server
+      // iou - VM + main controller
+      // dynamips - vm + main controller
       // docker - vm
 
       if (template.category === 'guest') {
@@ -141,7 +141,7 @@ export class ImportApplianceComponent implements OnInit {
       }
       this.template = template;
 
-      const url = this.getUploadPath(this.server, template.template_type, name);
+      const url = this.getUploadPath(this.controller, template.template_type, name);
       this.uploader.queue.forEach((elem) => (elem.url = url));
       const itemToUpload = this.uploader.queue[0];
       this.uploader.uploadItem(itemToUpload);
@@ -149,7 +149,7 @@ export class ImportApplianceComponent implements OnInit {
     fileReader.readAsText(file);
   }
 
-  private getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/${emulator}/images/${filename}`;
+  private getUploadPath(controller: Server, emulator: string, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
   }
 }

@@ -12,7 +12,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./status-info.component.scss'],
 })
 export class StatusInfoComponent implements OnInit {
-  public serverId: string = '';
+  public controllerId: string = '';
   public computeStatistics: ComputeStatistics[] = [];
   public connectionFailed: boolean;
 
@@ -24,13 +24,13 @@ export class StatusInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.serverId = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerId = this.route.snapshot.paramMap.get('controller_id');
     this.getStatistics();
   }
 
   getStatistics() {
-    this.serverService.get(Number(this.serverId)).then((server: Server) => {
-      this.computeService.getStatistics(server).subscribe((statistics: ComputeStatistics[]) => {
+    this.serverService.get(Number(this.controllerId)).then((controller: Server) => {
+      this.computeService.getStatistics(controller).subscribe((statistics: ComputeStatistics[]) => {
         this.computeStatistics = statistics;
         setTimeout(() => {
           this.getStatistics();

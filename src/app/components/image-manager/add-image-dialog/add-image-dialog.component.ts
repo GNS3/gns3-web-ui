@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
   ],
 })
 export class AddImageDialogComponent implements OnInit {
-  server: Server;
+  controller: Server;
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
   selectFile: any = [];
@@ -36,7 +36,7 @@ export class AddImageDialogComponent implements OnInit {
   ) {}
 
   public ngOnInit() {
-    this.server = this.data;
+    this.controller =this.data;
 
     this.uploaderImage = new FileUploader({});
     this.uploaderImage.onAfterAddingFile = (file) => {
@@ -98,11 +98,11 @@ export class AddImageDialogComponent implements OnInit {
       let file = event;
       let fileReader: FileReader = new FileReader();
       fileReader.onloadend = () => {
-        const url = this.imageService.getImagePath(this.server, this.install_appliance, fileName);
+        const url = this.imageService.getImagePath(this.controller, this.install_appliance, fileName);
         const itemToUpload = this.uploaderImage.queue[i];
         itemToUpload.url = url;
         if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
-        (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }];
+        (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
         this.uploaderImage.uploadItem(itemToUpload);
       };
       fileReader.readAsText(file);

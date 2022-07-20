@@ -17,7 +17,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./ethernet-switches-add-template.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetSwitchesAddTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   formGroup: FormGroup;
   isLocalComputerChosen: boolean = true;
@@ -40,13 +40,13 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
     });
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'ethernet-switches']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
   }
 
   setServerType(serverType: string) {
@@ -78,7 +78,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
       }
 
       this.builtInTemplatesService
-        .addTemplate(this.server, ethernetSwitchTemplate)
+        .addTemplate(this.controller, ethernetSwitchTemplate)
         .subscribe((ethernetSwitchTemplate) => {
           this.goBack();
         });

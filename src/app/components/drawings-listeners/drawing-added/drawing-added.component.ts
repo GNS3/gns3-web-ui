@@ -16,7 +16,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-added.component.scss'],
 })
 export class DrawingAddedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Input() selectedDrawing: string;
   @Output() drawingSaved = new EventEmitter<boolean>();
@@ -49,7 +49,7 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
     this.drawingService
-      .add(this.server, this.project.project_id, evt.x, evt.y, svgText)
+      .add(this.controller, this.project.project_id, evt.x, evt.y, svgText)
       .subscribe((serverDrawing: Drawing) => {
         this.drawingsDataSource.add(serverDrawing);
         this.drawingSaved.emit(true);

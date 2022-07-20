@@ -7,21 +7,21 @@ import { HttpServer } from './http-server.service';
 export class BuiltInTemplatesService {
   constructor(private httpServer: HttpServer) {}
 
-  getTemplates(server: Server): Observable<any[]> {
-    return this.httpServer.get<any[]>(server, '/templates') as Observable<any[]>;
+  getTemplates(controller: Server): Observable<any[]> {
+    return this.httpServer.get<any[]>(controller, '/templates') as Observable<any[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<any> {
-    return this.httpServer.get<any>(server, `/templates/${template_id}`) as Observable<any>;
+  getTemplate(controller: Server, template_id: string): Observable<any> {
+    return this.httpServer.get<any>(controller, `/templates/${template_id}`) as Observable<any>;
   }
 
-  addTemplate(server: Server, builtInTemplate: any): Observable<any> {
-    return this.httpServer.post<any>(server, `/templates`, builtInTemplate) as Observable<any>;
+  addTemplate(controller: Server, builtInTemplate: any): Observable<any> {
+    return this.httpServer.post<any>(controller, `/templates`, builtInTemplate) as Observable<any>;
   }
 
-  saveTemplate(server: Server, builtInTemplate: any): Observable<any> {
+  saveTemplate(controller: Server, builtInTemplate: any): Observable<any> {
     return this.httpServer.put<any>(
-      server,
+      controller,
       `/templates/${builtInTemplate.template_id}`,
       builtInTemplate
     ) as Observable<any>;

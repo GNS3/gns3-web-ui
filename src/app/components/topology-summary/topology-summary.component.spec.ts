@@ -20,7 +20,7 @@ import { MockedLinksDataSource, MockedNodesDataSource } from '../project-map/pro
 import { TopologySummaryComponent } from './topology-summary.component';
 
 export class MockedComputeService {
-  getComputes(server: Server) {
+  getComputes(controller: Server) {
     return of([]);
   }
 }

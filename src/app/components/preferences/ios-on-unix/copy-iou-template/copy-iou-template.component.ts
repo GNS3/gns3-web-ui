@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-iou-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyIouTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   templateName: string = '';
   iouTemplate: IouTemplate;
   templateNameForm: FormGroup;
@@ -35,10 +35,10 @@ export class CopyIouTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.qemuService.getTemplate(this.server, template_id).subscribe((iouTemplate: IouTemplate) => {
+      this.qemuService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
         this.templateName = `Copy of ${this.iouTemplate.name}`;
       });
@@ -46,7 +46,7 @@ export class CopyIouTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates']);
   }
 
   addTemplate() {
@@ -54,7 +54,7 @@ export class CopyIouTemplateComponent implements OnInit {
       this.iouTemplate.template_id = uuid();
       this.iouTemplate.name = this.templateName;
 
-      this.qemuService.addTemplate(this.server, this.iouTemplate).subscribe((template: IouTemplate) => {
+      this.qemuService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
         this.goBack();
       });
     } else {

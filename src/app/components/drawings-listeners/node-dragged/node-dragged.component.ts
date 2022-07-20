@@ -15,7 +15,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./node-dragged.component.scss'],
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   private nodeDragged: Subscription;
 
@@ -34,7 +34,7 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
-    this.nodeService.updatePosition(this.server, this.project, node, node.x, node.y).subscribe((serverNode: Node) => {
+    this.nodeService.updatePosition(this.controller, this.project, node, node.x, node.y).subscribe((serverNode: Node) => {
       this.nodesDataSource.update(serverNode);
     });
   }

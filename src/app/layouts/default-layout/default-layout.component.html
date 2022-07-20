@@ -4,11 +4,11 @@
 
     <button mat-button routerLink="/controllers">Controllers</button>
 
-    <button *ngIf="!recentlyOpenedProjectId && serverIdProjectList" mat-button (click)="listProjects()">
+    <button *ngIf="!recentlyOpenedProjectId && controllerIdProjectList" mat-button (click)="listProjects()">
       Projects
     </button>
 
-    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedServerId && !isLoginPage" mat-button (click)="backToProject()">
+    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedcontrollerId && !isLoginPage" mat-button (click)="backToProject()">
       Back to project
     </button>
 

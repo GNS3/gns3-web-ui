@@ -53,22 +53,22 @@
 
             <button
               mat-icon-button
-              matTooltip="Start server"
+              matTooltip="Start controller"
               matTooltipClass="custom-tooltip"
               (click)="startServer(row)"
               *ngIf="row.location === 'local' && getServerStatus(row) === 'stopped'"
             >
-              <mat-icon aria-label="Start server">play_arrow</mat-icon>
+              <mat-icon aria-label="Start controller">play_arrow</mat-icon>
             </button>
 
             <button
               mat-icon-button
-              matTooltip="Stop server"
+              matTooltip="Stop controller"
               matTooltipClass="custom-tooltip"
               (click)="stopServer(row)"
               *ngIf="row.location === 'local' && getServerStatus(row) === 'running'"
             >
-              <mat-icon aria-label="Stop server">stop</mat-icon>
+              <mat-icon aria-label="Stop controller">stop</mat-icon>
             </button>
 
             <mat-spinner
@@ -94,7 +94,7 @@
 
     <div class="buttons-bar">
       <button *ngIf="isElectronApp" mat-raised-button class="button" (click)="startLocalServer()">
-        Start local server
+        Start local controller
       </button>
       <button mat-raised-button class="button" color="primary" (click)="createModal()">Add Controller</button>
     </div>

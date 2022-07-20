@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplatesComponent } from './iou-templates.component';
 
 export class MockedIouService {
-  public getTemplates(server: Server) {
+  public getTemplates(controller: Server) {
     return of([{} as IouTemplate]);
   }
 }

@@ -12,7 +12,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './move-layer-down-action.component.html',
 })
 export class MoveLayerDownActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
 
@@ -30,14 +30,14 @@ export class MoveLayerDownActionComponent implements OnInit {
       node.z--;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.server, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
     });
 
     this.drawings.forEach((drawing) => {
       drawing.z--;
       this.drawingsDataSource.update(drawing);
 
-      this.drawingService.update(this.server, drawing).subscribe((drawing: Drawing) => {});
+      this.drawingService.update(this.controller, drawing).subscribe((drawing: Drawing) => {});
     });
   }
 }

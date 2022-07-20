@@ -8,7 +8,7 @@ import { HttpServer } from './http-server.service';
 export class VersionService {
   constructor(private httpServer: HttpServer) {}
 
-  get(server: Server) {
-    return this.httpServer.get<Version>(server, '/version');
+  get(controller: Server) {
+    return this.httpServer.get<Version>(controller, '/version');
   }
 }

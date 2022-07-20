@@ -13,7 +13,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./ios-templates.component.scss', '../../preferences.component.scss'],
 })
 export class IosTemplatesComponent implements OnInit {
-  server: Server;
+  controller: Server;
   iosTemplates: IosTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -26,14 +26,14 @@ export class IosTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.iosService.getTemplates(this.server).subscribe((templates: IosTemplate[]) => {
+    this.iosService.getTemplates(this.controller).subscribe((templates: IosTemplate[]) => {
       this.iosTemplates = templates.filter((elem) => elem.template_type === 'dynamips' && !elem.builtin);
     });
   }
@@ -49,7 +49,7 @@ export class IosTemplatesComponent implements OnInit {
   copyTemplate(template: IosTemplate) {
     this.router.navigate([
       '/controller',
-      this.server.id,
+      this.controller.id,
       'preferences',
       'dynamips',
       'templates',

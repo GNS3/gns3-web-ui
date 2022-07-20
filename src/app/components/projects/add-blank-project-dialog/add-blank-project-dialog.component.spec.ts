@@ -53,7 +53,7 @@ export class MockedProjectService {
 describe('AddBlankProjectDialogComponent', () => {
   let component: AddBlankProjectDialogComponent;
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
-  let server: Server;
+  let controller: Server;
   let router = {
     navigate: jasmine.createSpy('navigate'),
   };
@@ -85,15 +85,15 @@ describe('AddBlankProjectDialogComponent', () => {
       declarations: [AddBlankProjectDialogComponent],
     }).compileComponents();
 
-    server = new Server();
-    server.host = 'localhost';
-    server.port = 80;
+    controller = new Server();
+    controller.host = 'localhost';
+    controller.port = 80;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddBlankProjectDialogComponent);
     component = fixture.componentInstance;
-    component.server = server;
+    component.controller =  controller;
     fixture.detectChanges();
   });
 

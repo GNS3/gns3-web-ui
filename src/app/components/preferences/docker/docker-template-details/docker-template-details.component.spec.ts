@@ -22,11 +22,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { DockerTemplateDetailsComponent } from './docker-template-details.component';
 
 export class MockedDockerService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller: Server, template_id: string) {
     return of({} as DockerTemplate);
   }
 
-  public saveTemplate(server: Server, dockerTemplate: DockerTemplate) {
+  public saveTemplate(controller: Server, dockerTemplate: DockerTemplate) {
     return of(dockerTemplate);
   }
 }

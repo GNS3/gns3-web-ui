@@ -16,7 +16,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./text-edited.component.scss'],
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Server;
   private textEdited: Subscription;
 
   constructor(
@@ -38,7 +38,7 @@ export class TextEditedComponent implements OnInit, OnDestroy {
 
     let drawing = this.drawingsDataSource.get(evt.textDrawingId);
 
-    this.drawingService.updateText(this.server, drawing, svgString).subscribe((serverDrawing: Drawing) => {
+    this.drawingService.updateText(this.controller, drawing, svgString).subscribe((serverDrawing: Drawing) => {
       this.drawingsDataSource.update(serverDrawing);
       this.drawingsEventSource.textSaved.emit(true);
     });

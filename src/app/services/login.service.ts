@@ -10,7 +10,7 @@ export class LoginService {
   controller_id:string =''
   constructor(private httpServer: HttpServer) {}
 
-  login(server: Server, username: string, password: string) {
+  login(controller: Server, username: string, password: string) {
     const payload = new HttpParams()
         .set('username', username)
         .set('password', password);
@@ -19,13 +19,13 @@ export class LoginService {
         headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
     };
 
-    return this.httpServer.post<AuthResponse>(server, '/users/login', payload, options);
+    return this.httpServer.post<AuthResponse>(controller, '/users/login', payload, options);
   }
 
-  getLoggedUser(server: Server) {
-    return this.httpServer.get(server, "/users/me").toPromise()
+  getLoggedUser(controller: Server) {
+    return this.httpServer.get(controller, "/users/me").toPromise()
   }
-  async getLoggedUserRefToken(server: Server,current_user):Promise<any> {
-    return await this.httpServer.post<AuthResponse>(server, "/users/authenticate", {"username":current_user.username,"password":current_user.password}).toPromise()
+  async getLoggedUserRefToken(controller: Server,current_user):Promise<any> {
+    return await this.httpServer.post<AuthResponse>(controller, "/users/authenticate", {"username":current_user.username,"password":current_user.password}).toPromise()
   }
 }

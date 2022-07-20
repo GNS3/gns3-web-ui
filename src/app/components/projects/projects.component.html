@@ -25,7 +25,7 @@
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a [routerLink]="['/controller', server.id, 'project', row.project_id]" class="table-link">{{ row.name }}</a>
+            <a [routerLink]="['/controller', controller.id, 'project', row.project_id]" class="table-link">{{ row.name }}</a>
           </mat-cell>
         </ng-container>
 

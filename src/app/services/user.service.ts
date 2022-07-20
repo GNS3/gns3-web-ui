@@ -10,7 +10,7 @@ export class UserService {
     private httpServer: HttpServer
   ) {}
 
-  getInformationAboutLoggedUser(server: Server) {
-    return this.httpServer.get<User>(server, '/users/me/');
+  getInformationAboutLoggedUser(controller: Server) {
+    return this.httpServer.get<User>(controller, '/users/me/');
   }
 }

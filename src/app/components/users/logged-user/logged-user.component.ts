@@ -13,7 +13,7 @@ import { Server } from '../../../models/server';
 })
 export class LoggedUserComponent implements OnInit {
     public user: User;
-    public server: Server;
+    public controller: Server;
 
     constructor(
         private route: ActivatedRoute,
@@ -23,10 +23,10 @@ export class LoggedUserComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        let serverId = this.route.snapshot.paramMap.get('controller_id');
-        this.serverService.get(+serverId).then((server: Server) => {
-            this.server = server;
-            this.userService.getInformationAboutLoggedUser(server).subscribe((response: any) => {
+        let controllerId = this.route.snapshot.paramMap.get('controller_id');
+        this.serverService.get(+controllerId).then((controller: Server) => {
+            this.controller = controller;
+            this.userService.getInformationAboutLoggedUser(controller).subscribe((response: any) => {
                 this.user = response;
             });
         });
@@ -38,7 +38,7 @@ export class LoggedUserComponent implements OnInit {
         selBox.style.left = '0';
         selBox.style.top = '0';
         selBox.style.opacity = '0';
-        selBox.value = this.server.authToken;
+        selBox.value = this.controller.authToken;
         document.body.appendChild(selBox);
         selBox.focus();
         selBox.select();

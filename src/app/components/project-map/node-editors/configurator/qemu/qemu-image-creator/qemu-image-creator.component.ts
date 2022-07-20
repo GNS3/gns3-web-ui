@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['../../configurator.component.scss'],
 })
 export class QemuImageCreatorComponent implements OnInit {
-  server: Server;
+  controller: Server;
   qemuImg: QemuImg;
 
   formatOptions: string[] = ['qcow2', 'qcow', 'vhd', 'vdi', 'vmdk', 'raw'];
@@ -101,7 +101,7 @@ export class QemuImageCreatorComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid && this.qemuImg.format) {
-      this.qemuService.addImage(this.server, this.qemuImg).subscribe(() => {
+      this.qemuService.addImage(this.controller, this.qemuImg).subscribe(() => {
         this.dialogRef.close();
       });
     } else {

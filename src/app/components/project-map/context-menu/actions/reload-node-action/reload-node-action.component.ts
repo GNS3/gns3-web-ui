@@ -8,7 +8,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './reload-node-action.component.html',
 })
 export class ReloadNodeActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() nodes: Node[];
 
   filteredNodes: Node[] = [];
@@ -30,7 +30,7 @@ export class ReloadNodeActionComponent implements OnInit {
 
   reloadNodes() {
     this.filteredNodes.forEach((node) => {
-      this.nodeService.reload(this.server, node).subscribe((n: Node) => {});
+      this.nodeService.reload(this.controller, node).subscribe((n: Node) => {});
     });
   }
 }

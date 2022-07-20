@@ -13,9 +13,9 @@ import { ToasterService } from '../../services/toaster.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class DirectLinkComponent implements OnInit {
-  public serverOptionsVisibility = false;
-  public serverIp;
-  public serverPort;
+  public controllerOptionsVisibility = false;
+  public controllerIp;
+  public controllerPort;
   public projectId;
 
   protocols = [
@@ -42,27 +42,27 @@ export class DirectLinkComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if (this.serverService.isServiceInitialized) this.getServers();
+    if (this.serverService.isServiceInitialized) this.getControllers();
 
     this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
-        this.getServers();
+        this.getControllers();
       }
     });
   }
 
-  private async getServers() {
-    this.serverIp = this.route.snapshot.paramMap.get('server_ip');
-    this.serverPort = +this.route.snapshot.paramMap.get('server_port');
+  private async getControllers() {
+    this.controllerIp = this.route.snapshot.paramMap.get('server_ip');
+    this.controllerPort = +this.route.snapshot.paramMap.get('server_port');
     this.projectId = this.route.snapshot.paramMap.get('project_id');
 
-    const servers = await this.serverService.findAll();
-    const server = servers.filter((server) => server.host === this.serverIp && server.port === this.serverPort)[0];
+    const controllers = await this.serverService.findAll();
+    const controller = controllers.filter((controller) => controller.host === this.controllerIp && controller.port === this.controllerPort)[0];
 
-    if (server) {
-      this.router.navigate(['/controller', server.id, 'project', this.projectId]);
+    if (controller) {
+      this.router.navigate(['/controller', controller.id, 'project', this.projectId]);
     } else {
-      this.serverOptionsVisibility = true;
+      this.controllerOptionsVisibility = true;
     }
   }
 
@@ -73,8 +73,8 @@ export class DirectLinkComponent implements OnInit {
     }
 
     let serverToAdd: Server = new Server();
-    serverToAdd.host = this.serverIp;
-    serverToAdd.port = this.serverPort;
+    serverToAdd.host = this.controllerIp;
+    serverToAdd.port = this.controllerPort;
 
     serverToAdd.name = this.serverForm.get('name').value;
     serverToAdd.location = this.serverForm.get('location').value;

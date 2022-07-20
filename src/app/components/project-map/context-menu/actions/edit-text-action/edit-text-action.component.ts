@@ -14,7 +14,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   templateUrl: './edit-text-action.component.html',
 })
 export class EditTextActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() project: Project;
   @Input() drawing: Drawing;
   @Input() node: Node;
@@ -33,7 +33,7 @@ export class EditTextActionComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.drawing = this.drawing;
     instance.node = this.node;

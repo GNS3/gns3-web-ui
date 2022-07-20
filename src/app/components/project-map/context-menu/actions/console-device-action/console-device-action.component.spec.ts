@@ -16,7 +16,7 @@ describe('ConsoleDeviceActionComponent', () => {
   let component: ConsoleDeviceActionComponent;
   let fixture: ComponentFixture<ConsoleDeviceActionComponent>;
   let electronService;
-  let server: Server;
+  let controller: Server;
   let settingsService: SettingsService;
   let mockedServerService: MockedServerService;
   let mockedToaster: MockedToasterService;
@@ -37,7 +37,7 @@ describe('ConsoleDeviceActionComponent', () => {
     mockedServerService = new MockedServerService();
     mockedToaster = new MockedToasterService();
 
-    server = { host: 'localhost', port: 222 } as Server;
+    controller = { host: 'localhost', port: 222 } as Server;
   });
 
   beforeEach(async() => {
@@ -83,7 +83,7 @@ describe('ConsoleDeviceActionComponent', () => {
       ];
 
       component.nodes = nodes;
-      component.server = server;
+      component.controller =  controller;
 
       settingsService.setConsoleSettings('command');
       spyOn(component, 'openConsole');

@@ -16,7 +16,7 @@ import { PortsComponent } from '../../../common/ports/ports.component';
 })
 export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  server: Server;
+  controller: Server;
   ethernetSwitchTemplate: EthernetSwitchTemplate;
   inputForm: FormGroup;
   isSymbolSelectionOpened: boolean = false;
@@ -42,12 +42,12 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
       this.getConfiguration();
       this.builtInTemplatesService
-        .getTemplate(this.server, template_id)
+        .getTemplate(this.controller, template_id)
         .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
           this.ethernetSwitchTemplate = ethernetSwitchTemplate;
         });
@@ -60,7 +60,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'builtin', 'ethernet-switches']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
   }
 
   onSave() {
@@ -69,7 +69,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     } else {
       this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
       this.builtInTemplatesService
-        .saveTemplate(this.server, this.ethernetSwitchTemplate)
+        .saveTemplate(this.controller, this.ethernetSwitchTemplate)
         .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
           this.toasterService.success('Changes saved');
         });

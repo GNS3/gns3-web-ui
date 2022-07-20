@@ -8,9 +8,9 @@ const { app } = require('electron')
 
 const isWin = /^win/.test(process.platform);
 
-let runningServers = {};
+let runningControllers = {};
 
-exports.getLocalServerPath = async () => {
+exports.getLocalControllerPath = async () => {
   let binary = isWin ? 'gns3server.exe': 'gns3server';
   return findBinary('exe.', binary);
 }
@@ -20,21 +20,21 @@ exports.getUbridgePath = async () => {
   return findBinary('ubridge', binary);
 }
 
-exports.startLocalServer = async (server) => {
-  return await run(server, {
+exports.startLocalController = async (controller) => {
+  return await run(controller, {
     logStdout: true
   });
 }
 
-exports.stopLocalServer = async (server) => {
-  return await stop(server.name);
+exports.stopLocalServer = async (controller) => {
+  return await stop(controller.name);
 }
 
-exports.getRunningServers = () => {
-  return Object.keys(runningServers);
+exports.getrunningControllers = () => {
+  return Object.keys(runningControllers);
 }
 
-exports.stopAllLocalServers = async () => {
+exports.stopAllLocalControllers = async () => {
   return await stopAll();
 }
 
@@ -77,33 +77,33 @@ async function findBinaryInDirectory(baseDirectory, binaryDirectory, filename) {
 }
 
 
-function getServerArguments(server, overrides, configPath) {
-  let serverArguments = [];
-  if(server.host) {
-    serverArguments.push('--host');
-    serverArguments.push(server.host);
+function getControllerArguments(controller, overrides, configPath) {
+  let controllerArguments = [];
+  if(controller.host) {
+    controllerArguments.push('--host');
+    controllerArguments.push(controller.host);
   }
-  if(server.port) {
-    serverArguments.push('--port');
-    serverArguments.push(server.port);
+  if(controller.port) {
+    controllerArguments.push('--port');
+    controllerArguments.push(controller.port);
   }
 
-  serverArguments.push('--local');
+  controllerArguments.push('--local');
 
   if(configPath) {
-    serverArguments.push('--config');
-    serverArguments.push(configPath);
+    controllerArguments.push('--config');
+    controllerArguments.push(configPath);
   }
 
-  return serverArguments;
+  return controllerArguments;
 }
 
-function getChannelForServer(server) {
-  return `local-server-run-${server.name}`;
+function getChannelForController(controller) {
+  return `local-controller-run-${controller.name}`;
 }
 
 function notifyStatus(status) {
-  ipcMain.emit('local-server-status-events', status);
+  ipcMain.emit('local-controller-status-events', status);
 }
 
 function filterOutput(line) {
@@ -120,44 +120,44 @@ function filterOutput(line) {
 }
 
 async function stopAll() {
-  for(var serverName in runningServers) {
-    let result, error = await stop(serverName);
+  for(var controllerName in runningControllers) {
+    let result, error = await stop(controllerName);
   }
-  console.log(`Stopped all servers`);
+  console.log(`Stopped all controllers`);
 }
 
-async function stop(serverName) {
+async function stop(controllerName) {
   let pid = undefined;
 
-  const runningServer = runningServers[serverName];
+  const runningServer = runningControllers[controllerName];
 
   if(runningServer !== undefined && runningServer.process) {
     pid = runningServer.process.pid;
   }
 
-  console.log(`Stopping '${serverName}' with PID='${pid}'`);
+  console.log(`Stopping '${controllerName}' with PID='${pid}'`);
   
   const stopped = new Promise((resolve, reject) => {
     if(pid === undefined) {
-      resolve(`Server '${serverName} is already stopped`);
-      delete runningServers[serverName];
+      resolve(`Controller '${controllerName} is already stopped`);
+      delete runningControllers[controllerName];
       return;
     }
 
     kill(pid, (error) => {
       if(error) {
-        console.error(`Error occured during stopping '${serverName}' with PID='${pid}'`);
+        console.error(`Error occured during stopping '${controllerName}' with PID='${pid}'`);
         reject(error);
       }
       else {
-        delete runningServers[serverName];
-        console.log(`Stopped '${serverName}' with PID='${pid}'`);
-        resolve(`Stopped '${serverName}' with PID='${pid}'`);
+        delete runningControllers[controllerName];
+        console.log(`Stopped '${controllerName}' with PID='${pid}'`);
+        resolve(`Stopped '${controllerName}' with PID='${pid}'`);
 
         notifyStatus({
-          serverName: serverName,
+          controllerName: controllerName,
           status: 'stopped',
-          message: `Server '${serverName}' stopped'`
+          message: `Controller '${controllerName}' stopped'`
         });
       }
     });
@@ -166,11 +166,11 @@ async function stop(serverName) {
   return stopped;
 }
 
-async function getIniFile(server) {
-  return path.join(app.getPath('userData'), `gns3_server_${server.id}.ini`);
+async function getIniFile(controller) {
+  return path.join(app.getPath('userData'), `gns3_controller_${controller.id}.ini`);
 }
 
-async function configure(configPath, server) {
+async function configure(configPath, controller) {
   if(!fs.existsSync(configPath)) {
     fs.closeSync(fs.openSync(configPath, 'w'));
     console.log(`Configuration file '${configPath}' has been created.`);
@@ -178,20 +178,20 @@ async function configure(configPath, server) {
 
   var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
 
-  if(server.path) {
-    config.path = server.path;
+  if(controller.path) {
+    config.path = controller.path;
   }
-  if(server.host) {
-    config.host = server.host;
+  if(controller.host) {
+    config.host = controller.host;
   }
-  if(server.port) {
-    config.port = server.port;
+  if(controller.port) {
+    config.port = controller.port;
   }
-  if(server.ubridge_path) {
-    config.ubridge_path = server.ubridge_path;
+  if(controller.ubridge_path) {
+    config.ubridge_path = controller.ubridge_path;
   }
 
-  fs.writeFileSync(configPath, ini.stringify(config, { section: 'Server' }));
+  fs.writeFileSync(configPath, ini.stringify(config, { section: 'Controller' }));
 }
 
 async function setPATHEnv() {
@@ -216,7 +216,7 @@ async function setPATHEnv() {
   process.env.PATH = extra.join(";");
 }
 
-async function run(server, options) {
+async function run(controller, options) {
   if(!options) {
     options = {};
   }
@@ -226,34 +226,34 @@ async function run(server, options) {
 
   console.log(`Configuring`);
 
-  const configPath = await getIniFile(server);
-  await configure(configPath, server);
+  const configPath = await getIniFile(controller);
+  await configure(configPath, controller);
 
   console.log(`Setting up PATH`);
   await setPATHEnv();
 
-  console.log(`Running '${server.path}'`);
+  console.log(`Running '${controller.path}'`);
 
-  let serverProcess = spawn(server.path, getServerArguments(server, {}, configPath));
+  let controllerProcess = spawn(controller.path, getControllerArguments(controller, {}, configPath));
 
   notifyStatus({
-    serverName: server.name,
+    controllerName: controller.name,
     status: 'started',
-    message: `Server '${server.name}' started'`
+    message: `Controller '${controller.name}' started'`
   });
   
-  runningServers[server.name] = {
-    process: serverProcess
+  runningControllers[controller.name] = {
+    process: controllerProcess
   };
 
-  serverProcess.stdout.on('data', function(data) {
+  controllerProcess.stdout.on('data', function(data) {
     const line = data.toString();
     const { isCritical, errorMessage } = filterOutput(line);
     if(isCritical) {
       notifyStatus({
-        serverName: server.name,
+        controllerName: controller.name,
         status: 'stderr',
-        message: `Server reported error: '${errorMessage}`
+        message: `Controller reported error: '${errorMessage}`
       });
     }
 
@@ -262,25 +262,25 @@ async function run(server, options) {
     }
   });
 
-  serverProcess.stderr.on('data', function(data) {
+  controllerProcess.stderr.on('data', function(data) {
     if(logSterr) {
       console.log(data.toString());
     }
   });
 
-  serverProcess.on('exit', (code, signal) => {
+  controllerProcess.on('exit', (code, signal) => {
     notifyStatus({
-      serverName: server.name,
+      controllerName: controller.name,
       status: 'errored',
-      message: `Server '${server.name}' has exited with status='${code}'`
+      message: `controller '${controller.name}' has exited with status='${code}'`
     });
   });
 
-  serverProcess.on('error', (err) => {
+  controllerProcess.on('error', (err) => {
     notifyStatus({
-      serverName: server.name,
+      controllerName: controller.name,
       status: 'errored',
-      message: `Server errored: '${err}`
+      message: `Controller errored: '${err}`
     });
   });
 
@@ -297,9 +297,9 @@ async function main() {
 }
 
 if(ipcMain) {
-  ipcMain.on('local-server-run', async function (event, server) {
-    const responseChannel = getChannelForServer();
-    await run(server);
+  ipcMain.on('local-controller-run', async function (event, controller) {
+    const responseChannel = getChannelForController();
+    await run(controller);
     event.sender.send(responseChannel, {
       success: true
     });

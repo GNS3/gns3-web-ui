@@ -16,7 +16,7 @@ import { VirtualBoxService } from '../../../../services/virtual-box.service';
   styleUrls: ['./add-virtual-box-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVirtualBoxTemplateComponent implements OnInit {
-  server: Server;
+  controller: Server;
   virtualMachines: VirtualBoxVm[];
   selectedVM: VirtualBoxVm;
   virtualBoxTemplate: VirtualBoxTemplate;
@@ -38,10 +38,10 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+      this.controller = controller;
 
-      this.virtualBoxService.getVirtualMachines(this.server).subscribe((virtualMachines: VirtualBoxVm[]) => {
+      this.virtualBoxService.getVirtualMachines(this.controller).subscribe((virtualMachines: VirtualBoxVm[]) => {
         this.virtualMachines = virtualMachines;
 
         this.templateMocksService.getVirtualBoxTemplate().subscribe((template: VirtualBoxTemplate) => {
@@ -52,7 +52,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.server.id, 'preferences', 'virtualbox', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'virtualbox', 'templates']);
   }
 
   addTemplate() {
@@ -62,7 +62,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
       this.virtualBoxTemplate.ram = this.selectedVM.ram;
       this.virtualBoxTemplate.template_id = uuid();
 
-      this.virtualBoxService.addTemplate(this.server, this.virtualBoxTemplate).subscribe(() => {
+      this.virtualBoxService.addTemplate(this.controller, this.virtualBoxTemplate).subscribe(() => {
         this.goBack();
       });
     } else {

@@ -27,12 +27,12 @@ describe('TemplateService', () => {
     httpTestingController.verify();
   });
 
-  it('should ask for the list from server', () => {
-    const server = new Server();
-    server.host = '127.0.0.1';
-    server.port = 3080;
+  it('should ask for the list from controller', () => {
+    const controller = new Server();
+    controller.host = '127.0.0.1';
+    controller.port = 3080;
 
-    service.list(server).subscribe(() => {});
+    service.list(controller).subscribe(() => {});
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
     expect(req.request.url).toBe(`http://127.0.0.1:3080/${environment.current_version}/templates`);

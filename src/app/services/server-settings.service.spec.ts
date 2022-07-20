@@ -8,11 +8,11 @@ import { HttpServer } from './http-server.service';
 import { ServerSettingsService } from './server-settings.service';
 
 export class MockedServerSettingsService {
-  getSettingsForQemu(server: Server) {
+  getSettingsForQemu(controller: Server) {
     return of([]);
   }
 
-  updateSettingsForQemu(server: Server, qemuSettings: QemuSettings) {
+  updateSettingsForQemu(controller: Server, qemuSettings: QemuSettings) {
     return of([]);
   }
 }

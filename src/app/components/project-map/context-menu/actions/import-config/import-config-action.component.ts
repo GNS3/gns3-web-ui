@@ -12,7 +12,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   styleUrls: ['./import-config-action.component.scss'],
 })
 export class ImportConfigActionComponent {
-  @Input() server: Server;
+  @Input() controller: Server;
   @Input() node: Node;
   @ViewChild('fileInput') fileInput: ElementRef;
   configType: string;
@@ -47,11 +47,11 @@ export class ImportConfigActionComponent {
       }
 
       if (this.configType === 'startup-config') {
-        this.nodeService.saveConfiguration(this.server, this.node, content).subscribe(() => {
+        this.nodeService.saveConfiguration(this.controller, this.node, content).subscribe(() => {
           this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
         });
       } else if (this.configType === 'private-config') {
-        this.nodeService.savePrivateConfiguration(this.server, this.node, content).subscribe(() => {
+        this.nodeService.savePrivateConfiguration(this.controller, this.node, content).subscribe(() => {
           this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
         });
       }
