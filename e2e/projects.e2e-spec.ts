@@ -1,6 +1,6 @@
 import { TestHelper } from './helpers/common.po';
 import { ProjectsPage } from './helpers/project.po';
-import { ControllersPage } from './helpers/server.po';
+import { ControllersPage } from './helpers/controller.po';
 
 describe('Projects page', () => {
   let controllersPage: ControllersPage;
@@ -18,7 +18,7 @@ describe('Projects page', () => {
     controllersPage.maximizeWindow();
     await controllersPage.navigateToControllersPage();
     await controllersPage.clickAddController();
-    await controllersPage.navigateToServerProjects();
+    await controllersPage.navigateToControllerProjects();
     helper.sleep(2000);
 
     //act

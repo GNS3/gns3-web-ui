@@ -26,7 +26,7 @@ exports.startLocalController = async (controller) => {
   });
 }
 
-exports.stopLocalServer = async (controller) => {
+exports.stopLocalController = async (controller) => {
   return await stop(controller.name);
 }
 
@@ -129,10 +129,10 @@ async function stopAll() {
 async function stop(controllerName) {
   let pid = undefined;
 
-  const runningServer = runningControllers[controllerName];
+  const runningController = runningControllers[controllerName];
 
-  if(runningServer !== undefined && runningServer.process) {
-    pid = runningServer.process.pid;
+  if(runningController !== undefined && runningController.process) {
+    pid = runningController.process.pid;
   }
 
   console.log(`Stopping '${controllerName}' with PID='${pid}'`);

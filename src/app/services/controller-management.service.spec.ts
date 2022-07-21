@@ -29,10 +29,10 @@ describe('ControllerManagementService', () => {
       remote: {
         require: (file) => {
           return {
-            startLocalServer: (serv) => {
+            startLocalController: (serv) => {
               controller = serv;
             },
-            stopLocalServer: (serv) => {
+            stopLocalController: (serv) => {
               controller = serv;
             },
           };

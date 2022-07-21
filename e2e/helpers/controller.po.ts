@@ -28,7 +28,7 @@ export class ControllersPage {
     return browser.driver.findElements(by.css('mat-cell'));
   }
 
-  async navigateToServerProjects() {
+  async navigateToControllerProjects() {
     this.helper.sleep(2000);
     let hyperlinks = await browser.driver.findElements(by.css('a.table-link'));
     let controllerLink;

@@ -18,7 +18,7 @@ describe('Project map page', () => {
     controllersPage.maximizeWindow();
     await controllersPage.navigateToControllersPage();
     await controllersPage.clickAddController();
-    await controllersPage.navigateToServerProjects();
+    await controllersPage.navigateToControllerProjects();
     await projectsPage.openAddProjectDialog();
     helper.sleep(2000);
     await projectsPage.createProject();

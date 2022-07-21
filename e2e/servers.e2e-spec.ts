@@ -1,7 +1,7 @@
 import { TestHelper } from './helpers/common.po';
-import { ControllersPage } from './helpers/server.po';
+import { ControllersPage } from './helpers/controller.po';
 
-describe('Servers page', () => {
+describe('Controllers page', () => {
   let page: ControllersPage;
   let helper: TestHelper;
 
@@ -30,14 +30,14 @@ describe('Servers page', () => {
     helper.sleep(1000);
 
     // act
-    let firstRowOfServersTable = await page.checkControllersTable();
-    let serverData = [];
-    await helper.asyncForEach(firstRowOfServersTable, async (element) => {
-      serverData.push(await element.getText());
+    let firstRowOfControllersTable = await page.checkControllersTable();
+    let controllerData = [];
+    await helper.asyncForEach(firstRowOfControllersTable, async (element) => {
+      controllerData.push(await element.getText());
     });
 
     // assert
-    expect(serverData).toContain('127.0.0.1');
-    expect(serverData).toContain('3080');
+    expect(controllerData).toContain('127.0.0.1');
+    expect(controllerData).toContain('3080');
   });
 });

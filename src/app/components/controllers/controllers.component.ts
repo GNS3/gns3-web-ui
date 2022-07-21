@@ -104,7 +104,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
     this.serverStatusSubscription.unsubscribe();
   }
 
-  startLocalServer() {
+  startLocalController() {
     const controller = this.serverDatabase.data.find((n) => n.location === 'bundled' || 'local');
     this.startServer(controller);
   }
