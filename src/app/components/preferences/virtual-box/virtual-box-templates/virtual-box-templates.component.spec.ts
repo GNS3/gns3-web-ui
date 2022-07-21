@@ -9,16 +9,16 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxTemplatesComponent } from './virtual-box-templates.component';
 
 export class MockedVirtualBoxService {
-  public getTemplates(controller: Server) {
+  public getTemplates(controller:Controller ) {
     return of([{} as VirtualBoxTemplate]);
   }
 }
@@ -47,7 +47,7 @@ describe('VirtualBoxTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
       ],
       declarations: [VirtualBoxTemplatesComponent],

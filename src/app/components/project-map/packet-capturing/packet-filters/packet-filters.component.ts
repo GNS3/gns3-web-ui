@@ -5,7 +5,7 @@ import { FilterDescription } from '../../../../models/filter-description';
 import { Link } from '../../../../models/link';
 import { Message } from '../../../../models/message';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { LinkService } from '../../../../services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
@@ -15,7 +15,7 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   styleUrls: ['./packet-filters.component.scss'],
 })
 export class PacketFiltersDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   project: Project;
   link: Link;
   filters: Filter;

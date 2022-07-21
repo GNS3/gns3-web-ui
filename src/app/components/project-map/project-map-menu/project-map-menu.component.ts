@@ -4,7 +4,7 @@ import { select } from 'd3-selection';
 import * as svg from 'save-svg-as-png';
 import downloadSvg from 'svg-crowbar';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { SymbolService } from '../../../services/symbol.service';
@@ -20,7 +20,7 @@ import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/scre
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   @Input() project: Project;
-  @Input() controller: Server;
+  @Input() controller:Controller ;
 
   public selectedDrawing: string;
   public drawTools = {

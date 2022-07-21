@@ -11,12 +11,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
-import { MockedServerService } from '../../../../../services/server.service.spec';
+import { ControllerService } from '../../../../../services/controller.service';
+import { MockedServerService } from '../../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
 import { PortsComponent } from '../../../common/ports/ports.component';
@@ -24,11 +24,11 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetSwitchesTemplateDetailsComponent } from './ethernet-switches-template-details.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplate(controller: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({ ports_mapping: [] } as EthernetSwitchTemplate);
   }
 
-  public saveTemplate(controller: Server, cloudTemplate: EthernetSwitchTemplate) {
+  public saveTemplate(controller:Controller , cloudTemplate: EthernetSwitchTemplate) {
     return of(cloudTemplate);
   }
 }
@@ -61,7 +61,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },

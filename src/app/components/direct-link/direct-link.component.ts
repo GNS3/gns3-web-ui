@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../models/server';
-import { ServerDatabase } from '../../services/server.database';
-import { ServerService } from '../../services/server.service';
+import{ Controller } from '../../models/controller';
+import { ControllerDatabase } from '../../services/controller.database';
+import { ControllerService } from '../../services/controller.service';
 import { ToasterService } from '../../services/toaster.service';
 
 @Component({
@@ -34,8 +34,8 @@ export class DirectLinkComponent implements OnInit {
   });
 
   constructor(
-    private serverService: ServerService,
-    private serverDatabase: ServerDatabase,
+    private serverService: ControllerService,
+    private serverDatabase: ControllerDatabase,
     private route: ActivatedRoute,
     private router: Router,
     private toasterService: ToasterService
@@ -72,7 +72,7 @@ export class DirectLinkComponent implements OnInit {
       return;
     }
 
-    let serverToAdd: Server = new Server();
+    let serverToAdd:Controller  = new Controller  ();
     serverToAdd.host = this.controllerIp;
     serverToAdd.port = this.controllerPort;
 
@@ -80,7 +80,7 @@ export class DirectLinkComponent implements OnInit {
     serverToAdd.location = this.serverForm.get('location').value;
     serverToAdd.protocol = this.serverForm.get('protocol').value;
 
-    this.serverService.create(serverToAdd).then((addedServer: Server) => {
+    this.serverService.create(serverToAdd).then((addedServer:Controller ) => {
       this.router.navigate(['/controller', addedServer.id, 'project', this.projectId]);
     });
   }

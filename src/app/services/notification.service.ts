@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 
 @Injectable()
 export class NotificationService {
-  notificationsPath(controller: Server): string {
+  notificationsPath(controller:Controller ): string {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"
@@ -14,7 +14,7 @@ export class NotificationService {
   }
 
   
-  projectNotificationsPath(controller: Server, project_id: string): string {
+  projectNotificationsPath(controller:Controller , project_id: string): string {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"

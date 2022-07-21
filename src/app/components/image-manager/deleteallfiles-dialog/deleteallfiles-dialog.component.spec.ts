@@ -7,17 +7,17 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
-import { Server } from 'http';
+import{ Server } from 'http';
 import { of } from 'rxjs';
 import { ImageManagerService } from '../../../services/image-manager.service';
-import { ServerService } from '../../../services/server.service';
-import { MockedServerService } from '../../../services/server.service.spec';
+import { ControllerService } from '../../../services/controller.service';
+import { MockedServerService } from '../../../services/controller.service.spec';
 import { ImageManagerComponent } from '../image-manager.component';
 
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
 
 export class MockedImageManagerService {
-  public deleteALLFile(controller: Server, image_path) {
+  public deleteALLFile(controller:Server , image_path) {
     return of();
   }
 }
@@ -39,7 +39,7 @@ export class MockedImageManagerService {
         MatDialogModule,
       ],
       providers: [
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },

@@ -46,7 +46,7 @@ import { ProjectWebServiceHandler } from '../../handlers/project-web-service-han
 import { CapturingSettings } from '../../models/capturingSettings';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { DrawingService } from '../../services/drawing.service';
 import { LinkService } from '../../services/link.service';
 import { MapScaleService } from '../../services/mapScale.service';
@@ -56,8 +56,8 @@ import { NotificationService } from '../../services/notification.service';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from '../../services/server.service.spec';
+import { ControllerService } from '../../services/controller.service';
+import { MockedServerService } from '../../services/controller.service.spec';
 import { SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
@@ -89,55 +89,55 @@ export class MockedNodeService {
     return of(this.node);
   }
 
-  delete(controller: Server, node: Node) {
+  delete(controller:Controller , node: Node) {
     return of();
   }
 
-  startAll(controller: Server, project: Project) {
+  startAll(controller:Controller , project: Project) {
     return of();
   }
 
-  stopAll(controller: Server, project: Project) {
+  stopAll(controller:Controller , project: Project) {
     return of();
   }
 
-  suspendAll(controller: Server, project: Project) {
+  suspendAll(controller:Controller , project: Project) {
     return of();
   }
 
-  reloadAll(controller: Server, project: Project) {
+  reloadAll(controller:Controller , project: Project) {
     return of();
   }
 
-  start(controller: Server, node: Node) {
+  start(controller:Controller , node: Node) {
     return of();
   }
 
-  stop(controller: Server, node: Node) {
+  stop(controller:Controller , node: Node) {
     return of();
   }
 
-  suspend(controller: Server, node: Node) {
+  suspend(controller:Controller , node: Node) {
     return of();
   }
 
-  reload(controller: Server, node: Node) {
+  reload(controller:Controller , node: Node) {
     return of();
   }
 
-  duplicate(controller: Server, node: Node) {
+  duplicate(controller:Controller , node: Node) {
     return of(node);
   }
 
-  getStartupConfiguration(controller: Server, node: Node) {
+  getStartupConfiguration(controller:Controller , node: Node) {
     return of('sample config');
   }
 
-  saveConfiguration(controller: Server, node: Node, configuration: string) {
+  saveConfiguration(controller:Controller , node: Node, configuration: string) {
     return of(configuration);
   }
 
-  update(controller: Server, node: Node) {
+  update(controller:Controller , node: Node) {
     return of(node);
   }
 }
@@ -146,31 +146,31 @@ export class MockedDrawingService {
   public drawing = {} as Drawing;
   constructor() {}
 
-  add(_server: Server, _project_id: string, _x: number, _y: number, _svg: string) {
+  add(_server:Controller , _project_id: string, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
   }
 
-  duplicate(controller: Server, project_id: string, drawing: Drawing) {
+  duplicate(controller:Controller , project_id: string, drawing: Drawing) {
     return of(drawing);
   }
 
-  updatePosition(_server: Server, _project: Project, _drawing: Drawing, _x: number, _y: number) {
+  updatePosition(_server:Controller , _project: Project, _drawing: Drawing, _x: number, _y: number) {
     return of(this.drawing);
   }
 
-  updateSizeAndPosition(_server: Server, _drawing: Drawing, _x: number, _y: number, _svg: string) {
+  updateSizeAndPosition(_server:Controller , _drawing: Drawing, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
   }
 
-  update(_server: Server, _drawing: Drawing) {
+  update(_server:Controller , _drawing: Drawing) {
     return of(this.drawing);
   }
 
-  delete(_server: Server, _drawing: Drawing) {
+  delete(_server:Controller , _drawing: Drawing) {
     return of(this.drawing);
   }
 
-  updateText(_server: Server, _drawing: Drawing, _svg: string): Observable<Drawing> {
+  updateText(_server:Controller , _drawing: Drawing, _svg: string): Observable<Drawing> {
     return of(this.drawing);
   }
 }
@@ -178,15 +178,15 @@ export class MockedDrawingService {
 export class MockedLinkService {
   constructor() {}
 
-  getLink(controller: Server, projectId: string, linkId: string) {
+  getLink(controller:Controller , projectId: string, linkId: string) {
     return of({});
   }
 
-  deleteLink(_server: Server, link: Link) {
+  deleteLink(_server:Controller , link: Link) {
     return of({});
   }
 
-  updateLink(controller: Server, link: Link) {
+  updateLink(controller:Controller , link: Link) {
     return of({});
   }
 
@@ -198,11 +198,11 @@ export class MockedLinkService {
     return of({});
   }
 
-  startCaptureOnLink(controller: Server, link: Link, settings: CapturingSettings) {
+  startCaptureOnLink(controller:Controller , link: Link, settings: CapturingSettings) {
     return of({});
   }
 
-  getAvailableFilters(controller: Server, link: Link) {
+  getAvailableFilters(controller:Controller , link: Link) {
     return of({});
   }
 }
@@ -276,7 +276,7 @@ xdescribe('ProjectMapComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute },
-        { provide: ServerService, useClass: MockedServerService },
+        { provide: ControllerService, useClass: MockedServerService },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: NodeService },
         { provide: LinkService },

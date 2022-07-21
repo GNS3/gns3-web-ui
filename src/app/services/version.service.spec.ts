@@ -3,7 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs/Rx';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
 import { getTestServer } from './testing';
@@ -12,7 +12,7 @@ import { VersionService } from './version.service';
 export class MockedVersionService {
   public response: Observable<any>;
 
-  public get(controller: Server) {
+  public get(controller:Controller ) {
     return this.response;
   }
 }
@@ -22,7 +22,7 @@ describe('VersionService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: VersionService;
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

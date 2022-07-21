@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Server, ServerProtocol } from '../models/server';
+import {Controller , ServerProtocol } from '../models/controller';
 import { HttpServer } from './http-server.service';
 
 @Injectable()
-export class ServerService {
+export class ControllerService {
   private controllerIds: string[] = [];
   public serviceInitialized: Subject<boolean> = new Subject<boolean>();
   public isServiceInitialized: boolean;
@@ -28,42 +28,42 @@ export class ServerService {
     localStorage.setItem("controllerIds", this.controllerIds.toString());
   }
 
-  public get(id: number): Promise<Server> {
-    let controller: Server = JSON.parse(localStorage.getItem(`controller-${id}`));
-    let promise = new Promise<Server>((resolve) => {
+  public get(id: number): Promise<Controller> {
+    let controller:Controller  = JSON.parse(localStorage.getItem(`controller-${id}`));
+    let promise = new Promise<Controller>((resolve) => {
       resolve(controller);
     });
     return promise;
   }
 
-  public create(controller: Server) {
+  public create(controller:Controller ) {
     controller.id = this.controllerIds.length + 1;
     localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
 
     this.controllerIds.push(`controller-${controller.id}`);
     this.updatecontrollerIds();
 
-    let promise = new Promise<Server>((resolve) => {
+    let promise = new Promise<Controller>((resolve) => {
       resolve(controller);
     });
     return promise;
   }
 
-  public update(controller: Server) {
+  public update(controller:Controller ) {
     localStorage.removeItem(`controller-${controller.id}`);
     localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
 
-    let promise = new Promise<Server>((resolve) => {
+    let promise = new Promise<Controller>((resolve) => {
       resolve(controller);
     });
     return promise;
   }
 
   public findAll() {
-    let promise = new Promise<Server[]>((resolve) => {
-      let servers: Server[] = [];
+    let promise = new Promise<Controller[]>((resolve) => {
+      let servers:Controller [] = [];
       this.controllerIds.forEach((n) => {
-        let controller: Server = JSON.parse(localStorage.getItem(n));
+        let controller:Controller  = JSON.parse(localStorage.getItem(n));
         servers.push(controller);
       });
       resolve(servers);
@@ -71,7 +71,7 @@ export class ServerService {
     return promise;
   }
 
-  public delete(controller: Server) {
+  public delete(controller:Controller ) {
     localStorage.removeItem(`controller-${controller.id}`);
     this.controllerIds = this.controllerIds.filter((n) => n !== `controller-${controller.id}`);
     this.updatecontrollerIds();
@@ -82,17 +82,17 @@ export class ServerService {
     return promise;
   }
 
-  public getServerUrl(controller: Server) {
+  public getServerUrl(controller:Controller ) {
     return `${controller.protocol}//${controller.host}:${controller.port}/`;
   }
 
-  public checkServerVersion(controller: Server): Observable<any> {
+  public checkServerVersion(controller:Controller ): Observable<any> {
     return this.httpServer.get(controller, '/version');
   }
 
   public getLocalServer(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
-      this.findAll().then((servers: Server[]) => {
+      this.findAll().then((servers:Controller []) => {
         const local = servers.find((controller) => controller.location === 'bundled');
         if (local) {
           local.host = host;
@@ -102,7 +102,7 @@ export class ServerService {
             resolve(updated);
           }, reject);
         } else {
-          const controller = new Server();
+          const controller = new Controller ();
           controller.name = 'local';
           controller.host = host;
           controller.port = port;

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   cloudNodeTemplate: CloudTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -34,7 +34,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
     private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
@@ -49,7 +49,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

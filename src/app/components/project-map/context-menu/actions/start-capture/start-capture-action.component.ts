@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Link } from '../../../../../models/link';
 import { Project } from '../../../../../models/project';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { StartCaptureDialogComponent } from '../../../packet-capturing/start-cap
   templateUrl: './start-capture-action.component.html',
 })
 export class StartCaptureActionComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() link: Link;
 

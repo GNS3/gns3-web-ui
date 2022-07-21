@@ -4,14 +4,14 @@ import 'rxjs/add/operator/map';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class DrawingService {
   constructor(private httpServer: HttpServer, private svgToDrawingConverter: SvgToDrawingConverter) {}
 
-  add(controller: Server, project_id: string, x: number, y: number, svg: string) {
+  add(controller:Controller , project_id: string, x: number, y: number, svg: string) {
     return this.httpServer.post<Drawing>(controller, `/projects/${project_id}/drawings`, {
       svg: svg,
       x: Math.round(x),
@@ -20,7 +20,7 @@ export class DrawingService {
     });
   }
 
-  duplicate(controller: Server, project_id: string, drawing: Drawing) {
+  duplicate(controller:Controller , project_id: string, drawing: Drawing) {
     return this.httpServer.post<Drawing>(controller, `/projects/${project_id}/drawings`, {
       svg: drawing.svg,
       rotation: drawing.rotation,
@@ -30,7 +30,7 @@ export class DrawingService {
     });
   }
 
-  updatePosition(controller: Server, project: Project, drawing: Drawing, x: number, y: number): Observable<Drawing> {
+  updatePosition(controller:Controller , project: Project, drawing: Drawing, x: number, y: number): Observable<Drawing> {
     let xPosition: number = Math.round(x);
     let yPosition: number = Math.round(y);
 
@@ -52,7 +52,7 @@ export class DrawingService {
     });
   }
 
-  updateSizeAndPosition(controller: Server, drawing: Drawing, x: number, y: number, svg: string): Observable<Drawing> {
+  updateSizeAndPosition(controller:Controller , drawing: Drawing, x: number, y: number, svg: string): Observable<Drawing> {
     return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       svg: svg,
       x: Math.round(x),
@@ -60,7 +60,7 @@ export class DrawingService {
     });
   }
 
-  updateText(controller: Server, drawing: Drawing, svg: string): Observable<Drawing> {
+  updateText(controller:Controller , drawing: Drawing, svg: string): Observable<Drawing> {
     return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       svg: svg,
       x: Math.round(drawing.x),
@@ -69,7 +69,7 @@ export class DrawingService {
     });
   }
 
-  update(controller: Server, drawing: Drawing): Observable<Drawing> {
+  update(controller:Controller , drawing: Drawing): Observable<Drawing> {
     return this.httpServer.put<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`, {
       locked: drawing.locked,
       svg: drawing.svg,
@@ -80,7 +80,7 @@ export class DrawingService {
     });
   }
 
-  delete(controller: Server, drawing: Drawing) {
+  delete(controller:Controller , drawing: Drawing) {
     return this.httpServer.delete<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`);
   }
 }

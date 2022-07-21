@@ -3,10 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { forkJoin, from } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { Observable } from 'rxjs/Rx';
-import { Server, ServerProtocol } from '../../../models/server';
+import { Controller, ServerProtocol } from '../../../models/controller';
 import { Version } from '../../../models/version';
-import { ServerDatabase } from '../../../services/server.database';
-import { ServerService } from '../../../services/server.service';
+import { ControllerDatabase } from '../../../services/controller.database';
+import { ControllerService } from '../../../services/controller.service';
 import { VersionService } from '../../../services/version.service';
 
 @Component({
@@ -22,12 +22,12 @@ export class ControllerDiscoveryComponent implements OnInit {
     },
   ];
 
-  discoveredServer: Server;
+  discoveredServer: Controller;
 
   constructor(
     private versionService: VersionService,
-    private serverService: ServerService,
-    private serverDatabase: ServerDatabase,
+    private serverService: ControllerService,
+    private serverDatabase: ControllerDatabase,
     private route: ActivatedRoute
   ) {}
 
@@ -56,9 +56,9 @@ export class ControllerDiscoveryComponent implements OnInit {
   }
 
   async discoverServers() {
-    let discoveredServers: Server[] = [];
+    let discoveredServers: Controller[] = [];
     this.defaultServers.forEach(async (testServer) => {
-      const controller = new Server();
+      const controller = new Controller();
       controller.host = testServer.host;
       controller.port = testServer.port;
       let version = await this.versionService
@@ -71,7 +71,7 @@ export class ControllerDiscoveryComponent implements OnInit {
   }
 
   discoverFirstAvailableServer() {
-    forkJoin([from(this.serverService.findAll()).pipe(map((s: Server[]) => s)), this.discovery()]).subscribe(
+    forkJoin([from(this.serverService.findAll()).pipe(map((s: Controller[]) => s)), this.discovery()]).subscribe(
       ([local, discovered]) => {
         local.forEach((added) => {
           discovered = discovered.filter((controller) => {
@@ -86,8 +86,8 @@ export class ControllerDiscoveryComponent implements OnInit {
     );
   }
 
-  discovery(): Observable<Server[]> {
-    const queries: Observable<Server>[] = [];
+  discovery(): Observable<Controller[]> {
+    const queries: Observable<Controller>[] = [];
 
     this.defaultServers.forEach((testServer) => {
       queries.push(
@@ -97,7 +97,7 @@ export class ControllerDiscoveryComponent implements OnInit {
       );
     });
 
-    return new Observable<Server[]>((observer) => {
+    return new Observable<Controller[]>((observer) => {
       forkJoin(queries).subscribe((discoveredServers) => {
         observer.next(discoveredServers.filter((s) => s != null));
         observer.complete();
@@ -105,18 +105,18 @@ export class ControllerDiscoveryComponent implements OnInit {
     });
   }
 
-  isServerAvailable(ip: string, port: number): Observable<Server> {
-    const controller = new Server();
+  isServerAvailable(ip: string, port: number): Observable<Controller> {
+    const controller = new Controller();
     controller.host = ip;
     controller.port = port;
     return this.versionService.get(controller).flatMap((version: Version) => Observable.of(controller));
   }
 
-  ignore(controller: Server) {
+  ignore(controller: Controller) {
     this.discoveredServer = null;
   }
 
-  accept(controller: Server) {
+  accept(controller: Controller) {
     if (controller.name == null) {
       controller.name = controller.host;
     }
@@ -124,7 +124,7 @@ export class ControllerDiscoveryComponent implements OnInit {
     controller.location = 'remote';
     controller.protocol = location.protocol as ServerProtocol;
 
-    this.serverService.create(controller).then((created: Server) => {
+    this.serverService.create(controller).then((created: Controller) => {
       this.serverDatabase.addServer(created);
       this.discoveredServer = null;
     });

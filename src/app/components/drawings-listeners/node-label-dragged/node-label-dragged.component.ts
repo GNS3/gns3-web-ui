@@ -6,7 +6,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapLabel } from '../../../cartography/models/map/map-label';
 import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { NodeService } from '../../../services/node.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./node-label-dragged.component.scss'],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   private nodeLabelDragged: Subscription;
 
   constructor(

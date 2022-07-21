@@ -1,22 +1,22 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 
-export interface ServerStateEvent {
+export interface ControllerStateEvent {
   serverName: string;
   status: 'starting' | 'started' | 'errored' | 'stopped' | 'stderr';
   message: string;
 }
 
 @Injectable()
-export class ServerManagementService implements OnDestroy {
-  serverStatusChanged = new Subject<ServerStateEvent>();
+export class ControllerManagementService implements OnDestroy {
+  controllerStatusChanged = new Subject<ControllerStateEvent>();
 
   constructor(private electronService: ElectronService) {
     if (this.electronService.isElectronApp) {
       this.electronService.ipcRenderer.on(this.statusChannel, (event, data) => {
-        this.serverStatusChanged.next(data);
+        this.controllerStatusChanged.next(data);
       });
     }
   }
@@ -25,17 +25,17 @@ export class ServerManagementService implements OnDestroy {
     return 'local-controller-status-events';
   }
 
-  async start(controller: Server) {
-    var startingEvent: ServerStateEvent = {
+  async start(controller:Controller ) {
+    var startingEvent: ControllerStateEvent = {
       serverName: controller.name,
       status: 'starting',
       message: '',
     };
-    this.serverStatusChanged.next(startingEvent);
+    this.controllerStatusChanged.next(startingEvent);
     return await this.electronService.remote.require('./local-server.js').startLocalServer(controller);
   }
 
-  async stop(controller: Server) {
+  async stop(controller:Controller ) {
     return await this.electronService.remote.require('./local-server.js').stopLocalServer(controller);
   }
 

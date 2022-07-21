@@ -11,10 +11,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
@@ -23,11 +23,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplateDetailsComponent } from './vmware-template-details.component';
 
 export class MockedVmwareService {
-  public getTemplate(controller: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as VmwareTemplate);
   }
 
-  public saveTemplate(controller: Server, vmwareTemplate: VmwareTemplate) {
+  public saveTemplate(controller:Controller , vmwareTemplate: VmwareTemplate) {
     return of(vmwareTemplate);
   }
 }
@@ -60,7 +60,7 @@ describe('VmwareTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: VmwareService, useValue: mockedVmwareService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VmwareConfigurationService, useClass: VmwareConfigurationService },

@@ -2,26 +2,26 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Appliance } from '../models/appliance';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { HttpServer } from './http-server.service';
 
 @Injectable()
 export class ApplianceService {
   constructor(private httpServer: HttpServer) {}
 
-  getAppliances(controller: Server): Observable<Appliance[]> {
+  getAppliances(controller:Controller ): Observable<Appliance[]> {
     return this.httpServer.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;
   }
 
-  getAppliance(controller: Server, url): Observable<Appliance> {
+  getAppliance(controller:Controller , url): Observable<Appliance> {
     return this.httpServer.get<Appliance>(controller, url) as Observable<Appliance>;
   }
 
-  getUploadPath(controller: Server, emulator: string, filename: string) {
+  getUploadPath(controller:Controller , emulator: string, filename: string) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-  updateAppliances(controller: Server): Observable<Appliance[]> {
+  updateAppliances(controller:Controller ): Observable<Appliance[]> {
     return this.httpServer.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
   }
 }

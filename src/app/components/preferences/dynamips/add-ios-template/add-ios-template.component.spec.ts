@@ -16,12 +16,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -29,7 +29,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddIosTemplateComponent } from './add-ios-template.component';
 
 export class MockedIosService {
-  public addTemplate(controller: Server, iosTemplate: IosTemplate) {
+  public addTemplate(controller:Controller , iosTemplate: IosTemplate) {
     return of(iosTemplate);
   }
 }
@@ -67,7 +67,7 @@ xdescribe('AddIosTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: IosService, useValue: mockedIosService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
@@ -95,7 +95,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
     component.iosMemoryForm.controls['memory'].setValue(0);
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -109,7 +109,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
     component.iosMemoryForm.controls['memory'].setValue(0);
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -122,7 +122,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
     component.iosMemoryForm.controls['memory'].setValue(0);
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -135,7 +135,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['templateName'].setValue('template name');
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 

@@ -4,7 +4,7 @@ import { NodesDataSource } from '../../../../../cartography/datasources/nodes-da
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '../../../../../models/project';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './duplicate-action.component.html',
 })
 export class DuplicateActionComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() drawings: Drawing[];
   @Input() nodes: Node[];

@@ -3,7 +3,7 @@ import { DrawingsDataSource } from '../../../../../cartography/datasources/drawi
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodeService } from '../../../../../services/node.service';
 
@@ -12,7 +12,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './bring-to-front-action.component.html',
 })
 export class BringToFrontActionComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
 

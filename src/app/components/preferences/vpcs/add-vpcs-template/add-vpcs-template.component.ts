@@ -3,10 +3,10 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { ComputeService } from '../../../../services/compute.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { VpcsService } from '../../../../services/vpcs.service';
@@ -17,14 +17,14 @@ import { VpcsService } from '../../../../services/vpcs.service';
   styleUrls: ['./add-vpcs-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVpcsTemplateComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   templateName: string = '';
   templateNameForm: FormGroup;
   isLocalComputerChosen: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private vpcsService: VpcsService,
     private router: Router,
     private toasterService: ToasterService,
@@ -39,7 +39,7 @@ export class AddVpcsTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
     });
   }

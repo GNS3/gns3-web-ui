@@ -9,7 +9,7 @@ import { EllipseElement } from '../../../../cartography/models/drawings/ellipse-
 import { LineElement } from '../../../../cartography/models/drawings/line-element';
 import { RectElement } from '../../../../cartography/models/drawings/rect-element';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DrawingService } from '../../../../services/drawing.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
@@ -21,7 +21,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   styleUrls: ['./style-editor.component.scss'],
 })
 export class StyleEditorDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   project: Project;
   drawing: Drawing;
   element: ElementData;

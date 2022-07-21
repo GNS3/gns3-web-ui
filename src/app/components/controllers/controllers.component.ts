@@ -7,10 +7,10 @@ import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
 import { merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Server, ServerProtocol } from '../../models/server';
-import { ServerManagementService } from '../../services/server-management.service';
-import { ServerDatabase } from '../../services/server.database';
-import { ServerService } from '../../services/server.service';
+import {Controller , ServerProtocol } from '../../models/controller';
+import { ControllerManagementService } from '../../services/controller-management.service';
+import { ControllerDatabase } from '../../services/controller.database';
+import { ControllerService } from '../../services/controller.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 
@@ -27,9 +27,9 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
-    private serverService: ServerService,
-    private serverDatabase: ServerDatabase,
-    private serverManagement: ServerManagementService,
+    private serverService: ControllerService,
+    private serverDatabase: ControllerDatabase,
+    private serverManagement: ControllerManagementService,
     private changeDetector: ChangeDetectorRef,
     private electronService: ElectronService,
     private childProcessService: ChildProcessService,
@@ -41,7 +41,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
   getControllers() {
     const runningServersNames = this.serverManagement.getRunningServers();
 
-    this.serverService.findAll().then((controllers: Server[]) => {
+    this.serverService.findAll().then((controllers:Controller []) => {
       controllers.forEach((controller) => {
         const serverIndex = runningServersNames.findIndex((controllerName) => controller.name === controllerName);
         if (serverIndex >= 0) {
@@ -78,7 +78,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     this.dataSource = new ServerDataSource(this.serverDatabase);
 
-    this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
+    this.serverStatusSubscription = this.serverManagement.controllerStatusChanged.subscribe((serverStatus) => {
       const controller = this.serverDatabase.find(serverStatus.serverName);
       if (!controller) {
         return;
@@ -122,14 +122,14 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
-        this.serverService.create(controller).then((created: Server) => {
+        this.serverService.create(controller).then((created:Controller ) => {
           this.serverDatabase.addServer(created);
         });
       }
     });
   }
 
-  getServerStatus(controller: Server) {
+  getServerStatus(controller:Controller ) {
     if (controller.location === 'local') {
       if (controller.status === undefined) {
         return 'stopped';
@@ -138,7 +138,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteServer(controller: Server) {
+  deleteServer(controller:Controller ) {
     this.bottomSheet.open(ConfirmationBottomSheetComponent);
     let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
     bottomSheetRef.instance.message = 'Do you want to delete the controller?';
@@ -151,21 +151,21 @@ export class ControllersComponent implements OnInit, OnDestroy {
     });
   }
 
-  async startServer(controller: Server) {
+  async startServer(controller:Controller ) {
     await this.serverManagement.start(controller);
   }
 
-  async stopServer(controller: Server) {
+  async stopServer(controller:Controller ) {
     await this.serverManagement.stop(controller);
   }
 }
 
-export class ServerDataSource extends DataSource<Server> {
-  constructor(private serverDatabase: ServerDatabase) {
+export class ServerDataSource extends DataSource<Controller> {
+  constructor(private serverDatabase: ControllerDatabase) {
     super();
   }
 
-  connect(): Observable<Server[]> {
+  connect(): Observable< Controller[] > {
     return merge(this.serverDatabase.dataChange).pipe(
       map(() => {
         return this.serverDatabase.data;

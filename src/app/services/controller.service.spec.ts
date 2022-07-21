@@ -1,9 +1,9 @@
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 
 export class MockedServerService {
-  public servers: Server[] = [];
+  public servers:Controller [] = [];
 
-  public create(controller: Server) {
+  public create(controller:Controller ) {
     return new Promise((resolve, reject) => {
       this.servers.push(controller);
       resolve(controller);
@@ -11,14 +11,14 @@ export class MockedServerService {
   }
 
   public get(controller_id: number) {
-    const controller = new Server();
+    const controller = new Controller  ();
     controller.id = controller_id;
     return Promise.resolve(controller);
   }
 
   public getLocalServer(hostname: string, port: number) {
     return new Promise((resolve, reject) => {
-      const controller = new Server();
+      const controller = new Controller  ();
       controller.id = 99;
       resolve(controller);
     });
@@ -30,7 +30,7 @@ export class MockedServerService {
     });
   }
 
-  public getServerUrl(controller: Server) {
+  public getServerUrl(controller:Controller ) {
     return `${controller.host}:${controller.port}`;
   }
 }

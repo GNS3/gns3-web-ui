@@ -7,7 +7,7 @@ import { TextEditedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
@@ -16,7 +16,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./text-edited.component.scss'],
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
-  @Input() controller: Server;
+  @Input() controller: Controller;
   private textEdited: Subscription;
 
   constructor(

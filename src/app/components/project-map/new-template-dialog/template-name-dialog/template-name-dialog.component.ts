@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { Template } from '../../../../models/template';
 import { TemplateService } from '../../../../services/template.service';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -16,7 +16,7 @@ import { ProjectNameValidator } from '../../../projects/models/projectNameValida
   providers: [ProjectNameValidator],
 })
 export class TemplateNameDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   templateNameForm: FormGroup;
 
   constructor(

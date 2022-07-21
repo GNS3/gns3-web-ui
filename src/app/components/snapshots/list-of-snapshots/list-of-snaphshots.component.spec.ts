@@ -15,9 +15,9 @@ import { of } from 'rxjs';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { DateFilter } from '../../../filters/dateFilter.pipe';
 import { NameFilter } from '../../../filters/nameFilter.pipe';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
-import { ServerResolve } from '../../../resolvers/server-resolve';
+import { ControllerResolve } from '../../../resolvers/controller-resolve';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
@@ -39,7 +39,7 @@ export class MockedActivatedRoute {
           },
         },
         data: {
-          controller: new Server(),
+          controller: new Controller  (),
         },
       },
     };
@@ -47,15 +47,15 @@ export class MockedActivatedRoute {
 }
 
 export class MockedSnapshotService {
-  public list(controller: Server, project_id: string) {
+  public list(controller:Controller , project_id: string) {
     return of([]);
   }
 
-  public delete(controller: Server, project_id: string, snapshot_id: string) {
+  public delete(controller:Controller , project_id: string, snapshot_id: string) {
     return of({});
   }
 
-  public restore(controller: Server, project_id: string, snapshot_id: string) {
+  public restore(controller:Controller , project_id: string, snapshot_id: string) {
     return of({});
   }
 }
@@ -82,7 +82,7 @@ describe('ListOfSnapshotsComponent', () => {
           {
             path: 'controller/:controller_id/project/:project_id/snapshots',
             component: ListOfSnapshotsComponent,
-            resolve: { controller: ServerResolve },
+            resolve: { controller: ControllerResolve },
           },
         ]),
       ],

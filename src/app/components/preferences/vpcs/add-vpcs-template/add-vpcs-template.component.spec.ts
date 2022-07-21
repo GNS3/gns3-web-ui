@@ -10,11 +10,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { ComputeService } from '../../../../services/compute.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -23,13 +23,13 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
 
 export class MockedComputeService {
-  getComputes(controller: Server) {
+  getComputes(controller:Controller ) {
     return of([]);
   }
 }
 
 export class MockedVpcsService {
-  public addTemplate(controller: Server, vpcsTemplate: VpcsTemplate) {
+  public addTemplate(controller:Controller , vpcsTemplate: VpcsTemplate) {
     return of(vpcsTemplate);
   }
 }
@@ -61,7 +61,7 @@ describe('AddVpcsTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: VpcsService, useValue: mockedVpcsService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ComputeService, useValue: mockedComputeService },
@@ -86,7 +86,7 @@ describe('AddVpcsTemplateComponent', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     component.templateName = 'sample name';
     component.templateNameForm.controls['templateName'].setValue('template name');
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -97,7 +97,7 @@ describe('AddVpcsTemplateComponent', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = ' ';
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 

@@ -3,10 +3,10 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyQemuVmTemplateComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   qemuBinaries: QemuBinary[] = [];
   templateName: string = '';
   qemuTemplate: QemuTemplate;
@@ -23,7 +23,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private router: Router,
@@ -37,7 +37,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {

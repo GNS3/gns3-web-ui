@@ -4,13 +4,13 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ServerService } from '../../services/server.service';
+import { ControllerService } from '../../services/controller.service';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ServerManagementService, ServerStateEvent } from '../../services/server-management.service';
+import { ControllerManagementService, ServerStateEvent } from '../../services/controller-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
@@ -31,13 +31,13 @@ describe('DefaultLayoutComponent', () => {
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
   let serverManagementService = new MockedServerManagementService();
-  let serverService: ServerService;
+  let serverService: ControllerService;
   let httpServer: HttpServer;
   let errorHandler: ServerErrorHandler;
 
   beforeEach(async() => {
     electronServiceMock = new ElectronServiceMock();
-    serverManagementService.serverStatusChanged = new Subject<ServerStateEvent>();
+    serverManagementService.controllerStatusChanged = new Subject<ServerStateEvent>();
 
     await TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
@@ -48,7 +48,7 @@ describe('DefaultLayoutComponent', () => {
           useValue: electronServiceMock,
         },
         {
-          provide: ServerManagementService,
+          provide: ControllerManagementService,
           useValue: serverManagementService,
         },
         {
@@ -59,7 +59,7 @@ describe('DefaultLayoutComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService,
         },
-        { provide: ServerService },
+        { provide: ControllerService },
         { provide: HttpServer },
         { provide: ServerErrorHandler },
         ProgressService,
@@ -68,7 +68,7 @@ describe('DefaultLayoutComponent', () => {
 
     errorHandler = TestBed.inject(ServerErrorHandler);
     httpServer = TestBed.inject(HttpServer);
-    serverService = TestBed.inject(ServerService);
+    serverService = TestBed.inject(ControllerService);
   });
 
   beforeEach(() => {
@@ -95,7 +95,7 @@ describe('DefaultLayoutComponent', () => {
 
   it('should show error when server management service throw event', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
-    serverManagementService.serverStatusChanged.next({
+    serverManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
     });
@@ -105,7 +105,7 @@ describe('DefaultLayoutComponent', () => {
   it('should not show error when server management service throw event', () => {
     component.ngOnDestroy();
     const toaster: MockedToasterService = TestBed.get(ToasterService);
-    serverManagementService.serverStatusChanged.next({
+    serverManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
     });

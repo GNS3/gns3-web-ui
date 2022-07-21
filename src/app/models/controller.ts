@@ -2,7 +2,7 @@ export type ServerLocation = 'local' | 'remote' | 'bundled';
 export type ServerStatus = 'stopped' | 'starting' | 'running';
 export type ServerProtocol = 'http:' | 'https:';
 
-export class Server {
+export class Controller {
   authToken: string;
   id: number;
   name: string;

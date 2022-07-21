@@ -9,16 +9,16 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { VpcsService } from '../../../../services/vpcs.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsTemplatesComponent } from './vpcs-templates.component';
 
 export class MockedVpcsService {
-  public getTemplates(controller: Server) {
+  public getTemplates(controller:Controller ) {
     return of([{} as VpcsTemplate]);
   }
 }
@@ -47,7 +47,7 @@ describe('VpcsTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: VpcsService, useValue: mockedVpcsService },
       ],
       declarations: [VpcsTemplatesComponent],

@@ -3,7 +3,7 @@ import { Template } from '../models/template';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Symbol } from '../models/symbol';
 import { HttpServer } from './http-server.service';
 import { environment } from 'environments/environment';
@@ -26,7 +26,7 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
   }
 
-  getDimensions(controller: Server, symbol_id: string): Observable<SymbolDimension> {
+  getDimensions(controller:Controller , symbol_id: string): Observable<SymbolDimension> {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpServer.get(controller, `/symbols/${encoded_uri}/dimensions`);
   }
@@ -43,16 +43,16 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
   }
 
-  add(controller: Server, symbolName: string, symbol: string) {
+  add(controller:Controller , symbolName: string, symbol: string) {
     this.cache = null;
     return this.httpServer.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
-  load(controller: Server): Observable<Symbol[]> {
+  load(controller:Controller ): Observable<Symbol[]> {
     return this.httpServer.get<Symbol[]>(controller, '/symbols');
   }
 
-  list(controller: Server) {
+  list(controller:Controller ) {
     if (!this.cache) {
       this.cache = this.load(controller).pipe(shareReplay(CACHE_SIZE));
     }
@@ -60,12 +60,12 @@ export class SymbolService {
     return this.cache;
   }
 
-  raw(controller: Server, symbol_id: string) {
+  raw(controller:Controller , symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpServer.getText(controller, `/symbols/${encoded_uri}/raw`);
   }
 
-  getSymbolFromTemplate(controller: Server, template: Template) {
+  getSymbolFromTemplate(controller:Controller , template: Template) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/symbols/${template.symbol}/raw`;
   }
 }

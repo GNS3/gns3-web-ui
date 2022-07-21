@@ -3,11 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { ServerService } from '../../../services/server.service';
+import { ControllerService } from '../../../services/controller.service';
 import { SettingsService } from '../../../services/settings.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
@@ -20,14 +20,14 @@ import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-
 })
 export class NodesMenuComponent {
   @Input('project') project: Project;
-  @Input('controller') controller: Server;
+  @Input('controller') controller:Controller ;
 
   constructor(
     private nodeService: NodeService,
     private nodeConsoleService: NodeConsoleService,
     private nodesDataSource: NodesDataSource,
     private toasterService: ToasterService,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private settingsService: SettingsService,
     private mapSettingsService: MapSettingsService,
     private electronService: ElectronService,

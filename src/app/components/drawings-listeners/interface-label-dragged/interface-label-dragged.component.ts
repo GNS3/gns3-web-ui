@@ -5,7 +5,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '../../../models/link';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { LinkService } from '../../../services/link.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { LinkService } from '../../../services/link.service';
   styleUrls: ['./interface-label-dragged.component.scss'],
 })
 export class InterfaceLabelDraggedComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   private interfaceDragged: Subscription;
 
   constructor(

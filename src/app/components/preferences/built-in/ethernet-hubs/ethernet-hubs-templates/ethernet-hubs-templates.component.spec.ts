@@ -9,16 +9,16 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
-import { MockedServerService } from '../../../../../services/server.service.spec';
+import { ControllerService } from '../../../../../services/controller.service';
+import { MockedServerService } from '../../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsTemplatesComponent } from './ethernet-hubs-templates.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplates(controller: Server) {
+  public getTemplates(controller:Controller ) {
     return of([{} as EthernetHubTemplate]);
   }
 }
@@ -47,7 +47,7 @@ describe('EthernetHubsTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
       ],
       declarations: [EthernetHubsTemplatesComponent],

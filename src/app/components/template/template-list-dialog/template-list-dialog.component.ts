@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Template } from '../../../models/template';
 import { TemplateService } from '../../../services/template.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -17,7 +17,7 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
   styleUrls: ['./template-list-dialog.component.scss'],
 })
 export class TemplateListDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   project: Project;
   templateTypes: string[] = [
     'cloud',
@@ -136,7 +136,7 @@ export class TemplateDatabase {
     return this.dataChange.value;
   }
 
-  constructor(private controller: Server, private templateService: TemplateService) {
+  constructor(private controller:Controller , private templateService: TemplateService) {
     this.templateService.list(this.controller).subscribe((templates) => {
       this.dataChange.next(templates);
     });

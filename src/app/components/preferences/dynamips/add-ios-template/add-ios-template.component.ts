@@ -10,12 +10,12 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IosImage } from '../../../../models/images/ios-image';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
@@ -25,7 +25,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
-  controller: Server;
+  controller:Controller ;
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
 
@@ -56,7 +56,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private iosService: IosService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -113,7 +113,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     })
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getImages();

@@ -2,7 +2,7 @@ import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Project, ProjectVariable } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
@@ -16,7 +16,7 @@ import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 export class EditProjectDialogComponent implements OnInit {
   @ViewChild('editor') editor: ReadmeEditorComponent;
 
-  controller: Server;
+  controller:Controller ;
   project: Project;
   formGroup: FormGroup;
   variableFormGroup: FormGroup;

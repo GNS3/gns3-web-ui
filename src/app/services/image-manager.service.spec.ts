@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { HttpServer } from './http-server.service';
 import { getTestServer } from './testing';
 
@@ -14,7 +14,7 @@ describe('ImageManagerService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

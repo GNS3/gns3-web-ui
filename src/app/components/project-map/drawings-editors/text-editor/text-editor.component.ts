@@ -15,7 +15,7 @@ import { Node } from '../../../../cartography/models/node';
 import { Link } from '../../../../models/link';
 import { LinkNode } from '../../../../models/link-node';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DrawingService } from '../../../../services/drawing.service';
 import { LinkService } from '../../../../services/link.service';
 import { NodeService } from '../../../../services/node.service';
@@ -30,7 +30,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
 export class TextEditorDialogComponent implements OnInit {
   @ViewChild('textArea', { static: true }) textArea: ElementRef;
 
-  controller: Server;
+  controller:Controller ;
   project: Project;
   drawing: Drawing;
   node: Node;

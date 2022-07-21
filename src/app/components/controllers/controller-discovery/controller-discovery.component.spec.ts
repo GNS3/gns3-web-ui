@@ -2,11 +2,11 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { Observable } from 'rxjs/Rx';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Version } from '../../../models/version';
-import { ServerDatabase } from '../../../services/server.database';
-import { ServerService } from '../../../services/server.service';
-import { MockedServerService } from '../../../services/server.service.spec';
+import { ControllerDatabase } from '../../../services/controller.database';
+import { ControllerService } from '../../../services/controller.service';
+import { MockedServerService } from '../../../services/controller.service.spec';
 import { VersionService } from '../../../services/version.service';
 import { MockedVersionService } from '../../../services/version.service.spec';
 import { ControllerDiscoveryComponent } from './controller-discovery.component';
@@ -24,8 +24,8 @@ xdescribe('ControllerDiscoveryComponent', () => {
       imports: [MatCardModule, MatDividerModule],
       providers: [
         { provide: VersionService, useFactory: () => mockedVersionService },
-        { provide: ServerService, useFactory: () => mockedServerService },
-        ServerDatabase,
+        { provide: ControllerService, useFactory: () => mockedServerService },
+        ControllerDatabase,
       ],
       declarations: [ControllerDiscoveryComponent],
     }).compileComponents();
@@ -58,7 +58,7 @@ describe('isAvailable', () => {
       expect(s.port).toEqual(3080);
     });
 
-    const controller = new Server();
+    const controller = new Controller ();
     controller.host = '127.0.0.1';
     controller.port = 3080;
 
@@ -66,7 +66,7 @@ describe('isAvailable', () => {
   });
 
   it('should throw error once controller is not available', () => {
-    const controller = new Server();
+    const controller = new Controller ();
     controller.host = '127.0.0.1';
     controller.port = 3080;
 
@@ -94,7 +94,7 @@ describe('discovery', () => {
     version.version = '2.1.8';
 
     spyOn(component, 'isServerAvailable').and.callFake((ip, port) => {
-      const controller = new Server();
+      const controller = new Controller  ();
       controller.host = ip;
       controller.port = port;
       return Observable.of(controller);
@@ -112,10 +112,10 @@ describe('discovery', () => {
 });
 
 describe('discoverFirstAvailableServer', () => {
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(function () {
-    controller = new Server();
+    controller = new Controller  ();
     (controller.host = '199.111.111.1'), (controller.port = 3333);
 
     spyOn(component, 'discovery').and.callFake(() => {
@@ -142,9 +142,9 @@ describe('discoverFirstAvailableServer', () => {
 });
 
 describe('accepting and ignoring found controller', () => {
-  let controller: Server;
+  let controller:Controller ;
   beforeEach(() => {
-    controller = new Server();
+    controller = new Controller  ();
     (controller.host = '199.111.111.1'), (controller.port = 3333);
     component.discoveredServer = controller;
   });

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../..//models/server';
+import{ Controller } from '../../../models/controller';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '../../../models/project';
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./list-of-snapshots.component.scss'],
 })
 export class ListOfSnapshotsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   projectId: string;
   snapshots: Snapshot[];
   displayedColumns = ['name', 'creationDate', 'actions'];

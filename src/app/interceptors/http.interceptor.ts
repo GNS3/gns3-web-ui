@@ -1,13 +1,13 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoginService } from '@services/login.service';
-import { ServerService } from '@services/server.service';
+import { LoginService } from '../services/login.service';
+import { ControllerService } from '../services/controller.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
-  constructor(private serverService: ServerService, private loginService: LoginService) {}
+  constructor(private serverService: ControllerService, private loginService: LoginService) {}
   intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(httpRequest).pipe(
       catchError((err) => {

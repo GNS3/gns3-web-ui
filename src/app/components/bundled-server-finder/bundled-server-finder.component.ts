@@ -2,8 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressService } from '../../common/progress/progress.service';
-import { Server } from '../../models/server';
-import { ServerService } from '../../services/server.service';
+import{ Controller } from '../../models/controller';
+import { ControllerService } from '../../services/controller.service';
 
 @Component({
   selector: 'app-bundled-server-finder',
@@ -13,7 +13,7 @@ import { ServerService } from '../../services/server.service';
 export class BundledServerFinderComponent implements OnInit {
   constructor(
     private router: Router,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private progressService: ProgressService,
     @Inject(DOCUMENT) private document
   ) {}
@@ -31,7 +31,7 @@ export class BundledServerFinderComponent implements OnInit {
         port = 80;
       }
 
-      this.serverService.getLocalServer(this.document.location.hostname, port).then((controller: Server) => {
+      this.serverService.getLocalServer(this.document.location.hostname, port).then((controller:Controller ) => {
         this.router.navigate(['/controller', controller.id, 'projects']);
         this.progressService.deactivate();
       });

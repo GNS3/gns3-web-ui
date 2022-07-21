@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './console-device-action-browser.component.html',
 })
 export class ConsoleDeviceActionBrowserComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
 
   constructor(private toasterService: ToasterService, private nodeService: NodeService) {}

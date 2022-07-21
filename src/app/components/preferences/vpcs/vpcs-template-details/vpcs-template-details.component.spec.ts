@@ -10,10 +10,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
@@ -22,11 +22,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsTemplateDetailsComponent } from './vpcs-template-details.component';
 
 export class MockedVpcsService {
-  public getTemplate(controller: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as VpcsTemplate);
   }
 
-  public saveTemplate(controller: Server, vpcsTemplate: VpcsTemplate) {
+  public saveTemplate(controller:Controller , vpcsTemplate: VpcsTemplate) {
     return of(vpcsTemplate);
   }
 }
@@ -58,7 +58,7 @@ describe('VpcsTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: VpcsService, useValue: mockedVpcsService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VpcsConfigurationService, useClass: VpcsConfigurationService },

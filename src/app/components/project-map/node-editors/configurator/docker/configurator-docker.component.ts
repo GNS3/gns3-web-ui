@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -16,7 +16,7 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   generalSettingsForm: FormGroup;

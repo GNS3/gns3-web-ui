@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../services/server.service';
+import { ControllerService } from '../../services/controller.service';
 import { VersionService } from '../../services/version.service';
 import { ProgressService } from 'app/common/progress/progress.service';
 import { Image } from '../../models/images';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ImageManagerService } from "../../services/image-manager.service";
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
@@ -19,7 +19,7 @@ import { imageDataSource, imageDatabase } from "./image-database-file";
   styleUrls: ['./image-manager.component.scss']
 })
 export class ImageManagerComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   public version: string;
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
@@ -32,7 +32,7 @@ export class ImageManagerComponent implements OnInit {
     private imageService: ImageManagerService,
     private progressService: ProgressService,
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private versionService: VersionService,
     private dialog: MatDialog,
     private toasterService: ToasterService,
@@ -41,7 +41,7 @@ export class ImageManagerComponent implements OnInit {
 
   ngOnInit(): void {
     let controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'));
-    this.serverService.get(controller_id).then((controller: Server) => {
+    this.serverService.get(controller_id).then((controller:Controller ) => {
       this.controller = controller;
       if (controller.authToken) {
         this.getImages()

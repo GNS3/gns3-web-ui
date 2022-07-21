@@ -1,15 +1,15 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { NavigationEnd } from '@angular/router';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ServerService } from '../../services/server.service';
+import { ControllerService } from '../../services/controller.service';
 import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ServerManagementService } from '../../services/server-management.service';
+import { ControllerManagementService } from '../../services/controller-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { version } from './../../version';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 
 @Component({
   selector: 'app-default-layout',
@@ -33,11 +33,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   constructor(
     private electronService: ElectronService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private serverManagement: ServerManagementService,
+    private serverManagement: ControllerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService,
     public router: Router,
-    private serverService: ServerService
+    private serverService: ControllerService
   ) {}
 
   ngOnInit() {
@@ -54,7 +54,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
     // attach to notification stream when any of running local servers experienced issues
-    this.serverStatusSubscription = this.serverManagement.serverStatusChanged.subscribe((serverStatus) => {
+    this.serverStatusSubscription = this.serverManagement.controllerStatusChanged.subscribe((serverStatus) => {
       if (serverStatus.status === 'errored') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
@@ -71,14 +71,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   goToUserInfo() {
     let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+controllerId).then((controller: Server) => {
+    this.serverService.get(+controllerId).then((controller:Controller ) => {
       this.router.navigate(['/controller', controller.id, 'loggeduser']);
     });
   }
 
   goToDocumentation() {
     let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+controllerId).then((controller: Server) => {
+    this.serverService.get(+controllerId).then((controller:Controller ) => {
       (window as any).open(`http://${controller.host}:${controller.port}/docs`);
     });
   }
@@ -93,7 +93,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   logout() {
     let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+controllerId).then((controller: Server) => {
+    this.serverService.get(+controllerId).then((controller:Controller ) => {
       controller.authToken = null;
       this.serverService.update(controller).then(val => this.router.navigate(['/controller', controller.id, 'login']));
     });

@@ -4,11 +4,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ServerDatabase } from '../../services/server.database';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from 'app/services/server.service.spec';
+import { ControllerDatabase } from '../../services/controller.database';
+import { ControllerService } from '../../services/controller.service';
+import { MockedServerService } from 'app/services/controller.service.spec';
 import { ControllersComponent } from './controllers.component';
-import { ServerManagementService } from 'app/services/server-management.service';
+import { ControllerManagementService } from 'app/services/server-management.service';
 import { ElectronService } from 'ngx-electron';
 import { ChildProcessService } from 'ngx-childprocess';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -35,13 +35,13 @@ describe('ControllersComponent', () => {
       ],
       providers: [
         MatDialog,
-        ServerDatabase,
-        ServerManagementService,
+        ControllerDatabase,
+        ControllerManagementService,
         ElectronService,
         MatBottomSheet,
         ChildProcessService,
         ChangeDetectorRef,
-        { provide: ServerService, useValue: serverMockedService },
+        { provide: ControllerService, useValue: serverMockedService },
         { provide: ActivatedRoute, useValue: mockedActivatedRoute },
         { provide: Router, useValue: mockedRouter },
       ]

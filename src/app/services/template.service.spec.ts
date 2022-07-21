@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
 import { TemplateService } from './template.service';
@@ -28,7 +28,7 @@ describe('TemplateService', () => {
   });
 
   it('should ask for the list from controller', () => {
-    const controller = new Server();
+    const controller = new Controller  ();
     controller.host = '127.0.0.1';
     controller.port = 3080;
 

@@ -214,7 +214,7 @@ import { LoginGuard } from './guards/login-guard';
 import { ProjectWebServiceHandler } from './handlers/project-web-service-handler';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { MATERIAL_IMPORTS } from './material.imports';
-import { ServerResolve } from './resolvers/server-resolve';
+import { ControllerResolve } from './resolvers/controller-resolve';
 import { ApplianceService } from './services/appliances.service';
 import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from './services/built-in-templates.service';
@@ -243,10 +243,10 @@ import { ProjectService } from './services/project.service';
 import { QemuConfigurationService } from './services/qemu-configuration.service';
 import { QemuService } from './services/qemu.service';
 import { RecentlyOpenedProjectService } from './services/recentlyOpenedProject.service';
-import { ServerManagementService } from './services/server-management.service';
-import { ServerSettingsService } from './services/server-settings.service';
-import { ServerDatabase } from './services/server.database';
-import { ServerService } from './services/server.service';
+import { ControllerManagementService } from './services/controller-management.service';
+import { ControllerSettingsService } from './services/controller-settings.service';
+import { ControllerDatabase } from './services/controller.database';
+import { ControllerService } from './services/controller.service';
 import { SettingsService } from './services/settings.service';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
@@ -505,7 +505,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     VersionService,
     ProjectService,
     SymbolService,
-    ServerService,
+    ControllerService,
     TemplateService,
     NodeService,
     LinkService,
@@ -524,10 +524,10 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     InRectangleHelper,
     DrawingsDataSource,
     ServerErrorHandler,
-    ServerDatabase,
+    ControllerDatabase,
     ProjectNameValidator,
     ToolsService,
-    ServerSettingsService,
+    ControllerSettingsService,
     QemuService,
     VpcsService,
     TemplateMocksService,
@@ -549,7 +549,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     IouService,
     IouConfigurationService,
     RecentlyOpenedProjectService,
-    ServerManagementService,
+    ControllerManagementService,
     MapScaleService,
     ConsoleService,
     DefaultConsoleService,
@@ -564,7 +564,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     ThemeService,
     GoogleAnalyticsService,
     NodeConsoleService,
-    ServerResolve,
+    ControllerResolve,
     LoginGuard,
     ConsoleGuard,
     Title,

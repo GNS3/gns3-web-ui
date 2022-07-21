@@ -4,7 +4,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
 import { LinkService } from './link.service';
@@ -14,7 +14,7 @@ describe('LinkService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

@@ -9,7 +9,7 @@ import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { ProgressService } from '../../common/progress/progress.service';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '../../services/settings.service';
@@ -26,7 +26,7 @@ import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog
   styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
   displayedColumns = ['name', 'actions'];

@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Template } from '../models/template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
@@ -17,7 +17,7 @@ describe('NodeService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: NodeService;
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

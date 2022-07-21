@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { ProjectNameValidator } from '../models/projectNameValidator';
@@ -15,7 +15,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   providers: [ProjectNameValidator],
 })
 export class SaveProjectDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   project: Project;
   projectNameForm: FormGroup;
   onAddProject = new EventEmitter<string>();

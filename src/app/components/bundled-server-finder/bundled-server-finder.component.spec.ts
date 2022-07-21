@@ -4,9 +4,9 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressService } from '../../common/progress/progress.service';
-import { Server } from '../../models/server';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from '../../services/server.service.spec';
+import{ Controller } from '../../models/controller';
+import { ControllerService } from '../../services/controller.service';
+import { MockedServerService } from '../../services/controller.service.spec';
 import { MockedProgressService } from '../project-map/project-map.component.spec';
 import { BundledServerFinderComponent } from './bundled-server-finder.component';
 
@@ -14,9 +14,9 @@ describe('BundledServerFinderComponent', () => {
   let component: BundledServerFinderComponent;
   let fixture: ComponentFixture<BundledServerFinderComponent>;
   let router: any;
-  let service: ServerService;
+  let service: ControllerService;
   let progressService: MockedProgressService = new MockedProgressService();
-  let controllerServiceMock: jasmine.SpyObj<ServerService>;
+  let controllerServiceMock: jasmine.SpyObj<ControllerService>;
 
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('BundledServerFinderComponent', () => {
 
     
 
-    controllerServiceMock = jasmine.createSpyObj<ServerService>([
+    controllerServiceMock = jasmine.createSpyObj<ControllerService>([
       "getLocalServer"
     ]);
 
@@ -37,7 +37,7 @@ describe('BundledServerFinderComponent', () => {
     await TestBed.configureTestingModule({
       providers: [
         { provide: Router, useValue: router },
-        { provide: ServerService, useValue: controllerServiceMock },
+        { provide: ControllerService, useValue: controllerServiceMock },
         { provide: ProgressService, useValue: progressService },
       ],
       declarations: [BundledServerFinderComponent],
@@ -50,7 +50,7 @@ describe('BundledServerFinderComponent', () => {
   });
 
   it('should create and redirect to controller', fakeAsync(() => {
-    const controller = new Server();
+    const controller = new Controller ();
     controller.id = 99;
     controllerServiceMock.getLocalServer.and.returnValue(
       Promise.resolve(controller)
@@ -62,6 +62,6 @@ describe('BundledServerFinderComponent', () => {
       expect(controllerServiceMock.getLocalServer).toHaveBeenCalledWith('vps3.gns3.net',3000);
       expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
     })
-    service = TestBed.inject(ServerService);
+    service = TestBed.inject(ControllerService);
   }));
 });

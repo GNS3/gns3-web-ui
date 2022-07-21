@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   ethernetHubTemplate: EthernetHubTemplate;
   numberOfPorts: number;
   inputForm: FormGroup;
@@ -24,7 +24,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -41,7 +41,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();

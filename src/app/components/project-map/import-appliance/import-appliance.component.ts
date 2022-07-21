@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DockerTemplate } from '../../../models/templates/docker-template';
 import { IosTemplate } from '../../../models/templates/ios-template';
 import { IouTemplate } from '../../../models/templates/iou-template';
@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
 })
 export class ImportApplianceComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('controller') controller: Server;
+  @Input('controller') controller:Controller ;
   uploader: FileUploader;
   template;
 
@@ -149,7 +149,7 @@ export class ImportApplianceComponent implements OnInit {
     fileReader.readAsText(file);
   }
 
-  private getUploadPath(controller: Server, emulator: string, filename: string) {
+  private getUploadPath(controller:Controller , emulator: string, filename: string) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
   }
 }

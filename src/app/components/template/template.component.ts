@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ThemeService } from '../../services/theme.service';
 import { Subscription } from 'rxjs';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { Template } from '../../models/template';
 import { MapScaleService } from '../../services/mapScale.service';
 import { SymbolService } from '../../services/symbol.service';
@@ -18,7 +18,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./template.component.scss'],
 })
 export class TemplateComponent implements OnInit, OnDestroy {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
   overlay;

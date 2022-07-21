@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './reload-node-action.component.html',
 })
 export class ReloadNodeActionComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
 
   filteredNodes: Node[] = [];

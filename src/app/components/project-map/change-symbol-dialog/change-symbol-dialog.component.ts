@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { NodeService } from '../../../services/node.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./change-symbol-dialog.component.scss'],
 })
 export class ChangeSymbolDialogComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
   symbol: string;
 

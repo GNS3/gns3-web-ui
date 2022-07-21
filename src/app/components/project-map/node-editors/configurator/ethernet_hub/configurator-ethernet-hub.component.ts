@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
@@ -13,7 +13,7 @@ import { VpcsConfigurationService } from '../../../../../services/vpcs-configura
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   node: Node;
   numberOfPorts: number;
   inputForm: FormGroup;

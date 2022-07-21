@@ -5,7 +5,7 @@ import { ToasterService } from '../../../services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ServerResponse } from '../../../models/serverResponse';
 import { ProjectService } from '../../../services/project.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
@@ -23,7 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
   uploadProgress: number = 0;
-  controller: Server;
+  controller:Controller ;
   isImportEnabled: boolean = false;
   isFinishEnabled: boolean = false;
   isDeleteVisible: boolean = false;

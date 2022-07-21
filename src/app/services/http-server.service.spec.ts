@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer, ServerError, ServerErrorHandler } from './http-server.service';
 import { getTestServer } from './testing';
@@ -55,7 +55,7 @@ describe('HttpServer', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: HttpServer;
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

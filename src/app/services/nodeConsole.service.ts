@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Subject } from 'rxjs';
 import { Node } from '../cartography/models/node';
 import { Router } from '@angular/router';
@@ -66,7 +66,7 @@ export class NodeConsoleService {
     return this.defaultConsoleHeight / this.defaultNumberOfRows;
   }
 
-  getUrl(controller: Server, node: Node) {
+  getUrl(controller:Controller , node: Node) {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"

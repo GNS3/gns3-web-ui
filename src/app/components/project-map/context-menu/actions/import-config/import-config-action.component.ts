@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
@@ -12,7 +12,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   styleUrls: ['./import-config-action.component.scss'],
 })
 export class ImportConfigActionComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
   @ViewChild('fileInput') fileInput: ElementRef;
   configType: string;

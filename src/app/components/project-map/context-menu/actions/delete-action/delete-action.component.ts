@@ -7,7 +7,7 @@ import { NodesDataSource } from '../../../../../cartography/datasources/nodes-da
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
 import { Link } from '../../../../../models/link';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { LinkService } from '../../../../../services/link.service';
 import { NodeService } from '../../../../../services/node.service';
@@ -17,7 +17,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './delete-action.component.html',
 })
 export class DeleteActionComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   @Input() links: Link[];

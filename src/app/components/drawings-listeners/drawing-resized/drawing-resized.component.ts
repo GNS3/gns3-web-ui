@@ -6,7 +6,7 @@ import { DrawingsEventSource } from '../../../cartography/events/drawings-event-
 import { ResizedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-resized.component.scss'],
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   private drawingResized: Subscription;
 
   constructor(

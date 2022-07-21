@@ -17,11 +17,11 @@ import { of } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from '../../services/server.service.spec';
+import { ControllerService } from '../../services/controller.service';
+import { MockedServerService } from '../../services/controller.service.spec';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
@@ -32,8 +32,8 @@ xdescribe('ProjectsComponent', () => {
   let fixture: ComponentFixture<ProjectsComponent>;
   let settingsService: SettingsService;
   let projectService: ProjectService;
-  let serverService: ServerService;
-  let controller: Server;
+  let serverService: ControllerService;
+  let controller:Controller ;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
   let electronService;
@@ -66,7 +66,7 @@ xdescribe('ProjectsComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
-        { provide: ServerService, useClass: MockedServerService },
+        { provide: ControllerService, useClass: MockedServerService },
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService },
         { provide: ToasterService },
@@ -81,12 +81,12 @@ xdescribe('ProjectsComponent', () => {
       })
       .compileComponents();
 
-    serverService = TestBed.inject(ServerService);
+    serverService = TestBed.inject(ControllerService);
     settingsService = TestBed.inject(SettingsService);
     projectService = TestBed.inject(ProjectService);
     progressService = TestBed.inject(ProgressService);
 
-    controller = new Server();
+    controller = new Controller  ();
     controller.id = 99;
 
     const settings = {} as Settings;

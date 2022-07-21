@@ -9,7 +9,7 @@ import { Node } from '../../../cartography/models/node';
 import { Link } from '../../../models/link';
 import { LinkNode } from '../../../models/link-node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 
 @Component({
@@ -19,7 +19,7 @@ import { ProjectService } from '../../../services/project.service';
 })
 export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
-  @Input() controller: Server;
+  @Input() controller:Controller ;
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 

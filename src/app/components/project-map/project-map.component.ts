@@ -62,7 +62,7 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { Symbol } from '../../models/symbol';
 import { DrawingService } from '../../services/drawing.service';
 import { MapScaleService } from '../../services/mapScale.service';
@@ -72,7 +72,7 @@ import { NodeConsoleService } from '../../services/nodeConsole.service';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectService } from '../../services/project.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ServerService } from '../../services/server.service';
+import { ControllerService } from '../../services/controller.service';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { SymbolService } from '../../services/symbol.service';
 import { ThemeService } from '../../services/theme.service';
@@ -104,7 +104,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
   public project: Project;
-  public controller: Server;
+  public controller:Controller ;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -142,7 +142,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private projectService: ProjectService,
     private nodeService: NodeService,
     public drawingService: DrawingService,
@@ -333,7 +333,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       from(this.serverService.get(controller_id))
         .pipe(
-          mergeMap((controller: Server) => {
+          mergeMap((controller:Controller ) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
             return this.projectService.get(controller, paramMap.get('project_id')).pipe(

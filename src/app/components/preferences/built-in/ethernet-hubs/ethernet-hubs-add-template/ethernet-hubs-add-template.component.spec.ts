@@ -10,12 +10,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ComputeService } from '../../../../../services/compute.service';
-import { ServerService } from '../../../../../services/server.service';
-import { MockedServerService } from '../../../../../services/server.service.spec';
+import { ControllerService } from '../../../../../services/controller.service';
+import { MockedServerService } from '../../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
@@ -24,7 +24,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsAddTemplateComponent } from './ethernet-hubs-add-template.component';
 
 export class MockedBuiltInTemplatesService {
-  public addTemplate(controller: Server, ethernetHubTemplate: EthernetHubTemplate) {
+  public addTemplate(controller:Controller , ethernetHubTemplate: EthernetHubTemplate) {
     return of(ethernetHubTemplate);
   }
 }
@@ -59,7 +59,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ComputeService, useValue: mockedComputeService },
@@ -83,7 +83,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
   it('should call add template', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
     component.templateName = 'sample name';
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
     component.formGroup.controls['templateName'].setValue('template name');
     component.formGroup.controls['numberOfPorts'].setValue('1');
 
@@ -96,7 +96,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = '';
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -108,7 +108,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetHubTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = 'sample name';
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 

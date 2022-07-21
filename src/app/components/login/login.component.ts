@@ -2,11 +2,11 @@ import { Component, DoCheck, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthResponse } from '../../models/authResponse';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { Version } from '../../models/version';
 import { LoginService } from '../../services/login.service';
-import { ServerDatabase } from '../../services/server.database';
-import { ServerService } from '../../services/server.service';
+import { ControllerDatabase } from '../../services/controller.database';
+import { ControllerService } from '../../services/controller.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToasterService } from '../../services/toaster.service';
 import { VersionService } from '../../services/version.service';
@@ -18,7 +18,7 @@ import { VersionService } from '../../services/version.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit, DoCheck {
-  private controller: Server;
+  private controller:Controller ;
   public version: string;
   public isLightThemeEnabled: boolean = false;
   public loginError: boolean = false;
@@ -33,8 +33,8 @@ export class LoginComponent implements OnInit, DoCheck {
 
   constructor(
     private loginService: LoginService,
-    private serverService: ServerService,
-    private serverDatabase: ServerDatabase,
+    private serverService: ControllerService,
+    private serverDatabase: ControllerDatabase,
     private route: ActivatedRoute,
     private router: Router,
     private toasterService: ToasterService,
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, DoCheck {
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       if (controller.authToken) {

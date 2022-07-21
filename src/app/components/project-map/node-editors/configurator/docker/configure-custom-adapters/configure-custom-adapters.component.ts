@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
-import { Server } from '../../../../../../models/server';
+import{ Controller } from '../../../../../../models/controller';
 import { DockerConfigurationService } from '../../../../../../services/docker-configuration.service';
 import { NodeService } from '../../../../../../services/node.service';
 import { ToasterService } from '../../../../../../services/toaster.service';
@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['./configure-custom-adapters.component.scss'],
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   node: Node;
   displayedColumns: string[] = ['adapter_number', 'port_name'];
   adapters: CustomAdapter[] = [];

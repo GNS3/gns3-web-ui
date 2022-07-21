@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
-import { Server } from '../../../../../../models/server';
+import{ Controller } from '../../../../../../models/controller';
 import { NodeService } from '../../../../../../services/node.service';
 import { ToasterService } from '../../../../../../services/toaster.service';
 
@@ -11,7 +11,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['./edit-network-configuration.component.scss'],
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   node: Node;
   configuration: string;
 

@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./create-snapshot-dialog.component.scss'],
 })
 export class CreateSnapshotDialogComponent {
-  controller: Server;
+  controller:Controller ;
   project: Project;
   snapshot: Snapshot = new Snapshot();
   inputForm: FormGroup;

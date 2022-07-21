@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component'
 })
 export class ShowNodeActionComponent {
   @Input() node: Node;
-  @Input() controller: Server;
+  @Input() controller:Controller ;
 
   constructor(private dialog: MatDialog) {}
 

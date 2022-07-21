@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComputeStatistics } from '../../../models/computeStatistics';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ComputeService } from '../../../services/compute.service';
-import { ServerService } from '../../../services/server.service';
+import { ControllerService } from '../../../services/controller.service';
 import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class StatusInfoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private computeService: ComputeService,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private toasterService: ToasterService
   ) {}
 
@@ -29,7 +29,7 @@ export class StatusInfoComponent implements OnInit {
   }
 
   getStatistics() {
-    this.serverService.get(Number(this.controllerId)).then((controller: Server) => {
+    this.serverService.get(Number(this.controllerId)).then((controller:Controller ) => {
       this.computeService.getStatistics(controller).subscribe((statistics: ComputeStatistics[]) => {
         this.computeStatistics = statistics;
         setTimeout(() => {

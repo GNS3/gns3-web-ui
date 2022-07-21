@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { SettingsService } from '../../../../../services/settings.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -12,12 +12,12 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './console-device-action.component.html',
 })
 export class ConsoleDeviceActionComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
 
   constructor(
     private electronService: ElectronService,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private settingsService: SettingsService,
     private toasterService: ToasterService,
     private nodeService: NodeService

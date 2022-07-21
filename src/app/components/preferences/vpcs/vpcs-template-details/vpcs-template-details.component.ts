@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
 import { VpcsService } from '../../../../services/vpcs.service';
@@ -14,7 +14,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   vpcsTemplate: VpcsTemplate;
   inputForm: FormGroup;
   isSymbolSelectionOpened: boolean = false;
@@ -23,7 +23,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private vpcsService: VpcsService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -41,7 +41,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

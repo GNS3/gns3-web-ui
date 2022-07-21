@@ -2,8 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
-import { Server } from '../../../models/server';
-import { ServerService } from '../../../services/server.service';
+import{ Controller } from '../../../models/controller';
+import { ControllerService } from '../../../services/controller.service';
 import { ToasterService } from '../../../services/toaster.service';
 
 @Component({
@@ -30,7 +30,7 @@ export class AddControllerDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<AddControllerDialogComponent>,
     private electronService: ElectronService,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private toasterService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -124,7 +124,7 @@ export class AddControllerDialogComponent implements OnInit {
       return;
     }
 
-    const controller: Server = Object.assign({}, this.controllerForm.value);
+    const controller:Controller  = Object.assign({}, this.controllerForm.value);
     this.serverService.checkServerVersion(controller).subscribe(
       (serverInfo) => {
         if (serverInfo.version.split('.')[0] >= 3) {

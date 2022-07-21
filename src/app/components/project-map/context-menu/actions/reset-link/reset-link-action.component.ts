@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/server';
 import { Link } from '../../../../../models/link';
 import { LinkService } from '../../../../../services/link.service';
 
@@ -8,7 +8,7 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './reset-link-action.component.html'
 })
 export class ResetLinkActionComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() link: Link;
 
   constructor(

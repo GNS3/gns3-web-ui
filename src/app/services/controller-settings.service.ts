@@ -1,26 +1,26 @@
 import { Injectable } from '@angular/core';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { ServerSettings } from '../models/serverSettings';
 import { QemuSettings } from '../models/settings/qemu-settings';
 import { HttpServer } from './http-server.service';
 
 @Injectable()
-export class ServerSettingsService {
+export class ControllerSettingsService {
   constructor(private httpServer: HttpServer) {}
 
-  get(controller: Server) {
+  get(controller:Controller ) {
     return this.httpServer.get<ServerSettings>(controller, `/settings`);
   }
 
-  update(controller: Server, serverSettings: ServerSettings) {
+  update(controller:Controller , serverSettings: ServerSettings) {
     return this.httpServer.post<ServerSettings>(controller, `/settings`, serverSettings);
   }
 
-  getSettingsForQemu(controller: Server) {
+  getSettingsForQemu(controller:Controller ) {
     return this.httpServer.get<QemuSettings>(controller, `/settings/qemu`);
   }
 
-  updateSettingsForQemu(controller: Server, qemuSettings: QemuSettings) {
+  updateSettingsForQemu(controller:Controller , qemuSettings: QemuSettings) {
     return this.httpServer.put<QemuSettings>(controller, `/settings/qemu`, {
       enable_hardware_acceleration: qemuSettings.enable_hardware_acceleration,
       require_hardware_acceleration: qemuSettings.require_hardware_acceleration,

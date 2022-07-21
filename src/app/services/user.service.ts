@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { HttpServer } from './http-server.service';
 import { User } from '../models/users/user';
 
@@ -10,7 +10,7 @@ export class UserService {
     private httpServer: HttpServer
   ) {}
 
-  getInformationAboutLoggedUser(controller: Server) {
+  getInformationAboutLoggedUser(controller:Controller ) {
     return this.httpServer.get<User>(controller, '/users/me/');
   }
 }

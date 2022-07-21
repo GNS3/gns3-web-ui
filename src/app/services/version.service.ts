@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Version } from '../models/version';
 import { HttpServer } from './http-server.service';
 
@@ -8,7 +8,7 @@ import { HttpServer } from './http-server.service';
 export class VersionService {
   constructor(private httpServer: HttpServer) {}
 
-  get(controller: Server) {
+  get(controller:Controller ) {
     return this.httpServer.get<Version>(controller, '/version');
   }
 }

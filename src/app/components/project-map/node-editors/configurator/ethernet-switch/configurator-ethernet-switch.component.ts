@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  controller: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   inputForm: FormGroup;

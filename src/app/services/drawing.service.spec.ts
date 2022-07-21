@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { DrawingService } from './drawing.service';
 import { HttpServer } from './http-server.service';
@@ -15,7 +15,7 @@ describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
-  let controller: Server;
+  let controller:Controller ;
   let project: Project = new Project();
 
   beforeEach(() => {

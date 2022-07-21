@@ -10,23 +10,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplateDetailsComponent } from './iou-template-details.component';
 
 export class MockedIouService {
-  public getTemplate(controller: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as IouTemplate);
   }
 
-  public saveTemplate(controller: Server, iouTemplate: IouTemplate) {
+  public saveTemplate(controller:Controller , iouTemplate: IouTemplate) {
     return of(iouTemplate);
   }
 }
@@ -55,7 +55,7 @@ describe('IouTemplateDetailsComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: IouService, useValue: mockedIouService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: IouConfigurationService, useClass: IouConfigurationService },

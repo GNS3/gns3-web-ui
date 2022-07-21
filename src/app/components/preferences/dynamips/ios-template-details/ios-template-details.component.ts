@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IosTemplateDetailsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   iosTemplate: IosTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -37,7 +37,7 @@ export class IosTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private iosService: IosService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -71,7 +71,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

@@ -3,7 +3,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ImageManagerService } from '../../../services/image-manager.service';
 import { ToasterService } from '../../../services/toaster.service';
 
@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
   ],
 })
 export class AddImageDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
   selectFile: any = [];

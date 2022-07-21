@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { of } from 'rxjs';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
 import { ProjectService } from './project.service';
@@ -18,15 +18,15 @@ import { getTestServer } from './testing';
 export class MockedProjectService {
   public projects: Project[] = [];
 
-  list(controller: Server) {
+  list(controller:Controller ) {
     return of(this.projects);
   }
 
-  open(controller: Server, project: Project) {
+  open(controller:Controller , project: Project) {
     return of(project);
   }
 
-  close(controller: Server, project: Project) {
+  close(controller:Controller , project: Project) {
     return of(project);
   }
 
@@ -34,22 +34,22 @@ export class MockedProjectService {
     return project.readonly;
   }
 
-  links(controller: Server, project_id: string) {
+  links(controller:Controller , project_id: string) {
     return of([]);
   }
 
-  delete(controller: Server, project_id: string) {
+  delete(controller:Controller , project_id: string) {
     return of(project_id);
   }
 
-  duplicate(controller: Server, project_id: string) {
+  duplicate(controller:Controller , project_id: string) {
     return of(project_id);
   }
 
-  getStatistics(controller: Server, project_id: string) {
+  getStatistics(controller:Controller , project_id: string) {
     return of({});
   }
-  exportPortableProject(controller: Server, formData:{}) {
+  exportPortableProject(controller:Controller , formData:{}) {
     return of({});
   }
   getCompression() {
@@ -65,7 +65,7 @@ describe('ProjectService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: ProjectService;
-  let controller: Server;
+  let controller:Controller ;
   let settingsService: SettingsService;
 
   beforeEach(() => {

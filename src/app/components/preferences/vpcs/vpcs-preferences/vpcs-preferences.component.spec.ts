@@ -8,8 +8,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsPreferencesComponent } from './vpcs-preferences.component';
 
@@ -36,7 +36,7 @@ describe('VpcsPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
       ],
       declarations: [VpcsPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],

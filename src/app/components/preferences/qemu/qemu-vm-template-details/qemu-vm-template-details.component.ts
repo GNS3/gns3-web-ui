@@ -3,11 +3,11 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
@@ -17,7 +17,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   qemuTemplate: QemuTemplate;
   isSymbolSelectionOpened: boolean = false;
   consoleTypes: string[] = [];
@@ -38,7 +38,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private configurationService: QemuConfigurationService,
@@ -55,7 +55,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

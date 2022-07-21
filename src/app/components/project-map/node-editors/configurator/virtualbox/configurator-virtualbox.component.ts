@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { VirtualBoxConfigurationService } from '../../../../../services/virtual-box-configuration.service';
@@ -14,7 +14,7 @@ import { VirtualBoxConfigurationService } from '../../../../../services/virtual-
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   generalSettingsForm: FormGroup;

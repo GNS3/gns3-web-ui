@@ -9,10 +9,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { MockedServerSettingsService } from '../../../../services/server-settings.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerSettingsService } from '../../../../services/controller-settings.service';
+import { MockedControllerSettingsService } from '../../../../services/controller-settings.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
@@ -24,7 +24,7 @@ describe('DynamipsPreferencesComponent', () => {
 
   let mockedServerService = new MockedServerService();
   let activatedRoute = new MockedActivatedRoute().get();
-  let mockedServerSettingsService = new MockedServerSettingsService();
+  let mockedServerSettingsService = new MockedControllerSettingsService();
   let mockedToasterService = new MockedToasterService();
 
   beforeEach(async() => {
@@ -44,8 +44,8 @@ describe('DynamipsPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
-        { provide: ServerSettingsService, useValue: mockedServerSettingsService },
+        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerSettingsService, useValue: mockedServerSettingsService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
       declarations: [DynamipsPreferencesComponent],

@@ -9,16 +9,16 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplatesComponent } from './ios-templates.component';
 
 export class MockedIosService {
-  public getTemplates(controller: Server) {
+  public getTemplates(controller:Controller ) {
     return of([{} as IosTemplate]);
   }
 }
@@ -47,7 +47,7 @@ describe('IosTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: IosService, useValue: mockedIosService },
       ],
       declarations: [IosTemplatesComponent],

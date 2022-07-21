@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -29,7 +29,7 @@ import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-de
 })
 export class ContextConsoleMenuComponent implements OnInit {
   @Input() project: Project;
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
   @ViewChild('container', { read: ViewContainerRef }) container;
   componentRef: ComponentRef<ConsoleDeviceActionComponent>;

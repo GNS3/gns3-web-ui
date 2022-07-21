@@ -6,7 +6,7 @@ import { CapturingSettings } from '../../../../models/capturingSettings';
 import { Link } from '../../../../models/link';
 import { LinkNode } from '../../../../models/link-node';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { LinkService } from '../../../../services/link.service';
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -18,7 +18,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
   styleUrls: ['./start-capture.component.scss'],
 })
 export class StartCaptureDialogComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   project: Project;
   link: Link;
   linkTypes = [];

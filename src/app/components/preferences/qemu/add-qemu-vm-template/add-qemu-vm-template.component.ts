@@ -9,12 +9,12 @@ import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../models/qemu/qemu-image';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
@@ -24,7 +24,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddQemuVmTemplateComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   qemuBinaries: QemuBinary[] = [];
   selectPlatform: string[] = [];
   selectedPlatform: string;
@@ -47,7 +47,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private router: Router,
@@ -101,7 +101,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {

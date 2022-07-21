@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Template } from '../models/template';
 import { HttpServer } from './http-server.service';
 
@@ -12,56 +12,56 @@ import { HttpServer } from './http-server.service';
 export class NodeService {
   constructor(private httpServer: HttpServer) {}
 
-  getNodeById(controller: Server, projectId: string, nodeId: string) {
+  getNodeById(controller:Controller , projectId: string, nodeId: string) {
     return this.httpServer.get(controller, `/projects/${projectId}/nodes/${nodeId}`);
   }
 
-  isolate(controller: Server, node: Node) {
+  isolate(controller:Controller , node: Node) {
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/isolate`, {});
   }
 
-  unisolate(controller: Server, node: Node) {
+  unisolate(controller:Controller , node: Node) {
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/unisolate`, {});
   }
 
-  start(controller: Server, node: Node) {
+  start(controller:Controller , node: Node) {
     debugger
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/start`, {});
   }
 
-  startAll(controller: Server, project: Project) {
+  startAll(controller:Controller , project: Project) {
     return this.httpServer.post(controller, `/projects/${project.project_id}/nodes/start`, {});
   }
 
-  stop(controller: Server, node: Node) {
+  stop(controller:Controller , node: Node) {
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/stop`, {});
   }
 
-  stopAll(controller: Server, project: Project) {
+  stopAll(controller:Controller , project: Project) {
     return this.httpServer.post(controller, `/projects/${project.project_id}/nodes/stop`, {});
   }
 
-  suspend(controller: Server, node: Node) {
+  suspend(controller:Controller , node: Node) {
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/suspend`, {});
   }
 
-  suspendAll(controller: Server, project: Project) {
+  suspendAll(controller:Controller , project: Project) {
     return this.httpServer.post(controller, `/projects/${project.project_id}/nodes/suspend`, {});
   }
 
-  reload(controller: Server, node: Node) {
+  reload(controller:Controller , node: Node) {
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/reload`, {});
   }
 
-  reloadAll(controller: Server, project: Project) {
+  reloadAll(controller:Controller , project: Project) {
     return this.httpServer.post(controller, `/projects/${project.project_id}/nodes/reload`, {});
   }
-  resetAllNodes(controller: Server, project: Project) {
+  resetAllNodes(controller:Controller , project: Project) {
     return this.httpServer.post(controller, `/projects/${project.project_id}/nodes/console/reset`, {});
   }
 
   createFromTemplate(
-    controller: Server,
+    controller:Controller ,
     project: Project,
     template: Template,
     x: number,
@@ -82,7 +82,7 @@ export class NodeService {
     });
   }
 
-  updatePosition(controller: Server, project: Project, node: Node, x: number, y: number): Observable<Node> {
+  updatePosition(controller:Controller , project: Project, node: Node, x: number, y: number): Observable<Node> {
     let xPosition: number = Math.round(x);
     let yPosition: number = Math.round(y);
 
@@ -100,7 +100,7 @@ export class NodeService {
     });
   }
 
-  updateLabel(controller: Server, node: Node, label: Label): Observable<Node> {
+  updateLabel(controller:Controller , node: Node, label: Label): Observable<Node> {
     return this.httpServer.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       label: {
         rotation: label.rotation,
@@ -112,13 +112,13 @@ export class NodeService {
     });
   }
 
-  updateSymbol(controller: Server, node: Node, changedSymbol: string): Observable<Node> {
+  updateSymbol(controller:Controller , node: Node, changedSymbol: string): Observable<Node> {
     return this.httpServer.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       symbol: changedSymbol,
     });
   }
 
-  update(controller: Server, node: Node): Observable<Node> {
+  update(controller:Controller , node: Node): Observable<Node> {
     return this.httpServer.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       x: Math.round(node.x),
       y: Math.round(node.y),
@@ -126,7 +126,7 @@ export class NodeService {
     });
   }
 
-  updateNode(controller: Server, node: Node): Observable<Node> {
+  updateNode(controller:Controller , node: Node): Observable<Node> {
     return this.httpServer.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
       console_auto_start: node.console_auto_start,
@@ -136,7 +136,7 @@ export class NodeService {
     });
   }
 
-  updateNodeWithCustomAdapters(controller: Server, node: Node): Observable<Node> {
+  updateNodeWithCustomAdapters(controller:Controller , node: Node): Observable<Node> {
     return this.httpServer.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
       console_auto_start: node.console_auto_start,
@@ -146,11 +146,11 @@ export class NodeService {
     });
   }
 
-  delete(controller: Server, node: Node) {
+  delete(controller:Controller , node: Node) {
     return this.httpServer.delete<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
 
-  duplicate(controller: Server, node: Node) {
+  duplicate(controller:Controller , node: Node) {
     return this.httpServer.post(controller, `/projects/${node.project_id}/nodes/${node.node_id}/duplicate`, {
       x: node.x + 10,
       y: node.y + 10,
@@ -158,7 +158,7 @@ export class NodeService {
     });
   }
 
-  getNode(controller: Server, node: Node) {
+  getNode(controller:Controller , node: Node) {
     return this.httpServer.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
 
@@ -166,7 +166,7 @@ export class NodeService {
     return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
   }
 
-  getNetworkConfiguration(controller: Server, node: Node) {
+  getNetworkConfiguration(controller:Controller , node: Node) {
     return this.httpServer.get(
       controller,
       `/projects/${node.project_id}/nodes/${node.node_id}/files/etc/network/interfaces`,
@@ -174,7 +174,7 @@ export class NodeService {
     );
   }
 
-  saveNetworkConfiguration(controller: Server, node: Node, configuration: string) {
+  saveNetworkConfiguration(controller:Controller , node: Node, configuration: string) {
     return this.httpServer.post(
       controller,
       `/projects/${node.project_id}/nodes/${node.node_id}/files/etc/network/interfaces`,
@@ -182,7 +182,7 @@ export class NodeService {
     );
   }
 
-  getStartupConfiguration(controller: Server, node: Node) {
+  getStartupConfiguration(controller:Controller , node: Node) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'vpcs') {
@@ -196,7 +196,7 @@ export class NodeService {
     return this.httpServer.get(controller, urlPath, { responseType: 'text' as 'json' });
   }
 
-  getPrivateConfiguration(controller: Server, node: Node) {
+  getPrivateConfiguration(controller:Controller , node: Node) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'iou') {
@@ -208,7 +208,7 @@ export class NodeService {
     return this.httpServer.get(controller, urlPath, { responseType: 'text' as 'json' });
   }
 
-  saveConfiguration(controller: Server, node: Node, configuration: string) {
+  saveConfiguration(controller:Controller , node: Node, configuration: string) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'vpcs') {
@@ -222,7 +222,7 @@ export class NodeService {
     return this.httpServer.post(controller, urlPath, configuration);
   }
 
-  savePrivateConfiguration(controller: Server, node: Node, configuration: string) {
+  savePrivateConfiguration(controller:Controller , node: Node, configuration: string) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'iou') {

@@ -15,7 +15,7 @@ import { InformationDialogComponent } from '../../../components/dialogs/informat
 import { Appliance, Image, Version } from '../../../models/appliance';
 import { Project } from '../../../models/project';
 import { QemuBinary } from '../../../models/qemu/qemu-binary';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Template } from '../../../models/template';
 import { DockerTemplate } from '../../../models/templates/docker-template';
 import { IosTemplate } from '../../../models/templates/ios-template';
@@ -47,7 +47,7 @@ import { environment } from 'environments/environment';
   ],
 })
 export class NewTemplateDialogComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
 
   uploader: FileUploader;

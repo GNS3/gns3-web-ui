@@ -9,16 +9,16 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuVmTemplatesComponent } from './qemu-vm-templates.component';
 
 export class MockedQemuService {
-  public getTemplates(controller: Server) {
+  public getTemplates(controller:Controller ) {
     return of([{} as QemuTemplate]);
   }
 }
@@ -47,7 +47,7 @@ describe('QemuTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: QemuService, useValue: mockedQemuService },
       ],
       declarations: [QemuVmTemplatesComponent],

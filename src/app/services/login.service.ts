@@ -1,7 +1,7 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { HttpServer } from './http-server.service';
 import { AuthResponse } from '../models/authResponse';
 
@@ -10,7 +10,7 @@ export class LoginService {
   controller_id:string =''
   constructor(private httpServer: HttpServer) {}
 
-  login(controller: Server, username: string, password: string) {
+  login(controller:Controller , username: string, password: string) {
     const payload = new HttpParams()
         .set('username', username)
         .set('password', password);
@@ -22,10 +22,10 @@ export class LoginService {
     return this.httpServer.post<AuthResponse>(controller, '/users/login', payload, options);
   }
 
-  getLoggedUser(controller: Server) {
+  getLoggedUser(controller:Controller ) {
     return this.httpServer.get(controller, "/users/me").toPromise()
   }
-  async getLoggedUserRefToken(controller: Server,current_user):Promise<any> {
+  async getLoggedUserRefToken(controller:Controller ,current_user):Promise<any> {
     return await this.httpServer.post<AuthResponse>(controller, "/users/authenticate", {"username":current_user.username,"password":current_user.password}).toPromise()
   }
 }

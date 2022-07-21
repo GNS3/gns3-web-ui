@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class ExportPortableProjectComponent implements OnInit {
   compression_methods: any = [];
   compression_level: any = [];
   compression_filter_value: any = [];
-  controller: Server;
+  controller:Controller ;
   project: Project;
   index: number = 4;
   fileName: string;

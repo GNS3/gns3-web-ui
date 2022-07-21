@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { Symbol } from '../../../../models/symbol';
 import { SymbolService } from '../../../../services/symbol.service';
 
@@ -10,7 +10,7 @@ import { SymbolService } from '../../../../services/symbol.service';
   styleUrls: ['./symbols.component.scss'],
 })
 export class SymbolsComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() symbol: string;
   @Output() symbolChanged = new EventEmitter<string>();
 

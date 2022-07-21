@@ -6,7 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ProjectService } from '../../../services/project.service';
@@ -62,7 +62,7 @@ describe('ContextConsoleMenuComponent', () => {
 beforeEach(() => {
   fixture = TestBed.createComponent(ContextConsoleMenuComponent);
   component = fixture.componentInstance;
-  component.controller = { location: 'local' } as Server;
+  component.controller = { location: 'local' } as Controller ;
   fixture.detectChanges();
 });
 

@@ -13,7 +13,7 @@ import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { StyleProperty } from '../../../components/project-map/drawings-editors/text-editor/text-editor.component';
 import { Link } from '../../../models/link';
-import { Server } from '../../../models/server';
+import { Controller } from '../../../models/controller';
 import { LinkService } from '../../../services/link.service';
 import { MapScaleService } from '../../../services/mapScale.service';
 import { ToolsService } from '../../../services/tools.service';
@@ -37,7 +37,7 @@ import { Node } from '../../models/node';
 export class TextEditorComponent implements OnInit, OnDestroy {
   @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
   @Input('svg') svg: SVGSVGElement;
-  @Input('controller') controller: Server;
+  @Input('controller') controller: Controller;
 
   leftPosition: string = '0px';
   topPosition: string = '0px';

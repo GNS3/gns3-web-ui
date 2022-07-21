@@ -4,7 +4,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpServer } from 'app/services/http-server.service';
-import { MockedServerService } from 'app/services/server.service.spec';
+import { MockedServerService } from 'app/services/controller.service.spec';
 import { TemplateMocksService } from 'app/services/template-mocks.service';
 import { TemplateService } from 'app/services/template.service';
 import { ToasterService } from 'app/services/toaster.service';

@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
 import { VmwareVm } from '../../../../models/vmware/vmware-vm';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { VmwareService } from '../../../../services/vmware.service';
@@ -16,7 +16,7 @@ import { VmwareService } from '../../../../services/vmware.service';
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVmwareTemplateComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   virtualMachines: VmwareVm[];
   selectedVM: VmwareVm;
   vmwareTemplate: VmwareTemplate;
@@ -24,7 +24,7 @@ export class AddVmwareTemplateComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private vmwareService: VmwareService,
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
@@ -38,7 +38,7 @@ export class AddVmwareTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.vmwareService.getVirtualMachines(this.controller).subscribe((virtualMachines: VmwareVm[]) => {

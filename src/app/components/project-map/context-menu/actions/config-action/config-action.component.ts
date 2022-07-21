@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { ConfiguratorDialogAtmSwitchComponent } from '../../../node-editors/configurator/atm_switch/configurator-atm-switch.component';
 import { ConfiguratorDialogCloudComponent } from '../../../node-editors/configurator/cloud/configurator-cloud.component';
 import { ConfiguratorDialogDockerComponent } from '../../../node-editors/configurator/docker/configurator-docker.component';
@@ -21,7 +21,7 @@ import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configura
   templateUrl: './config-action.component.html',
 })
 export class ConfigActionComponent {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
   private conf = {
     autoFocus: false,

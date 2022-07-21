@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './unisolate-node-action.component.html',
 })
 export class UnisolateNodeActionComponent implements OnInit {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private toasterService: ToasterService) {}

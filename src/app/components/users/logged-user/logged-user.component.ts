@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../../services/server.service';
+import { ControllerService } from '../../../services/controller.service';
 import { UserService } from '../../../services/user.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { User } from '../../../models/users/user';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 
 @Component({
   selector: 'app-logged-user',
@@ -13,18 +13,18 @@ import { Server } from '../../../models/server';
 })
 export class LoggedUserComponent implements OnInit {
     public user: User;
-    public controller: Server;
+    public controller:Controller ;
 
     constructor(
         private route: ActivatedRoute,
-        private serverService: ServerService,
+        private serverService: ControllerService,
         private userService: UserService,
         private toasterService: ToasterService
     ) {}
 
     ngOnInit() {
         let controllerId = this.route.snapshot.paramMap.get('controller_id');
-        this.serverService.get(+controllerId).then((controller: Server) => {
+        this.serverService.get(+controllerId).then((controller:Controller ) => {
             this.controller = controller;
             this.userService.getInformationAboutLoggedUser(controller).subscribe((response: any) => {
                 this.user = response;

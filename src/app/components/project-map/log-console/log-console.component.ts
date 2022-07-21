@@ -19,7 +19,7 @@ import { Link } from '../../../models/link';
 import { LogEvent } from '../../../models/logEvent';
 import { Port } from '../../../models/port';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { HttpServer } from '../../../services/http-server.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
@@ -34,7 +34,7 @@ import { LogEventsDataSource } from './log-events-datasource';
   styleUrls: ['./log-console.component.scss'],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() controller: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
 
   @ViewChild('console') console: ElementRef;

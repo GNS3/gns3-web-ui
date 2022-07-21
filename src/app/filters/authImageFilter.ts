@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Console } from 'console';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { HttpServer } from '../services/http-server.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'environments/environment';
@@ -15,7 +15,7 @@ export class AuthImageFilter implements PipeTransform {
         private domSanitizer: DomSanitizer
     ) { }
 
-    async transform(src: string, controller: Server) {
+    async transform(src: string, controller:Controller ) {
         let url = src.split(`${environment.current_version}`)[1];
         const imageBlob: Blob = await this.httpServer.getBlob(controller, url).toPromise();
         const reader = new FileReader();

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Snapshot } from '../models/snapshot';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpServer } from './http-server.service';
@@ -14,7 +14,7 @@ describe('SnapshotService', () => {
   let httpTestingController: HttpTestingController;
   let httpServer: HttpServer;
   let service: SnapshotService;
-  let controller: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

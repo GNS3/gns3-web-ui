@@ -16,12 +16,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedServerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -29,7 +29,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddIouTemplateComponent } from './add-iou-template.component';
 
 export class MockedIouService {
-  public addTemplate(controller: Server, iouTemplate: IouTemplate) {
+  public addTemplate(controller:Controller , iouTemplate: IouTemplate) {
     return of(iouTemplate);
   }
 }
@@ -67,7 +67,7 @@ xdescribe('AddIouTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedServerService },
         { provide: IouService, useValue: mockedIouService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
@@ -93,7 +93,7 @@ xdescribe('AddIouTemplateComponent', () => {
     component.templateNameForm.controls['templateName'].setValue('sample name');
     component.imageForm.controls['imageName'].setValue('sample name');
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -104,7 +104,7 @@ xdescribe('AddIouTemplateComponent', () => {
     spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
     component.imageForm.controls['imageName'].setValue('sample name');
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -115,7 +115,7 @@ xdescribe('AddIouTemplateComponent', () => {
     spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
     component.templateNameForm.controls['templateName'].setValue('sample name');
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 

@@ -53,7 +53,7 @@ import { WebConsoleFullWindowComponent } from './components/web-console-full-win
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
-import { ServerResolve } from './resolvers/server-resolve';
+import { ControllerResolve } from './resolvers/controller-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
@@ -73,7 +73,7 @@ const routes: Routes = [
         path: 'controller/:controller_id/projects',
         component: ProjectsComponent,
         canActivate: [LoginGuard],
-        resolve: { controller: ServerResolve },
+        resolve: { controller: ControllerResolve },
       },
       { path: 'help', component: HelpComponent },
       { path: 'settings', component: SettingsComponent },
@@ -86,7 +86,7 @@ const routes: Routes = [
         path: 'controller/:controller_id/project/:project_id/snapshots',
         component: ListOfSnapshotsComponent,
         canActivate: [LoginGuard],
-        resolve: { controller: ServerResolve },
+        resolve: { controller: ControllerResolve },
       },
       { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
       // { path: 'controller/:controller_id/preferences/general', component: GeneralPreferencesComponent },

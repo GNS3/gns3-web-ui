@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
@@ -13,19 +13,19 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./virtual-box-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VirtualBoxTemplatesComponent implements OnInit {
-  controller: Server;
+  controller:Controller ;
   virtualBoxTemplates: VirtualBoxTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private serverService: ControllerService,
     private virtualBoxService: VirtualBoxService
   ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller: Server) => {
+    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

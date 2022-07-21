@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import * as marked from 'marked';
 import { ProjectService } from '../../../../services/project.service';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { Project } from '../../../../models/project';
 
 @Component({
@@ -11,7 +11,7 @@ import { Project } from '../../../../models/project';
     styleUrls: ['./readme-editor.component.scss']
 })
 export class ReadmeEditorComponent implements OnInit {
-    @Input() controller: Server;
+    @Input() controller:Controller ;
     @Input() project: Project;
 
     public markdown = ``;

@@ -9,7 +9,7 @@ import { ToasterService } from '../../../services/toaster.service';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
@@ -66,7 +66,7 @@ describe('LogConsoleComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LogConsoleComponent);
     component = fixture.componentInstance;
-    component.controller = { location: 'local' } as Server;
+    component.controller = { location: 'local' } as Controller ;
     fixture.detectChanges();
   });
 
