@@ -10,11 +10,11 @@ import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ControllerManagementService, ServerStateEvent } from '../../services/controller-management.service';
+import { ControllerManagementService, ControllerStateEvent } from '../../services/controller-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
-import { HttpServer, ServerErrorHandler } from '../../services/http-server.service';
+import { HttpController, ControllerErrorHandler } from '../../services/http-controller.service';
 import { HttpClientModule } from '@angular/common/http';
 
 class ElectronServiceMock {
@@ -22,7 +22,7 @@ class ElectronServiceMock {
 }
 
 class MockedServerManagementService {
-  public serverStatusChanged;
+  public controllerStatusChanged;
   public stopAll() {}
 }
 
@@ -32,12 +32,12 @@ describe('DefaultLayoutComponent', () => {
   let electronServiceMock: ElectronServiceMock;
   let serverManagementService = new MockedServerManagementService();
   let serverService: ControllerService;
-  let httpServer: HttpServer;
-  let errorHandler: ServerErrorHandler;
+  let httpServer: HttpController;
+  let errorHandler: ControllerErrorHandler;
 
   beforeEach(async() => {
     electronServiceMock = new ElectronServiceMock();
-    serverManagementService.controllerStatusChanged = new Subject<ServerStateEvent>();
+    serverManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
     await TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
@@ -60,14 +60,14 @@ describe('DefaultLayoutComponent', () => {
           useClass: RecentlyOpenedProjectService,
         },
         { provide: ControllerService },
-        { provide: HttpServer },
-        { provide: ServerErrorHandler },
+        { provide: HttpController },
+        { provide: ControllerErrorHandler },
         ProgressService,
       ],
     }).compileComponents();
 
-    errorHandler = TestBed.inject(ServerErrorHandler);
-    httpServer = TestBed.inject(HttpServer);
+    errorHandler = TestBed.inject(ControllerErrorHandler);
+    httpServer = TestBed.inject(HttpController);
     serverService = TestBed.inject(ControllerService);
   });
 

@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { VpcsService } from '../../../../services/vpcs.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsTemplatesComponent } from './vpcs-templates.component';
@@ -27,7 +27,7 @@ describe('VpcsTemplatesComponent', () => {
   let component: VpcsTemplatesComponent;
   let fixture: ComponentFixture<VpcsTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedVpcsService = new MockedVpcsService();
   let activatedRoute = new MockedActivatedRoute().get();
 

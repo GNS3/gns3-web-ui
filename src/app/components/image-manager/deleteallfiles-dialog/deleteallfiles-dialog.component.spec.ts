@@ -11,7 +11,7 @@ import{ Server } from 'http';
 import { of } from 'rxjs';
 import { ImageManagerService } from '../../../services/image-manager.service';
 import { ControllerService } from '../../../services/controller.service';
-import { MockedServerService } from '../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../services/controller.service.spec';
 import { ImageManagerComponent } from '../image-manager.component';
 
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
@@ -25,7 +25,7 @@ export class MockedImageManagerService {
  describe('DeleteAllImageFilesDialogComponent', () => {
   let component: DeleteAllImageFilesDialogComponent;
   let fixture: ComponentFixture<DeleteAllImageFilesDialogComponent>;
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
 

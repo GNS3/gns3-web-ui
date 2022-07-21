@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import{ Controller } from '../models/controller';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
 import { VirtualBoxVm } from '../models/virtualBox/virtual-box-vm';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VirtualBoxService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<VirtualBoxTemplate[]> {
     return this.httpServer.get<VirtualBoxTemplate[]>(controller, '/templates') as Observable<VirtualBoxTemplate[]>;

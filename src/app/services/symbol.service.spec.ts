@@ -6,25 +6,25 @@ import { of } from 'rxjs';
 import{ Controller } from '../models/controller';
 import { Symbol } from '../models/symbol';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { SymbolService } from './symbol.service';
 import { getTestServer } from './testing';
 
 describe('SymbolService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SymbolService],
+      providers: [HttpController, SymbolService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     controller = getTestServer();
   });
 

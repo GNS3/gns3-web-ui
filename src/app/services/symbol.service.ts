@@ -5,7 +5,7 @@ import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
 import{ Controller } from '../models/controller';
 import { Symbol } from '../models/symbol';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { environment } from 'environments/environment';
 
 const CACHE_SIZE = 1;
@@ -16,7 +16,7 @@ export class SymbolService {
   private cache: Observable<Symbol[]>;
   private maximumSymbolSize: number = 80;
 
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getMaximumSymbolSize() {
     return this.maximumSymbolSize;

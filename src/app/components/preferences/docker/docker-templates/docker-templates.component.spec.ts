@@ -13,7 +13,7 @@ import{ Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { DockerTemplatesComponent } from './docker-templates.component';
 
@@ -27,7 +27,7 @@ describe('DockerTemplatesComponent', () => {
   let component: DockerTemplatesComponent;
   let fixture: ComponentFixture<DockerTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let activatedRoute = new MockedActivatedRoute().get();
 

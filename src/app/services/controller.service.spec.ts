@@ -1,6 +1,6 @@
 import{ Controller } from '../models/controller';
 
-export class MockedServerService {
+export class MockedControllerService {
   public servers:Controller [] = [];
 
   public create(controller:Controller ) {

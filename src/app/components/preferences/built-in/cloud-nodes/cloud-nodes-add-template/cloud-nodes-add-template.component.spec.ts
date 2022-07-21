@@ -15,7 +15,7 @@ import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ComputeService } from '../../../../../services/compute.service';
 import { ControllerService } from '../../../../../services/controller.service';
-import { MockedServerService } from '../../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
@@ -33,7 +33,7 @@ describe('CloudNodesAddTemplateComponent', () => {
   let component: CloudNodesAddTemplateComponent;
   let fixture: ComponentFixture<CloudNodesAddTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let mockedToasterService = new MockedToasterService();
   let mockedComputeService = new MockedComputeService();

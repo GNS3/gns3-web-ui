@@ -21,7 +21,7 @@ import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -39,7 +39,7 @@ xdescribe('AddIouTemplateComponent', () => {
   let component: AddIouTemplateComponent;
   let fixture: ComponentFixture<AddIouTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedIouService = new MockedIouService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();

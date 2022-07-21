@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { Context } from 'app/cartography/models/context';
-import { HttpServer, ServerErrorHandler } from 'app/services/http-server.service';
+import { HttpController, ControllerErrorHandler } from 'app/services/http-controller.service';
 import { MapScaleService } from 'app/services/mapScale.service';
 import { SymbolService } from 'app/services/symbol.service';
 import { TemplateService } from 'app/services/template.service';
@@ -24,11 +24,11 @@ describe('TemplateComponent', () => {
         MatDialog,
         Overlay,
         TemplateService,
-        HttpServer,
+        HttpController,
         MapScaleService,
         HttpClient,
         HttpHandler,
-        ServerErrorHandler,
+        ControllerErrorHandler,
         Context, 
         { provide: SymbolService, useClass: mockedSymbolService },
       ],

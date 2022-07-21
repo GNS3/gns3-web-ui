@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import{ Controller } from '../models/controller';
 import { QemuSettings } from '../models/settings/qemu-settings';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { ControllerSettingsService } from './controller-settings.service';
 
 export class MockedControllerSettingsService {
@@ -18,15 +18,15 @@ export class MockedControllerSettingsService {
 }
 
 describe('ControllerSettingsService', () => {
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, ControllerSettingsService],
+      providers: [HttpController, ControllerSettingsService],
     });
 
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
   });
 
   it('should be created', inject([ControllerSettingsService], (service: ControllerSettingsService) => {

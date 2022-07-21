@@ -66,7 +66,7 @@ export type HeadersOptions = {
 };
 /* tslint:enable:interface-over-type-literal */
 
-export class ServerError extends Error {
+export class ControllerError extends Error {
   public originalError: Error;
 
   constructor(message: string) {
@@ -74,19 +74,19 @@ export class ServerError extends Error {
   }
 
   static fromError(message: string, originalError: Error) {
-    const serverError = new ServerError(message);
-    serverError.originalError = originalError;
-    return serverError;
+    const controllerError = new ControllerError(message);
+    controllerError.originalError = originalError;
+    return controllerError;
   }
 }
 
 @Injectable()
-export class ServerErrorHandler {
+export class ControllerErrorHandler {
   handleError(error: HttpErrorResponse) {
     let err: Error = error;
 
     if (error.name === 'HttpErrorResponse' && error.status === 0) {
-      err = ServerError.fromError('Server is unreachable', error);
+      err = ControllerError.fromError('Controller is unreachable', error);
     }
 
     if (error.status === 401) {
@@ -98,14 +98,14 @@ export class ServerErrorHandler {
 }
 
 @Injectable()
-export class HttpServer {
+export class HttpController {
   public requestsNotificationEmitter = new EventEmitter<string>();
 
-  constructor(private http: HttpClient, private errorHandler: ServerErrorHandler) {}
+  constructor(private http: HttpClient, private errorHandler: ControllerErrorHandler) {}
 
   get<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer<JsonOptions>(controller, url, options);
+    const intercepted = this.getOptionsForController<JsonOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
 
     return this.http
@@ -115,7 +115,7 @@ export class HttpServer {
 
   getText(controller:Controller , url: string, options?: TextOptions): Observable<string> {
     options = this.getTextOptions(options);
-    const intercepted = this.getOptionsForServer<TextOptions>(controller, url, options);
+    const intercepted = this.getOptionsForController<TextOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
 
     return this.http
@@ -125,7 +125,7 @@ export class HttpServer {
 
   getBlob(controller:Controller , url: string, options?: BlobOptions): Observable<Blob> {
     options = this.getBlobOptions(options);
-    const intercepted = this.getOptionsForServer<BlobOptions>(controller, url, options);
+    const intercepted = this.getOptionsForController<BlobOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
 
     return this.http
@@ -135,7 +135,7 @@ export class HttpServer {
 
   post<T>(controller:Controller , url: string, body: any | null, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(controller, url, options);
+    const intercepted = this.getOptionsForController(controller, url, options);
     this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
 
     return this.http
@@ -145,7 +145,7 @@ export class HttpServer {
 
   put<T>(controller:Controller , url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(controller, url, options);
+    const intercepted = this.getOptionsForController(controller, url, options);
     this.requestsNotificationEmitter.emit(`PUT ${intercepted.url}`);
 
     return this.http
@@ -155,7 +155,7 @@ export class HttpServer {
 
   delete<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(controller, url, options);
+    const intercepted = this.getOptionsForController(controller, url, options);
     this.requestsNotificationEmitter.emit(`DELETE ${intercepted.url}`);
 
     return this.http
@@ -165,7 +165,7 @@ export class HttpServer {
 
   patch<T>(controller:Controller , url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(controller, url, options);
+    const intercepted = this.getOptionsForController(controller, url, options);
     return this.http
       .patch<T>(intercepted.url, body, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -173,7 +173,7 @@ export class HttpServer {
 
   head<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(controller, url, options);
+    const intercepted = this.getOptionsForController(controller, url, options);
     return this.http
       .head<T>(intercepted.url, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -181,7 +181,7 @@ export class HttpServer {
 
   options<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
-    const intercepted = this.getOptionsForServer(controller, url, options);
+    const intercepted = this.getOptionsForController(controller, url, options);
     return this.http
       .options<T>(intercepted.url, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
@@ -214,7 +214,7 @@ export class HttpServer {
     return options;
   }
 
-  private getOptionsForServer<T extends HeadersOptions>(controller:Controller , url: string, options: T) {
+  private getOptionsForController<T extends HeadersOptions>(controller:Controller , url: string, options: T) {
     if (controller && controller.host && controller.port) {
       if (!controller.protocol) {
         controller.protocol = location.protocol as ServerProtocol;

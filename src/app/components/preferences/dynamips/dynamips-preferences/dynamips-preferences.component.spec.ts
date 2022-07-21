@@ -12,7 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ControllerSettingsService } from '../../../../services/controller-settings.service';
 import { MockedControllerSettingsService } from '../../../../services/controller-settings.service.spec';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
@@ -22,7 +22,7 @@ describe('DynamipsPreferencesComponent', () => {
   let component: DynamipsPreferencesComponent;
   let fixture: ComponentFixture<DynamipsPreferencesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
   let mockedServerSettingsService = new MockedControllerSettingsService();
   let mockedToasterService = new MockedToasterService();

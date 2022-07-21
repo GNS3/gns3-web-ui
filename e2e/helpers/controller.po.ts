@@ -1,22 +1,22 @@
 import { browser, by } from 'protractor';
 import { TestHelper } from './common.po';
 
-export class ServersPage {
+export class ControllersPage {
   helper = new TestHelper();
 
   maximizeWindow() {
     browser.driver.manage().window().maximize();
   }
 
-  navigateToServersPage() {
+  navigateToControllersPage() {
     return browser.get('/controllers');
   }
 
-  getAddServerNotificationText() {
+  getAddControllerNotificationText() {
     return browser.driver.findElement(by.className('mat-card-content')).getText();
   }
 
-  async clickAddServer() {
+  async clickAddController() {
     let controllerTable = await this.checkControllersTable();
     if (controllerTable.length === 0) {
       let buttons = await browser.driver.findElements(by.className('mat-button mat-button-base'));

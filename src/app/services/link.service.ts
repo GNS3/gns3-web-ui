@@ -7,11 +7,11 @@ import { Link } from '../models/link';
 import { LinkNode } from '../models/link-node';
 import { Port } from '../models/port';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class LinkService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   createLink(
     controller:Controller ,

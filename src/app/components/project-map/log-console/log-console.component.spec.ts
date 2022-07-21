@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
 import{ Controller } from '../../../models/controller';
-import { HttpServer, ServerErrorHandler } from '../../../services/http-server.service';
+import { HttpController, ControllerErrorHandler } from '../../../services/http-controller.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
@@ -39,7 +39,7 @@ describe('LogConsoleComponent', () => {
   let mapSettingsService: MapSettingsService;
   let toasterService: ToasterService;
 
-  let httpServer = new HttpServer({} as HttpClient, {} as ServerErrorHandler);
+  let httpServer = new HttpController({} as HttpClient, {} as ControllerErrorHandler);
 
   beforeEach(async() => {
    await TestBed.configureTestingModule({
@@ -49,7 +49,7 @@ describe('LogConsoleComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: LogEventsDataSource, useClass: LogEventsDataSource },
-        { provide: HttpServer, useValue: httpServer },
+        { provide: HttpController, useValue: httpServer },
         NodeConsoleService,
         ToasterService,
         MapSettingsService

@@ -6,11 +6,11 @@ import { Node } from '../cartography/models/node';
 import { Project } from '../models/project';
 import{ Controller } from '../models/controller';
 import { Template } from '../models/template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class NodeService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getNodeById(controller:Controller , projectId: string, nodeId: string) {
     return this.httpServer.get(controller, `/projects/${projectId}/nodes/${nodeId}`);

@@ -13,7 +13,7 @@ import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ControllerService } from '../../../../../services/controller.service';
-import { MockedServerService } from '../../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsTemplatesComponent } from './ethernet-hubs-templates.component';
 
@@ -27,7 +27,7 @@ describe('EthernetHubsTemplatesComponent', () => {
   let component: EthernetHubsTemplatesComponent;
   let fixture: ComponentFixture<EthernetHubsTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let activatedRoute = new MockedActivatedRoute().get();
 

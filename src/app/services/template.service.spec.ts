@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { TemplateService } from './template.service';
 
 describe('TemplateService', () => {
@@ -15,7 +15,7 @@ describe('TemplateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [TemplateService, HttpServer, HttpClient],
+      providers: [TemplateService, HttpController, HttpClient],
     });
 
     httpClient = TestBed.get(HttpClient);

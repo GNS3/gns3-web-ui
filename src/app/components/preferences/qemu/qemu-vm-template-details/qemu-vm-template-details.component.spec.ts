@@ -16,7 +16,7 @@ import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../services/qemu.service';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
@@ -44,7 +44,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
   let component: QemuVmTemplateDetailsComponent;
   let fixture: ComponentFixture<QemuVmTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedQemuService = new MockedQemuService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();

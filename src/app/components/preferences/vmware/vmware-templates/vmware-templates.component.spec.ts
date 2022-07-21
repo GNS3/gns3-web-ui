@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 import{ Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { VmwareService } from '../../../../services/vmware.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplatesComponent } from './vmware-templates.component';
@@ -27,7 +27,7 @@ describe('VmwareTemplatesComponent', () => {
   let component: VmwareTemplatesComponent;
   let fixture: ComponentFixture<VmwareTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedVmwareService = new MockedVmwareService();
   let activatedRoute = new MockedActivatedRoute().get();
 

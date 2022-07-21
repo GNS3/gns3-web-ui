@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxTemplatesComponent } from './virtual-box-templates.component';
@@ -27,7 +27,7 @@ describe('VirtualBoxTemplatesComponent', () => {
   let component: VirtualBoxTemplatesComponent;
   let fixture: ComponentFixture<VirtualBoxTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedVirtualBoxService = new MockedVirtualBoxService();
   let activatedRoute = new MockedActivatedRoute().get();
 

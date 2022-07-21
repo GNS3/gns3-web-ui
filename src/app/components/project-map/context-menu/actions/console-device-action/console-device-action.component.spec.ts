@@ -5,7 +5,7 @@ import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ControllerService } from '../../../../../services/controller.service';
-import { MockedServerService } from '../../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../../services/controller.service.spec';
 import { SettingsService } from '../../../../../services/settings.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
@@ -18,7 +18,7 @@ describe('ConsoleDeviceActionComponent', () => {
   let electronService;
   let controller:Controller ;
   let settingsService: SettingsService;
-  let mockedServerService: MockedServerService;
+  let mockedServerService: MockedControllerService;
   let mockedToaster: MockedToasterService;
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 
@@ -34,7 +34,7 @@ describe('ConsoleDeviceActionComponent', () => {
       },
     };
 
-    mockedServerService = new MockedServerService();
+    mockedServerService = new MockedControllerService();
     mockedToaster = new MockedToasterService();
 
     controller = { host: 'localhost', port: 222 } as Controller ;

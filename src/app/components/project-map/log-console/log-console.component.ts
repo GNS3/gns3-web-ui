@@ -20,7 +20,7 @@ import { LogEvent } from '../../../models/logEvent';
 import { Port } from '../../../models/port';
 import { Project } from '../../../models/project';
 import{ Controller } from '../../../models/controller';
-import { HttpServer } from '../../../services/http-server.service';
+import { HttpController } from '../../../services/http-controller.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
@@ -70,7 +70,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private nodeService: NodeService,
     private nodesDataSource: NodesDataSource,
     private logEventsDataSource: LogEventsDataSource,
-    private httpService: HttpServer,
+    private httpService: HttpController,
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
     private nodeConsoleService: NodeConsoleService,

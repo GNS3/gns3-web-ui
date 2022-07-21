@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { DockerImage } from '../models/docker/docker-image';
 import{ Controller } from '../models/controller';
 import { DockerTemplate } from '../models/templates/docker-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class DockerService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<DockerTemplate[]> {
     return this.httpServer.get<DockerTemplate[]>(controller, '/templates') as Observable<DockerTemplate[]>;

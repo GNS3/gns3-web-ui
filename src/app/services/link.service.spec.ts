@@ -6,25 +6,25 @@ import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { LinkService } from './link.service';
 import { getTestServer } from './testing';
 
 describe('LinkService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, LinkService],
+      providers: [HttpController, LinkService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     controller = getTestServer();
   });
 

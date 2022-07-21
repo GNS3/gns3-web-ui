@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import{ Controller } from '../models/controller';
 import { ServerSettings } from '../models/serverSettings';
 import { QemuSettings } from '../models/settings/qemu-settings';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ControllerSettingsService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   get(controller:Controller ) {
     return this.httpServer.get<ServerSettings>(controller, `/settings`);

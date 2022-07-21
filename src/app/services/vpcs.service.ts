@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import{ Controller } from '../models/controller';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VpcsService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<VpcsTemplate[]> {
     return this.httpServer.get<VpcsTemplate[]>(controller, '/templates') as Observable<VpcsTemplate[]>;

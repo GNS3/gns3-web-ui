@@ -5,25 +5,25 @@ import { environment } from 'environments/environment';
 import{ Controller } from '../models/controller';
 import { QemuTemplate } from '../models/templates/qemu-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { QemuService } from './qemu.service';
 import { getTestServer } from './testing';
 
 describe('QemuService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, QemuService],
+      providers: [HttpController, QemuService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     controller = getTestServer();
   });
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import {Controller , ServerProtocol } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ControllerService {
@@ -9,7 +9,7 @@ export class ControllerService {
   public serviceInitialized: Subject<boolean> = new Subject<boolean>();
   public isServiceInitialized: boolean;
 
-  constructor(private httpServer: HttpServer) {
+  constructor(private httpServer: HttpController) {
     this.controllerIds = this.getcontrollerIds();
     this.isServiceInitialized = true;
     this.serviceInitialized.next(this.isServiceInitialized);

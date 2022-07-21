@@ -13,7 +13,7 @@ import{ Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplatesComponent } from './iou-templates.component';
 
@@ -27,7 +27,7 @@ describe('IouTemplatesComponent', () => {
   let component: IouTemplatesComponent;
   let fixture: ComponentFixture<IouTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedIouService = new MockedIouService();
   let activatedRoute = new MockedActivatedRoute().get();
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { Observable } from 'rxjs';
 import { Image } from "../models/images";
 import { environment } from 'environments/environment';
@@ -10,7 +10,7 @@ import { environment } from 'environments/environment';
 })
 export class ImageManagerService {
 
-  constructor(private httpServer: HttpServer) { }
+  constructor(private httpServer: HttpController) { }
 
   getImages(controller:Controller ) {
     return this.httpServer.get<Image[]>(controller, '/images') as Observable<Image[]>;

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class BuiltInTemplatesService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<any[]> {
     return this.httpServer.get<any[]>(controller, '/templates') as Observable<any[]>;

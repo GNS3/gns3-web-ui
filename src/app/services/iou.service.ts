@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { IouImage } from '../models/iou/iou-image';
 import{ Controller } from '../models/controller';
 import { IouTemplate } from '../models/templates/iou-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class IouService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<IouTemplate[]> {
     return this.httpServer.get<IouTemplate[]>(controller, '/templates') as Observable<IouTemplate[]>;

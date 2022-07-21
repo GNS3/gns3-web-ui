@@ -8,14 +8,14 @@ import { Project } from '../models/project';
 import{ Controller } from '../models/controller';
 import { Template } from '../models/template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { NodeService } from './node.service';
 import { getTestServer } from './testing';
 
 describe('NodeService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let service: NodeService;
   let controller:Controller ;
 
@@ -23,14 +23,14 @@ describe('NodeService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
       providers: [
-        HttpServer,
+        HttpController,
         NodeService,
       ],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     service = TestBed.get(NodeService);
     controller = getTestServer();
   });

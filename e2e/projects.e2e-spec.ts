@@ -1,14 +1,14 @@
 import { TestHelper } from './helpers/common.po';
 import { ProjectsPage } from './helpers/project.po';
-import { ServersPage } from './helpers/server.po';
+import { ControllersPage } from './helpers/server.po';
 
 describe('Projects page', () => {
-  let controllersPage: ServersPage;
+  let controllersPage: ControllersPage;
   let projectsPage: ProjectsPage;
   let helper: TestHelper;
 
   beforeEach(() => {
-    controllersPage = new ServersPage();
+    controllersPage = new ControllersPage();
     projectsPage = new ProjectsPage();
     helper = new TestHelper();
   });
@@ -16,8 +16,8 @@ describe('Projects page', () => {
   it('user should have possibility to create new project', async () => {
     // arrange
     controllersPage.maximizeWindow();
-    await controllersPage.navigateToServersPage();
-    await controllersPage.clickAddServer();
+    await controllersPage.navigateToControllersPage();
+    await controllersPage.clickAddController();
     await controllersPage.navigateToServerProjects();
     helper.sleep(2000);
 

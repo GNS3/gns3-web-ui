@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { Compute } from '../models/compute';
 import { ComputeStatistics } from '../models/computeStatistics';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ComputeService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getComputes(controller:Controller ): Observable<Compute[]> {
     return this.httpServer.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;

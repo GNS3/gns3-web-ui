@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import{ Controller } from '../models/controller';
 import { VmwareTemplate } from '../models/templates/vmware-template';
 import { VmwareVm } from '../models/vmware/vmware-vm';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VmwareService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<VmwareTemplate[]> {
     return this.httpServer.get<VmwareTemplate[]>(controller, '/templates') as Observable<VmwareTemplate[]>;

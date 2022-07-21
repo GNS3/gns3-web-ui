@@ -5,11 +5,11 @@ import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-con
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '../models/project';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class DrawingService {
-  constructor(private httpServer: HttpServer, private svgToDrawingConverter: SvgToDrawingConverter) {}
+  constructor(private httpServer: HttpController, private svgToDrawingConverter: SvgToDrawingConverter) {}
 
   add(controller:Controller , project_id: string, x: number, y: number, svg: string) {
     return this.httpServer.post<Drawing>(controller, `/projects/${project_id}/drawings`, {

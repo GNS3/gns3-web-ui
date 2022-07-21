@@ -6,7 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ImageManagerService } from 'app/services/image-manager.service';
 import { ControllerService } from '../../../services/controller.service';
-import { MockedServerService } from '../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../services/controller.service.spec';
 import { of } from 'rxjs';
 import{ Controller } from '../../../models/controller';
 
@@ -27,7 +27,7 @@ describe('AddImageDialogComponent', () => {
   let component: AddImageDialogComponent;
   let fixture: ComponentFixture<AddImageDialogComponent>;
   
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
 

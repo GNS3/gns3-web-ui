@@ -21,7 +21,7 @@ import{ Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
 import { ControllerService } from '../../services/controller.service';
-import { MockedServerService } from '../../services/controller.service.spec';
+import { MockedControllerService } from '../../services/controller.service.spec';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
@@ -66,7 +66,7 @@ xdescribe('ProjectsComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
-        { provide: ControllerService, useClass: MockedServerService },
+        { provide: ControllerService, useClass: MockedControllerService },
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService },
         { provide: ToasterService },

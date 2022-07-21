@@ -14,7 +14,7 @@ import { of } from 'rxjs';
 import{ Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
@@ -36,7 +36,7 @@ describe('VmwareTemplateDetailsComponent', () => {
   let component: VmwareTemplateDetailsComponent;
   let fixture: ComponentFixture<VmwareTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedVmwareService = new MockedVmwareService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();

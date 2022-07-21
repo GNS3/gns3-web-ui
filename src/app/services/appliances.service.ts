@@ -3,11 +3,11 @@ import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Appliance } from '../models/appliance';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ApplianceService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getAppliances(controller:Controller ): Observable<Appliance[]> {
     return this.httpServer.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;

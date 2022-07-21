@@ -29,7 +29,7 @@ import { ProgressDialogService } from './common/progress-dialog/progress-dialog.
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from './common/progress/progress.service';
 import { AdbutlerComponent } from './components/adbutler/adbutler.component';
-import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
+import { BundledControllerFinderComponent } from './components/bundled-controller-finder/bundled-controller-finder.component';
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
@@ -224,7 +224,7 @@ import { DockerService } from './services/docker.service';
 import { DrawingService } from './services/drawing.service';
 import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
-import { HttpServer, ServerErrorHandler } from './services/http-server.service';
+import { HttpController, ControllerErrorHandler } from './services/http-controller.service';
 import { InfoService } from './services/info.service';
 import { InstalledSoftwareService } from './services/installed-software.service';
 import { IosConfigurationService } from './services/ios-configuration.service';
@@ -319,7 +319,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     SuspendLinkActionComponent,
     SettingsComponent,
     PreferencesComponent,
-    BundledServerFinderComponent,
+    BundledControllerFinderComponent,
     ProgressComponent,
     ControllerDiscoveryComponent,
     NodeSelectInterfaceComponent,
@@ -510,7 +510,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     NodeService,
     LinkService,
     DrawingService,
-    HttpServer,
+    HttpController,
     SnapshotService,
     ProgressDialogService,
     ToasterService,
@@ -523,7 +523,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     SelectionManager,
     InRectangleHelper,
     DrawingsDataSource,
-    ServerErrorHandler,
+    ControllerErrorHandler,
     ControllerDatabase,
     ProjectNameValidator,
     ToolsService,

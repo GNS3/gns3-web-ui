@@ -6,11 +6,11 @@ import{ Controller } from '../../models/controller';
 import { ControllerService } from '../../services/controller.service';
 
 @Component({
-  selector: 'app-bundled-server-finder',
-  templateUrl: './bundled-server-finder.component.html',
-  styleUrls: ['./bundled-server-finder.component.scss'],
+  selector: 'app-bundled-controller-finder',
+  templateUrl: './bundled-controller-finder.component.html',
+  styleUrls: ['./bundled-controller-finder.component.scss'],
 })
-export class BundledServerFinderComponent implements OnInit {
+export class BundledControllerFinderComponent implements OnInit {
   constructor(
     private router: Router,
     private serverService: ControllerService,

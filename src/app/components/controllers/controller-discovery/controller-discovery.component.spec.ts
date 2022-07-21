@@ -6,7 +6,7 @@ import{ Controller } from '../../../models/controller';
 import { Version } from '../../../models/version';
 import { ControllerDatabase } from '../../../services/controller.database';
 import { ControllerService } from '../../../services/controller.service';
-import { MockedServerService } from '../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../services/controller.service.spec';
 import { VersionService } from '../../../services/version.service';
 import { MockedVersionService } from '../../../services/version.service.spec';
 import { ControllerDiscoveryComponent } from './controller-discovery.component';
@@ -15,10 +15,10 @@ xdescribe('ControllerDiscoveryComponent', () => {
   let component: ControllerDiscoveryComponent;
   let fixture: ComponentFixture<ControllerDiscoveryComponent>;
   let mockedVersionService: MockedVersionService;
-  let mockedServerService: MockedServerService;
+  let mockedServerService: MockedControllerService;
 
   beforeEach(async () => {
-    mockedServerService = new MockedServerService();
+    mockedServerService = new MockedControllerService();
     mockedVersionService = new MockedVersionService();
     await TestBed.configureTestingModule({
       imports: [MatCardModule, MatDividerModule],

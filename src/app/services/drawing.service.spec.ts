@@ -8,25 +8,25 @@ import { Project } from '../models/project';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { DrawingService } from './drawing.service';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { getTestServer } from './testing';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let controller:Controller ;
   let project: Project = new Project();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SvgToDrawingConverter, DrawingService],
+      providers: [HttpController, SvgToDrawingConverter, DrawingService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     controller = getTestServer();
   });
 

@@ -7,24 +7,24 @@ import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { BuiltInTemplatesService } from './built-in-templates.service';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { getTestServer } from './testing';
 
 describe('BuiltInTemplatesService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, BuiltInTemplatesService],
+      providers: [HttpController, BuiltInTemplatesService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     controller = getTestServer();
   });
 

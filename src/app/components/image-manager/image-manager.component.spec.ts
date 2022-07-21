@@ -7,7 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ImageManagerService } from 'app/services/image-manager.service';
 import { ControllerService } from 'app/services/controller.service';
-import { MockedServerService } from 'app/services/controller.service.spec';
+import { MockedControllerService } from 'app/services/controller.service.spec';
 import { of } from 'rxjs';
 import{ Controller } from '../../models/controller';
 
@@ -37,7 +37,7 @@ describe('ImageManagerComponent', () => {
   let component: ImageManagerComponent;
   let fixture: ComponentFixture<ImageManagerComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedProgressService = new MockedProgressService()
   let mockedVersionService = new MockedVersionService()

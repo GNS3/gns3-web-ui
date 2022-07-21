@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { Project } from '../models/project';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { ProjectService } from './project.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
@@ -63,7 +63,7 @@ export class MockedProjectService {
 describe('ProjectService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpServer: HttpController;
   let service: ProjectService;
   let controller:Controller ;
   let settingsService: SettingsService;
@@ -72,7 +72,7 @@ describe('ProjectService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
       providers: [
-        HttpServer,
+        HttpController,
         ProjectService,
         RecentlyOpenedProjectService,
         { provide: SettingsService },
@@ -81,7 +81,7 @@ describe('ProjectService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpServer = TestBed.get(HttpController);
     service = TestBed.get(ProjectService);
     settingsService = TestBed.get(SettingsService);
 

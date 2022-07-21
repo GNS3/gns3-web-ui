@@ -57,7 +57,7 @@ import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ControllerService } from '../../services/controller.service';
-import { MockedServerService } from '../../services/controller.service.spec';
+import { MockedControllerService } from '../../services/controller.service.spec';
 import { SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
@@ -276,7 +276,7 @@ xdescribe('ProjectMapComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute },
-        { provide: ControllerService, useClass: MockedServerService },
+        { provide: ControllerService, useClass: MockedControllerService },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: NodeService },
         { provide: LinkService },

@@ -9,7 +9,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwarePreferencesComponent } from './vmware-preferences.component';
 
@@ -17,7 +17,7 @@ describe('VmwarePreferencesComponent', () => {
   let component: VmwarePreferencesComponent;
   let fixture: ComponentFixture<VmwarePreferencesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(async() => {

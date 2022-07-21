@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
+import { BundledControllerFinderComponent } from './components/bundled-controller-finder/bundled-controller-finder.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { HelpComponent } from './components/help/help.component';
 import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
@@ -65,7 +65,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'controllers', component: ControllersComponent },
-      { path: 'bundled', component: BundledServerFinderComponent },
+      { path: 'bundled', component: BundledControllerFinderComponent },
       { path: 'controller/:controller_id/login', component: LoginComponent },
       { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
       {path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},

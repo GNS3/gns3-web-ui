@@ -6,13 +6,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressService } from '../../common/progress/progress.service';
 import{ Controller } from '../../models/controller';
 import { ControllerService } from '../../services/controller.service';
-import { MockedServerService } from '../../services/controller.service.spec';
+import { MockedControllerService } from '../../services/controller.service.spec';
 import { MockedProgressService } from '../project-map/project-map.component.spec';
-import { BundledServerFinderComponent } from './bundled-server-finder.component';
+import { BundledControllerFinderComponent } from './bundled-controller-finder.component';
 
-describe('BundledServerFinderComponent', () => {
-  let component: BundledServerFinderComponent;
-  let fixture: ComponentFixture<BundledServerFinderComponent>;
+describe('BundledControllerFinderComponent', () => {
+  let component: BundledControllerFinderComponent;
+  let fixture: ComponentFixture<BundledControllerFinderComponent>;
   let router: any;
   let service: ControllerService;
   let progressService: MockedProgressService = new MockedProgressService();
@@ -31,7 +31,7 @@ describe('BundledServerFinderComponent', () => {
     ]);
 
 
-    // serverService = new MockedServerService();
+    // serverService = new MockedControllerService();
     // spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
 
     await TestBed.configureTestingModule({
@@ -40,11 +40,11 @@ describe('BundledServerFinderComponent', () => {
         { provide: ControllerService, useValue: controllerServiceMock },
         { provide: ProgressService, useValue: progressService },
       ],
-      declarations: [BundledServerFinderComponent],
+      declarations: [BundledControllerFinderComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BundledServerFinderComponent);
+    fixture = TestBed.createComponent(BundledControllerFinderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

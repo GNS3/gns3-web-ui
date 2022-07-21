@@ -13,7 +13,7 @@ import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosService } from '../../../../services/ios.service';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplatesComponent } from './ios-templates.component';
 
@@ -27,7 +27,7 @@ describe('IosTemplatesComponent', () => {
   let component: IosTemplatesComponent;
   let fixture: ComponentFixture<IosTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedIosService = new MockedIosService();
   let activatedRoute = new MockedActivatedRoute().get();
 

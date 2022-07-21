@@ -3,13 +3,13 @@ import { Observable, Subject } from 'rxjs';
 import 'rxjs/add/operator/map';
 import{ Controller } from '../models/controller';
 import { Template } from '../models/template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class TemplateService {
   public newTemplateCreated: Subject<Template> = new Subject<Template>();
 
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   list(controller:Controller ): Observable<Template[]> {
     return this.httpServer.get<Template[]>(controller, '/templates') as Observable<Template[]>;

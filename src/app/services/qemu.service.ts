@@ -5,11 +5,11 @@ import { QemuImage } from '../models/qemu/qemu-image';
 import { QemuImg } from '../models/qemu/qemu-img';
 import{ Controller } from '../models/controller';
 import { QemuTemplate } from '../models/templates/qemu-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class QemuService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<QemuTemplate[]> {
     return this.httpServer.get<QemuTemplate[]>(controller, '/templates') as Observable<QemuTemplate[]>;

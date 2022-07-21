@@ -6,9 +6,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ControllerDatabase } from '../../services/controller.database';
 import { ControllerService } from '../../services/controller.service';
-import { MockedServerService } from 'app/services/controller.service.spec';
+import { MockedControllerService } from 'app/services/controller.service.spec';
 import { ControllersComponent } from './controllers.component';
-import { ControllerManagementService } from 'app/services/server-management.service';
+import { ControllerManagementService } from '../../services/controller-management.service';
 import { ElectronService } from 'ngx-electron';
 import { ChildProcessService } from 'ngx-childprocess';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -21,7 +21,7 @@ import { MockedRouter } from 'app/common/progress/progress.component.spec';
 describe('ControllersComponent', () => {
   let component: ControllersComponent;
   let fixture: ComponentFixture<ControllersComponent>;
-  let serverMockedService: MockedServerService
+  let serverMockedService: MockedControllerService
   let mockedActivatedRoute: MockedActivatedRoute
   let mockedRouter  : MockedRouter
 

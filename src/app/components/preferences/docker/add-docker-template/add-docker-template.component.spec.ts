@@ -23,7 +23,7 @@ import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { DockerService } from '../../../../services/docker.service';
 import { ControllerService } from '../../../../services/controller.service';
-import { MockedServerService } from '../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -41,7 +41,7 @@ xdescribe('AddDockerTemplateComponent', () => {
   let component: AddDockerTemplateComponent;
   let fixture: ComponentFixture<AddDockerTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();

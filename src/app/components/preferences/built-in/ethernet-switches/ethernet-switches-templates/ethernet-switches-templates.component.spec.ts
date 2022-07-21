@@ -13,7 +13,7 @@ import{ Controller } from '../../../../../models/controller';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ControllerService } from '../../../../../services/controller.service';
-import { MockedServerService } from '../../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetSwitchesTemplatesComponent } from './ethernet-switches-templates.component';
 
@@ -27,7 +27,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
   let component: EthernetSwitchesTemplatesComponent;
   let fixture: ComponentFixture<EthernetSwitchesTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let activatedRoute = new MockedActivatedRoute().get();
 

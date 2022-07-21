@@ -13,7 +13,7 @@ import{ Controller } from '../../../../../models/controller';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ControllerService } from '../../../../../services/controller.service';
-import { MockedServerService } from '../../../../../services/controller.service.spec';
+import { MockedControllerService } from '../../../../../services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesTemplatesComponent } from './cloud-nodes-templates.component';
 
@@ -27,7 +27,7 @@ describe('CloudNodesTemplatesComponent', () => {
   let component: CloudNodesTemplatesComponent;
   let fixture: ComponentFixture<CloudNodesTemplatesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedServerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let activatedRoute = new MockedActivatedRoute().get();
 

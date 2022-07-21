@@ -4,36 +4,36 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer, ServerError, ServerErrorHandler } from './http-server.service';
+import { HttpController, ControllerError, ControllerErrorHandler } from './http-controller.service';
 import { getTestServer } from './testing';
 
 class MyType {
   id: number;
 }
 
-describe('ServerError', () => {
+describe('ControllerError', () => {
   it('should construct with message', () => {
     const error = new Error('test');
     expect(error.message).toEqual('test');
   });
 
-  it('should construct ServerError from error', () => {
+  it('should construct ControllerError from error', () => {
     const error = new Error('test');
-    const serverError = ServerError.fromError('new message', error);
-    expect(serverError.originalError).toEqual(error);
-    expect(serverError.message).toEqual('new message');
+    const controllerError = ControllerError.fromError('new message', error);
+    expect(controllerError.originalError).toEqual(error);
+    expect(controllerError.message).toEqual('new message');
   });
 });
 
-describe('ServerErrorHandler', () => {
+describe('ControllerErrorHandler', () => {
   it('should handle HttpErrorResponse with status 0', (done) => {
     const error = new HttpErrorResponse({ status: 0 });
 
-    const handler = new ServerErrorHandler();
+    const handler = new ControllerErrorHandler();
     const result = handler.handleError(error);
 
     result.subscribe(null, (err) => {
-      expect(err.message).toEqual('Server is unreachable');
+      expect(err.message).toEqual('Controller is unreachable');
       done();
     });
   });
@@ -41,7 +41,7 @@ describe('ServerErrorHandler', () => {
   it('should not handle HttpErrorResponse with status!=0', (done) => {
     const error = new HttpErrorResponse({ status: 499 });
 
-    const handler = new ServerErrorHandler();
+    const handler = new ControllerErrorHandler();
     const result = handler.handleError(error);
 
     result.subscribe(null, (err) => {
@@ -51,21 +51,21 @@ describe('ServerErrorHandler', () => {
   });
 });
 
-describe('HttpServer', () => {
+describe('HttpController', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let service: HttpServer;
+  let service: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer],
+      providers: [HttpController],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(HttpServer);
+    service = TestBed.get(HttpController);
 
     controller = getTestServer();
   });

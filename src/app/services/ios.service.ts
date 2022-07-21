@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { IosImage } from '../models/images/ios-image';
 import{ Controller } from '../models/controller';
 import { IosTemplate } from '../models/templates/ios-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class IosService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   getImages(controller:Controller ): Observable<any> {
     return this.httpServer.get<IosImage[]>(controller, '/images?image_type=ios') as Observable<IosImage[]>;

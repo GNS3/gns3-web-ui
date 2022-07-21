@@ -2,13 +2,13 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { AuthResponse } from '../models/authResponse';
 
 @Injectable()
 export class LoginService {
   controller_id:string =''
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpServer: HttpController) {}
 
   login(controller:Controller , username: string, password: string) {
     const payload = new HttpParams()

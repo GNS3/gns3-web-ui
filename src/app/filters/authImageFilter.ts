@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Console } from 'console';
 import{ Controller } from '../models/controller';
-import { HttpServer } from '../services/http-server.service';
+import { HttpController } from '../services/http-controller.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'environments/environment';
 
@@ -11,7 +11,7 @@ import { environment } from 'environments/environment';
 export class AuthImageFilter implements PipeTransform {
 
     constructor(
-        private httpServer: HttpServer,
+        private httpServer: HttpController,
         private domSanitizer: DomSanitizer
     ) { }
 

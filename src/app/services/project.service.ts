@@ -6,7 +6,7 @@ import { Node } from '../cartography/models/node';
 import { Link } from '../models/link';
 import { Project } from '../models/project';
 import{ Controller } from '../models/controller';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
 
@@ -34,7 +34,7 @@ export class ProjectService {
 
   public projectListSubject = new Subject<boolean>();
   constructor(
-    private httpServer: HttpServer,
+    private httpServer: HttpController,
     private settingsService: SettingsService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
