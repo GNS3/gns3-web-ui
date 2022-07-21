@@ -25,7 +25,6 @@ export class NodeService {
   }
 
   start(controller:Controller , node: Node) {
-    debugger
     return this.httpServer.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/start`, {});
   }
 

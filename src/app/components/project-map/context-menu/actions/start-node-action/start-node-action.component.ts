@@ -29,7 +29,6 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
   }
 
   startNodes() {
-    debugger
     this.nodes.forEach((node) => {
       this.nodeService.start(this.controller, node).subscribe(
         (n: Node) => {},

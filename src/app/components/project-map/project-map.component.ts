@@ -951,7 +951,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   importProject() {
-    debugger
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
       width: '400px',

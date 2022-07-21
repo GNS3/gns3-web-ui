@@ -88,7 +88,6 @@ export class NodesMenuComponent {
   }
 
   resetNodes() {
-    debugger
     this.nodeService.resetAllNodes(this.controller, this.project).subscribe(() => {
       this.toasterService.success('Successfully reset all console connections');
     });
