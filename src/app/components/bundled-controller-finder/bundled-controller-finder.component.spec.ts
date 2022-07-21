@@ -27,12 +27,9 @@ describe('BundledControllerFinderComponent', () => {
     
 
     controllerServiceMock = jasmine.createSpyObj<ControllerService>([
-      "getLocalServer"
+      "getLocalController"
     ]);
 
-
-    // serverService = new MockedControllerService();
-    // spyOn(serverService, 'getLocalServer').and.returnValue(Promise.resolve(server));
 
     await TestBed.configureTestingModule({
       providers: [
@@ -52,14 +49,14 @@ describe('BundledControllerFinderComponent', () => {
   it('should create and redirect to controller', fakeAsync(() => {
     const controller = new Controller ();
     controller.id = 99;
-    controllerServiceMock.getLocalServer.and.returnValue(
+    controllerServiceMock.getLocalController.and.returnValue(
       Promise.resolve(controller)
     );
     expect(component).toBeTruthy();
     tick(101)
     fixture.detectChanges()
     fixture.whenStable().then(() => {
-      expect(controllerServiceMock.getLocalServer).toHaveBeenCalledWith('vps3.gns3.net',3000);
+      expect(controllerServiceMock.getLocalController).toHaveBeenCalledWith('vps3.gns3.net',3000);
       expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
     })
     service = TestBed.inject(ControllerService);

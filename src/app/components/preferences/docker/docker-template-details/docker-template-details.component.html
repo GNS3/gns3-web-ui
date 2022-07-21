@@ -143,7 +143,7 @@
 </div>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && dockerTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="dockerTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

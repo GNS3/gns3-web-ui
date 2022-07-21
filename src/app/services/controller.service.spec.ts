@@ -1,11 +1,11 @@
 import{ Controller } from '../models/controller';
 
 export class MockedControllerService {
-  public servers:Controller [] = [];
+  public controllers:Controller [] = [];
 
   public create(controller:Controller ) {
     return new Promise((resolve, reject) => {
-      this.servers.push(controller);
+      this.controllers.push(controller);
       resolve(controller);
     });
   }
@@ -16,7 +16,7 @@ export class MockedControllerService {
     return Promise.resolve(controller);
   }
 
-  public getLocalServer(hostname: string, port: number) {
+  public getLocalController(hostname: string, port: number) {
     return new Promise((resolve, reject) => {
       const controller = new Controller  ();
       controller.id = 99;
@@ -26,7 +26,7 @@ export class MockedControllerService {
 
   public findAll() {
     return new Promise((resolve, reject) => {
-      resolve(this.servers);
+      resolve(this.controllers);
     });
   }
 

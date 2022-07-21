@@ -93,7 +93,7 @@ describe('DefaultLayoutComponent', () => {
     expect(component.isInstalledSoftwareAvailable).toBeFalsy();
   });
 
-  it('should show error when server management service throw event', () => {
+  it('should show error when controller management service throw event', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
     serverManagementService.controllerStatusChanged.next({
       status: 'errored',
@@ -102,7 +102,7 @@ describe('DefaultLayoutComponent', () => {
     expect(toaster.errors).toEqual(['Message']);
   });
 
-  it('should not show error when server management service throw event', () => {
+  it('should not show error when controller management service throw event', () => {
     component.ngOnDestroy();
     const toaster: MockedToasterService = TestBed.get(ToasterService);
     serverManagementService.controllerStatusChanged.next({
@@ -112,7 +112,7 @@ describe('DefaultLayoutComponent', () => {
     expect(toaster.errors).toEqual([]);
   });
 
-  describe('auto stopping servers', () => {
+  describe('auto stopping controllers', () => {
     let event;
     beforeEach(() => {
       event = new Event('onbeforeunload');
@@ -124,7 +124,7 @@ describe('DefaultLayoutComponent', () => {
       expect(isClosed).toBeUndefined();
     });
 
-    it('should stop all servers and close window', () => {
+    it('should stop all controllers and close window', () => {
       component.shouldStopServersOnClosing = true;
       const isClosed = component.onBeforeUnload(event);
       expect(isClosed).toBeTruthy();

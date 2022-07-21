@@ -23,7 +23,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isLoginPage = false;
   public routeSubscription;
 
-  serverStatusSubscription: Subscription;
+  controllerStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
 
   recentlyOpenedcontrollerId: string;
@@ -33,7 +33,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   constructor(
     private electronService: ElectronService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private serverManagement: ControllerManagementService,
+    private controllerManagement: ControllerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService,
     public router: Router,
@@ -53,8 +53,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
-    // attach to notification stream when any of running local servers experienced issues
-    this.serverStatusSubscription = this.serverManagement.controllerStatusChanged.subscribe((serverStatus) => {
+    // attach to notification stream when any of running local controllers experienced issues
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((serverStatus) => {
       if (serverStatus.status === 'errored') {
         console.error(serverStatus.message);
         this.toasterService.error(serverStatus.message);
@@ -65,7 +65,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       }
     });
 
-    // stop servers only when in Electron
+    // stop controllers only when in Electron
     this.shouldStopServersOnClosing = this.electronService.isElectronApp;
   }
 
@@ -119,7 +119,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     $event.preventDefault();
     $event.returnValue = false;
     this.progressService.activate();
-    await this.serverManagement.stopAll();
+    await this.controllerManagement.stopAll();
     this.shouldStopServersOnClosing = false;
     this.progressService.deactivate();
     window.close();
@@ -127,7 +127,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.serverStatusSubscription.unsubscribe();
+    this.controllerStatusSubscription.unsubscribe();
     this.routeSubscription.unsubscribe();
   }
 }

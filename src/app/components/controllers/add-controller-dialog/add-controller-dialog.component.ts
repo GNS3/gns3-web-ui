@@ -55,9 +55,9 @@ export class AddControllerDialogComponent implements OnInit {
   }
 
   async numberOfLocalServers() {
-    const servers = await this.serverService.findAll();
+    const controllers = await this.serverService.findAll();
 
-    return servers.filter((controller) => controller.location === 'local').length;
+    return controllers.filter((controller) => controller.location === 'local').length;
   }
 
   getDefaultHost() {

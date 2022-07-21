@@ -61,12 +61,12 @@ export class ControllerService {
 
   public findAll() {
     let promise = new Promise<Controller[]>((resolve) => {
-      let servers:Controller [] = [];
+      let controllers:Controller [] = [];
       this.controllerIds.forEach((n) => {
         let controller:Controller  = JSON.parse(localStorage.getItem(n));
-        servers.push(controller);
+        controllers.push(controller);
       });
-      resolve(servers);
+      resolve(controllers);
     });
     return promise;
   }
@@ -90,10 +90,10 @@ export class ControllerService {
     return this.httpServer.get(controller, '/version');
   }
 
-  public getLocalServer(host: string, port: number) {
+  public getLocalController(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
-      this.findAll().then((servers:Controller []) => {
-        const local = servers.find((controller) => controller.location === 'bundled');
+      this.findAll().then((controllers:Controller []) => {
+        const local = controllers.find((controller) => controller.location === 'bundled');
         if (local) {
           local.host = host;
           local.port = port;

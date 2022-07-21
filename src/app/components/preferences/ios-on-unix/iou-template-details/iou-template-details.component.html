@@ -150,7 +150,7 @@
 </div>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && iouTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="iouTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

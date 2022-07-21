@@ -1,12 +1,12 @@
-import { Builtin } from './server-settings-models/builtin';
-import { Docker } from './server-settings-models/docker';
-import { Dynamips } from './server-settings-models/dynamips';
-import { GraphicsView } from './server-settings-models/graphics-view';
-import { IOU } from './server-settings-models/iou';
-import { Qemu } from './server-settings-models/qemu';
-import { VirtualBox } from './server-settings-models/virtual-box';
-import { VMware } from './server-settings-models/vmware';
-import { VPCS } from './server-settings-models/vpcs';
+import { Builtin } from './controller-settings-models/builtin';
+import { Docker } from './controller-settings-models/docker';
+import { Dynamips } from './controller-settings-models/dynamips';
+import { GraphicsView } from './controller-settings-models/graphics-view';
+import { IOU } from './controller-settings-models/iou';
+import { Qemu } from './controller-settings-models/qemu';
+import { VirtualBox } from './controller-settings-models/virtual-box';
+import { VMware } from './controller-settings-models/vmware';
+import { VPCS } from './controller-settings-models/vpcs';
 
 export class ServerSettings {
   Builtin: Builtin;

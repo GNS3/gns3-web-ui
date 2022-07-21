@@ -22,14 +22,14 @@ import { AddControllerDialogComponent } from './add-controller-dialog/add-contro
 export class ControllersComponent implements OnInit, OnDestroy {
   dataSource: ServerDataSource;
   displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
-  serverStatusSubscription: Subscription;
+  controllerStatusSubscription: Subscription;
   isElectronApp: boolean = false;
 
   constructor(
     private dialog: MatDialog,
     private serverService: ControllerService,
     private serverDatabase: ControllerDatabase,
-    private serverManagement: ControllerManagementService,
+    private controllerManagement: ControllerManagementService,
     private changeDetector: ChangeDetectorRef,
     private electronService: ElectronService,
     private childProcessService: ChildProcessService,
@@ -39,7 +39,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
   ) { }
 
   getControllers() {
-    const runningServersNames = this.serverManagement.getRunningServers();
+    const runningServersNames = this.controllerManagement.getRunningServers();
 
     this.serverService.findAll().then((controllers:Controller []) => {
       controllers.forEach((controller) => {
@@ -78,7 +78,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     this.dataSource = new ServerDataSource(this.serverDatabase);
 
-    this.serverStatusSubscription = this.serverManagement.controllerStatusChanged.subscribe((serverStatus) => {
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((serverStatus) => {
       const controller = this.serverDatabase.find(serverStatus.serverName);
       if (!controller) {
         return;
@@ -101,7 +101,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.serverStatusSubscription.unsubscribe();
+    this.controllerStatusSubscription.unsubscribe();
   }
 
   startLocalController() {
@@ -152,11 +152,11 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   async startServer(controller:Controller ) {
-    await this.serverManagement.start(controller);
+    await this.controllerManagement.start(controller);
   }
 
   async stopServer(controller:Controller ) {
-    await this.serverManagement.stop(controller);
+    await this.controllerManagement.stop(controller);
   }
 }
 

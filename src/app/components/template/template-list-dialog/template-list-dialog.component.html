@@ -5,7 +5,7 @@
     class="top-button"
     color="accent"
     (click)="onNoClick()"
-    routerLink="/controller/{{ server?.id }}/preferences"
+    routerLink="/controller/{{ controller?.id }}/preferences"
   >
     Go to template preferences
   </button>
@@ -55,7 +55,7 @@
       />
     </mat-form-field>
   </form>
-  <mat-select *ngIf="selectedTemplate" placeholder="Choose server for node" [(value)]="selectedTemplate.compute_id">
+  <mat-select *ngIf="selectedTemplate" placeholder="Choose controller for node" [(value)]="selectedTemplate.compute_id">
     <mat-option *ngFor="let type of nodeServers" [value]="type">
       {{ type }}
     </mat-option>

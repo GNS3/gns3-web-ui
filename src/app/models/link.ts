@@ -15,11 +15,11 @@ export class Link {
   suspend: boolean;
   link_style?: LinkStyle;
 
-  distance: number; // this is not from server
-  length: number; // this is not from server
-  source: Node; // this is not from server
-  target: Node; // this is not from server
+  distance: number; // this is not from controller
+  length: number; // this is not from controller
+  source: Node; // this is not from controller
+  target: Node; // this is not from controller
 
-  x: number; // this is not from server
-  y: number; // this is not from server
+  x: number; // this is not from controller
+  y: number; // this is not from controller
 }

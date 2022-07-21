@@ -181,7 +181,7 @@
 </div>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && cloudNodeTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="cloudNodeTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

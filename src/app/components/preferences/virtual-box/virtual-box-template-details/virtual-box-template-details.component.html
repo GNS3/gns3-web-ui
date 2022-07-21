@@ -176,7 +176,7 @@
 ></app-custom-adapters>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && virtualBoxTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="virtualBoxTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

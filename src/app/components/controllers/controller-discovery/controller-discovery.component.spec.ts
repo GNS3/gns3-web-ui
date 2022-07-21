@@ -15,16 +15,16 @@ xdescribe('ControllerDiscoveryComponent', () => {
   let component: ControllerDiscoveryComponent;
   let fixture: ComponentFixture<ControllerDiscoveryComponent>;
   let mockedVersionService: MockedVersionService;
-  let mockedServerService: MockedControllerService;
+  let mockedControllerService: MockedControllerService;
 
   beforeEach(async () => {
-    mockedServerService = new MockedControllerService();
+    mockedControllerService = new MockedControllerService();
     mockedVersionService = new MockedVersionService();
     await TestBed.configureTestingModule({
       imports: [MatCardModule, MatDividerModule],
       providers: [
         { provide: VersionService, useFactory: () => mockedVersionService },
-        { provide: ControllerService, useFactory: () => mockedServerService },
+        { provide: ControllerService, useFactory: () => mockedControllerService },
         ControllerDatabase,
       ],
       declarations: [ControllerDiscoveryComponent],
@@ -89,7 +89,7 @@ describe('isAvailable', () => {
 });
 
 describe('discovery', () => {
-  it('should discovery all servers available', (done) => {
+  it('should discovery all controllers available', (done) => {
     const version = new Version();
     version.version = '2.1.8';
 
@@ -132,7 +132,7 @@ describe('discoverFirstAvailableServer', () => {
   }));
 
   it('should get first controller from discovered and with already added', fakeAsync(() => {
-    mockedServerService.servers.push(controller);
+    mockedControllerService.controllers.push(controller);
 
     expect(component.discoveredServer).toBeUndefined();
     component.discoverFirstAvailableServer();
@@ -154,9 +154,9 @@ describe('accepting and ignoring found controller', () => {
       component.accept(controller);
       tick();
       expect(component.discoveredServer).toBeNull();
-      expect(mockedServerService.servers[0].host).toEqual('199.111.111.1');
-      expect(mockedServerService.servers[0].name).toEqual('199.111.111.1');
-      expect(mockedServerService.servers[0].location).toEqual('remote');
+      expect(mockedControllerService.controllers[0].host).toEqual('199.111.111.1');
+      expect(mockedControllerService.controllers[0].name).toEqual('199.111.111.1');
+      expect(mockedControllerService.controllers[0].location).toEqual('remote');
     }));
   });
 
