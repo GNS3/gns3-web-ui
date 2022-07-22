@@ -21,7 +21,7 @@ import { AddControllerDialogComponent } from './add-controller-dialog/add-contro
 })
 export class ControllersComponent implements OnInit, OnDestroy {
   dataSource: ControllerDataSource;
-  displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
+  displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
   isElectronApp: boolean = false;
 
