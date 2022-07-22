@@ -9,7 +9,7 @@ export class ControllerService {
   public serviceInitialized: Subject<boolean> = new Subject<boolean>();
   public isServiceInitialized: boolean;
 
-  constructor(private httpServer: HttpController) {
+  constructor(private httpController: HttpController) {
     this.controllerIds = this.getcontrollerIds();
     this.isServiceInitialized = true;
     this.serviceInitialized.next(this.isServiceInitialized);
@@ -87,7 +87,7 @@ export class ControllerService {
   }
 
   public checkServerVersion(controller:Controller ): Observable<any> {
-    return this.httpServer.get(controller, '/version');
+    return this.httpController.get(controller, '/version');
   }
 
   public getLocalController(host: string, port: number) {

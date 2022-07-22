@@ -16,7 +16,7 @@ export class SymbolService {
   private cache: Observable<Symbol[]>;
   private maximumSymbolSize: number = 80;
 
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getMaximumSymbolSize() {
     return this.maximumSymbolSize;
@@ -28,7 +28,7 @@ export class SymbolService {
 
   getDimensions(controller:Controller , symbol_id: string): Observable<SymbolDimension> {
     const encoded_uri = encodeURI(symbol_id);
-    return this.httpServer.get(controller, `/symbols/${encoded_uri}/dimensions`);
+    return this.httpController.get(controller, `/symbols/${encoded_uri}/dimensions`);
   }
 
   scaleDimensionsForNode(node: Node): SymbolDimension {
@@ -45,11 +45,11 @@ export class SymbolService {
 
   add(controller:Controller , symbolName: string, symbol: string) {
     this.cache = null;
-    return this.httpServer.post(controller, `/symbols/${symbolName}/raw`, symbol);
+    return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
   load(controller:Controller ): Observable<Symbol[]> {
-    return this.httpServer.get<Symbol[]>(controller, '/symbols');
+    return this.httpController.get<Symbol[]>(controller, '/symbols');
   }
 
   list(controller:Controller ) {
@@ -62,7 +62,7 @@ export class SymbolService {
 
   raw(controller:Controller , symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
-    return this.httpServer.getText(controller, `/symbols/${encoded_uri}/raw`);
+    return this.httpController.getText(controller, `/symbols/${encoded_uri}/raw`);
   }
 
   getSymbolFromTemplate(controller:Controller , template: Template) {

@@ -7,10 +7,10 @@ import { User } from '../models/users/user';
 @Injectable()
 export class UserService {
   constructor(
-    private httpServer: HttpController
+    private httpController: HttpController
   ) {}
 
   getInformationAboutLoggedUser(controller:Controller ) {
-    return this.httpServer.get<User>(controller, '/users/me/');
+    return this.httpController.get<User>(controller, '/users/me/');
   }
 }

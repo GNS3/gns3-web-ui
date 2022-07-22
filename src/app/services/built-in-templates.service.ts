@@ -5,22 +5,22 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class BuiltInTemplatesService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<any[]> {
-    return this.httpServer.get<any[]>(controller, '/templates') as Observable<any[]>;
+    return this.httpController.get<any[]>(controller, '/templates') as Observable<any[]>;
   }
 
   getTemplate(controller:Controller , template_id: string): Observable<any> {
-    return this.httpServer.get<any>(controller, `/templates/${template_id}`) as Observable<any>;
+    return this.httpController.get<any>(controller, `/templates/${template_id}`) as Observable<any>;
   }
 
   addTemplate(controller:Controller , builtInTemplate: any): Observable<any> {
-    return this.httpServer.post<any>(controller, `/templates`, builtInTemplate) as Observable<any>;
+    return this.httpController.post<any>(controller, `/templates`, builtInTemplate) as Observable<any>;
   }
 
   saveTemplate(controller:Controller , builtInTemplate: any): Observable<any> {
-    return this.httpServer.put<any>(
+    return this.httpController.put<any>(
       controller,
       `/templates/${builtInTemplate.template_id}`,
       builtInTemplate

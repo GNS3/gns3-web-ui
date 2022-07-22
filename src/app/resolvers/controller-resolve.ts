@@ -5,9 +5,9 @@ import { ControllerService } from '../services/controller.service';
 
 @Injectable()
 export class ControllerResolve implements Resolve<Controller> {
-  constructor(private serverService: ControllerService) {}
+  constructor(private controllerService: ControllerService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.serverService.get(parseInt(route.params['controller_id']));
+    return this.controllerService.get(parseInt(route.params['controller_id']));
   }
 }

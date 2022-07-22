@@ -30,7 +30,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private dockerService: DockerService,
     private toasterService: ToasterService,
     private configurationService: DockerConfigurationService,
@@ -48,7 +48,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

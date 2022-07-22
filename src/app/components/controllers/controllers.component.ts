@@ -20,15 +20,15 @@ import { AddControllerDialogComponent } from './add-controller-dialog/add-contro
   styleUrls: ['./controllers.component.scss'],
 })
 export class ControllersComponent implements OnInit, OnDestroy {
-  dataSource: ServerDataSource;
+  dataSource: ControllerDataSource;
   displayedColumns = ['id', 'name', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
   isElectronApp: boolean = false;
 
   constructor(
     private dialog: MatDialog,
-    private serverService: ControllerService,
-    private serverDatabase: ControllerDatabase,
+    private controllerService: ControllerService,
+    private controllerDatabase: ControllerDatabase,
     private controllerManagement: ControllerManagementService,
     private changeDetector: ChangeDetectorRef,
     private electronService: ElectronService,
@@ -41,7 +41,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
   getControllers() {
     const runningServersNames = this.controllerManagement.getRunningServers();
 
-    this.serverService.findAll().then((controllers:Controller []) => {
+    this.controllerService.findAll().then((controllers:Controller []) => {
       controllers.forEach((controller) => {
         const serverIndex = runningServersNames.findIndex((controllerName) => controller.name === controllerName);
         if (serverIndex >= 0) {
@@ -50,11 +50,11 @@ export class ControllersComponent implements OnInit, OnDestroy {
       });
 
       controllers.forEach((controller) => {
-        this.serverService.checkServerVersion(controller).subscribe(
+        this.controllerService.checkServerVersion(controller).subscribe(
           (serverInfo) => {
             if (serverInfo.version.split('.')[0] >= 3) {
               if (!controller.protocol) controller.protocol = location.protocol as ServerProtocol;
-              if (!this.serverDatabase.find(controller.name)) this.serverDatabase.addServer(controller);
+              if (!this.controllerDatabase.find(controller.name)) this.controllerDatabase.addServer(controller);
             }
           },
           (error) => { }
@@ -66,36 +66,36 @@ export class ControllersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isElectronApp = this.electronService.isElectronApp;
 
-    if (this.serverService && this.serverService.isServiceInitialized) this.getControllers();
+    if (this.controllerService && this.controllerService.isServiceInitialized) this.getControllers();
 
-    if (this.serverService && this.serverService.isServiceInitialized) {
-      this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+    if (this.controllerService && this.controllerService.isServiceInitialized) {
+      this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
         if (value) {
           this.getControllers();
         }
       });
     }
 
-    this.dataSource = new ServerDataSource(this.serverDatabase);
+    this.dataSource = new ControllerDataSource(this.controllerDatabase);
 
-    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((serverStatus) => {
-      const controller = this.serverDatabase.find(serverStatus.serverName);
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
+      const controller = this.controllerDatabase.find(controllerStatus.controllerName);
       if (!controller) {
         return;
       }
-      if (serverStatus.status === 'starting') {
+      if (controllerStatus.status === 'starting') {
         controller.status = 'starting';
       }
-      if (serverStatus.status === 'stopped') {
+      if (controllerStatus.status === 'stopped') {
         controller.status = 'stopped';
       }
-      if (serverStatus.status === 'errored') {
+      if (controllerStatus.status === 'errored') {
         controller.status = 'stopped';
       }
-      if (serverStatus.status === 'started') {
+      if (controllerStatus.status === 'started') {
         controller.status = 'running';
       }
-      this.serverDatabase.update(controller);
+      this.controllerDatabase.update(controller);
       this.changeDetector.detectChanges();
     });
   }
@@ -105,8 +105,8 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   startLocalController() {
-    const controller = this.serverDatabase.data.find((n) => n.location === 'bundled' || 'local');
-    this.startServer(controller);
+    const controller = this.controllerDatabase.data.find((n) => n.location === 'bundled' || 'local');
+    this.startController(controller);
   }
 
   openProjects(controller) {
@@ -122,14 +122,14 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
-        this.serverService.create(controller).then((created:Controller ) => {
-          this.serverDatabase.addServer(created);
+        this.controllerService.create(controller).then((created:Controller ) => {
+          this.controllerDatabase.addServer(created);
         });
       }
     });
   }
 
-  getServerStatus(controller:Controller ) {
+  getControllerStatus(controller:Controller ) {
     if (controller.location === 'local') {
       if (controller.status === undefined) {
         return 'stopped';
@@ -138,37 +138,37 @@ export class ControllersComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteServer(controller:Controller ) {
+  deleteController(controller:Controller ) {
     this.bottomSheet.open(ConfirmationBottomSheetComponent);
     let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
     bottomSheetRef.instance.message = 'Do you want to delete the controller?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.serverService.delete(controller).then(() => {
-          this.serverDatabase.remove(controller);
+        this.controllerService.delete(controller).then(() => {
+          this.controllerDatabase.remove(controller);
         });
       }
     });
   }
 
-  async startServer(controller:Controller ) {
+  async startController(controller:Controller ) {
     await this.controllerManagement.start(controller);
   }
 
-  async stopServer(controller:Controller ) {
+  async stopController(controller:Controller ) {
     await this.controllerManagement.stop(controller);
   }
 }
 
-export class ServerDataSource extends DataSource<Controller> {
-  constructor(private serverDatabase: ControllerDatabase) {
+export class ControllerDataSource extends DataSource<Controller> {
+  constructor(private controllerDatabase: ControllerDatabase) {
     super();
   }
 
   connect(): Observable< Controller[] > {
-    return merge(this.serverDatabase.dataChange).pipe(
+    return merge(this.controllerDatabase.dataChange).pipe(
       map(() => {
-        return this.serverDatabase.data;
+        return this.controllerDatabase.data;
       })
     );
   }

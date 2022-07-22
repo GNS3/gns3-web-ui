@@ -17,14 +17,14 @@ export class LoggedUserComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
-        private serverService: ControllerService,
+        private controllerService: ControllerService,
         private userService: UserService,
         private toasterService: ToasterService
     ) {}
 
     ngOnInit() {
         let controllerId = this.route.snapshot.paramMap.get('controller_id');
-        this.serverService.get(+controllerId).then((controller:Controller ) => {
+        this.controllerService.get(+controllerId).then((controller:Controller ) => {
             this.controller = controller;
             this.userService.getInformationAboutLoggedUser(controller).subscribe((response: any) => {
                 this.user = response;

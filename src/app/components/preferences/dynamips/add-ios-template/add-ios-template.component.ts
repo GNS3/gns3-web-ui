@@ -56,7 +56,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private iosService: IosService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -113,7 +113,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     })
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       this.getImages();

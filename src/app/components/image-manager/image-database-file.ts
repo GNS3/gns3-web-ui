@@ -20,14 +20,14 @@ export class imageDatabase {
 }
 
 export class imageDataSource extends DataSource<Image> {
-  constructor(private serverDatabase: imageDatabase) {
+  constructor(private controllerDatabase: imageDatabase) {
     super();
   }
 
   connect(): Observable<Image[]> {
-    return merge(this.serverDatabase.dataChange).pipe(
+    return merge(this.controllerDatabase.dataChange).pipe(
       map(() => {
-        return this.serverDatabase.data;
+        return this.controllerDatabase.data;
       })
     );
   }

@@ -40,8 +40,8 @@ export class InterfaceLabelDraggedComponent {
       link.nodes[1].label.y += draggedEvent.dy;
     }
 
-    this.linkService.updateNodes(this.controller, link, link.nodes).subscribe((serverLink: Link) => {
-      this.linksDataSource.update(serverLink);
+    this.linkService.updateNodes(this.controller, link, link.nodes).subscribe((controllerLink: Link) => {
+      this.linksDataSource.update(controllerLink);
     });
   }
 

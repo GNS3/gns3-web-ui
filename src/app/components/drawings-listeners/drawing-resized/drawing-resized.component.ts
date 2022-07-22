@@ -35,8 +35,8 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .updateSizeAndPosition(this.controller, drawing, resizedEvent.x, resizedEvent.y, svgString)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.update(controllerDrawing);
       });
   }
 

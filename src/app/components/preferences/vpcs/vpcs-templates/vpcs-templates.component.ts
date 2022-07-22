@@ -16,11 +16,11 @@ export class VpcsTemplatesComponent implements OnInit {
   vpcsTemplates: VpcsTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
-  constructor(private route: ActivatedRoute, private serverService: ControllerService, private vpcsService: VpcsService) {}
+  constructor(private route: ActivatedRoute, private controllerService: ControllerService, private vpcsService: VpcsService) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

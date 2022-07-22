@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController, ControllerError, ControllerErrorHandler } from './http-controller.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 class MyType {
   id: number;
@@ -67,7 +67,7 @@ describe('HttpController', () => {
     httpTestingController = TestBed.get(HttpTestingController);
     service = TestBed.get(HttpController);
 
-    controller = getTestServer();
+    controller = getTestController();
   });
 
   afterEach(() => {

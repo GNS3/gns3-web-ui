@@ -8,10 +8,10 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class IosService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getImages(controller:Controller ): Observable<any> {
-    return this.httpServer.get<IosImage[]>(controller, '/images?image_type=ios') as Observable<IosImage[]>;
+    return this.httpController.get<IosImage[]>(controller, '/images?image_type=ios') as Observable<IosImage[]>;
   }
 
   getImagePath(controller:Controller , filename: string): string {
@@ -19,19 +19,19 @@ export class IosService {
   }
 
   getTemplates(controller:Controller ): Observable<IosTemplate[]> {
-    return this.httpServer.get<IosTemplate[]>(controller, '/templates') as Observable<IosTemplate[]>;
+    return this.httpController.get<IosTemplate[]>(controller, '/templates') as Observable<IosTemplate[]>;
   }
 
   getTemplate(controller:Controller , template_id: string): Observable<IosTemplate> {
-    return this.httpServer.get<IosTemplate>(controller, `/templates/${template_id}`) as Observable<IosTemplate>;
+    return this.httpController.get<IosTemplate>(controller, `/templates/${template_id}`) as Observable<IosTemplate>;
   }
 
   addTemplate(controller:Controller , iosTemplate: IosTemplate): Observable<IosTemplate> {
-    return this.httpServer.post<IosTemplate>(controller, `/templates`, iosTemplate) as Observable<IosTemplate>;
+    return this.httpController.post<IosTemplate>(controller, `/templates`, iosTemplate) as Observable<IosTemplate>;
   }
 
   saveTemplate(controller:Controller , iosTemplate: IosTemplate): Observable<IosTemplate> {
-    return this.httpServer.put<IosTemplate>(
+    return this.httpController.put<IosTemplate>(
       controller,
       `/templates/${iosTemplate.template_id}`,
       iosTemplate

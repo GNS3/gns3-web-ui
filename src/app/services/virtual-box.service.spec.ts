@@ -6,13 +6,13 @@ import{ Controller } from '../models/controller';
 import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 import { VirtualBoxService } from './virtual-box.service';
 
 describe('VirtualBoxService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
@@ -23,8 +23,8 @@ describe('VirtualBoxService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
-    controller = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {

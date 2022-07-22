@@ -13,7 +13,7 @@ import { ControllerService } from '../../services/controller.service';
 export class BundledControllerFinderComponent implements OnInit {
   constructor(
     private router: Router,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private progressService: ProgressService,
     @Inject(DOCUMENT) private document
   ) {}
@@ -31,7 +31,7 @@ export class BundledControllerFinderComponent implements OnInit {
         port = 80;
       }
 
-      this.serverService.getLocalController(this.document.location.hostname, port).then((controller:Controller ) => {
+      this.controllerService.getLocalController(this.document.location.hostname, port).then((controller:Controller ) => {
         this.router.navigate(['/controller', controller.id, 'projects']);
         this.progressService.deactivate();
       });

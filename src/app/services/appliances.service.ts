@@ -7,14 +7,14 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ApplianceService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getAppliances(controller:Controller ): Observable<Appliance[]> {
-    return this.httpServer.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;
+    return this.httpController.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;
   }
 
   getAppliance(controller:Controller , url): Observable<Appliance> {
-    return this.httpServer.get<Appliance>(controller, url) as Observable<Appliance>;
+    return this.httpController.get<Appliance>(controller, url) as Observable<Appliance>;
   }
 
   getUploadPath(controller:Controller , emulator: string, filename: string) {
@@ -22,6 +22,6 @@ export class ApplianceService {
   }
 
   updateAppliances(controller:Controller ): Observable<Appliance[]> {
-    return this.httpServer.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
+    return this.httpController.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
   }
 }

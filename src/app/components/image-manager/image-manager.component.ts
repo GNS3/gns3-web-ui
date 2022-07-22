@@ -32,7 +32,7 @@ export class ImageManagerComponent implements OnInit {
     private imageService: ImageManagerService,
     private progressService: ProgressService,
     private route: ActivatedRoute,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private versionService: VersionService,
     private dialog: MatDialog,
     private toasterService: ToasterService,
@@ -41,7 +41,7 @@ export class ImageManagerComponent implements OnInit {
 
   ngOnInit(): void {
     let controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'));
-    this.serverService.get(controller_id).then((controller:Controller ) => {
+    this.controllerService.get(controller_id).then((controller:Controller ) => {
       this.controller = controller;
       if (controller.authToken) {
         this.getImages()

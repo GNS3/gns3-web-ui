@@ -19,7 +19,7 @@ export class StatusInfoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private computeService: ComputeService,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private toasterService: ToasterService
   ) {}
 
@@ -29,7 +29,7 @@ export class StatusInfoComponent implements OnInit {
   }
 
   getStatistics() {
-    this.serverService.get(Number(this.controllerId)).then((controller:Controller ) => {
+    this.controllerService.get(Number(this.controllerId)).then((controller:Controller ) => {
       this.computeService.getStatistics(controller).subscribe((statistics: ComputeStatistics[]) => {
         this.computeStatistics = statistics;
         setTimeout(() => {

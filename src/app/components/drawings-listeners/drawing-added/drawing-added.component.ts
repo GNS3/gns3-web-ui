@@ -50,8 +50,8 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .add(this.controller, this.project.project_id, evt.x, evt.y, svgText)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.add(serverDrawing);
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.add(controllerDrawing);
         this.drawingSaved.emit(true);
       });
   }

@@ -30,7 +30,7 @@ export class AddControllerDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<AddControllerDialogComponent>,
     private electronService: ElectronService,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private toasterService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
@@ -55,7 +55,7 @@ export class AddControllerDialogComponent implements OnInit {
   }
 
   async numberOfLocalServers() {
-    const controllers = await this.serverService.findAll();
+    const controllers = await this.controllerService.findAll();
 
     return controllers.filter((controller) => controller.location === 'local').length;
   }
@@ -125,7 +125,7 @@ export class AddControllerDialogComponent implements OnInit {
     }
 
     const controller:Controller  = Object.assign({}, this.controllerForm.value);
-    this.serverService.checkServerVersion(controller).subscribe(
+    this.controllerService.checkServerVersion(controller).subscribe(
       (serverInfo) => {
         if (serverInfo.version.split('.')[0] >= 3) {
           this.dialogRef.close(controller);

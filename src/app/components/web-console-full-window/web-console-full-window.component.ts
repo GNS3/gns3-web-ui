@@ -32,18 +32,18 @@ export class WebConsoleFullWindowComponent implements OnInit {
 
   constructor(
     private consoleService: NodeConsoleService,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private route: ActivatedRoute,
     private title: Title,
     private nodeService: NodeService
   ) {}
 
   ngOnInit() {
-    if (this.serverService.isServiceInitialized) {
+    if (this.controllerService.isServiceInitialized) {
       this.getData();
     } else {
       this.subscriptions.add(
-        this.serverService.serviceInitialized.subscribe((val) => {
+        this.controllerService.serviceInitialized.subscribe((val) => {
           if (val) this.getData();
         })
       );
@@ -59,7 +59,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
       this.fitAddon.fit();
     });
 
-    this.serverService.get(+this.controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller:Controller ) => {
       this.controller = controller;
       this.nodeService.getNodeById(this.controller, this.projectId, this.nodeId).subscribe((node: Node) => {
         this.node = node;

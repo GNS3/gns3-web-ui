@@ -4,7 +4,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
 import{ Controller } from '../models/controller';
 import { HttpController } from './http-controller.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 import { ImageManagerService } from './image-manager.service';
 import { Image } from "../models/images";
@@ -13,7 +13,7 @@ import { environment } from 'environments/environment';
 describe('ImageManagerService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
@@ -24,8 +24,8 @@ describe('ImageManagerService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
-    controller = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
     // service = TestBed.inject(ImageManagerService);
   });
   afterEach(() => {

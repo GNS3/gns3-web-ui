@@ -39,7 +39,7 @@ describe('LogConsoleComponent', () => {
   let mapSettingsService: MapSettingsService;
   let toasterService: ToasterService;
 
-  let httpServer = new HttpController({} as HttpClient, {} as ControllerErrorHandler);
+  let httpController = new HttpController({} as HttpClient, {} as ControllerErrorHandler);
 
   beforeEach(async() => {
    await TestBed.configureTestingModule({
@@ -49,7 +49,7 @@ describe('LogConsoleComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: LogEventsDataSource, useClass: LogEventsDataSource },
-        { provide: HttpController, useValue: httpServer },
+        { provide: HttpController, useValue: httpController },
         NodeConsoleService,
         ToasterService,
         MapSettingsService

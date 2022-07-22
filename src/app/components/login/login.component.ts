@@ -33,8 +33,8 @@ export class LoginComponent implements OnInit, DoCheck {
 
   constructor(
     private loginService: LoginService,
-    private serverService: ControllerService,
-    private serverDatabase: ControllerDatabase,
+    private controllerService: ControllerService,
+    private controllerDatabase: ControllerDatabase,
     private route: ActivatedRoute,
     private router: Router,
     private toasterService: ToasterService,
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, DoCheck {
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
 
       if (controller.authToken) {
@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit, DoCheck {
         controller.username = username;
         controller.password = password;
         controller.tokenExpired = false;
-        await this.serverService.update(controller);
+        await this.controllerService.update(controller);
 
         if (this.returnUrl.length <= 1) {
           this.router.navigate(['/controller', this.controller.id, 'projects']);

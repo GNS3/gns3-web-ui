@@ -27,7 +27,7 @@ export class NodesMenuComponent {
     private nodeConsoleService: NodeConsoleService,
     private nodesDataSource: NodesDataSource,
     private toasterService: ToasterService,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private settingsService: SettingsService,
     private mapSettingsService: MapSettingsService,
     private electronService: ElectronService,
@@ -50,7 +50,7 @@ export class NodesMenuComponent {
           name: node.name,
           project_id: node.project_id,
           node_id: node.node_id,
-          server_url: this.serverService.getServerUrl(this.controller),
+          server_url: this.controllerService.getServerUrl(this.controller),
         };
         await this.electronService.remote.require('./console-executor.js').openConsole(request);
       }

@@ -111,7 +111,7 @@ describe('discovery', () => {
   });
 });
 
-describe('discoverFirstAvailableServer', () => {
+describe('discoverFirstAvailableController', () => {
   let controller:Controller ;
 
   beforeEach(function () {
@@ -125,7 +125,7 @@ describe('discoverFirstAvailableServer', () => {
 
   it('should get first controller from discovered and with no added before', fakeAsync(() => {
     expect(component.discoveredServer).toBeUndefined();
-    component.discoverFirstAvailableServer();
+    component.discoverFirstAvailableController();
     tick();
     expect(component.discoveredServer.host).toEqual('199.111.111.1');
     expect(component.discoveredServer.port).toEqual(3333);
@@ -135,7 +135,7 @@ describe('discoverFirstAvailableServer', () => {
     mockedControllerService.controllers.push(controller);
 
     expect(component.discoveredServer).toBeUndefined();
-    component.discoverFirstAvailableServer();
+    component.discoverFirstAvailableController();
     tick();
     expect(component.discoveredServer).toBeUndefined();
   }));

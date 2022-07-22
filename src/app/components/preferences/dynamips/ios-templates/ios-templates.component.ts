@@ -19,14 +19,14 @@ export class IosTemplatesComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private iosService: IosService,
     private router: Router
   ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

@@ -142,7 +142,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private projectService: ProjectService,
     private nodeService: NodeService,
     public drawingService: DrawingService,
@@ -199,11 +199,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.getSettings();
     this.progressService.activate();
 
-    if (this.serverService.isServiceInitialized) {
+    if (this.controllerService.isServiceInitialized) {
       this.getData();
     } else {
       this.projectMapSubscription.add(
-        this.serverService.serviceInitialized.subscribe((val) => {
+        this.controllerService.serviceInitialized.subscribe((val) => {
           if (val) this.getData();
         })
       );
@@ -331,7 +331,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const controller_id = parseInt(paramMap.get('controller_id'), 10);
 
-      from(this.serverService.get(controller_id))
+      from(this.controllerService.get(controller_id))
         .pipe(
           mergeMap((controller:Controller ) => {
             if (!controller) this.router.navigate(['/controllers']);

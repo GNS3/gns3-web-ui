@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import{ Controller } from '../models/controller';
 
 export interface ControllerStateEvent {
-  serverName: string;
+  controllerName: string;
   status: 'starting' | 'started' | 'errored' | 'stopped' | 'stderr';
   message: string;
 }
@@ -27,7 +27,7 @@ export class ControllerManagementService implements OnDestroy {
 
   async start(controller:Controller ) {
     var startingEvent: ControllerStateEvent = {
-      serverName: controller.name,
+      controllerName: controller.name,
       status: 'starting',
       message: '',
     };

@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
-  constructor(private serverService: ControllerService, private loginService: LoginService) {}
+  constructor(private controllerService: ControllerService, private loginService: LoginService) {}
   intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(httpRequest).pipe(
       catchError((err) => {
@@ -23,15 +23,15 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
   async call() {
     let getCurrentUser = JSON.parse(localStorage.getItem(`isRememberMe`)) ?? null;
     const controller_id = this.loginService.controller_id;
-    let controller = await this.serverService.get(parseInt(controller_id, 10));
+    let controller = await this.controllerService.get(parseInt(controller_id, 10));
     controller.tokenExpired = true;
-    await this.serverService.update(controller);
+    await this.controllerService.update(controller);
     try {
       if (getCurrentUser && getCurrentUser.isRememberMe) {
         let response = await this.loginService.getLoggedUserRefToken(controller, getCurrentUser);
         controller.authToken = response.access_token;
         controller.tokenExpired = false;
-        await this.serverService.update(controller);
+        await this.controllerService.update(controller);
         await this.loginService.getLoggedUser(controller);
         this.reloadCurrentRoute();
       }

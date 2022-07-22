@@ -10,7 +10,7 @@ import { HttpController } from './http-controller.service';
 import { ProjectService } from './project.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 /**
  * Mocks ProjectsService so it's not based on settings
@@ -63,7 +63,7 @@ export class MockedProjectService {
 describe('ProjectService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let service: ProjectService;
   let controller:Controller ;
   let settingsService: SettingsService;
@@ -81,11 +81,11 @@ describe('ProjectService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
+    httpController = TestBed.get(HttpController);
     service = TestBed.get(ProjectService);
     settingsService = TestBed.get(SettingsService);
 
-    controller = getTestServer();
+    controller = getTestController();
   });
 
   afterEach(() => {

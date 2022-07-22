@@ -88,8 +88,8 @@ export class StyleEditorDialogComponent implements OnInit {
 
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-      this.drawingService.update(this.controller, this.drawing).subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
+      this.drawingService.update(this.controller, this.drawing).subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.update(controllerDrawing);
         this.dialogRef.close();
       });
     } else {

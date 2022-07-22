@@ -8,21 +8,21 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VirtualBoxService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<VirtualBoxTemplate[]> {
-    return this.httpServer.get<VirtualBoxTemplate[]>(controller, '/templates') as Observable<VirtualBoxTemplate[]>;
+    return this.httpController.get<VirtualBoxTemplate[]>(controller, '/templates') as Observable<VirtualBoxTemplate[]>;
   }
 
   getTemplate(controller:Controller , template_id: string): Observable<VirtualBoxTemplate> {
-    return this.httpServer.get<VirtualBoxTemplate>(
+    return this.httpController.get<VirtualBoxTemplate>(
       controller,
       `/templates/${template_id}`
     ) as Observable<VirtualBoxTemplate>;
   }
 
   addTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
-    return this.httpServer.post<VirtualBoxTemplate>(
+    return this.httpController.post<VirtualBoxTemplate>(
       controller,
       `/templates`,
       virtualBoxTemplate
@@ -30,7 +30,7 @@ export class VirtualBoxService {
   }
 
   saveTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
-    return this.httpServer.put<VirtualBoxTemplate>(
+    return this.httpController.put<VirtualBoxTemplate>(
       controller,
       `/templates/${virtualBoxTemplate.template_id}`,
       virtualBoxTemplate
@@ -38,6 +38,6 @@ export class VirtualBoxService {
   }
 
   getVirtualMachines(controller:Controller ): Observable<VirtualBoxVm[]> {
-    return this.httpServer.get<VirtualBoxVm[]>(controller, `/computes/${environment.compute_id}/virtualbox/vms`) as Observable<VirtualBoxVm[]>;
+    return this.httpController.get<VirtualBoxVm[]>(controller, `/computes/${environment.compute_id}/virtualbox/vms`) as Observable<VirtualBoxVm[]>;
   }
 }

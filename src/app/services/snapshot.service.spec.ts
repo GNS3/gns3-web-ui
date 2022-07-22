@@ -7,12 +7,12 @@ import { Snapshot } from '../models/snapshot';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { SnapshotService } from './snapshot.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('SnapshotService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let service: SnapshotService;
   let controller:Controller ;
 
@@ -24,9 +24,9 @@ describe('SnapshotService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
+    httpController = TestBed.get(HttpController);
     service = TestBed.get(SnapshotService);
-    controller = getTestServer();
+    controller = getTestController();
   });
 
   afterEach(() => {

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Rx';
 import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 import { VersionService } from './version.service';
 
 export class MockedVersionService {
@@ -20,7 +20,7 @@ export class MockedVersionService {
 describe('VersionService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let service: VersionService;
   let controller:Controller ;
 
@@ -32,9 +32,9 @@ describe('VersionService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
+    httpController = TestBed.get(HttpController);
     service = TestBed.get(VersionService);
-    controller = getTestServer();
+    controller = getTestController();
   });
 
   afterEach(() => {

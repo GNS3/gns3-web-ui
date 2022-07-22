@@ -8,12 +8,12 @@ import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { BuiltInTemplatesService } from './built-in-templates.service';
 import { HttpController } from './http-controller.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('BuiltInTemplatesService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
@@ -24,8 +24,8 @@ describe('BuiltInTemplatesService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
-    controller = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {

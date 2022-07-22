@@ -6,22 +6,22 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VpcsService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<VpcsTemplate[]> {
-    return this.httpServer.get<VpcsTemplate[]>(controller, '/templates') as Observable<VpcsTemplate[]>;
+    return this.httpController.get<VpcsTemplate[]>(controller, '/templates') as Observable<VpcsTemplate[]>;
   }
 
   getTemplate(controller:Controller , template_id: string): Observable<VpcsTemplate> {
-    return this.httpServer.get<VpcsTemplate>(controller, `/templates/${template_id}`) as Observable<VpcsTemplate>;
+    return this.httpController.get<VpcsTemplate>(controller, `/templates/${template_id}`) as Observable<VpcsTemplate>;
   }
 
   addTemplate(controller:Controller , vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
-    return this.httpServer.post<VpcsTemplate>(controller, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
+    return this.httpController.post<VpcsTemplate>(controller, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
   }
 
   saveTemplate(controller:Controller , vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
-    return this.httpServer.put<VpcsTemplate>(
+    return this.httpController.put<VpcsTemplate>(
       controller,
       `/templates/${vpcsTemplate.template_id}`,
       vpcsTemplate

@@ -6,9 +6,9 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VersionService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   get(controller:Controller ) {
-    return this.httpServer.get<Version>(controller, '/version');
+    return this.httpController.get<Version>(controller, '/version');
   }
 }

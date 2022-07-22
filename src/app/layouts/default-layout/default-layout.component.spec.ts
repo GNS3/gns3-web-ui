@@ -31,8 +31,8 @@ describe('DefaultLayoutComponent', () => {
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
   let serverManagementService = new MockedServerManagementService();
-  let serverService: ControllerService;
-  let httpServer: HttpController;
+  let controllerService: ControllerService;
+  let httpController: HttpController;
   let errorHandler: ControllerErrorHandler;
 
   beforeEach(async() => {
@@ -67,8 +67,8 @@ describe('DefaultLayoutComponent', () => {
     }).compileComponents();
 
     errorHandler = TestBed.inject(ControllerErrorHandler);
-    httpServer = TestBed.inject(HttpController);
-    serverService = TestBed.inject(ControllerService);
+    httpController = TestBed.inject(HttpController);
+    controllerService = TestBed.inject(ControllerService);
   });
 
   beforeEach(() => {

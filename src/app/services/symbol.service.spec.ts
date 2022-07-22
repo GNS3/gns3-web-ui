@@ -8,12 +8,12 @@ import { Symbol } from '../models/symbol';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { SymbolService } from './symbol.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('SymbolService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let controller:Controller ;
 
   beforeEach(() => {
@@ -24,8 +24,8 @@ describe('SymbolService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
-    controller = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {

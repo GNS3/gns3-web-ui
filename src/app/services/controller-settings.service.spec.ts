@@ -18,7 +18,7 @@ export class MockedControllerSettingsService {
 }
 
 describe('ControllerSettingsService', () => {
-  let httpServer: HttpController;
+  let httpController: HttpController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -26,7 +26,7 @@ describe('ControllerSettingsService', () => {
       providers: [HttpController, ControllerSettingsService],
     });
 
-    httpServer = TestBed.get(HttpController);
+    httpController = TestBed.get(HttpController);
   });
 
   it('should be created', inject([ControllerSettingsService], (service: ControllerSettingsService) => {

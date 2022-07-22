@@ -9,13 +9,13 @@ import { HttpController } from './http-controller.service';
 export class TemplateService {
   public newTemplateCreated: Subject<Template> = new Subject<Template>();
 
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   list(controller:Controller ): Observable<Template[]> {
-    return this.httpServer.get<Template[]>(controller, '/templates') as Observable<Template[]>;
+    return this.httpController.get<Template[]>(controller, '/templates') as Observable<Template[]>;
   }
 
   deleteTemplate(controller:Controller , templateId: string): Observable<any> {
-    return this.httpServer.delete(controller, `/templates/${templateId}`, { observe: 'body' });
+    return this.httpController.delete(controller, `/templates/${templateId}`, { observe: 'body' });
   }
 }

@@ -34,17 +34,17 @@ export class DirectLinkComponent implements OnInit {
   });
 
   constructor(
-    private serverService: ControllerService,
-    private serverDatabase: ControllerDatabase,
+    private controllerService: ControllerService,
+    private controllerDatabase: ControllerDatabase,
     private route: ActivatedRoute,
     private router: Router,
     private toasterService: ToasterService
   ) {}
 
   async ngOnInit() {
-    if (this.serverService.isServiceInitialized) this.getControllers();
+    if (this.controllerService.isServiceInitialized) this.getControllers();
 
-    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+    this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
         this.getControllers();
       }
@@ -56,7 +56,7 @@ export class DirectLinkComponent implements OnInit {
     this.controllerPort = +this.route.snapshot.paramMap.get('server_port');
     this.projectId = this.route.snapshot.paramMap.get('project_id');
 
-    const controllers = await this.serverService.findAll();
+    const controllers = await this.controllerService.findAll();
     const controller = controllers.filter((controller) => controller.host === this.controllerIp && controller.port === this.controllerPort)[0];
 
     if (controller) {
@@ -80,7 +80,7 @@ export class DirectLinkComponent implements OnInit {
     serverToAdd.location = this.serverForm.get('location').value;
     serverToAdd.protocol = this.serverForm.get('protocol').value;
 
-    this.serverService.create(serverToAdd).then((addedServer:Controller ) => {
+    this.controllerService.create(serverToAdd).then((addedServer:Controller ) => {
       this.router.navigate(['/controller', addedServer.id, 'project', this.projectId]);
     });
   }

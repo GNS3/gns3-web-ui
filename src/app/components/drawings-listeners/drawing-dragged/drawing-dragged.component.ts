@@ -36,8 +36,8 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .updatePosition(this.controller, this.project, drawing, drawing.x, drawing.y)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.update(controllerDrawing);
       });
   }
 

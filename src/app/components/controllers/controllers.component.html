@@ -14,13 +14,13 @@
           <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <a
-              *ngIf="getServerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
+              *ngIf="getControllerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
               [routerLink]="['/controller', row.id, 'login']"
               class="table-link"
               >{{ row.name }}</a
             >
             <span
-              *ngIf="getServerStatus(row) != 'running' && row.location !== 'remote' && row.location !== 'bundled'"
+              *ngIf="getControllerStatus(row) != 'running' && row.location !== 'remote' && row.location !== 'bundled'"
               >{{ row.name }}</span
             >
           </mat-cell>
@@ -46,7 +46,7 @@
               matTooltip="Go to projects"
               matTooltipClass="custom-tooltip"
               (click)="openProjects(row)"
-              *ngIf="getServerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
+              *ngIf="getControllerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
             >
               <mat-icon aria-label="Go to projects">arrow_forward</mat-icon>
             </button>
@@ -55,8 +55,8 @@
               mat-icon-button
               matTooltip="Start controller"
               matTooltipClass="custom-tooltip"
-              (click)="startServer(row)"
-              *ngIf="row.location === 'local' && getServerStatus(row) === 'stopped'"
+              (click)="startController(row)"
+              *ngIf="row.location === 'local' && getControllerStatus(row) === 'stopped'"
             >
               <mat-icon aria-label="Start controller">play_arrow</mat-icon>
             </button>
@@ -65,22 +65,22 @@
               mat-icon-button
               matTooltip="Stop controller"
               matTooltipClass="custom-tooltip"
-              (click)="stopServer(row)"
-              *ngIf="row.location === 'local' && getServerStatus(row) === 'running'"
+              (click)="stopController(row)"
+              *ngIf="row.location === 'local' && getControllerStatus(row) === 'running'"
             >
               <mat-icon aria-label="Stop controller">stop</mat-icon>
             </button>
 
             <mat-spinner
               [diameter]="24"
-              *ngIf="row.location === 'local' && getServerStatus(row) === 'starting'"
+              *ngIf="row.location === 'local' && getControllerStatus(row) === 'starting'"
             ></mat-spinner>
 
             <button
               mat-icon-button
               matTooltip="Remove controller"
               matTooltipClass="custom-tooltip"
-              (click)="deleteServer(row)"
+              (click)="deleteController(row)"
             >
               <mat-icon aria-label="Remove controller">delete</mat-icon>
             </button>

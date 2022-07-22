@@ -10,12 +10,12 @@ import { Template } from '../models/template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { NodeService } from './node.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('NodeService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpController;
+  let httpController: HttpController;
   let service: NodeService;
   let controller:Controller ;
 
@@ -30,9 +30,9 @@ describe('NodeService', () => {
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpController);
+    httpController = TestBed.get(HttpController);
     service = TestBed.get(NodeService);
-    controller = getTestServer();
+    controller = getTestController();
   });
 
   afterEach(() => {

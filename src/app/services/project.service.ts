@@ -34,7 +34,7 @@ export class ProjectService {
 
   public projectListSubject = new Subject<boolean>();
   constructor(
-    private httpServer: HttpController,
+    private httpController: HttpController,
     private settingsService: SettingsService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
@@ -44,48 +44,49 @@ export class ProjectService {
   }
 
   getReadmeFile(controller:Controller , project_id: string) {
-    return this.httpServer.getText(controller, `/projects/${project_id}/files/README.txt`);
+    return this.httpController.getText(controller, `/projects/${project_id}/files/README.txt`);
   }
 
   postReadmeFile(controller:Controller , project_id: string, readme: string) {
-    return this.httpServer.post<any>(controller, `/projects/${project_id}/files/README.txt`, readme);
+    return this.httpController.post<any>(controller, `/projects/${project_id}/files/README.txt`, readme);
   }
 
   get(controller:Controller , project_id: string) {
-    return this.httpServer.get<Project>(controller, `/projects/${project_id}`);
+    return this.httpController.get<Project>(controller, `/projects/${project_id}`);
   }
 
   open(controller:Controller , project_id: string) {
-    return this.httpServer.post<Project>(controller, `/projects/${project_id}/open`, {});
+    return this.httpController.post<Project>(controller, `/projects/${project_id}/open`, {});
   }
 
   close(controller:Controller , project_id: string) {
     this.recentlyOpenedProjectService.removeData();
-    return this.httpServer.post<Project>(controller, `/projects/${project_id}/close`, {});
+    return this.httpController.post<Project>(controller, `/projects/${project_id}/close`, {});
   }
 
   list(controller:Controller ) {
-    return this.httpServer.get<Project[]>(controller, '/projects');
+    return this.httpController.get<Project[]>(controller, '/projects');
   }
 
   nodes(controller:Controller , project_id: string) {
-    return this.httpServer.get<Node[]>(controller, `/projects/${project_id}/nodes`);
+    return this.httpController.get<Node[]>(controller, `/projects/${project_id}/nodes`);
   }
 
   links(controller:Controller , project_id: string) {
-    return this.httpServer.get<Link[]>(controller, `/projects/${project_id}/links`);
+    debugger
+    return this.httpController.get<Link[]>(controller, `/projects/${project_id}/links`);
   }
 
   drawings(controller:Controller , project_id: string) {
-    return this.httpServer.get<Drawing[]>(controller, `/projects/${project_id}/drawings`);
+    return this.httpController.get<Drawing[]>(controller, `/projects/${project_id}/drawings`);
   }
 
   add(controller:Controller , project_name: string, project_id: string): Observable<any> {
-    return this.httpServer.post<Project>(controller, `/projects`, { name: project_name, project_id: project_id });
+    return this.httpController.post<Project>(controller, `/projects`, { name: project_name, project_id: project_id });
   }
 
   update(controller:Controller , project: Project): Observable<Project> {
-    return this.httpServer.put<Project>(controller, `/projects/${project.project_id}`, {
+    return this.httpController.put<Project>(controller, `/projects/${project.project_id}`, {
       auto_close: project.auto_close,
       auto_open: project.auto_open,
       auto_start: project.auto_start,
@@ -99,7 +100,7 @@ export class ProjectService {
   }
 
   delete(controller:Controller , project_id: string): Observable<any> {
-    return this.httpServer.delete(controller, `/projects/${project_id}`);
+    return this.httpController.delete(controller, `/projects/${project_id}`);
   }
 
   getUploadPath(controller:Controller , uuid: string, project_name: string) {
@@ -111,15 +112,15 @@ export class ProjectService {
   }
 
   export(controller:Controller , project_id: string): Observable<any> {
-    return this.httpServer.get(controller, `/projects/${project_id}/export`);
+    return this.httpController.get(controller, `/projects/${project_id}/export`);
   }
 
   getStatistics(controller:Controller , project_id: string): Observable<any> {
-    return this.httpServer.get(controller, `/projects/${project_id}/stats`);
+    return this.httpController.get(controller, `/projects/${project_id}/stats`);
   }
 
   duplicate(controller:Controller , project_id: string, project_name): Observable<any> {
-    return this.httpServer.post(controller, `/projects/${project_id}/duplicate`, { name: project_name });
+    return this.httpController.post(controller, `/projects/${project_id}/duplicate`, { name: project_name });
   }
 
   isReadOnly(project: Project) {

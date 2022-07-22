@@ -32,7 +32,7 @@ xdescribe('ProjectsComponent', () => {
   let fixture: ComponentFixture<ProjectsComponent>;
   let settingsService: SettingsService;
   let projectService: ProjectService;
-  let serverService: ControllerService;
+  let controllerService: ControllerService;
   let controller:Controller ;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
@@ -81,7 +81,7 @@ xdescribe('ProjectsComponent', () => {
       })
       .compileComponents();
 
-    serverService = TestBed.inject(ControllerService);
+    controllerService = TestBed.inject(ControllerService);
     settingsService = TestBed.inject(SettingsService);
     projectService = TestBed.inject(ProjectService);
     progressService = TestBed.inject(ProgressService);
@@ -91,7 +91,7 @@ xdescribe('ProjectsComponent', () => {
 
     const settings = {} as Settings;
 
-    spyOn(serverService, 'get').and.returnValue(Promise.resolve(controller));
+    spyOn(controllerService, 'get').and.returnValue(Promise.resolve(controller));
     spyOn(settingsService, 'getAll').and.returnValue(settings);
     spyOn(projectService, 'list').and.returnValue(of([]));
 

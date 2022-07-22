@@ -8,18 +8,18 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class IouService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getTemplates(controller:Controller ): Observable<IouTemplate[]> {
-    return this.httpServer.get<IouTemplate[]>(controller, '/templates') as Observable<IouTemplate[]>;
+    return this.httpController.get<IouTemplate[]>(controller, '/templates') as Observable<IouTemplate[]>;
   }
 
   getTemplate(controller:Controller , template_id: string): Observable<any> {
-    return this.httpServer.get<IouTemplate>(controller, `/templates/${template_id}`) as Observable<IouTemplate>;
+    return this.httpController.get<IouTemplate>(controller, `/templates/${template_id}`) as Observable<IouTemplate>;
   }
 
   getImages(controller:Controller ): Observable<any> {
-    return this.httpServer.get<IouImage[]>(controller, '/images?image_type=iou') as Observable<IouImage[]>;
+    return this.httpController.get<IouImage[]>(controller, '/images?image_type=iou') as Observable<IouImage[]>;
   }
 
   getImagePath(controller:Controller , filename: string): string {
@@ -27,11 +27,11 @@ export class IouService {
   }
 
   addTemplate(controller:Controller , iouTemplate: any): Observable<any> {
-    return this.httpServer.post<IouTemplate>(controller, `/templates`, iouTemplate) as Observable<IouTemplate>;
+    return this.httpController.post<IouTemplate>(controller, `/templates`, iouTemplate) as Observable<IouTemplate>;
   }
 
   saveTemplate(controller:Controller , iouTemplate: any): Observable<any> {
-    return this.httpServer.put<IouTemplate>(
+    return this.httpController.put<IouTemplate>(
       controller,
       `/templates/${iouTemplate.template_id}`,
       iouTemplate

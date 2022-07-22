@@ -51,8 +51,8 @@ export class TextAddedComponent implements OnInit, OnDestroy {
           this.context.transformation.k,
         svgText
       )
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.add(serverDrawing);
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.add(controllerDrawing);
         this.drawingSaved.emit(true);
       });
   }

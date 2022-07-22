@@ -17,7 +17,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
 
   constructor(
     private electronService: ElectronService,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private settingsService: SettingsService,
     private toasterService: ToasterService,
     private nodeService: NodeService
@@ -49,7 +49,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
         name: node.name,
         project_id: node.project_id,
         node_id: node.node_id,
-        server_url: this.serverService.getServerUrl(this.controller),
+        server_url: this.controllerService.getServerUrl(this.controller),
       };
       await this.openConsole(consoleRequest);
     }

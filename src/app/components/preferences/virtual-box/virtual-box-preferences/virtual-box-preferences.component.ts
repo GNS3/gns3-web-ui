@@ -12,11 +12,11 @@ export class VirtualBoxPreferencesComponent implements OnInit {
   controller:Controller ;
   vboxManagePath: string;
 
-  constructor(private route: ActivatedRoute, private serverService: ControllerService) {}
+  constructor(private route: ActivatedRoute, private controllerService: ControllerService) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
     });
   }

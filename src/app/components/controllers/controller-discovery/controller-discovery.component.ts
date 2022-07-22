@@ -26,14 +26,14 @@ export class ControllerDiscoveryComponent implements OnInit {
 
   constructor(
     private versionService: VersionService,
-    private serverService: ControllerService,
-    private serverDatabase: ControllerDatabase,
+    private controllerService: ControllerService,
+    private controllerDatabase: ControllerDatabase,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    if (this.serverService.isServiceInitialized) this.discoverFirstServer();
-    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+    if (this.controllerService.isServiceInitialized) this.discoverFirstServer();
+    this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
         this.discoverFirstServer();
       }
@@ -42,7 +42,7 @@ export class ControllerDiscoveryComponent implements OnInit {
 
   async discoverFirstServer() {
     let discovered = await this.discoverServers();
-    let local = await this.serverService.findAll();
+    let local = await this.controllerService.findAll();
 
     local.forEach((added) => {
       discovered = discovered.filter((controller) => {
@@ -56,7 +56,7 @@ export class ControllerDiscoveryComponent implements OnInit {
   }
 
   async discoverServers() {
-    let discoveredServers: Controller[] = [];
+    let discoveredControllers: Controller[] = [];
     this.defaultServers.forEach(async (testServer) => {
       const controller = new Controller();
       controller.host = testServer.host;
@@ -65,13 +65,13 @@ export class ControllerDiscoveryComponent implements OnInit {
         .get(controller)
         .toPromise()
         .catch((error) => null);
-      if (version) discoveredServers.push(controller);
+      if (version) discoveredControllers.push(controller);
     });
-    return discoveredServers;
+    return discoveredControllers;
   }
 
-  discoverFirstAvailableServer() {
-    forkJoin([from(this.serverService.findAll()).pipe(map((s: Controller[]) => s)), this.discovery()]).subscribe(
+  discoverFirstAvailableController() {
+    forkJoin([from(this.controllerService.findAll()).pipe(map((s: Controller[]) => s)), this.discovery()]).subscribe(
       ([local, discovered]) => {
         local.forEach((added) => {
           discovered = discovered.filter((controller) => {
@@ -98,8 +98,8 @@ export class ControllerDiscoveryComponent implements OnInit {
     });
 
     return new Observable<Controller[]>((observer) => {
-      forkJoin(queries).subscribe((discoveredServers) => {
-        observer.next(discoveredServers.filter((s) => s != null));
+      forkJoin(queries).subscribe((discoveredControllers) => {
+        observer.next(discoveredControllers.filter((s) => s != null));
         observer.complete();
       });
     });
@@ -124,8 +124,8 @@ export class ControllerDiscoveryComponent implements OnInit {
     controller.location = 'remote';
     controller.protocol = location.protocol as ServerProtocol;
 
-    this.serverService.create(controller).then((created: Controller) => {
-      this.serverDatabase.addServer(created);
+    this.controllerService.create(controller).then((created: Controller) => {
+      this.controllerDatabase.addServer(created);
       this.discoveredServer = null;
     });
   }

@@ -38,8 +38,8 @@ export class TextEditedComponent implements OnInit, OnDestroy {
 
     let drawing = this.drawingsDataSource.get(evt.textDrawingId);
 
-    this.drawingService.updateText(this.controller, drawing, svgString).subscribe((serverDrawing: Drawing) => {
-      this.drawingsDataSource.update(serverDrawing);
+    this.drawingService.updateText(this.controller, drawing, svgString).subscribe((controllerDrawing: Drawing) => {
+      this.drawingsDataSource.update(controllerDrawing);
       this.drawingsEventSource.textSaved.emit(true);
     });
   }

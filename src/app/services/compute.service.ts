@@ -8,10 +8,10 @@ import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ComputeService {
-  constructor(private httpServer: HttpController) {}
+  constructor(private httpController: HttpController) {}
 
   getComputes(controller:Controller ): Observable<Compute[]> {
-    return this.httpServer.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
+    return this.httpController.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
   }
 
   getUploadPath(controller:Controller , emulator: string, filename: string) {
@@ -19,6 +19,6 @@ export class ComputeService {
   }
 
   getStatistics(controller:Controller ): Observable<ComputeStatistics[]> {
-    return this.httpServer.get(controller, `/statistics`);
+    return this.httpController.get(controller, `/statistics`);
   }
 }

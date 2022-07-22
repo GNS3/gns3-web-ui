@@ -10,10 +10,10 @@ import { environment } from 'environments/environment';
 })
 export class ImageManagerService {
 
-  constructor(private httpServer: HttpController) { }
+  constructor(private httpController: HttpController) { }
 
   getImages(controller:Controller ) {
-    return this.httpServer.get<Image[]>(controller, '/images') as Observable<Image[]>;
+    return this.httpController.get<Image[]>(controller, '/images') as Observable<Image[]>;
   }
 
   getImagePath(controller :Controller, install_appliance, image_path){
@@ -25,9 +25,9 @@ export class ImageManagerService {
   }
 
   uploadedImage(controller :Controller, install_appliance, image_path, flie){
-    return this.httpServer.post<Image[]>(controller, `/images/upload/${image_path}?install_appliances=${install_appliance}`,flie) as Observable<Image[]>;
+    return this.httpController.post<Image[]>(controller, `/images/upload/${image_path}?install_appliances=${install_appliance}`,flie) as Observable<Image[]>;
   }
   deleteFile(controller :Controller, image_path){
-    return this.httpServer.delete<Image[]>(controller, `/images/${image_path}`) as Observable<Image[]>;
+    return this.httpController.delete<Image[]>(controller, `/images/${image_path}`) as Observable<Image[]>;
   }
 }

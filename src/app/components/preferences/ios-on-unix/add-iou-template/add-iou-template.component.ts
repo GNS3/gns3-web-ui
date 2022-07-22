@@ -40,7 +40,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ControllerService,
+    private controllerService: ControllerService,
     private iouService: IouService,
     private toasterService: ToasterService,
     private router: Router,
@@ -85,7 +85,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.serverService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
       this.getImages();
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {

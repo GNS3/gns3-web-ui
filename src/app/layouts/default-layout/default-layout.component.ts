@@ -37,7 +37,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     public router: Router,
-    private serverService: ControllerService
+    private controllerService: ControllerService
   ) {}
 
   ngOnInit() {
@@ -54,14 +54,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
     // attach to notification stream when any of running local controllers experienced issues
-    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((serverStatus) => {
-      if (serverStatus.status === 'errored') {
-        console.error(serverStatus.message);
-        this.toasterService.error(serverStatus.message);
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
+      if (controllerStatus.status === 'errored') {
+        console.error(controllerStatus.message);
+        this.toasterService.error(controllerStatus.message);
       }
-      if (serverStatus.status === 'stderr') {
-        console.error(serverStatus.message);
-        this.toasterService.error(serverStatus.message);
+      if (controllerStatus.status === 'stderr') {
+        console.error(controllerStatus.message);
+        this.toasterService.error(controllerStatus.message);
       }
     });
 
@@ -71,14 +71,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   goToUserInfo() {
     let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+controllerId).then((controller:Controller ) => {
       this.router.navigate(['/controller', controller.id, 'loggeduser']);
     });
   }
 
   goToDocumentation() {
     let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+controllerId).then((controller:Controller ) => {
       (window as any).open(`http://${controller.host}:${controller.port}/docs`);
     });
   }
@@ -93,9 +93,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   logout() {
     let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.serverService.get(+controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+controllerId).then((controller:Controller ) => {
       controller.authToken = null;
-      this.serverService.update(controller).then(val => this.router.navigate(['/controller', controller.id, 'login']));
+      this.controllerService.update(controller).then(val => this.router.navigate(['/controller', controller.id, 'login']));
     });
   }
 
