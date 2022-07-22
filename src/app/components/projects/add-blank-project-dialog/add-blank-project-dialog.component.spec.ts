@@ -8,7 +8,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
@@ -53,7 +53,7 @@ export class MockedProjectService {
 describe('AddBlankProjectDialogComponent', () => {
   let component: AddBlankProjectDialogComponent;
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
-  let server: Server;
+  let controller:Controller ;
   let router = {
     navigate: jasmine.createSpy('navigate'),
   };
@@ -85,15 +85,15 @@ describe('AddBlankProjectDialogComponent', () => {
       declarations: [AddBlankProjectDialogComponent],
     }).compileComponents();
 
-    server = new Server();
-    server.host = 'localhost';
-    server.port = 80;
+    controller = new Controller  ();
+    controller.host = 'localhost';
+    controller.port = 80;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddBlankProjectDialogComponent);
     component = fixture.componentInstance;
-    component.server = server;
+    component.controller =  controller;
     fixture.detectChanges();
   });
 

@@ -9,7 +9,7 @@ import { Node } from '../../../cartography/models/node';
 import { Link } from '../../../models/link';
 import { LinkNode } from '../../../models/link-node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 
 @Component({
@@ -19,7 +19,7 @@ import { ProjectService } from '../../../services/project.service';
 })
 export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
-  @Input() server: Server;
+  @Input() controller:Controller ;
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -34,7 +34,7 @@ export class ContextMenuComponent implements OnInit {
 
   hasTextCapabilities = false;
   isElectronApp = false;
-  isBundledServer: boolean = false;
+  isBundledController: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -47,7 +47,7 @@ export class ContextMenuComponent implements OnInit {
     this.setPosition(0, 0);
 
     this.isElectronApp = this.electronService.isElectronApp;
-    this.isBundledServer = this.server.location === 'bundled';
+    this.isBundledController = this.controller.location === 'bundled';
   }
 
   public setPosition(top: number, left: number) {

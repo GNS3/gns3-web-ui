@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Snapshot } from '../models/snapshot';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class SnapshotService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  create(server: Server, project_id: string, snapshot: Snapshot) {
-    return this.httpServer.post<Snapshot>(server, `/projects/${project_id}/snapshots`, snapshot);
+  create(controller:Controller , project_id: string, snapshot: Snapshot) {
+    return this.httpController.post<Snapshot>(controller, `/projects/${project_id}/snapshots`, snapshot);
   }
 
-  delete(server: Server, project_id: string, snapshot_id: string) {
-    return this.httpServer.delete(server, `/projects/${project_id}/snapshots/${snapshot_id}`);
+  delete(controller:Controller , project_id: string, snapshot_id: string) {
+    return this.httpController.delete(controller, `/projects/${project_id}/snapshots/${snapshot_id}`);
   }
 
-  list(server: Server, project_id: string) {
-    return this.httpServer.get<Snapshot[]>(server, `/projects/${project_id}/snapshots`);
+  list(controller:Controller , project_id: string) {
+    return this.httpController.get<Snapshot[]>(controller, `/projects/${project_id}/snapshots`);
   }
 
-  restore(server: Server, project_id: string, snapshot_id: string) {
-    return this.httpServer.post(server, `/projects/${project_id}/snapshots/${snapshot_id}/restore`, {});
+  restore(controller:Controller , project_id: string, snapshot_id: string) {
+    return this.httpController.post(controller, `/projects/${project_id}/snapshots/${snapshot_id}/restore`, {});
   }
 }

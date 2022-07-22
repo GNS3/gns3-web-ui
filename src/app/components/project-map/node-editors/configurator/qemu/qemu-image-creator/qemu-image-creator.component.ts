@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { QemuImg } from '../../../../../../models/qemu/qemu-img';
-import { Server } from '../../../../../../models/server';
+import{ Controller } from '../../../../../../models/controller';
 import { NodeService } from '../../../../../../services/node.service';
 import { QemuService } from '../../../../../../services/qemu.service';
 import { ToasterService } from '../../../../../../services/toaster.service';
@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['../../configurator.component.scss'],
 })
 export class QemuImageCreatorComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   qemuImg: QemuImg;
 
   formatOptions: string[] = ['qcow2', 'qcow', 'vhd', 'vdi', 'vmdk', 'raw'];
@@ -101,7 +101,7 @@ export class QemuImageCreatorComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid && this.qemuImg.format) {
-      this.qemuService.addImage(this.server, this.qemuImg).subscribe(() => {
+      this.qemuService.addImage(this.controller, this.qemuImg).subscribe(() => {
         this.dialogRef.close();
       });
     } else {

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockedNodeService } from 'app/components/project-map/project-map.component.spec';
-import { HttpServer } from 'app/services/http-server.service';
+import { HttpController } from 'app/services/http-controller.service';
 import { NodeService } from 'app/services/node.service';
 import { StopNodeActionComponent } from './stop-node-action.component';
 

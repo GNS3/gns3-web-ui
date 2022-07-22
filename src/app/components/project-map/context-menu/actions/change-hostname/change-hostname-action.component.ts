@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/change-hostname-dialog.component';
 
 @Component({
@@ -9,7 +9,7 @@ import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/c
   templateUrl: './change-hostname-action.component.html',
 })
 export class ChangeHostnameActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
 
   constructor(private dialog: MatDialog) {}
@@ -22,7 +22,7 @@ export class ChangeHostnameActionComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.node = this.node;
   }
 }

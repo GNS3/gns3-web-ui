@@ -10,12 +10,12 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IosImage } from '../../../../models/images/ios-image';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
@@ -25,7 +25,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
-  server: Server;
+  controller:Controller ;
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
 
@@ -56,7 +56,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private iosService: IosService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -112,9 +112,9 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
     })
 
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.getImages();
 
@@ -133,14 +133,14 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     });
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
 
   getImages() {
-    this.iosService.getImages(this.server).subscribe((images: IosImage[]) => {
+    this.iosService.getImages(this.controller).subscribe((images: IosImage[]) => {
       this.iosImages = images;
     });
   }
@@ -150,11 +150,11 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.iosNameForm.controls['templateName'].setValue(name);
     let fileName = event.target.files[0].name;
 
-    const url = this.iosService.getImagePath(this.server, fileName);
+    const url = this.iosService.getImagePath(this.controller, fileName);
     this.uploader.queue.forEach((elem) => (elem.url = url));
 
     const itemToUpload = this.uploader.queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.server.authToken }])
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
@@ -187,7 +187,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       if (this.networkModulesForTemplate.length > 0) this.completeModulesData();
       this.iosTemplate.compute_id = 'local';
 
-      this.iosService.addTemplate(this.server, this.iosTemplate).subscribe((template: IosTemplate) => {
+      this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
         this.goBack();
       });
     } else {
@@ -237,7 +237,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'dynamips', 'templates']);
   }
 
   onImageChosen() {

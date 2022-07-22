@@ -1,0 +1,16 @@
+<div class="header">
+  <div>
+    <a
+      mat-icon-button
+      matTooltip="Back to user detail"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="['/controller', controller.id, 'management', 'users', user.user_id]">
+      <mat-icon aria-label="Back to user detail">keyboard_arrow_left</mat-icon>
+    </a>
+  </div>
+  <div>
+    Edit {{user.username}} role permissions
+  </div>
+</div>
+<app-permission-editor [ownedPermissions]="userPermissions" [availablePermissions]="permissions" [controller]="controller"
+                       (updatedPermissions)="updatePermissions($event)"></app-permission-editor>

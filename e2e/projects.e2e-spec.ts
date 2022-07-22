@@ -1,24 +1,24 @@
 import { TestHelper } from './helpers/common.po';
 import { ProjectsPage } from './helpers/project.po';
-import { ServersPage } from './helpers/server.po';
+import { ControllersPage } from './helpers/controller.po';
 
 describe('Projects page', () => {
-  let serversPage: ServersPage;
+  let controllersPage: ControllersPage;
   let projectsPage: ProjectsPage;
   let helper: TestHelper;
 
   beforeEach(() => {
-    serversPage = new ServersPage();
+    controllersPage = new ControllersPage();
     projectsPage = new ProjectsPage();
     helper = new TestHelper();
   });
 
   it('user should have possibility to create new project', async () => {
     // arrange
-    serversPage.maximizeWindow();
-    await serversPage.navigateToServersPage();
-    await serversPage.clickAddServer();
-    await serversPage.navigateToServerProjects();
+    controllersPage.maximizeWindow();
+    await controllersPage.navigateToControllersPage();
+    await controllersPage.clickAddController();
+    await controllersPage.navigateToControllerProjects();
     helper.sleep(2000);
 
     //act
@@ -28,6 +28,6 @@ describe('Projects page', () => {
     helper.sleep(2000);
 
     //assert
-    expect(helper.getCurrentUrl()).toMatch('server/1/project/');
+    expect(helper.getCurrentUrl()).toMatch('controller/1/project/');
   });
 });

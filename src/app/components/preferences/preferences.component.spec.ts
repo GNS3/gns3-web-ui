@@ -68,7 +68,7 @@ describe('PreferencesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should save correct server id', () => {
-    expect(component.serverId).toBe('1');
+  it('should save correct controller id', () => {
+    expect(component.controllerId).toBe('1');
   });
 });

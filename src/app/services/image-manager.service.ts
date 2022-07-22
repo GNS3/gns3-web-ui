@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import{ Controller } from '../models/controller';
+import { HttpController } from './http-controller.service';
 import { Observable } from 'rxjs';
 import { Image } from "../models/images";
 import { environment } from 'environments/environment';
@@ -10,24 +10,24 @@ import { environment } from 'environments/environment';
 })
 export class ImageManagerService {
 
-  constructor(private httpServer: HttpServer) { }
+  constructor(private httpController: HttpController) { }
 
-  getImages(server: Server) {
-    return this.httpServer.get<Image[]>(server, '/images') as Observable<Image[]>;
+  getImages(controller:Controller ) {
+    return this.httpController.get<Image[]>(controller, '/images') as Observable<Image[]>;
   }
 
-  getImagePath(server:Server, install_appliance, image_path){
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${image_path}?install_appliances=${install_appliance}`;
+  getImagePath(controller :Controller, install_appliance, image_path){
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${image_path}?install_appliances=${install_appliance}`;
   }
 
-  getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
+  getUploadPath(controller:Controller , emulator: string, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-  uploadedImage(server:Server, install_appliance, image_path, flie){
-    return this.httpServer.post<Image[]>(server, `/images/upload/${image_path}?install_appliances=${install_appliance}`,flie) as Observable<Image[]>;
+  uploadedImage(controller :Controller, install_appliance, image_path, flie){
+    return this.httpController.post<Image[]>(controller, `/images/upload/${image_path}?install_appliances=${install_appliance}`,flie) as Observable<Image[]>;
   }
-  deleteFile(server:Server, image_path){
-    return this.httpServer.delete<Image[]>(server, `/images/${image_path}`) as Observable<Image[]>;
+  deleteFile(controller :Controller, image_path){
+    return this.httpController.delete<Image[]>(controller, `/images/${image_path}`) as Observable<Image[]>;
   }
 }

@@ -10,23 +10,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IouTemplateDetailsComponent } from './iou-template-details.component';
 
 export class MockedIouService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as IouTemplate);
   }
 
-  public saveTemplate(server: Server, iouTemplate: IouTemplate) {
+  public saveTemplate(controller:Controller , iouTemplate: IouTemplate) {
     return of(iouTemplate);
   }
 }
@@ -35,7 +35,7 @@ describe('IouTemplateDetailsComponent', () => {
   let component: IouTemplateDetailsComponent;
   let fixture: ComponentFixture<IouTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIouService = new MockedIouService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -55,7 +55,7 @@ describe('IouTemplateDetailsComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: IouConfigurationService, useClass: IouConfigurationService },

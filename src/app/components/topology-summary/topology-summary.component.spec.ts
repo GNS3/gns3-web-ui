@@ -12,7 +12,7 @@ import { LinksDataSource } from '../../cartography/datasources/links-datasource'
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { Node } from '../../cartography/models/node';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ComputeService } from '../../services/compute.service';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
@@ -20,7 +20,7 @@ import { MockedLinksDataSource, MockedNodesDataSource } from '../project-map/pro
 import { TopologySummaryComponent } from './topology-summary.component';
 
 export class MockedComputeService {
-  getComputes(server: Server) {
+  getComputes(controller:Controller ) {
     return of([]);
   }
 }

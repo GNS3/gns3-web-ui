@@ -6,7 +6,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Link } from '../../../../../models/link';
 import { LinkNode } from '../../../../../models/link-node';
 import { Project } from '../../../../../models/project';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 
 @Component({
@@ -14,7 +14,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   templateUrl: './edit-text-action.component.html',
 })
 export class EditTextActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() drawing: Drawing;
   @Input() node: Node;
@@ -33,7 +33,7 @@ export class EditTextActionComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.drawing = this.drawing;
     instance.node = this.node;

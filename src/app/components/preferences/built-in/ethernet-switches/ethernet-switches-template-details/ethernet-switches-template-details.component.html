@@ -78,7 +78,7 @@
 </div>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && ethernetSwitchTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="ethernetSwitchTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

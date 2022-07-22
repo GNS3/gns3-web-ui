@@ -4,28 +4,28 @@ import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { LinkService } from './link.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('LinkService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
-  let server: Server;
+  let httpController: HttpController;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, LinkService],
+      providers: [HttpController, LinkService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {
@@ -52,7 +52,7 @@ describe('LinkService', () => {
     targetPort.port_number = 3;
     targetPort.adapter_number = 4;
 
-    service.createLink(server, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
+    service.createLink(controller, sourceNode, sourcePort, targetNode, targetPort, 0, 0, 10, 10).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links`);
     expect(req.request.method).toEqual('POST');

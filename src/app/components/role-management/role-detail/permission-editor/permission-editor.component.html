@@ -1,0 +1,69 @@
+<div class="header">
+  <div>
+    <div>
+      Allow:
+    </div>
+    <div class="box allow"></div>
+    <div>
+      Deny:
+    </div>
+    <div class="box deny"></div>
+  </div>
+  <input type="text"
+         matInput
+         name="typeInput"
+         placeholder="Search by name"
+         [(ngModel)]="searchPermissions"
+         [matAutocomplete]="auto"
+         class="permission-filter"
+         (input)="changeAutocomplete($event.target.value)">
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-option *ngFor="let option of filteredOptions | filterComplete: searchPermissions" [value]="option">
+      {{option.name}}
+    </mat-option>
+  </mat-autocomplete>
+  <div>
+    <button
+      mat-button
+      mat-raised-button
+      (click)="reset()">Reset
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      (click)="update()"
+      color="primary">Update
+    </button>
+  </div>
+</div>
+
+
+<div class="editor">
+  <div class="column">
+    <div class="title">Owned</div>
+    <app-editable-permission
+      [side]="'LEFT'"
+      [permission]="permission"
+      [controller]="controller"
+      (click)="remove(permission)"
+      *ngFor="let permission of ownedArray | permissionsFilter: searchPermissions?.id | paginator: pageEventOwned">
+
+    </app-editable-permission>
+    <mat-paginator [length]="ownedArray.length" (page)="pageEventOwned = $event"
+                   [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
+  </div>
+  <mat-divider [vertical]="true"></mat-divider>
+  <div class="column">
+    <div class="title">Available</div>
+    <app-editable-permission
+      [side]="'RIGHT'"
+      [permission]="permission"
+      [controller]="controller"
+      (click)="add(permission)"
+      *ngFor="let permission of availableArray | permissionsFilter: searchPermissions?.id | paginator: pageEventAvailable">
+
+    </app-editable-permission>
+    <mat-paginator [length]="availableArray.length" (page)="pageEventAvailable = $event"
+                   [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
+  </div>
+</div>

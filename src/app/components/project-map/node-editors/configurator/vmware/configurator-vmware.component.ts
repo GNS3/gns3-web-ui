@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { VmwareConfigurationService } from '../../../../../services/vmware-configuration.service';
@@ -14,7 +14,7 @@ import { VmwareConfigurationService } from '../../../../../services/vmware-confi
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogVmwareComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   generalSettingsForm: FormGroup;
@@ -39,7 +39,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
@@ -64,7 +64,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
 
       this.node.properties.adapters = this.node.custom_adapters.length;
 
-      this.nodeService.updateNodeWithCustomAdapters(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

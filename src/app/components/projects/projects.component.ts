@@ -10,7 +10,7 @@ import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { ProgressService } from '../../common/progress/progress.service';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '../../services/settings.service';
@@ -28,7 +28,7 @@ import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog
   styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
   displayedColumns = ['select', 'name', 'actions', 'delete'];
@@ -54,9 +54,9 @@ export class ProjectsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.server = this.route.snapshot.data['server'];
-    if (!this.server) this.router.navigate(['/servers']);
-    this.recentlyOpenedProjectService.setServerIdProjectList(this.server.id.toString());
+    this.controller = this.route.snapshot.data['controller'];
+    if (!this.controller) this.router.navigate(['/controllers']);
+    this.recentlyOpenedProjectService.setcontrollerIdProjectList(this.controller.id.toString());
 
     this.refresh();
     this.sort.sort(<MatSortable>{
@@ -71,18 +71,18 @@ export class ProjectsComponent implements OnInit {
 
   goToPreferences() {
     this.router
-      .navigate(['/server', this.server.id, 'preferences'])
+      .navigate(['/controller', this.controller.id, 'preferences'])
       .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
   }
 
   goToSystemStatus() {
     this.router
-      .navigate(['/server', this.server.id, 'systemstatus'])
+      .navigate(['/controller', this.controller.id, 'systemstatus'])
       .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
   }
 
   refresh() {
-    this.projectService.list(this.server).subscribe(
+    this.projectService.list(this.controller).subscribe(
       (projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
       },
@@ -98,7 +98,7 @@ export class ProjectsComponent implements OnInit {
     bottomSheetRef.instance.message = 'Do you want to delete the project?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.delete(this.server, project.project_id).subscribe(() => {
+        this.projectService.delete(this.controller, project.project_id).subscribe(() => {
           this.refresh();
         });
       }
@@ -108,7 +108,7 @@ export class ProjectsComponent implements OnInit {
   open(project: Project) {
     this.progressService.activate();
 
-    this.projectService.open(this.server, project.project_id).subscribe(
+    this.projectService.open(this.controller, project.project_id).subscribe(
       () => {
         this.refresh();
       },
@@ -129,7 +129,7 @@ export class ProjectsComponent implements OnInit {
     bottomSheetRef.instance.message = 'Do you want to close the project?';
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.close(this.server, project.project_id).subscribe(() => {
+        this.projectService.close(this.controller, project.project_id).subscribe(() => {
           this.refresh();
           this.progressService.deactivate();
         });
@@ -144,7 +144,7 @@ export class ProjectsComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = project;
     dialogRef.afterClosed().subscribe(() => {
       this.refresh();
@@ -158,7 +158,7 @@ export class ProjectsComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
   }
 
   importProject() {
@@ -169,7 +169,7 @@ export class ProjectsComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     const subscription = dialogRef.componentInstance.onImportProject.subscribe((projectId: string) => {
       uuid = projectId;
     });
@@ -184,8 +184,8 @@ export class ProjectsComponent implements OnInit {
 
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
-            this.projectService.open(this.server, uuid).subscribe(() => {
-              this.router.navigate(['/server', this.server.id, 'project', uuid]);
+            this.projectService.open(this.controller, uuid).subscribe(() => {
+              this.router.navigate(['/controller', this.controller.id, 'project', uuid]);
             });
           }
         });

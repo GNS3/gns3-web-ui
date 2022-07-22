@@ -98,7 +98,7 @@
   <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled }">photo_camera</mat-icon>
 </button>
 <app-drawing-added
-  [server]="server"
+  [controller]="controller"
   [project]="project"
   [selectedDrawing]="selectedDrawing"
   (drawingSaved)="onDrawingSaved()"

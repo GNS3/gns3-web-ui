@@ -3,16 +3,16 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs/Rx';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
-import { getTestServer } from './testing';
+import { HttpController } from './http-controller.service';
+import { getTestController } from './testing';
 import { VersionService } from './version.service';
 
 export class MockedVersionService {
   public response: Observable<any>;
 
-  public get(server: Server) {
+  public get(controller:Controller ) {
     return this.response;
   }
 }
@@ -20,21 +20,21 @@ export class MockedVersionService {
 describe('VersionService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
+  let httpController: HttpController;
   let service: VersionService;
-  let server: Server;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, VersionService],
+      providers: [HttpController, VersionService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
+    httpController = TestBed.get(HttpController);
     service = TestBed.get(VersionService);
-    server = getTestServer();
+    controller = getTestController();
   });
 
   afterEach(() => {
@@ -46,7 +46,7 @@ describe('VersionService', () => {
   }));
 
   it('should get version', inject([VersionService], (service: VersionService) => {
-    service.get(server).subscribe();
+    service.get(controller).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/version`);
     expect(req.request.method).toEqual('GET');

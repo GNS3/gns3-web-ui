@@ -6,7 +6,7 @@ import { CapturingSettings } from '../../../../models/capturingSettings';
 import { Link } from '../../../../models/link';
 import { LinkNode } from '../../../../models/link-node';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { LinkService } from '../../../../services/link.service';
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -18,7 +18,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
   styleUrls: ['./start-capture.component.scss'],
 })
 export class StartCaptureDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   project: Project;
   link: Link;
   linkTypes = [];
@@ -78,10 +78,10 @@ export class StartCaptureDialogComponent implements OnInit {
       };
 
       if (this.startProgram) {
-        this.packetCaptureService.startCapture(this.server, this.project, this.link, captureSettings.capture_file_name);
+        this.packetCaptureService.startCapture(this.controller, this.project, this.link, captureSettings.capture_file_name);
       }
 
-      this.linkService.startCaptureOnLink(this.server, this.link, captureSettings).subscribe(() => {
+      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe(() => {
         this.dialogRef.close();
       });
     }

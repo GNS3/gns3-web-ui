@@ -6,7 +6,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-dragged.component.scss'],
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   private drawingDragged: Subscription;
 
@@ -35,9 +35,9 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
     drawing.y += draggedEvent.dy;
 
     this.drawingService
-      .updatePosition(this.server, this.project, drawing, drawing.x, drawing.y)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.update(serverDrawing);
+      .updatePosition(this.controller, this.project, drawing, drawing.x, drawing.y)
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.update(controllerDrawing);
       });
   }
 

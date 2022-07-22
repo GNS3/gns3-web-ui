@@ -3,7 +3,7 @@ import { DrawingsDataSource } from '../../../../../cartography/datasources/drawi
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodeService } from '../../../../../services/node.service';
 
@@ -12,7 +12,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './lock-action.component.html',
 })
 export class LockActionComponent implements OnChanges {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   command: string;
@@ -37,14 +37,14 @@ export class LockActionComponent implements OnChanges {
   lock() {
     this.nodes.forEach((node) => {
       node.locked = !node.locked;
-      this.nodeService.updateNode(this.server, node).subscribe((node) => {
+      this.nodeService.updateNode(this.controller, node).subscribe((node) => {
         this.nodesDataSource.update(node);
       });
     });
 
     this.drawings.forEach((drawing) => {
       drawing.locked = !drawing.locked;
-      this.drawingService.update(this.server, drawing).subscribe((drawing) => {
+      this.drawingService.update(this.controller, drawing).subscribe((drawing) => {
         this.drawingsDataSource.update(drawing);
       });
     });

@@ -19,8 +19,8 @@ import { Link } from '../../../models/link';
 import { LogEvent } from '../../../models/logEvent';
 import { Port } from '../../../models/port';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
-import { HttpServer } from '../../../services/http-server.service';
+import{ Controller } from '../../../models/controller';
+import { HttpController } from '../../../services/http-controller.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
@@ -34,7 +34,7 @@ import { LogEventsDataSource } from './log-events-datasource';
   styleUrls: ['./log-console.component.scss'],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
 
   @ViewChild('console') console: ElementRef;
@@ -43,13 +43,13 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private nodeSubscription: Subscription;
   private linkSubscription: Subscription;
   private drawingSubscription: Subscription;
-  private serverRequestsSubscription: Subscription;
+  private controllerRequestsSubscription: Subscription;
   private errorSubscription: Subscription;
   private warningSubscription: Subscription;
   private infoSubscription: Subscription;
 
   public command: string = '';
-  public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'server requests'];
+  public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   public selectedFilter: string = 'all';
   public filteredEvents: LogEvent[] = [];
 
@@ -70,7 +70,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private nodeService: NodeService,
     private nodesDataSource: NodesDataSource,
     private logEventsDataSource: LogEventsDataSource,
-    private httpService: HttpServer,
+    private httpService: HttpController,
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
     private nodeConsoleService: NodeConsoleService,
@@ -119,9 +119,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         message: message,
       });
     });
-    this.serverRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((message) => {
+    this.controllerRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((message) => {
       this.showMessage({
-        type: 'server request',
+        type: 'controller request',
         message: message,
       });
     });
@@ -153,7 +153,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nodeSubscription.unsubscribe();
     this.linkSubscription.unsubscribe();
     this.drawingSubscription.unsubscribe();
-    this.serverRequestsSubscription.unsubscribe();
+    this.controllerRequestsSubscription.unsubscribe();
     this.errorSubscription.unsubscribe();
     this.warningSubscription.unsubscribe();
     this.infoSubscription.unsubscribe();
@@ -180,22 +180,22 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showCommand('Current version: ' + this.version);
     } else if (this.command === 'start all') {
       this.showCommand('Starting all nodes...');
-      this.nodeService.startAll(this.server, this.project).subscribe(() => {
+      this.nodeService.startAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes started.');
       });
     } else if (this.command === 'stop all') {
       this.showCommand('Stopping all nodes...');
-      this.nodeService.stopAll(this.server, this.project).subscribe(() => {
+      this.nodeService.stopAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes stopped.');
       });
     } else if (this.command === 'suspend all') {
       this.showCommand('Suspending all nodes...');
-      this.nodeService.suspendAll(this.server, this.project).subscribe(() => {
+      this.nodeService.suspendAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes suspended.');
       });
     } else if (this.command === 'reload all') {
       this.showCommand('Reloading all nodes...');
-      this.nodeService.reloadAll(this.server, this.project).subscribe(() => {
+      this.nodeService.reloadAll(this.controller, this.project).subscribe(() => {
         this.showCommand('All nodes reloaded.');
       });
     } else if (
@@ -211,16 +211,16 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       if (node) {
         if (this.regexStart.test(this.command)) {
           this.showCommand(`Starting node ${splittedCommand[1]}...`);
-          this.nodeService.start(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
+          this.nodeService.start(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
         } else if (this.regexStop.test(this.command)) {
           this.showCommand(`Stopping node ${splittedCommand[1]}...`);
-          this.nodeService.stop(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
+          this.nodeService.stop(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
         } else if (this.regexSuspend.test(this.command)) {
           this.showCommand(`Suspending node ${splittedCommand[1]}...`);
-          this.nodeService.suspend(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
+          this.nodeService.suspend(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
         } else if (this.regexReload.test(this.command)) {
           this.showCommand(`Reloading node ${splittedCommand[1]}...`);
-          this.nodeService.reload(this.server, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
+          this.nodeService.reload(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
         } else if (this.regexConsole.test(this.command)) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
@@ -280,8 +280,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getFilteredEvents(): LogEvent[] {
-    if (this.selectedFilter === 'server requests') {
-      return this.logEventsDataSource.getItems().filter((n) => n.type === 'server request');
+    if (this.selectedFilter === 'controller requests') {
+      return this.logEventsDataSource.getItems().filter((n) => n.type === 'controller request');
     } else if (this.selectedFilter === 'errors') {
       return this.logEventsDataSource.getItems().filter((n) => n.type === 'error');
     } else if (this.selectedFilter === 'warnings') {
@@ -297,28 +297,28 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   printNode(node: Node): string {
     return (
-      `command_line: ${node.command_line}, 
-            compute_id: ${node.compute_id}, 
-            console: ${node.console}, 
-            console_host: ${node.console_host}, 
-            console_type: ${node.console_type}, 
-            first_port_name: ${node.first_port_name}, 
-            height: ${node.height}, 
-            label: ${node.label.text}, 
-            name: ${node.name}, 
-            node_directory: ${node.node_directory}, 
-            node_id: ${node.node_id}, 
-            node_type: ${node.node_type}, 
-            port_name_format: ${node.port_name_format}, 
+      `command_line: ${node.command_line},
+            compute_id: ${node.compute_id},
+            console: ${node.console},
+            console_host: ${node.console_host},
+            console_type: ${node.console_type},
+            first_port_name: ${node.first_port_name},
+            height: ${node.height},
+            label: ${node.label.text},
+            name: ${node.name},
+            node_directory: ${node.node_directory},
+            node_id: ${node.node_id},
+            node_type: ${node.node_type},
+            port_name_format: ${node.port_name_format},
             port_segment_size: ${node.port_segment_size}, ` +
       this.printPorts(node.ports) +
-      `project_id: ${node.project_id}, 
-            status: ${node.status}, 
-            symbol: ${node.symbol}, 
-            symbol_url: ${node.symbol_url}, 
-            width: ${node.width}, 
-            x: ${node.x}, 
-            y: ${node.y}, 
+      `project_id: ${node.project_id},
+            status: ${node.status},
+            symbol: ${node.symbol},
+            symbol_url: ${node.symbol_url},
+            width: ${node.width},
+            x: ${node.x},
+            y: ${node.y},
             z: ${node.z}`
     );
   }
@@ -328,31 +328,31 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     ports.forEach((port) => {
       response =
         response +
-        `adapter_number: ${port.adapter_number}, 
-            link_type: ${port.link_type}, 
-            name: ${port.name}, 
-            port_number: ${port.port_number}, 
+        `adapter_number: ${port.adapter_number},
+            link_type: ${port.link_type},
+            name: ${port.name},
+            port_number: ${port.port_number},
             short_name: ${port.short_name}, `;
     });
     return response;
   }
 
   printLink(link: Link): string {
-    return `capture_file_name: ${link.capture_file_name}, 
-            capture_file_path: ${link.capture_file_path}, 
-            capturing: ${link.capturing}, 
-            link_id: ${link.link_id}, 
-            link_type: ${link.link_type}, 
-            project_id: ${link.project_id}, 
+    return `capture_file_name: ${link.capture_file_name},
+            capture_file_path: ${link.capture_file_path},
+            capturing: ${link.capturing},
+            link_id: ${link.link_id},
+            link_type: ${link.link_type},
+            project_id: ${link.project_id},
             suspend: ${link.suspend}, `;
   }
 
   printDrawing(drawing: Drawing): string {
-    return `drawing_id: ${drawing.drawing_id}, 
-            project_id: ${drawing.project_id}, 
-            rotation: ${drawing.rotation}, 
-            x: ${drawing.x}, 
-            y: ${drawing.y}, 
+    return `drawing_id: ${drawing.drawing_id},
+            project_id: ${drawing.project_id},
+            rotation: ${drawing.rotation},
+            x: ${drawing.x},
+            y: ${drawing.y},
             z: ${drawing.z}`;
   }
 }

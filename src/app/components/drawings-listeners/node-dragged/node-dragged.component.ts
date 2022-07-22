@@ -6,7 +6,7 @@ import { NodesEventSource } from '../../../cartography/events/nodes-event-source
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { NodeService } from '../../../services/node.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./node-dragged.component.scss'],
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   private nodeDragged: Subscription;
 
@@ -34,8 +34,8 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
-    this.nodeService.updatePosition(this.server, this.project, node, node.x, node.y).subscribe((serverNode: Node) => {
-      this.nodesDataSource.update(serverNode);
+    this.nodeService.updatePosition(this.controller, this.project, node, node.x, node.y).subscribe((controllerNode: Node) => {
+      this.nodesDataSource.update(controllerNode);
     });
   }
 

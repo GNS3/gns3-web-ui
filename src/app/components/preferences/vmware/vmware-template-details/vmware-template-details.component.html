@@ -138,7 +138,7 @@
 ></app-custom-adapters>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && vmwareTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="vmwareTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

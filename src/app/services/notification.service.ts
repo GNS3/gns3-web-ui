@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 
 @Injectable()
 export class NotificationService {
-  notificationsPath(server: Server): string {
+  notificationsPath(controller:Controller ): string {
     let protocol:string = "ws"
-	  if (server.protocol === "https:") {
+	  if (controller.protocol === "https:") {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/notifications/ws?token=${server.authToken}`;
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/notifications/ws?token=${controller.authToken}`;
   }
 
   
-  projectNotificationsPath(server: Server, project_id: string): string {
+  projectNotificationsPath(controller:Controller , project_id: string): string {
     let protocol:string = "ws"
-	  if (server.protocol === "https:") {
+	  if (controller.protocol === "https:") {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${server.authToken}`;
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${controller.authToken}`;
   }
 }

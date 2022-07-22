@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuSettings } from '../../../../models/settings/qemu-settings';
-import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerSettingsService } from '../../../../services/controller-settings.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
@@ -12,22 +12,22 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./qemu-preferences.component.scss'],
 })
 export class QemuPreferencesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   settings: QemuSettings;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
-    private serverSettingsService: ServerSettingsService,
+    private controllerService: ControllerService,
+    private controllerSettingsService: ControllerSettingsService,
     private toasterService: ToasterService
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
-      this.serverSettingsService.getSettingsForQemu(this.server).subscribe((settings: QemuSettings) => {
+      this.controllerSettingsService.getSettingsForQemu(this.controller).subscribe((settings: QemuSettings) => {
         this.settings = settings;
       });
     });
@@ -38,8 +38,8 @@ export class QemuPreferencesComponent implements OnInit {
       this.settings.require_hardware_acceleration = false;
     }
 
-    this.serverSettingsService
-      .updateSettingsForQemu(this.server, this.settings)
+    this.controllerSettingsService
+      .updateSettingsForQemu(this.controller, this.settings)
       .subscribe((qemuSettings: QemuSettings) => {
         this.toasterService.success(`Changes applied`);
       });
@@ -51,8 +51,8 @@ export class QemuPreferencesComponent implements OnInit {
       require_hardware_acceleration: true,
     };
 
-    this.serverSettingsService
-      .updateSettingsForQemu(this.server, defaultSettings)
+    this.controllerSettingsService
+      .updateSettingsForQemu(this.controller, defaultSettings)
       .subscribe((qemuSettings: QemuSettings) => {
         this.settings = qemuSettings;
         this.toasterService.success(`Restored to default settings`);

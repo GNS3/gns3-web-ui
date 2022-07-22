@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { IouConfigurationService } from '../../../../../services/iou-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogIouComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   generalSettingsForm: FormGroup;
@@ -38,7 +38,7 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
@@ -51,7 +51,7 @@ export class ConfiguratorDialogIouComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid && this.networkForm.valid) {
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

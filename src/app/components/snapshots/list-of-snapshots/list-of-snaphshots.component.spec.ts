@@ -15,9 +15,9 @@ import { of } from 'rxjs';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { DateFilter } from '../../../filters/dateFilter.pipe';
 import { NameFilter } from '../../../filters/nameFilter.pipe';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
-import { ServerResolve } from '../../../resolvers/server-resolve';
+import { ControllerResolve } from '../../../resolvers/controller-resolve';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
@@ -39,7 +39,7 @@ export class MockedActivatedRoute {
           },
         },
         data: {
-          server: new Server(),
+          controller: new Controller  (),
         },
       },
     };
@@ -47,15 +47,15 @@ export class MockedActivatedRoute {
 }
 
 export class MockedSnapshotService {
-  public list(server: Server, project_id: string) {
+  public list(controller:Controller , project_id: string) {
     return of([]);
   }
 
-  public delete(server: Server, project_id: string, snapshot_id: string) {
+  public delete(controller:Controller , project_id: string, snapshot_id: string) {
     return of({});
   }
 
-  public restore(server: Server, project_id: string, snapshot_id: string) {
+  public restore(controller:Controller , project_id: string, snapshot_id: string) {
     return of({});
   }
 }
@@ -80,9 +80,9 @@ describe('ListOfSnapshotsComponent', () => {
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
           {
-            path: 'server/:server_id/project/:project_id/snapshots',
+            path: 'controller/:controller_id/project/:project_id/snapshots',
             component: ListOfSnapshotsComponent,
-            resolve: { server: ServerResolve },
+            resolve: { controller: ControllerResolve },
           },
         ]),
       ],

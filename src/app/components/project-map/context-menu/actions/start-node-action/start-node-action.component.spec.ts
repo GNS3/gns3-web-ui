@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MockedNodeService } from 'app/components/project-map/project-map.component.spec';
-import { HttpServer } from 'app/services/http-server.service';
+import { HttpController } from 'app/services/http-controller.service';
 import { NodeService } from 'app/services/node.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
@@ -19,7 +19,7 @@ describe('StartNodeActionComponent', () => {
       imports:[MatProgressSpinnerModule ],
       providers: [
         { provide: NodeService, useValue: mockedNodeService },
-        { provide: HttpServer, useValue: {} },
+        { provide: HttpController, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
     }).compileComponents();

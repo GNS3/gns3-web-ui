@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
@@ -14,11 +14,11 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['./console-wrapper.component.scss'],
 })
 export class ConsoleWrapperComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Output() closeConsole = new EventEmitter<boolean>();
 
-  filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'server requests'];
+  filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   selectedFilter: string = 'all';
 
   public style: object = {};

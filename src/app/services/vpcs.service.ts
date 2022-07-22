@@ -1,28 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { VpcsTemplate } from '../models/templates/vpcs-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class VpcsService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  getTemplates(server: Server): Observable<VpcsTemplate[]> {
-    return this.httpServer.get<VpcsTemplate[]>(server, '/templates') as Observable<VpcsTemplate[]>;
+  getTemplates(controller:Controller ): Observable<VpcsTemplate[]> {
+    return this.httpController.get<VpcsTemplate[]>(controller, '/templates') as Observable<VpcsTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<VpcsTemplate> {
-    return this.httpServer.get<VpcsTemplate>(server, `/templates/${template_id}`) as Observable<VpcsTemplate>;
+  getTemplate(controller:Controller , template_id: string): Observable<VpcsTemplate> {
+    return this.httpController.get<VpcsTemplate>(controller, `/templates/${template_id}`) as Observable<VpcsTemplate>;
   }
 
-  addTemplate(server: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
-    return this.httpServer.post<VpcsTemplate>(server, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
+  addTemplate(controller:Controller , vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
+    return this.httpController.post<VpcsTemplate>(controller, `/templates`, vpcsTemplate) as Observable<VpcsTemplate>;
   }
 
-  saveTemplate(server: Server, vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
-    return this.httpServer.put<VpcsTemplate>(
-      server,
+  saveTemplate(controller:Controller , vpcsTemplate: VpcsTemplate): Observable<VpcsTemplate> {
+    return this.httpController.put<VpcsTemplate>(
+      controller,
       `/templates/${vpcsTemplate.template_id}`,
       vpcsTemplate
     ) as Observable<VpcsTemplate>;

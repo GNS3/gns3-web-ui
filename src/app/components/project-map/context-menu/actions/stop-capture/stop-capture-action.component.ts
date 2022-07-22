@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Link } from '../../../../../models/link';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { LinkService } from '../../../../../services/link.service';
 
 @Component({
@@ -8,12 +8,12 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './stop-capture-action.component.html',
 })
 export class StopCaptureActionComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}
 
   stopCapture() {
-    this.linkService.stopCaptureOnLink(this.server, this.link).subscribe(() => {});
+    this.linkService.stopCaptureOnLink(this.controller, this.link).subscribe(() => {});
   }
 }

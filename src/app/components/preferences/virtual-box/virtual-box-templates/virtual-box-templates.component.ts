@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
@@ -13,26 +13,26 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./virtual-box-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VirtualBoxTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   virtualBoxTemplates: VirtualBoxTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private virtualBoxService: VirtualBoxService
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.virtualBoxService.getTemplates(this.server).subscribe((virtualBoxTemplates: VirtualBoxTemplate[]) => {
+    this.virtualBoxService.getTemplates(this.controller).subscribe((virtualBoxTemplates: VirtualBoxTemplate[]) => {
       this.virtualBoxTemplates = virtualBoxTemplates.filter(
         (elem) => elem.template_type === 'virtualbox' && !elem.builtin
       );

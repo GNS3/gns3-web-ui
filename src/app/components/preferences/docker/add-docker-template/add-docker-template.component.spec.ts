@@ -18,12 +18,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { DockerService } from '../../../../services/docker.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -31,7 +31,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddDockerTemplateComponent } from './add-docker-template.component';
 
 export class MockedDockerService {
-  public addTemplate(server: Server, dockerTemplate: DockerTemplate) {
+  public addTemplate(controller:Controller , dockerTemplate: DockerTemplate) {
     return of(dockerTemplate);
   }
 }
@@ -41,7 +41,7 @@ xdescribe('AddDockerTemplateComponent', () => {
   let component: AddDockerTemplateComponent;
   let fixture: ComponentFixture<AddDockerTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -67,12 +67,12 @@ xdescribe('AddDockerTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/docker/templates', component: AddDockerTemplateComponent },
+          { path: 'controller/1/preferences/docker/templates', component: AddDockerTemplateComponent },
         ]),
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
@@ -106,7 +106,7 @@ xdescribe('AddDockerTemplateComponent', () => {
    await fixture.whenStable().then(() => {
       let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
 
-      expect(selectedLabel.textContent).toMatch('Server type');
+      expect(selectedLabel.textContent).toMatch('Controller type');
     });
   });
 

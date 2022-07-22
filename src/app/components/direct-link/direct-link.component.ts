@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../models/server';
-import { ServerDatabase } from '../../services/server.database';
-import { ServerService } from '../../services/server.service';
+import{ Controller } from '../../models/controller';
+import { ControllerDatabase } from '../../services/controller.database';
+import { ControllerService } from '../../services/controller.service';
 import { ToasterService } from '../../services/toaster.service';
 
 @Component({
@@ -13,9 +13,9 @@ import { ToasterService } from '../../services/toaster.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class DirectLinkComponent implements OnInit {
-  public serverOptionsVisibility = false;
-  public serverIp;
-  public serverPort;
+  public controllerOptionsVisibility = false;
+  public controllerIp;
+  public controllerPort;
   public projectId;
 
   protocols = [
@@ -27,61 +27,61 @@ export class DirectLinkComponent implements OnInit {
     { key: 'remote', name: 'Remote' },
   ];
 
-  serverForm = new FormGroup({
+  controllerForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     location: new FormControl(''),
     protocol: new FormControl('http:')
   });
 
   constructor(
-    private serverService: ServerService,
-    private serverDatabase: ServerDatabase,
+    private controllerService: ControllerService,
+    private controllerDatabase: ControllerDatabase,
     private route: ActivatedRoute,
     private router: Router,
     private toasterService: ToasterService
   ) {}
 
   async ngOnInit() {
-    if (this.serverService.isServiceInitialized) this.getServers();
+    if (this.controllerService.isServiceInitialized) this.getControllers();
 
-    this.serverService.serviceInitialized.subscribe(async (value: boolean) => {
+    this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
-        this.getServers();
+        this.getControllers();
       }
     });
   }
 
-  private async getServers() {
-    this.serverIp = this.route.snapshot.paramMap.get('server_ip');
-    this.serverPort = +this.route.snapshot.paramMap.get('server_port');
+  private async getControllers() {
+    this.controllerIp = this.route.snapshot.paramMap.get('controller_ip');
+    this.controllerPort = +this.route.snapshot.paramMap.get('controller_port');
     this.projectId = this.route.snapshot.paramMap.get('project_id');
 
-    const servers = await this.serverService.findAll();
-    const server = servers.filter((server) => server.host === this.serverIp && server.port === this.serverPort)[0];
+    const controllers = await this.controllerService.findAll();
+    const controller = controllers.filter((controller) => controller.host === this.controllerIp && controller.port === this.controllerPort)[0];
 
-    if (server) {
-      this.router.navigate(['/server', server.id, 'project', this.projectId]);
+    if (controller) {
+      this.router.navigate(['/controller', controller.id, 'project', this.projectId]);
     } else {
-      this.serverOptionsVisibility = true;
+      this.controllerOptionsVisibility = true;
     }
   }
 
-  public createServer() {
-    if (!this.serverForm.get('name').hasError && !this.serverForm.get('location').hasError && !this.serverForm.get('protocol').hasError) {
+  public createController() {
+    if (!this.controllerForm.get('name').hasError && !this.controllerForm.get('location').hasError && !this.controllerForm.get('protocol').hasError) {
       this.toasterService.error('Please use correct values');
       return;
     }
 
-    let serverToAdd: Server = new Server();
-    serverToAdd.host = this.serverIp;
-    serverToAdd.port = this.serverPort;
+    let controllerToAdd:Controller  = new Controller  ();
+    controllerToAdd.host = this.controllerIp;
+    controllerToAdd.port = this.controllerPort;
 
-    serverToAdd.name = this.serverForm.get('name').value;
-    serverToAdd.location = this.serverForm.get('location').value;
-    serverToAdd.protocol = this.serverForm.get('protocol').value;
+    controllerToAdd.name = this.controllerForm.get('name').value;
+    controllerToAdd.location = this.controllerForm.get('location').value;
+    controllerToAdd.protocol = this.controllerForm.get('protocol').value;
 
-    this.serverService.create(serverToAdd).then((addedServer: Server) => {
-      this.router.navigate(['/server', addedServer.id, 'project', this.projectId]);
+    this.controllerService.create(controllerToAdd).then((addedController:Controller ) => {
+      this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
     });
   }
 }

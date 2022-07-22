@@ -1,13 +1,13 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoginService } from '@services/login.service';
-import { ServerService } from '@services/server.service';
+import { LoginService } from '../services/login.service';
+import { ControllerService } from '../services/controller.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class HttpRequestsInterceptor implements HttpInterceptor {
-  constructor(private serverService: ServerService, private loginService: LoginService) {}
+  constructor(private controllerService: ControllerService, private loginService: LoginService) {}
   intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(httpRequest).pipe(
       catchError((err) => {
@@ -22,17 +22,17 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
 
   async call() {
     let getCurrentUser = JSON.parse(localStorage.getItem(`isRememberMe`)) ?? null;
-    const server_id = this.loginService.server_id;
-    let server = await this.serverService.get(parseInt(server_id, 10));
-    server.tokenExpired = true;
-    await this.serverService.update(server);
+    const controller_id = this.loginService.controller_id;
+    let controller = await this.controllerService.get(parseInt(controller_id, 10));
+    controller.tokenExpired = true;
+    await this.controllerService.update(controller);
     try {
       if (getCurrentUser && getCurrentUser.isRememberMe) {
-        let response = await this.loginService.getLoggedUserRefToken(server, getCurrentUser);
-        server.authToken = response.access_token;
-        server.tokenExpired = false;
-        await this.serverService.update(server);
-        await this.loginService.getLoggedUser(server);
+        let response = await this.loginService.getLoggedUserRefToken(controller, getCurrentUser);
+        controller.authToken = response.access_token;
+        controller.tokenExpired = false;
+        await this.controllerService.update(controller);
+        await this.loginService.getLoggedUser(controller);
         this.reloadCurrentRoute();
       }
     } catch (e) {

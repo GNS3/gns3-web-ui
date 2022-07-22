@@ -2,26 +2,26 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Appliance } from '../models/appliance';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import{ Controller } from '../models/controller';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ApplianceService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  getAppliances(server: Server): Observable<Appliance[]> {
-    return this.httpServer.get<Appliance[]>(server, '/appliances') as Observable<Appliance[]>;
+  getAppliances(controller:Controller ): Observable<Appliance[]> {
+    return this.httpController.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;
   }
 
-  getAppliance(server: Server, url): Observable<Appliance> {
-    return this.httpServer.get<Appliance>(server, url) as Observable<Appliance>;
+  getAppliance(controller:Controller , url): Observable<Appliance> {
+    return this.httpController.get<Appliance>(controller, url) as Observable<Appliance>;
   }
 
-  getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/images/upload/${filename}`;
+  getUploadPath(controller:Controller , emulator: string, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}?allow_raw_image=true`;
   }
 
-  updateAppliances(server: Server): Observable<Appliance[]> {
-    return this.httpServer.get<Appliance[]>(server, '/appliances?update=yes') as Observable<Appliance[]>;
+  updateAppliances(controller:Controller ): Observable<Appliance[]> {
+    return this.httpController.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
   }
 }

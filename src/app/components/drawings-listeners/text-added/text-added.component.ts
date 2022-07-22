@@ -9,7 +9,7 @@ import { Context } from '../../../cartography/models/context';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
@@ -18,7 +18,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./text-added.component.scss'],
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Output() drawingSaved = new EventEmitter<boolean>();
   private textAdded: Subscription;
@@ -43,7 +43,7 @@ export class TextAddedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .add(
-        this.server,
+        this.controller,
         this.project.project_id,
         (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) /
           this.context.transformation.k,
@@ -51,8 +51,8 @@ export class TextAddedComponent implements OnInit, OnDestroy {
           this.context.transformation.k,
         svgText
       )
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.add(serverDrawing);
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.add(controllerDrawing);
         this.drawingSaved.emit(true);
       });
   }

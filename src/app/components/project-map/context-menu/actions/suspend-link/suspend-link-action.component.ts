@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Link } from '../../../../../models/link';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { LinkService } from '../../../../../services/link.service';
 
 @Component({
@@ -8,13 +8,13 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './suspend-link-action.component.html',
 })
 export class SuspendLinkActionComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}
 
   suspendLink() {
     this.link.suspend = true;
-    this.linkService.updateLink(this.server, this.link).subscribe(() => {});
+    this.linkService.updateLink(this.controller, this.link).subscribe(() => {});
   }
 }

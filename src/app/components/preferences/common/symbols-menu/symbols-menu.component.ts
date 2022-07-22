@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 
 @Component({
   selector: 'app-symbols-menu',
@@ -7,7 +7,7 @@ import { Server } from '../../../../models/server';
   styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],
 })
 export class SymbolsMenuComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() symbol: string;
   @Output() symbolChangedEmitter = new EventEmitter<string>();
 

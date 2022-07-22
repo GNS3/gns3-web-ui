@@ -26,7 +26,7 @@
             </form>
             
             <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_open">
-                Open this project in the background when GNS3 server starts
+                Open this project in the background when GNS3 controller starts
             </mat-checkbox>
             
             <mat-checkbox [ngModelOptions]="{standalone: true}" [(ngModel)]="project.auto_start">
@@ -42,8 +42,8 @@
             </mat-checkbox>
         </mat-tab>
 
-        <mat-tab label="Readme" *ngIf="server && project">
-            <app-readme-editor #editor [server]="server" [project]="project"></app-readme-editor>
+        <mat-tab label="Readme" *ngIf="controller && project">
+            <app-readme-editor #editor [controller]="controller" [project]="project"></app-readme-editor>
         </mat-tab>
 
         <mat-tab label="Global variables">

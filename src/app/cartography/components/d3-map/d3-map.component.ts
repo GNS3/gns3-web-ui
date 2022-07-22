@@ -13,7 +13,7 @@ import { select, Selection } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { Link } from '../../../models/link';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import { Controller } from '../../../models/controller';
 import { Symbol } from '../../../models/symbol';
 import { MapScaleService } from '../../../services/mapScale.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
@@ -43,7 +43,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() drawings: Drawing[] = [];
   @Input() symbols: Symbol[] = [];
   @Input() project: Project;
-  @Input() server: Server;
+  @Input() controller: Controller;
 
   @Input() width = 1500;
   @Input() height = 600;

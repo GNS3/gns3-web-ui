@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../..//models/server';
+import{ Controller } from '../../../models/controller';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '../../../models/project';
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./list-of-snapshots.component.scss'],
 })
 export class ListOfSnapshotsComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   projectId: string;
   snapshots: Snapshot[];
   displayedColumns = ['name', 'creationDate', 'actions'];
@@ -30,18 +30,18 @@ export class ListOfSnapshotsComponent implements OnInit {
 
   ngOnInit() {
     this.projectId = this.route.snapshot.paramMap.get('project_id');
-    this.server = this.route.snapshot.data['server'];
+    this.controller = this.route.snapshot.data['controller'];
     this.getSnapshots();
   }
 
   getSnapshots() {
-    this.snapshotService.list(this.server, this.projectId).subscribe((snapshots: Snapshot[]) => {
+    this.snapshotService.list(this.controller, this.projectId).subscribe((snapshots: Snapshot[]) => {
       this.snapshots = snapshots;
     });
   }
 
   restoreSnapshot(snapshot: Snapshot) {
-    const restoring = this.snapshotService.restore(this.server, this.projectId, snapshot.snapshot_id.toString());
+    const restoring = this.snapshotService.restore(this.controller, this.projectId, snapshot.snapshot_id.toString());
     const progress = this.progressDialogService.open();
     const subscription = restoring.subscribe((project: Project) => {
       this.toaster.success(`Snapshot ${snapshot.name} has been restored.`);
@@ -56,7 +56,7 @@ export class ListOfSnapshotsComponent implements OnInit {
   }
 
   deleteSnapshot(snapshot: Snapshot) {
-    this.snapshotService.delete(this.server, this.projectId, snapshot.snapshot_id.toString()).subscribe(() => {
+    this.snapshotService.delete(this.controller, this.projectId, snapshot.snapshot_id.toString()).subscribe(() => {
       this.getSnapshots();
       this.toaster.success(`Snapshot ${snapshot.name} has been deleted.`);
     });

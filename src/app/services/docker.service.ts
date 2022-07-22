@@ -2,33 +2,33 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { DockerImage } from '../models/docker/docker-image';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { DockerTemplate } from '../models/templates/docker-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class DockerService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  getTemplates(server: Server): Observable<DockerTemplate[]> {
-    return this.httpServer.get<DockerTemplate[]>(server, '/templates') as Observable<DockerTemplate[]>;
+  getTemplates(controller:Controller ): Observable<DockerTemplate[]> {
+    return this.httpController.get<DockerTemplate[]>(controller, '/templates') as Observable<DockerTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<any> {
-    return this.httpServer.get<DockerTemplate>(server, `/templates/${template_id}`) as Observable<DockerTemplate>;
+  getTemplate(controller:Controller , template_id: string): Observable<any> {
+    return this.httpController.get<DockerTemplate>(controller, `/templates/${template_id}`) as Observable<DockerTemplate>;
   }
 
-  getImages(server: Server): Observable<DockerImage[]> {
-    return this.httpServer.get<DockerImage[]>(server, `/computes/${environment.compute_id}/docker/images`) as Observable<DockerImage[]>;
+  getImages(controller:Controller ): Observable<DockerImage[]> {
+    return this.httpController.get<DockerImage[]>(controller, `/computes/${environment.compute_id}/docker/images`) as Observable<DockerImage[]>;
   }
 
-  addTemplate(server: Server, dockerTemplate: any): Observable<any> {
-    return this.httpServer.post<DockerTemplate>(server, `/templates`, dockerTemplate) as Observable<DockerTemplate>;
+  addTemplate(controller:Controller , dockerTemplate: any): Observable<any> {
+    return this.httpController.post<DockerTemplate>(controller, `/templates`, dockerTemplate) as Observable<DockerTemplate>;
   }
 
-  saveTemplate(server: Server, dockerTemplate: any): Observable<any> {
-    return this.httpServer.put<DockerTemplate>(
-      server,
+  saveTemplate(controller:Controller , dockerTemplate: any): Observable<any> {
+    return this.httpController.put<DockerTemplate>(
+      controller,
       `/templates/${dockerTemplate.template_id}`,
       dockerTemplate
     ) as Observable<DockerTemplate>;

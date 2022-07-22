@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
@@ -29,7 +30,7 @@ import { ProgressDialogService } from './common/progress-dialog/progress-dialog.
 import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from './common/progress/progress.service';
 import { AdbutlerComponent } from './components/adbutler/adbutler.component';
-import { BundledServerFinderComponent } from './components/bundled-server-finder/bundled-server-finder.component';
+import { BundledControllerFinderComponent } from './components/bundled-controller-finder/bundled-controller-finder.component';
 import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
@@ -132,7 +133,7 @@ import { StartNodeActionComponent } from './components/project-map/context-menu/
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
 import { IsolateNodeActionComponent } from './components/project-map/context-menu/actions/isolate-node-action/isolate-node-action.component';
 import { UnisolateNodeActionComponent } from './components/project-map/context-menu/actions/unisolate-node-action/unisolate-node-action.component';
-import { StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
+import {StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
 import { ContextMenuComponent } from './components/project-map/context-menu/context-menu.component';
@@ -187,9 +188,9 @@ import { ProjectNameValidator } from './components/projects/models/projectNameVa
 import { NavigationDialogComponent } from './components/projects/navigation-dialog/navigation-dialog.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { SaveProjectDialogComponent } from './components/projects/save-project-dialog/save-project-dialog.component';
-import { AddServerDialogComponent } from './components/servers/add-server-dialog/add-server-dialog.component';
-import { ServerDiscoveryComponent } from './components/servers/server-discovery/server-discovery.component';
-import { ServersComponent } from './components/servers/servers.component';
+import { AddControllerDialogComponent } from './components/controllers/add-controller-dialog/add-controller-dialog.component';
+import { ControllerDiscoveryComponent } from './components/controllers/controller-discovery/controller-discovery.component';
+import { ControllersComponent } from './components/controllers/controllers.component';
 import { ConsoleComponent } from './components/settings/console/console.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { CreateSnapshotDialogComponent } from './components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
@@ -214,7 +215,7 @@ import { LoginGuard } from './guards/login-guard';
 import { ProjectWebServiceHandler } from './handlers/project-web-service-handler';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { MATERIAL_IMPORTS } from './material.imports';
-import { ServerResolve } from './resolvers/server-resolve';
+import { ControllerResolve } from './resolvers/controller-resolve';
 import { ApplianceService } from './services/appliances.service';
 import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from './services/built-in-templates.service';
@@ -224,7 +225,7 @@ import { DockerService } from './services/docker.service';
 import { DrawingService } from './services/drawing.service';
 import { ExternalSoftwareDefinitionService } from './services/external-software-definition.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
-import { HttpServer, ServerErrorHandler } from './services/http-server.service';
+import { HttpController, ControllerErrorHandler } from './services/http-controller.service';
 import { InfoService } from './services/info.service';
 import { InstalledSoftwareService } from './services/installed-software.service';
 import { IosConfigurationService } from './services/ios-configuration.service';
@@ -243,10 +244,10 @@ import { ProjectService } from './services/project.service';
 import { QemuConfigurationService } from './services/qemu-configuration.service';
 import { QemuService } from './services/qemu.service';
 import { RecentlyOpenedProjectService } from './services/recentlyOpenedProject.service';
-import { ServerManagementService } from './services/server-management.service';
-import { ServerSettingsService } from './services/server-settings.service';
-import { ServerDatabase } from './services/server.database';
-import { ServerService } from './services/server.service';
+import { ControllerManagementService } from './services/controller-management.service';
+import { ControllerSettingsService } from './services/controller-settings.service';
+import { ControllerDatabase } from './services/controller.database';
+import { ControllerService } from './services/controller.service';
 import { SettingsService } from './services/settings.service';
 import { ConsoleService } from './services/settings/console.service';
 import { DefaultConsoleService } from './services/settings/default-console.service';
@@ -271,9 +272,50 @@ import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from './components/login/login.component';
 import { LoginService } from './services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
-import { UserManagementComponent } from './components/user-management/user-management.component'
+import { UserManagementComponent } from './components/user-management/user-management.component';
 import { UserService } from './services/user.service';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
+import { AddUserDialogComponent } from './components/user-management/add-user-dialog/add-user-dialog.component';
+import { UserFilterPipe } from './filters/user-filter.pipe';
+import { GroupManagementComponent } from './components/group-management/group-management.component';
+import { GroupFilterPipe } from './filters/group-filter.pipe';
+import { AddGroupDialogComponent } from './components/group-management/add-group-dialog/add-group-dialog.component';
+import { DeleteGroupDialogComponent } from './components/group-management/delete-group-dialog/delete-group-dialog.component';
+import { DeleteUserDialogComponent } from './components/user-management/delete-user-dialog/delete-user-dialog.component';
+import { GroupDetailsComponent } from './components/group-details/group-details.component';
+import { UserDetailComponent } from './components/user-management/user-detail/user-detail.component';
+import { AddUserToGroupDialogComponent } from './components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
+import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
+import { PaginatorPipe } from './components/group-details/paginator.pipe';
+import { MembersFilterPipe } from './components/group-details/members-filter.pipe';
+import { ManagementComponent } from './components/management/management.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import { RoleManagementComponent } from './components/role-management/role-management.component';
+import { RoleFilterPipe } from './components/role-management/role-filter.pipe';
+import { AddRoleDialogComponent } from './components/role-management/add-role-dialog/add-role-dialog.component';
+import { DeleteRoleDialogComponent } from './components/role-management/delete-role-dialog/delete-role-dialog.component';
+import { RoleDetailComponent } from './components/role-management/role-detail/role-detail.component';
+import { PermissionEditorComponent } from './components/role-management/role-detail/permission-editor/permission-editor.component';
+import { EditablePermissionComponent } from './components/role-management/role-detail/permission-editor/editable-permission/editable-permission.component';
+import { PermissionEditorValidateDialogComponent } from './components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component';
+import { PermissionsManagementComponent } from './components/permissions-management/permissions-management.component';
+import { PermissionEditLineComponent } from '@components/permissions-management/permission-edit-line/permission-edit-line.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { UserPermissionsComponent } from './components/user-management/user-detail/user-permissions/user-permissions.component';
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {PathAutoCompleteComponent} from './components/permissions-management/add-permission-line/path-auto-complete/path-auto-complete.component';
+import {FilterCompletePipe} from './components/permissions-management/add-permission-line/path-auto-complete/filter-complete.pipe';
+import { AddPermissionLineComponent } from './components/permissions-management/add-permission-line/add-permission-line.component';
+import { MethodButtonComponent } from './components/permissions-management/method-button/method-button.component';
+import { ActionButtonComponent } from './components/permissions-management/action-button/action-button.component';
+import { DeletePermissionDialogComponent } from './components/permissions-management/delete-permission-dialog/delete-permission-dialog.component';
+import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import { PermissionsFilterPipe } from './components/permissions-management/permissions-filter.pipe';
+import { DisplayPathPipe } from './components/permissions-management/display-path.pipe';
+import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
+import { ChangeUserPasswordComponent } from './components/user-management/user-detail/change-user-password/change-user-password.component';
+import {MatMenuModule} from "@angular/material/menu";
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
 import { AddImageDialogComponent } from './components/image-manager/add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
@@ -288,8 +330,8 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     LoggedUserComponent,
     ProjectMapComponent,
     LoginComponent,
-    ServersComponent,
-    AddServerDialogComponent,
+    ControllersComponent,
+    AddControllerDialogComponent,
     CreateSnapshotDialogComponent,
     SnapshotMenuItemComponent,
     ProjectsComponent,
@@ -320,9 +362,9 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     SuspendLinkActionComponent,
     SettingsComponent,
     PreferencesComponent,
-    BundledServerFinderComponent,
+    BundledControllerFinderComponent,
     ProgressComponent,
-    ServerDiscoveryComponent,
+    ControllerDiscoveryComponent,
     NodeSelectInterfaceComponent,
     DrawLinkToolComponent,
     InstalledSoftwareComponent,
@@ -471,6 +513,47 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     EditNetworkConfigurationDialogComponent,
     UserManagementComponent,
     ProjectReadmeComponent,
+    AddGroupDialogComponent,
+    GroupFilterPipe,
+    GroupManagementComponent,
+    AddUserDialogComponent,
+    UserFilterPipe,
+    DeleteGroupDialogComponent,
+    DeleteUserDialogComponent,
+    GroupDetailsComponent,
+    UserDetailComponent,
+    AddUserToGroupDialogComponent,
+    RemoveToGroupDialogComponent,
+    PaginatorPipe,
+    MembersFilterPipe,
+    ManagementComponent,
+    RoleManagementComponent,
+    RoleFilterPipe,
+    AddRoleDialogComponent,
+    DeleteRoleDialogComponent,
+    RoleDetailComponent,
+    PermissionEditorComponent,
+    EditablePermissionComponent,
+    PermissionEditorValidateDialogComponent,
+    RemoveToGroupDialogComponent,
+    PermissionsManagementComponent,
+    AddRoleToGroupComponent,
+    PermissionEditLineComponent,
+    AddPermissionLineComponent,
+    MethodButtonComponent,
+    ActionButtonComponent,
+    DeletePermissionDialogComponent,
+    PathAutoCompleteComponent,
+    FilterCompletePipe,
+    UserPermissionsComponent,
+    PermissionsFilterPipe,
+    RolePermissionsComponent,
+    DisplayPathPipe,
+    ChangeUserPasswordComponent,
+    FilterCompletePipe,
+    DisplayPathPipe,
+    ChangeUserPasswordComponent,
+    ProjectReadmeComponent,
     ImageManagerComponent,
     AddImageDialogComponent,
     DeleteAllImageFilesDialogComponent,
@@ -491,6 +574,8 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     NgxElectronModule,
     FileUploadModule,
     MatSidenavModule,
+    MatFormFieldModule,
+    MatMenuModule,
     ResizableModule,
     DragAndDropModule,
     DragDropModule,
@@ -498,21 +583,24 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     MATERIAL_IMPORTS,
     NgCircleProgressModule.forRoot(),
     OverlayModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatAutocompleteModule,
   ],
   providers: [
     SettingsService,
-    { provide: ErrorHandler, useClass: ToasterErrorHandler },
-    { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
+    {provide: ErrorHandler, useClass: ToasterErrorHandler},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true},
     D3Service,
     VersionService,
     ProjectService,
     SymbolService,
-    ServerService,
+    ControllerService,
     TemplateService,
     NodeService,
     LinkService,
     DrawingService,
-    HttpServer,
+    HttpController,
     SnapshotService,
     ProgressDialogService,
     ToasterService,
@@ -525,11 +613,11 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     SelectionManager,
     InRectangleHelper,
     DrawingsDataSource,
-    ServerErrorHandler,
-    ServerDatabase,
+    ControllerErrorHandler,
+    ControllerDatabase,
     ProjectNameValidator,
     ToolsService,
-    ServerSettingsService,
+    ControllerSettingsService,
     QemuService,
     VpcsService,
     TemplateMocksService,
@@ -551,7 +639,7 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     IouService,
     IouConfigurationService,
     RecentlyOpenedProjectService,
-    ServerManagementService,
+    ControllerManagementService,
     MapScaleService,
     ConsoleService,
     DefaultConsoleService,
@@ -566,7 +654,7 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     ThemeService,
     GoogleAnalyticsService,
     NodeConsoleService,
-    ServerResolve,
+    ControllerResolve,
     LoginGuard,
     ConsoleGuard,
     Title,
@@ -576,7 +664,7 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     UserService
   ],
   entryComponents: [
-    AddServerDialogComponent,
+    AddControllerDialogComponent,
     CreateSnapshotDialogComponent,
     ProgressDialogComponent,
     TemplateListDialogComponent,

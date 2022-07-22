@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
@@ -13,7 +13,7 @@ import { VpcsConfigurationService } from '../../../../../services/vpcs-configura
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   node: Node;
   numberOfPorts: number;
   inputForm: FormGroup;
@@ -34,7 +34,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = this.node.name;
       this.numberOfPorts = this.node.ports.length;
@@ -57,7 +57,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
         });
       }
 
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

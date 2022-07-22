@@ -10,23 +10,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { DockerService } from '../../../../services/docker.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { DockerTemplateDetailsComponent } from './docker-template-details.component';
 
 export class MockedDockerService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as DockerTemplate);
   }
 
-  public saveTemplate(server: Server, dockerTemplate: DockerTemplate) {
+  public saveTemplate(controller:Controller , dockerTemplate: DockerTemplate) {
     return of(dockerTemplate);
   }
 }
@@ -35,7 +35,7 @@ describe('DockerTemplateDetailsComponent', () => {
   let component: DockerTemplateDetailsComponent;
   let fixture: ComponentFixture<DockerTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -58,7 +58,7 @@ describe('DockerTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: DockerConfigurationService, useClass: DockerConfigurationService },

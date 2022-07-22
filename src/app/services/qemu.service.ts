@@ -3,45 +3,45 @@ import { Observable } from 'rxjs';
 import { QemuBinary } from '../models/qemu/qemu-binary';
 import { QemuImage } from '../models/qemu/qemu-image';
 import { QemuImg } from '../models/qemu/qemu-img';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { QemuTemplate } from '../models/templates/qemu-template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class QemuService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  getTemplates(server: Server): Observable<QemuTemplate[]> {
-    return this.httpServer.get<QemuTemplate[]>(server, '/templates') as Observable<QemuTemplate[]>;
+  getTemplates(controller:Controller ): Observable<QemuTemplate[]> {
+    return this.httpController.get<QemuTemplate[]>(controller, '/templates') as Observable<QemuTemplate[]>;
   }
 
-  getTemplate(server: Server, template_id: string): Observable<QemuTemplate> {
-    return this.httpServer.get<QemuTemplate>(server, `/templates/${template_id}`) as Observable<QemuTemplate>;
+  getTemplate(controller:Controller , template_id: string): Observable<QemuTemplate> {
+    return this.httpController.get<QemuTemplate>(controller, `/templates/${template_id}`) as Observable<QemuTemplate>;
   }
 
-  getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/images/upload/${filename}`;
+  getImagePath(controller:Controller , filename: string): string {
+    return `${controller.protocol}//${controller.host}:${controller.port}/images/upload/${filename}`;
   }
 
-  getBinaries(server: Server): Observable<QemuBinary[]> {
-    return this.httpServer.get<QemuBinary[]>(server, '/computes/local/qemu/binaries') as Observable<QemuBinary[]>;
+  getBinaries(controller:Controller ): Observable<QemuBinary[]> {
+    return this.httpController.get<QemuBinary[]>(controller, '/computes/local/qemu/binaries') as Observable<QemuBinary[]>;
   }
 
-  getImages(server: Server): Observable<any> {
-    return this.httpServer.get<QemuImage[]>(server, '/images?image_type=qemu') as Observable<QemuImage[]>;
+  getImages(controller:Controller ): Observable<any> {
+    return this.httpController.get<QemuImage[]>(controller, '/images?image_type=qemu') as Observable<QemuImage[]>;
   }
 
-  addImage(server: Server, qemuImg: QemuImg): Observable<QemuImg> {
-    return this.httpServer.post<QemuImg>(server, '/images/upload', qemuImg) as Observable<QemuImg>;
+  addImage(controller:Controller , qemuImg: QemuImg): Observable<QemuImg> {
+    return this.httpController.post<QemuImg>(controller, '/images/upload', qemuImg) as Observable<QemuImg>;
   }
 
-  addTemplate(server: Server, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
-    return this.httpServer.post<QemuTemplate>(server, `/templates`, qemuTemplate) as Observable<QemuTemplate>;
+  addTemplate(controller:Controller , qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+    return this.httpController.post<QemuTemplate>(controller, `/templates`, qemuTemplate) as Observable<QemuTemplate>;
   }
 
-  saveTemplate(server: Server, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
-    return this.httpServer.put<QemuTemplate>(
-      server,
+  saveTemplate(controller:Controller , qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+    return this.httpController.put<QemuTemplate>(
+      controller,
       `/templates/${qemuTemplate.template_id}`,
       qemuTemplate
     ) as Observable<QemuTemplate>;

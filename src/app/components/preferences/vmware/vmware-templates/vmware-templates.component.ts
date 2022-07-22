@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { VmwareService } from '../../../../services/vmware.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
@@ -12,26 +12,26 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./vmware-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VmwareTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   vmwareTemplates: VmwareTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private vmwareService: VmwareService
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.vmwareService.getTemplates(this.server).subscribe((vmwareTemplates: VmwareTemplate[]) => {
+    this.vmwareService.getTemplates(this.controller).subscribe((vmwareTemplates: VmwareTemplate[]) => {
       this.vmwareTemplates = vmwareTemplates.filter((elem) => elem.template_type === 'vmware' && !elem.builtin);
     });
   }

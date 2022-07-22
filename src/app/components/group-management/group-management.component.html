@@ -1,0 +1,81 @@
+<div class="content" *ngIf="isReady; else loading">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Groups management</h1>
+      <button class="col" mat-raised-button color="primary" (click)="onDelete(selection.selected)" class="add-group-button" [disabled]="selection.selected.length == 0">
+        Delete selected groups
+      </button>
+      <button class="col" mat-raised-button color="primary" (click)="addGroup()" class="add-group-button">
+        Add group
+      </button>
+    </div>
+  </div>
+
+  <form>
+    <mat-form-field class="full-width">
+      <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+    </mat-form-field>
+  </form>
+
+  <div class="default-content">
+    <table mat-table [dataSource]="dataSource | groupFilter: searchText" class="mat-elevation-z8" matSort #groupsSort="matSort">
+
+      <ng-container matColumnDef="select" >
+        <th mat-header-cell *matHeaderCellDef class="small-col">
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="small-col">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name</th>
+        <td mat-cell *matCellDef="let element"><a class="table-link" routerLink="/controller/{{controller.id}}/management/groups/{{element.user_group_id}}">{{element.name}}</a> </td>
+      </ng-container>
+
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Creation date</th>
+        <td mat-cell *matCellDef="let element"> {{element.created_at}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="updated_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Last update</th>
+        <td mat-cell *matCellDef="let element"> {{element.updated_at}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="is_builtin">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> is build in</th>
+        <td mat-cell *matCellDef="let element"> {{element.is_builtin}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element"><button mat-button (click)="onDelete([element])"><mat-icon>delete</mat-icon></button></td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+
+    </table>
+    <mat-paginator #groupsPaginator="matPaginator"
+      [pageSizeOptions]="[5, 10, 20]"
+                   showFirstLastButtons
+                   aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>
+<ng-template #loading>
+  <div>
+    <mat-spinner class="loader"></mat-spinner>
+  </div>
+</ng-template>

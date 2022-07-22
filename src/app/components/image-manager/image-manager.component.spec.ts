@@ -6,10 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ImageManagerService } from 'app/services/image-manager.service';
-import { ServerService } from 'app/services/server.service';
-import { MockedServerService } from 'app/services/server.service.spec';
+import { ControllerService } from 'app/services/controller.service';
+import { MockedControllerService } from 'app/services/controller.service.spec';
 import { of } from 'rxjs';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 
 import { ImageManagerComponent } from './image-manager.component';
 import { Image } from '../../models/images';
@@ -23,11 +23,11 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 
 export class MockedImageManagerService {
-  public getImages(server: Server) {
+  public getImages(controller:Controller ) {
     return of();
   }
 
-  public deleteFile(server: Server, image_path) {
+  public deleteFile(controller:Controller , image_path) {
     return of();
   }
 
@@ -37,7 +37,7 @@ describe('ImageManagerComponent', () => {
   let component: ImageManagerComponent;
   let fixture: ComponentFixture<ImageManagerComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedProgressService = new MockedProgressService()
   let mockedVersionService = new MockedVersionService()
@@ -59,7 +59,7 @@ describe('ImageManagerComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: ProgressService, useValue: mockedProgressService },
         { provide: VersionService, useValue: mockedVersionService },

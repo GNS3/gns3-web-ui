@@ -11,10 +11,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
@@ -23,11 +23,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxTemplateDetailsComponent } from './virtual-box-template-details.component';
 
 export class MockedVirtualBoxService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as VirtualBoxTemplate);
   }
 
-  public saveTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate) {
+  public saveTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate) {
     return of(virtualBoxTemplate);
   }
 }
@@ -36,7 +36,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
   let component: VirtualBoxTemplateDetailsComponent;
   let fixture: ComponentFixture<VirtualBoxTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedVirtualBoxService = new MockedVirtualBoxService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -60,7 +60,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VirtualBoxConfigurationService, useClass: VirtualBoxConfigurationService },

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Node } from '../cartography/models/node';
 import { Port } from '../models/port';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 
 @Injectable()
 export class InfoService {
-  getInfoAboutNode(node: Node, server: Server): string[] {
+  getInfoAboutNode(node: Node, controller:Controller ): string[] {
     let infoList: string[] = [];
     if (node.node_type === 'cloud') {
       infoList.push(`Cloud ${node.name} is always on.`);
@@ -34,8 +34,8 @@ export class InfoService {
     } else if (node.node_type === 'vpcs') {
       infoList.push(`Node ${node.name} is ${node.status}.`);
     }
-    infoList.push(`Running on server ${server.name} with port ${server.port}.`);
-    infoList.push(`Server ID is ${server.id}.`);
+    infoList.push(`Running on controller ${controller.name} with port ${controller.port}.`);
+    infoList.push(`Controller ID is ${controller.id}.`);
     if (node.console_type !== 'none' && node.console_type !== 'null') {
       infoList.push(`Console is on port ${node.console} and type is ${node.console_type}.`);
     }
@@ -46,7 +46,7 @@ export class InfoService {
   getInfoAboutPorts(ports: Port[]): string {
     let response: string = `Ports: `;
     ports.forEach((port) => {
-      response += `link_type: ${port.link_type}, 
+      response += `link_type: ${port.link_type},
                         name: ${port.name}; `;
     });
     response = response.substring(0, response.length - 2);

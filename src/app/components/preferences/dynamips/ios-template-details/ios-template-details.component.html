@@ -282,7 +282,7 @@
 </div>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && iosTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="iosTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

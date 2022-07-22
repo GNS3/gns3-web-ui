@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./create-snapshot-dialog.component.scss'],
 })
 export class CreateSnapshotDialogComponent {
-  server: Server;
+  controller:Controller ;
   project: Project;
   snapshot: Snapshot = new Snapshot();
   inputForm: FormGroup;
@@ -30,7 +30,7 @@ export class CreateSnapshotDialogComponent {
     private nodesDataSource: NodesDataSource,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.server = data['server'];
+    this.controller = data['controller'];
     this.project = data['project'];
 
     this.inputForm = this.formBuilder.group({
@@ -38,7 +38,7 @@ export class CreateSnapshotDialogComponent {
     });
 
     if (this.project && this.project.project_id) {
-      this.snapshotService.list(this.server, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
+      this.snapshotService.list(this.controller, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
         snapshots.forEach((snapshot: Snapshot) => {
           this.snapshots.push(snapshot.name);
         });

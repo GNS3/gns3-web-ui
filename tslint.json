@@ -4,6 +4,8 @@
   ],
   "rules": {
     "arrow-return-shorthand": true,
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
     "callable-types": true,
     "class-name": true,
     "comment-format": [

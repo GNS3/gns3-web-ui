@@ -4,7 +4,7 @@ import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
 
@@ -15,7 +15,7 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() node: Node;
 
@@ -53,7 +53,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     if (this.isLightThemeEnabled)
       this.term.setOption('theme', { background: 'white', foreground: 'black', cursor: 'black' });
 
-    const socket = new WebSocket(this.consoleService.getUrl(this.server, this.node));
+    const socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
 
     socket.onerror = (event) => {
       this.term.write('Connection lost');

@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { VpcsService } from '../../../../services/vpcs.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
@@ -12,22 +12,22 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./vpcs-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VpcsTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   vpcsTemplates: VpcsTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
-  constructor(private route: ActivatedRoute, private serverService: ServerService, private vpcsService: VpcsService) {}
+  constructor(private route: ActivatedRoute, private controllerService: ControllerService, private vpcsService: VpcsService) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.vpcsService.getTemplates(this.server).subscribe((vpcsTemplates: VpcsTemplate[]) => {
+    this.vpcsService.getTemplates(this.controller).subscribe((vpcsTemplates: VpcsTemplate[]) => {
       this.vpcsTemplates = vpcsTemplates.filter((elem) => elem.template_type === 'vpcs' && !elem.builtin);
     });
   }

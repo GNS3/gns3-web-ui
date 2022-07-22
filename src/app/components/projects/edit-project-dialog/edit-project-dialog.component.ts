@@ -2,7 +2,7 @@ import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Project, ProjectVariable } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
@@ -16,7 +16,7 @@ import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 export class EditProjectDialogComponent implements OnInit {
   @ViewChild('editor') editor: ReadmeEditorComponent;
 
-  server: Server;
+  controller:Controller ;
   project: Project;
   formGroup: FormGroup;
   variableFormGroup: FormGroup;
@@ -91,8 +91,8 @@ export class EditProjectDialogComponent implements OnInit {
 
       this.project.auto_close = !this.auto_close;
 
-      this.projectService.update(this.server, this.project).subscribe((project: Project) => {
-        this.projectService.postReadmeFile(this.server, this.project.project_id, this.editor.markdown).subscribe((response) => {
+      this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
+        this.projectService.postReadmeFile(this.controller, this.project.project_id, this.editor.markdown).subscribe((response) => {
           this.toasterService.success(`Project ${project.name} updated.`);
           this.onNoClick();
         });

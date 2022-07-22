@@ -6,7 +6,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapLabel } from '../../../cartography/models/map/map-label';
 import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { NodeService } from '../../../services/node.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./node-label-dragged.component.scss'],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   private nodeLabelDragged: Subscription;
 
   constructor(
@@ -38,8 +38,8 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
-    this.nodeService.updateLabel(this.server, node, node.label).subscribe((serverNode: Node) => {
-      this.nodesDataSource.update(serverNode);
+    this.nodeService.updateLabel(this.controller, node, node.label).subscribe((controllerNode: Node) => {
+      this.nodesDataSource.update(controllerNode);
     });
   }
 

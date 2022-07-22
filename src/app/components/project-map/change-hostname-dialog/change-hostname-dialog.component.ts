@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../cartography/models/node';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { NodeService } from '../../../services/node.service';
 import { ToasterService } from '../../../services/toaster.service';
 
@@ -12,7 +12,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./change-hostname-dialog.component.scss'],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   node: Node;
   inputForm: FormGroup;
   name: string;
@@ -29,7 +29,7 @@ export class ChangeHostnameDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = this.node.name;
     });
@@ -37,7 +37,7 @@ export class ChangeHostnameDialogComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

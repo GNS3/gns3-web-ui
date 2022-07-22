@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './isolate-node-action.component.html',
 })
 export class IsolateNodeActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private toasterService: ToasterService) {}
@@ -17,7 +17,7 @@ export class IsolateNodeActionComponent implements OnInit {
   ngOnInit() {}
 
   isolate() {
-    this.nodeService.isolate(this.server, this.node).subscribe(
+    this.nodeService.isolate(this.controller, this.node).subscribe(
         (n: Node) => {},
         (error) => {
           this.toasterService.error(error.error.message);

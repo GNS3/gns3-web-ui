@@ -4,7 +4,7 @@ import { NodesDataSource } from '../../../../../cartography/datasources/nodes-da
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '../../../../../models/project';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './duplicate-action.component.html',
 })
 export class DuplicateActionComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() drawings: Drawing[];
   @Input() nodes: Node[];
@@ -31,7 +31,7 @@ export class DuplicateActionComponent {
     let runningNodes: string = '';
     for (let node of this.nodes) {
       if (node.status === 'stopped') {
-        this.nodeService.duplicate(this.server, node).subscribe((node: Node) => {
+        this.nodeService.duplicate(this.controller, node).subscribe((node: Node) => {
           this.nodesDataSource.add(node);
         });
       } else {
@@ -40,7 +40,7 @@ export class DuplicateActionComponent {
     }
 
     for (let drawing of this.drawings) {
-      this.drawingService.duplicate(this.server, drawing.project_id, drawing).subscribe((drawing: Drawing) => {
+      this.drawingService.duplicate(this.controller, drawing.project_id, drawing).subscribe((drawing: Drawing) => {
         this.drawingsDataSource.add(drawing);
       });
     }

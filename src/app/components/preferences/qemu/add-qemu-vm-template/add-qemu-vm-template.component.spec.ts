@@ -15,12 +15,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -28,15 +28,15 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 
 export class MockedQemuService {
-  public addTemplate(server: Server, qemuTemplate: QemuTemplate) {
+  public addTemplate(controller:Controller , qemuTemplate: QemuTemplate) {
     return of(qemuTemplate);
   }
 
-  public getBinaries(server: Server) {
+  public getBinaries(controller:Controller ) {
     return of([]);
   }
 
-  public getImages(server: Server) {
+  public getImages(controller:Controller ) {
     return of([]);
   }
 }
@@ -46,7 +46,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
   let component: AddQemuVmTemplateComponent;
   let fixture: ComponentFixture<AddQemuVmTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedQemuService = new MockedQemuService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -71,13 +71,13 @@ xdescribe('AddQemuVmTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/qemu/templates', component: AddQemuVmTemplateComponent },
+          { path: 'controller/1/preferences/qemu/templates', component: AddQemuVmTemplateComponent },
         ]),
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: Router, useValue: router },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: QemuService, useValue: mockedQemuService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
@@ -110,7 +110,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       version: 'version',
     };
     component.newImageSelected = true;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -129,7 +129,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       version: 'version',
     };
     component.newImageSelected = true;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
@@ -147,7 +147,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       version: 'version',
     };
     component.newImageSelected = true;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 
