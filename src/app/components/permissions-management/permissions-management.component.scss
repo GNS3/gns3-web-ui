@@ -1,0 +1,36 @@
+.permission-content {
+  max-width: 1400px;
+}
+
+.add-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+.loader {
+  position: absolute;
+  margin: auto;
+  height: 175px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 175px;
+}
+
+.add {
+ /* display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid;
+  align-items: center;*/
+}
+
+.permission-filter {
+  border-bottom: 1px solid;
+  margin: 5px;
+  border-bottom-color: #b0bec5;
+}

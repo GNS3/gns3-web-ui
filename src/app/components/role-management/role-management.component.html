@@ -1,0 +1,91 @@
+<div class="content" *ngIf="isReady; else loading">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Roles Management</h1>
+      <button class="col" mat-raised-button color="primary" (click)="onDelete(selection.selected)" class="add-button"
+              [disabled]="selection.selected.length == 0">
+        Delete roles
+      </button>
+      <button class="col" mat-raised-button color="primary" (click)="addRole()" class="add-button">
+        Add role
+      </button>
+    </div>
+  </div>
+
+  <form>
+    <mat-form-field class="full-width">
+      <input matInput placeholder="Search role by name" [(ngModel)]="searchText"
+             [ngModelOptions]="{ standalone: true }"/>
+    </mat-form-field>
+  </form>
+
+  <div class="default-content">
+    <div class="mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource | roleFilter: searchText" matSort #rolesSort="matSort">
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef class="small-col">
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="small-col">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null"
+                          [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <a [routerLink]="['/server', server.id, 'management','roles', row.role_id]"
+               class="table-link" [matTooltip]="row.name">{{ row.name }}</a>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Description</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div [matTooltip]="row.description" matTooltipClass="custom-tooltip"
+                 class="overflow-col">{{ row.description }}</div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="permissions">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Permissions (Allow)</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="permissions-list">
+              <div class="overflow-col permission" *ngFor="let permission of row.permissions">
+                <div>{{permission.action}}</div>
+                <div>{{permission.methods.join(',')}}</div>
+                <div>{{permission.path}}</div>
+              </div>
+              </div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="delete">
+          <mat-header-cell *matHeaderCellDef class="small-col"></mat-header-cell>
+          <mat-cell *matCellDef="let row" class="small-col">
+            <button mat-button (click)="onDelete([row])">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+
+      <mat-paginator #rolesPaginator="matPaginator"
+        [pageSizeOptions]="[5, 10, 20]"
+                     showFirstLastButtons
+                     aria-label="Select page">
+      </mat-paginator>
+    </div>
+  </div>
+</div>
+<ng-template #loading>
+  <div>
+    <mat-spinner class="loader"></mat-spinner>
+  </div>
+</ng-template>

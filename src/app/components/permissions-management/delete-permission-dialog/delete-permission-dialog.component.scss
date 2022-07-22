@@ -1,0 +1,18 @@
+.description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.description > div {
+  margin-bottom: 10px;
+}
+
+.button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-top: 20px;
+}

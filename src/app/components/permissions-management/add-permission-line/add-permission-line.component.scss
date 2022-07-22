@@ -1,0 +1,49 @@
+.box-border {
+  width: 100%;
+  margin-top: 20px;
+  border-bottom: 1px solid;
+}
+
+.edit-mode {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.information-box {
+  margin-left: 10px;
+  width: 100%;
+}
+
+.information-box > div {
+  margin-bottom: 10px;
+}
+
+.methods {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.button-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.description {
+  width: 100%;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.description > mat-form-field {
+  width: 100%;
+}
+
+.not-edit {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}

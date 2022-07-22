@@ -1,0 +1,40 @@
+.main {
+  display: flex;
+  justify-content: space-around;
+}
+
+.details {
+  width: 30vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.permissions {
+  width: 35vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.permission {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border: 1px solid;
+  padding: 5px;
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 20px;
+
+}
+.header > div {
+  font-size: 2em;
+}
