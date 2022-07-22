@@ -1,7 +1,7 @@
 import {async, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {DisplayPathPipe} from "@components/permissions-management/display-path.pipe";
 import {ApiInformationService} from "@services/ApiInformation/api-information.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Observable, of} from "rxjs";
 import {IExtraParams} from "@services/ApiInformation/IExtraParams";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
@@ -33,7 +33,7 @@ describe('DisplayPathPipe', () => {
     };
 
     apiService
-      .getListByObjectId = (server: Server, key: string, value?: string, extraParams?: IExtraParams[]): Observable<IGenericApiObject[]> => {
+      .getListByObjectId = (controller: Controller, key: string, value?: string, extraParams?: IExtraParams[]): Observable<IGenericApiObject[]> => {
       if (key === 'project_id') {
         return of([{id: '1111-2222-3333', name: 'myProject'}]);
       }
@@ -44,9 +44,9 @@ describe('DisplayPathPipe', () => {
 
     let result: string;
 
-    const server = new Server();
+    const controller = new Controller();
     comp
-      .transform('/project/1111-2222-3333/nodes/2222-2222-2222', server)
+      .transform('/project/1111-2222-3333/nodes/2222-2222-2222', controller)
       .subscribe((res: string) => {
         result = res;
       });

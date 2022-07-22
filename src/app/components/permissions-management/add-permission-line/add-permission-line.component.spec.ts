@@ -5,7 +5,7 @@ import {ApiInformationService} from "@services/ApiInformation/api-information.se
 import {PermissionsService} from "@services/permissions.service";
 import {ToasterService} from "@services/toaster.service";
 import {Methods, Permission, PermissionActions} from "@models/api/permission";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Observable, of, throwError} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 
@@ -79,7 +79,7 @@ describe('AddPermissionLineComponent', () => {
     comp.permission.action = PermissionActions.DENY;
     comp.permission.description = "john doe is here";
 
-    permissionService.add = (server: Server, permission: Permission): Observable<Permission> => {
+    permissionService.add = (controller: Controller, permission: Permission): Observable<Permission> => {
       return of(permission);
     };
 
@@ -111,12 +111,12 @@ describe('AddPermissionLineComponent', () => {
 
     let errorMessage: string;
 
-    permissionService.add = (server: Server, permission: Permission): Observable<Permission> => {
+    permissionService.add = (controller: Controller, permission: Permission): Observable<Permission> => {
       const error = new HttpErrorResponse({
         error: new Error("An error occur"),
         headers: undefined,
         status: 500,
-        statusText: 'error from server'
+        statusText: 'error from controller'
       });
       return throwError(error);
     };

@@ -1,5 +1,5 @@
 import {ApiInformationService, IApiObject} from "@services/ApiInformation/api-information.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {IExtraParams} from "@services/ApiInformation/IExtraParams";
 import {forkJoin, Observable, of} from "rxjs";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
@@ -27,13 +27,13 @@ export class GetObjectIdHelper {
 
   /**
    * Build the request, append the value if required
-   * @param server
+   * @param controller
    * @param value
    * @param extraParams
    */
-  public static buildRequestURL(server: Server, value: string, extraParams: IExtraParams[]): (elem) => string {
+  public static buildRequestURL(controller: Controller, value: string, extraParams: IExtraParams[]): (elem) => string {
     return (elem): string => {
-      let url = `${server.protocol}//${server.host}:${server.port}${elem.path}`;
+      let url = `${controller.protocol}//${controller.host}:${controller.port}${elem.path}`;
       if (extraParams) {
         extraParams.forEach((param) => {
           url = url.replace(param.key, param.value);
@@ -48,16 +48,16 @@ export class GetObjectIdHelper {
   }
 
   /**
-   * Map the data from server to a generic response object
+   * Map the data from controller to a generic response object
    * @param key
    * @param extraParams
    * @param service
-   * @param server
+   * @param controller
    */
   public static createResponseObject(key: string,
                                      extraParams: IExtraParams[],
                                      service: ApiInformationService,
-                                     server: Server
+                                     controller: Controller
   ): (response) => Observable<IGenericApiObject[]> {
 
     const idName = key ? GetObjectIdHelper.getIdNameFromKey(key) : undefined;
@@ -74,7 +74,7 @@ export class GetObjectIdHelper {
       specific treatment for link_id
        */
       if (key === '{link_id}') {
-        return GetObjectIdHelper.setLinkObjectInformation(response, extraParams, service, server);
+        return GetObjectIdHelper.setLinkObjectInformation(response, extraParams, service, controller);
       } else {
         return GetObjectIdHelper.setGenericObjectInformation(response, idName);
       }
@@ -97,19 +97,19 @@ export class GetObjectIdHelper {
   private static setLinkObjectInformation(links: any[],
                                           extraParams: IExtraParams[],
                                           service: ApiInformationService,
-                                          server: Server
+                                          controller: Controller
   ): Observable<IGenericApiObject[]> {
 
-    return forkJoin(links.map(link => GetObjectIdHelper.getLinkInformation(link, extraParams, service, server)));
+    return forkJoin(links.map(link => GetObjectIdHelper.getLinkInformation(link, extraParams, service, controller)));
   }
 
   private static getLinkInformation(link: any,
                                     extraParams: IExtraParams[],
                                     service: ApiInformationService,
-                                    server: Server
+                                    controller: Controller
   ): Observable<IGenericApiObject> {
 
-    const nodesDataObs = link.nodes.map(node => service.getListByObjectId(server, '{node_id}', node.node_id, extraParams));
+    const nodesDataObs = link.nodes.map(node => service.getListByObjectId(controller, '{node_id}', node.node_id, extraParams));
     return forkJoin(nodesDataObs)
       .pipe(map((nodes: [any]) => {
         const name = nodes

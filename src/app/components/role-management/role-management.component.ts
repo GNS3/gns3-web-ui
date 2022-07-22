@@ -11,14 +11,14 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {MatTableDataSource} from "@angular/material/table";
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProgressService} from "../../common/progress/progress.service";
-import {ServerService} from "@services/server.service";
+import {ControllerService} from "@services/controller.service";
 import {MatDialog} from "@angular/material/dialog";
 import {ToasterService} from "@services/toaster.service";
 import {Role} from "@models/api/role";
@@ -35,7 +35,7 @@ import {HttpErrorResponse} from "@angular/common/http";
   styleUrls: ['./role-management.component.scss']
 })
 export class RoleManagementComponent implements OnInit {
-  server: Server;
+  controller: Controller;
   dataSource = new MatTableDataSource<Role>();
   displayedColumns = ['select', 'name', 'description', 'permissions', 'delete'];
   selection = new SelectionModel<Role>(true, []);
@@ -51,15 +51,15 @@ export class RoleManagementComponent implements OnInit {
     private router: Router,
     private roleService: RoleService,
     private progressService: ProgressService,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     public dialog: MatDialog,
     private toasterService: ToasterService) {
   }
 
   ngOnInit() {
-    const serverId = this.route.parent.snapshot.paramMap.get('server_id');
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.server = server;
+    const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(+controllerId).then((controller: Controller) => {
+      this.controller = controller;
       this.refresh();
     });
 
@@ -85,7 +85,7 @@ export class RoleManagementComponent implements OnInit {
   }
 
   refresh() {
-    this.roleService.get(this.server).subscribe(
+    this.roleService.get(this.controller).subscribe(
       (roles: Role[]) => {
         this.isReady = true;
         this.dataSource.data = roles;
@@ -101,12 +101,12 @@ export class RoleManagementComponent implements OnInit {
       width: '400px',
       autoFocus: false,
       disableClose: true,
-      data: {server: this.server},
+      data: {controller: this.controller},
     })
       .afterClosed()
       .subscribe((role: { name: string; description: string }) => {
         if (role) {
-          this.roleService.create(this.server, role)
+          this.roleService.create(this.controller, role)
             .subscribe(() => {
                 this.toasterService.success(`${role.name} role created`);
                 this.refresh();
@@ -135,7 +135,7 @@ export class RoleManagementComponent implements OnInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          const observables = rolesToDelete.map((role: Role) => this.roleService.delete(this.server, role.role_id));
+          const observables = rolesToDelete.map((role: Role) => this.roleService.delete(this.controller, role.role_id));
           forkJoin(observables)
             .subscribe(() => {
                 this.refresh();

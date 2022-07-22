@@ -14,7 +14,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {User} from "@models/users/user";
 import {ToasterService} from "@services/toaster.service";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
@@ -34,7 +34,7 @@ import {matchingPassword} from "@components/user-management/ConfirmPasswordValid
 })
 export class AddUserDialogComponent implements OnInit {
   addUserForm: FormGroup;
-  server: Server;
+  controller: Controller;
 
   groups: Group[];
   groupsToAdd: Set<Group> = new Set([]);
@@ -52,11 +52,11 @@ export class AddUserDialogComponent implements OnInit {
         Validators.required,
         Validators.minLength(3),
         Validators.pattern("[a-zA-Z0-9_-]+$")],
-        [userNameAsyncValidator(this.server, this.userService)]),
+        [userNameAsyncValidator(this.controller, this.userService)]),
       full_name: new FormControl(),
       email: new FormControl(null,
         [Validators.email, Validators.required],
-        [userEmailAsyncValidator(this.server, this.userService)]),
+        [userEmailAsyncValidator(this.controller, this.userService)]),
       password: new FormControl(null,
         [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
       confirmPassword: new FormControl(null,
@@ -65,7 +65,7 @@ export class AddUserDialogComponent implements OnInit {
     },{
       validators: [matchingPassword]
     });
-    this.groupService.getGroups(this.server)
+    this.groupService.getGroups(this.controller)
       .subscribe((groups: Group[]) => {
       this.groups = groups;
       this.filteredGroups = this.autocompleteControl.valueChanges.pipe(
@@ -99,11 +99,11 @@ export class AddUserDialogComponent implements OnInit {
     }
     const newUser = this.addUserForm.value;
     const toAdd = Array.from(this.groupsToAdd.values());
-    this.userService.add(this.server,  newUser)
+    this.userService.add(this.controller,  newUser)
       .subscribe((user: User) => {
         this.toasterService.success(`User ${user.username} added`);
           toAdd.forEach((group: Group) => {
-            this.groupService.addMemberToGroup(this.server, group, user)
+            this.groupService.addMemberToGroup(this.controller, group, user)
               .subscribe(() => {
                   this.toasterService.success(`user ${user.username} was added to group ${group.name}`);
                 },

@@ -24,8 +24,8 @@
         <span>Settings</span>
       </button>
       <button mat-menu-item
-              [disabled]="!serverId"
-              [routerLink]="['server', serverId, 'management', 'users']">
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'management', 'users']">
         <mat-icon>groups</mat-icon>
         <span>Management</span>
       </button>
@@ -34,17 +34,17 @@
         <span>Help</span>
       </button>
       <button
-        [disabled]="!serverId"
-        [routerLink]="['/server', serverId, 'loggeduser']"
+        [disabled]="!controllerId"
+        [routerLink]="['/controller', controllerId, 'loggeduser']"
         mat-menu-item>
         <mat-icon>person</mat-icon>
         <span>User info</span>
       </button>
-      <button [disabled]="!serverId" mat-menu-item (click)="goToDocumentation()">
+      <button [disabled]="!controllerId" mat-menu-item (click)="goToDocumentation()">
         <mat-icon>person</mat-icon>
         <span>API documentation</span>
       </button>
-      <button mat-menu-item [disabled]="!serverId" (click)="logout()">
+      <button mat-menu-item [disabled]="!controllerId" (click)="logout()">
         <mat-icon>highlight_off</mat-icon>
         <span>Logout</span>
       </button>
@@ -56,4 +56,4 @@
 
 <app-progress></app-progress>
 
-<footer class="footer mat-app-background">GNS3 Web UI &copy; 2021 - v{{ uiVersion }}</footer>
+<footer class="footer mat-app-background">GNS3 Web UI &copy; 2022 - v{{ uiVersion }}</footer>

@@ -14,7 +14,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {BehaviorSubject, forkJoin, timer} from "rxjs";
 import {User} from "@models/users/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Group} from "@models/groups/group";
 import {UserService} from "@services/user.service";
 import {GroupService} from "@services/group.service";
@@ -35,7 +35,7 @@ export class AddRoleToGroupComponent implements OnInit {
   loading = false;
 
   constructor(private dialog: MatDialogRef<AddRoleToGroupComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { server: Server; group: Group },
+              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group },
               private groupService: GroupService,
               private roleService: RoleService,
               private toastService: ToasterService) {
@@ -58,8 +58,8 @@ export class AddRoleToGroupComponent implements OnInit {
 
   getRoles() {
     forkJoin([
-      this.roleService.get(this.data.server),
-      this.groupService.getGroupRole(this.data.server, this.data.group.user_group_id)
+      this.roleService.get(this.data.controller),
+      this.groupService.getGroupRole(this.data.controller, this.data.group.user_group_id)
     ]).subscribe((results) => {
       const [globalRoles, groupRoles] = results;
       const roles = globalRoles.filter((role: Role) => {
@@ -76,7 +76,7 @@ export class AddRoleToGroupComponent implements OnInit {
   addRole(role: Role) {
     this.loading = true;
     this.groupService
-      .addRoleToGroup(this.data.server, this.data.group, role)
+      .addRoleToGroup(this.data.controller, this.data.group, role)
       .subscribe(() => {
         this.toastService.success(`role ${role.name} was added`);
         this.getRoles();

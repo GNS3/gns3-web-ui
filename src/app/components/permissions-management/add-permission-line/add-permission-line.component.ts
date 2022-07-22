@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {Methods, Permission, PermissionActions} from "@models/api/permission";
 import {PermissionsService} from "@services/permissions.service";
@@ -25,7 +25,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class AddPermissionLineComponent implements OnInit {
 
-  @Input() server: Server;
+  @Input() controller: Controller;
   @Output() addPermissionEvent = new EventEmitter<void>();
   permission: Permission = {
     action: PermissionActions.ALLOW,
@@ -69,7 +69,7 @@ export class AddPermissionLineComponent implements OnInit {
   }
 
   save() {
-    this.permissionService.add(this.server, this.permission)
+    this.permissionService.add(this.controller, this.permission)
       .subscribe(() => {
         this.toasterService.success(`permission was created`);
         this.reset();

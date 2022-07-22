@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Role} from "@models/api/role";
 import {Permission} from "@models/api/permission";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -19,7 +19,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class UserPermissionsComponent implements OnInit {
 
-  server: Server;
+  controller: Controller;
   user: User;
   userPermissions: Permission[];
   permissions: Permission[];
@@ -29,8 +29,8 @@ export class UserPermissionsComponent implements OnInit {
               private toastService: ToasterService,
               private router: Router,
               private userService: UserService) {
-    this.route.data.subscribe((data: { server: Server, user: User, userPermissions: Permission[], permissions: Permission[] }) => {
-      this.server = data.server;
+    this.route.data.subscribe((data: { controller: Controller, user: User, userPermissions: Permission[], permissions: Permission[] }) => {
+      this.controller = data.controller;
       this.user = data.user;
       this.userPermissions = data.userPermissions;
       this.permissions = data.permissions;
@@ -44,16 +44,16 @@ export class UserPermissionsComponent implements OnInit {
     const {add, remove} = toUpdate;
     const obs: Observable<any>[] = [];
     add.forEach((permission: Permission) => {
-      obs.push(this.userService.addPermission(this.server, this.user.user_id, permission));
+      obs.push(this.userService.addPermission(this.controller, this.user.user_id, permission));
     });
     remove.forEach((permission: Permission) => {
-      obs.push(this.userService.removePermission(this.server, this.user.user_id, permission));
+      obs.push(this.userService.removePermission(this.controller, this.user.user_id, permission));
     });
 
     forkJoin(obs)
       .subscribe(() => {
           this.toastService.success(`permissions updated`);
-          this.router.navigate(['/server', this.server.id, 'management', 'users', this.user.user_id]);
+          this.router.navigate(['/controller', this.controller.id, 'management', 'users', this.user.user_id]);
         },
         (error: HttpErrorResponse) => {
           this.toastService.error(`${error.message}

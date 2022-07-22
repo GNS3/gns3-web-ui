@@ -12,12 +12,12 @@
 */
 import {Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {PermissionsService} from "@services/permissions.service";
 import {ProgressService} from "../../common/progress/progress.service";
 import {Permission} from "@models/api/permission";
 import {AddPermissionLineComponent} from "@components/permissions-management/add-permission-line/add-permission-line.component";
-import {ServerService} from "@services/server.service";
+import {ControllerService} from "@services/controller.service";
 import {PageEvent} from "@angular/material/paginator";
 import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
@@ -28,7 +28,7 @@ import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
   styleUrls: ['./permissions-management.component.scss']
 })
 export class PermissionsManagementComponent implements OnInit {
-  server: Server;
+  controller: Controller;
   permissions: Permission[];
   addPermissionLineComp = AddPermissionLineComponent;
   newPermissionEdit = false;
@@ -46,19 +46,19 @@ export class PermissionsManagementComponent implements OnInit {
               private router: Router,
               private permissionService: PermissionsService,
               private progressService: ProgressService,
-              private serverService: ServerService,
+              private controllerService: ControllerService,
               private apiInformationService: ApiInformationService) { }
 
   ngOnInit(): void {
-    const serverId = this.route.parent.snapshot.paramMap.get('server_id');
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.server = server;
+    const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(+controllerId).then((controller: Controller) => {
+      this.controller = controller;
       this.refresh();
     });
   }
 
   refresh() {
-    this.permissionService.list(this.server).subscribe(
+    this.permissionService.list(this.controller).subscribe(
       (permissions: Permission[]) => {
         this.permissions = permissions;
         this.isReady = true;

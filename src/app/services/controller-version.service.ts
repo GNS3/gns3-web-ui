@@ -11,19 +11,19 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import { Injectable } from '@angular/core';
-import {HttpServer} from "./http-server.service";
-import {Server} from "../models/server";
-import {Observable} from "rxjs";
+import { HttpController } from "./http-controller.service";
+import { Controller } from "../models/controller";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
-export class ServerVersionService {
+export class ControllerVersionService {
 
-  constructor(private httpServer: HttpServer) { }
+  constructor(private httpController: HttpController) { }
 
 
-  public checkServerVersion(server: Server): Observable<any> {
-    return this.httpServer.get(server, '/version');
+  public checkControllerVersion(controller: Controller): Observable<any> {
+    return this.httpController.get(controller, '/version');
   }
 }

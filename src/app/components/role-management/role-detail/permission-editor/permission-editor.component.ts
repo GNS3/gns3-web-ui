@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Permission} from "@models/api/permission";
 import {MatDialog} from "@angular/material/dialog";
 import {PermissionEditorValidateDialogComponent} from "@components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component";
@@ -33,7 +33,7 @@ export class PermissionEditorComponent implements OnInit {
   pageEventOwned: PageEvent | undefined;
   pageEventAvailable: PageEvent | undefined;
 
-  @Input() server: Server;
+  @Input() controller: Controller;
   @Input() ownedPermissions: Permission[];
   @Input() availablePermissions: Permission[];
   @Output() updatedPermissions: EventEmitter<any> = new EventEmitter();

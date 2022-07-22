@@ -11,8 +11,8 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import { Injectable } from '@angular/core';
-import {HttpServer} from "./http-server.service";
-import {Server} from "../models/server";
+import {HttpController} from "./http-controller.service";
+import {Controller} from "../models/controller";
 import {Group} from "../models/groups/group";
 import {Role} from "../models/api/role";
 import {Permission} from "@models/api/permission";
@@ -22,34 +22,34 @@ import {Permission} from "@models/api/permission";
 })
 export class RoleService {
 
-  constructor(private httpServer: HttpServer) { }
+  constructor(private httpController: HttpController) { }
 
-  get(server: Server) {
-    return this.httpServer.get<Role[]>(server, '/roles');
+  get(controller: Controller) {
+    return this.httpController.get<Role[]>(controller, '/roles');
   }
 
-  delete(server: Server, role_id: string) {
-    return this.httpServer.delete(server, `/roles/${role_id}`);
+  delete(controller: Controller, role_id: string) {
+    return this.httpController.delete(controller, `/roles/${role_id}`);
   }
 
-  create(server: Server, newRole: { name: string; description: string }) {
-    return this.httpServer.post(server, `/roles`, newRole);
+  create(controller: Controller, newRole: { name: string; description: string }) {
+    return this.httpController.post(controller, `/roles`, newRole);
   }
 
-  getById(server: Server, roleId: string) {
-    return this.httpServer.get<Role>(server, `/roles/${roleId}`);
+  getById(controller: Controller, roleId: string) {
+    return this.httpController.get<Role>(controller, `/roles/${roleId}`);
   }
 
-  update(server: Server, role: Role) {
-    return this.httpServer.put(server, `/roles/${role.role_id}`, {name: role.name, description: role.description});
+  update(controller: Controller, role: Role) {
+    return this.httpController.put(controller, `/roles/${role.role_id}`, {name: role.name, description: role.description});
   }
 
-  addPermission(server: Server, role: Role, permission: Permission) {
-    return this.httpServer.put(server, `/roles/${role.role_id}/permissions/${permission.permission_id}`, {});
+  addPermission(controller: Controller, role: Role, permission: Permission) {
+    return this.httpController.put(controller, `/roles/${role.role_id}/permissions/${permission.permission_id}`, {});
 
   }
 
-  removePermission(server: Server, role: Role, permission: Permission) {
-    return this.httpServer.delete(server, `/roles/${role.role_id}/permissions/${permission.permission_id}`);
+  removePermission(controller: Controller, role: Role, permission: Permission) {
+    return this.httpController.delete(controller, `/roles/${role.role_id}/permissions/${permission.permission_id}`);
   }
 }

@@ -17,9 +17,9 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable, Subscriber} from 'rxjs';
-import {ServerService} from "../services/server.service";
+import {ControllerService} from "../services/controller.service";
 import {GroupService} from "../services/group.service";
-import {Server} from "../models/server";
+import {Controller} from "../models/controller";
 import {Group} from "../models/groups/group";
 import {User} from "../models/users/user";
 
@@ -28,7 +28,7 @@ import {User} from "../models/users/user";
 })
 export class GroupMembersResolver implements Resolve<User[]> {
 
-  constructor(private serverService: ServerService,
+  constructor(private controllerService: ControllerService,
               private groupService: GroupService) {
   }
 
@@ -36,11 +36,11 @@ export class GroupMembersResolver implements Resolve<User[]> {
 
     return new Observable<User[]>((subscriber: Subscriber<User[]>) => {
 
-      const serverId = route.paramMap.get('server_id');
+      const controllerId = route.paramMap.get('controller_id');
       const groupId = route.paramMap.get('user_group_id');
 
-      this.serverService.get(+serverId).then((server: Server) => {
-        this.groupService.getGroupMember(server, groupId).subscribe((users: User[]) => {
+      this.controllerService.get(+controllerId).then((controller: Controller) => {
+        this.groupService.getGroupMember(controller, groupId).subscribe((users: User[]) => {
           subscriber.next(users);
           subscriber.complete();
         });

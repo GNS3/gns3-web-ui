@@ -12,8 +12,8 @@
 */
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Server} from "@models/server";
-import {ServerService} from "@services/server.service";
+import {Controller} from "@models/controller";
+import {ControllerService} from "@services/controller.service";
 
 @Component({
   selector: 'app-management',
@@ -22,19 +22,19 @@ import {ServerService} from "@services/server.service";
 })
 export class ManagementComponent implements OnInit {
 
-  server: Server;
+  controller: Controller;
   links = ['users', 'groups', 'roles', 'permissions'];
   activeLink: string = this.links[0];
 
   constructor(
     private route: ActivatedRoute,
     public router: Router,
-    private serverService: ServerService) { }
+    private controllerService: ControllerService) { }
 
   ngOnInit(): void {
-    const serverId = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.server = server;
+    const controllerId = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(+controllerId).then((controller: Controller) => {
+      this.controller = controller;
     });
   }
 }

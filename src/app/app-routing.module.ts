@@ -103,7 +103,7 @@ const routes: Routes = [
           user: UserDetailResolver,
           groups: UserGroupsResolver,
           permissions: UserPermissionsResolver,
-          server: ServerResolve},
+          controller: ControllerResolve},
       },
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
@@ -238,8 +238,9 @@ const routes: Routes = [
             path: 'roles',
             component: RoleManagementComponent
           },
-          {path: 'permissions',
-          component: PermissionsManagementComponent
+          {
+            path: 'permissions',
+            component: PermissionsManagementComponent
           }
         ]
       },
@@ -248,7 +249,7 @@ const routes: Routes = [
         component: GroupDetailsComponent,
         resolve: {
           members: GroupMembersResolver,
-          server: ServerResolve,
+          controller: ControllerResolve,
           group: GroupResolver,
           roles: GroupRoleResolver
         }
@@ -258,7 +259,7 @@ const routes: Routes = [
         component: RoleDetailComponent,
         resolve: {
           role: RoleDetailResolver,
-          server: ServerResolve
+          controller: ControllerResolve
         }
       },
       {
@@ -266,7 +267,7 @@ const routes: Routes = [
         component: RolePermissionsComponent,
         resolve: {
           role: RoleDetailResolver,
-          server: ServerResolve,
+          controller: ControllerResolve,
           permissions: PermissionResolver
         }
       },
@@ -276,7 +277,7 @@ const routes: Routes = [
         resolve: {
           user: UserDetailResolver,
           userPermissions: UserPermissionsResolver,
-          server: ServerResolve,
+          controller: ControllerResolve,
           permissions: PermissionResolver
         }
       }

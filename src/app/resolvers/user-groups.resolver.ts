@@ -19,26 +19,26 @@ import {
 import {Observable, of, Subscriber} from 'rxjs';
 import {Group} from "../models/groups/group";
 import {User} from "../models/users/user";
-import {Server} from "../models/server";
-import {ServerService} from "../services/server.service";
+import {Controller} from "../models/controller";
+import {ControllerService} from "../services/controller.service";
 import {UserService} from "../services/user.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserGroupsResolver implements Resolve<Group[]> {
-  constructor(private serverService: ServerService,
+  constructor(private controllerService: ControllerService,
               private userService: UserService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Group[]> {
     return new Observable<Group[]>((subscriber: Subscriber<Group[]>) => {
 
-      const serverId = route.paramMap.get('server_id');
+      const controllerId = route.paramMap.get('controller_id');
       const userId = route.paramMap.get('user_id');
 
-      this.serverService.get(+serverId).then((server: Server) => {
-        this.userService.getGroupsByUserId(server, userId).subscribe((groups: Group[]) => {
+      this.controllerService.get(+controllerId).then((controller: Controller) => {
+        this.userService.getGroupsByUserId(controller, userId).subscribe((groups: Group[]) => {
           subscriber.next(groups);
           subscriber.complete();
         });

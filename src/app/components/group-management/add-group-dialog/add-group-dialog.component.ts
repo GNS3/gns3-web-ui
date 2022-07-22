@@ -16,7 +16,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
 import {GroupNameValidator} from "@components/group-management/add-group-dialog/GroupNameValidator";
 import {GroupService} from "../../../services/group.service";
-import {Server} from "../../../models/server";
+import {Controller} from "../../../models/controller";
 import {BehaviorSubject, forkJoin, timer} from "rxjs";
 import {User} from "@models/users/user";
 import {UserService} from "@services/user.service";
@@ -35,7 +35,7 @@ import {map, startWith} from "rxjs/operators";
 export class AddGroupDialogComponent implements OnInit {
 
   groupNameForm: FormGroup;
-  server: Server;
+  controller: Controller;
 
   users: User[];
   usersToAdd: Set<User> = new Set([]);
@@ -46,7 +46,7 @@ export class AddGroupDialogComponent implements OnInit {
 
 
   constructor(private dialogRef: MatDialogRef<AddGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { server: Server },
+              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
               private formBuilder: FormBuilder,
               private groupNameValidator: GroupNameValidator,
               private groupService: GroupService,
@@ -55,15 +55,15 @@ export class AddGroupDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.server = this.data.server;
+    this.controller = this.data.controller;
     this.groupNameForm = this.formBuilder.group({
       groupName: new FormControl(
         null,
         [Validators.required, this.groupNameValidator.get],
-        [groupNameAsyncValidator(this.data.server, this.groupService)]
+        [groupNameAsyncValidator(this.data.controller, this.groupService)]
       ),
     });
-    this.userService.list(this.server)
+    this.userService.list(this.controller)
       .subscribe((users: User[]) => {
         this.users = users;
         this.filteredUsers = this.autocompleteControl.valueChanges.pipe(
@@ -91,10 +91,10 @@ export class AddGroupDialogComponent implements OnInit {
     const toAdd = Array.from(this.usersToAdd.values());
 
 
-    this.groupService.addGroup(this.server, groupName)
+    this.groupService.addGroup(this.controller, groupName)
       .subscribe((group) => {
         toAdd.forEach((user: User) => {
-          this.groupService.addMemberToGroup(this.server, group, user)
+          this.groupService.addMemberToGroup(this.controller, group, user)
             .subscribe(() => {
                 this.toasterService.success(`user ${user.username} was added`);
               },

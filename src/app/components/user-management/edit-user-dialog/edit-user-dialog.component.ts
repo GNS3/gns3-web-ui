@@ -12,7 +12,7 @@
 */
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
@@ -32,7 +32,7 @@ export class EditUserDialogComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
               public userService: UserService,
               private toasterService: ToasterService,
-              @Inject(MAT_DIALOG_DATA) public data: { user: User, server: Server }) {}
+              @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller }) {}
 
   ngOnInit(): void {
     this.editUserForm = new FormGroup({
@@ -40,11 +40,11 @@ export class EditUserDialogComponent implements OnInit {
           Validators.required,
           Validators.minLength(3),
           Validators.pattern("[a-zA-Z0-9_-]+$")],
-        [userNameAsyncValidator(this.data.server, this.userService, this.data.user.username)]),
+        [userNameAsyncValidator(this.data.controller, this.userService, this.data.user.username)]),
       full_name: new FormControl(this.data.user.full_name),
       email: new FormControl(this.data.user.email,
         [Validators.email, Validators.required],
-        [userEmailAsyncValidator(this.data.server, this.userService, this.data.user.email)]),
+        [userEmailAsyncValidator(this.data.controller, this.userService, this.data.user.email)]),
       password: new FormControl(null,
         [Validators.minLength(6), Validators.maxLength(100)]),
       is_active: new FormControl(this.data.user.is_active)
@@ -67,7 +67,7 @@ export class EditUserDialogComponent implements OnInit {
 
     updatedUser.user_id = this.data.user.user_id;
     console.log(updatedUser)
-    this.userService.update(this.data.server, updatedUser)
+    this.userService.update(this.data.controller, updatedUser)
       .subscribe((user: User) => {
           console.log("Done ", user)
           this.toasterService.success(`User ${user.username} updated`);

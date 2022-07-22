@@ -5,7 +5,7 @@
         mat-icon-button
         matTooltip="Back to role management"
         matTooltipClass="custom-tooltip"
-        [routerLink]="['/server', server.id, 'management', 'roles']">
+        [routerLink]="['/controller', controller.id, 'management', 'roles']">
         <mat-icon aria-label="Back to role management">keyboard_arrow_left</mat-icon>
       </a>
       <h1 class="col">Role {{role.name}} details</h1>
@@ -44,14 +44,14 @@
           <div>
             <button
               mat-button
-              [routerLink]="['/server', server.id, 'management', 'roles', role.role_id, 'permissions']">
+              [routerLink]="['/controller', controller.id, 'management', 'roles', role.role_id, 'permissions']">
               <mat-icon>edit</mat-icon>
             </button>
           </div>
         </div>
         <app-editable-permission
           [permission]="permission"
-          [server]="server"
+          [controller]="controller"
           *ngFor="let permission of role.permissions">
         </app-editable-permission>
       </div>

@@ -12,10 +12,10 @@
 */
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {ServerService} from "../../services/server.service";
+import {ControllerService} from "../../services/controller.service";
 import {ToasterService} from "../../services/toaster.service";
 import {GroupService} from "../../services/group.service";
-import {Server} from "../../models/server";
+import {Controller} from "../../models/controller";
 import {Group} from "../../models/groups/group";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
@@ -33,7 +33,7 @@ import {MatTableDataSource} from "@angular/material/table";
   styleUrls: ['./group-management.component.scss']
 })
 export class GroupManagementComponent implements OnInit {
-  server: Server;
+  controller: Controller;
 
   @ViewChildren('groupsPaginator') groupsPaginator: QueryList<MatPaginator>;
   @ViewChildren('groupsSort') groupsSort: QueryList<MatSort>;
@@ -47,7 +47,7 @@ export class GroupManagementComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private toasterService: ToasterService,
     public groupService: GroupService,
     public dialog: MatDialog
@@ -56,9 +56,9 @@ export class GroupManagementComponent implements OnInit {
 
 
   ngOnInit(): void {
-    const serverId = this.route.parent.snapshot.paramMap.get('server_id');
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.server = server;
+    const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(+controllerId).then((controller: Controller) => {
+      this.controller = controller;
       this.refresh();
     });
   }
@@ -95,7 +95,7 @@ export class GroupManagementComponent implements OnInit {
 
   addGroup() {
     this.dialog
-      .open(AddGroupDialogComponent, {width: '600px', height: '500px', data: {server: this.server}})
+      .open(AddGroupDialogComponent, {width: '600px', height: '500px', data: {controller: this.controller}})
       .afterClosed()
       .subscribe((added: boolean) => {
         if (added) {
@@ -105,7 +105,7 @@ export class GroupManagementComponent implements OnInit {
   }
 
   refresh() {
-    this.groupService.getGroups(this.server).subscribe((groups: Group[]) => {
+    this.groupService.getGroups(this.controller).subscribe((groups: Group[]) => {
       this.isReady = true;
       this.groups = groups;
       this.dataSource.data = groups;
@@ -119,7 +119,7 @@ export class GroupManagementComponent implements OnInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          const observables = groupsToDelete.map((group: Group) => this.groupService.delete(this.server, group.user_group_id));
+          const observables = groupsToDelete.map((group: Group) => this.groupService.delete(this.controller, group.user_group_id));
           forkJoin(observables)
             .subscribe(() => {
                 this.refresh();

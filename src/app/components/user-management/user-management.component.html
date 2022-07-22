@@ -40,7 +40,7 @@
         <ng-container matColumnDef="username">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Username</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a [routerLink]="['/server', server.id, 'management','users', row.user_id]"
+            <a [routerLink]="['/controller', controller.id, 'management','users', row.user_id]"
                class="table-link" [matTooltip]="row.username">{{ row.username }}</a>
           </mat-cell>
         </ng-container>
