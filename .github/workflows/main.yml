@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - '**'  
+      - '**'
   pull_request:
     branches:
       - master
@@ -10,14 +10,17 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-    
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 14, 16, 18 ]
+    name: Node ${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node 14
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - name: Setup ${{ matrix.node }}
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: ${{ matrix.node }}
       - uses: c-hive/gha-yarn-cache@v1
       - name: Install JS dependencies
         run: yarn install
