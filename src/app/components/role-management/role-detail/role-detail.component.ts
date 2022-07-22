@@ -13,8 +13,8 @@
 import {Component, OnInit} from '@angular/core';
 import {RoleService} from "@services/role.service";
 import {ActivatedRoute} from "@angular/router";
-import {Server} from "@models/server";
-import {ServerService} from "@services/server.service";
+import {Controller} from "@models/controller";
+import {ControllerService} from "@services/controller.service";
 import {Role} from "@models/api/role";
 import {FormControl, FormGroup} from "@angular/forms";
 import {ToasterService} from "@services/toaster.service";
@@ -26,12 +26,12 @@ import {HttpErrorResponse} from "@angular/common/http";
   styleUrls: ['./role-detail.component.scss']
 })
 export class RoleDetailComponent implements OnInit {
-  server: Server;
+  controller: Controller;
   role: Role;
   editRoleForm: FormGroup;
 
   constructor(private roleService: RoleService,
-              private serverService: ServerService,
+              private controllerService: ControllerService,
               private toastService: ToasterService,
               private route: ActivatedRoute) {
 
@@ -42,14 +42,14 @@ export class RoleDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.data.subscribe((d: { server: Server; role: Role }) => {
-      this.server = d.server;
+    this.route.data.subscribe((d: { controller: Controller; role: Role }) => {
+      this.controller = d.controller;
       this.role = d.role;
     });
   }
 
   onUpdate() {
-    this.roleService.update(this.server, this.role)
+    this.roleService.update(this.controller, this.role)
       .subscribe(() => {
           this.toastService.success(`role: ${this.role.name} was updated`);
         },

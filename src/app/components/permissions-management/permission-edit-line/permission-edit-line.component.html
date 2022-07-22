@@ -18,9 +18,9 @@
   </div>
   <div>
     <div
-      [matTooltip]="permission.path | displayPath: server | async"
+      [matTooltip]="permission.path | displayPath: controller | async"
       matTooltipClass="custom-tooltip">
-      {{permission.path | displayPath: server | async}}
+      {{permission.path | displayPath: controller | async}}
     </div>
   </div>
   <div>

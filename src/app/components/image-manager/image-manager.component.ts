@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ServerService } from '../../services/server.service';
+import { ControllerService } from '../../services/controller.service';
 import { VersionService } from '../../services/version.service';
 import { ProgressService } from 'app/common/progress/progress.service';
 import { Image } from '../../models/images';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ImageManagerService } from "../../services/image-manager.service";
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
@@ -19,7 +19,7 @@ import { imageDataSource, imageDatabase } from "./image-database-file";
   styleUrls: ['./image-manager.component.scss']
 })
 export class ImageManagerComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   public version: string;
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
@@ -32,7 +32,7 @@ export class ImageManagerComponent implements OnInit {
     private imageService: ImageManagerService,
     private progressService: ProgressService,
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private versionService: VersionService,
     private dialog: MatDialog,
     private toasterService: ToasterService,
@@ -40,13 +40,13 @@ export class ImageManagerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    let server_id = parseInt(this.route.snapshot.paramMap.get('server_id'));
-    this.serverService.get(server_id).then((server: Server) => {
-      this.server = server;
-      if (server.authToken) {
+    let controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'));
+    this.controllerService.get(controller_id).then((controller:Controller ) => {
+      this.controller = controller;
+      if (controller.authToken) {
         this.getImages()
       }
-      // this.versionService.get(this.server).subscribe((version: Version) => {
+      // this.versionService.get(this.controller).subscribe((version: Version) => {
       //   this.version = version.version;
       // });
     });
@@ -54,7 +54,7 @@ export class ImageManagerComponent implements OnInit {
   }
 
   getImages() {
-    this.imageService.getImages(this.server).subscribe(
+    this.imageService.getImages(this.controller).subscribe(
       (images: Image[]) => {
         this.imageDatabase.addImages(images)
       },
@@ -66,7 +66,7 @@ export class ImageManagerComponent implements OnInit {
   }
 
   deleteFile(path) {
-    this.imageService.deleteFile(this.server, path).subscribe(
+    this.imageService.deleteFile(this.controller, path).subscribe(
       (res) => {
         this.getImages()
         this.unChecked()
@@ -106,7 +106,7 @@ export class ImageManagerComponent implements OnInit {
       maxHeight: '550px',
       autoFocus: false,
       disableClose: true,
-      data: this.server
+      data: this.controller
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {
@@ -128,7 +128,7 @@ export class ImageManagerComponent implements OnInit {
       autoFocus: false,
       disableClose: true,
       data: {
-        server: this.server,
+        controller: this.controller,
         deleteFilesPaths: this.selection.selected
       }
     });

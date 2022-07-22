@@ -44,7 +44,7 @@
     <app-editable-permission
       [side]="'LEFT'"
       [permission]="permission"
-      [server]="server"
+      [controller]="controller"
       (click)="remove(permission)"
       *ngFor="let permission of ownedArray | permissionsFilter: searchPermissions?.id | paginator: pageEventOwned">
 
@@ -58,7 +58,7 @@
     <app-editable-permission
       [side]="'RIGHT'"
       [permission]="permission"
-      [server]="server"
+      [controller]="controller"
       (click)="add(permission)"
       *ngFor="let permission of availableArray | permissionsFilter: searchPermissions?.id | paginator: pageEventAvailable">
 

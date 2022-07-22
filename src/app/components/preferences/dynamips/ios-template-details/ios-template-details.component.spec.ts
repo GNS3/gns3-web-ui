@@ -10,23 +10,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplateDetailsComponent } from './ios-template-details.component';
 
 export class MockedIosService {
-  public getTemplate(server: Server, template_id: string) {
+  public getTemplate(controller:Controller , template_id: string) {
     return of({} as IosTemplate);
   }
 
-  public saveTemplate(server: Server, iosTemplate: IosTemplate) {
+  public saveTemplate(controller:Controller , iosTemplate: IosTemplate) {
     return of(iosTemplate);
   }
 }
@@ -35,7 +35,7 @@ describe('IosTemplateDetailsComponent', () => {
   let component: IosTemplateDetailsComponent;
   let fixture: ComponentFixture<IosTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIosService = new MockedIosService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -58,7 +58,7 @@ describe('IosTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: IosConfigurationService, useClass: IosConfigurationService },

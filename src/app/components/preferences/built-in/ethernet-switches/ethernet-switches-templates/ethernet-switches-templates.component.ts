@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 @Component({
@@ -12,27 +12,27 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
   styleUrls: ['./ethernet-switches-templates.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetSwitchesTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   ethernetSwitchesTemplates: EthernetSwitchTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
     this.builtInTemplatesService
-      .getTemplates(this.server)
+      .getTemplates(this.controller)
       .subscribe((ethernetSwitchesTemplates: EthernetSwitchTemplate[]) => {
         this.ethernetSwitchesTemplates = ethernetSwitchesTemplates.filter(
           (elem) => elem.template_type === 'ethernet_switch' && !elem.builtin

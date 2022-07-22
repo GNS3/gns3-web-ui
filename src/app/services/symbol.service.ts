@@ -3,9 +3,9 @@ import { Template } from '../models/template';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Symbol } from '../models/symbol';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { environment } from 'environments/environment';
 
 const CACHE_SIZE = 1;
@@ -16,7 +16,7 @@ export class SymbolService {
   private cache: Observable<Symbol[]>;
   private maximumSymbolSize: number = 80;
 
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
   getMaximumSymbolSize() {
     return this.maximumSymbolSize;
@@ -26,9 +26,9 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
   }
 
-  getDimensions(server: Server, symbol_id: string): Observable<SymbolDimension> {
+  getDimensions(controller:Controller , symbol_id: string): Observable<SymbolDimension> {
     const encoded_uri = encodeURI(symbol_id);
-    return this.httpServer.get(server, `/symbols/${encoded_uri}/dimensions`);
+    return this.httpController.get(controller, `/symbols/${encoded_uri}/dimensions`);
   }
 
   scaleDimensionsForNode(node: Node): SymbolDimension {
@@ -43,30 +43,30 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
   }
 
-  add(server: Server, symbolName: string, symbol: string) {
+  add(controller:Controller , symbolName: string, symbol: string) {
     this.cache = null;
-    return this.httpServer.post(server, `/symbols/${symbolName}/raw`, symbol);
+    return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
-  load(server: Server): Observable<Symbol[]> {
-    return this.httpServer.get<Symbol[]>(server, '/symbols');
+  load(controller:Controller ): Observable<Symbol[]> {
+    return this.httpController.get<Symbol[]>(controller, '/symbols');
   }
 
-  list(server: Server) {
+  list(controller:Controller ) {
     if (!this.cache) {
-      this.cache = this.load(server).pipe(shareReplay(CACHE_SIZE));
+      this.cache = this.load(controller).pipe(shareReplay(CACHE_SIZE));
     }
 
     return this.cache;
   }
 
-  raw(server: Server, symbol_id: string) {
+  raw(controller:Controller , symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
-    return this.httpServer.getText(server, `/symbols/${encoded_uri}/raw`);
+    return this.httpController.getText(controller, `/symbols/${encoded_uri}/raw`);
   }
 
-  getSymbolFromTemplate(server: Server, template: Template) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/symbols/${template.symbol}/raw`;
+  getSymbolFromTemplate(controller:Controller , template: Template) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/symbols/${template.symbol}/raw`;
   }
 }
 

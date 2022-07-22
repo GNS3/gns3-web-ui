@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { Link } from '../../../../models/link';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { ToasterService } from '../../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
 import { LinkService } from '../../../../services/link.service';
@@ -17,7 +17,7 @@ import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/l
   styleUrls: ['./link-style-editor.component.scss'],
 })
 export class LinkStyleEditorDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   project: Project;
   link: Link;
   formGroup: FormGroup;
@@ -68,7 +68,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       let type = this.borderTypes.indexOf(this.formGroup.get('type').value);
       this.link.link_style.type = type;
 
-      this.linkService.updateLinkStyle(this.server, this.link).subscribe((link) => {
+      this.linkService.updateLinkStyle(this.controller, this.link).subscribe((link) => {
         this.linksDataSource.update(link);
         this.linksEventSource.edited.next(this.linkToMapLink.convert(link));
         location.reload() 

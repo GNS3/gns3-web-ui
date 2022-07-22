@@ -7,11 +7,11 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./system-status.component.scss'],
 })
 export class SystemStatusComponent implements OnInit {
-  public serverId: string = '';
+  public controllerId: string = '';
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.serverId = this.route.snapshot.paramMap.get('server_id');
+    this.controllerId = this.route.snapshot.paramMap.get('controller_id');
   }
 }

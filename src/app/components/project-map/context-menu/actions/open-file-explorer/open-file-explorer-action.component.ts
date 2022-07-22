@@ -1,14 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 
 @Component({
   selector: 'app-open-file-explorer-action',
   templateUrl: './open-file-explorer-action.component.html',
 })
 export class OpenFileExplorerActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
 
   constructor(private electronService: ElectronService) {}

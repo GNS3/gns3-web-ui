@@ -10,12 +10,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ComputeService } from '../../../../../services/compute.service';
-import { ServerService } from '../../../../../services/server.service';
-import { MockedServerService } from '../../../../../services/server.service.spec';
+import { ControllerService } from '../../../../../services/controller.service';
+import { MockedControllerService } from '../../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../../services/toaster.service.spec';
@@ -24,7 +24,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesAddTemplateComponent } from './cloud-nodes-add-template.component';
 
 export class MockedBuiltInTemplatesService {
-  public addTemplate(server: Server, cloudTemplate: CloudTemplate) {
+  public addTemplate(controller:Controller , cloudTemplate: CloudTemplate) {
     return of(cloudTemplate);
   }
 }
@@ -33,7 +33,7 @@ describe('CloudNodesAddTemplateComponent', () => {
   let component: CloudNodesAddTemplateComponent;
   let fixture: ComponentFixture<CloudNodesAddTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let mockedToasterService = new MockedToasterService();
   let mockedComputeService = new MockedComputeService();
@@ -51,12 +51,12 @@ describe('CloudNodesAddTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/builtin/cloud-nodes', component: CloudNodesAddTemplateComponent },
+          { path: 'controller/1/preferences/builtin/cloud-nodes', component: CloudNodesAddTemplateComponent },
         ]),
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ComputeService, useValue: mockedComputeService },
@@ -80,7 +80,7 @@ describe('CloudNodesAddTemplateComponent', () => {
   it('should call add template', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
     component.templateName = 'sample name';
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
     component.formGroup.controls['templateName'].setValue('template name');
 
     component.addTemplate();
@@ -92,7 +92,7 @@ describe('CloudNodesAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = '';
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 

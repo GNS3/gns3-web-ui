@@ -5,7 +5,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
 import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -16,7 +16,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogCloudComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   generalSettingsForm: FormGroup;
@@ -51,7 +51,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
@@ -98,7 +98,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
         .concat(this.portsMappingEthernet)
         .concat(this.portsMappingTap);
 
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

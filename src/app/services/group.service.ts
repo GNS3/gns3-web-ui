@@ -11,8 +11,8 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Injectable} from '@angular/core';
-import {HttpServer} from "./http-server.service";
-import {Server} from "../models/server";
+import {HttpController} from "./http-controller.service";
+import {Controller} from "../models/controller";
 import {Group} from "../models/groups/group";
 import {User} from "../models/users/user";
 import {Observable} from "rxjs";
@@ -24,51 +24,51 @@ import {Role} from "@models/api/role";
 export class GroupService {
 
   constructor(
-    private httpServer: HttpServer
+    private httpController: HttpController
   ) {
   }
 
-  getGroups(server: Server) {
-    return this.httpServer.get<Group[]>(server, '/groups');
+  getGroups(controller: Controller) {
+    return this.httpController.get<Group[]>(controller, '/groups');
   }
 
-  getGroupMember(server: Server, groupId: string) {
-    return this.httpServer.get<User[]>(server, `/groups/${groupId}/members`);
+  getGroupMember(controller: Controller, groupId: string) {
+    return this.httpController.get<User[]>(controller, `/groups/${groupId}/members`);
   }
 
-  addGroup(server: Server, name: string): Observable<Group> {
-    return this.httpServer.post<Group>(server, `/groups`, {name});
+  addGroup(controller: Controller, name: string): Observable<Group> {
+    return this.httpController.post<Group>(controller, `/groups`, {name});
   }
 
-  delete(server: Server, user_group_id: string) {
-    return this.httpServer.delete(server, `/groups/${user_group_id}`);
+  delete(controller: Controller, user_group_id: string) {
+    return this.httpController.delete(controller, `/groups/${user_group_id}`);
   }
 
-  get(server: Server, user_group_id: string) {
-    return this.httpServer.get(server, `/groups/${user_group_id}`);
+  get(controller: Controller, user_group_id: string) {
+    return this.httpController.get(controller, `/groups/${user_group_id}`);
   }
 
-  addMemberToGroup(server: Server, group: Group, user: User) {
-    return this.httpServer.put(server, `/groups/${group.user_group_id}/members/${user.user_id}`, {});
+  addMemberToGroup(controller: Controller, group: Group, user: User) {
+    return this.httpController.put(controller, `/groups/${group.user_group_id}/members/${user.user_id}`, {});
   }
 
-  removeUser(server: Server, group: Group, user: User) {
-    return this.httpServer.delete(server, `/groups/${group.user_group_id}/members/${user.user_id}`);
+  removeUser(controller: Controller, group: Group, user: User) {
+    return this.httpController.delete(controller, `/groups/${group.user_group_id}/members/${user.user_id}`);
   }
 
-  update(server: Server, group: Group) {
-    return this.httpServer.put(server, `/groups/${group.user_group_id}`, {name: group.name});
+  update(controller: Controller, group: Group) {
+    return this.httpController.put(controller, `/groups/${group.user_group_id}`, {name: group.name});
   }
 
-  getGroupRole(server: Server, groupId: string) {
-    return this.httpServer.get<Role[]>(server, `/groups/${groupId}/roles`);
+  getGroupRole(controller: Controller, groupId: string) {
+    return this.httpController.get<Role[]>(controller, `/groups/${groupId}/roles`);
   }
 
-  removeRole(server: Server, group: Group, role: Role) {
-    return this.httpServer.delete(server, `/groups/${group.user_group_id}/roles/${role.role_id}`);
+  removeRole(controller: Controller, group: Group, role: Role) {
+    return this.httpController.delete(controller, `/groups/${group.user_group_id}/roles/${role.role_id}`);
   }
 
-  addRoleToGroup(server: Server, group: Group, role: Role) {
-    return this.httpServer.put(server, `/groups/${group.user_group_id}/roles/${role.role_id}`, {});
+  addRoleToGroup(controller: Controller, group: Group, role: Role) {
+    return this.httpController.put(controller, `/groups/${group.user_group_id}/roles/${role.role_id}`, {});
   }
 }

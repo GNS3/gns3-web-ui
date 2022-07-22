@@ -12,7 +12,7 @@
 */
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Group} from "@models/groups/group";
 import {User} from "@models/users/user";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -31,7 +31,7 @@ import {AddRoleToGroupComponent} from "@components/group-details/add-role-to-gro
   styleUrls: ['./group-details.component.scss']
 })
 export class GroupDetailsComponent implements OnInit {
-  server: Server;
+  controller: Controller;
   group: Group;
   members: User[];
   editGroupForm: FormGroup;
@@ -48,9 +48,9 @@ export class GroupDetailsComponent implements OnInit {
       groupname: new FormControl(''),
     });
 
-    this.route.data.subscribe((d: { server: Server; group: Group, members: User[], roles: Role[] }) => {
+    this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], roles: Role[] }) => {
 
-      this.server = d.server;
+      this.controller = d.controller;
       this.group = d.group;
       this.roles = d.roles;
       this.members = d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
@@ -63,7 +63,7 @@ export class GroupDetailsComponent implements OnInit {
   }
 
   onUpdate() {
-    this.groupService.update(this.server, this.group)
+    this.groupService.update(this.controller, this.group)
       .subscribe(() => {
         this.toastService.success(`group updated`);
       }, (error) => {
@@ -77,7 +77,7 @@ export class GroupDetailsComponent implements OnInit {
       .open<AddRoleToGroupComponent>(AddRoleToGroupComponent,
         {
           width: '700px', height: '500px',
-          data: {server: this.server, group: this.group}
+          data: {controller: this.controller, group: this.group}
         })
       .afterClosed()
       .subscribe(() => {
@@ -89,7 +89,7 @@ export class GroupDetailsComponent implements OnInit {
       .open<AddUserToGroupDialogComponent>(AddUserToGroupDialogComponent,
         {
           width: '700px', height: '500px',
-          data: {server: this.server, group: this.group}
+          data: {controller: this.controller, group: this.group}
         })
       .afterClosed()
       .subscribe(() => {
@@ -103,7 +103,7 @@ export class GroupDetailsComponent implements OnInit {
       .afterClosed()
       .subscribe((confirm: boolean) => {
         if (confirm) {
-          this.groupService.removeUser(this.server, this.group, user)
+          this.groupService.removeUser(this.controller, this.group, user)
             .subscribe(() => {
                 this.toastService.success(`User ${user.username} was removed`);
                 this.reloadMembers();
@@ -123,7 +123,7 @@ export class GroupDetailsComponent implements OnInit {
       .afterClosed()
       .subscribe((confirm: string) => {
         if (confirm) {
-          this.groupService.removeRole(this.server, this.group, role)
+          this.groupService.removeRole(this.controller, this.group, role)
             .subscribe(() => {
                 this.toastService.success(`Role ${role.name} was removed`);
                 this.reloadRoles();
@@ -137,14 +137,14 @@ export class GroupDetailsComponent implements OnInit {
   }
 
   reloadMembers() {
-    this.groupService.getGroupMember(this.server, this.group.user_group_id)
+    this.groupService.getGroupMember(this.controller, this.group.user_group_id)
       .subscribe((members: User[]) => {
         this.members = members;
       });
   }
 
   reloadRoles() {
-    this.groupService.getGroupRole(this.server, this.group.user_group_id)
+    this.groupService.getGroupRole(this.controller, this.group.user_group_id)
       .subscribe((roles: Role[]) => {
         this.roles = roles;
       });

@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { PortsComponent } from '../../../common/ports/ports.component';
 
@@ -16,7 +16,7 @@ import { PortsComponent } from '../../../common/ports/ports.component';
 })
 export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  server: Server;
+  controller:Controller ;
   ethernetSwitchTemplate: EthernetSwitchTemplate;
   inputForm: FormGroup;
   isSymbolSelectionOpened: boolean = false;
@@ -25,7 +25,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -40,14 +40,14 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.getConfiguration();
       this.builtInTemplatesService
-        .getTemplate(this.server, template_id)
+        .getTemplate(this.controller, template_id)
         .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
           this.ethernetSwitchTemplate = ethernetSwitchTemplate;
         });
@@ -60,7 +60,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'ethernet-switches']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
   }
 
   onSave() {
@@ -69,7 +69,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     } else {
       this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
       this.builtInTemplatesService
-        .saveTemplate(this.server, this.ethernetSwitchTemplate)
+        .saveTemplate(this.controller, this.ethernetSwitchTemplate)
         .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
           this.toasterService.success('Changes saved');
         });

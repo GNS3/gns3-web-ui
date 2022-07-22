@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
-import { Server } from '../../../../../../models/server';
+import{ Controller } from '../../../../../../models/controller';
 import { NodeService } from '../../../../../../services/node.service';
 import { ToasterService } from '../../../../../../services/toaster.service';
 
@@ -11,7 +11,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['./edit-network-configuration.component.scss'],
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   node: Node;
   configuration: string;
 
@@ -22,14 +22,14 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.nodeService.getNetworkConfiguration(this.server, this.node).subscribe((response: string) => {
+    this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe((response: string) => {
       this.configuration = response;
     });
   }
 
   onSaveClick() {
     this.nodeService
-      .saveNetworkConfiguration(this.server, this.node, this.configuration)
+      .saveNetworkConfiguration(this.controller, this.node, this.configuration)
       .subscribe((response: string) => {
         this.onCancelClick();
         this.toasterService.success(`Configuration for node ${this.node.name} saved.`);

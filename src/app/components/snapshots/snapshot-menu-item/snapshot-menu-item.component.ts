@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -16,7 +16,7 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
 })
 export class SnapshotMenuItemComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('server') server: Server;
+  @Input('controller') controller:Controller ;
 
   constructor(
     private dialog: MatDialog,
@@ -31,7 +31,7 @@ export class SnapshotMenuItemComponent implements OnInit {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
       width: '450px',
       data: {
-        server: this.server,
+        controller: this.controller,
         project: this.project,
       },
       autoFocus: false,
@@ -40,7 +40,7 @@ export class SnapshotMenuItemComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((snapshot) => {
       if (snapshot && this.project.project_id) {
-        const creation = this.snapshotService.create(this.server, this.project.project_id, snapshot);
+        const creation = this.snapshotService.create(this.controller, this.project.project_id, snapshot);
 
         const progress = this.progressDialogService.open();
 

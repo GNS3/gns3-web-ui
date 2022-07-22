@@ -12,7 +12,7 @@
 */
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Permission} from "@models/api/permission";
-import { Server } from '@models/server';
+import {Controller} from '@models/controller';
 
 @Component({
   selector: 'app-editable-permission',
@@ -22,7 +22,7 @@ import { Server } from '@models/server';
 export class EditablePermissionComponent implements OnInit {
 
   @Input() permission: Permission;
-  @Input() server: Server;
+  @Input() controller: Controller;
   @Input() side: 'LEFT' | 'RIGHT';
   @Output() click = new EventEmitter();
 

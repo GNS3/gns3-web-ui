@@ -4,7 +4,7 @@ import {Group} from "@models/groups/group";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
 import {User} from "@models/users/user";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
 import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -25,7 +25,7 @@ export class UserDetailComponent implements OnInit {
   editUserForm: FormGroup;
   groups: Group[];
   user: User;
-  server: Server;
+  controller: Controller;
   user_id: string;
   permissions: Permission[];
   changingPassword: boolean = false;
@@ -39,10 +39,10 @@ export class UserDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.server = this.route.snapshot.data['server'];
-    if (!this.server) this.router.navigate(['/servers']);
+    this.controller = this.route.snapshot.data['controller'];
+    if (!this.controller) this.router.navigate(['/controllers']);
 
-    this.route.data.subscribe((d: { server: Server; user: User, groups: Group[], permissions: Permission[]}) => {
+    this.route.data.subscribe((d: { controller: Controller; user: User, groups: Group[], permissions: Permission[]}) => {
       this.user = d.user;
       this.user_id = this.user.user_id;
       this.groups = d.groups;
@@ -58,11 +58,11 @@ export class UserDetailComponent implements OnInit {
           Validators.required,
           Validators.minLength(3),
           Validators.pattern("[a-zA-Z0-9_-]+$")],
-        [userNameAsyncValidator(this.server, this.userService, this.user.username)]),
+        [userNameAsyncValidator(this.controller, this.userService, this.user.username)]),
       full_name: new FormControl(this.user.full_name),
       email: new FormControl(this.user.email,
         [Validators.email, Validators.required],
-        [userEmailAsyncValidator(this.server, this.userService, this.user.email)]),
+        [userEmailAsyncValidator(this.controller, this.userService, this.user.email)]),
       is_active: new FormControl(this.user.is_active)
     });
   }
@@ -79,7 +79,7 @@ export class UserDetailComponent implements OnInit {
     const updatedUser = this.getUpdatedValues();
     updatedUser['user_id'] = this.user.user_id;
 
-    this.userService.update(this.server, updatedUser)
+    this.userService.update(this.controller, updatedUser)
       .subscribe((user: User) => {
           this.toasterService.success(`User ${user.username} updated`);
         },
@@ -105,6 +105,6 @@ export class UserDetailComponent implements OnInit {
 
   onChangePassword() {
     this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent,
-      {width: '400px', height: '300px', data: {user: this.user, server: this.server}});
+      {width: '400px', height: '300px', data: {user: this.user, controller: this.controller}});
   }
 }

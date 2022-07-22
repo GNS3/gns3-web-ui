@@ -10,16 +10,16 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Server} from "../../../models/server";
+import {Controller} from "../../../models/controller";
 import {UserService} from "../../../services/user.service";
 import {FormControl} from "@angular/forms";
 import {timer} from "rxjs";
 import {map, switchMap} from "rxjs/operators";
 
-export const userEmailAsyncValidator = (server: Server, userService: UserService, except: string = '') => {
+export const userEmailAsyncValidator = (controller: Controller, userService: UserService, except: string = '') => {
   return (control: FormControl) => {
     return timer(500).pipe(
-      switchMap(() => userService.list(server)),
+      switchMap(() => userService.list(controller)),
       map((response) => {
         return (response.find((n) => n.email === control.value && control.value !== except) ? { emailExists: true } : null);
       })

@@ -21,7 +21,7 @@
         <mat-form-field class="input-full-width">
           <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
             <mat-option *ngFor="let compressionValue of compression_methods" [value]="compressionValue">{{
-              compressionValue.name
+              compressionValue?.name
             }}</mat-option>
           </mat-select>
         </mat-form-field>

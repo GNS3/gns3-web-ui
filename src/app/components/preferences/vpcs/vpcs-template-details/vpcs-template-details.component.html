@@ -73,7 +73,7 @@
 </div>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && vpcsTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="vpcsTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

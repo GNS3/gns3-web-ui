@@ -7,7 +7,7 @@ import { TextEditedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
@@ -16,7 +16,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./text-edited.component.scss'],
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Controller;
   private textEdited: Subscription;
 
   constructor(
@@ -38,8 +38,8 @@ export class TextEditedComponent implements OnInit, OnDestroy {
 
     let drawing = this.drawingsDataSource.get(evt.textDrawingId);
 
-    this.drawingService.updateText(this.server, drawing, svgString).subscribe((serverDrawing: Drawing) => {
-      this.drawingsDataSource.update(serverDrawing);
+    this.drawingService.updateText(this.controller, drawing, svgString).subscribe((controllerDrawing: Drawing) => {
+      this.drawingsDataSource.update(controllerDrawing);
       this.drawingsEventSource.textSaved.emit(true);
     });
   }

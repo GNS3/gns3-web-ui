@@ -7,7 +7,7 @@ import { AddedDataEvent } from '../../../cartography/events/event-source';
 import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({
@@ -16,7 +16,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-added.component.scss'],
 })
 export class DrawingAddedComponent implements OnInit, OnDestroy {
-  @Input() server: Server;
+  @Input() controller: Controller
   @Input() project: Project;
   @Input() selectedDrawing: string;
   @Output() drawingSaved = new EventEmitter<boolean>();
@@ -49,9 +49,9 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
     this.drawingService
-      .add(this.server, this.project.project_id, evt.x, evt.y, svgText)
-      .subscribe((serverDrawing: Drawing) => {
-        this.drawingsDataSource.add(serverDrawing);
+      .add(this.controller, this.project.project_id, evt.x, evt.y, svgText)
+      .subscribe((controllerDrawing: Drawing) => {
+        this.drawingsDataSource.add(controllerDrawing);
         this.drawingSaved.emit(true);
       });
   }

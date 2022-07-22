@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  server: Server;
+  controller:Controller ;
   node: Node;
   name: string;
   inputForm: FormGroup;
@@ -34,7 +34,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = this.node.name;
       this.getConfiguration();
@@ -48,7 +48,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   onSaveClick() {
     if (this.inputForm.valid) {
       this.node.properties.ports_mapping = this.portsComponent.ethernetPorts;
-      this.nodeService.updateNode(this.server, this.node).subscribe(() => {
+      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
       });

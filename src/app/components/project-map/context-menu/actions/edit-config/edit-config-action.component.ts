@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '../../../../../models/project';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor/config-editor.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor
   templateUrl: './edit-config-action.component.html',
 })
 export class EditConfigActionComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() node: Node;
 
@@ -24,7 +24,7 @@ export class EditConfigActionComponent {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.node = this.node;
   }

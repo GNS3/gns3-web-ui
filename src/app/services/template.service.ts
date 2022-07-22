@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import 'rxjs/add/operator/map';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Template } from '../models/template';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class TemplateService {
   public newTemplateCreated: Subject<Template> = new Subject<Template>();
 
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  list(server: Server): Observable<Template[]> {
-    return this.httpServer.get<Template[]>(server, '/templates') as Observable<Template[]>;
+  list(controller:Controller ): Observable<Template[]> {
+    return this.httpController.get<Template[]>(controller, '/templates') as Observable<Template[]>;
   }
 
-  deleteTemplate(server: Server, templateId: string): Observable<any> {
-    return this.httpServer.delete(server, `/templates/${templateId}`, { observe: 'body' });
+  deleteTemplate(controller:Controller , templateId: string): Observable<any> {
+    return this.httpController.delete(controller, `/templates/${templateId}`, { observe: 'body' });
   }
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
@@ -12,27 +12,27 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./qemu-vm-templates.component.scss', '../../preferences.component.scss'],
 })
 export class QemuVmTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   qemuTemplates: QemuTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private qemuService: QemuService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.qemuService.getTemplates(this.server).subscribe((qemuTemplates: QemuTemplate[]) => {
+    this.qemuService.getTemplates(this.controller).subscribe((qemuTemplates: QemuTemplate[]) => {
       this.qemuTemplates = qemuTemplates.filter((elem) => elem.template_type === 'qemu' && !elem.builtin);
     });
   }
@@ -46,6 +46,6 @@ export class QemuVmTemplatesComponent implements OnInit {
   }
 
   copyTemplate(template: QemuTemplate) {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates', template.template_id, 'copy']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates', template.template_id, 'copy']);
   }
 }

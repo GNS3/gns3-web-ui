@@ -9,12 +9,12 @@ import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../models/qemu/qemu-image';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../services/qemu.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
@@ -24,7 +24,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddQemuVmTemplateComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   qemuBinaries: QemuBinary[] = [];
   selectPlatform: string[] = [];
   selectedPlatform: string;
@@ -47,7 +47,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private router: Router,
@@ -88,7 +88,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+      this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
         this.qemuImages = qemuImages;
       });
       this.toasterService.success('Image uploaded');
@@ -100,21 +100,21 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
     };
 
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
       });
 
 
-      this.qemuService.getBinaries(this.server).subscribe((qemuBinaries: QemuBinary[]) => {
+      this.qemuService.getBinaries(this.controller).subscribe((qemuBinaries: QemuBinary[]) => {
         this.qemuBinaries = qemuBinaries;
         if (this.qemuBinaries[0]) this.selectedBinary = this.qemuBinaries[0];
       });
 
-      this.qemuService.getImages(this.server).subscribe((qemuImages: QemuImage[]) => {
+      this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
         this.qemuImages = qemuImages;
       });
 
@@ -134,8 +134,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -150,12 +150,12 @@ export class AddQemuVmTemplateComponent implements OnInit {
     let name = event.target.files[0].name;
     this.diskForm.controls['fileName'].setValue(name);
 
-    const url = this.qemuService.getImagePath(this.server, name);
+    const url = this.qemuService.getImagePath(this.controller, name);
     this.uploader.queue.forEach((elem) => (elem.url = url));
-  
+
     const itemToUpload = this.uploader.queue[0];
-    
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.server.authToken}]) 
+
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller.authToken}])
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar', data:{upload_file_type:'Image'}});
   }
@@ -169,7 +169,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'qemu', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates']);
   }
 
   addTemplate() {
@@ -187,13 +187,13 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.qemuTemplate.name = this.nameForm.get('templateName').value;
       this.qemuTemplate.compute_id = 'local';
 
-      this.qemuService.addTemplate(this.server, this.qemuTemplate).subscribe((template: QemuTemplate) => {
+      this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
     }
   }
-  
+
 
 }

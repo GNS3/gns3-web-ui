@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './align-vertically.component.html',
 })
 export class AlignVerticallyActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
 
   constructor(private nodesDataSource: NodesDataSource, private nodeService: NodeService) {}
@@ -27,7 +27,7 @@ export class AlignVerticallyActionComponent implements OnInit {
       node.x = averageX;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.server, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
     });
   }
 }

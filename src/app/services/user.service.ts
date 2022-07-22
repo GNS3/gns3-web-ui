@@ -1,54 +1,55 @@
 import { Injectable } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import { Subject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Controller } from '../models/controller';
+import { HttpController } from './http-controller.service';
 import { User } from '../models/users/user';
-import {Group} from "@models/groups/group";
-import {Permission} from "@models/api/permission";
+import { Group } from "@models/groups/group";
+import { Permission } from "@models/api/permission";
 
 @Injectable()
 export class UserService {
   constructor(
-    private httpServer: HttpServer
+    private httpController: HttpController
   ) {}
 
-  getInformationAboutLoggedUser(server: Server) {
-    return this.httpServer.get<User>(server, '/users/me/');
+  getInformationAboutLoggedUser(controller: Controller) {
+    return this.httpController.get<User>(controller, '/users/me/');
   }
 
-  get(server:Server, user_id: string) {
-    return this.httpServer.get<User>(server, `/users/${user_id}`);
+  get(controller: Controller, user_id: string) {
+    return this.httpController.get<User>(controller, `/users/${user_id}`);
   }
 
-  list(server: Server) {
-    return this.httpServer.get<User[]>(server, '/users');
+  list(controller: Controller) {
+    return this.httpController.get<User[]>(controller, '/users');
   }
 
-  add(server: Server, user: any): Observable<User> {
-    return this.httpServer.post<User>(server, `/users`, user);
+  add(controller: Controller, user: any): Observable<User> {
+    return this.httpController.post<User>(controller, `/users`, user);
   }
 
-  delete(server: Server, user_id: string) {
-    return this.httpServer.delete(server, `/users/${user_id}`);
+  delete(controller: Controller, user_id: string) {
+    return this.httpController.delete(controller, `/users/${user_id}`);
   }
 
-  update(server: Server, user: any): Observable<User> {
-    return this.httpServer.put<User>(server, `/users/${user.user_id}`, user);
+  update(controller: Controller, user: any): Observable<User> {
+    return this.httpController.put<User>(controller, `/users/${user.user_id}`, user);
   }
 
-  getGroupsByUserId(server: Server, user_id: string) {
-    return this.httpServer.get<Group[]>(server, `/users/${user_id}/groups`);
+  getGroupsByUserId(controller: Controller, user_id: string) {
+    return this.httpController.get<Group[]>(controller, `/users/${user_id}/groups`);
   }
 
-  getPermissionsByUserId(server: Server, user_id: string) {
-    return this.httpServer.get<Permission[]>(server, `/users/${user_id}/permissions`);
+  getPermissionsByUserId(controller: Controller, user_id: string) {
+    return this.httpController.get<Permission[]>(controller, `/users/${user_id}/permissions`);
   }
 
-  addPermission(server: Server, user_id: string, permission: Permission) {
-    return this.httpServer.put(server, `/users/${user_id}/permissions/${permission.permission_id}`, {});
+  addPermission(controller: Controller, user_id: string, permission: Permission) {
+    return this.httpController.put(controller, `/users/${user_id}/permissions/${permission.permission_id}`, {});
   }
 
-  removePermission(server: Server, user_id: string, permission: Permission) {
-    return this.httpServer.delete(server, `/users/${ user_id}/permissions/${permission.permission_id}`);
+  removePermission(controller: Controller, user_id: string, permission: Permission) {
+    return this.httpController.delete(controller, `/users/${user_id}/permissions/${permission.permission_id}`);
   }
 }

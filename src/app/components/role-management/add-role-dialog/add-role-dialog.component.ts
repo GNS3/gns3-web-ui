@@ -13,7 +13,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {GroupNameValidator} from "@components/group-management/add-group-dialog/GroupNameValidator";
 import {GroupService} from "@services/group.service";
 import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
@@ -28,7 +28,7 @@ export class AddRoleDialogComponent implements OnInit {
   roleNameForm: FormGroup;
 
   constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { server: Server },
+              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
               private formBuilder: FormBuilder) {
   }
 

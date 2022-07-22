@@ -3,22 +3,22 @@ import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Compute } from '../models/compute';
 import { ComputeStatistics } from '../models/computeStatistics';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import{ Controller } from '../models/controller';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class ComputeService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
-  getComputes(server: Server): Observable<Compute[]> {
-    return this.httpServer.get<Compute[]>(server, '/computes') as Observable<Compute[]>;
+  getComputes(controller:Controller ): Observable<Compute[]> {
+    return this.httpController.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
   }
 
-  getUploadPath(server: Server, emulator: string, filename: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/${emulator}/images/${filename}`;
+  getUploadPath(controller:Controller , emulator: string, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
   }
 
-  getStatistics(server: Server): Observable<ComputeStatistics[]> {
-    return this.httpServer.get(server, `/statistics`);
+  getStatistics(controller:Controller ): Observable<ComputeStatistics[]> {
+    return this.httpController.get(controller, `/statistics`);
   }
 }

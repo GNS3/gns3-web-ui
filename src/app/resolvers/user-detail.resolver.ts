@@ -17,28 +17,28 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable, of, Subscriber} from 'rxjs';
-import {ServerService} from "@services/server.service";
+import {ControllerService} from "@services/controller.service";
 import {UserService} from "@services/user.service";
 import {User} from "@models/users/user";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserDetailResolver implements Resolve<User> {
 
-  constructor(private serverService: ServerService,
+  constructor(private controllerService: ControllerService,
               private userService: UserService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<User> {
     return new Observable<User>((subscriber: Subscriber<User>) => {
 
-      const serverId = route.paramMap.get('server_id');
+      const controllerId = route.paramMap.get('controller_id');
       const userId = route.paramMap.get('user_id');
 
-      this.serverService.get(+serverId).then((server: Server) => {
-        this.userService.get(server, userId).subscribe((user: User) => {
+      this.controllerService.get(+controllerId).then((controller: Controller) => {
+        this.userService.get(controller, userId).subscribe((user: User) => {
           subscriber.next(user);
           subscriber.complete();
         });

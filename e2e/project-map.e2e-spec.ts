@@ -1,24 +1,24 @@
 import { TestHelper } from './helpers/common.po';
 import { ProjectMapPage } from './helpers/project-map.po';
 import { ProjectsPage } from './helpers/project.po';
-import { ServersPage } from './helpers/server.po';
+import { ControllersPage } from './helpers/controller.po';
 
 describe('Project map page', () => {
-  let serversPage: ServersPage;
+  let controllersPage: ControllersPage;
   let projectsPage: ProjectsPage;
   let projectMapPage: ProjectMapPage;
   let helper: TestHelper;
 
   beforeEach(async () => {
-    serversPage = new ServersPage();
+    controllersPage = new ControllersPage();
     projectsPage = new ProjectsPage();
     projectMapPage = new ProjectMapPage();
     helper = new TestHelper();
 
-    serversPage.maximizeWindow();
-    await serversPage.navigateToServersPage();
-    await serversPage.clickAddServer();
-    await serversPage.navigateToServerProjects();
+    controllersPage.maximizeWindow();
+    await controllersPage.navigateToControllersPage();
+    await controllersPage.clickAddController();
+    await controllersPage.navigateToControllerProjects();
     await projectsPage.openAddProjectDialog();
     helper.sleep(2000);
     await projectsPage.createProject();

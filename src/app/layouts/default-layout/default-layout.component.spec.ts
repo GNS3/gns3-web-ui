@@ -4,25 +4,25 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ServerService } from '../../services/server.service';
+import { ControllerService } from '../../services/controller.service';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ServerManagementService, ServerStateEvent } from '../../services/server-management.service';
+import { ControllerManagementService, ControllerStateEvent } from '../../services/controller-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
-import { HttpServer, ServerErrorHandler } from '../../services/http-server.service';
+import { HttpController, ControllerErrorHandler } from '../../services/http-controller.service';
 import { HttpClientModule } from '@angular/common/http';
 
 class ElectronServiceMock {
   public isElectronApp: boolean;
 }
 
-class MockedServerManagementService {
-  public serverStatusChanged;
+class MockedControllerManagementService {
+  public controllerStatusChanged;
   public stopAll() {}
 }
 
@@ -30,14 +30,14 @@ describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
-  let serverManagementService = new MockedServerManagementService();
-  let serverService: ServerService;
-  let httpServer: HttpServer;
-  let errorHandler: ServerErrorHandler;
+  let controllerManagementService = new MockedControllerManagementService();
+  let controllerService: ControllerService;
+  let httpController: HttpController;
+  let errorHandler: ControllerErrorHandler;
 
   beforeEach(async() => {
     electronServiceMock = new ElectronServiceMock();
-    serverManagementService.serverStatusChanged = new Subject<ServerStateEvent>();
+    controllerManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
     await TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
@@ -48,8 +48,8 @@ describe('DefaultLayoutComponent', () => {
           useValue: electronServiceMock,
         },
         {
-          provide: ServerManagementService,
-          useValue: serverManagementService,
+          provide: ControllerManagementService,
+          useValue: controllerManagementService,
         },
         {
           provide: ToasterService,
@@ -59,16 +59,16 @@ describe('DefaultLayoutComponent', () => {
           provide: RecentlyOpenedProjectService,
           useClass: RecentlyOpenedProjectService,
         },
-        { provide: ServerService },
-        { provide: HttpServer },
-        { provide: ServerErrorHandler },
+        { provide: ControllerService },
+        { provide: HttpController },
+        { provide: ControllerErrorHandler },
         ProgressService,
       ],
     }).compileComponents();
 
-    errorHandler = TestBed.inject(ServerErrorHandler);
-    httpServer = TestBed.inject(HttpServer);
-    serverService = TestBed.inject(ServerService);
+    errorHandler = TestBed.inject(ControllerErrorHandler);
+    httpController = TestBed.inject(HttpController);
+    controllerService = TestBed.inject(ControllerService);
   });
 
   beforeEach(() => {
@@ -93,39 +93,39 @@ describe('DefaultLayoutComponent', () => {
     expect(component.isInstalledSoftwareAvailable).toBeFalsy();
   });
 
-  it('should show error when server management service throw event', () => {
+  it('should show error when controller management service throw event', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
-    serverManagementService.serverStatusChanged.next({
+    controllerManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
     });
     expect(toaster.errors).toEqual(['Message']);
   });
 
-  it('should not show error when server management service throw event', () => {
+  it('should not show error when controller management service throw event', () => {
     component.ngOnDestroy();
     const toaster: MockedToasterService = TestBed.get(ToasterService);
-    serverManagementService.serverStatusChanged.next({
+    controllerManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
     });
     expect(toaster.errors).toEqual([]);
   });
 
-  describe('auto stopping servers', () => {
+  describe('auto stopping controllers', () => {
     let event;
     beforeEach(() => {
       event = new Event('onbeforeunload');
     });
 
     it('should close window with no action when not in electron', async () => {
-      component.shouldStopServersOnClosing = false;
+      component.shouldStopControllersOnClosing = false;
       const isClosed = await component.onBeforeUnload(event);
       expect(isClosed).toBeUndefined();
     });
 
-    it('should stop all servers and close window', () => {
-      component.shouldStopServersOnClosing = true;
+    it('should stop all controllers and close window', () => {
+      component.shouldStopControllersOnClosing = true;
       const isClosed = component.onBeforeUnload(event);
       expect(isClosed).toBeTruthy();
     });

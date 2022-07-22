@@ -4,7 +4,7 @@
       mat-icon-button
       matTooltip="Back to role detail"
       matTooltipClass="custom-tooltip"
-      [routerLink]="['/server', server.id, 'management', 'roles', role.role_id]">
+      [routerLink]="['/controller', controller.id, 'management', 'roles', role.role_id]">
       <mat-icon aria-label="Back to role detail">keyboard_arrow_left</mat-icon>
     </a>
   </div>
@@ -12,5 +12,5 @@
     Edit {{role.name}} role permissions
   </div>
 </div>
-<app-permission-editor [ownedPermissions]="role.permissions" [availablePermissions]="permissions" [server]="server"
+<app-permission-editor [ownedPermissions]="role.permissions" [availablePermissions]="permissions" [controller]="controller"
 (updatedPermissions)="updatePermissions($event)"></app-permission-editor>

@@ -3,29 +3,29 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { of } from 'rxjs';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { Symbol } from '../models/symbol';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { SymbolService } from './symbol.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('SymbolService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
-  let server: Server;
+  let httpController: HttpController;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SymbolService],
+      providers: [HttpController, SymbolService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {
@@ -37,14 +37,14 @@ describe('SymbolService', () => {
   }));
 
   it('should list symbols', inject([SymbolService], (service: SymbolService) => {
-    service.list(server).subscribe();
+    service.list(controller).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols`);
     expect(req.request.method).toEqual('GET');
   }));
 
   it('should get raw symbol', inject([SymbolService], (service: SymbolService) => {
-    service.raw(server, ':my/tested.png').subscribe();
+    service.raw(controller, ':my/tested.png').subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols/:my/tested.png/raw`);
     expect(req.request.method).toEqual('GET');

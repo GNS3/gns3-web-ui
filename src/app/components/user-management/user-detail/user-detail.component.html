@@ -5,7 +5,7 @@
         mat-icon-button
         matTooltip="Back to user management"
         matTooltipClass="custom-tooltip"
-        [routerLink]="['/server', server.id, 'management', 'users']">
+        [routerLink]="['/controller', controller.id, 'management', 'users']">
         <mat-icon aria-label="Back to user management">keyboard_arrow_left</mat-icon>
       </button>
       <h1 class="col">User Details</h1>
@@ -74,7 +74,7 @@
         <div class="user-groups">
           <ul>
             <li *ngFor="let group of groups">
-              <a [routerLink]="['/server', server.id, 'management','groups', group.user_group_id]"
+              <a [routerLink]="['/controller', controller.id, 'management','groups', group.user_group_id]"
                  class="table-link">{{ group.name }}</a>
             </li>
           </ul>
@@ -84,14 +84,14 @@
         <div>
           <button
             mat-button
-            [routerLink]="['/server', server.id, 'management', 'users', user.user_id, 'permissions']">
+            [routerLink]="['/controller', controller.id, 'management', 'users', user.user_id, 'permissions']">
             <mat-icon>edit</mat-icon>
           </button>
         </div>
 
         <app-editable-permission
           [permission]="permission"
-          [server]="server"
+          [controller]="controller"
           *ngFor="let permission of permissions">
         </app-editable-permission>
       </mat-tab>

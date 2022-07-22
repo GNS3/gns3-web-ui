@@ -17,9 +17,9 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable, of, Subscriber} from 'rxjs';
-import {ServerService} from "../services/server.service";
+import {ControllerService} from "../services/controller.service";
 import {UserService} from "../services/user.service";
-import {Server} from "../models/server";
+import {Controller} from "../models/controller";
 import {Permission} from "../models/api/permission";
 
 @Injectable({
@@ -27,18 +27,18 @@ import {Permission} from "../models/api/permission";
 })
 export class UserPermissionsResolver implements Resolve<Permission[]> {
 
-  constructor(private serverService: ServerService,
+  constructor(private controllerService: ControllerService,
               private userService: UserService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Permission[]> {
     return new Observable<Permission[]>((subscriber: Subscriber<Permission[]>) => {
 
-      const serverId = route.paramMap.get('server_id');
+      const controllerId = route.paramMap.get('controller_id');
       const userId = route.paramMap.get('user_id');
 
-      this.serverService.get(+serverId).then((server: Server) => {
-        this.userService.getPermissionsByUserId(server, userId).subscribe((permissions: Permission[]) => {
+      this.controllerService.get(+controllerId).then((controller: Controller) => {
+        this.userService.getPermissionsByUserId(controller, userId).subscribe((permissions: Permission[]) => {
           subscriber.next(permissions);
           subscriber.complete();
         });

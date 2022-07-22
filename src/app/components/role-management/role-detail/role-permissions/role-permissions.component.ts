@@ -15,7 +15,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {ToasterService} from "@services/toaster.service";
 import {RoleService} from "@services/role.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {Role} from "@models/api/role";
 import {Permission} from "@models/api/permission";
 import {Observable} from "rxjs/Rx";
@@ -28,7 +28,7 @@ import {HttpErrorResponse} from "@angular/common/http";
   styleUrls: ['./role-permissions.component.scss']
 })
 export class RolePermissionsComponent implements OnInit {
-  server: Server;
+  controller: Controller;
   role: Role;
   permissions: Permission[];
 
@@ -37,8 +37,8 @@ export class RolePermissionsComponent implements OnInit {
               private toastService: ToasterService,
               private router: Router,
               private roleService: RoleService) {
-    this.route.data.subscribe((data: { server: Server, role: Role, permissions: Permission[] }) => {
-      this.server = data.server;
+    this.route.data.subscribe((data: { controller: Controller, role: Role, permissions: Permission[] }) => {
+      this.controller = data.controller;
       this.role = data.role;
       this.permissions = data.permissions;
     });
@@ -51,16 +51,16 @@ export class RolePermissionsComponent implements OnInit {
     const {add, remove} = toUpdate;
     const obs: Observable<any>[] = [];
     add.forEach((permission: Permission) => {
-      obs.push(this.roleService.addPermission(this.server, this.role, permission));
+      obs.push(this.roleService.addPermission(this.controller, this.role, permission));
     });
     remove.forEach((permission: Permission) => {
-      obs.push(this.roleService.removePermission(this.server, this.role, permission));
+      obs.push(this.roleService.removePermission(this.controller, this.role, permission));
     });
 
     forkJoin(obs)
       .subscribe(() => {
           this.toastService.success(`permissions updated`);
-          this.router.navigate(['/server', this.server.id, 'management', 'roles', this.role.role_id]);
+          this.router.navigate(['/controller', this.controller.id, 'management', 'roles', this.role.role_id]);
         },
         (error: HttpErrorResponse) => {
           this.toastService.error(`${error.message}

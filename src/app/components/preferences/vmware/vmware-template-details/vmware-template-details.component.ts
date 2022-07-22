@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
 import { VmwareService } from '../../../../services/vmware.service';
@@ -16,7 +16,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VmwareTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   vmwareTemplate: VmwareTemplate;
   generalSettingsForm: FormGroup;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
@@ -32,7 +32,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private vmwareService: VmwareService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -47,13 +47,13 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.vmwareService.getTemplate(this.server, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
+      this.vmwareService.getTemplate(this.controller, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
         this.vmwareTemplate = vmwareTemplate;
         this.fillCustomAdapters();
       });
@@ -68,7 +68,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'vmware', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vmware', 'templates']);
   }
 
   onSave() {
@@ -77,7 +77,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     } else {
       this.fillCustomAdapters();
 
-      this.vmwareService.saveTemplate(this.server, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
+      this.vmwareService.saveTemplate(this.controller, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
         this.toasterService.success('Changes saved');
       });
     }

@@ -11,8 +11,8 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Injectable} from '@angular/core';
-import {HttpServer} from "./http-server.service";
-import {Server} from "../models/server";
+import {HttpController} from "./http-controller.service";
+import {Controller} from "../models/controller";
 import {Permission} from "../models/api/permission";
 import {Observable} from "rxjs/Rx";
 
@@ -21,22 +21,22 @@ import {Observable} from "rxjs/Rx";
 })
 export class PermissionsService {
 
-  constructor(private httpServer: HttpServer) {
+  constructor(private httpController: HttpController) {
   }
 
-  list(server: Server) {
-    return this.httpServer.get<Permission[]>(server, '/permissions');
+  list(controller: Controller) {
+    return this.httpController.get<Permission[]>(controller, '/permissions');
   }
 
-  add(server: Server, permission: Permission): Observable<Permission> {
-    return this.httpServer.post<Permission>(server, '/permissions', permission);
+  add(controller: Controller, permission: Permission): Observable<Permission> {
+    return this.httpController.post<Permission>(controller, '/permissions', permission);
   }
 
-  update(server: Server, permission: Permission): Observable<Permission> {
-    return this.httpServer.put<Permission>(server, `/permissions/${permission.permission_id}`, permission);
+  update(controller: Controller, permission: Permission): Observable<Permission> {
+    return this.httpController.put<Permission>(controller, `/permissions/${permission.permission_id}`, permission);
   }
 
-  delete(server: Server, permission_id: string) {
-    return this.httpServer.delete(server, `/permissions/${permission_id}`);
+  delete(controller: Controller, permission_id: string) {
+    return this.httpController.delete(controller, `/permissions/${permission_id}`);
   }
 }

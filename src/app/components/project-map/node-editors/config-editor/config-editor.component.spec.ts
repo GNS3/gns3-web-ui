@@ -7,7 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs/internal/observable/of';
 import { Node } from '../../../../cartography/models/node';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { NodeService } from '../../../../services/node.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedNodeService } from '../../project-map.component.spec';
@@ -16,7 +16,7 @@ import { ConfigEditorDialogComponent } from './config-editor.component';
 describe('ConfigEditorDialogComponent', () => {
   let component: ConfigEditorDialogComponent;
   let fixture: ComponentFixture<ConfigEditorDialogComponent>;
-  let server: Server;
+  let controller:Controller ;
   let node: Node;
   let toaster = {
     success: jasmine.createSpy('success'),
@@ -45,9 +45,9 @@ describe('ConfigEditorDialogComponent', () => {
       declarations: [ConfigEditorDialogComponent],
     }).compileComponents();
 
-    server = new Server();
-    server.host = 'localhost';
-    server.port = 80;
+    controller = new Controller  ();
+    controller.host = 'localhost';
+    controller.port = 80;
 
     node = new Node();
     node.name = 'sample name';
@@ -56,7 +56,7 @@ describe('ConfigEditorDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ConfigEditorDialogComponent);
     component = fixture.componentInstance;
-    component.server = server;
+    component.controller =  controller;
     component.node = node;
     fixture.detectChanges();
   });

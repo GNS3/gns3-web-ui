@@ -5,7 +5,7 @@ import { FilterDescription } from '../../../../models/filter-description';
 import { Link } from '../../../../models/link';
 import { Message } from '../../../../models/message';
 import { Project } from '../../../../models/project';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { LinkService } from '../../../../services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
@@ -15,7 +15,7 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   styleUrls: ['./packet-filters.component.scss'],
 })
 export class PacketFiltersDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   project: Project;
   link: Link;
   filters: Filter;
@@ -28,7 +28,7 @@ export class PacketFiltersDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.linkService.getLink(this.server, this.link.project_id, this.link.link_id).subscribe((link: Link) => {
+    this.linkService.getLink(this.controller, this.link.project_id, this.link.link_id).subscribe((link: Link) => {
       this.link = link;
       this.filters = {
         bpf: [],
@@ -47,7 +47,7 @@ export class PacketFiltersDialogComponent implements OnInit {
       }
     });
 
-    this.linkService.getAvailableFilters(this.server, this.link).subscribe((availableFilters: FilterDescription[]) => {
+    this.linkService.getAvailableFilters(this.controller, this.link).subscribe((availableFilters: FilterDescription[]) => {
       this.availableFilters = availableFilters;
     });
   }
@@ -65,14 +65,14 @@ export class PacketFiltersDialogComponent implements OnInit {
       packet_loss: [0],
     };
 
-    this.linkService.updateLink(this.server, this.link).subscribe((link: Link) => {
+    this.linkService.updateLink(this.controller, this.link).subscribe((link: Link) => {
       this.dialogRef.close();
     });
   }
 
   onYesClick() {
     this.link.filters = this.filters;
-    this.linkService.updateLink(this.server, this.link).subscribe((link: Link) => {
+    this.linkService.updateLink(this.controller, this.link).subscribe((link: Link) => {
       this.dialogRef.close();
     });
   }

@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { DockerService } from '../../../../services/docker.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class DockerTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   dockerTemplate: DockerTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -30,7 +30,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private dockerService: DockerService,
     private toasterService: ToasterService,
     private configurationService: DockerConfigurationService,
@@ -46,13 +46,13 @@ export class DockerTemplateDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.dockerService.getTemplate(this.server, template_id).subscribe((dockerTemplate: DockerTemplate) => {
+      this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {
         this.dockerTemplate = dockerTemplate;
       });
     });
@@ -65,14 +65,14 @@ export class DockerTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
-      this.dockerService.saveTemplate(this.server, this.dockerTemplate).subscribe((savedTemplate: DockerTemplate) => {
+      this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe((savedTemplate: DockerTemplate) => {
         this.toasterService.success('Changes saved');
       });
     }

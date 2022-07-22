@@ -17,9 +17,9 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable, of, Subscriber} from 'rxjs';
-import {Server} from "../models/server";
+import {Controller} from "../models/controller";
 import {Role} from "../models/api/role";
-import {ServerService} from "../services/server.service";
+import {ControllerService} from "../services/controller.service";
 import {RoleService} from "../services/role.service";
 
 @Injectable({
@@ -27,17 +27,17 @@ import {RoleService} from "../services/role.service";
 })
 export class RoleDetailResolver implements Resolve<Role> {
 
-  constructor(private serverService: ServerService,
+  constructor(private controllerService: ControllerService,
               private roleService: RoleService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Role> {
     return new Observable<Role>((observer: Subscriber<Role>) => {
-      const serverId = route.paramMap.get('server_id');
+      const controllerId = route.paramMap.get('controller_id');
       const roleId = route.paramMap.get('role_id');
 
-      this.serverService.get(+serverId).then((server: Server) => {
-        this.roleService.getById(server, roleId).subscribe((role: Role) => {
+      this.controllerService.get(+controllerId).then((controller: Controller) => {
+        this.roleService.getById(controller, roleId).subscribe((role: Role) => {
           observer.next( role);
           observer.complete();
         });

@@ -2,29 +2,29 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { QemuTemplate } from '../models/templates/qemu-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { QemuService } from './qemu.service';
-import { getTestServer } from './testing';
+import { getTestController } from './testing';
 
 describe('QemuService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
-  let server: Server;
+  let httpController: HttpController;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, QemuService],
+      providers: [HttpController, QemuService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {
@@ -80,7 +80,7 @@ describe('QemuService', () => {
       usage: '',
     };
 
-    service.saveTemplate(server, template).subscribe();
+    service.saveTemplate(controller, template).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
     expect(req.request.method).toEqual('PUT');
@@ -132,7 +132,7 @@ describe('QemuService', () => {
       usage: '',
     };
 
-    service.addTemplate(server, template).subscribe();
+    service.addTemplate(controller, template).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
     expect(req.request.method).toEqual('POST');

@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { Template } from '../../../../models/template';
 import { TemplateService } from '../../../../services/template.service';
 import { ToasterService } from '../../../../services/toaster.service';
@@ -16,7 +16,7 @@ import { ProjectNameValidator } from '../../../projects/models/projectNameValida
   providers: [ProjectNameValidator],
 })
 export class TemplateNameDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   templateNameForm: FormGroup;
 
   constructor(
@@ -36,7 +36,7 @@ export class TemplateNameDialogComponent implements OnInit {
       templateName: new FormControl(
         name,
         [Validators.required, this.templateNameValidator.get],
-        [templateNameAsyncValidator(this.server, this.templateService)]
+        [templateNameAsyncValidator(this.controller, this.templateService)]
       ),
     });
 
@@ -54,7 +54,7 @@ export class TemplateNameDialogComponent implements OnInit {
       this.toasterService.error('Please enter correct name for new template');
       return;
     }
-    this.templateService.list(this.server).subscribe((templates: Template[]) => {
+    this.templateService.list(this.controller).subscribe((templates: Template[]) => {
       const templateName = this.templateNameForm.controls['templateName'].value;
       let existingProject = templates.find((t) => t.name === templateName);
 

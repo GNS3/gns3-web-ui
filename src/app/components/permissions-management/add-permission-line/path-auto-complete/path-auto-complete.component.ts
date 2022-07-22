@@ -12,7 +12,7 @@
 */
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ApiInformationService} from "@services/ApiInformation/api-information.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {PermissionPath} from "@components/permissions-management/add-permission-line/path-auto-complete/PermissionPath";
 import {SubPath} from "@components/permissions-management/add-permission-line/path-auto-complete/SubPath";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
@@ -26,7 +26,7 @@ export class PathAutoCompleteComponent implements OnInit {
 
 
   @Output() update = new EventEmitter<string>();
-  @Input() server: Server;
+  @Input() controller: Controller;
   path: PermissionPath = new PermissionPath();
   values: string[] = [];
   private completeData: { data: IGenericApiObject[]; key: string };
@@ -73,7 +73,7 @@ export class PathAutoCompleteComponent implements OnInit {
 
   valueChanged(value: string) {
     if (value.match(this.apiInformationService.bracketIdRegex) && !this.path.containStar()) {
-      this.apiInformationService.getListByObjectId(this.server, value, undefined, this.path.getVariables())
+      this.apiInformationService.getListByObjectId(this.controller, value, undefined, this.path.getVariables())
         .subscribe((data) => {
           this.mode = 'COMPLETE';
           this.completeData = {data, key: value};

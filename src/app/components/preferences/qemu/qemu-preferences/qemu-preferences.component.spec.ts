@@ -10,10 +10,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { MockedServerSettingsService } from '../../../../services/server-settings.service.spec';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerSettingsService } from '../../../../services/controller-settings.service';
+import { MockedControllerSettingsService } from '../../../../services/controller-settings.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
@@ -23,9 +23,9 @@ describe('QemuPreferencesComponent', () => {
   let component: QemuPreferencesComponent;
   let fixture: ComponentFixture<QemuPreferencesComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
-  let mockedServerSettingsService = new MockedServerSettingsService();
+  let mockedControllerSettingsService = new MockedControllerSettingsService();
   let mockedToasterService = new MockedToasterService();
 
   beforeEach(async() => {
@@ -45,8 +45,8 @@ describe('QemuPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ServerService, useValue: mockedServerService },
-        { provide: ServerSettingsService, useValue: mockedServerSettingsService },
+        { provide: ControllerService, useValue: mockedControllerService },
+        { provide: ControllerSettingsService, useValue: mockedControllerSettingsService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
       declarations: [QemuPreferencesComponent],
@@ -65,10 +65,10 @@ describe('QemuPreferencesComponent', () => {
   });
 
   it('should call update settings when restore defaults chosen', () => {
-    spyOn(mockedServerSettingsService, 'updateSettingsForQemu').and.returnValue(of([]));
+    spyOn(mockedControllerSettingsService, 'updateSettingsForQemu').and.returnValue(of([]));
 
     component.restoreDefaults();
 
-    expect(mockedServerSettingsService.updateSettingsForQemu).toHaveBeenCalled();
+    expect(mockedControllerSettingsService.updateSettingsForQemu).toHaveBeenCalled();
   });
 });

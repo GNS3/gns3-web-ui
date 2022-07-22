@@ -3,8 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {DisplayPathPipe} from "@components/permissions-management/display-path.pipe";
 import {Observable, of, ReplaySubject} from "rxjs";
-import {Server} from "@models/server";
-import {getTestServer} from "@services/testing";
+import {Controller} from "@models/controller";
+import {getTestController} from "@services/testing";
 import {Methods} from "@models/api/permission";
 import {ApiInformationCache} from "@services/ApiInformation/ApiInformationCache";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
@@ -12,7 +12,7 @@ import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 describe('ApiInformationService', () => {
   let apiService: ApiInformationService;
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
-  let server: Server;
+  let controller: Controller;
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('HttpClient', ['get']);
@@ -22,7 +22,7 @@ describe('ApiInformationService', () => {
     httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>
     httpClientSpy.get.and.returnValue(new Observable());
     apiService = TestBed.inject(ApiInformationService);
-    server = getTestServer();
+    controller = getTestController();
   });
 
   describe('ApiInformationService.getMethods() tests', () => {
@@ -274,7 +274,7 @@ describe('ApiInformationService', () => {
       let res: IGenericApiObject[];
       const mockGetCache: IGenericApiObject[] = [{id: 'id-tralala', name: 'tralala-project'}];
       spyOn(apiService['cache'], 'get').and.returnValue(mockGetCache);
-      apiService.getListByObjectId(server, '{project_id}', 'id-tralala').subscribe(data => {
+      apiService.getListByObjectId(controller, '{project_id}', 'id-tralala').subscribe(data => {
         res = data;
       });
       tick();

@@ -12,7 +12,7 @@
 */
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Methods, Permission} from "@models/api/permission";
-import {Server} from '@models/server';
+import {Controller} from '@models/controller';
 import {ApiInformationService} from "@services/ApiInformation/api-information.service";
 import {PermissionsService} from "@services/permissions.service";
 import {ToasterService} from "@services/toaster.service";
@@ -26,7 +26,7 @@ import {DeletePermissionDialogComponent} from "@components/permissions-managemen
 })
 export class PermissionEditLineComponent {
   @Input() permission: Permission;
-  @Input() server: Server;
+  @Input() controller: Controller;
 
   isEditable = false;
   @Output() update = new EventEmitter<void>();
@@ -44,7 +44,7 @@ export class PermissionEditLineComponent {
       .afterClosed()
       .subscribe((confirm: boolean) => {
         if (confirm) {
-          this.permissionService.delete(this.server, this.permission.permission_id)
+          this.permissionService.delete(this.controller, this.permission.permission_id)
             .subscribe(() => {
               this.toasterService.success(`Permission was deleted`);
               this.update.emit();
@@ -58,7 +58,7 @@ export class PermissionEditLineComponent {
   }
 
   onSave() {
-    this.permissionService.update(this.server, this.permission)
+    this.permissionService.update(this.controller, this.permission)
       .subscribe(() => {
         this.toasterService.success(`Permission was updated`);
         this.update.emit();

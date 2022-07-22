@@ -1,9 +1,9 @@
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 
-export function getTestServer(): Server {
-  const server = new Server();
-  server.host = '127.0.0.1';
-  server.port = 3080;
-  server.protocol = 'http:';
-  return server;
+export function getTestController():Controller  {
+  const controller = new Controller  ();
+  controller.host = '127.0.0.1';
+  controller.port = 3080;
+  controller.protocol = 'http:';
+  return controller;
 }

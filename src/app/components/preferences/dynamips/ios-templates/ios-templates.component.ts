@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { IosService } from '../../../../services/ios.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
@@ -13,27 +13,27 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./ios-templates.component.scss', '../../preferences.component.scss'],
 })
 export class IosTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   iosTemplates: IosTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private iosService: IosService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.iosService.getTemplates(this.server).subscribe((templates: IosTemplate[]) => {
+    this.iosService.getTemplates(this.controller).subscribe((templates: IosTemplate[]) => {
       this.iosTemplates = templates.filter((elem) => elem.template_type === 'dynamips' && !elem.builtin);
     });
   }
@@ -48,8 +48,8 @@ export class IosTemplatesComponent implements OnInit {
 
   copyTemplate(template: IosTemplate) {
     this.router.navigate([
-      '/server',
-      this.server.id,
+      '/controller',
+      this.controller.id,
       'preferences',
       'dynamips',
       'templates',

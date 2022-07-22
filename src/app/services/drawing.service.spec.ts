@@ -5,29 +5,29 @@ import { environment } from 'environments/environment';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { DrawingService } from './drawing.service';
-import { HttpServer } from './http-server.service';
-import { getTestServer } from './testing';
+import { HttpController } from './http-controller.service';
+import { getTestController } from './testing';
 
 describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
-  let server: Server;
+  let httpController: HttpController;
+  let controller:Controller ;
   let project: Project = new Project();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, SvgToDrawingConverter, DrawingService],
+      providers: [HttpController, SvgToDrawingConverter, DrawingService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {
@@ -43,7 +43,7 @@ describe('DrawingService', () => {
     drawing.project_id = 'myproject';
     drawing.drawing_id = 'id';
 
-    service.updatePosition(server, project, drawing, 10, 20).subscribe();
+    service.updatePosition(controller, project, drawing, 10, 20).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings/id`);
     expect(req.request.method).toEqual('PUT');
@@ -58,7 +58,7 @@ describe('DrawingService', () => {
     drawing.project_id = 'myproject';
     drawing.drawing_id = 'id';
 
-    service.updatePosition(server, project, drawing, 10.1, 20.6).subscribe();
+    service.updatePosition(controller, project, drawing, 10.1, 20.6).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings/id`);
     expect(req.request.method).toEqual('PUT');
@@ -74,7 +74,7 @@ describe('DrawingService', () => {
     drawing.drawing_id = 'id';
     let svgSample = '<svg><test></svg>';
 
-    service.updateSizeAndPosition(server, drawing, 100, 100, svgSample).subscribe();
+    service.updateSizeAndPosition(controller, drawing, 100, 100, svgSample).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings/id`);
     expect(req.request.method).toEqual('PUT');
@@ -93,7 +93,7 @@ describe('DrawingService', () => {
       drawing.drawing_id = 'id';
       let svgSample = '<svg><test></svg>';
 
-      service.updateSizeAndPosition(server, drawing, 100.1, 100.6, svgSample).subscribe();
+      service.updateSizeAndPosition(controller, drawing, 100.1, 100.6, svgSample).subscribe();
 
       const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings/id`);
       expect(req.request.method).toEqual('PUT');
@@ -116,7 +116,7 @@ describe('DrawingService', () => {
     drawing.svg = '<svg></svg>';
     drawing.locked = false;
 
-    service.update(server, drawing).subscribe();
+    service.update(controller, drawing).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings/id`);
     expect(req.request.method).toEqual('PUT');
@@ -135,7 +135,7 @@ describe('DrawingService', () => {
     drawing.project_id = 'myproject';
     drawing.drawing_id = 'id';
 
-    service.delete(server, drawing).subscribe();
+    service.delete(controller, drawing).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings/id`);
     expect(req.request.method).toEqual('DELETE');
@@ -152,7 +152,7 @@ describe('DrawingService', () => {
     drawing.svg =
       '<svg height="100" width="200"><rect fill="#ffffff" fill-opacity="1.0" height="100" stroke="#000000" stroke-width="2" width="200" /></svg>';
 
-    service.duplicate(server, drawing.project_id, drawing).subscribe();
+    service.duplicate(controller, drawing.project_id, drawing).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/${drawing.project_id}/drawings`);
     expect(req.request.method).toEqual('POST');

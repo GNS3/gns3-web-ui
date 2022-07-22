@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -9,13 +9,13 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './console-device-action-browser.component.html',
 })
 export class ConsoleDeviceActionBrowserComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
 
   constructor(private toasterService: ToasterService, private nodeService: NodeService) {}
 
   openConsole() {
-    this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.startConsole();
     });
@@ -30,7 +30,7 @@ export class ConsoleDeviceActionBrowserComponent {
         this.node.console_host === '0:0:0:0:0:0:0:0' ||
         this.node.console_host === '::'
       ) {
-        this.node.console_host = this.server.host;
+        this.node.console_host = this.controller.host;
       }
 
       if (

@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { VirtualBoxVm } from '../../../../models/virtualBox/virtual-box-vm';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { VirtualBoxService } from '../../../../services/virtual-box.service';
@@ -16,7 +16,7 @@ import { VirtualBoxService } from '../../../../services/virtual-box.service';
   styleUrls: ['./add-virtual-box-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVirtualBoxTemplateComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   virtualMachines: VirtualBoxVm[];
   selectedVM: VirtualBoxVm;
   virtualBoxTemplate: VirtualBoxTemplate;
@@ -24,7 +24,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private virtualBoxService: VirtualBoxService,
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
@@ -37,11 +37,11 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
-      this.virtualBoxService.getVirtualMachines(this.server).subscribe((virtualMachines: VirtualBoxVm[]) => {
+      this.virtualBoxService.getVirtualMachines(this.controller).subscribe((virtualMachines: VirtualBoxVm[]) => {
         this.virtualMachines = virtualMachines;
 
         this.templateMocksService.getVirtualBoxTemplate().subscribe((template: VirtualBoxTemplate) => {
@@ -52,7 +52,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'virtualbox', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'virtualbox', 'templates']);
   }
 
   addTemplate() {
@@ -62,7 +62,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
       this.virtualBoxTemplate.ram = this.selectedVM.ram;
       this.virtualBoxTemplate.template_id = uuid();
 
-      this.virtualBoxService.addTemplate(this.server, this.virtualBoxTemplate).subscribe(() => {
+      this.virtualBoxService.addTemplate(this.controller, this.virtualBoxTemplate).subscribe(() => {
         this.goBack();
       });
     } else {

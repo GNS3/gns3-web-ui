@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
@@ -12,27 +12,27 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./docker-templates.component.scss', '../../preferences.component.scss'],
 })
 export class DockerTemplatesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   dockerTemplates: DockerTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private dockerService: DockerService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
       this.getTemplates();
     });
   }
 
   getTemplates() {
-    this.dockerService.getTemplates(this.server).subscribe((dockerTemplates: DockerTemplate[]) => {
+    this.dockerService.getTemplates(this.controller).subscribe((dockerTemplates: DockerTemplate[]) => {
       this.dockerTemplates = dockerTemplates.filter((elem) => elem.template_type === 'docker' && !elem.builtin);
     });
   }
@@ -47,8 +47,8 @@ export class DockerTemplatesComponent implements OnInit {
 
   copyTemplate(template: DockerTemplate) {
     this.router.navigate([
-      '/server',
-      this.server.id,
+      '/controller',
+      this.controller.id,
       'preferences',
       'docker',
       'templates',

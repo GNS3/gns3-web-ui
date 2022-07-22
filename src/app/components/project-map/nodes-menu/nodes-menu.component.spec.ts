@@ -8,7 +8,7 @@ import { ElectronService } from 'ngx-electron';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { NodeService } from '../../../services/node.service';
-import { ServerService } from '../../../services/server.service';
+import { ControllerService } from '../../../services/controller.service';
 import { SettingsService } from '../../../services/settings.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
@@ -29,7 +29,7 @@ xdescribe('NodesMenuComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
-        { provide: ServerService },
+        { provide: ControllerService },
         { provide: SettingsService },
         { provide: ElectronService },
       ],

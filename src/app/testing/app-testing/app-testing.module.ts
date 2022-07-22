@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ServerErrorHandler } from '../../services/http-server.service';
+import { ControllerErrorHandler } from '../../services/http-controller.service';
 
 @NgModule({
   imports: [CommonModule],
   declarations: [],
-  providers: [ServerErrorHandler],
+  providers: [ControllerErrorHandler],
 })
 export class AppTestingModule {}

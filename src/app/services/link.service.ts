@@ -6,15 +6,15 @@ import { FilterDescription } from '../models/filter-description';
 import { Link } from '../models/link';
 import { LinkNode } from '../models/link-node';
 import { Port } from '../models/port';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import{ Controller } from '../models/controller';
+import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class LinkService {
-  constructor(private httpServer: HttpServer) {}
+  constructor(private httpController: HttpController) {}
 
   createLink(
-    server: Server,
+    controller:Controller ,
     source_node: Node,
     source_port: Port,
     target_node: Node,
@@ -24,7 +24,7 @@ export class LinkService {
     xLabelTargetNode: number,
     yLabelTargetNode: number
   ) {
-    return this.httpServer.post(server, `/projects/${source_node.project_id}/links`, {
+    return this.httpController.post(controller, `/projects/${source_node.project_id}/links`, {
       nodes: [
         {
           node_id: source_node.node_id,
@@ -54,33 +54,33 @@ export class LinkService {
     });
   }
 
-  getLink(server: Server, projectId: string, linkId: string) {
-    return this.httpServer.get<Link>(server, `/projects/${projectId}/links/${linkId}`);
+  getLink(controller:Controller , projectId: string, linkId: string) {
+    return this.httpController.get<Link>(controller, `/projects/${projectId}/links/${linkId}`);
   }
 
-  deleteLink(server: Server, link: Link) {
-    return this.httpServer.delete(server, `/projects/${link.project_id}/links/${link.link_id}`);
+  deleteLink(controller:Controller , link: Link) {
+    return this.httpController.delete(controller, `/projects/${link.project_id}/links/${link.link_id}`);
   }
 
-  updateLink(server: Server, link: Link) {
+  updateLink(controller:Controller , link: Link) {
     link.x = Math.round(link.x);
     link.y = Math.round(link.y);
 
-    return this.httpServer.put<Link>(server, `/projects/${link.project_id}/links/${link.link_id}`, link);
+    return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 
-  updateLinkStyle(server: Server, link: Link) {
-    return this.httpServer.put<Link>(server, `/projects/${link.project_id}/links/${link.link_id}`, link);
+  updateLinkStyle(controller:Controller , link: Link) {
+    return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 
-  getAvailableFilters(server: Server, link: Link) {
-    return this.httpServer.get<FilterDescription[]>(
-      server,
+  getAvailableFilters(controller:Controller , link: Link) {
+    return this.httpController.get<FilterDescription[]>(
+      controller,
       `/projects/${link.project_id}/links/${link.link_id}/available_filters`
     );
   }
 
-  updateNodes(server: Server, link: Link, nodes: LinkNode[]) {
+  updateNodes(controller:Controller , link: Link, nodes: LinkNode[]) {
     const requestNodes = nodes.map((linkNode) => {
       return {
         node_id: linkNode.node_id,
@@ -96,22 +96,22 @@ export class LinkService {
       };
     });
 
-    return this.httpServer.put(server, `/projects/${link.project_id}/links/${link.link_id}`, { nodes: requestNodes });
+    return this.httpController.put(controller, `/projects/${link.project_id}/links/${link.link_id}`, { nodes: requestNodes });
   }
 
-  startCaptureOnLink(server: Server, link: Link, settings: CapturingSettings) {
-    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/capture/start`, settings);
+  startCaptureOnLink(controller:Controller , link: Link, settings: CapturingSettings) {
+    return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/start`, settings);
   }
 
-  stopCaptureOnLink(server: Server, link: Link) {
-    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/capture/stop`, {});
+  stopCaptureOnLink(controller:Controller , link: Link) {
+    return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/stop`, {});
   }
 
-  resetLink(server: Server, link: Link) {
-    return this.httpServer.post(server, `/projects/${link.project_id}/links/${link.link_id}/reset`, {});
+  resetLink(controller:Controller , link: Link) {
+    return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/reset`, {});
   }
 
-  streamPcap(server: Server, link: Link) {
-    return this.httpServer.get(server, `/projects/${link.project_id}/links/${link.link_id}/capture/stream`);
+  streamPcap(controller:Controller , link: Link) {
+    return this.httpController.get(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/stream`);
   }
 }

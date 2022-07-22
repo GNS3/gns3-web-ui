@@ -7,10 +7,10 @@
   <div class="default-content">
     <div class="container mat-elevation-z8">
       <mat-vertical-stepper [linear]="true">
-        <mat-step label="Server type" [completed]="isLocalComputerChosen">
+        <mat-step label="Controller type" [completed]="isLocalComputerChosen">
           <mat-radio-group class="radio-group">
-            <!-- <mat-radio-button class="radio-button" value="1" (click)="setServerType('remote computer')">Run this Docker container on a remote computer</mat-radio-button> -->
-            <mat-radio-button class="radio-button" value="1" (click)="setServerType('local')" checked
+            <!-- <mat-radio-button class="radio-button" value="1" (click)="setControllerType('remote compute')">Run this Docker container on a remote compute</mat-radio-button> -->
+            <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
               >Run this Docker container locally</mat-radio-button
             >
           </mat-radio-group>

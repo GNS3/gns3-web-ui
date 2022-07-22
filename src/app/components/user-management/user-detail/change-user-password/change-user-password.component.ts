@@ -3,7 +3,7 @@ import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, 
 import {User} from "@models/users/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {ToasterService} from "@services/toaster.service";
 import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
 
@@ -18,7 +18,7 @@ export class ChangeUserPasswordComponent implements OnInit {
   user: User;
 
   constructor(private dialogRef: MatDialogRef<ChangeUserPasswordComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { user: User, server: Server },
+              @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller },
               private userService: UserService,
               private toasterService: ToasterService) { }
 
@@ -54,7 +54,7 @@ export class ChangeUserPasswordComponent implements OnInit {
 
     console.log(updatedUser);
 
-    this.userService.update(this.data.server, updatedUser)
+    this.userService.update(this.data.controller, updatedUser)
       .subscribe((user: User) => {
           this.toasterService.success(`User ${user.username} password updated`);
           this.editPasswordForm.reset();

@@ -15,8 +15,8 @@ import {HttpClient} from "@angular/common/http";
 import {Observable, of, ReplaySubject} from "rxjs";
 import {map, switchMap, take, tap} from "rxjs/operators";
 import {Methods} from "app/models/api/permission";
-import {HttpServer} from "app/services/http-server.service";
-import {Server} from "app/models/server";
+import {HttpController} from "app/services/http-controller.service";
+import {Controller} from "app/models/controller";
 import {GetObjectIdHelper} from "@services/ApiInformation/GetObjectIdHelper";
 import {IExtraParams} from "@services/ApiInformation/IExtraParams";
 import {ApiInformationCache} from "@services/ApiInformation/ApiInformationCache";
@@ -249,24 +249,24 @@ export class ApiInformationService {
 
   /**
    * get the value of specific object with his ID
-   * @param {server} the server object to query
+   * @param {controller} the controller object to query
    * @param {key} to query ex :'node_id'
    * @param {value} generally the object uuid
    * @param {extraParams} somes params like the project_id if you query specific node_id
    */
-  getListByObjectId(server: Server, key: string, value?: string, extraParams?: IExtraParams[]): Observable<IGenericApiObject[]> {
+  getListByObjectId(controller: Controller, key: string, value?: string, extraParams?: IExtraParams[]): Observable<IGenericApiObject[]> {
 
-    const cachedData = this.cache.get(server, key, value, extraParams);
+    const cachedData = this.cache.get(controller, key, value, extraParams);
     if (cachedData) {
       return of(cachedData);
     }
 
     return this.objs.pipe(
       map(GetObjectIdHelper.findElementInObjectListFn(key)),
-      map(GetObjectIdHelper.buildRequestURL(server, value, extraParams)),
-      switchMap(url => this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${server.authToken}`}})),
-      switchMap(GetObjectIdHelper.createResponseObject(key, extraParams, this, server)),
-      tap(data => this.cache.update(server, key, value, extraParams, data)),
+      map(GetObjectIdHelper.buildRequestURL(controller, value, extraParams)),
+      switchMap(url => this.httpClient.get<any[]>(url, {headers: {Authorization: `Bearer ${controller.authToken}`}})),
+      switchMap(GetObjectIdHelper.createResponseObject(key, extraParams, this, controller)),
+      tap(data => this.cache.update(controller, key, value, extraParams, data)),
       take(1));
   }
 

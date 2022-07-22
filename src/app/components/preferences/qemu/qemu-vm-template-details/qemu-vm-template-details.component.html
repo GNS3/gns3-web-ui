@@ -298,7 +298,7 @@
 ></app-custom-adapters>
 <app-symbols-menu
   *ngIf="isSymbolSelectionOpened && qemuTemplate"
-  [server]="server"
+  [controller]="controller"
   [symbol]="qemuTemplate.symbol"
   (symbolChangedEmitter)="symbolChanged($event)"
 ></app-symbols-menu>

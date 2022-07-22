@@ -33,8 +33,8 @@ export class VirtualBoxConfigurationService {
       'PCnet-PCI II (Am79C970A)',
       'PCNet-FAST III (Am79C973)',
       'Intel PRO/1000 MT Desktop (82540EM)',
-      'Intel PRO/1000 T Server (82543GC)',
-      'Intel PRO/1000 MT Server (82545EM)',
+      'Intel PRO/1000 T Server  (82543GC)',
+      'Intel PRO/1000 MT Server  (82545EM)',
       'Paravirtualized Network (virtio-net)',
     ];
 

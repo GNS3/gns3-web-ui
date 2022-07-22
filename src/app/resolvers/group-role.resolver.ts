@@ -17,10 +17,10 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable, of, Subscriber} from 'rxjs';
-import {ServerService} from "../services/server.service";
+import {ControllerService} from "../services/controller.service";
 import {GroupService} from "../services/group.service";
 import {User} from "../models/users/user";
-import {Server} from "../models/server";
+import {Controller} from "../models/controller";
 import {Role} from "../models/api/role";
 
 @Injectable({
@@ -28,7 +28,7 @@ import {Role} from "../models/api/role";
 })
 export class GroupRoleResolver implements Resolve<Role[]> {
 
-  constructor(private serverService: ServerService,
+  constructor(private controllerService: ControllerService,
               private groupService: GroupService) {
   }
 
@@ -36,11 +36,11 @@ export class GroupRoleResolver implements Resolve<Role[]> {
 
     return new Observable<Role[]>((subscriber: Subscriber<Role[]>) => {
 
-      const serverId = route.paramMap.get('server_id');
+      const controllerId = route.paramMap.get('controller_id');
       const groupId = route.paramMap.get('user_group_id');
 
-      this.serverService.get(+serverId).then((server: Server) => {
-        this.groupService.getGroupRole(server, groupId).subscribe((role: Role[]) => {
+      this.controllerService.get(+controllerId).then((controller: Controller) => {
+        this.groupService.getGroupRole(controller, groupId).subscribe((role: Role[]) => {
           subscriber.next(role);
           subscriber.complete();
         });

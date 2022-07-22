@@ -3,11 +3,11 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../../models/compute';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
 import { ComputeService } from '../../../../../services/compute.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -17,14 +17,14 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./ethernet-hubs-add-template.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetHubsAddTemplateComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   templateName: string = '';
   formGroup: FormGroup;
   isLocalComputerChosen: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private router: Router,
     private toasterService: ToasterService,
@@ -39,20 +39,20 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
     });
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-hubs']);
   }
 
   addTemplate() {
@@ -74,7 +74,7 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
         });
       }
 
-      this.builtInTemplatesService.addTemplate(this.server, ethernetHubTemplate).subscribe(() => {
+      this.builtInTemplatesService.addTemplate(this.controller, ethernetHubTemplate).subscribe(() => {
         this.goBack();
       });
     } else {

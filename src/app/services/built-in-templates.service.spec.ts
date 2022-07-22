@@ -2,30 +2,30 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { CloudTemplate } from '../models/templates/cloud-template';
 import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { BuiltInTemplatesService } from './built-in-templates.service';
-import { HttpServer } from './http-server.service';
-import { getTestServer } from './testing';
+import { HttpController } from './http-controller.service';
+import { getTestController } from './testing';
 
 describe('BuiltInTemplatesService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let httpServer: HttpServer;
-  let server: Server;
+  let httpController: HttpController;
+  let controller:Controller ;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpServer, BuiltInTemplatesService],
+      providers: [HttpController, BuiltInTemplatesService],
     });
 
     httpClient = TestBed.get(HttpClient);
     httpTestingController = TestBed.get(HttpTestingController);
-    httpServer = TestBed.get(HttpServer);
-    server = getTestServer();
+    httpController = TestBed.get(HttpController);
+    controller = getTestController();
   });
 
   afterEach(() => {
@@ -50,7 +50,7 @@ describe('BuiltInTemplatesService', () => {
       template_type: 'cloud',
     } as CloudTemplate;
 
-    service.saveTemplate(server, cloudtemplate).subscribe();
+    service.saveTemplate(controller, cloudtemplate).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
     expect(req.request.method).toEqual('PUT');
@@ -70,7 +70,7 @@ describe('BuiltInTemplatesService', () => {
       template_type: 'ethernet_hub',
     };
 
-    service.saveTemplate(server, ethernethubtemplate).subscribe();
+    service.saveTemplate(controller, ethernethubtemplate).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/2`);
     expect(req.request.method).toEqual('PUT');
@@ -90,7 +90,7 @@ describe('BuiltInTemplatesService', () => {
       template_type: 'ethernet_hub',
     };
 
-    service.saveTemplate(server, ethernetswitchtemplate).subscribe();
+    service.saveTemplate(controller, ethernetswitchtemplate).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/3`);
     expect(req.request.method).toEqual('PUT');
@@ -111,7 +111,7 @@ describe('BuiltInTemplatesService', () => {
       template_type: 'cloud',
     } as CloudTemplate;
 
-    service.addTemplate(server, cloudtemplate).subscribe();
+    service.addTemplate(controller, cloudtemplate).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
     expect(req.request.method).toEqual('POST');
@@ -131,7 +131,7 @@ describe('BuiltInTemplatesService', () => {
       template_type: 'ethernet_hub',
     };
 
-    service.addTemplate(server, ethernethubtemplate).subscribe();
+    service.addTemplate(controller, ethernethubtemplate).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
     expect(req.request.method).toEqual('POST');
@@ -151,7 +151,7 @@ describe('BuiltInTemplatesService', () => {
       template_type: 'ethernet_hub',
     };
 
-    service.addTemplate(server, ethernetswitchtemplate).subscribe();
+    service.addTemplate(controller, ethernetswitchtemplate).subscribe();
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
     expect(req.request.method).toEqual('POST');

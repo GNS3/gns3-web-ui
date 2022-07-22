@@ -7,7 +7,7 @@ import { NodesDataSource } from '../../../../../cartography/datasources/nodes-da
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
 import { Link } from '../../../../../models/link';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { LinkService } from '../../../../../services/link.service';
 import { NodeService } from '../../../../../services/node.service';
@@ -17,7 +17,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './delete-action.component.html',
 })
 export class DeleteActionComponent implements OnInit {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   @Input() links: Link[];
@@ -49,19 +49,19 @@ export class DeleteActionComponent implements OnInit {
     this.nodes.forEach((node) => {
       this.nodesDataSource.remove(node);
 
-      this.nodeService.delete(this.server, node).subscribe((node: Node) => {});
+      this.nodeService.delete(this.controller, node).subscribe((node: Node) => {});
     });
 
     this.drawings.forEach((drawing) => {
       this.drawingsDataSource.remove(drawing);
 
-      this.drawingService.delete(this.server, drawing).subscribe((drawing: Drawing) => {});
+      this.drawingService.delete(this.controller, drawing).subscribe((drawing: Drawing) => {});
     });
 
     this.links.forEach((link) => {
       this.linksDataSource.remove(link);
 
-      this.linkService.deleteLink(this.server, link).subscribe(() => {});
+      this.linkService.deleteLink(this.controller, link).subscribe(() => {});
     });
   }
 }

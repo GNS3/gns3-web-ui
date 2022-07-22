@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import { Server } from '../models/server';
+import{ Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpServer } from './http-server.service';
+import { HttpController } from './http-controller.service';
 import { TemplateService } from './template.service';
 
 describe('TemplateService', () => {
@@ -15,7 +15,7 @@ describe('TemplateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [TemplateService, HttpServer, HttpClient],
+      providers: [TemplateService, HttpController, HttpClient],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -27,12 +27,12 @@ describe('TemplateService', () => {
     httpTestingController.verify();
   });
 
-  it('should ask for the list from server', () => {
-    const server = new Server();
-    server.host = '127.0.0.1';
-    server.port = 3080;
+  it('should ask for the list from controller', () => {
+    const controller = new Controller  ();
+    controller.host = '127.0.0.1';
+    controller.port = 3080;
 
-    service.list(server).subscribe(() => {});
+    service.list(controller).subscribe(() => {});
 
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
     expect(req.request.url).toBe(`http://127.0.0.1:3080/${environment.current_version}/templates`);

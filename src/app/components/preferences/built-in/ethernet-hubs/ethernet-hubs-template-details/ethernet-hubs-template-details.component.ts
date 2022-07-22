@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ServerService } from '../../../../../services/server.service';
+import { ControllerService } from '../../../../../services/controller.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   ethernetHubTemplate: EthernetHubTemplate;
   numberOfPorts: number;
   inputForm: FormGroup;
@@ -24,7 +24,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
     private formBuilder: FormBuilder,
@@ -39,14 +39,14 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
       this.builtInTemplatesService
-        .getTemplate(this.server, template_id)
+        .getTemplate(this.controller, template_id)
         .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
           this.ethernetHubTemplate = ethernetHubTemplate;
           this.numberOfPorts = this.ethernetHubTemplate.ports_mapping.length;
@@ -55,7 +55,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'builtin', 'ethernet-hubs']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-hubs']);
   }
 
   onSave() {
@@ -71,7 +71,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
       }
 
       this.builtInTemplatesService
-        .saveTemplate(this.server, this.ethernetHubTemplate)
+        .saveTemplate(this.controller, this.ethernetHubTemplate)
         .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
           this.toasterService.success('Changes saved');
         });

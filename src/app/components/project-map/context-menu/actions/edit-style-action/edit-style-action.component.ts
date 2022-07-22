@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { ImageElement } from '../../../../../cartography/models/drawings/image-element';
 import { Project } from '../../../../../models/project';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
 
 @Component({
@@ -11,7 +11,7 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
   templateUrl: './edit-style-action.component.html',
 })
 export class EditStyleActionComponent implements OnChanges {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() project: Project;
   @Input() drawing: Drawing;
   isImageDrawing: boolean = false;
@@ -29,7 +29,7 @@ export class EditStyleActionComponent implements OnChanges {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     instance.project = this.project;
     instance.drawing = this.drawing;
   }

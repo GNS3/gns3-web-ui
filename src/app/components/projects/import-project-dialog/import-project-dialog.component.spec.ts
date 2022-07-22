@@ -15,7 +15,7 @@ import { environment } from 'environments/environment';
 import { FileItem, FileSelectDirective, FileUploadModule } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
 import { ToasterService } from '../../../services/toaster.service';
@@ -51,19 +51,19 @@ export class MockedProjectService {
     return of(this.projects);
   }
 
-  getUploadPath(server: Server, uuid: string, project_name: string) {
-    return `http://${server.host}:${server.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
+  getUploadPath(controller:Controller , uuid: string, project_name: string) {
+    return `http://${controller.host}:${controller.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
   }
 
-  getExportPath(server: Server, project: Project) {
-    return `http://${server.host}:${server.port}/${environment.current_version}/projects/${project.project_id}/export`;
+  getExportPath(controller:Controller , project: Project) {
+    return `http://${controller.host}:${controller.port}/${environment.current_version}/projects/${project.project_id}/export`;
   }
 }
 
 describe('ImportProjectDialogComponent', () => {
   let component: ImportProjectDialogComponent;
   let fixture: ComponentFixture<ImportProjectDialogComponent>;
-  let server: Server;
+  let controller:Controller ;
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
   let mockedToasterService = new MockedToasterService()
@@ -99,16 +99,16 @@ describe('ImportProjectDialogComponent', () => {
       declarations: [ImportProjectDialogComponent],
     }).compileComponents();
 
-    server = new Server();
-    server.host = 'localhost';
-    server.port = 80;
+    controller = new Controller  ();
+    controller.host = 'localhost';
+    controller.port = 80;
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ImportProjectDialogComponent);
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
-    component.server = server;
+    component.controller =  controller;
     component.projectNameForm.controls['projectName'].setValue('ValidName');
     fixture.detectChanges();
 

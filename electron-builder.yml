@@ -15,7 +15,7 @@ files:
   - renderer.js
   - sentry.js
   - installed-software.js
-  - local-server.js
+  - local-controller.js
   - console-executor.js
   - package.json
 

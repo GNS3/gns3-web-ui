@@ -5,7 +5,7 @@
         mat-icon-button
         matTooltip="Back to group management"
         matTooltipClass="custom-tooltip"
-        [routerLink]="['/server', server.id, 'management', 'groups']">
+        [routerLink]="['/controller', controller.id, 'management', 'groups']">
         <mat-icon aria-label="Back to group management">keyboard_arrow_left</mat-icon>
       </a>
       <h1 class="col">Groups {{group.name}} details</h1>
@@ -47,7 +47,7 @@
             </mat-form-field>
           </div>
           <div *ngFor="let user of members | membersFilter: searchMembers | paginator: pageEvent">
-            <a href="/server/{{server.id}}/management/users/{{user.user_id}}">
+            <a href="/controller/{{controller.id}}/management/users/{{user.user_id}}">
               <div>{{user.username}}</div>
             </a>
             <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>

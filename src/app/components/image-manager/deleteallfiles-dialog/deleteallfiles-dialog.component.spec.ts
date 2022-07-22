@@ -10,14 +10,14 @@ import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { Server } from 'http';
 import { of } from 'rxjs';
 import { ImageManagerService } from '../../../services/image-manager.service';
-import { ServerService } from '../../../services/server.service';
-import { MockedServerService } from '../../../services/server.service.spec';
+import { ControllerService } from '../../../services/controller.service';
+import { MockedControllerService } from '../../../services/controller.service.spec';
 import { ImageManagerComponent } from '../image-manager.component';
 
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
 
 export class MockedImageManagerService {
-  public deleteALLFile(server: Server, image_path) {
+  public deleteALLFile(controller:Server , image_path) {
     return of();
   }
 }
@@ -25,7 +25,7 @@ export class MockedImageManagerService {
  describe('DeleteAllImageFilesDialogComponent', () => {
   let component: DeleteAllImageFilesDialogComponent;
   let fixture: ComponentFixture<DeleteAllImageFilesDialogComponent>;
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
 
@@ -39,7 +39,7 @@ export class MockedImageManagerService {
         MatDialogModule,
       ],
       providers: [
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },

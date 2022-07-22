@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Server } from '../../../../models/server';
-import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { ServerService } from '../../../../services/server.service';
+import{ Controller } from '../../../../models/controller';
+import { ControllerSettingsService } from '../../../../services/controller-settings.service';
+import { ControllerService } from '../../../../services/controller.service';
 
 @Component({
   selector: 'app-dynamips-preferences',
@@ -10,19 +10,19 @@ import { ServerService } from '../../../../services/server.service';
   styleUrls: ['./dynamips-preferences.component.scss'],
 })
 export class DynamipsPreferencesComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   dynamipsPath: string;
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
-    private serverSettingsService: ServerSettingsService
+    private controllerService: ControllerService,
+    private controllerSettingsService: ControllerSettingsService
   ) {}
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
     });
   }
 

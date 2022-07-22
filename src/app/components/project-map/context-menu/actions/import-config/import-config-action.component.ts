@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Server } from '../../../../../models/server';
+import{ Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
@@ -12,7 +12,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   styleUrls: ['./import-config-action.component.scss'],
 })
 export class ImportConfigActionComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   @Input() node: Node;
   @ViewChild('fileInput') fileInput: ElementRef;
   configType: string;
@@ -47,11 +47,11 @@ export class ImportConfigActionComponent {
       }
 
       if (this.configType === 'startup-config') {
-        this.nodeService.saveConfiguration(this.server, this.node, content).subscribe(() => {
+        this.nodeService.saveConfiguration(this.controller, this.node, content).subscribe(() => {
           this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
         });
       } else if (this.configType === 'private-config') {
-        this.nodeService.savePrivateConfiguration(this.server, this.node, content).subscribe(() => {
+        this.nodeService.savePrivateConfiguration(this.controller, this.node, content).subscribe(() => {
           this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
         });
       }

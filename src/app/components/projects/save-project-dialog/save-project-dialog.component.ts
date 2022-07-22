@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { ProjectNameValidator } from '../models/projectNameValidator';
@@ -15,7 +15,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   providers: [ProjectNameValidator],
 })
 export class SaveProjectDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   project: Project;
   projectNameForm: FormGroup;
   onAddProject = new EventEmitter<string>();
@@ -43,7 +43,7 @@ export class SaveProjectDialogComponent implements OnInit {
     if (this.projectNameForm.invalid) {
       return;
     }
-    this.projectService.list(this.server).subscribe((projects: Project[]) => {
+    this.projectService.list(this.controller).subscribe((projects: Project[]) => {
       const projectName = this.projectNameForm.controls['projectName'].value;
       let existingProject = projects.find((project) => project.name === projectName);
 
@@ -72,7 +72,7 @@ export class SaveProjectDialogComponent implements OnInit {
 
   addProject(): void {
     this.projectService
-      .duplicate(this.server, this.project.project_id, this.projectNameForm.controls['projectName'].value)
+      .duplicate(this.controller, this.project.project_id, this.projectNameForm.controls['projectName'].value)
       .subscribe((project: Project) => {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);

@@ -17,11 +17,11 @@ import { of } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { Project } from '../../models/project';
-import { Server } from '../../models/server';
+import{ Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
-import { ServerService } from '../../services/server.service';
-import { MockedServerService } from '../../services/server.service.spec';
+import { ControllerService } from '../../services/controller.service';
+import { MockedControllerService } from '../../services/controller.service.spec';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
@@ -32,8 +32,8 @@ xdescribe('ProjectsComponent', () => {
   let fixture: ComponentFixture<ProjectsComponent>;
   let settingsService: SettingsService;
   let projectService: ProjectService;
-  let serverService: ServerService;
-  let server: Server;
+  let controllerService: ControllerService;
+  let controller:Controller ;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
   let electronService;
@@ -66,7 +66,7 @@ xdescribe('ProjectsComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
-        { provide: ServerService, useClass: MockedServerService },
+        { provide: ControllerService, useClass: MockedControllerService },
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService },
         { provide: ToasterService },
@@ -81,17 +81,17 @@ xdescribe('ProjectsComponent', () => {
       })
       .compileComponents();
 
-    serverService = TestBed.inject(ServerService);
+    controllerService = TestBed.inject(ControllerService);
     settingsService = TestBed.inject(SettingsService);
     projectService = TestBed.inject(ProjectService);
     progressService = TestBed.inject(ProgressService);
 
-    server = new Server();
-    server.id = 99;
+    controller = new Controller  ();
+    controller.id = 99;
 
     const settings = {} as Settings;
 
-    spyOn(serverService, 'get').and.returnValue(Promise.resolve(server));
+    spyOn(controllerService, 'get').and.returnValue(Promise.resolve(controller));
     spyOn(settingsService, 'getAll').and.returnValue(settings);
     spyOn(projectService, 'list').and.returnValue(of([]));
 
@@ -136,12 +136,12 @@ describe('ProjectComponent open', () => {
 
     spyOn(projectService, 'open').and.returnValue(of(project));
 
-    component.server = server;
+    component.controller = controller;
   });
 
   it('should open project', () => {
     component.open(project);
-    expect(projectService.open).toHaveBeenCalledWith(server, project.project_id);
+    expect(projectService.open).toHaveBeenCalledWith(controller, project.project_id);
 
     expect(progressService.activate).toHaveBeenCalled();
     expect(progressService.deactivate).toHaveBeenCalled();
@@ -157,12 +157,12 @@ describe('ProjectComponent close', () => {
 
     spyOn(projectService, 'close').and.returnValue(of(project));
 
-    component.server = server;
+    component.controller = controller;
   });
 
   xit('should close project', () => {
     component.close(project);
-    expect(projectService.close).toHaveBeenCalledWith(server, project.project_id);
+    expect(projectService.close).toHaveBeenCalledWith(controller, project.project_id);
 
     expect(progressService.activate).toHaveBeenCalled();
     expect(progressService.deactivate).toHaveBeenCalled();

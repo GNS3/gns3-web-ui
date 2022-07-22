@@ -13,7 +13,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {BehaviorSubject, forkJoin, observable, Observable, timer} from "rxjs";
 import {User} from "@models/users/user";
 import {GroupService} from "@services/group.service";
@@ -34,7 +34,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
   loading = false;
 
   constructor(private dialog: MatDialogRef<AddUserToGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { server: Server; group: Group },
+              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group },
               private userService: UserService,
               private groupService: GroupService,
               private toastService: ToasterService) {
@@ -57,8 +57,8 @@ export class AddUserToGroupDialogComponent implements OnInit {
 
   getUsers() {
     forkJoin([
-      this.userService.list(this.data.server),
-      this.groupService.getGroupMember(this.data.server, this.data.group.user_group_id)
+      this.userService.list(this.data.controller),
+      this.groupService.getGroupMember(this.data.controller, this.data.group.user_group_id)
     ]).subscribe((results) => {
       const [userList, members] = results;
       const users = userList.filter((user: User) => {
@@ -75,7 +75,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
   addUser(user: User) {
     this.loading = true;
     this.groupService
-      .addMemberToGroup(this.data.server, this.data.group, user)
+      .addMemberToGroup(this.data.controller, this.data.group, user)
       .subscribe(() => {
         this.toastService.success(`user ${user.username} was added`);
         this.getUsers();

@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Project } from '../../../models/project';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { Template } from '../../../models/template';
 import { TemplateService } from '../../../services/template.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -17,7 +17,7 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
   styleUrls: ['./template-list-dialog.component.scss'],
 })
 export class TemplateListDialogComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   project: Project;
   templateTypes: string[] = [
     'cloud',
@@ -39,7 +39,7 @@ export class TemplateListDialogComponent implements OnInit {
   selectedTemplate: Template;
   searchText: string = '';
 
-  nodeServers: string[] = ['local', 'vm'];
+  nodeControllers: string[] = ['local', 'vm'];
 
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,
@@ -49,7 +49,7 @@ export class TemplateListDialogComponent implements OnInit {
     private toasterService: ToasterService,
     private nonNegativeValidator: NonNegativeValidator
   ) {
-    this.server = data['server'];
+    this.controller = data['controller'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
       numberOfNodes: new FormControl(1, [ Validators.compose([Validators.required, nonNegativeValidator.get])]),
@@ -61,7 +61,7 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.templateService.list(this.server).subscribe((listOfTemplates: Template[]) => {
+    this.templateService.list(this.controller).subscribe((listOfTemplates: Template[]) => {
       this.filteredTemplates = listOfTemplates;
       this.templates = listOfTemplates;
     });
@@ -108,7 +108,7 @@ export class TemplateListDialogComponent implements OnInit {
       } else {
         let event: NodeAddedEvent = {
           template: this.selectedTemplate,
-          server: this.selectedTemplate.compute_id,
+          controller: this.selectedTemplate.compute_id,
           // name: this.configurationForm.get('name').value,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
@@ -122,7 +122,7 @@ export class TemplateListDialogComponent implements OnInit {
 
 export interface NodeAddedEvent {
   template: Template;
-  server: string;
+  controller: string;
   name?: string;
   numberOfNodes: number;
   x: number;
@@ -136,8 +136,8 @@ export class TemplateDatabase {
     return this.dataChange.value;
   }
 
-  constructor(private server: Server, private templateService: TemplateService) {
-    this.templateService.list(this.server).subscribe((templates) => {
+  constructor(private controller:Controller , private templateService: TemplateService) {
+    this.templateService.list(this.controller).subscribe((templates) => {
       this.dataChange.next(templates);
     });
   }

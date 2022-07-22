@@ -1,7 +1,7 @@
 <div class="content" *ngIf="isReady; else loading">
   <div class="add">
     <app-add-permission-line
-      [server]="server"
+      [controller]="controller"
       (addPermissionEvent)="refresh()"></app-add-permission-line>
   </div>
   <div class="permission-content default-content">
@@ -22,7 +22,7 @@
     <div *ngFor="let permission of permissions | permissionsFilter: searchPermissions?.id | paginator: pageEvent">
       <app-permission-add-edit-line
               [permission]="permission"
-              [server]="server"
+              [controller]="controller"
         (update)="refresh()"></app-permission-add-edit-line>
     </div>
     <mat-paginator [length]="permissions.length" (page)="pageEvent = $event"

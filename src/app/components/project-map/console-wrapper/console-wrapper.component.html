@@ -39,12 +39,12 @@
     </button>
   </div>
 
-  <app-log-console [hidden]="!(selected.value === 0) || isMinimized" [server]="server" [project]="project">
+  <app-log-console [hidden]="!(selected.value === 0) || isMinimized" [controller]="controller" [project]="project">
   </app-log-console>
 
   <div (mouseover)="disableScroll($event)" (mouseout)="enableScroll($event)" class="xterm-console"
     [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
-    <app-web-console [hidden]="!(selected.value === index + 1)" [server]="server" [node]="nodes[index]">
+    <app-web-console [hidden]="!(selected.value === index + 1)" [controller]="controller" [node]="nodes[index]">
     </app-web-console>
   </div>
 </div>

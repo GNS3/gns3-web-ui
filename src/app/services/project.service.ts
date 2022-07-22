@@ -5,8 +5,8 @@ import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
 import { Link } from '../models/link';
 import { Project } from '../models/project';
-import { Server } from '../models/server';
-import { HttpServer } from './http-server.service';
+import{ Controller } from '../models/controller';
+import { HttpController } from './http-controller.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';
 
@@ -34,7 +34,7 @@ export class ProjectService {
 
   public projectListSubject = new Subject<boolean>();
   constructor(
-    private httpServer: HttpServer,
+    private httpController: HttpController,
     private settingsService: SettingsService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
@@ -43,49 +43,50 @@ export class ProjectService {
     this.projectListSubject.next(true);
   }
 
-  getReadmeFile(server: Server, project_id: string) {
-    return this.httpServer.getText(server, `/projects/${project_id}/files/README.txt`);
+  getReadmeFile(controller:Controller , project_id: string) {
+    return this.httpController.getText(controller, `/projects/${project_id}/files/README.txt`);
   }
 
-  postReadmeFile(server: Server, project_id: string, readme: string) {
-    return this.httpServer.post<any>(server, `/projects/${project_id}/files/README.txt`, readme);
+  postReadmeFile(controller:Controller , project_id: string, readme: string) {
+    return this.httpController.post<any>(controller, `/projects/${project_id}/files/README.txt`, readme);
   }
 
-  get(server: Server, project_id: string) {
-    return this.httpServer.get<Project>(server, `/projects/${project_id}`);
+  get(controller:Controller , project_id: string) {
+    return this.httpController.get<Project>(controller, `/projects/${project_id}`);
   }
 
-  open(server: Server, project_id: string) {
-    return this.httpServer.post<Project>(server, `/projects/${project_id}/open`, {});
+  open(controller:Controller , project_id: string) {
+    return this.httpController.post<Project>(controller, `/projects/${project_id}/open`, {});
   }
 
-  close(server: Server, project_id: string) {
+  close(controller:Controller , project_id: string) {
     this.recentlyOpenedProjectService.removeData();
-    return this.httpServer.post<Project>(server, `/projects/${project_id}/close`, {});
+    return this.httpController.post<Project>(controller, `/projects/${project_id}/close`, {});
   }
 
-  list(server: Server) {
-    return this.httpServer.get<Project[]>(server, '/projects');
+  list(controller:Controller ) {
+    return this.httpController.get<Project[]>(controller, '/projects');
   }
 
-  nodes(server: Server, project_id: string) {
-    return this.httpServer.get<Node[]>(server, `/projects/${project_id}/nodes`);
+  nodes(controller:Controller , project_id: string) {
+    return this.httpController.get<Node[]>(controller, `/projects/${project_id}/nodes`);
   }
 
-  links(server: Server, project_id: string) {
-    return this.httpServer.get<Link[]>(server, `/projects/${project_id}/links`);
+  links(controller:Controller , project_id: string) {
+    debugger
+    return this.httpController.get<Link[]>(controller, `/projects/${project_id}/links`);
   }
 
-  drawings(server: Server, project_id: string) {
-    return this.httpServer.get<Drawing[]>(server, `/projects/${project_id}/drawings`);
+  drawings(controller:Controller , project_id: string) {
+    return this.httpController.get<Drawing[]>(controller, `/projects/${project_id}/drawings`);
   }
 
-  add(server: Server, project_name: string, project_id: string): Observable<any> {
-    return this.httpServer.post<Project>(server, `/projects`, { name: project_name, project_id: project_id });
+  add(controller:Controller , project_name: string, project_id: string): Observable<any> {
+    return this.httpController.post<Project>(controller, `/projects`, { name: project_name, project_id: project_id });
   }
 
-  update(server: Server, project: Project): Observable<Project> {
-    return this.httpServer.put<Project>(server, `/projects/${project.project_id}`, {
+  update(controller:Controller , project: Project): Observable<Project> {
+    return this.httpController.put<Project>(controller, `/projects/${project.project_id}`, {
       auto_close: project.auto_close,
       auto_open: project.auto_open,
       auto_start: project.auto_start,
@@ -98,28 +99,28 @@ export class ProjectService {
     });
   }
 
-  delete(server: Server, project_id: string): Observable<any> {
-    return this.httpServer.delete(server, `/projects/${project_id}`);
+  delete(controller:Controller , project_id: string): Observable<any> {
+    return this.httpController.delete(controller, `/projects/${project_id}`);
   }
 
-  getUploadPath(server: Server, uuid: string, project_name: string) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
+  getUploadPath(controller:Controller , uuid: string, project_name: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
   }
 
-  getExportPath(server: Server, project: Project) {
-    return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${project.project_id}/export`;
+  getExportPath(controller:Controller , project: Project) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project.project_id}/export`;
   }
 
-  export(server: Server, project_id: string): Observable<any> {
-    return this.httpServer.get(server, `/projects/${project_id}/export`);
+  export(controller:Controller , project_id: string): Observable<any> {
+    return this.httpController.get(controller, `/projects/${project_id}/export`);
   }
 
-  getStatistics(server: Server, project_id: string): Observable<any> {
-    return this.httpServer.get(server, `/projects/${project_id}/stats`);
+  getStatistics(controller:Controller , project_id: string): Observable<any> {
+    return this.httpController.get(controller, `/projects/${project_id}/stats`);
   }
 
-  duplicate(server: Server, project_id: string, project_name): Observable<any> {
-    return this.httpServer.post(server, `/projects/${project_id}/duplicate`, { name: project_name });
+  duplicate(controller:Controller , project_id: string, project_name): Observable<any> {
+    return this.httpController.post(controller, `/projects/${project_id}/duplicate`, { name: project_name });
   }
 
   isReadOnly(project: Project) {
@@ -137,11 +138,11 @@ export class ProjectService {
   };
 
 
-  getexportPortableProjectPath(server:Server, project_id: string,formData:any={}) {
+  getexportPortableProjectPath(controller :Controller, project_id: string,formData:any={}) {
     if (formData.compression_level != null && formData.compression_level !='') {
-      return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}&token=${server.authToken}`;
+      return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}&token=${controller.authToken}`;
     } else {
-      return `${server.protocol}//${server.host}:${server.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&token=${server.authToken}`;
+      return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&token=${controller.authToken}`;
 
     }
   }

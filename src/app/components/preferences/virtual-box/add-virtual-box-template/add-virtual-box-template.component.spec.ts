@@ -10,10 +10,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ServerService } from '../../../../services/server.service';
-import { MockedServerService } from '../../../../services/server.service.spec';
+import { ControllerService } from '../../../../services/controller.service';
+import { MockedControllerService } from '../../../../services/controller.service.spec';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
@@ -22,11 +22,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVirtualBoxTemplateComponent } from './add-virtual-box-template.component';
 
 export class MockedVirtualBoxService {
-  public addTemplate(server: Server, virtualBoxTemplate: VirtualBoxTemplate) {
+  public addTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate) {
     return of(virtualBoxTemplate);
   }
 
-  public getVirtualMachines(server: Server) {
+  public getVirtualMachines(controller:Controller ) {
     return of([]);
   }
 }
@@ -35,7 +35,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
   let component: AddVirtualBoxTemplateComponent;
   let fixture: ComponentFixture<AddVirtualBoxTemplateComponent>;
 
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedVirtualBoxService = new MockedVirtualBoxService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -52,12 +52,12 @@ describe('AddVirtualBoxTemplateComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([
-          { path: 'server/1/preferences/virtualbox/templates', component: AddVirtualBoxTemplateComponent },
+          { path: 'controller/1/preferences/virtualbox/templates', component: AddVirtualBoxTemplateComponent },
         ]),
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
@@ -106,7 +106,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
     };
     component.virtualBoxTemplate = {} as VirtualBoxTemplate;
     component.selectedVM = template;
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
     component.vmForm.controls['vm'].setValue('virtual machine');
 
     component.addTemplate();
@@ -116,7 +116,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
 
   it('should not call save template when virtual machine is not selected', () => {
     spyOn(mockedVirtualBoxService, 'addTemplate').and.returnValue(of({} as VirtualBoxTemplate));
-    component.server = { id: 1 } as Server;
+    component.controller = { id: 1 } as Controller ;
 
     component.addTemplate();
 

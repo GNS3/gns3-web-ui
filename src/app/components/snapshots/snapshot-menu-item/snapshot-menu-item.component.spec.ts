@@ -5,7 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Context } from 'app/cartography/models/context';
 import { ProgressDialogService } from 'app/common/progress-dialog/progress-dialog.service';
-import { HttpServer, ServerErrorHandler } from 'app/services/http-server.service';
+import { HttpController, ControllerErrorHandler } from 'app/services/http-controller.service';
 import { SnapshotService } from 'app/services/snapshot.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { SnapshotMenuItemComponent } from './snapshot-menu-item.component';
@@ -21,11 +21,11 @@ describe('SnapshotMenuItemComponent', () => {
       providers: [
         SnapshotService,
         MatDialog,
-        HttpServer,
+        HttpController,
         Overlay,
         ScrollStrategyOptions,
         HttpClient,
-        ServerErrorHandler,
+        ControllerErrorHandler,
         ProgressDialogService,
         Context,
         ToasterService

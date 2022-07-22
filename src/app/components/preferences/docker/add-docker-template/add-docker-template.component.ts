@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { DockerImage } from '../../../../models/docker/docker-image';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';
 import { DockerService } from '../../../../services/docker.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
@@ -19,7 +19,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddDockerTemplateComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   dockerTemplate: DockerTemplate;
   consoleTypes: string[] = [];
   isRemoteComputerChosen: boolean = false;
@@ -34,7 +34,7 @@ export class AddDockerTemplateComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private dockerService: DockerService,
     private toasterService: ToasterService,
     private router: Router,
@@ -59,9 +59,9 @@ export class AddDockerTemplateComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
 
@@ -69,14 +69,14 @@ export class AddDockerTemplateComponent implements OnInit {
         this.dockerTemplate = dockerTemplate;
       });
 
-      this.dockerService.getImages(server).subscribe((images) => {
+      this.dockerService.getImages(controller).subscribe((images) => {
         this.dockerImages = images;
       });
     });
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -86,7 +86,7 @@ export class AddDockerTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'docker', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'docker', 'templates']);
   }
 
   addTemplate() {
@@ -107,7 +107,7 @@ export class AddDockerTemplateComponent implements OnInit {
       this.dockerTemplate.adapters = +this.networkAdaptersForm.get('adapters').value;
       this.dockerTemplate.compute_id = 'local';
 
-      this.dockerService.addTemplate(this.server, this.dockerTemplate).subscribe((template: DockerTemplate) => {
+      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe((template: DockerTemplate) => {
         this.goBack();
       });
     } else {

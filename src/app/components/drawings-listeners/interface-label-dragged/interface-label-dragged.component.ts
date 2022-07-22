@@ -5,7 +5,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '../../../models/link';
-import { Server } from '../../../models/server';
+import{ Controller } from '../../../models/controller';
 import { LinkService } from '../../../services/link.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { LinkService } from '../../../services/link.service';
   styleUrls: ['./interface-label-dragged.component.scss'],
 })
 export class InterfaceLabelDraggedComponent {
-  @Input() server: Server;
+  @Input() controller:Controller ;
   private interfaceDragged: Subscription;
 
   constructor(
@@ -40,8 +40,8 @@ export class InterfaceLabelDraggedComponent {
       link.nodes[1].label.y += draggedEvent.dy;
     }
 
-    this.linkService.updateNodes(this.server, link, link.nodes).subscribe((serverLink: Link) => {
-      this.linksDataSource.update(serverLink);
+    this.linkService.updateNodes(this.controller, link, link.nodes).subscribe((controllerLink: Link) => {
+      this.linksDataSource.update(controllerLink);
     });
   }
 

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Server } from '../../../../models/server';
+import{ Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';
-import { ServerService } from '../../../../services/server.service';
+import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IouTemplateDetailsComponent implements OnInit {
-  server: Server;
+  controller:Controller ;
   iouTemplate: IouTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -29,7 +29,7 @@ export class IouTemplateDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     private iouService: IouService,
     private toasterService: ToasterService,
     private configurationService: IouConfigurationService,
@@ -51,13 +51,13 @@ export class IouTemplateDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    const server_id = this.route.snapshot.paramMap.get('server_id');
+    const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.serverService.get(parseInt(server_id, 10)).then((server: Server) => {
-      this.server = server;
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+      this.controller = controller;
 
       this.getConfiguration();
-      this.iouService.getTemplate(this.server, template_id).subscribe((iouTemplate: IouTemplate) => {
+      this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
       });
     });
@@ -69,14 +69,14 @@ export class IouTemplateDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/server', this.server.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates']);
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid || this.networkForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
-      this.iouService.saveTemplate(this.server, this.iouTemplate).subscribe(() => {
+      this.iouService.saveTemplate(this.controller, this.iouTemplate).subscribe(() => {
         this.toasterService.success('Changes saved');
       });
     }

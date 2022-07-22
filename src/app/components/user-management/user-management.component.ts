@@ -12,7 +12,7 @@
 */
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Server} from "@models/server";
+import {Controller} from "@models/controller";
 import {MatSort} from "@angular/material/sort";
 import {UserService} from "@services/user.service";
 import {ProgressService} from "../../common/progress/progress.service";
@@ -24,7 +24,7 @@ import {DeleteUserDialogComponent} from "@components/user-management/delete-user
 import {ToasterService} from "@services/toaster.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
-import {ServerService} from "@services/server.service";
+import {ControllerService} from "@services/controller.service";
 
 @Component({
   selector: 'app-user-management',
@@ -32,7 +32,7 @@ import {ServerService} from "@services/server.service";
   styleUrls: ['./user-management.component.scss']
 })
 export class UserManagementComponent implements OnInit {
-  server: Server;
+  controller: Controller;
   dataSource = new MatTableDataSource<User>();
   displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
   selection = new SelectionModel<User>(true, []);
@@ -47,14 +47,14 @@ export class UserManagementComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private progressService: ProgressService,
-    private serverService: ServerService,
+    private controllerService: ControllerService,
     public dialog: MatDialog,
     private toasterService: ToasterService) { }
 
   ngOnInit() {
-    const serverId = this.route.parent.snapshot.paramMap.get('server_id');
-    this.serverService.get(+serverId).then((server: Server) => {
-      this.server = server;
+    const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
+    this.controllerService.get(+controllerId).then((controller: Controller) => {
+      this.controller = controller;
       this.refresh();
     });
   }
@@ -81,7 +81,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   refresh() {
-    this.userService.list(this.server).subscribe(
+    this.userService.list(this.controller).subscribe(
       (users: User[]) => {
         this.isReady = true;
         this.dataSource.data = users;
@@ -99,7 +99,7 @@ export class UserManagementComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.server = this.server;
+    instance.controller = this.controller;
     dialogRef.afterClosed().subscribe(() => this.refresh());
   }
 
@@ -109,7 +109,7 @@ export class UserManagementComponent implements OnInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.userService.delete(this.server, user.user_id)
+          this.userService.delete(this.controller, user.user_id)
             .subscribe(() => {
               this.refresh()
             }, (error) => {
@@ -140,7 +140,7 @@ export class UserManagementComponent implements OnInit {
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
           this.selection.selected.forEach((user: User) => {
-            this.userService.delete(this.server, user.user_id)
+            this.userService.delete(this.controller, user.user_id)
               .subscribe(() => {
                 this.refresh()
               }, (error) => {
