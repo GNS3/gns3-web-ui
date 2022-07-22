@@ -25,11 +25,10 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   controllerStatusSubscription: Subscription;
   shouldStopControllersOnClosing = true;
-
   recentlyOpenedcontrollerId: string;
   recentlyOpenedProjectId: string;
-
   controllerIdProjectList: string;
+  controllerId: string | undefined | null;
 
   constructor(
     private electronService: ElectronService,
@@ -38,8 +37,15 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private toasterService: ToasterService,
     private progressService: ProgressService,
     public router: Router,
+    private route: ActivatedRoute,
     private controllerService: ControllerService
-  ) {}
+  ) {
+    this.router.events.subscribe((data) => {
+      if (data instanceof NavigationEnd) {
+        this.controllerId = this.route.children[0].snapshot.paramMap.get("controller_id");
+      }
+    });
+  }
 
   ngOnInit() {
 
@@ -70,16 +76,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.shouldStopControllersOnClosing = this.electronService.isElectronApp;
   }
 
-  goToUserInfo() {
-    let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.controllerService.get(+controllerId).then((controller:Controller ) => {
-      this.router.navigate(['/controller', controller.id, 'loggeduser']);
-    });
-  }
-
   goToDocumentation() {
-    let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.controllerService.get(+controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       (window as any).open(`http://${controller.host}:${controller.port}/docs`);
     });
   }
@@ -93,8 +91,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    let controllerId = this.router.url.split("/controller/")[1].split("/")[0];
-    this.controllerService.get(+controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       controller.authToken = null;
       this.controllerService.update(controller).then(val => this.router.navigate(['/controller', controller.id, 'login']));
     });
