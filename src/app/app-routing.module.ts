@@ -57,6 +57,23 @@ import { ServerResolve } from './resolvers/server-resolve';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
+import { UserDetailComponent } from "./components/user-management/user-detail/user-detail.component";
+import { UserDetailResolver } from "./resolvers/user-detail.resolver";
+import { ManagementComponent } from "./components/management/management.component";
+import { PermissionResolver } from "./resolvers/permission.resolver";
+import { UserGroupsResolver } from "./resolvers/user-groups.resolver";
+import { UserPermissionsResolver } from "./resolvers/user-permissions.resolver";
+import { GroupManagementComponent } from "./components/group-management/group-management.component";
+import { RoleManagementComponent } from "./components/role-management/role-management.component";
+import { PermissionsManagementComponent } from "./components/permissions-management/permissions-management.component";
+import { GroupDetailsComponent } from "./components/group-details/group-details.component";
+import { GroupMembersResolver } from "./resolvers/group-members.resolver";
+import { GroupResolver } from "./resolvers/group.resolver";
+import { GroupRoleResolver } from "./resolvers/group-role.resolver";
+import { RoleDetailComponent } from "./components/role-management/role-detail/role-detail.component";
+import { RoleDetailResolver } from "./resolvers/role-detail.resolver";
+import { RolePermissionsComponent } from "./components/role-management/role-detail/role-permissions/role-permissions.component";
+import { UserPermissionsComponent } from "./components/user-management/user-detail/user-permissions/user-permissions.component";
 
 const routes: Routes = [
   {
@@ -78,6 +95,16 @@ const routes: Routes = [
       { path: 'help', component: HelpComponent },
       { path: 'settings', component: SettingsComponent },
       { path: 'settings/console', component: ConsoleComponent },
+      {
+        path: 'server/:server_id/management/users/:user_id',
+        component: UserDetailComponent,
+        canActivate: [LoginGuard],
+        resolve: {
+          user: UserDetailResolver,
+          groups: UserGroupsResolver,
+          permissions: UserPermissionsResolver,
+          server: ServerResolve},
+      },
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'server/:server_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
 
@@ -190,8 +217,70 @@ const routes: Routes = [
 
       { path: 'server/:server_id/preferences/iou/templates', component: IouTemplatesComponent, canActivate: [LoginGuard] },
       { path: 'server/:server_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
-      { path: 'server/:server_id/preferences/iou/templates/:template_id/copy', component: CopyIouTemplateComponent, canActivate: [LoginGuard] },
+      {
+        path: 'server/:server_id/preferences/iou/templates/:template_id/copy',
+        component: CopyIouTemplateComponent,
+        canActivate: [LoginGuard]
+      },
       { path: 'server/:server_id/preferences/iou/addtemplate', component: AddIouTemplateComponent, canActivate: [LoginGuard] },
+      {
+        path: 'server/:server_id/management',
+        component: ManagementComponent,
+        children: [
+          {
+            path: 'users',
+            component: UserManagementComponent
+          },
+          {
+            path: 'groups',
+            component: GroupManagementComponent
+          },
+          {
+            path: 'roles',
+            component: RoleManagementComponent
+          },
+          {path: 'permissions',
+          component: PermissionsManagementComponent
+          }
+        ]
+      },
+      {
+        path: 'server/:server_id/management/groups/:user_group_id',
+        component: GroupDetailsComponent,
+        resolve: {
+          members: GroupMembersResolver,
+          server: ServerResolve,
+          group: GroupResolver,
+          roles: GroupRoleResolver
+        }
+      },
+      {
+        path: 'server/:server_id/management/roles/:role_id',
+        component: RoleDetailComponent,
+        resolve: {
+          role: RoleDetailResolver,
+          server: ServerResolve
+        }
+      },
+      {
+        path: 'server/:server_id/management/roles/:role_id/permissions',
+        component: RolePermissionsComponent,
+        resolve: {
+          role: RoleDetailResolver,
+          server: ServerResolve,
+          permissions: PermissionResolver
+        }
+      },
+      {
+        path: 'server/:server_id/management/users/:user_id/permissions',
+        component: UserPermissionsComponent,
+        resolve: {
+          user: UserDetailResolver,
+          userPermissions: UserPermissionsResolver,
+          server: ServerResolve,
+          permissions: PermissionResolver
+        }
+      }
     ],
   },
   {
@@ -211,14 +300,10 @@ const routes: Routes = [
     canActivate: [LoginGuard]
   },
   {
-    path: 'user_management',
-    component: UserManagementComponent
-  },
-  {
     path: '**',
     component: PageNotFoundComponent,
   }
-  
+
 ];
 
 @NgModule({
@@ -231,4 +316,5 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+}

@@ -28,6 +28,7 @@ a.table-link {
 .snackbar-error {
   background: #b00020 !important;
   color: white !important;
+  white-space: pre-wrap !important;
 }
 
 .mat-dialog-actions {
@@ -55,4 +56,15 @@ mat-menu-panel {
 .custom-tooltip {
   background-color: grey;
   color: #ffffff;
+}
+
+.permission-tooltip {
+  max-width: unset !important;
+  background-color: grey;
+  color: #ffffff;
+  background-color: grey;
+  color: #ffffff;
+  white-space: pre-line;
+  font-size: 12px !important;
+  font-family: monospace;
 }

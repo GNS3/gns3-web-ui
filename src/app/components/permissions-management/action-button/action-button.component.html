@@ -1,0 +1,6 @@
+<button [ngClass]="{allow: action === 'ALLOW', deny: action === 'DENY'}"
+  mat-button
+  [disabled]="disabled"
+  (click)="change()">
+  {{action}}
+</button>

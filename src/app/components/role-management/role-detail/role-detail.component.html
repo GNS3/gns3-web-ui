@@ -1,0 +1,60 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row align-items-center">
+      <a
+        mat-icon-button
+        matTooltip="Back to role management"
+        matTooltipClass="custom-tooltip"
+        [routerLink]="['/server', server.id, 'management', 'roles']">
+        <mat-icon aria-label="Back to role management">keyboard_arrow_left</mat-icon>
+      </a>
+      <h1 class="col">Role {{role.name}} details</h1>
+    </div>
+    <div class="main">
+      <div class="details">
+        <div>
+          <mat-form-field>
+            <mat-label>Role name:</mat-label>
+            <input matInput type="text" [ngModel]="role.name">
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Description:</mat-label>
+            <input matInput type="text" [ngModel]="role.description">
+          </mat-form-field>
+        </div>
+        <div>Creation date:   {{role.created_at}}</div>
+        <div>Last update Date:   {{role.updated_at}}</div>
+        <div>UUID:   {{role.role_id}}</div>
+        <div>
+          <mat-checkbox [checked]="role.is_builtin" disabled>Is build in</mat-checkbox>
+        </div>
+        <div mat-dialog-actions class="button-div">
+          <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
+                  [disabled]="!editRoleForm.valid">
+            Update Role
+          </button>
+        </div>
+      </div>
+      <mat-divider [vertical]="true"></mat-divider>
+      <div class="permissions">
+        <div class="header">
+          <div>Permissions</div>
+          <div>
+            <button
+              mat-button
+              [routerLink]="['/server', server.id, 'management', 'roles', role.role_id, 'permissions']">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+        <app-editable-permission
+          [permission]="permission"
+          [server]="server"
+          *ngFor="let permission of role.permissions">
+        </app-editable-permission>
+      </div>
+    </div>
+  </div>
+</div>

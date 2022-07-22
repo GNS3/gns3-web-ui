@@ -1,0 +1,57 @@
+<div class="permission">
+  <div class="action-button-bar">
+    <div>
+      <app-action-button
+        [action]="permission.action"
+        [disabled]="!isEditable"
+        (update)="permission.action = $event"></app-action-button>
+    </div>
+    <div class="methods">
+      <div *ngFor="let method of apiInformation.getMethods(permission.path) | async">
+        <app-method-button
+          [name]="method"
+          [disabled]="!isEditable"
+          [enable]="permission.methods.includes(method)"
+        (update)="onMethodUpdate($event)"></app-method-button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+      [matTooltip]="permission.path | displayPath: server | async"
+      matTooltipClass="custom-tooltip">
+      {{permission.path | displayPath: server | async}}
+    </div>
+  </div>
+  <div>
+    <mat-form-field class="permission-input" appearance="none">
+      <input
+        [(ngModel)]="permission.description"
+        matInput
+        type="text"
+        placeholder="Description"
+        [matTooltip]="permission.description"
+        matTooltipClass="custom-tooltip"
+        [readonly]="!isEditable"/>
+    </mat-form-field>
+  </div>
+
+  <div class="button-bar">
+    <div>
+      <button mat-button matTooltip="Edit permission" (click)="isEditable = true" *ngIf="!isEditable">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-button matTooltip="Delete permission" (click)="onDelete()" *ngIf="!isEditable">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    <div>
+      <button mat-button matTooltip="Save Changes" (click)="onSave()" *ngIf="isEditable" color="primary">
+        <mat-icon>check_circle</mat-icon>
+      </button>
+      <button mat-button matTooltip="Cancel Changes" color="warn" (click)="onCancel()" *ngIf="isEditable">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
