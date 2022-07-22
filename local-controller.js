@@ -30,7 +30,7 @@ exports.stopLocalController = async (controller) => {
   return await stop(controller.name);
 }
 
-exports.getrunningControllers = () => {
+exports.getRunningControllers = () => {
   return Object.keys(runningControllers);
 }
 
@@ -40,7 +40,7 @@ exports.stopAllLocalControllers = async () => {
 
 async function findBinary(binaryDirectory, filename) {
   const lookupDirectories = [
-    __dirname, 
+    __dirname,
     path.dirname(app.getPath('exe'))
   ];
 
@@ -60,7 +60,7 @@ async function findBinaryInDirectory(baseDirectory, binaryDirectory, filename) {
   }
 
   const files = fs.readdirSync(distDirectory);
-  
+
   let binaryPath = null;
 
   files.forEach((directory) => {
@@ -136,7 +136,7 @@ async function stop(controllerName) {
   }
 
   console.log(`Stopping '${controllerName}' with PID='${pid}'`);
-  
+
   const stopped = new Promise((resolve, reject) => {
     if(pid === undefined) {
       resolve(`Controller '${controllerName} is already stopped`);
@@ -241,7 +241,7 @@ async function run(controller, options) {
     status: 'started',
     message: `Controller '${controller.name}' started'`
   });
-  
+
   runningControllers[controller.name] = {
     process: controllerProcess
   };

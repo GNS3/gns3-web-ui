@@ -36,7 +36,7 @@ describe('CloudNodesTemplateDetailsComponent', () => {
   let component: CloudNodesTemplateDetailsComponent;
   let fixture: ComponentFixture<CloudNodesTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -60,7 +60,7 @@ describe('CloudNodesTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },

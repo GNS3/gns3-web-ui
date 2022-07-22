@@ -44,7 +44,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
   let component: QemuVmTemplateDetailsComponent;
   let fixture: ComponentFixture<QemuVmTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedQemuService = new MockedQemuService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -65,7 +65,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: QemuService, useValue: mockedQemuService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: QemuConfigurationService, useClass: QemuConfigurationService },

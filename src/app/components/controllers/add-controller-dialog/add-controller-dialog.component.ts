@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ControllerService } from '../../../services/controller.service';
 import { ToasterService } from '../../../services/toaster.service';
 
@@ -36,10 +36,10 @@ export class AddControllerDialogComponent implements OnInit {
   ) {}
 
   async getLocations() {
-    const localServers = await this.numberOfLocalServers();
+    const localControllers = await this.numberOfLocalControllers();
 
     let locations = [];
-    if (this.electronService.isElectronApp && localServers === 0) {
+    if (this.electronService.isElectronApp && localControllers === 0) {
       locations.push({ key: 'local', name: 'Local' });
     }
     locations.push({ key: 'remote', name: 'Remote' });
@@ -47,14 +47,14 @@ export class AddControllerDialogComponent implements OnInit {
   }
 
   async getDefaultLocation() {
-    const localServers = await this.numberOfLocalServers();
-    if (this.electronService.isElectronApp && localServers === 0) {
+    const localControllers = await this.numberOfLocalControllers();
+    if (this.electronService.isElectronApp && localControllers === 0) {
       return 'local';
     }
     return 'remote';
   }
 
-  async numberOfLocalServers() {
+  async numberOfLocalControllers() {
     const controllers = await this.controllerService.findAll();
 
     return controllers.filter((controller) => controller.location === 'local').length;
@@ -68,16 +68,16 @@ export class AddControllerDialogComponent implements OnInit {
     return 3080;
   }
 
-  async getDefaultLocalServerPath() {
+  async getDefaultLocalControllerPath() {
     if (this.electronService.isElectronApp) {
-      return await this.electronService.remote.require('./local-server.js').getLocalServerPath();
+      return await this.electronService.remote.require('./local-controller.js').getLocalControllerPath();
     }
     return;
   }
 
   async getDefaultUbridgePath() {
     if (this.electronService.isElectronApp) {
-      return await this.electronService.remote.require('./local-server.js').getUbridgePath();
+      return await this.electronService.remote.require('./local-controller.js').getUbridgePath();
     }
     return;
   }
@@ -85,7 +85,7 @@ export class AddControllerDialogComponent implements OnInit {
   async ngOnInit() {
     this.locations = await this.getLocations();
 
-    const defaultLocalServerPath = await this.getDefaultLocalServerPath();
+    const defaultLocalControllerPath = await this.getDefaultLocalControllerPath();
     const defaultUbridgePath = await this.getDefaultUbridgePath();
 
     this.controllerForm.get('location').valueChanges.subscribe((location: string) => {
@@ -93,7 +93,7 @@ export class AddControllerDialogComponent implements OnInit {
       const ubridgePathControl = this.controllerForm.get('ubridge_path');
 
       if (location === 'local') {
-        pathControl.setValue(defaultLocalServerPath);
+        pathControl.setValue(defaultLocalControllerPath);
         pathControl.setValidators([Validators.required]);
 
         ubridgePathControl.setValue(defaultUbridgePath);
@@ -125,14 +125,14 @@ export class AddControllerDialogComponent implements OnInit {
     }
 
     const controller:Controller  = Object.assign({}, this.controllerForm.value);
-    this.controllerService.checkServerVersion(controller).subscribe(
-      (serverInfo) => {
-        if (serverInfo.version.split('.')[0] >= 3) {
+    this.controllerService.checkControllerVersion(controller).subscribe(
+      (controllerInfo) => {
+        if (controllerInfo.version.split('.')[0] >= 3) {
           this.dialogRef.close(controller);
-          this.toasterService.success(`Server ${controller.name} added.`);
+          this.toasterService.success(`Controller ${controller.name} added.`);
         } else {
           this.dialogRef.close();
-          this.toasterService.error(`Server version is not supported.`);
+          this.toasterService.error(`Controller version is not supported.`);
         }
       },
       (error) => {

@@ -133,8 +133,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     });
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }

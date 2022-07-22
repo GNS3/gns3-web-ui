@@ -33,7 +33,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
   let component: EthernetSwitchesAddTemplateComponent;
   let fixture: ComponentFixture<EthernetSwitchesAddTemplateComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let mockedToasterService = new MockedToasterService();
   let mockedComputeService = new MockedComputeService();
@@ -59,7 +59,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ComputeService, useValue: mockedComputeService },

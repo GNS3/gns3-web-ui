@@ -35,7 +35,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
   let component: AddVirtualBoxTemplateComponent;
   let fixture: ComponentFixture<AddVirtualBoxTemplateComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedVirtualBoxService = new MockedVirtualBoxService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -57,7 +57,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },

@@ -27,7 +27,7 @@ describe('CloudNodesTemplatesComponent', () => {
   let component: CloudNodesTemplatesComponent;
   let fixture: ComponentFixture<CloudNodesTemplatesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
   let activatedRoute = new MockedActivatedRoute().get();
 
@@ -47,7 +47,7 @@ describe('CloudNodesTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
       ],
       declarations: [CloudNodesTemplatesComponent],

@@ -21,7 +21,7 @@ import { MockedRouter } from 'app/common/progress/progress.component.spec';
 describe('ControllersComponent', () => {
   let component: ControllersComponent;
   let fixture: ComponentFixture<ControllersComponent>;
-  let serverMockedService: MockedControllerService
+  let controllerMockedService: MockedControllerService
   let mockedActivatedRoute: MockedActivatedRoute
   let mockedRouter  : MockedRouter
 
@@ -41,7 +41,7 @@ describe('ControllersComponent', () => {
         MatBottomSheet,
         ChildProcessService,
         ChangeDetectorRef,
-        { provide: ControllerService, useValue: serverMockedService },
+        { provide: ControllerService, useValue: controllerMockedService },
         { provide: ActivatedRoute, useValue: mockedActivatedRoute },
         { provide: Router, useValue: mockedRouter },
       ]

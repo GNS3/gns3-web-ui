@@ -35,7 +35,7 @@ describe('DockerTemplateDetailsComponent', () => {
   let component: DockerTemplateDetailsComponent;
   let fixture: ComponentFixture<DockerTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -58,7 +58,7 @@ describe('DockerTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: DockerConfigurationService, useClass: DockerConfigurationService },

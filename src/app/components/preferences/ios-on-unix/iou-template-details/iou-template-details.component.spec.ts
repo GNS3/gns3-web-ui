@@ -35,7 +35,7 @@ describe('IouTemplateDetailsComponent', () => {
   let component: IouTemplateDetailsComponent;
   let fixture: ComponentFixture<IouTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIouService = new MockedIouService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -55,7 +55,7 @@ describe('IouTemplateDetailsComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: IouConfigurationService, useClass: IouConfigurationService },

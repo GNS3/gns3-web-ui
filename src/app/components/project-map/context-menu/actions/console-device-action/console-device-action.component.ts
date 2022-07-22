@@ -49,7 +49,7 @@ export class ConsoleDeviceActionComponent implements OnInit {
         name: node.name,
         project_id: node.project_id,
         node_id: node.node_id,
-        server_url: this.controllerService.getServerUrl(this.controller),
+        controller_url: this.controllerService.getControllerUrl(this.controller),
       };
       await this.openConsole(consoleRequest);
     }

@@ -45,8 +45,8 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
     });
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }

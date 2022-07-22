@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import{ Controller } from '../models/controller';
-import { ServerSettings } from '../models/serverSettings';
+import { ControllerSettings } from '../models/controllerSettings';
 import { QemuSettings } from '../models/settings/qemu-settings';
 import { HttpController } from './http-controller.service';
 
@@ -9,11 +9,11 @@ export class ControllerSettingsService {
   constructor(private httpController: HttpController) {}
 
   get(controller:Controller ) {
-    return this.httpController.get<ServerSettings>(controller, `/settings`);
+    return this.httpController.get<ControllerSettings>(controller, `/settings`);
   }
 
-  update(controller:Controller , serverSettings: ServerSettings) {
-    return this.httpController.post<ServerSettings>(controller, `/settings`, serverSettings);
+  update(controller:Controller , controllerSettings: ControllerSettings) {
+    return this.httpController.post<ControllerSettings>(controller, `/settings`, controllerSettings);
   }
 
   getSettingsForQemu(controller:Controller ) {

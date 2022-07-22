@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import {Controller , ServerProtocol } from '../models/controller';
+import {Controller , ControllerProtocol } from '../models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()
@@ -82,11 +82,11 @@ export class ControllerService {
     return promise;
   }
 
-  public getServerUrl(controller:Controller ) {
+  public getControllerUrl(controller:Controller) {
     return `${controller.protocol}//${controller.host}:${controller.port}/`;
   }
 
-  public checkServerVersion(controller:Controller ): Observable<any> {
+  public checkControllerVersion(controller:Controller): Observable<any> {
     return this.httpController.get(controller, '/version');
   }
 
@@ -97,7 +97,7 @@ export class ControllerService {
         if (local) {
           local.host = host;
           local.port = port;
-          local.protocol = location.protocol as ServerProtocol;
+          local.protocol = location.protocol as ControllerProtocol;
           this.update(local).then((updated) => {
             resolve(updated);
           }, reject);
@@ -107,7 +107,7 @@ export class ControllerService {
           controller.host = host;
           controller.port = port;
           controller.location = 'bundled';
-          controller.protocol = location.protocol as ServerProtocol;
+          controller.protocol = location.protocol as ControllerProtocol;
           this.create(controller).then((created) => {
             resolve(created);
           }, reject);

@@ -50,7 +50,7 @@ export class NodesMenuComponent {
           name: node.name,
           project_id: node.project_id,
           node_id: node.node_id,
-          server_url: this.controllerService.getServerUrl(this.controller),
+          controller_url: this.controllerService.getControllerUrl(this.controller),
         };
         await this.electronService.remote.require('./console-executor.js').openConsole(request);
       }

@@ -39,7 +39,7 @@ xdescribe('AddIouTemplateComponent', () => {
   let component: AddIouTemplateComponent;
   let fixture: ComponentFixture<AddIouTemplateComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIouService = new MockedIouService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -67,7 +67,7 @@ xdescribe('AddIouTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },

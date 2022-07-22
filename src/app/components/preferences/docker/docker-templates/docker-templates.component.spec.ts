@@ -27,7 +27,7 @@ describe('DockerTemplatesComponent', () => {
   let component: DockerTemplatesComponent;
   let fixture: ComponentFixture<DockerTemplatesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let activatedRoute = new MockedActivatedRoute().get();
 
@@ -44,7 +44,7 @@ describe('DockerTemplatesComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
       ],
       declarations: [DockerTemplatesComponent],

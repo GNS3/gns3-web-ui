@@ -1004,7 +1004,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: {serverDetails:this.controller,projectDetails:this.project},
+      data: {controllerDetails:this.controller,projectDetails:this.project},
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
@@ -1021,8 +1021,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     fileReader.onloadend = () => {
       let image = fileReader.result;
-      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\"
                 xlink:href=\"${image}\"/>\n</svg>`;
       this.drawingService
         .add(this.controller, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)

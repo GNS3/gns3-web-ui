@@ -37,7 +37,7 @@ describe('ImageManagerComponent', () => {
   let component: ImageManagerComponent;
   let fixture: ComponentFixture<ImageManagerComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedProgressService = new MockedProgressService()
   let mockedVersionService = new MockedVersionService()
@@ -59,7 +59,7 @@ describe('ImageManagerComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: ProgressService, useValue: mockedProgressService },
         { provide: VersionService, useValue: mockedVersionService },

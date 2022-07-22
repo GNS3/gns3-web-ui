@@ -1,4 +1,4 @@
-export class ServerResponse {
+export class ControllerResponse {
   message: string;
   status: number;
 }

@@ -17,7 +17,7 @@ describe('VpcsPreferencesComponent', () => {
   let component: VpcsPreferencesComponent;
   let fixture: ComponentFixture<VpcsPreferencesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(async() => {
@@ -36,7 +36,7 @@ describe('VpcsPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
       ],
       declarations: [VpcsPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],

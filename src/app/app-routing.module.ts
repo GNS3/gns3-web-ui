@@ -81,7 +81,7 @@ const routes: Routes = [
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
 
-      { path: 'controller/:server_ip/:server_port/project/:project_id', component: DirectLinkComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_ip/:controller_port/project/:project_id', component: DirectLinkComponent, canActivate: [LoginGuard] },
       {
         path: 'controller/:controller_id/project/:project_id/snapshots',
         component: ListOfSnapshotsComponent,
@@ -218,7 +218,7 @@ const routes: Routes = [
     path: '**',
     component: PageNotFoundComponent,
   }
-  
+
 ];
 
 @NgModule({

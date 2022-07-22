@@ -22,9 +22,9 @@ describe('DynamipsPreferencesComponent', () => {
   let component: DynamipsPreferencesComponent;
   let fixture: ComponentFixture<DynamipsPreferencesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
-  let mockedServerSettingsService = new MockedControllerSettingsService();
+  let mockedControllerSettingsService = new MockedControllerSettingsService();
   let mockedToasterService = new MockedToasterService();
 
   beforeEach(async() => {
@@ -44,8 +44,8 @@ describe('DynamipsPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
-        { provide: ControllerSettingsService, useValue: mockedServerSettingsService },
+        { provide: ControllerService, useValue: mockedControllerService },
+        { provide: ControllerSettingsService, useValue: mockedControllerSettingsService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
       declarations: [DynamipsPreferencesComponent],

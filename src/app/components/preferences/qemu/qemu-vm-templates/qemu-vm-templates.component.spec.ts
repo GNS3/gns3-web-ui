@@ -27,7 +27,7 @@ describe('QemuTemplatesComponent', () => {
   let component: QemuVmTemplatesComponent;
   let fixture: ComponentFixture<QemuVmTemplatesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedQemuService = new MockedQemuService();
   let activatedRoute = new MockedActivatedRoute().get();
 
@@ -47,7 +47,7 @@ describe('QemuTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: QemuService, useValue: mockedQemuService },
       ],
       declarations: [QemuVmTemplatesComponent],

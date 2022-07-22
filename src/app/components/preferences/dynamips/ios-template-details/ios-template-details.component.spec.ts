@@ -35,7 +35,7 @@ describe('IosTemplateDetailsComponent', () => {
   let component: IosTemplateDetailsComponent;
   let fixture: ComponentFixture<IosTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIosService = new MockedIosService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -58,7 +58,7 @@ describe('IosTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: IosConfigurationService, useClass: IosConfigurationService },

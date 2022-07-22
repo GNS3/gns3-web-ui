@@ -46,7 +46,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
   let component: AddQemuVmTemplateComponent;
   let fixture: ComponentFixture<AddQemuVmTemplateComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedQemuService = new MockedQemuService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -77,7 +77,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: Router, useValue: router },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: QemuService, useValue: mockedQemuService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },

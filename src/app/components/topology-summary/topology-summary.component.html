@@ -70,9 +70,9 @@
           </div>
         </div>
       </mat-tab>
-      <mat-tab (click)="toggleTopologyVisibility(false)" label="Controllers">
+      <mat-tab (click)="toggleTopologyVisibility(false)" label="Computes">
         <div class="tabContent">
-          <div class="summaryContentServers">
+          <div class="summaryContentComputes">
             <div class="nodeRow" *ngFor="let compute of computes">
               <div>
                 <svg *ngIf="compute.connected" width="10" height="10">

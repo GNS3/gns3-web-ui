@@ -34,8 +34,8 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
-    this.nodeService.updatePosition(this.controller, this.project, node, node.x, node.y).subscribe((serverNode: Node) => {
-      this.nodesDataSource.update(serverNode);
+    this.nodeService.updatePosition(this.controller, this.project, node, node.x, node.y).subscribe((controllerNode: Node) => {
+      this.nodesDataSource.update(controllerNode);
     });
   }
 

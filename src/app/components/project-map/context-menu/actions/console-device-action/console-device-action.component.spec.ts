@@ -18,7 +18,7 @@ describe('ConsoleDeviceActionComponent', () => {
   let electronService;
   let controller:Controller ;
   let settingsService: SettingsService;
-  let mockedServerService: MockedControllerService;
+  let mockedControllerService: MockedControllerService;
   let mockedToaster: MockedToasterService;
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 
@@ -34,7 +34,7 @@ describe('ConsoleDeviceActionComponent', () => {
       },
     };
 
-    mockedServerService = new MockedControllerService();
+    mockedControllerService = new MockedControllerService();
     mockedToaster = new MockedToasterService();
 
     controller = { host: 'localhost', port: 222 } as Controller ;
@@ -44,7 +44,7 @@ describe('ConsoleDeviceActionComponent', () => {
    await TestBed.configureTestingModule({
       providers: [
         { provide: ElectronService, useValue: electronService },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: SettingsService },
         { provide: ToasterService, useValue: mockedToaster },
         { provide: NodeService, useValue: mockedNodeService },
@@ -100,7 +100,7 @@ describe('ConsoleDeviceActionComponent', () => {
         name: 'Node 1',
         project_id: '1111',
         node_id: '2222',
-        server_url: 'localhost:222',
+        controller_url: 'localhost:222',
       });
     });
 

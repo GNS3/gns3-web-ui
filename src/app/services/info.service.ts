@@ -35,7 +35,7 @@ export class InfoService {
       infoList.push(`Node ${node.name} is ${node.status}.`);
     }
     infoList.push(`Running on controller ${controller.name} with port ${controller.port}.`);
-    infoList.push(`Server ID is ${controller.id}.`);
+    infoList.push(`Controller ID is ${controller.id}.`);
     if (node.console_type !== 'none' && node.console_type !== 'null') {
       infoList.push(`Console is on port ${node.console} and type is ${node.console_type}.`);
     }
@@ -46,7 +46,7 @@ export class InfoService {
   getInfoAboutPorts(ports: Port[]): string {
     let response: string = `Ports: `;
     ports.forEach((port) => {
-      response += `link_type: ${port.link_type}, 
+      response += `link_type: ${port.link_type},
                         name: ${port.name}; `;
     });
     response = response.substring(0, response.length - 2);

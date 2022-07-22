@@ -39,7 +39,7 @@ xdescribe('AddIosTemplateComponent', () => {
   let component: AddIosTemplateComponent;
   let fixture: ComponentFixture<AddIosTemplateComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIosService = new MockedIosService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -67,7 +67,7 @@ xdescribe('AddIosTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },

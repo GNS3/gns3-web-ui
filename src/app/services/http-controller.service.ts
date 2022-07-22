@@ -3,7 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {Controller , ServerProtocol } from '../models/controller';
+import {Controller , ControllerProtocol } from '../models/controller';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -217,7 +217,7 @@ export class HttpController {
   private getOptionsForController<T extends HeadersOptions>(controller:Controller , url: string, options: T) {
     if (controller && controller.host && controller.port) {
       if (!controller.protocol) {
-        controller.protocol = location.protocol as ServerProtocol;
+        controller.protocol = location.protocol as ControllerProtocol;
       }
       url = `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}${url}`;
     } else {

@@ -21,7 +21,7 @@ class ElectronServiceMock {
   public isElectronApp: boolean;
 }
 
-class MockedServerManagementService {
+class MockedControllerManagementService {
   public controllerStatusChanged;
   public stopAll() {}
 }
@@ -30,14 +30,14 @@ describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
   let electronServiceMock: ElectronServiceMock;
-  let serverManagementService = new MockedServerManagementService();
+  let controllerManagementService = new MockedControllerManagementService();
   let controllerService: ControllerService;
   let httpController: HttpController;
   let errorHandler: ControllerErrorHandler;
 
   beforeEach(async() => {
     electronServiceMock = new ElectronServiceMock();
-    serverManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
+    controllerManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
     await TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
@@ -49,7 +49,7 @@ describe('DefaultLayoutComponent', () => {
         },
         {
           provide: ControllerManagementService,
-          useValue: serverManagementService,
+          useValue: controllerManagementService,
         },
         {
           provide: ToasterService,
@@ -95,7 +95,7 @@ describe('DefaultLayoutComponent', () => {
 
   it('should show error when controller management service throw event', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
-    serverManagementService.controllerStatusChanged.next({
+    controllerManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
     });
@@ -105,7 +105,7 @@ describe('DefaultLayoutComponent', () => {
   it('should not show error when controller management service throw event', () => {
     component.ngOnDestroy();
     const toaster: MockedToasterService = TestBed.get(ToasterService);
-    serverManagementService.controllerStatusChanged.next({
+    controllerManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
     });
@@ -119,13 +119,13 @@ describe('DefaultLayoutComponent', () => {
     });
 
     it('should close window with no action when not in electron', async () => {
-      component.shouldStopServersOnClosing = false;
+      component.shouldStopControllersOnClosing = false;
       const isClosed = await component.onBeforeUnload(event);
       expect(isClosed).toBeUndefined();
     });
 
     it('should stop all controllers and close window', () => {
-      component.shouldStopServersOnClosing = true;
+      component.shouldStopControllersOnClosing = true;
       const isClosed = component.onBeforeUnload(event);
       expect(isClosed).toBeTruthy();
     });

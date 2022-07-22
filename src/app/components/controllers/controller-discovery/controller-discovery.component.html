@@ -1,12 +1,12 @@
-<mat-card class="info" *ngIf="discoveredServer">
+<mat-card class="info" *ngIf="discoveredController">
   <mat-card-content align="center">
-    We've discovered GNS3 controller on <b>{{ discoveredServer?.host }}:{{ discoveredServer?.port }}</b
+    We've discovered GNS3 controller on <b>{{ discoveredController?.host }}:{{ discoveredController?.port }}</b
     >, would you like to add to the list?
   </mat-card-content>
   <mat-card-actions align="right">
-    <button mat-button color="accent" (click)="ignore(discoveredServer)">NO</button>
-    <button mat-button (click)="accept(discoveredServer)">YES</button>
+    <button mat-button color="accent" (click)="ignore(discoveredController)">NO</button>
+    <button mat-button (click)="accept(discoveredController)">YES</button>
   </mat-card-actions>
 </mat-card>
 
-<mat-divider *ngIf="discoveredServer"></mat-divider>
+<mat-divider *ngIf="discoveredController"></mat-divider>

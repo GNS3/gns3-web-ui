@@ -23,9 +23,9 @@ describe('QemuPreferencesComponent', () => {
   let component: QemuPreferencesComponent;
   let fixture: ComponentFixture<QemuPreferencesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
-  let mockedServerSettingsService = new MockedControllerSettingsService();
+  let mockedControllerSettingsService = new MockedControllerSettingsService();
   let mockedToasterService = new MockedToasterService();
 
   beforeEach(async() => {
@@ -45,8 +45,8 @@ describe('QemuPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
-        { provide: ControllerSettingsService, useValue: mockedServerSettingsService },
+        { provide: ControllerService, useValue: mockedControllerService },
+        { provide: ControllerSettingsService, useValue: mockedControllerSettingsService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
       declarations: [QemuPreferencesComponent],
@@ -65,10 +65,10 @@ describe('QemuPreferencesComponent', () => {
   });
 
   it('should call update settings when restore defaults chosen', () => {
-    spyOn(mockedServerSettingsService, 'updateSettingsForQemu').and.returnValue(of([]));
+    spyOn(mockedControllerSettingsService, 'updateSettingsForQemu').and.returnValue(of([]));
 
     component.restoreDefaults();
 
-    expect(mockedServerSettingsService.updateSettingsForQemu).toHaveBeenCalled();
+    expect(mockedControllerSettingsService.updateSettingsForQemu).toHaveBeenCalled();
   });
 });

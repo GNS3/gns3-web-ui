@@ -30,7 +30,7 @@ export class ExportPortableProjectComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.controller = this.data.serverDetails;
+    this.controller = this.data.controllerDetails;
     this.project = this.data.projectDetails;
     this.fileName = this.project.name + '.gns3project';
     await this.formControls();

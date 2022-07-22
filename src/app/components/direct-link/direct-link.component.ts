@@ -27,7 +27,7 @@ export class DirectLinkComponent implements OnInit {
     { key: 'remote', name: 'Remote' },
   ];
 
-  serverForm = new FormGroup({
+  controllerForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     location: new FormControl(''),
     protocol: new FormControl('http:')
@@ -52,8 +52,8 @@ export class DirectLinkComponent implements OnInit {
   }
 
   private async getControllers() {
-    this.controllerIp = this.route.snapshot.paramMap.get('server_ip');
-    this.controllerPort = +this.route.snapshot.paramMap.get('server_port');
+    this.controllerIp = this.route.snapshot.paramMap.get('controller_ip');
+    this.controllerPort = +this.route.snapshot.paramMap.get('controller_port');
     this.projectId = this.route.snapshot.paramMap.get('project_id');
 
     const controllers = await this.controllerService.findAll();
@@ -66,22 +66,22 @@ export class DirectLinkComponent implements OnInit {
     }
   }
 
-  public createServer() {
-    if (!this.serverForm.get('name').hasError && !this.serverForm.get('location').hasError && !this.serverForm.get('protocol').hasError) {
+  public createController() {
+    if (!this.controllerForm.get('name').hasError && !this.controllerForm.get('location').hasError && !this.controllerForm.get('protocol').hasError) {
       this.toasterService.error('Please use correct values');
       return;
     }
 
-    let serverToAdd:Controller  = new Controller  ();
-    serverToAdd.host = this.controllerIp;
-    serverToAdd.port = this.controllerPort;
+    let controllerToAdd:Controller  = new Controller  ();
+    controllerToAdd.host = this.controllerIp;
+    controllerToAdd.port = this.controllerPort;
 
-    serverToAdd.name = this.serverForm.get('name').value;
-    serverToAdd.location = this.serverForm.get('location').value;
-    serverToAdd.protocol = this.serverForm.get('protocol').value;
+    controllerToAdd.name = this.controllerForm.get('name').value;
+    controllerToAdd.location = this.controllerForm.get('location').value;
+    controllerToAdd.protocol = this.controllerForm.get('protocol').value;
 
-    this.controllerService.create(serverToAdd).then((addedServer:Controller ) => {
-      this.router.navigate(['/controller', addedServer.id, 'project', this.projectId]);
+    this.controllerService.create(controllerToAdd).then((addedController:Controller ) => {
+      this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
     });
   }
 }

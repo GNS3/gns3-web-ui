@@ -36,7 +36,7 @@ describe('VmwareTemplateDetailsComponent', () => {
   let component: VmwareTemplateDetailsComponent;
   let fixture: ComponentFixture<VmwareTemplateDetailsComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedVmwareService = new MockedVmwareService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -60,7 +60,7 @@ describe('VmwareTemplateDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: VmwareService, useValue: mockedVmwareService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VmwareConfigurationService, useClass: VmwareConfigurationService },

@@ -43,7 +43,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private nodeSubscription: Subscription;
   private linkSubscription: Subscription;
   private drawingSubscription: Subscription;
-  private serverRequestsSubscription: Subscription;
+  private controllerRequestsSubscription: Subscription;
   private errorSubscription: Subscription;
   private warningSubscription: Subscription;
   private infoSubscription: Subscription;
@@ -119,7 +119,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         message: message,
       });
     });
-    this.serverRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((message) => {
+    this.controllerRequestsSubscription = this.httpService.requestsNotificationEmitter.subscribe((message) => {
       this.showMessage({
         type: 'controller request',
         message: message,
@@ -153,7 +153,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nodeSubscription.unsubscribe();
     this.linkSubscription.unsubscribe();
     this.drawingSubscription.unsubscribe();
-    this.serverRequestsSubscription.unsubscribe();
+    this.controllerRequestsSubscription.unsubscribe();
     this.errorSubscription.unsubscribe();
     this.warningSubscription.unsubscribe();
     this.infoSubscription.unsubscribe();
@@ -297,28 +297,28 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   printNode(node: Node): string {
     return (
-      `command_line: ${node.command_line}, 
-            compute_id: ${node.compute_id}, 
-            console: ${node.console}, 
-            console_host: ${node.console_host}, 
-            console_type: ${node.console_type}, 
-            first_port_name: ${node.first_port_name}, 
-            height: ${node.height}, 
-            label: ${node.label.text}, 
-            name: ${node.name}, 
-            node_directory: ${node.node_directory}, 
-            node_id: ${node.node_id}, 
-            node_type: ${node.node_type}, 
-            port_name_format: ${node.port_name_format}, 
+      `command_line: ${node.command_line},
+            compute_id: ${node.compute_id},
+            console: ${node.console},
+            console_host: ${node.console_host},
+            console_type: ${node.console_type},
+            first_port_name: ${node.first_port_name},
+            height: ${node.height},
+            label: ${node.label.text},
+            name: ${node.name},
+            node_directory: ${node.node_directory},
+            node_id: ${node.node_id},
+            node_type: ${node.node_type},
+            port_name_format: ${node.port_name_format},
             port_segment_size: ${node.port_segment_size}, ` +
       this.printPorts(node.ports) +
-      `project_id: ${node.project_id}, 
-            status: ${node.status}, 
-            symbol: ${node.symbol}, 
-            symbol_url: ${node.symbol_url}, 
-            width: ${node.width}, 
-            x: ${node.x}, 
-            y: ${node.y}, 
+      `project_id: ${node.project_id},
+            status: ${node.status},
+            symbol: ${node.symbol},
+            symbol_url: ${node.symbol_url},
+            width: ${node.width},
+            x: ${node.x},
+            y: ${node.y},
             z: ${node.z}`
     );
   }
@@ -328,31 +328,31 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     ports.forEach((port) => {
       response =
         response +
-        `adapter_number: ${port.adapter_number}, 
-            link_type: ${port.link_type}, 
-            name: ${port.name}, 
-            port_number: ${port.port_number}, 
+        `adapter_number: ${port.adapter_number},
+            link_type: ${port.link_type},
+            name: ${port.name},
+            port_number: ${port.port_number},
             short_name: ${port.short_name}, `;
     });
     return response;
   }
 
   printLink(link: Link): string {
-    return `capture_file_name: ${link.capture_file_name}, 
-            capture_file_path: ${link.capture_file_path}, 
-            capturing: ${link.capturing}, 
-            link_id: ${link.link_id}, 
-            link_type: ${link.link_type}, 
-            project_id: ${link.project_id}, 
+    return `capture_file_name: ${link.capture_file_name},
+            capture_file_path: ${link.capture_file_path},
+            capturing: ${link.capturing},
+            link_id: ${link.link_id},
+            link_type: ${link.link_type},
+            project_id: ${link.project_id},
             suspend: ${link.suspend}, `;
   }
 
   printDrawing(drawing: Drawing): string {
-    return `drawing_id: ${drawing.drawing_id}, 
-            project_id: ${drawing.project_id}, 
-            rotation: ${drawing.rotation}, 
-            x: ${drawing.x}, 
-            y: ${drawing.y}, 
+    return `drawing_id: ${drawing.drawing_id},
+            project_id: ${drawing.project_id},
+            rotation: ${drawing.rotation},
+            x: ${drawing.x},
+            y: ${drawing.y},
             z: ${drawing.z}`;
   }
 }

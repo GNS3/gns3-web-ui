@@ -134,8 +134,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }
@@ -152,10 +152,10 @@ export class AddQemuVmTemplateComponent implements OnInit {
 
     const url = this.qemuService.getImagePath(this.controller, name);
     this.uploader.queue.forEach((elem) => (elem.url = url));
-  
+
     const itemToUpload = this.uploader.queue[0];
-    
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller.authToken}]) 
+
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller.authToken}])
     this.uploader.uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar', data:{upload_file_type:'Image'}});
   }
@@ -194,6 +194,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.toasterService.error(`Fill all required fields`);
     }
   }
-  
+
 
 }

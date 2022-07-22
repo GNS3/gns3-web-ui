@@ -146,7 +146,7 @@ export class MockedDrawingService {
   public drawing = {} as Drawing;
   constructor() {}
 
-  add(_server:Controller , _project_id: string, _x: number, _y: number, _svg: string) {
+  add(_controller:Controller , _project_id: string, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
   }
 
@@ -154,23 +154,23 @@ export class MockedDrawingService {
     return of(drawing);
   }
 
-  updatePosition(_server:Controller , _project: Project, _drawing: Drawing, _x: number, _y: number) {
+  updatePosition(_controller:Controller , _project: Project, _drawing: Drawing, _x: number, _y: number) {
     return of(this.drawing);
   }
 
-  updateSizeAndPosition(_server:Controller , _drawing: Drawing, _x: number, _y: number, _svg: string) {
+  updateSizeAndPosition(_controller:Controller , _drawing: Drawing, _x: number, _y: number, _svg: string) {
     return of(this.drawing);
   }
 
-  update(_server:Controller , _drawing: Drawing) {
+  update(_controller:Controller , _drawing: Drawing) {
     return of(this.drawing);
   }
 
-  delete(_server:Controller , _drawing: Drawing) {
+  delete(_controller:Controller , _drawing: Drawing) {
     return of(this.drawing);
   }
 
-  updateText(_server:Controller , _drawing: Drawing, _svg: string): Observable<Drawing> {
+  updateText(_controller:Controller , _drawing: Drawing, _svg: string): Observable<Drawing> {
     return of(this.drawing);
   }
 }
@@ -182,7 +182,7 @@ export class MockedLinkService {
     return of({});
   }
 
-  deleteLink(_server:Controller , link: Link) {
+  deleteLink(_controller:Controller , link: Link) {
     return of({});
   }
 

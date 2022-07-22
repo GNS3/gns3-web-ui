@@ -39,7 +39,7 @@ export class TemplateListDialogComponent implements OnInit {
   selectedTemplate: Template;
   searchText: string = '';
 
-  nodeServers: string[] = ['local', 'vm'];
+  nodeControllers: string[] = ['local', 'vm'];
 
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,

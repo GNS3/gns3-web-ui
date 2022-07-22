@@ -6,7 +6,7 @@ import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Project } from '../../../models/project';
 import{ Controller } from '../../../models/controller';
-import { ServerResponse } from '../../../models/serverResponse';
+import { ControllerResponse } from '../../../models/controllerResponse';
 import { ProjectService } from '../../../services/project.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
@@ -58,8 +58,8 @@ export class ImportProjectDialogComponent implements OnInit {
     };
 
     this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-      let serverResponse: ServerResponse = JSON.parse(response);
-      this.resultMessage = 'An error occured: ' + serverResponse.message;
+      let controllerResponse: ControllerResponse = JSON.parse(response);
+      this.resultMessage = 'An error has occurred: ' + controllerResponse.message;
       this.isFinishEnabled = true;
     };
 

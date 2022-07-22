@@ -41,7 +41,7 @@ xdescribe('AddDockerTemplateComponent', () => {
   let component: AddDockerTemplateComponent;
   let fixture: ComponentFixture<AddDockerTemplateComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedDockerService = new MockedDockerService();
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
@@ -72,7 +72,7 @@ xdescribe('AddDockerTemplateComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
@@ -106,7 +106,7 @@ xdescribe('AddDockerTemplateComponent', () => {
    await fixture.whenStable().then(() => {
       let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
 
-      expect(selectedLabel.textContent).toMatch('Server type');
+      expect(selectedLabel.textContent).toMatch('Controller type');
     });
   });
 

@@ -32,20 +32,20 @@ export class ControllerManagementService implements OnDestroy {
       message: '',
     };
     this.controllerStatusChanged.next(startingEvent);
-    return await this.electronService.remote.require('./local-server.js').startLocalController(controller);
+    return await this.electronService.remote.require('./local-controller.js').startLocalController(controller);
   }
 
   async stop(controller:Controller ) {
-    return await this.electronService.remote.require('./local-server.js').stopLocalController(controller);
+    return await this.electronService.remote.require('./local-controller.js').stopLocalController(controller);
   }
 
   async stopAll() {
-    return await this.electronService.remote.require('./local-server.js').stopAllLocalServers();
+    return await this.electronService.remote.require('./local-controller.js').stopAllLocalControllers();
   }
 
-  getRunningServers() {
+  getRunningControllers() {
     if (this.electronService.isElectronApp) {
-      return this.electronService.remote.require('./local-server.js').getRunningServers();
+      return this.electronService.remote.require('./local-controller.js').getRunningControllers();
     }
     return [];
   }

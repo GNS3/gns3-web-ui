@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { forkJoin, from } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { Observable } from 'rxjs/Rx';
-import { Controller, ServerProtocol } from '../../../models/controller';
+import { Controller, ControllerProtocol } from '../../../models/controller';
 import { Version } from '../../../models/version';
 import { ControllerDatabase } from '../../../services/controller.database';
 import { ControllerService } from '../../../services/controller.service';
@@ -15,14 +15,14 @@ import { VersionService } from '../../../services/version.service';
   styleUrls: ['./controller-discovery.component.scss'],
 })
 export class ControllerDiscoveryComponent implements OnInit {
-  private defaultServers = [
+  private defaultControllers = [
     {
       host: '127.0.0.1',
       port: 3080,
     },
   ];
 
-  discoveredServer: Controller;
+  discoveredController: Controller;
 
   constructor(
     private versionService: VersionService,
@@ -32,16 +32,16 @@ export class ControllerDiscoveryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.controllerService.isServiceInitialized) this.discoverFirstServer();
+    if (this.controllerService.isServiceInitialized) this.discoverFirstController();
     this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
-        this.discoverFirstServer();
+        this.discoverFirstController();
       }
     });
   }
 
-  async discoverFirstServer() {
-    let discovered = await this.discoverServers();
+  async discoverFirstController() {
+    let discovered = await this.discoverControllers();
     let local = await this.controllerService.findAll();
 
     local.forEach((added) => {
@@ -51,16 +51,16 @@ export class ControllerDiscoveryComponent implements OnInit {
     });
 
     if (discovered.length > 0) {
-      this.discoveredServer = discovered.shift();
+      this.discoveredController = discovered.shift();
     }
   }
 
-  async discoverServers() {
+  async discoverControllers() {
     let discoveredControllers: Controller[] = [];
-    this.defaultServers.forEach(async (testServer) => {
+    this.defaultControllers.forEach(async (testController) => {
       const controller = new Controller();
-      controller.host = testServer.host;
-      controller.port = testServer.port;
+      controller.host = testController.host;
+      controller.port = testController.port;
       let version = await this.versionService
         .get(controller)
         .toPromise()
@@ -79,7 +79,7 @@ export class ControllerDiscoveryComponent implements OnInit {
           });
         });
         if (discovered.length > 0) {
-          this.discoveredServer = discovered.shift();
+          this.discoveredController = discovered.shift();
         }
       },
       (error) => {}
@@ -89,9 +89,9 @@ export class ControllerDiscoveryComponent implements OnInit {
   discovery(): Observable<Controller[]> {
     const queries: Observable<Controller>[] = [];
 
-    this.defaultServers.forEach((testServer) => {
+    this.defaultControllers.forEach((testController) => {
       queries.push(
-        this.isServerAvailable(testServer.host, testServer.port).catch((err) => {
+        this.isControllerAvailable(testController.host, testController.port).catch((err) => {
           return Observable.of(null);
         })
       );
@@ -105,7 +105,7 @@ export class ControllerDiscoveryComponent implements OnInit {
     });
   }
 
-  isServerAvailable(ip: string, port: number): Observable<Controller> {
+  isControllerAvailable(ip: string, port: number): Observable<Controller> {
     const controller = new Controller();
     controller.host = ip;
     controller.port = port;
@@ -113,7 +113,7 @@ export class ControllerDiscoveryComponent implements OnInit {
   }
 
   ignore(controller: Controller) {
-    this.discoveredServer = null;
+    this.discoveredController = null;
   }
 
   accept(controller: Controller) {
@@ -122,11 +122,11 @@ export class ControllerDiscoveryComponent implements OnInit {
     }
 
     controller.location = 'remote';
-    controller.protocol = location.protocol as ServerProtocol;
+    controller.protocol = location.protocol as ControllerProtocol;
 
     this.controllerService.create(controller).then((created: Controller) => {
-      this.controllerDatabase.addServer(created);
-      this.discoveredServer = null;
+      this.controllerDatabase.addController(created);
+      this.discoveredController = null;
     });
   }
 }

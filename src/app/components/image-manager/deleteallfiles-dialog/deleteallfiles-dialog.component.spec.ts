@@ -7,7 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
-import{ Server } from 'http';
+import { Server } from 'http';
 import { of } from 'rxjs';
 import { ImageManagerService } from '../../../services/image-manager.service';
 import { ControllerService } from '../../../services/controller.service';
@@ -25,7 +25,7 @@ export class MockedImageManagerService {
  describe('DeleteAllImageFilesDialogComponent', () => {
   let component: DeleteAllImageFilesDialogComponent;
   let fixture: ComponentFixture<DeleteAllImageFilesDialogComponent>;
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
 
@@ -39,7 +39,7 @@ export class MockedImageManagerService {
         MatDialogModule,
       ],
       providers: [
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },

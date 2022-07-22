@@ -26,8 +26,8 @@ export class MockedImageManagerService {
 describe('AddImageDialogComponent', () => {
   let component: AddImageDialogComponent;
   let fixture: ComponentFixture<AddImageDialogComponent>;
-  
-  let mockedServerService = new MockedControllerService();
+
+  let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
 
@@ -42,7 +42,7 @@ describe('AddImageDialogComponent', () => {
         MatSnackBarModule
       ],
       providers: [
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },

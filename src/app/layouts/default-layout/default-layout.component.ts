@@ -24,7 +24,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public routeSubscription;
 
   controllerStatusSubscription: Subscription;
-  shouldStopServersOnClosing = true;
+  shouldStopControllersOnClosing = true;
 
   recentlyOpenedcontrollerId: string;
   recentlyOpenedProjectId: string;
@@ -41,12 +41,12 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-   
+
     this.checkIfUserIsLoginPage();
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
     });
-    
+
     this.recentlyOpenedcontrollerId = this.recentlyOpenedProjectService.getcontrollerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.controllerIdProjectList = this.recentlyOpenedProjectService.getcontrollerIdProjectList();
@@ -66,7 +66,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     });
 
     // stop controllers only when in Electron
-    this.shouldStopServersOnClosing = this.electronService.isElectronApp;
+    this.shouldStopControllersOnClosing = this.electronService.isElectronApp;
   }
 
   goToUserInfo() {
@@ -113,14 +113,14 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   async onBeforeUnload($event) {
-    if (!this.shouldStopServersOnClosing) {
+    if (!this.shouldStopControllersOnClosing) {
       return;
     }
     $event.preventDefault();
     $event.returnValue = false;
     this.progressService.activate();
     await this.controllerManagement.stopAll();
-    this.shouldStopServersOnClosing = false;
+    this.shouldStopControllersOnClosing = false;
     this.progressService.deactivate();
     window.close();
     return false;

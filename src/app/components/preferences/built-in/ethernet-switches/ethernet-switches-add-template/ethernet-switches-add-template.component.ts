@@ -49,8 +49,8 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
     this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
   }
 
-  setServerType(serverType: string) {
-    if (serverType === 'local') {
+  setControllerType(controllerType: string) {
+    if (controllerType === 'local') {
       this.isLocalComputerChosen = true;
     }
   }

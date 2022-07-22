@@ -8,7 +8,7 @@ import { VirtualBox } from './controller-settings-models/virtual-box';
 import { VMware } from './controller-settings-models/vmware';
 import { VPCS } from './controller-settings-models/vpcs';
 
-export class ServerSettings {
+export class ControllerSettings {
   Builtin: Builtin;
   Docker: Docker;
   Dynamips: Dynamips;

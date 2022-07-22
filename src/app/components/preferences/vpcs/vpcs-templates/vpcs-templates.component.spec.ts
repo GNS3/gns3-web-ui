@@ -27,7 +27,7 @@ describe('VpcsTemplatesComponent', () => {
   let component: VpcsTemplatesComponent;
   let fixture: ComponentFixture<VpcsTemplatesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedVpcsService = new MockedVpcsService();
   let activatedRoute = new MockedActivatedRoute().get();
 
@@ -47,7 +47,7 @@ describe('VpcsTemplatesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: VpcsService, useValue: mockedVpcsService },
       ],
       declarations: [VpcsTemplatesComponent],

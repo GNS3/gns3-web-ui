@@ -17,7 +17,7 @@ describe('VirtualBoxPreferencesComponent', () => {
   let component: VirtualBoxPreferencesComponent;
   let fixture: ComponentFixture<VirtualBoxPreferencesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(async() => {
@@ -36,7 +36,7 @@ describe('VirtualBoxPreferencesComponent', () => {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
       ],
       declarations: [VirtualBoxPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],

@@ -27,7 +27,7 @@ describe('IouTemplatesComponent', () => {
   let component: IouTemplatesComponent;
   let fixture: ComponentFixture<IouTemplatesComponent>;
 
-  let mockedServerService = new MockedControllerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedIouService = new MockedIouService();
   let activatedRoute = new MockedActivatedRoute().get();
 
@@ -44,7 +44,7 @@ describe('IouTemplatesComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
       ],
       declarations: [IouTemplatesComponent],

@@ -38,8 +38,8 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
-    this.nodeService.updateLabel(this.controller, node, node.label).subscribe((serverNode: Node) => {
-      this.nodesDataSource.update(serverNode);
+    this.nodeService.updateLabel(this.controller, node, node.label).subscribe((controllerNode: Node) => {
+      this.nodesDataSource.update(controllerNode);
     });
   }
 

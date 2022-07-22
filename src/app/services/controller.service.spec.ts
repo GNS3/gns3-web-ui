@@ -30,7 +30,7 @@ export class MockedControllerService {
     });
   }
 
-  public getServerUrl(controller:Controller ) {
+  public getControllerUrl(controller:Controller) {
     return `${controller.host}:${controller.port}`;
   }
 }

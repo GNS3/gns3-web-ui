@@ -308,7 +308,7 @@ export class NewTemplateDialogComponent implements OnInit {
     }
   }
 
-  setServerType(serverType: string) {
+  setControllerType(controllerType: string) {
     this.isLocalComputerChosen = true;
   }
 
@@ -385,7 +385,7 @@ export class NewTemplateDialogComponent implements OnInit {
           autoFocus: false,
           disableClose: true,
         });
-        dialogRef.componentInstance.confirmationMessage = `This is not the correct file. 
+        dialogRef.componentInstance.confirmationMessage = `This is not the correct file.
                     The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {

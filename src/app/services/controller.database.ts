@@ -12,13 +12,13 @@ export class ControllerDatabase {
     return this.dataChange.value;
   }
 
-  public addServer(controller:Controller ) {
+  public addController(controller:Controller ) {
     const controllers = this.data.slice();
     controllers.push(controller);
     this.dataChange.next(controllers);
   }
 
-  public addServers(controllers:Controller []) {
+  public addControllers(controllers:Controller []) {
     this.dataChange.next(controllers);
   }
 

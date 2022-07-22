@@ -34,7 +34,7 @@ export class ContextMenuComponent implements OnInit {
 
   hasTextCapabilities = false;
   isElectronApp = false;
-  isBundledServer: boolean = false;
+  isBundledController: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -47,7 +47,7 @@ export class ContextMenuComponent implements OnInit {
     this.setPosition(0, 0);
 
     this.isElectronApp = this.electronService.isElectronApp;
-    this.isBundledServer = this.controller.location === 'bundled';
+    this.isBundledController = this.controller.location === 'bundled';
   }
 
   public setPosition(top: number, left: number) {

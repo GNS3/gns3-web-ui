@@ -7,7 +7,7 @@ import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
 import { merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {Controller , ServerProtocol } from '../../models/controller';
+import {Controller , ControllerProtocol } from '../../models/controller';
 import { ControllerManagementService } from '../../services/controller-management.service';
 import { ControllerDatabase } from '../../services/controller.database';
 import { ControllerService } from '../../services/controller.service';
@@ -39,22 +39,22 @@ export class ControllersComponent implements OnInit, OnDestroy {
   ) { }
 
   getControllers() {
-    const runningServersNames = this.controllerManagement.getRunningServers();
+    const runningControllerNames = this.controllerManagement.getRunningControllers();
 
     this.controllerService.findAll().then((controllers:Controller []) => {
       controllers.forEach((controller) => {
-        const serverIndex = runningServersNames.findIndex((controllerName) => controller.name === controllerName);
-        if (serverIndex >= 0) {
+        const controllerIndex = runningControllerNames.findIndex((controllerName) => controller.name === controllerName);
+        if (controllerIndex >= 0) {
           controller.status = 'running';
         }
       });
 
       controllers.forEach((controller) => {
-        this.controllerService.checkServerVersion(controller).subscribe(
-          (serverInfo) => {
-            if (serverInfo.version.split('.')[0] >= 3) {
-              if (!controller.protocol) controller.protocol = location.protocol as ServerProtocol;
-              if (!this.controllerDatabase.find(controller.name)) this.controllerDatabase.addServer(controller);
+        this.controllerService.checkControllerVersion(controller).subscribe(
+          (controllerInfo) => {
+            if (controllerInfo.version.split('.')[0] >= 3) {
+              if (!controller.protocol) controller.protocol = location.protocol as ControllerProtocol;
+              if (!this.controllerDatabase.find(controller.name)) this.controllerDatabase.addController(controller);
             }
           },
           (error) => { }
@@ -123,7 +123,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
         this.controllerService.create(controller).then((created:Controller ) => {
-          this.controllerDatabase.addServer(created);
+          this.controllerDatabase.addController(created);
         });
       }
     });
