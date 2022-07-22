@@ -9,7 +9,7 @@ import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProje
 import { ControllerManagementService } from '../../services/controller-management.service';
 import { ToasterService } from '../../services/toaster.service';
 import { version } from './../../version';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 
 @Component({
   selector: 'app-default-layout',
@@ -28,6 +28,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   recentlyOpenedcontrollerId: string;
   recentlyOpenedProjectId: string;
+
   controllerIdProjectList: string;
 
   constructor(

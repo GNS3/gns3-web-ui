@@ -1,0 +1,42 @@
+.box {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid;
+  border-radius: 20px;
+  margin: 10px;
+  font-size: 12px;
+  font-family: monospace;
+  justify-items: center;
+  background-color: rgba(130, 8, 8, 0.36);
+  justify-content: flex-start;
+}
+
+
+
+.left {
+  justify-content: flex-end;
+}
+
+.allow {
+  background-color: rgba(5, 76, 5, 0.38);
+}
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.content > div {
+  padding-right: 20px;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button {
+  border-radius: 20px;
+}

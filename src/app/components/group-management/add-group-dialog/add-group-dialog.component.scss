@@ -1,0 +1,25 @@
+.file-name-form-field {
+  width: 100%;
+}
+
+.project-snackbar {
+  background: #2196f3;
+}
+
+.userList {
+  display: flex;
+  margin: 10px;
+  justify-content: space-between;
+  flex: 1 1 auto;
+}
+
+.users {
+  display: flex;
+  height: 180px;
+  overflow: auto;
+  flex-direction: column;
+}
+
+.button-div {
+  float: right;
+}

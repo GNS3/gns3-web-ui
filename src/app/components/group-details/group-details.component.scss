@@ -1,0 +1,51 @@
+.main {
+  display: flex;
+  justify-content: space-around;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.members {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.members > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.details > div {
+  margin-bottom: 20px;
+}
+
+.button-div {
+  float: right;
+}
+
+.members > .search {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  width: 100%;
+}
+mat-form-field {
+  width: 100%;
+}
+
+.roles {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

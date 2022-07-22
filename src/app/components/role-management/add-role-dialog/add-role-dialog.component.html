@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Create new role</h1>
+<form [formGroup]="roleNameForm" class="file-name-form">
+  <mat-form-field>
+    <input
+      matInput
+      type="text"
+      formControlName="name"
+      [ngClass]="{ 'is-invalid': form.name?.errors }"
+      placeholder="Please enter role name"/>
+    <mat-error *ngIf="form.name?.touched && form.name?.errors && form.name?.errors.required">
+      role name is required
+    </mat-error>
+    <mat-error *ngIf="form.name?.errors && form.name?.errors.invalidName">
+      Role name is incorrect
+    </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      type="text"
+      formControlName="description"
+      placeholder="Please enter a description"/>
+  </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" class="add-project-button" mat-raised-button color="primary">
+      Add Role
+    </button>
+  </div>
+</form>
