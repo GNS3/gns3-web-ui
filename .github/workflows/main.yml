@@ -17,12 +17,12 @@ jobs:
     name: Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3
-      - name: Setup ${{ matrix.node }}
+      - name: Setup Node ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - uses: c-hive/gha-yarn-cache@v1
+          cache: 'yarn'
       - name: Install JS dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile --immutable
       - name: Test
         run: yarn test
