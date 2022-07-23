@@ -7,8 +7,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MockedProjectService } from '../../../services/project.service.spec';
 import { MockedToasterService } from '../../../services/toaster.service.spec';
 import { ProjectService } from '../../../services/project.service';
-import { ServerService } from '../../../services/server.service';
-import { MockedServerService } from '../../../services/server.service.spec';
+import { ControllerService } from '../../../services/controller.service';
+import { MockedControllerService } from '../../../services/controller.service.spec';
 import { ToasterService } from '../../../services/toaster.service';
 
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects.component';
@@ -16,7 +16,7 @@ import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-al
 describe('ConfirmationDeleteAllProjectsComponent', () => {
   let component: ConfirmationDeleteAllProjectsComponent;
   let fixture: ComponentFixture<ConfirmationDeleteAllProjectsComponent>;
-  let mockedServerService = new MockedServerService();
+  let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedProjectService()
   let mockedToasterService = new MockedToasterService()
 
@@ -30,7 +30,7 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
         MatDialogModule,
       ],
       providers: [
-        { provide: ServerService, useValue: mockedServerService },
+        { provide: ControllerService, useValue: mockedControllerService },
         { provide: ProjectService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },

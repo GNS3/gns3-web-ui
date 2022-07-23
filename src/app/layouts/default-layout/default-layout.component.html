@@ -19,15 +19,22 @@
     </button>
 
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="goToSystemStatus()">
+      <button mat-menu-item
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'systemstatus']">
         <mat-icon>info</mat-icon>
         <span>System status</span>
       </button>
-      <button mat-menu-item (click)="goToPreferences()">
+      <button mat-menu-item
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'preferences']">
         <mat-icon>settings_applications</mat-icon>
         <span>Template preferences</span>
       </button>
-      <button mat-menu-item (click)="goToImageManager()">
+      <button mat-menu-item
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'image-manager']">
+
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
       </button>

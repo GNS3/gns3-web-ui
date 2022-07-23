@@ -200,7 +200,7 @@ export class ProjectsComponent implements OnInit {
       autoFocus: false,
       disableClose: true,
       data: {
-        server: this.server,
+        controller: this.controller,
         deleteFilesPaths: this.selection.selected
       }
     });
@@ -251,7 +251,7 @@ exportSelectProject(project: Project){
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: {serverDetails:this.server,projectDetails:this.project},
+      data: {controllerDetails:this.controller,projectDetails:this.project},
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
@@ -276,8 +276,6 @@ export class ProjectDatabase {
       this.dataChange.next(this.data.slice());
     }
   }
-
-  
 }
 
 export class ProjectDataSource extends DataSource<any> {

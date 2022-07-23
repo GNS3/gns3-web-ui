@@ -36,7 +36,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private controllerManagement: ControllerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private controllerService: ControllerService
   ) {
@@ -50,8 +50,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.checkIfUserIsLoginPage();
-    this.controller = this.route.snapshot.data['server'];
-
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
     });
@@ -85,7 +83,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   checkIfUserIsLoginPage() {
-    if (this.router.url.includes('login')) {
+    if (this.router.url.includes("login")) {
       this.isLoginPage = true;
     } else {
       this.isLoginPage = false;
@@ -109,26 +107,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.router
       .navigate(['/controller', this.recentlyOpenedcontrollerId, 'project', this.recentlyOpenedProjectId])
       .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
-  }
-
-  goToPreferences() {
-    let controllerId = this.router.url.split('/server/')[1].split('/')[0];
-    this.router
-      .navigate(['/server', controllerId, 'preferences'])
-      .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
-  }
-
-  goToSystemStatus() {
-    let controllerId = this.router.url.split('/server/')[1].split('/')[0];
-    this.router
-      .navigate(['/server', controllerId, 'systemstatus'])
-      .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
-  }
-  goToImageManager() {
-    let controllerId = this.router.url.split('/server/')[1].split('/')[0];
-    this.router
-      .navigate(['/server', controllerId, 'image-manager'])
-      .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
   }
 
   @HostListener('window:beforeunload', ['$event'])

@@ -34,7 +34,7 @@ export class ConfirmationDeleteAllProjectsComponent implements OnInit {
   deleteFile() {
     const calls = [];
     this.deleteData.deleteFilesPaths.forEach(project => {
-      calls.push(this.projectService.delete(this.deleteData.server, project.project_id).pipe(catchError(error => of(error))))
+      calls.push(this.projectService.delete(this.deleteData.controller, project.project_id).pipe(catchError(error => of(error))))
     });
     Observable.forkJoin(calls).subscribe(responses => {
       this.deleteFliesDetails = responses.filter(x => x !== null)
