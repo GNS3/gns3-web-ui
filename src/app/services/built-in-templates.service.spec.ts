@@ -45,7 +45,7 @@ describe('BuiltInTemplatesService', () => {
       name: '',
       ports_mapping: [],
       remote_console_type: 'none',
-      symbol: ':/symbols/cloud.svg',
+      symbol: 'cloud',
       template_id: '1',
       template_type: 'cloud',
     } as CloudTemplate;
@@ -65,7 +65,7 @@ describe('BuiltInTemplatesService', () => {
       default_name_format: 'Hub{0}',
       name: '',
       ports_mapping: [],
-      symbol: ':/symbols/hub.svg',
+      symbol: 'hub',
       template_id: '2',
       template_type: 'ethernet_hub',
     };
@@ -85,7 +85,7 @@ describe('BuiltInTemplatesService', () => {
       default_name_format: 'Hub{0}',
       name: '',
       ports_mapping: [],
-      symbol: ':/symbols/hub.svg',
+      symbol: 'hub',
       template_id: '3',
       template_type: 'ethernet_hub',
     };
@@ -106,7 +106,7 @@ describe('BuiltInTemplatesService', () => {
       name: '',
       ports_mapping: [],
       remote_console_type: 'none',
-      symbol: ':/symbols/cloud.svg',
+      symbol: 'cloud',
       template_id: '1',
       template_type: 'cloud',
     } as CloudTemplate;
@@ -126,7 +126,7 @@ describe('BuiltInTemplatesService', () => {
       default_name_format: 'Hub{0}',
       name: '',
       ports_mapping: [],
-      symbol: ':/symbols/hub.svg',
+      symbol: 'hub',
       template_id: '2',
       template_type: 'ethernet_hub',
     };
@@ -146,7 +146,7 @@ describe('BuiltInTemplatesService', () => {
       default_name_format: 'Hub{0}',
       name: '',
       ports_mapping: [],
-      symbol: ':/symbols/hub.svg',
+      symbol: 'hub',
       template_id: '3',
       template_type: 'ethernet_hub',
     };
