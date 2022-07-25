@@ -97,7 +97,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
       port_name_format: 'Ethernet{0}',
       port_segment_size: 0,
       ram: 0,
-      symbol: ':/symbols/vbox_guest.svg',
+      symbol: 'vbox_guest',
       template_id: '',
       template_type: 'virtualbox',
       usage: '',

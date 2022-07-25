@@ -179,7 +179,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.iosTemplate.ram = this.iosMemoryForm.get('memory').value;
 
       if (this.isEtherSwitchRouter) {
-        this.iosTemplate.symbol = ':/symbols/multilayer_switch.svg';
+        this.iosTemplate.symbol = 'multilayer_switch';
         this.iosTemplate.category = 'switch';
       }
 

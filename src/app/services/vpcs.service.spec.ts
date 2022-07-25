@@ -45,7 +45,7 @@ describe('VpcsService', () => {
       console_type: 'telnet',
       default_name_format: 'PC{0}',
       name: '',
-      symbol: ':/symbols/vpcs_guest.svg',
+      symbol: 'vpcs_guest',
       template_id: '1',
       template_type: 'vpcs',
     };
@@ -67,7 +67,7 @@ describe('VpcsService', () => {
       console_type: 'telnet',
       default_name_format: 'PC{0}',
       name: '',
-      symbol: ':/symbols/vpcs_guest.svg',
+      symbol: 'vpcs_guest',
       template_id: '',
       template_type: 'vpcs',
     };
