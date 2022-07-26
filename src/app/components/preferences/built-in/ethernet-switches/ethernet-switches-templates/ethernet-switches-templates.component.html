@@ -45,6 +45,9 @@
             <button mat-menu-item (click)="deleteTemplate(template)">
               <mat-icon>delete</mat-icon><span>Delete</span>
             </button>
+            <button mat-menu-item  routerLink="{{ template.template_id }}">
+              <mat-icon>edit</mat-icon><span>Edit</span>
+            </button>
           </mat-menu>
         </div>
       </mat-nav-list>

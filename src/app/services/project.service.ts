@@ -73,7 +73,6 @@ export class ProjectService {
   }
 
   links(controller:Controller , project_id: string) {
-    debugger
     return this.httpController.get<Link[]>(controller, `/projects/${project_id}/links`);
   }
 

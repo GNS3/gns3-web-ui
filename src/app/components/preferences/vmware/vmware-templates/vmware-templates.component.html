@@ -1,25 +1,33 @@
 <div class="content">
   <div class="default-header">
+
     <div class="row">
-      <h1 class="col">VMware VM templates</h1>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        routerLink="/controller/{{ controller.id }}/preferences"
-        mat-button
-      >
-        Back
-      </button>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        routerLink="/controller/{{ controller.id }}/preferences/vmware/addtemplate"
-        mat-raised-button
-        color="primary"
-      >
-        Add VMware template
-      </button>
+      <div class="col col-md-1">
+        <button
+          class="top-button"
+          *ngIf="controller"
+          class="cancel-button"
+          mat-button
+          routerLink="/controller/{{ controller.id }}/preferences"
+          >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-10">
+        <h1 class="col">VMware VM templates</h1>
+      </div>
+      <div class="col col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button cancel-button"
+          matTooltip="Add VMware template"
+          matTooltipClass="custom-tooltip"
+          routerLink="/controller/{{ controller.id }}/preferences/vmware/addtemplate"
+          mat-button
+        >
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
   <app-empty-templates-list *ngIf="!vmwareTemplates.length"></app-empty-templates-list>

@@ -1,7 +1,21 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">New Ethernet hub template</h1>
+      <div class="col-md-1">
+          <button
+          *ngIf="controller"
+          class="top-button"
+          class="cancel-button"
+          (click)="goBack()"
+          mat-button
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">New Ethernet hub template</h1>
+
+      </div>
     </div>
   </div>
   <div class="default-content">

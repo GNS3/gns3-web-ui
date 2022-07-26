@@ -1,25 +1,33 @@
 <div class="content">
   <div class="default-header">
+
     <div class="row">
-      <h1 class="col">QEMU VM templates</h1>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        routerLink="/controller/{{ controller.id }}/preferences"
-        mat-button
-      >
-        Back
-      </button>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        routerLink="/controller/{{ controller.id }}/preferences/qemu/addtemplate"
-        mat-raised-button
-        color="primary"
-      >
-        Add QEMU VM template
-      </button>
+      <div class="col col-md-1">
+        <button
+          class="top-button"
+          *ngIf="controller"
+          class="cancel-button"
+          mat-button
+          routerLink="/controller/{{ controller.id }}/preferences"
+          >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-10">
+        <h1 class="col">QEMU VM templates</h1>
+      </div>
+      <div class="col col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button cancel-button"
+          matTooltip="Add QEMU VM template"
+          matTooltipClass="custom-tooltip"
+          routerLink="/controller/{{ controller.id }}/preferences/qemu/addtemplate"
+          mat-button
+        >
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
   <app-empty-templates-list *ngIf="!qemuTemplates.length"></app-empty-templates-list>
@@ -34,12 +42,16 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="deleteTemplate(template)">
-              <mat-icon>delete</mat-icon><span>Delete</span>
+            <button mat-menu-item routerLink="{{ template.template_id }}">
+              <mat-icon>edit</mat-icon><span>Edit</span>
             </button>
             <button mat-menu-item (click)="copyTemplate(template)">
               <mat-icon>content_copy</mat-icon><span>Copy</span>
             </button>
+            <button mat-menu-item (click)="deleteTemplate(template)">
+              <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+            
           </mat-menu>
         </div>
       </mat-nav-list>

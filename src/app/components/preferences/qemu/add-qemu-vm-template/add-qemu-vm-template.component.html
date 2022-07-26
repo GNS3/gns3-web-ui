@@ -1,7 +1,14 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">New QEMU VM template</h1>
+      <div class="col col-md-1">
+        <button class="top-button" *ngIf="controller" class="cancel-button" mat-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-11">
+        <h1 class="col">New QEMU VM template</h1>
+      </div>
     </div>
   </div>
   <div class="default-content">
@@ -32,12 +39,8 @@
         <mat-step label="Platform and memory" [completed]="memoryForm.get('ramMemory').value && selectedPlatform">
           <form [formGroup]="memoryForm">
             <mat-form-field class="form-field">
-              <mat-select
-                placeholder="Platform"
-                [(ngModel)]="selectedPlatform"
-                [ngModelOptions]="{ standalone: true }"
-              >
-                <mat-option *ngFor="let platform of selectPlatform " [value]="platform">
+              <mat-select placeholder="Platform" [(ngModel)]="selectedPlatform" [ngModelOptions]="{ standalone: true }">
+                <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
                   {{ platform }}
                 </mat-option>
               </mat-select> </mat-form-field
@@ -103,7 +106,7 @@
                   placeholder="Please enter name"
                 />
               </mat-form-field>
-             <!-- here removed the processbar and common processbar -->
+              <!-- here removed the processbar and common processbar -->
             </div>
           </form>
         </mat-step>

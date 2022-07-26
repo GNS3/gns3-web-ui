@@ -215,7 +215,7 @@ const routes: Routes = [
       },
       { path: 'controller/:controller_id/preferences/docker/addtemplate', component: AddDockerTemplateComponent, canActivate: [LoginGuard] },
       { path: 'controller/:controller_id/preferences/iou/templates', component: IouTemplatesComponent, canActivate: [LoginGuard] },
-      { path: 'controller/:controller_id//preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
+      { path: 'controller/:controller_id/preferences/iou/templates/:template_id', component: IouTemplateDetailsComponent, canActivate: [LoginGuard] },
       {
         path: 'controller/:controller_id/preferences/iou/templates/:template_id/copy',
         component: CopyIouTemplateComponent,
