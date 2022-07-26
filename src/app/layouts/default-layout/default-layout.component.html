@@ -19,7 +19,29 @@
     </button>
 
     <mat-menu #menu="matMenu">
-      <button mat-menu-item routerLink="/settings">
+      <button mat-menu-item
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'systemstatus']">
+        <mat-icon>info</mat-icon>
+        <span>System status</span>
+      </button>
+      <button mat-menu-item
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'preferences']">
+        <mat-icon>settings_applications</mat-icon>
+        <span>Template preferences</span>
+      </button>
+      <button mat-menu-item
+              [disabled]="!controllerId"
+              [routerLink]="['controller', controllerId, 'image-manager']">
+
+        <mat-icon>collections</mat-icon>
+        <span>Image manager</span>
+      </button>
+      <button mat-menu-item
+      [disabled]="!controllerId"
+      [routerLink]="['controller', controllerId, 'settings']"
+      >
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
@@ -29,7 +51,10 @@
         <mat-icon>groups</mat-icon>
         <span>Management</span>
       </button>
-      <button mat-menu-item routerLink="/help">
+      <button mat-menu-item 
+      [disabled]="!controllerId"
+      [routerLink]="['controller', controllerId, 'help']"
+      >
         <mat-icon>help</mat-icon>
         <span>Help</span>
       </button>

@@ -92,9 +92,9 @@ const routes: Routes = [
         canActivate: [LoginGuard],
         resolve: { controller: ControllerResolve },
       },
-      { path: 'help', component: HelpComponent },
-      { path: 'settings', component: SettingsComponent },
-      { path: 'settings/console', component: ConsoleComponent },
+      { path: 'controller/:controller_id/help', component: HelpComponent },
+      { path: 'controller/:controller_id/settings', component: SettingsComponent },
+      { path: 'controller/:controller_id/settings/console', component: ConsoleComponent },
       {
         path: 'controller/:controller_id/management/users/:user_id',
         component: UserDetailComponent,

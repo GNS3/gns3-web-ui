@@ -2,8 +2,6 @@
   <div class="default-header">
     <div class="row">
       <h1 class="col">Projects</h1>
-      <button class="col" mat-raised-button (click)="goToSystemStatus()" class="add-button">Go to system status</button>
-      <button class="col" mat-raised-button (click)="goToPreferences()" class="add-button">Go to preferences</button>
       <button class="col" mat-raised-button color="primary" (click)="addBlankProject()" class="add-button">
         Add blank project
       </button>
@@ -22,6 +20,21 @@
   <div class="default-content">
     <div class="mat-elevation-z8">
       <mat-table #table [dataSource]="dataSource | projectsfilter: searchText" matSort>
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? selectAllImages() : null" [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+              [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </mat-cell>
+
+        </ng-container>
+
+
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
@@ -30,8 +43,8 @@
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-          <mat-cell *matCellDef="let row" style="text-align: right">
+          <mat-header-cell *matHeaderCellDef class="action"> Actions </mat-header-cell>
+          <mat-cell  class="action" *matCellDef="let row" style="text-align: right">
             <button
               mat-icon-button
               matTooltip="Open project"
@@ -52,22 +65,37 @@
             </button>
             <button
               mat-icon-button
-              matTooltip="Duplicate project"
+              matTooltip="Save project as"
               matTooltipClass="custom-tooltip"
               (click)="duplicate(row)"
               *ngIf="row.status == 'closed'"
             >
-              <mat-icon aria-label="Duplicate project">filter_2</mat-icon>
+              <mat-icon aria-label="Save project as">save</mat-icon>
             </button>
             <button
               mat-icon-button
-              matTooltip="Delete project"
+              matTooltip="Export project"
               matTooltipClass="custom-tooltip"
-              (click)="delete(row)"
-              *ngIf="row.status == 'closed'"
+              (click)="exportSelectProject(row)"
+              
             >
-              <mat-icon aria-label="Delete project">delete</mat-icon>
+            <mat-icon aria-label="Export project">arrow_downward</mat-icon>
+
             </button>
+            
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="delete" >
+          <mat-header-cell *matHeaderCellDef  class="action"> 
+            <button mat-button   matTooltip="Delete all projects"   matTooltipClass="custom-tooltip"*ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+             <mat-icon>delete</mat-icon>
+            </button>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"   class="action">
+            <button  mat-icon-button  matTooltip="Delete project"   matTooltipClass="custom-tooltip" (click)="delete(row)" *ngIf="row.status == 'closed' && selection.isSelected(row)" aria-label="Example icon button with a delete icon" >
+            <mat-icon aria-label="Delete project">delete</mat-icon>
+          </button>
           </mat-cell>
         </ng-container>
 

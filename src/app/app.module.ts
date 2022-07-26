@@ -322,6 +322,7 @@ import { DeleteAllImageFilesDialogComponent } from './components/image-manager/d
 import { UploadingProcessbarComponent } from './common/uploading-processbar/uploading-processbar.component';
 import { ExportPortableProjectComponent } from './components/export-portable-project/export-portable-project.component';
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
+import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 
 @NgModule({
   declarations: [
@@ -559,6 +560,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
     UploadingProcessbarComponent,
     ExportPortableProjectComponent,
     NodesMenuConfirmationDialogComponent,
+    ConfirmationDeleteAllProjectsComponent,
   ],
   imports: [
     BrowserModule,
