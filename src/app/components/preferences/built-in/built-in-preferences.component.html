@@ -1,22 +1,26 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Built-in preferences</h1>
-      <button class="top-button" class="cancel-button" routerLink="/controller/{{ controllerId }}/preferences" mat-button>
-        Back
-      </button>
+      <div class="col-md-1">
+        <button class="top-button" class="cancel-button" routerLink="/controller/{{ controllerId }}/preferences" mat-button>
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">Built-in templates</h1>
+      </div>
     </div>
   </div>
   <div class="default-content">
     <div class="listcontainer mat-elevation-z8">
       <mat-nav-list>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/ethernet-hubs">
-          Ethernet hubs
+          Ethernet hub templates
         </mat-list-item>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/ethernet-switches">
-          Ethernet switches
+          Ethernet switch templates
         </mat-list-item>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/cloud-nodes"> Cloud nodes </mat-list-item>
+        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/cloud-nodes"> Cloud node templates </mat-list-item>
       </mat-nav-list>
     </div>
   </div>

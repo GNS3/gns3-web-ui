@@ -1,26 +1,34 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Cloud nodes templates</h1>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        routerLink="/controller/{{ controller.id }}/preferences/builtin"
-        mat-button
-      >
-        Back
-      </button>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        routerLink="/controller/{{ controller.id }}/preferences/builtin/cloud-nodes/addtemplate"
-        mat-raised-button
-        color="primary"
-      >
-        Add cloud node template
-      </button>
+      <div class="col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button"
+          class="cancel-button"
+          routerLink="/controller/{{ controller.id }}/preferences/builtin"
+          mat-button
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-10">
+        <h1 class="col">Cloud nodes templates</h1>
+      </div>
+      <div class="col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button cancel-button"
+          matTooltip=" Add cloud node template"
+          matTooltipClass="custom-tooltip"
+          routerLink="/controller/{{ controller.id }}/preferences/builtin/cloud-nodes/addtemplate"
+          mat-button
+        >
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+      </div>
     </div>
+
   </div>
   <app-empty-templates-list *ngIf="!cloudNodesTemplates.length"></app-empty-templates-list>
   <div class="default-content" *ngIf="cloudNodesTemplates.length">
