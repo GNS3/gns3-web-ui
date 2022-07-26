@@ -69,7 +69,7 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
 
       for (let i = 0; i < this.formGroup.get('numberOfPorts').value; i++) {
         ethernetSwitchTemplate.ports_mapping.push({
-          ethertype: '',
+          ethertype: '0x8100',
           name: `Ethernet${i}`,
           port_number: i,
           type: 'access',
