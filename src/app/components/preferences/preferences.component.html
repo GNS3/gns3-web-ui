@@ -1,18 +1,36 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Preferences</h1>
+      <div class="col-md-1">
+        <button
+          class="top-button"
+          class="cancel-button"
+          routerLink="/controller/{{ controllerId }}/projects"
+          mat-button
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">Template preferences</h1>
+      </div>
     </div>
   </div>
   <div class="default-content">
     <div class="listcontainer mat-elevation-z8">
       <mat-nav-list>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin"> Built-in </mat-list-item>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/dynamips/templates"> Dynamips </mat-list-item>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/iou/templates"> IOS on Unix </mat-list-item>
+        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/dynamips/templates">
+          Dynamips
+        </mat-list-item>
+        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/iou/templates">
+          IOS on Unix
+        </mat-list-item>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/vpcs/templates"> VPCS </mat-list-item>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/qemu/templates"> QEMU </mat-list-item>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/virtualbox/templates"> VirtualBox </mat-list-item>
+        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/virtualbox/templates">
+          VirtualBox
+        </mat-list-item>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/vmware/templates"> VMware </mat-list-item>
         <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/docker/templates"> Docker </mat-list-item>
       </mat-nav-list>

@@ -1,25 +1,31 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">IOU device templates</h1>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        routerLink="/controller/{{ controller.id }}/preferences"
-        mat-button
-      >
-        Back
-      </button>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        routerLink="/controller/{{ controller.id }}/preferences/iou/addtemplate"
-        mat-raised-button
-        color="primary"
-      >
-        Add IOU device template
-      </button>
+      <div class="col col-md-1">
+        <button
+          class="top-button"
+          class="cancel-button"
+          routerLink="/controller/{{ controller?.id }}/preferences"
+          mat-button
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-10">
+        <h1 class="col">IOU device templates</h1>
+      </div>
+      <div class="col col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button cancel-button"
+          matTooltip="Add IOU device template"
+          matTooltipClass="custom-tooltip"
+          routerLink="/controller/{{ controller?.id }}/preferences/iou/addtemplate"
+          mat-button
+        >
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
   <app-empty-templates-list *ngIf="!iouTemplates.length"></app-empty-templates-list>
@@ -39,6 +45,9 @@
             </button>
             <button mat-menu-item (click)="copyTemplate(template)">
               <mat-icon>content_copy</mat-icon><span>Copy</span>
+            </button>
+            <button mat-menu-item routerLink="{{ template.template_id }}">
+              <mat-icon>edit</mat-icon><span>Edit</span>
             </button>
           </mat-menu>
         </div>

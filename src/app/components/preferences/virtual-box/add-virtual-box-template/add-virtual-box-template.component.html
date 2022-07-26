@@ -1,7 +1,20 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">New VirtualBox VM template</h1>
+      <div class="col col-md-1">
+        <button
+          class="top-button"
+          *ngIf="controller"
+          class="cancel-button"
+          mat-button
+          (click)="goBack()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-11">
+        <h1 class="col">New VirtualBox VM template</h1>
+      </div>
     </div>
   </div>
   <div class="default-content" *ngIf="virtualBoxTemplate">

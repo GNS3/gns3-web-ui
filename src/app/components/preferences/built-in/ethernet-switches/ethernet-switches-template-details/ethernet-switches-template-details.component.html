@@ -1,7 +1,14 @@
 <div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Ethernet switch configuration</h1>
+      <div class="col col-md-1">
+        <button *ngIf="controller" class="top-button" class="cancel-button col" (click)="goBack()" mat-button>
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">Ethernet switch configuration</h1>
+      </div>
     </div>
   </div>
   <div class="default-content" *ngIf="ethernetSwitchTemplate">

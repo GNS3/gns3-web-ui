@@ -1,25 +1,32 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Ethernet hubs templates</h1>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        routerLink="/controller/{{ controller.id }}/preferences/builtin"
-        mat-button
-      >
-        Back
-      </button>
-      <button
-        *ngIf="controller"
-        class="top-button"
-        routerLink="/controller/{{ controller.id }}/preferences/builtin/ethernet-hubs/addtemplate"
-        mat-raised-button
-        color="primary"
-      >
-        Add Ethernet hub template
-      </button>
+      <div class="col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button"
+          class="cancel-button"
+          routerLink="/controller/{{ controller.id }}/preferences/builtin"
+          mat-button
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-10">
+        <h1 class="col">Ethernet hubs templates</h1>
+      </div>
+      <div class="col-md-1">
+        <button
+          *ngIf="controller"
+          class="top-button cancel-button"
+          matTooltip="Add Ethernet hub template"
+          matTooltipClass="custom-tooltip"
+          routerLink="/controller/{{ controller.id }}/preferences/builtin/ethernet-hubs/addtemplate"
+          mat-button
+        >
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
   <app-empty-templates-list *ngIf="!ethernetHubsTemplates.length"></app-empty-templates-list>
@@ -36,6 +43,9 @@
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="deleteTemplate(template)">
               <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+            <button mat-menu-item  routerLink="{{ template.template_id }}">
+              <mat-icon>edit</mat-icon><span>Edit</span>
             </button>
           </mat-menu>
         </div>

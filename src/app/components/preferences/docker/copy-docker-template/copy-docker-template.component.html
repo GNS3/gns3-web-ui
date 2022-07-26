@@ -1,7 +1,14 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
+      <div class="col col-md-1">
+        <button class="top-button" *ngIf="controller" class="cancel-button" (click)="goBack()" mat-button>
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-11">
       <h1 class="col">Copy Docker container template</h1>
+      </div>
     </div>
   </div>
   <div class="default-content">
