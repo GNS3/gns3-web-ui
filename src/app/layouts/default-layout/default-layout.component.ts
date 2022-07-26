@@ -41,7 +41,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private controllerService: ControllerService
   ) {
     this.router.events.subscribe((data) => {
-      debugger
       if (data instanceof NavigationEnd) {
         this.controllerId = this.route.children[0].snapshot.paramMap.get("controller_id");
       }

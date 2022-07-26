@@ -1,7 +1,7 @@
 <div *ngIf="!isDelete && !isUsedFiles">
     <h1 mat-dialog-title>Do you want delete all projects?.</h1>
     <div mat-dialog-content>
-        <p>Your selected files</p>
+        <p>Your selected projects</p>
         <p *ngFor="let file of deleteData?.deleteFilesPaths; let i = index">{{i+1}}. {{file?.filename}}</p>
     </div>
     <div mat-dialog-actions align="end">

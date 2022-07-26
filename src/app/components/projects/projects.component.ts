@@ -69,18 +69,6 @@ export class ProjectsComponent implements OnInit {
     this.projectService.projectListSubject.subscribe(() => this.refresh());
   }
 
-  goToPreferences() {
-    this.router
-      .navigate(['/controller', this.controller.id, 'preferences'])
-      .catch((error) => this.toasterService.error('Cannot navigate to the preferences'));
-  }
-
-  goToSystemStatus() {
-    this.router
-      .navigate(['/controller', this.controller.id, 'systemstatus'])
-      .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
-  }
-
   refresh() {
     this.projectService.list(this.controller).subscribe(
       (projects: Project[]) => {
@@ -209,7 +197,7 @@ export class ProjectsComponent implements OnInit {
       if (isAllfilesdeleted) {
         this.unChecked()
         this.refresh()
-        this.toasterService.success('All files deleted');
+        this.toasterService.success('All projects deleted');
       } else {
         this.unChecked()
         this.refresh()
