@@ -99,7 +99,7 @@
         <mat-icon>info</mat-icon>
         <span>Go to system status</span>
       </button>
-      <button mat-menu-item routerLink="/settings">
+      <button mat-menu-item [routerLink]="['/controller', controller.id, 'settings']">
         <mat-icon>settings</mat-icon>
         <span>Go to settings</span>
       </button>

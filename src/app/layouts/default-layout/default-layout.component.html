@@ -1,6 +1,7 @@
 <header>
   <mat-toolbar color="primary">
-    <button mat-icon-button><mat-icon svgIcon="gns3"></mat-icon></button>
+    <button mat-icon-button   matTooltip="Open menu"
+    matTooltipClass="custom-tooltip"  [matMenuTriggerFor]="mainMenu"><mat-icon svgIcon="gns3"></mat-icon></button>
 
     <button mat-button routerLink="/controllers">Controllers</button>
 
@@ -74,6 +75,48 @@
         <span>Logout</span>
       </button>
     </mat-menu>
+ <!-- GNS3 menu -->
+ <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
+  <button mat-menu-item [routerLink]="['/controller', controllerId, 'projects']">
+    <mat-icon>work</mat-icon>
+    <span>Go to projects</span>
+  </button>
+  <button mat-menu-item [routerLink]="['/controllers']">
+    <mat-icon>developer_board</mat-icon>
+    <span>Go to controllers</span>
+  </button>
+  <button mat-menu-item routerLink="/controller/{{ controllerId }}/preferences">
+    <mat-icon>settings_applications</mat-icon>
+    <span>Go to preferences</span>
+  </button>
+  <button mat-menu-item routerLink="/controller/{{ controllerId }}/systemstatus">
+    <mat-icon>info</mat-icon>
+    <span>Go to system status</span>
+  </button>
+  <button mat-menu-item [routerLink]="['/controller', controllerId, 'settings']">
+    <mat-icon>settings</mat-icon>
+    <span>Go to settings</span>
+  </button>
+  <button mat-menu-item [routerLink]="['/controller', controllerId, 'image-manager']">
+    <mat-icon>collections</mat-icon>
+    <span>Image manager</span>
+  </button>
+  <!-- <button mat-menu-item (click)="addNewTemplate()">
+    <mat-icon>control_point</mat-icon>
+    <span>New template</span>
+  </button>
+  <app-import-appliance [controller]="controller" [project]="project"></app-import-appliance>
+  <button mat-menu-item [matMenuTriggerFor]="projectMenu">
+    <mat-icon>settings</mat-icon>
+    <span>Project settings</span>
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="viewMenu">
+    <mat-icon>view_module</mat-icon>
+    <span>Map settings</span>
+  </button> -->
+</mat-menu>
+
+
   </mat-toolbar>
 </header>
 
