@@ -7,7 +7,6 @@
       <mat-icon svgIcon="gns3"></mat-icon>
     </button>
 
-    <button mat-button routerLink="/controllers">Controllers</button>
 
     <button *ngIf="!recentlyOpenedProjectId && controllerIdProjectList" mat-button (click)="listProjects()">
       Projects
@@ -71,17 +70,13 @@
     </mat-menu>
     <!-- GNS3 menu -->
     <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item [routerLink]="['/controller', controllerId, 'projects']">
-        <mat-icon>work</mat-icon>
-        <span>Go to projects</span>
-      </button>
       <button mat-menu-item [routerLink]="['/controllers']">
         <mat-icon>developer_board</mat-icon>
-        <span>Go to controllers</span>
+        <span>Controllers</span>
       </button>
-      <button mat-menu-item routerLink="/controller/{{ controllerId }}/preferences">
-        <mat-icon>settings_applications</mat-icon>
-        <span>Go to preferences</span>
+      <button mat-menu-item [routerLink]="['/controller', controllerId, 'projects']">
+        <mat-icon>work</mat-icon>
+        <span>Projects</span>
       </button>
       <button mat-menu-item routerLink="/controller/{{ controllerId }}/systemstatus">
         <mat-icon>info</mat-icon>
@@ -90,10 +85,6 @@
       <button mat-menu-item [routerLink]="['/controller', controllerId, 'settings']">
         <mat-icon>settings</mat-icon>
         <span>Go to settings</span>
-      </button>
-      <button mat-menu-item [routerLink]="['/controller', controllerId, 'image-manager']">
-        <mat-icon>collections</mat-icon>
-        <span>Image manager</span>
       </button>
     </mat-menu>
   </mat-toolbar>
