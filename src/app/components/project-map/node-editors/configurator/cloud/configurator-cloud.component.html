@@ -42,16 +42,16 @@
           <mat-tab label="Miscellaneous">
               <form [formGroup]="generalSettingsForm">
                   <mat-form-field class="form-field">
-                      <input 
-                          matInput type="text" 
+                      <input
+                          matInput type="text"
                           [(ngModel)]="node.name"
                           formControlName="name"
                           placeholder="Name">
                   </mat-form-field>
               </form>
               <mat-form-field class="select">
-                  <mat-select 
-                      placeholder="Console type" 
+                  <mat-select
+                      placeholder="Console type"
                       [(ngModel)]="node.console_type">
                           <mat-option *ngFor="let type of consoleTypes" [value]="type">
                               {{type}}
@@ -59,21 +59,21 @@
                   </mat-select>
               </mat-form-field>
               <mat-form-field class="form-field">
-                  <input 
-                      matInput type="text" 
-                      [(ngModel)]="node.properties.remote_console_host" 
+                  <input
+                      matInput type="text"
+                      [(ngModel)]="node.properties.remote_console_host"
                       placeholder="Console host">
               </mat-form-field>
               <mat-form-field class="form-field">
-                  <input 
-                      matInput type="text" 
-                      [(ngModel)]="node.properties.remote_console_port" 
+                  <input
+                      matInput type="text"
+                      [(ngModel)]="node.properties.remote_console_port"
                       placeholder="Console port">
               </mat-form-field>
               <mat-form-field class="form-field">
-                  <input 
-                      matInput type="text" 
-                      [(ngModel)]="node.properties.remote_console_http_path" 
+                  <input
+                      matInput type="text"
+                      [(ngModel)]="node.properties.remote_console_http_path"
                       placeholder="Console HTTP path">
               </mat-form-field>
           </mat-tab>
@@ -84,7 +84,7 @@
               </mat-form-field>
           </mat-tab>
         </mat-tab-group>
-      </mat-card>iv>
+      </mat-card><div>
     </div>
   </div>
 </div>
