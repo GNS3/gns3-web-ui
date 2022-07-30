@@ -1,21 +1,24 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ControllerService } from '../../services/controller.service';
+import { ProjectService } from '../../services/project.service';
+import { MockedProjectService } from '../../services/project.service.spec';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ControllerManagementService, ControllerStateEvent } from '../../services/controller-management.service';
+import { ControllerService } from '../../services/controller.service';
+import { ControllerErrorHandler, HttpController } from '../../services/http-controller.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ToasterService } from '../../services/toaster.service';
 import { MockedToasterService } from '../../services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
-import { HttpController, ControllerErrorHandler } from '../../services/http-controller.service';
-import { HttpClientModule } from '@angular/common/http';
 
 class ElectronServiceMock {
   public isElectronApp: boolean;
@@ -35,13 +38,21 @@ describe('DefaultLayoutComponent', () => {
   let httpController: HttpController;
   let errorHandler: ControllerErrorHandler;
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     electronServiceMock = new ElectronServiceMock();
     controllerManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
     await TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
-      imports: [MatIconModule, MatMenuModule, MatToolbarModule, HttpClientModule, RouterTestingModule, MatProgressSpinnerModule],
+      imports: [
+        MatIconModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatToolbarModule,
+        HttpClientModule,
+        RouterTestingModule,
+        MatProgressSpinnerModule,
+      ],
       providers: [
         {
           provide: ElectronService,
@@ -51,6 +62,8 @@ describe('DefaultLayoutComponent', () => {
           provide: ControllerManagementService,
           useValue: controllerManagementService,
         },
+        { provide: ProjectService, useClass: MockedProjectService },
+
         {
           provide: ToasterService,
           useClass: MockedToasterService,
@@ -62,6 +75,8 @@ describe('DefaultLayoutComponent', () => {
         { provide: ControllerService },
         { provide: HttpController },
         { provide: ControllerErrorHandler },
+        { provide: MatDialogRef, useValue: {}},
+        { provide: MAT_DIALOG_DATA, useValue: {}},
         ProgressService,
       ],
     }).compileComponents();

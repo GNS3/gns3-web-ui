@@ -1,15 +1,18 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { NavigationEnd } from '@angular/router';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ControllerService } from '../../services/controller.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ProjectService } from '@services/project.service';
 import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
+import { NewTemplateDialogComponent } from '../../components/project-map/new-template-dialog/new-template-dialog.component';
+import { Controller } from '../../models/controller';
+import { Project } from '../../models/project';
 import { ControllerManagementService } from '../../services/controller-management.service';
+import { ControllerService } from '../../services/controller.service';
+import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { ToasterService } from '../../services/toaster.service';
 import { version } from './../../version';
-import { Controller } from '../../models/controller';
 
 @Component({
   selector: 'app-default-layout',
@@ -29,6 +32,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   recentlyOpenedProjectId: string;
   controllerIdProjectList: string;
   controllerId: string | undefined | null;
+  public controller: Controller;
+  public project: Project;
+  private projectMapSubscription: Subscription = new Subscription();
 
   constructor(
     private electronService: ElectronService,
@@ -36,19 +42,21 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     private controllerManagement: ControllerManagementService,
     private toasterService: ToasterService,
     private progressService: ProgressService,
+    private dialog: MatDialog,
     public router: Router,
     private route: ActivatedRoute,
-    private controllerService: ControllerService
+    private controllerService: ControllerService,
+    private projectService: ProjectService
   ) {
     this.router.events.subscribe((data) => {
       if (data instanceof NavigationEnd) {
-        this.controllerId = this.route.children[0].snapshot.paramMap.get("controller_id");
+        this.controllerId = this.route.children[0].snapshot.paramMap.get('controller_id');
+        this.getData();
       }
     });
   }
 
   ngOnInit() {
-
     this.checkIfUserIsLoginPage();
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
@@ -61,16 +69,18 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
 
     // attach to notification stream when any of running local controllers experienced issues
-    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
-      if (controllerStatus.status === 'errored') {
-        console.error(controllerStatus.message);
-        this.toasterService.error(controllerStatus.message);
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe(
+      (controllerStatus) => {
+        if (controllerStatus.status === 'errored') {
+          console.error(controllerStatus.message);
+          this.toasterService.error(controllerStatus.message);
+        }
+        if (controllerStatus.status === 'stderr') {
+          console.error(controllerStatus.message);
+          this.toasterService.error(controllerStatus.message);
+        }
       }
-      if (controllerStatus.status === 'stderr') {
-        console.error(controllerStatus.message);
-        this.toasterService.error(controllerStatus.message);
-      }
-    });
+    );
 
     // stop controllers only when in Electron
     this.shouldStopControllersOnClosing = this.electronService.isElectronApp;
@@ -83,7 +93,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   checkIfUserIsLoginPage() {
-    if (this.router.url.includes("login")) {
+    if (this.router.url.includes('login')) {
       this.isLoginPage = true;
     } else {
       this.isLoginPage = false;
@@ -93,7 +103,9 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   logout() {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       controller.authToken = null;
-      this.controllerService.update(controller).then(val => this.router.navigate(['/controller', controller.id, 'login']));
+      this.controllerService
+        .update(controller)
+        .then((val) => this.router.navigate(['/controller', controller.id, 'login']));
     });
   }
 
@@ -122,6 +134,23 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.progressService.deactivate();
     window.close();
     return false;
+  }
+  getData() {
+    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
+      this.controller = controller;
+    });
+  }
+
+  public addNewTemplate() {
+    const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
+      width: '1000px',
+      maxHeight: '700px',
+      autoFocus: false,
+      disableClose: true,
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    instance.project = this.project;
   }
 
   ngOnDestroy() {
