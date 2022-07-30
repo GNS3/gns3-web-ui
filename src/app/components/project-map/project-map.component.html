@@ -96,14 +96,6 @@
         <mat-icon>settings_applications</mat-icon>
         <span>Template preferences</span>
       </button>
-      <button mat-menu-item routerLink="/controller/{{ controller.id }}/systemstatus">
-        <mat-icon>info</mat-icon>
-        <span>Go to system status</span>
-      </button>
-      <button mat-menu-item [routerLink]="['/controller', controller.id, 'settings']">
-        <mat-icon>settings</mat-icon>
-        <span>Go to settings</span>
-      </button>
       <button mat-menu-item [routerLink]="['/controller', controller.id, 'image-manager']">
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
