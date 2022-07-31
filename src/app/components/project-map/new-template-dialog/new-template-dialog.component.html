@@ -77,7 +77,7 @@
         </ng-container>
 
         <!-- <ng-container matColumnDef="expandedDetail">
-                    <mat-cell *matCellDef="let detail"> 
+                    <mat-cell *matCellDef="let detail">
                         The symbol for {{detail.element}}
                     </mat-cell>
                 </ng-container> -->
@@ -85,14 +85,14 @@
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 
-        <!-- <mat-row 
+        <!-- <mat-row
                     *matRowDef="let row; columns: displayedColumns;"
-                    matRipple 
-                    class="element-row" 
+                    matRipple
+                    class="element-row"
                     [class.expanded]="expandedElement == row"
                     (click)="expandedElement = row">
                 </mat-row>
-                <mat-row 
+                <mat-row
                     *matRowDef="let row; columns: ['expandedDetail']; when: isExpansionDetailRow"
                     [@detailExpand]="row.element == expandedElement ? 'expanded' : 'collapsed'"
                     style="overflow: hidden">
@@ -132,19 +132,6 @@
     <mat-card [hidden]="!(!isLinuxPlatform || applianceToInstall.dynamips)">
       <div *ngIf="applianceToInstall.qemu">
         <div>
-          Qemu binary<br />
-          <mat-select
-            class="selection-group"
-            placeholder="Qemu binary"
-            [(ngModel)]="selectedBinary"
-            [ngModelOptions]="{ standalone: true }"
-          >
-            <mat-option *ngFor="let binary of qemuBinaries" [value]="binary">
-              {{ binary.path }}
-            </mat-option>
-          </mat-select>
-        </div>
-        <div>
           Install required files
           <button
             mat-icon-button
@@ -154,7 +141,7 @@
           >
             <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
           ><br />
-          <div> 
+          <div>
             <div *ngFor="let version of applianceToInstall.versions">
               <div class="list-item">
                 <span>{{ applianceToInstall.name }} version {{ version.name }}</span>
@@ -225,7 +212,7 @@
                     [uploader]="uploaderImage"
                   />
                   <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                 
+
                   <button
                     class="button"
                     mat-raised-button
@@ -305,7 +292,7 @@
       </div>
 
       <div *ngIf="applianceToInstall.docker">
-        
+
         <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">
           Create docker template
         </button>

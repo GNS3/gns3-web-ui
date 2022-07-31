@@ -23,7 +23,6 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   name: string;
   generalSettingsForm: FormGroup;
   consoleTypes: string[] = [];
-  binaries: QemuBinary[] = [];
   onCloseOptions = [];
   bootPriorities = [];
   diskInterfaces: string[] = [];
@@ -61,10 +60,6 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
-    });
-
-    this.qemuService.getBinaries(this.controller).subscribe((qemuBinaries: QemuBinary[]) => {
-      this.binaries = qemuBinaries;
     });
 
     this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {

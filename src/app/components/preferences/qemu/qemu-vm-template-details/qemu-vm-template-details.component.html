@@ -62,13 +62,6 @@
           <input matInput type="number" [(ngModel)]="qemuTemplate.cpus" placeholder="vCPUs" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <mat-select placeholder="Qemu binary" [(ngModel)]="qemuTemplate.qemu_path">
-            <mat-option *ngFor="let binary of binaries" [value]="binary.path">
-              {{ binary.path }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="form-field">
           <mat-select placeholder="Boot priority" [(ngModel)]="qemuTemplate.boot_priority">
             <mat-option *ngFor="let priority of bootPriorities" [value]="priority[1]">
               {{ priority[0] }}

@@ -27,7 +27,6 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   onCloseOptions = [];
   categories = [];
   priorities: string[] = [];
-  binaries: QemuBinary[] = [];
   activateCpuThrottling: boolean = true;
   isConfiguratorOpened: boolean = false;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
@@ -57,15 +56,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;
-
       this.getConfiguration();
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
         this.fillCustomAdapters();
-
-        this.qemuService.getBinaries(controller).subscribe((qemuBinaries: QemuBinary[]) => {
-          this.binaries = qemuBinaries;
-        });
       });
     });
   }

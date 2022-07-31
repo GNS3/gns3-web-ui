@@ -32,10 +32,6 @@ export class MockedQemuService {
     return of(qemuTemplate);
   }
 
-  public getBinaries(controller:Controller ) {
-    return of([]);
-  }
-
   public getImages(controller:Controller ) {
     return of([]);
   }
@@ -105,10 +101,6 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     component.memoryForm.controls['ramMemory'].setValue(0);
     component.diskForm.controls['fileName'].setValue('file name');
     component.chosenImage = 'path';
-    component.selectedBinary = {
-      path: 'path',
-      version: 'version',
-    };
     component.newImageSelected = true;
     component.controller = { id: 1 } as Controller ;
 
@@ -124,10 +116,6 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     component.memoryForm.controls['ramMemory'].setValue(0);
     component.diskForm.controls['fileName'].setValue('file name');
     component.chosenImage = 'path';
-    component.selectedBinary = {
-      path: 'path',
-      version: 'version',
-    };
     component.newImageSelected = true;
     component.controller = { id: 1 } as Controller ;
 
@@ -142,10 +130,6 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     component.memoryForm.controls['binary'].setValue('binary');
     component.diskForm.controls['fileName'].setValue('file name');
     component.chosenImage = 'path';
-    component.selectedBinary = {
-      path: 'path',
-      version: 'version',
-    };
     component.newImageSelected = true;
     component.controller = { id: 1 } as Controller ;
 
