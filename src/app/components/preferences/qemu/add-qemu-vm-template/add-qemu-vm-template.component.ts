@@ -65,7 +65,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     });
 
     this.memoryForm = this.formBuilder.group({
-      ramMemory: new FormControl('', Validators.required),
+      ramMemory: new FormControl('256', Validators.required),
     });
 
     this.diskForm = this.formBuilder.group({

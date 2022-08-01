@@ -32,6 +32,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   isConfiguratorOpened: boolean = false;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   generalSettingsForm: FormGroup;
+  selectPlatform: string[] = [];
+  selectedPlatform: string;
+
 
   @ViewChild('customAdaptersConfigurator')
   customAdaptersConfigurator: CustomAdaptersComponent;
@@ -68,6 +71,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         // });
       });
     });
+
+    this.selectPlatform = this.configurationService.getPlatform();
+      this.selectedPlatform = this.selectPlatform[0];
   }
 
   getConfiguration() {
