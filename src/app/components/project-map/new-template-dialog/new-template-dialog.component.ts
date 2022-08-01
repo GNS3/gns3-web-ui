@@ -126,10 +126,6 @@ export class NewTemplateDialogComponent implements OnInit {
       });
     });
 
-    // this.qemuService.getBinaries(this.controller).subscribe((binaries) => {
-    //   this.qemuBinaries = binaries;
-    // });
-
     this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
     });

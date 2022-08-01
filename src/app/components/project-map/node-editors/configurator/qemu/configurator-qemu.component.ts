@@ -63,10 +63,6 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       this.getConfiguration();
     });
 
-    // this.qemuService.getBinaries(this.controller).subscribe((qemuBinaries: QemuBinary[]) => {
-    //   this.binaries = qemuBinaries;
-    // });
-
     this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
       this.qemuImages = qemuImages;
     });

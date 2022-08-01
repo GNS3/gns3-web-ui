@@ -109,11 +109,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       });
 
 
-      // this.qemuService.getBinaries(this.controller).subscribe((qemuBinaries: QemuBinary[]) => {
-      //   debugger
-      //   this.qemuBinaries = qemuBinaries;
-      //   if (this.qemuBinaries[0]) this.selectedBinary = this.qemuBinaries[0];
-      // });
+      
 
       this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
         this.qemuImages = qemuImages;
