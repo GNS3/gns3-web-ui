@@ -65,7 +65,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     });
 
     this.memoryForm = this.formBuilder.group({
-      ramMemory: new FormControl('256', Validators.required),
+      ramMemory: new FormControl('', Validators.required),
     });
 
     this.diskForm = this.formBuilder.group({
@@ -120,7 +120,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       });
 
       this.selectPlatform = this.configurationService.getPlatform();
-      this.selectedPlatform = this.selectPlatform[0];
+      // this.selectedPlatform = this.selectPlatform[0];
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
     });
