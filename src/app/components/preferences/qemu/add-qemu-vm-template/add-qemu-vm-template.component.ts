@@ -25,10 +25,8 @@ import { ToasterService } from '../../../../services/toaster.service';
 })
 export class AddQemuVmTemplateComponent implements OnInit {
   controller:Controller ;
-  qemuBinaries: QemuBinary[] = [];
   selectPlatform: string[] = [];
   selectedPlatform: string;
-  selectedBinary: QemuBinary;
   ramMemory: number;
   consoleTypes: string[] = [];
   newImageSelected: boolean = false;
@@ -172,7 +170,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
       this.qemuTemplate.ram = +this.memoryForm.get('ramMemory').value;
-      // this.qemuTemplate.qemu_path = this.selectedBinary.path;
       this.qemuTemplate.platform = this.selectedPlatform;
       if (this.newImageSelected) {
         this.qemuTemplate.hda_disk_image = this.diskForm.get('fileName').value;

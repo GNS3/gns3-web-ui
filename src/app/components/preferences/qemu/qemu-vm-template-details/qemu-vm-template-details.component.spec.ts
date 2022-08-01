@@ -31,9 +31,6 @@ export class MockedQemuService {
     return of(qemuTemplate);
   }
 
-  public getBinaries(controller:Controller ) {
-    return of([]);
-  }
 
   public getImages(controller:Controller ) {
     return of([]);

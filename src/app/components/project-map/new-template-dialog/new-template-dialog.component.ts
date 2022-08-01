@@ -65,8 +65,6 @@ export class NewTemplateDialogComponent implements OnInit {
   public isLinuxPlatform = false;
   private isLocalComputerChosen = false;
 
-  public qemuBinaries: QemuBinary[] = [];
-  public selectedBinary: QemuBinary;
 
   public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
   public category: string = 'all categories';
@@ -332,30 +330,6 @@ export class NewTemplateDialogComponent implements OnInit {
     this.applianceToInstall = object;
     setTimeout(() => {
       this.stepper.next();
-      if (this.applianceToInstall.qemu) {
-        setTimeout(() => {
-          if (this.qemuBinaries.length) {
-            if (this.applianceToInstall.qemu.arch === 'x86_64') {
-              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.includes('qemu-system-x86_64'));
-              if (filtered_binaries.length) {
-                this.selectedBinary = filtered_binaries[0];
-              }
-            } else if (this.applianceToInstall.qemu.arch === 'i386') {
-              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.includes('qemu-system-i386'));
-              if (filtered_binaries.length) {
-                this.selectedBinary = filtered_binaries[0];
-              }
-            } else if (this.applianceToInstall.qemu.arch === 'x86_64') {
-              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.includes('qemu-system-arm'));
-              if (filtered_binaries.length) {
-                this.selectedBinary = filtered_binaries[0];
-              }
-            } else {
-              this.selectedBinary = this.qemuBinaries[0];
-            }
-          }
-        }, 100);
-      }
     }, 100);
   }
 
@@ -658,7 +632,6 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
     qemuTemplate.symbol = this.applianceToInstall.symbol;
-    // qemuTemplate.qemu_path = this.selectedBinary.path;
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = version.images.hda_disk_image;

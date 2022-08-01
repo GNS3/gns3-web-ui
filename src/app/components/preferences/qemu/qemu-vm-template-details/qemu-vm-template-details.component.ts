@@ -27,7 +27,6 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   onCloseOptions = [];
   categories = [];
   priorities: string[] = [];
-  binaries: QemuBinary[] = [];
   activateCpuThrottling: boolean = true;
   isConfiguratorOpened: boolean = false;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
