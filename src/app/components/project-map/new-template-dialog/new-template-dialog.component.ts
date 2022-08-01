@@ -126,9 +126,9 @@ export class NewTemplateDialogComponent implements OnInit {
       });
     });
 
-    this.qemuService.getBinaries(this.controller).subscribe((binaries) => {
-      this.qemuBinaries = binaries;
-    });
+    // this.qemuService.getBinaries(this.controller).subscribe((binaries) => {
+    //   this.qemuBinaries = binaries;
+    // });
 
     this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
@@ -642,10 +642,10 @@ export class NewTemplateDialogComponent implements OnInit {
       return;
     }
 
-    if (!this.selectedBinary) {
-      this.toasterService.error('Please select QEMU binary first');
-      return;
-    }
+    // if (!this.selectedBinary) {
+    //   this.toasterService.error('Please select QEMU binary first');
+    //   return;
+    // }
 
     let qemuTemplate: QemuTemplate = new QemuTemplate();
     qemuTemplate.ram = this.applianceToInstall.qemu.ram;
@@ -662,7 +662,7 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
     qemuTemplate.symbol = this.applianceToInstall.symbol;
-    qemuTemplate.qemu_path = this.selectedBinary.path;
+    // qemuTemplate.qemu_path = this.selectedBinary.path;
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = version.images.hda_disk_image;

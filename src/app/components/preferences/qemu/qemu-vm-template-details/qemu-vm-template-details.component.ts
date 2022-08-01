@@ -63,9 +63,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         this.qemuTemplate = qemuTemplate;
         this.fillCustomAdapters();
 
-        this.qemuService.getBinaries(controller).subscribe((qemuBinaries: QemuBinary[]) => {
-          this.binaries = qemuBinaries;
-        });
+        // this.qemuService.getBinaries(controller).subscribe((qemuBinaries: QemuBinary[]) => {
+        //   this.binaries = qemuBinaries;
+        // });
       });
     });
   }

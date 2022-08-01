@@ -131,7 +131,7 @@
 
     <mat-card [hidden]="!(!isLinuxPlatform || applianceToInstall.dynamips)">
       <div *ngIf="applianceToInstall.qemu">
-        <div>
+        <!-- <div>
           Qemu binary<br />
           <mat-select
             class="selection-group"
@@ -143,7 +143,7 @@
               {{ binary.path }}
             </mat-option>
           </mat-select>
-        </div>
+        </div> -->
         <div>
           Install required files
           <button
