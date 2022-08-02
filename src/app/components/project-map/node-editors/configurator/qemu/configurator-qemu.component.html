@@ -12,6 +12,13 @@
                 <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
               </mat-form-field>
               <mat-form-field class="form-field">
+                <mat-select placeholder="Platform" [(ngModel)]="node.properties.platform"  [ngModelOptions]="{ standalone: true }">
+                  <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
+                    {{ platform }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="form-field">
                 <input
                   matInput
                   type="number"

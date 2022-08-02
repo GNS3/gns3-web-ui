@@ -114,8 +114,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
       });
 
       this.selectPlatform = this.configurationService.getPlatform();
-      // this.selectedPlatform = this.selectPlatform[0];
-
       this.consoleTypes = this.configurationService.getConsoleTypes();
     });
 

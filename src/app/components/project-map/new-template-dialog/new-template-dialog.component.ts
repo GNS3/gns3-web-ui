@@ -612,11 +612,6 @@ export class NewTemplateDialogComponent implements OnInit {
       return;
     }
 
-    // if (!this.selectedBinary) {
-    //   this.toasterService.error('Please select QEMU binary first');
-    //   return;
-    // }
-
     let qemuTemplate: QemuTemplate = new QemuTemplate();
     qemuTemplate.ram = this.applianceToInstall.qemu.ram;
     qemuTemplate.adapters = this.applianceToInstall.qemu.adapters;
@@ -638,6 +633,7 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = this.applianceToInstall.usage;
+    qemuTemplate.platform = this.applianceToInstall.qemu.arch;
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
       width: '400px',

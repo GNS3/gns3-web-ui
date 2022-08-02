@@ -31,6 +31,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
   qemuImages: QemuImage[] = [];
+  selectPlatform: string[] = [];
 
   private conf = {
     autoFocus: false,
@@ -66,6 +67,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
       this.qemuImages = qemuImages;
     });
+    this.selectPlatform = this.qemuConfigurationService.getPlatform();
+
   }
 
   openQemuImageCreator() {
