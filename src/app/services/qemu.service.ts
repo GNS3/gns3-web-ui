@@ -23,9 +23,6 @@ export class QemuService {
     return `${controller.protocol}//${controller.host}:${controller.port}/images/upload/${filename}`;
   }
 
-  getBinaries(controller:Controller ): Observable<QemuBinary[]> {
-    return this.httpController.get<QemuBinary[]>(controller, '/computes/local/qemu/binaries') as Observable<QemuBinary[]>;
-  }
 
   getImages(controller:Controller ): Observable<any> {
     return this.httpController.get<QemuImage[]>(controller, '/images?image_type=qemu') as Observable<QemuImage[]>;

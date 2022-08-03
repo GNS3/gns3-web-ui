@@ -21,7 +21,6 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   name: string;
   generalSettingsForm: FormGroup;
   consoleTypes: string[] = [];
-  binaries: QemuBinary[] = [];
   onCloseOptions = [];
   bootPriorities = [];
   diskInterfaces: string[] = [];

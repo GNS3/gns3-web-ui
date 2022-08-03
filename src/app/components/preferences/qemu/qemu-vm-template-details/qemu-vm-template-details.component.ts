@@ -27,11 +27,13 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   onCloseOptions = [];
   categories = [];
   priorities: string[] = [];
-  binaries: QemuBinary[] = [];
   activateCpuThrottling: boolean = true;
   isConfiguratorOpened: boolean = false;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   generalSettingsForm: FormGroup;
+  selectPlatform: string[] = [];
+  selectedPlatform: string;
+
 
   @ViewChild('customAdaptersConfigurator')
   customAdaptersConfigurator: CustomAdaptersComponent;
@@ -62,12 +64,10 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
         this.fillCustomAdapters();
-
-        this.qemuService.getBinaries(controller).subscribe((qemuBinaries: QemuBinary[]) => {
-          this.binaries = qemuBinaries;
-        });
       });
     });
+
+    this.selectPlatform = this.configurationService.getPlatform();
   }
 
   getConfiguration() {
