@@ -106,14 +106,12 @@ export class AddQemuVmTemplateComponent implements OnInit {
         this.qemuTemplate = qemuTemplate;
       });
 
-
-      
-
       this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
         this.qemuImages = qemuImages;
       });
 
       this.selectPlatform = this.configurationService.getPlatform();
+      this.selectedPlatform = this.selectPlatform[0];
       this.consoleTypes = this.configurationService.getConsoleTypes();
     });
 

@@ -68,7 +68,6 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     });
 
     this.selectPlatform = this.configurationService.getPlatform();
-      this.selectedPlatform = this.selectPlatform[0];
   }
 
   getConfiguration() {
