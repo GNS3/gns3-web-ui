@@ -17,7 +17,7 @@
     "start": "ng serve",
     "startforelectron": "ng serve --configuration=electronDev",
     "build": "ng build",
-    "buildforproduction": "ng build --source-map=false --build-optimizer=false --aot --configuration=production --base-href /static/web-ui/",
+    "buildforproduction": "ng build --source-map=false --build-optimizer=true --aot --configuration=production --base-href /static/web-ui/",
     "buildforelectron": "ng build --configuration=electronProd",
     "buildforgithub": "ng build --configuration=githubProd",
     "test": "ng test",
@@ -131,6 +131,9 @@
     "webpack": "^5.72.0",
     "yarn-upgrade-all": "^0.7.1"
   },
+  "resolutions": {
+    "autoprefixer": "10.4.5"
+},
   "greenkeeper": {
     "ignore": [
       "typescript"

@@ -29,7 +29,8 @@
                             "stylenames",
                             "source-map-js"
                         ],
-                        "outputPath": "dist",
+                        "baseHref": "/static/web-ui/",
+                        "outputPath": "dist/static/web-ui/",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "tsConfig": "src/tsconfig.app.json",
@@ -60,7 +61,13 @@
                                 "type": "anyComponentStyle",
                                 "maximumWarning": "6kb"
                             }],
-                            "optimization": true,
+                            "optimization": {
+                                "scripts": false,
+                                "styles": {
+                                  "minify": true,
+                                  "inlineCritical": false
+                                }
+                            },
                             "outputHashing": "all",
                             "sourceMap": {
                                 "hidden": true,

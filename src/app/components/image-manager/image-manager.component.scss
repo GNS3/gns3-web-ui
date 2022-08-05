@@ -14,4 +14,19 @@ mat-header-cell, mat-cell {
   justify-content: center;
 }
 
+.mat-cell-width{
+  max-width: 60px;
+
+}
+.mat-cell-img-type-width{
+  max-width: 110px;
+
+}
+ 
+.mat-cell-file-name-width{
+  justify-content: left;
+  margin-left: 10px;
+
+}
+
   

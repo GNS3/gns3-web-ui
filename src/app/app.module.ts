@@ -323,6 +323,7 @@ import { UploadingProcessbarComponent } from './common/uploading-processbar/uplo
 import { ExportPortableProjectComponent } from './components/export-portable-project/export-portable-project.component';
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
+import { APP_BASE_HREF } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -591,6 +592,7 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     SettingsService,
     {provide: ErrorHandler, useClass: ToasterErrorHandler},
     {provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true},
+    {provide: APP_BASE_HREF, useValue: '/static/web-ui'},
     D3Service,
     VersionService,
     ProjectService,
