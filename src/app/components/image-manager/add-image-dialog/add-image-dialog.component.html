@@ -39,7 +39,7 @@
     <div class="col-md-4 txt-align" *ngIf="uploaderImage.queue.length <= 0">
       <input
         type="file"
-        accept=".qcow2, .bin,.image,.qcow2,.vmdk,.img,.tmp"
+        accept=".bin,.image,.qcow2,.vmdk"
         multiple
         #file
         class="non-visible"
@@ -56,7 +56,7 @@
     </div>
   </div>
 
- 
+
   <div class="row" *ngFor="let img of uploaderImage.queue; let i = index">
     <div class="{{img.isError || img.isUploaded ? 'col-md-10' : 'col-md-6'}}">
       <mat-title [ngClass]="{ 'uploaded-error-text': img.isError }">
