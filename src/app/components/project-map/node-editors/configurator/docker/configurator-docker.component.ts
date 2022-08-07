@@ -20,7 +20,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   name: string;
   generalSettingsForm: FormGroup;
   consoleTypes: string[] = [];
-  consoleResolutions: string[] = ['640x480', '800x600', '1024x768', '1280x800', '1280x1024', '1366x768', '1920x1080'];
+  consoleResolutions: string[] = ['2560x1440', '1920x1080', '1680x1050', '1440x900', '1366x768', '1280x1024', '1280x800', '1024x768', '800x600', '640x480'];
   private conf = {
     autoFocus: false,
     width: '800px',
