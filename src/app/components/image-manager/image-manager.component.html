@@ -36,7 +36,7 @@
         <ng-container matColumnDef="filename">
           <mat-header-cell *matHeaderCellDef> File Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a class="table-link">{{ row.filename }}</a>
+            <mat-list-item role="listitem">{{ row.filename }}</mat-list-item>
           </mat-cell>
         </ng-container>
 
