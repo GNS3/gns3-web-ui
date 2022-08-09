@@ -32,7 +32,9 @@ export class ExportPortableProjectComponent implements OnInit {
   async ngOnInit() {
     this.controller = this.data.controllerDetails;
     this.project = this.data.projectDetails;
-   if(this.project){ this.fileName = this.project.name + '.gns3project';}
+    if( this.project){
+      this.fileName = this.project.name + '.gns3project';
+    }
     await this.formControls();
     this.compression_methods = this.projectService.getCompression();
     this.compression_level = this.projectService.getCompressionLevel();
