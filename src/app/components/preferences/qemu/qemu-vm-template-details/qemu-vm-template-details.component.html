@@ -194,7 +194,7 @@
         </mat-form-field>
         <mat-form-field class="form-field">
           <mat-select placeholder="Type" [(ngModel)]="qemuTemplate.adapter_type">
-            <mat-option *ngFor="let type of networkTypes" [value]="type[0]"> {{ type[1] }} ({{ type[0] }}) </mat-option>
+            <mat-option *ngFor="let type of networkTypes" [value]="type.value">{{type.name}} ({{type.value}}) </mat-option>
           </mat-select>
         </mat-form-field>
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
