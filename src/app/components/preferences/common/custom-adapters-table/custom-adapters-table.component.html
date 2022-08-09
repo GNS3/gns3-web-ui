@@ -13,8 +13,8 @@
     <th mat-header-cell *matHeaderCellDef>Adapter type</th>
     <td mat-cell *matCellDef="let element; let i = index">
       <mat-select placeholder="Type" [(ngModel)]="element.adapter_type">
-        <mat-option *ngFor="let type of networkTypes" [value]="type">
-          {{ type }}
+        <mat-option *ngFor="let type of networkTypes" [value]="type.value">
+          {{ type.name }}
         </mat-option>
       </mat-select>
     </td>
