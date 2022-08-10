@@ -26,6 +26,12 @@ export class StyleEditorDialogComponent implements OnInit {
   drawing: Drawing;
   element: ElementData;
   formGroup: FormGroup;
+  borderTypes = [ 
+    {value:"none",name:"Solid"}, 
+    {value:"5",name:"Dash"}, 
+    {value:"15",name:"Dot"}, 
+    {value:"5 15",name:"Dash Dot"}
+  ];
 
   constructor(
     public dialogRef: MatDialogRef<StyleEditorDialogComponent>,
@@ -46,15 +52,14 @@ export class StyleEditorDialogComponent implements OnInit {
 
   ngOnInit() {
     this.element = new ElementData();
-
     if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
       this.element.fill = this.drawing.element.fill;
       this.element.stroke = this.drawing.element.stroke;
-      this.element.stroke_dasharray = this.drawing.element.stroke_dasharray;
+      this.element.stroke_dasharray = this.drawing.element.stroke_dasharray ?? 'none'
       this.element.stroke_width = this.drawing.element.stroke_width;
     } else if (this.drawing.element instanceof LineElement) {
       this.element.stroke = this.drawing.element.stroke;
-      this.element.stroke_dasharray = this.drawing.element.stroke_dasharray;
+      this.element.stroke_dasharray = this.drawing.element.stroke_dasharray ?? 'none';
       this.element.stroke_width = this.drawing.element.stroke_width;
     }
 
@@ -82,10 +87,9 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width;
       }
-
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
       mapDrawing.element = this.drawing.element;
-
+      
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
       this.drawingService.update(this.controller, this.drawing).subscribe((controllerDrawing: Drawing) => {

@@ -25,15 +25,10 @@
     <mat-form-field class="form-field">
       <input matInput formControlName="borderWidth" placeholder="Border width" type="number" />
     </mat-form-field>
-
-    <mat-form-field class="form-field" *ngIf="element.stroke_dasharray">
-      <input
-        matInput
-        [ngModelOptions]="{ standalone: true }"
-        placeholder="Border style"
-        type="text"
-        [(ngModel)]="element.stroke_dasharray"
-      />
+    <mat-form-field class="form-field">
+      <mat-select placeholder="Type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.stroke_dasharray">
+        <mat-option *ngFor="let type of borderTypes" [value]="type.value"> {{ type.name }} </mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field class="form-field">
