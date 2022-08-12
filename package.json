@@ -105,7 +105,7 @@
     "@types/jasminewd2": "^2.0.10",
     "@types/node": "^17.0.31",
     "codelyzer": "^0.0.28",
-    "electron": "20.0.2",
+    "electron": "13.6.6",
     "electron-builder": "^23.0.3",
     "file-loader": "^6.2.0",
     "jasmine-core": "^4.1.0",
