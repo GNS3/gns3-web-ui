@@ -76,7 +76,7 @@
     "ngx-childprocess": "^0.0.6",
     "ngx-device-detector": "^3.0.0",
     "ngx-electron": "^2.2.0",
-    "node-fetch": "^3.2.4",
+    "node-fetch": "^3.2.10",
     "notosans-fontface": "^1.3.0",
     "postcss-loader": "^6.2.1",
     "prettier-plugin-organize-imports": "^2.3.4",
