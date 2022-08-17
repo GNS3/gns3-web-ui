@@ -68,3 +68,12 @@ mat-menu-panel {
   font-size: 12px !important;
   font-family: monospace;
 }
+.mat-tab-body-content {
+  height: 100%;
+  overflow: initial !important;
+}
+.mat-tab-body.mat-tab-body-active {
+ 
+  overflow-y: clip !important;
+
+}
