@@ -103,6 +103,8 @@ export class NodeWidget implements Widget {
       })
       .on('mouseover', function (this, n: MapNode) {
         select(this).attr('class', 'over');
+        self.onContextMenu.emit(new NodeContextMenu(event, n));
+
       })
       .on('mouseout', function (this, n: MapNode) {
         select(this).attr('class', '');
