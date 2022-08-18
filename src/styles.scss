@@ -77,3 +77,10 @@ mat-menu-panel {
   overflow-y: clip !important;
 
 }
+.mat-tab-label {
+  padding: 0 10px !important;
+  min-width: 152px !important;
+} 
+.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
+  display: none !important;
+}
