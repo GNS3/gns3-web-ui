@@ -19,7 +19,7 @@ export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
       elem = `<ellipse fill=\"${mapDrawing.element.fill}\" fill-opacity=\"${mapDrawing.element.fill_opacity}\" cx=\"${mapDrawing.element.cx}\" cy=\"${mapDrawing.element.cy}\" rx=\"${mapDrawing.element.rx}\" ry=\"${mapDrawing.element.ry}\" stroke=\"${mapDrawing.element.stroke}\" stroke-width=\"${mapDrawing.element.stroke_width}\" stroke-dasharray=\"${mapDrawing.element.stroke_dasharray}\" />`;
     } else if (mapDrawing.element instanceof LineElement) {
       elem = `<line stroke=\"${mapDrawing.element.stroke}\" stroke-width=\"${mapDrawing.element.stroke_width}\" x1=\"${mapDrawing.element.x1}\" x2=\"${mapDrawing.element.x2}\" y1=\"${mapDrawing.element.y1}\" y2=\"${mapDrawing.element.y2}\" stroke-dasharray=\"${mapDrawing.element.stroke_dasharray}\" />`;
-    } else if (mapDrawing.element instanceof TextElement) {
+    } else if (mapDrawing.element instanceof TextElement ) {
       elem = `<text fill=\"${mapDrawing.element.fill}\" fill-opacity=\"1.0\" font-family=\"${mapDrawing.element.font_family}\" font-size=\"${mapDrawing.element.font_size}\" font-weight=\"${mapDrawing.element.font_weight}\">${mapDrawing.element.text}</text>`;
     } else return '';
 

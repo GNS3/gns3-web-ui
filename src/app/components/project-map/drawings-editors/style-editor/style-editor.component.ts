@@ -8,8 +8,8 @@ import { Drawing } from '../../../../cartography/models/drawing';
 import { EllipseElement } from '../../../../cartography/models/drawings/ellipse-element';
 import { LineElement } from '../../../../cartography/models/drawings/line-element';
 import { RectElement } from '../../../../cartography/models/drawings/rect-element';
+import { Controller } from '../../../../models/controller';
 import { Project } from '../../../../models/project';
-import{ Controller } from '../../../../models/controller';
 import { DrawingService } from '../../../../services/drawing.service';
 import { ToasterService } from '../../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
@@ -21,16 +21,18 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   styleUrls: ['./style-editor.component.scss'],
 })
 export class StyleEditorDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   drawing: Drawing;
   element: ElementData;
   formGroup: FormGroup;
-  borderTypes = [ 
-    {value:"none",name:"Solid"}, 
-    {value:"5",name:"Dash"}, 
-    {value:"15",name:"Dot"}, 
-    {value:"5 15",name:"Dash Dot"}
+  borderTypes = [
+    { value: '', name: 'Invisible' },
+    { value: 'none', name: 'Solid' },
+    { value: '5', name: 'Dash' },
+    { value: '15', name: 'Dot' },
+    { value: '5 15', name: 'Dash Dot' },
+    { value: '10 5 5', name: 'Dash Dot Dot' },
   ];
 
   constructor(
@@ -55,7 +57,7 @@ export class StyleEditorDialogComponent implements OnInit {
     if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
       this.element.fill = this.drawing.element.fill;
       this.element.stroke = this.drawing.element.stroke;
-      this.element.stroke_dasharray = this.drawing.element.stroke_dasharray ?? 'none'
+      this.element.stroke_dasharray = this.drawing.element.stroke_dasharray ?? 'none';
       this.element.stroke_width = this.drawing.element.stroke_width;
     } else if (this.drawing.element instanceof LineElement) {
       this.element.stroke = this.drawing.element.stroke;
@@ -74,7 +76,11 @@ export class StyleEditorDialogComponent implements OnInit {
 
   onYesClick() {
     if (this.formGroup.valid) {
-      this.element.stroke_width = this.formGroup.get('borderWidth').value;
+      if (this.element.stroke_dasharray == '') {
+        this.element.stroke_width = 0;
+      } else {
+        this.element.stroke_width = this.formGroup.get('borderWidth').value === 0 ? 2 : this.formGroup.get('borderWidth').value 
+      }
       this.drawing.rotation = this.formGroup.get('rotation').value;
 
       if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
@@ -84,12 +90,12 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke_width = this.element.stroke_width;
       } else if (this.drawing.element instanceof LineElement) {
         this.drawing.element.stroke = this.element.stroke;
-        this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
-        this.drawing.element.stroke_width = this.element.stroke_width;
+        this.drawing.element.stroke_dasharray = this.element.stroke_dasharray === '' ? 'none': this.element.stroke_dasharray ;
+        this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 :this.element.stroke_width;
       }
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
       mapDrawing.element = this.drawing.element;
-      
+
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
       this.drawingService.update(this.controller, this.drawing).subscribe((controllerDrawing: Drawing) => {
