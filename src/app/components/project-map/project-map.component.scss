@@ -382,6 +382,9 @@ g.node text,
 .context-menu-items .mat-menu-item:focus {
   background: none;
 }
+.context-menu-items .mat-menu-item:hover {
+  background-color: rgba(160, 156, 156, 0.795) !important;
+}
 
 .visible {
   display: none;
