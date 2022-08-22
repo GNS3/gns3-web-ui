@@ -29,10 +29,10 @@ export class StyleEditorDialogComponent implements OnInit {
   borderTypes = [
     { value: '', name: 'Invisible' },
     { value: 'none', name: 'Solid' },
-    { value: '5', name: 'Dash' },
-    { value: '15', name: 'Dot' },
-    { value: '5 15', name: 'Dash Dot' },
-    { value: '10 5 5', name: 'Dash Dot Dot' },
+    { value: '5', name: 'Dot' },
+    { value: '15', name: 'Dash' },
+    { value: '15 5', name: 'Dash Dot' },
+    { value: '15 5 5', name: 'Dash Dot Dot' },
   ];
 
   constructor(
