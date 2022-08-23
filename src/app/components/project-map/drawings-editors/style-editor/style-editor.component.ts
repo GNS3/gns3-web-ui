@@ -28,10 +28,10 @@ export class StyleEditorDialogComponent implements OnInit {
   formGroup: FormGroup;
   borderTypes = [
     { value: 'none', name: 'Solid' },
+    { value: '15 3', name: 'Dash' },
     { value: '5', name: 'Dot' },
-    { value: '15', name: 'Dash' },
-    { value: '15 5', name: 'Dash Dot' },
-    { value: '15 5 5', name: 'Dash Dot Dot' },
+    { value: '15 2 7 2', name: 'Dash Dot' },
+    { value: '15 2 7 2 7 2', name: 'Dash Dot Dot' },
     { value: '', name: 'No border' },
   ];
 
@@ -79,7 +79,8 @@ export class StyleEditorDialogComponent implements OnInit {
       if (this.element.stroke_dasharray == '') {
         this.element.stroke_width = 0;
       } else {
-        this.element.stroke_width = this.formGroup.get('borderWidth').value === 0 ? 2 : this.formGroup.get('borderWidth').value 
+        this.element.stroke_width =
+          this.formGroup.get('borderWidth').value === 0 ? 2 : this.formGroup.get('borderWidth').value;
       }
       this.drawing.rotation = this.formGroup.get('rotation').value;
 
@@ -90,8 +91,9 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke_width = this.element.stroke_width;
       } else if (this.drawing.element instanceof LineElement) {
         this.drawing.element.stroke = this.element.stroke;
-        this.drawing.element.stroke_dasharray = this.element.stroke_dasharray === '' ? 'none': this.element.stroke_dasharray ;
-        this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 :this.element.stroke_width;
+        this.drawing.element.stroke_dasharray =
+          this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
+        this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
       }
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
       mapDrawing.element = this.drawing.element;
