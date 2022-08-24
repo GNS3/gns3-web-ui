@@ -28,12 +28,12 @@ export class StyleEditorDialogComponent implements OnInit {
   element: ElementData;
   formGroup: FormGroup;
   borderTypes = [
-    {qt:'none', value: 'none', name: 'Solid' },
-    {qt:'10, 2', value: '25, 25', name: 'Dash' },
-    {qt:'4, 2', value: '5, 25', name: 'Dot' },
-    {qt:'5, 5, 1, 5', value: '5, 25, 25', name: 'Dash Dot' },
-    {qt:'5, 2, 5, 2, 5', value: '25, 25, 5, 25, 5', name: 'Dash Dot Dot' },
-    {qt:'', value: '', name: 'No border' },
+    { qt: 'none', value: 'none', name: 'Solid' },
+    { qt: '10, 2', value: '25, 25', name: 'Dash' },
+    { qt: '4, 2', value: '5, 25', name: 'Dot' },
+    { qt: '5, 5, 1, 5', value: '5, 25, 25', name: 'Dash Dot' },
+    { qt: '5, 2, 5, 2, 5', value: '25, 25, 5, 25, 5', name: 'Dash Dot Dot' },
+    { qt: '', value: '', name: 'No border' },
   ];
 
   constructor(
@@ -62,7 +62,7 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.stroke = this.drawing.element.stroke;
       let dasharray_value = this.drawing.element.stroke_dasharray;
       this.borderTypes.map((_) => {
-        if (_.qt == dasharray_value) {
+        if (_.qt == dasharray_value || _.value == dasharray_value) {
           dasharray_find_value = _.value;
         }
       });
@@ -72,7 +72,7 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.stroke = this.drawing.element.stroke;
       let dasharray_value = this.drawing.element.stroke_dasharray;
       this.borderTypes.map((_) => {
-        if (_.qt == dasharray_value) {
+        if (_.qt == dasharray_value || _.value == dasharray_value) {
           dasharray_find_value = _.value;
         }
       });
@@ -102,7 +102,7 @@ export class StyleEditorDialogComponent implements OnInit {
       if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
         this.drawing.element.fill = this.element.fill;
         this.drawing.element.stroke = this.element.stroke;
-        this.drawing.element.stroke_dasharray = this.qtDasharrayFixer.fix(this.element.stroke_dasharray);
+        this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width;
       } else if (this.drawing.element instanceof LineElement) {
         this.drawing.element.stroke = this.element.stroke;
