@@ -14,9 +14,11 @@ export class QtDasharrayFixer {
   };
 
   public fix(dasharray: string): string {
+    if(dasharray || dasharray == '' ){
     if (dasharray in QtDasharrayFixer.MAPPING) {
       return QtDasharrayFixer.MAPPING[dasharray];
     }
     return dasharray;
   }
+}
 }
