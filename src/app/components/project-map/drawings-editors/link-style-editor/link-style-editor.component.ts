@@ -21,7 +21,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   project: Project;
   link: Link;
   formGroup: FormGroup;
-  borderTypes = ["Solid", "Dash", "Dot", "Dash Dot"];
+  borderTypes = ["Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
 
   constructor(
     public dialogRef: MatDialogRef<LinkStyleEditorDialogComponent>,
@@ -71,8 +71,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       this.linkService.updateLinkStyle(this.controller, this.link).subscribe((link) => {
         this.linksDataSource.update(link);
         this.linksEventSource.edited.next(this.linkToMapLink.convert(link));
-        location.reload() 
-        // we add this code/line for reload the entire page because single graph/link style is not updated automatically. 
+        location.reload()
+        // we add this code/line for reload the entire page because single graph/link style is not updated automatically.
         // this.toasterService.success("Link updated");
         this.dialogRef.close();
       });
