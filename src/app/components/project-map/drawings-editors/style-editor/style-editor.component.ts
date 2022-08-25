@@ -60,13 +60,13 @@ export class StyleEditorDialogComponent implements OnInit {
     if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
       this.element.fill = this.drawing.element.fill;
       this.element.stroke = this.drawing.element.stroke;
-      let dasharray_value = this.drawing.element.stroke_dasharray;
+      let dasharray_value = this.drawing.element.stroke_dasharray ?? 'none';
       this.borderTypes.map((_) => {
         if (_.qt == dasharray_value || _.value == dasharray_value) {
           dasharray_find_value = _.value;
         }
       });
-      this.element.stroke_dasharray = dasharray_find_value ?? 'none';
+      this.element.stroke_dasharray = dasharray_find_value;
       this.element.stroke_width = this.drawing.element.stroke_width;
     } else if (this.drawing.element instanceof LineElement) {
       this.element.stroke = this.drawing.element.stroke;
