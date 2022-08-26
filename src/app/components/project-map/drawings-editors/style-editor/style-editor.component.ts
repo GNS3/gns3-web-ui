@@ -59,27 +59,13 @@ export class StyleEditorDialogComponent implements OnInit {
     this.element = new ElementData();
     if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
       this.element.fill = this.drawing.element.fill;
-      this.element.stroke = this.drawing.element.stroke;
-      let dasharray_value =
-        this.drawing.element.stroke_dasharray ??
-        this.drawing.element.stroke_width ??
-        (this.drawing.element.stroke_width == undefined || this.drawing.element.stroke_width == 0 ? '' : 'none');
-      this.borderTypes.map((_) => {
-        if (_.qt == dasharray_value || _.value == dasharray_value) {
-          dasharray_find_value = _.value;
-        }
-      });
-      this.element.stroke_dasharray = dasharray_find_value;
+      this.element.stroke = this.drawing.element.stroke;  
+      console.log(this.drawing.element.stroke_dasharray, this.drawing.element.stroke_width)
+      this.element.stroke_dasharray = (this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined ) ? '': this.drawing.element.stroke_dasharray ?? 'none' ;
       this.element.stroke_width = this.drawing.element.stroke_width;
     } else if (this.drawing.element instanceof LineElement) {
       this.element.stroke = this.drawing.element.stroke;
-      let dasharray_value = this.drawing.element.stroke_dasharray;
-      this.borderTypes.map((_) => {
-        if (_.qt == dasharray_value || _.value == dasharray_value) {
-          dasharray_find_value = _.value;
-        }
-      });
-      this.element.stroke_dasharray = dasharray_find_value ?? 'none';
+      this.element.stroke_dasharray = (this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined ) ? '': this.drawing.element.stroke_dasharray ?? 'none' ;
       this.element.stroke_width = this.drawing.element.stroke_width;
     }
 
@@ -104,13 +90,19 @@ export class StyleEditorDialogComponent implements OnInit {
 
       if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
         this.drawing.element.fill = this.element.fill;
-        this.drawing.element.stroke = this.element.stroke;
+        this.drawing.element.stroke = this.element.stroke ?? "#000000";
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width;
       } else if (this.drawing.element instanceof LineElement) {
+        if (this.element.stroke_dasharray != '') {
+          this.drawing.element.stroke = this.element.stroke ?? "#000000";
+          this.drawing.element.stroke_dasharray =  this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
+          this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;  
+        } else {
+          this.toasterService.warning(`No border style line element not supported`);
+        }
         this.drawing.element.stroke = this.element.stroke;
-        this.drawing.element.stroke_dasharray =
-          this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
+        this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
       }
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
