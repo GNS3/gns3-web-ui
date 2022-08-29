@@ -160,8 +160,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   public changeLockValue() {
     this.isLocked = !this.isLocked;
     this.mapSettingsService.changeMapLockValue(this.isLocked);
-  }
 
+  }
   public uploadImageFile(event) {
     this.readImageFile(event.target);
   }

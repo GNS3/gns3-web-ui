@@ -139,6 +139,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild('topologySummaryContainer', { read: ViewContainerRef }) topologySummaryContainer: ViewContainerRef;
 
   private projectMapSubscription: Subscription = new Subscription();
+  private mapSettingsSubscription: Subscription;
+  private isMapLocked: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -216,6 +218,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.themeService.getActualTheme() === 'light'
         ? (this.isLightThemeEnabled = true)
         : (this.isLightThemeEnabled = false);
+    });
+
+    this.mapSettingsSubscription = this.mapSettingsService.isMapLocked.subscribe((value) => {
+      this.isMapLocked = value;
+      this.all_lock_Nodes()
+      console.log('lock value---',this.isMapLocked)
+    });  
+  }
+
+  all_lock_Nodes(){
+    this.nodes.forEach((node) => {
+      node.locked = this.isMapLocked;
+        this.nodesDataSource.update(node);
+    });
+      this.drawings.forEach((drawing) => {
+      drawing.locked = !drawing.locked;
+        this.drawingsDataSource.update(drawing);
     });
   }
 

@@ -52,8 +52,8 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
 
     this.mapSettingsSubscription = this.mapSettingsService.isMapLocked.subscribe((value) => {
       this.isMapLocked = value;
+      console.log('locl value---',this.isMapLocked)
     });
-
     this.start = merge(
       this.nodesWidget.draggable.start,
       this.drawingsWidget.draggable.start,
