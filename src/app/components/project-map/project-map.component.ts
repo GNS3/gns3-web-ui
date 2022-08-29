@@ -223,7 +223,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapSettingsSubscription = this.mapSettingsService.isMapLocked.subscribe((value) => {
       this.isMapLocked = value;
       this.all_lock_Nodes()
-      console.log('lock value---',this.isMapLocked)
     });  
   }
 
