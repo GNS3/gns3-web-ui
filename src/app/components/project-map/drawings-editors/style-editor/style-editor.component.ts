@@ -31,8 +31,8 @@ export class StyleEditorDialogComponent implements OnInit {
     { qt: 'none', value: 'none', name: 'Solid' },
     { qt: '10, 2', value: '25, 25', name: 'Dash' },
     { qt: '4, 2', value: '5, 25', name: 'Dot' },
-    { qt: '5, 5, 1, 5', value: '5, 25, 25', name: 'Dash Dot' },
-    { qt: '5, 2, 5, 2, 5', value: '25, 25, 5, 25, 5', name: 'Dash Dot Dot' },
+    { qt: '12, 3, 5, 3', value: '5, 25, 25', name: 'Dash Dot' },
+    { qt: '12, 3, 5, 3, 5, 3', value: '25, 25, 5, 25, 5', name: 'Dash Dot Dot' },
     { qt: '', value: '', name: 'No border' },
   ];
 
@@ -59,7 +59,7 @@ export class StyleEditorDialogComponent implements OnInit {
     this.element = new ElementData();
     if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
       this.element.fill = this.drawing.element.fill;
-      this.element.stroke = this.drawing.element.stroke;  
+      this.element.stroke = this.drawing.element.stroke;
       console.log(this.drawing.element.stroke_dasharray, this.drawing.element.stroke_width)
       this.element.stroke_dasharray = (this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined ) ? '': this.drawing.element.stroke_dasharray ?? 'none' ;
       this.element.stroke_width = this.drawing.element.stroke_width;
@@ -97,7 +97,7 @@ export class StyleEditorDialogComponent implements OnInit {
         if (this.element.stroke_dasharray != '') {
           this.drawing.element.stroke = this.element.stroke ?? "#000000";
           this.drawing.element.stroke_dasharray =  this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
-          this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;  
+          this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
         } else {
           this.toasterService.warning(`No border style line element not supported`);
         }

@@ -9,8 +9,8 @@ export class QtDasharrayFixer {
   static MAPPING = {
     '25, 25': '10, 2', // Dash
     '5, 25': '4, 2', // Dot
-    '5, 25, 25': '5, 5, 1, 5', // Dash Dot
-    '25, 25, 5, 25, 5': '5, 2, 5, 2, 5', // Dash Dot Dot
+    '5, 25, 25': '12, 3, 5, 3', // Dash Dot
+    '25, 25, 5, 25, 5': '12, 3, 5, 3, 5, 3', // Dash Dot Dot
   };
 
   public fix(dasharray: string): string {
