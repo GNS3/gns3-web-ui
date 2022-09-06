@@ -3,16 +3,17 @@ import { DrawingsDataSource } from '../../../../../cartography/datasources/drawi
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodeService } from '../../../../../services/node.service';
+import { ProjectService } from '../../../../../services/project.service';
 
 @Component({
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html',
 })
 export class LockActionComponent implements OnChanges {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   command: string;
@@ -21,7 +22,8 @@ export class LockActionComponent implements OnChanges {
     private nodesDataSource: NodesDataSource,
     private drawingsDataSource: DrawingsDataSource,
     private nodeService: NodeService,
-    private drawingService: DrawingService
+    private drawingService: DrawingService,
+    private projectService: ProjectService
   ) {}
 
   ngOnChanges() {
@@ -34,19 +36,20 @@ export class LockActionComponent implements OnChanges {
     }
   }
 
-  lock() {
-    this.nodes.forEach((node) => {
+  async lock() {
+   await this.nodes.forEach((node) => {
       node.locked = !node.locked;
       this.nodeService.updateNode(this.controller, node).subscribe((node) => {
         this.nodesDataSource.update(node);
       });
     });
 
-    this.drawings.forEach((drawing) => {
+   await this.drawings.forEach((drawing) => {
       drawing.locked = !drawing.locked;
       this.drawingService.update(this.controller, drawing).subscribe((drawing) => {
         this.drawingsDataSource.update(drawing);
       });
     });
+    this.projectService.projectUpdateLockIcon()
   }
 }

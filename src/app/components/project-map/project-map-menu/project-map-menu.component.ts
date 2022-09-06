@@ -1,17 +1,24 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { NodeService } from '../../../services/node.service';
 import { select } from 'd3-selection';
+import { Subscription } from 'rxjs';
 import * as svg from 'save-svg-as-png';
 import downloadSvg from 'svg-crowbar';
+import { Drawing } from '../../../cartography/models/drawing';
+import { Node } from '../../../cartography/models/node';
+import { Controller } from '../../../models/controller';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 import { MapSettingsService } from '../../../services/mapsettings.service';
+import { ProjectService } from '../../../services/project.service';
 import { SymbolService } from '../../../services/symbol.service';
 import { ThemeService } from '../../../services/theme.service';
 import { ToolsService } from '../../../services/tools.service';
 import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
-
+import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
+import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 @Component({
   selector: 'app-project-map-menu',
   templateUrl: './project-map-menu.component.html',
@@ -20,9 +27,12 @@ import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/scre
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   @Input() project: Project;
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
+  private nodes: Node[] = [];
+  private drawing: Drawing[] = [];
 
   public selectedDrawing: string;
+  public lock: string = 'lock_open';
   public drawTools = {
     isRectangleChosen: false,
     isEllipseChosen: false,
@@ -31,20 +41,30 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   };
   public isLocked: boolean = false;
   public isLightThemeEnabled: boolean = false;
-
+  private projectSubscription: Subscription;
   constructor(
     private toolsService: ToolsService,
     private mapSettingsService: MapSettingsService,
     private drawingService: DrawingService,
     private symbolService: SymbolService,
     private dialog: MatDialog,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private projectServices: ProjectService,
+    private nodeService : NodeService,
+    private nodesDataSource: NodesDataSource,
+    private drawingsDataSource: DrawingsDataSource,
   ) {}
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
+    this.projectSubscription = this.projectServices.projectLockIconSubject.subscribe((isRedraw: boolean) => {
+      if (isRedraw) {
+        this.getAllNodesAndDrawingStatus();
+      }
+    });
+    this.getAllNodesAndDrawingStatus();
   }
 
   getCssClassForIcon(type: string) {
@@ -104,11 +124,15 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public addDrawing(selectedObject: string) {
-    if ((selectedObject === 'rectangle' && this.drawTools.isRectangleChosen) || (selectedObject === 'ellipse' && this.drawTools.isEllipseChosen) ||
-    (selectedObject === 'line' && this.drawTools.isLineChosen) || (selectedObject === 'text' && this.drawTools.isTextChosen)) {
-      document.documentElement.style.cursor = "default";
+    if (
+      (selectedObject === 'rectangle' && this.drawTools.isRectangleChosen) ||
+      (selectedObject === 'ellipse' && this.drawTools.isEllipseChosen) ||
+      (selectedObject === 'line' && this.drawTools.isLineChosen) ||
+      (selectedObject === 'text' && this.drawTools.isTextChosen)
+    ) {
+      document.documentElement.style.cursor = 'default';
     } else {
-      document.documentElement.style.cursor = "crosshair";
+      document.documentElement.style.cursor = 'crosshair';
     }
 
     switch (selectedObject) {
@@ -147,8 +171,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public resetDrawToolChoice() {
-    document.documentElement.style.cursor = "default";
-
+    document.documentElement.style.cursor = 'default';
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
@@ -156,10 +179,70 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.selectedDrawing = '';
     this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
   }
+  getAllNodesAndDrawingStatus() {
+   this.projectServices.getProjectStatus(this.controller,this.project.project_id).subscribe((status)=>{
+     if (status) {
+          this.isLocked = true;
+          this.lock = 'lock';
+        } else {
+          this.isLocked = false;
+          this.lock = 'lock_open';
+        }
+   })
+    this.projectServices.nodes(this.controller, this.project.project_id).subscribe((response) => {
+      this.nodes = response;
+      this.nodes.forEach((node) => {
+        this.nodeService.updateNode(this.controller, node).subscribe((node) => {
+          this.nodesDataSource.update(node);
+        });
+      });
+    });
 
+    this.projectServices.drawings(this.controller, this.project.project_id).subscribe((response) => {
+      this.drawing = response;
+      this.drawing.forEach((drawing) => {
+        this.drawingService.update(this.controller, drawing).subscribe((drawing) => {
+          this.drawingsDataSource.update(drawing);
+        });
+      });
+    });
+  }
+  
   public changeLockValue() {
     this.isLocked = !this.isLocked;
-    this.mapSettingsService.changeMapLockValue(this.isLocked);
+    const dialogRef = this.dialog.open(ProjectMapLockConfirmationDialogComponent, {
+      width: '500px',
+      maxHeight: '200px',
+      autoFocus: false,
+      disableClose: true,
+      data: { isAction: this.isLocked, actionType: this.isLocked == true ? 'Lock' : 'Unlock' },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmAction_result) => {
+      if (confirmAction_result && confirmAction_result != '') {
+        if (confirmAction_result.actionType == 'Lock' && confirmAction_result.isAction) {
+          this.lockAllNode();
+        } else {
+          this.unlockAllNode();
+        }
+        this.mapSettingsService.changeMapLockValue(this.isLocked);
+      } else {
+      }
+    });
+  }
+
+  lockAllNode() {
+    this.lock = 'lock';
+    this.drawingService.lockAllNodes(this.controller, this.project).subscribe((res) => {
+      this.getAllNodesAndDrawingStatus();
+    });
+  }
+
+  unlockAllNode() {
+    this.lock = 'lock_open';
+    this.drawingService.unLockAllNodes(this.controller, this.project).subscribe((res) => {
+      this.getAllNodesAndDrawingStatus();
+    });
   }
 
   public uploadImageFile(event) {
@@ -190,5 +273,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
                 width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    // this.projectSubscription.unsubscribe();
+  }
 }

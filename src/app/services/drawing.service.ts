@@ -83,4 +83,13 @@ export class DrawingService {
   delete(controller:Controller , drawing: Drawing) {
     return this.httpController.delete<Drawing>(controller, `/projects/${drawing.project_id}/drawings/${drawing.drawing_id}`);
   }
+
+  lockAllNodes(controller:Controller,project:Project){
+    return this.httpController.post(controller, `/projects/${project.project_id}/lock`,{});
+
+  }
+  unLockAllNodes(controller:Controller,project:Project){
+    return this.httpController.post(controller, `/projects/${project.project_id}/unlock`,{});
+
+  }
 }
