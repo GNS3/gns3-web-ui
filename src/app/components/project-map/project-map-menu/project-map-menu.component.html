@@ -86,7 +86,7 @@
   class="menu-button"
   (click)="changeLockValue()"
 >
-  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">lock</mat-icon>
+  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">{{lock}}</mat-icon>
 </button>
 <button
   matTooltip="Take a screenshot"

@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ProjectService } from '../../../services/project.service';
 import { ElectronService } from 'ngx-electron';
 import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
 import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
@@ -15,8 +16,14 @@ import { MapSettingsService } from '../../../services/mapsettings.service';
 import { SymbolService } from '../../../services/symbol.service';
 import { ToolsService } from '../../../services/tools.service';
 import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
-import { MockedDrawingService } from '../project-map.component.spec';
+import { MockedDrawingService,MockedDrawingsDataSource } from '../project-map.component.spec';
 import { ProjectMapMenuComponent } from './project-map-menu.component';
+import { MockedProjectService } from '../../../services/project.service.spec';
+import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
+import { NodeService } from '../../../services/node.service';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
+import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 
 describe('ProjectMapMenuComponent', () => {
   let component: ProjectMapMenuComponent;
@@ -24,6 +31,11 @@ describe('ProjectMapMenuComponent', () => {
   let drawingService = new MockedDrawingService();
   let mapSettingService = new MapSettingsService();
   let mockedSymbolService = new MockedSymbolService();
+  let mockedProjectService: MockedProjectService = new MockedProjectService();
+  let mockedNodeService: MockedNodeService = new MockedNodeService();
+  let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
+  let mockedDrawingsDataSource = new MockedDrawingsDataSource();
+  let mockedDrawingsEventSource = new DrawingsEventSource();
 
   beforeEach(async() => {
    await TestBed.configureTestingModule({
@@ -38,9 +50,14 @@ describe('ProjectMapMenuComponent', () => {
       ],
       providers: [
         { provide: DrawingService, useValue: drawingService },
-        { provide: ToolsService },
+        { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
+        { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
+        { provide: ProjectService, useValue: mockedProjectService },
+        { provide: ToolsService, useClass: ToolsService },
         { provide: MapSettingsService, useValue: mapSettingService },
         { provide: SymbolService, useValue: mockedSymbolService },
+        { provide: NodeService, useValue: mockedNodeService },
+        { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: ElectronService },
       ],
       declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
@@ -77,9 +94,9 @@ describe('ProjectMapMenuComponent', () => {
     spyOn(mapSettingService, 'changeMapLockValue');
 
     component.changeLockValue();
-    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);;
 
     component.changeLockValue();
-    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);;
   });
 });

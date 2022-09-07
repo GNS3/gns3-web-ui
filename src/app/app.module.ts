@@ -323,6 +323,7 @@ import { UploadingProcessbarComponent } from './common/uploading-processbar/uplo
 import { ExportPortableProjectComponent } from './components/export-portable-project/export-portable-project.component';
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
+import { ProjectMapLockConfirmationDialogComponent } from './components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -561,6 +562,7 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
     ExportPortableProjectComponent,
     NodesMenuConfirmationDialogComponent,
     ConfirmationDeleteAllProjectsComponent,
+    ProjectMapLockConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
