@@ -25,7 +25,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 
-fdescribe('ProjectMapMenuComponent', () => {
+describe('ProjectMapMenuComponent', () => {
   let component: ProjectMapMenuComponent;
   let fixture: ComponentFixture<ProjectMapMenuComponent>;
   let drawingService = new MockedDrawingService();
@@ -94,9 +94,9 @@ fdescribe('ProjectMapMenuComponent', () => {
     spyOn(mapSettingService, 'changeMapLockValue');
 
     component.changeLockValue();
-    expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);;
 
     component.changeLockValue();
-    expect(mapSettingService.changeMapLockValue).toHaveBeenCalled();
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);;
   });
 });

@@ -210,6 +210,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   
   public changeLockValue() {
     this.isLocked = !this.isLocked;
+    this.mapSettingsService.changeMapLockValue(this.isLocked);
     const dialogRef = this.dialog.open(ProjectMapLockConfirmationDialogComponent, {
       width: '500px',
       maxHeight: '200px',
@@ -225,7 +226,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         } else {
           this.unlockAllNode();
         }
-        this.mapSettingsService.changeMapLockValue(this.isLocked);
       } else {
       }
     });
