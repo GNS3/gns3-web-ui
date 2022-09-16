@@ -12,7 +12,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ExportPortableProjectComponent } from '../../components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
 import { from, Observable, Subscription } from 'rxjs';
@@ -59,11 +58,13 @@ import { EthernetLinkWidget } from '../../cartography/widgets/links/ethernet-lin
 import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { ProgressService } from '../../common/progress/progress.service';
+import { ExportPortableProjectComponent } from '../../components/export-portable-project/export-portable-project.component';
 import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
+import { Controller } from '../../models/controller';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
 import { Symbol } from '../../models/symbol';
+import { ControllerService } from '../../services/controller.service';
 import { DrawingService } from '../../services/drawing.service';
 import { MapScaleService } from '../../services/mapScale.service';
 import { MapSettingsService } from '../../services/mapsettings.service';
@@ -72,7 +73,6 @@ import { NodeConsoleService } from '../../services/nodeConsole.service';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectService } from '../../services/project.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ControllerService } from '../../services/controller.service';
 import { Settings, SettingsService } from '../../services/settings.service';
 import { SymbolService } from '../../services/symbol.service';
 import { ThemeService } from '../../services/theme.service';
@@ -104,7 +104,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
   public project: Project;
-  public controller:Controller ;
+  public controller: Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -147,7 +147,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeService: NodeService,
     public drawingService: DrawingService,
     private progressService: ProgressService,
-    private projectWebServiceHandler: ProjectWebServiceHandler,
+    public projectWebServiceHandler: ProjectWebServiceHandler,
     private mapChangeDetectorRef: MapChangeDetectorRef,
     private nodeWidget: NodeWidget,
     private drawingsWidget: DrawingsWidget,
@@ -333,7 +333,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       from(this.controllerService.get(controller_id))
         .pipe(
-          mergeMap((controller:Controller ) => {
+          mergeMap((controller: Controller) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
             return this.projectService.get(controller, paramMap.get('project_id')).pipe(
@@ -482,14 +482,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpProjectWS(project: Project) {
-    this.projectws = new WebSocket(this.notificationService.projectNotificationsPath(this.controller, project.project_id));
+    this.projectws = new WebSocket(
+      this.notificationService.projectNotificationsPath(this.controller, project.project_id)
+    );
 
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
 
     this.projectws.onerror = (event: MessageEvent) => {
-      this.toasterService.error(`Connection to host lost. Error: ${event.data}`);
+      // this.toasterService.error(`Connection to host lost. Error: ${event.data}`);
+      this.getHttpControlNotifications();
     };
   }
 
@@ -963,7 +966,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       uuid = projectId;
     });
 
-    dialogRef.afterClosed().subscribe((isCancel:boolean) => {
+    dialogRef.afterClosed().subscribe((isCancel: boolean) => {
       subscription.unsubscribe();
       if (uuid && !isCancel) {
         this.bottomSheet.open(NavigationDialogComponent);
@@ -998,14 +1001,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.exportPortableProjectDialog();
     }
   }
-  
+
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
       width: '700px',
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: {controllerDetails:this.controller,projectDetails:this.project},
+      data: { controllerDetails: this.controller, projectDetails: this.project },
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
@@ -1084,6 +1087,70 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.project = this.project;
+  }
+
+  private async getHttpControlNotifications(): Promise<void> {
+    let url = this.notificationService.getPathControllerNotification(this.controller);
+    var gns3Headers = new Headers();
+    gns3Headers.append('Authorization', `Bearer ${this.controller.authToken}`);
+    var requestOptions = {
+      headers: gns3Headers,
+    };
+    const response = await fetch(url, requestOptions);
+    if (response.body == null) {
+      throw new Error('Http Notifications Failed');
+    }
+    this.getHttpProjectNotifications();
+    const reader = response.body.getReader();
+    const cd = this.cd;
+    const controllerStream = async () => {
+      const { done, value } = await reader.read();
+      const textDecoder = new TextDecoder();
+      if (done) {
+        return;
+      }
+      const notificationValue = textDecoder.decode(value);
+      const validStreamJson = notificationValue
+        .replace('[{', '{')
+        .replace('},', '}')
+        .replace(',{', '{')
+        .replace('}]', '}');
+      cd.markForCheck();
+      await controllerStream();
+    };
+    await controllerStream();
+  }
+  private async getHttpProjectNotifications(): Promise<void> {
+    let url = this.notificationService.getPathProjectNotification(this.controller, this.project.project_id);
+    var gns3Headers = new Headers();
+    gns3Headers.append('Authorization', `Bearer ${this.controller.authToken}`);
+    var requestOptions = {
+      headers: gns3Headers,
+    };
+    const response = await fetch(url, requestOptions);
+    if (response.body == null) {
+      throw new Error('Http Notifications Failed');
+    }
+    const reader = response.body.getReader();
+    const cd = this.cd;
+    const projectReadStream = async () => {
+      const { done, value } = await reader.read();
+      const textDecoder = new TextDecoder();
+      if (done) {
+        return;
+      }
+      const projectNotificationValue = textDecoder.decode(value);
+      const trimmedValue = projectNotificationValue
+        .replace('[{', '{')
+        .replace('},', '}')
+        .replace(',{', '{')
+        .replace('}]', '}');
+      let data = JSON.stringify(JSON.parse(trimmedValue));
+      this.projectWebServiceHandler.handleMessage(JSON.parse(data));
+      cd.markForCheck();
+      await projectReadStream();
+    };
+    await projectReadStream();
   }
 
   public ngOnDestroy() {
