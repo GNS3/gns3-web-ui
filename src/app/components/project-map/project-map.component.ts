@@ -491,7 +491,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     };
 
     this.projectws.onerror = (event: MessageEvent) => {
-      // this.toasterService.error(`Connection to host lost. Error: ${event.data}`);
+      this.toasterService.error(`We are facing issue in websocket. So we are switching to Http stream.`);
+      // Error: ${event.data}
+      // http stream notifications call
       this.getHttpControlNotifications();
     };
   }
