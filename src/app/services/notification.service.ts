@@ -18,7 +18,6 @@ export class NotificationService {
     if (controller.protocol === 'https:') {
       protocol = 'wss';
     }
-
     return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${controller.authToken}`;
   }
   getPathControllerNotification(controller :Controller){

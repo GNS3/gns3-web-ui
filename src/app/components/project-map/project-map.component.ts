@@ -474,7 +474,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks();
-        this.setUpProjectWS(project);
+        this.setUpWS() // A method for controller notications
+        this.setUpProjectWS(project); // A method for project notications
 
         this.progressService.deactivate();
       });
@@ -489,17 +490,24 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
-
     this.projectws.onerror = (event: MessageEvent) => {
       this.toasterService.error(`We are facing issue in websocket. So we are switching to Http stream.`);
       // Error: ${event.data}
       // http stream notifications call
-      this.getHttpControlNotifications();
+      this.getHttpProjectNotifications();
     };
   }
 
   setUpWS() {
     this.ws = new WebSocket(this.notificationService.notificationsPath(this.controller));
+    this.ws.onmessage = (event: MessageEvent) => {
+      this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
+    };
+    this.ws.onerror = (event: MessageEvent) => {
+      this.toasterService.error(`We are facing issue in websocket. So we are switching to Http stream.`);
+      // http stream cantroller notifications call
+      this.getHttpControlNotifications();
+    };
   }
 
   setUpMapCallbacks() {
@@ -1102,7 +1110,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (response.body == null) {
       throw new Error('Http Notifications Failed');
     }
-    this.getHttpProjectNotifications();
     const reader = response.body.getReader();
     const cd = this.cd;
     const controllerStream = async () => {
@@ -1117,6 +1124,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .replace('},', '}')
         .replace(',{', '{')
         .replace('}]', '}');
+      let data = JSON.stringify(validStreamJson);
+      this.projectWebServiceHandler.handleMessage(JSON.parse(data));
       cd.markForCheck();
       await controllerStream();
     };
