@@ -491,7 +491,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
     this.projectws.onerror = (event: MessageEvent) => {
-      this.toasterService.error(`We are facing issue in websocket. So we are switching to Http stream.`);
+      this.toasterService.error(`Cannot connect to the WebSocket for this project, switching to an HTTP stream`);
       // Error: ${event.data}
       // http stream notifications call
       this.getHttpProjectNotifications();
