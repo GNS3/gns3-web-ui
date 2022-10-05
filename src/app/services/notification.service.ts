@@ -4,7 +4,8 @@ import { Controller } from '../models/controller';
 
 @Injectable()
 export class NotificationService {
-  notificationsPath(controller: Controller): string {
+
+  controllerNotificationsPath(controller: Controller): string {
     let protocol: string = 'ws';
     if (controller.protocol === 'https:') {
       protocol = 'wss';
@@ -20,9 +21,11 @@ export class NotificationService {
     }
     return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${controller.authToken}`;
   }
+
   getPathControllerNotification(controller :Controller){
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/notifications`;
   }
+
   getPathProjectNotification(controller :Controller, project_id: string){
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications`;
   }

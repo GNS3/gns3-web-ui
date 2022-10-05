@@ -474,8 +474,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks();
-        this.setUpWS() // A method for controller notications
-        this.setUpProjectWS(project); // A method for project notications
+        this.setUpControllerWS() // A method for controller notifications
+        this.setUpProjectWS(project); // A method for project notifications
 
         this.progressService.deactivate();
       });
@@ -491,22 +491,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
     this.projectws.onerror = (event: MessageEvent) => {
-      this.toasterService.error(`Cannot connect to the WebSocket for this project, switching to an HTTP stream`);
-      // Error: ${event.data}
-      // http stream notifications call
+      this.toasterService.error(`Cannot connect to the project WebSocket, switching to an HTTP stream.`);
+      // http stream project notifications call
       this.getHttpProjectNotifications();
     };
   }
 
-  setUpWS() {
-    this.ws = new WebSocket(this.notificationService.notificationsPath(this.controller));
+  setUpControllerWS() {
+    this.ws = new WebSocket(this.notificationService.controllerNotificationsPath(this.controller));
     this.ws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
     };
     this.ws.onerror = (event: MessageEvent) => {
-      this.toasterService.error(`We are facing issue in websocket. So we are switching to Http stream.`);
-      // http stream cantroller notifications call
-      this.getHttpControlNotifications();
+      this.toasterService.error(`Cannot connect to the controller WebSocket, switching to an HTTP stream.`);
+      // http stream controller notifications call
+      this.getHttpControllerNotifications();
     };
   }
 
@@ -1099,7 +1098,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
-  private async getHttpControlNotifications(): Promise<void> {
+  private async getHttpControllerNotifications(): Promise<void> {
     let url = this.notificationService.getPathControllerNotification(this.controller);
     var gns3Headers = new Headers();
     gns3Headers.append('Authorization', `Bearer ${this.controller.authToken}`);
