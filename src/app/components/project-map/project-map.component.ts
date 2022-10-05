@@ -492,8 +492,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     };
     this.projectws.onerror = (event: MessageEvent) => {
       this.toasterService.error(`Cannot connect to the project WebSocket, switching to an HTTP stream.`);
-      // http stream project notifications call
-      this.getHttpProjectNotifications();
+      this.getHttpProjectNotifications(); // http stream project notifications call
     };
   }
 
@@ -504,8 +503,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     };
     this.ws.onerror = (event: MessageEvent) => {
       this.toasterService.error(`Cannot connect to the controller WebSocket, switching to an HTTP stream.`);
-      // http stream controller notifications call
-      this.getHttpControllerNotifications();
+      this.getHttpControllerNotifications(); // http stream controller notifications call
     };
   }
 
@@ -1099,7 +1097,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   private async getHttpControllerNotifications(): Promise<void> {
-    let url = this.notificationService.getPathControllerNotification(this.controller);
+    let url = this.notificationService.getPathControllerNotifications(this.controller);
     var gns3Headers = new Headers();
     gns3Headers.append('Authorization', `Bearer ${this.controller.authToken}`);
     var requestOptions = {
@@ -1111,7 +1109,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
     const reader = response.body.getReader();
     const cd = this.cd;
-    const controllerStream = async () => {
+    const controllerHttpStream = async () => {
       const { done, value } = await reader.read();
       const textDecoder = new TextDecoder();
       if (done) {
@@ -1126,12 +1124,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       let data = JSON.stringify(validStreamJson);
       this.projectWebServiceHandler.handleMessage(JSON.parse(data));
       cd.markForCheck();
-      await controllerStream();
+      await controllerHttpStream();
     };
-    await controllerStream();
+    await controllerHttpStream();
   }
   private async getHttpProjectNotifications(): Promise<void> {
-    let url = this.notificationService.getPathProjectNotification(this.controller, this.project.project_id);
+    let url = this.notificationService.getPathProjectNotifications(this.controller, this.project.project_id);
     var gns3Headers = new Headers();
     gns3Headers.append('Authorization', `Bearer ${this.controller.authToken}`);
     var requestOptions = {
@@ -1143,7 +1141,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
     const reader = response.body.getReader();
     const cd = this.cd;
-    const projectReadStream = async () => {
+    const projectHttpStream = async () => {
       const { done, value } = await reader.read();
       const textDecoder = new TextDecoder();
       if (done) {
@@ -1158,9 +1156,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       let data = JSON.stringify(JSON.parse(trimmedValue));
       this.projectWebServiceHandler.handleMessage(JSON.parse(data));
       cd.markForCheck();
-      await projectReadStream();
+      await projectHttpStream();
     };
-    await projectReadStream();
+    await projectHttpStream();
   }
 
   public ngOnDestroy() {

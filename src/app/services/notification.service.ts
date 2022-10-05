@@ -22,11 +22,11 @@ export class NotificationService {
     return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications/ws?token=${controller.authToken}`;
   }
 
-  getPathControllerNotification(controller :Controller){
+  getPathControllerNotifications(controller :Controller){
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/notifications`;
   }
 
-  getPathProjectNotification(controller :Controller, project_id: string){
+  getPathProjectNotifications(controller :Controller, project_id: string){
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/notifications`;
   }
 }
