@@ -73,5 +73,12 @@ export class ProjectWebServiceHandler {
     if (message.action === 'log.info') {
       this.infoNotificationEmitter.emit(message.event.message);
     }
+    // Controller notification
+    if (message.action === 'template.deleted') {
+      this.infoNotificationEmitter.emit(message.event.message);
+    }
+    if (message.action === 'template.updated') {
+      this.infoNotificationEmitter.emit(message.event.message);
+    }
   }
 }

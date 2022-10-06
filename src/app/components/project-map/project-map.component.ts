@@ -1153,7 +1153,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .replace('},', '}')
         .replace(',{', '{')
         .replace('}]', '}');
-      let data = JSON.stringify(JSON.parse(trimmedValue));
+      let data = JSON.stringify(trimmedValue);
       this.projectWebServiceHandler.handleMessage(JSON.parse(data));
       cd.markForCheck();
       await projectHttpStream();
