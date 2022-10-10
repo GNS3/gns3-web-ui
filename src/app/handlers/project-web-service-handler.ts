@@ -28,6 +28,7 @@ export class ProjectWebServiceHandler {
   ) {}
 
   public handleMessage(message: WebServiceMessage) {
+    console.log('----------------------',message.action)
     if (message.action === 'node.updated') {
       this.nodesDataSource.update(message.event as Node);
       this.nodeNotificationEmitter.emit(message);
@@ -80,5 +81,11 @@ export class ProjectWebServiceHandler {
     if (message.action === 'template.updated') {
       this.infoNotificationEmitter.emit(message.event.message);
     }
+    if (message.action === 'template.added') {
+      this.infoNotificationEmitter.emit(message.event.message);
+    }
+    // if (message.action === 'compute.updated') {
+    //   this.infoNotificationEmitter.emit(message.event.message);
+    // }
   }
 }

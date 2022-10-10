@@ -118,6 +118,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public symbolScaling: boolean = true;
   private instance: ComponentRef<TopologySummaryComponent>;
   // private instance: any
+  private reader: any;
 
   tools = {
     selection: true,
@@ -474,7 +475,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.drawingsDataSource.set(drawings);
 
         this.setUpMapCallbacks();
-        this.setUpControllerWS() // A method for controller notifications
+        this.setUpControllerWS(); // A method for controller notifications
         this.setUpProjectWS(project); // A method for project notifications
 
         this.progressService.deactivate();
@@ -1107,26 +1108,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (response.body == null) {
       throw new Error('Http Notifications Failed');
     }
-    const reader = response.body.getReader();
-    const cd = this.cd;
-    const controllerHttpStream = async () => {
-      const { done, value } = await reader.read();
-      const textDecoder = new TextDecoder();
-      if (done) {
-        return;
-      }
-      const notificationValue = textDecoder.decode(value);
-      const validStreamJson = notificationValue
-        .replace('[{', '{')
-        .replace('},', '}')
-        .replace(',{', '{')
-        .replace('}]', '}');
-      let data = JSON.stringify(validStreamJson);
-      this.projectWebServiceHandler.handleMessage(JSON.parse(data));
-      cd.markForCheck();
-      await controllerHttpStream();
-    };
-    await controllerHttpStream();
+    this.reader = response.body.getReader();
+    this.jsonFormater();
+    await this.jsonFormater();
   }
   private async getHttpProjectNotifications(): Promise<void> {
     let url = this.notificationService.getPathProjectNotifications(this.controller, this.project.project_id);
@@ -1139,26 +1123,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (response.body == null) {
       throw new Error('Http Notifications Failed');
     }
-    const reader = response.body.getReader();
-    const cd = this.cd;
-    const projectHttpStream = async () => {
-      const { done, value } = await reader.read();
-      const textDecoder = new TextDecoder();
-      if (done) {
-        return;
-      }
-      const projectNotificationValue = textDecoder.decode(value);
-      const trimmedValue = projectNotificationValue
-        .replace('[{', '{')
-        .replace('},', '}')
-        .replace(',{', '{')
-        .replace('}]', '}');
-      let data = JSON.stringify(trimmedValue);
-      this.projectWebServiceHandler.handleMessage(JSON.parse(data));
-      cd.markForCheck();
-      await projectHttpStream();
-    };
-    await projectHttpStream();
+    this.reader = response.body.getReader();
+    this.jsonFormater();
+    await this.jsonFormater();
+  }
+
+  jsonFormater = async () => {
+    const { done, value } = await this.reader.read();
+    const textDecoder = new TextDecoder();
+    if (done) {
+      return;
+    }
+    const notificationValue = textDecoder.decode(value);
+    let isJsonValid = this.isJsonString(notificationValue);
+    if (isJsonValid) {
+      this.projectWebServiceHandler.handleMessage(JSON.parse(JSON.parse(JSON.stringify(notificationValue))));
+    }
+    this.cd.markForCheck();
+    await this.jsonFormater();
+  };
+
+  isJsonString(str) {
+    try {
+      JSON.parse(JSON.parse(JSON.stringify(str)));
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
   public ngOnDestroy() {
