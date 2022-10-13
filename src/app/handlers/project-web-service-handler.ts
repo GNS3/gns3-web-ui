@@ -28,7 +28,6 @@ export class ProjectWebServiceHandler {
   ) {}
 
   public handleMessage(message: WebServiceMessage) {
-    console.log('----------------------',message.action)
     if (message.action === 'node.updated') {
       this.nodesDataSource.update(message.event as Node);
       this.nodeNotificationEmitter.emit(message);
