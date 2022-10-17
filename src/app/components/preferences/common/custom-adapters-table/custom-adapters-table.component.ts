@@ -17,6 +17,8 @@ export class CustomAdaptersTableComponent {
     let adapter: CustomAdapter = {
       adapter_number: this.adapters.length,
       adapter_type: this.networkTypes[0],
+      mac_address:null,
+      port_name:null
     };
     this.adapters = this.adapters.concat([adapter]);
   }
