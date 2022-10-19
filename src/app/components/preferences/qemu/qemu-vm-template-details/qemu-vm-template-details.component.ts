@@ -103,12 +103,12 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       this.fillCustomAdapters();
       this.customAdaptersConfigurator.numberOfAdapters = this.qemuTemplate.adapters;
       this.customAdaptersConfigurator.adapters = [];
-      this.qemuTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
+      this.qemuTemplate.custom_adapters.forEach((adapter: CustomAdapter,i) => {
         this.customAdaptersConfigurator.adapters.push({
           adapter_number: adapter.adapter_number,
           adapter_type: adapter.adapter_type,
-          mac_address:adapter.mac_address,
-          port_name:adapter.port_name
+          mac_address:null,
+          port_name:this.qemuTemplate.port_name_format.replace(/[0-9]/g,`${i}`)
         });
       });
     }
@@ -120,18 +120,18 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   }
 
   fillCustomAdapters() {
+
     let copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
     this.qemuTemplate.custom_adapters = [];
-
     for (let i = 0; i < this.qemuTemplate.adapters; i++) {
       if (copyOfAdapters[i]) {
         this.qemuTemplate.custom_adapters.push(copyOfAdapters[i]);
       } else {
         this.qemuTemplate.custom_adapters.push({
           adapter_number: i,
-          adapter_type: 'e1000',
-          mac_address:'',
-          port_name:''
+          adapter_type: this.qemuTemplate.adapter_type,
+          mac_address:null,
+          port_name:this.qemuTemplate.port_name_format.replace(/[0-9]/g,`${i}`)
         });
       }
     }

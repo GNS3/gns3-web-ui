@@ -17,6 +17,7 @@ import { QemuService } from '../../../../services/qemu.service';
 import { ControllerService } from '../../../../services/controller.service';
 import { TemplateMocksService } from '../../../../services/template-mocks.service';
 import { ToasterService } from '../../../../services/toaster.service';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 
 @Component({
   selector: 'app-add-qemu-virtual-machine-template',
@@ -103,6 +104,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.controller = controller;
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
+        debugger
         this.qemuTemplate = qemuTemplate;
       });
 
@@ -164,6 +166,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   addTemplate() {
+    debugger
     if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
       this.qemuTemplate.ram = +this.memoryForm.get('ramMemory').value;
       this.qemuTemplate.platform = this.selectedPlatform;
@@ -175,7 +178,14 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.qemuTemplate.template_id = uuid();
       this.qemuTemplate.name = this.nameForm.get('templateName').value;
       this.qemuTemplate.compute_id = 'local';
-
+      // let adapter: CustomAdapter = {
+      //   adapter_number: this.qemuTemplate.adapters,
+      //   adapter_type:this.qemuTemplate.adapter_type ,
+      //   mac_address:null,
+      //   port_name:this.qemuTemplate.port_name_format
+      // };
+      // this.qemuTemplate.custom_adapters = this.qemuTemplate.custom_adapters.concat([adapter]);
+debugger
       this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();
       });

@@ -110,7 +110,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
           adapter_number: n.adapter_number,
           adapter_type: n.adapter_type,
           mac_address: n.mac_address ??  n.mac_address,
-          port_name: n.port_name ?? this.node.port_name_format.replace('{0}',`${i}`)
+          port_name: n.port_name ?? this.node.port_name_format.replace(/[0-9]/g,`${i}`)
         });
       });
 
