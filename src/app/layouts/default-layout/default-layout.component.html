@@ -1,5 +1,5 @@
 <header>
-  <mat-toolbar color="primary">
+  <mat-toolbar color="primary"  *ngIf="router.url != '/controllers'">
     <button mat-icon-button *ngIf="!isLoginPage && router.url == '/controllers'">
       <mat-icon svgIcon="gns3"></mat-icon>
     </button>
