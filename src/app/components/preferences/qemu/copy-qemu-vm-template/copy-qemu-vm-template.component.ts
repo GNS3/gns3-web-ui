@@ -16,7 +16,6 @@ import { ToasterService } from '../../../../services/toaster.service';
 })
 export class CopyQemuVmTemplateComponent implements OnInit {
   controller:Controller ;
-  qemuBinaries: QemuBinary[] = [];
   templateName: string = '';
   qemuTemplate: QemuTemplate;
   nameForm: FormGroup;

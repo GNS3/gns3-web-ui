@@ -25,7 +25,7 @@ export class ConfigActionComponent {
   @Input() node: Node;
   private conf = {
     autoFocus: false,
-    width: '800px',
+    width: '950px',
     disableClose: true,
   };
   dialogRef;

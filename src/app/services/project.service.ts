@@ -33,6 +33,7 @@ export class ProjectService {
   ];
 
   public projectListSubject = new Subject<boolean>();
+  public projectLockIconSubject = new Subject<boolean>();
   constructor(
     private httpController: HttpController,
     private settingsService: SettingsService,
@@ -144,5 +145,14 @@ export class ProjectService {
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&token=${controller.authToken}`;
 
     }
+  }
+
+getProjectStatus(controller :Controller, project_id: string): Observable<any> {
+  return this.get(controller,`${project_id}/locked`)
+}
+
+
+  projectUpdateLockIcon(){
+    this.projectLockIconSubject.next(true)
   }
 }

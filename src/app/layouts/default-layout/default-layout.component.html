@@ -1,67 +1,53 @@
 <header>
-  <mat-toolbar color="primary">
-    <button mat-icon-button><mat-icon svgIcon="gns3"></mat-icon></button>
+  <mat-toolbar color="primary"  *ngIf="router.url != '/controllers'">
+    <button mat-icon-button *ngIf="!isLoginPage && router.url == '/controllers'">
+      <mat-icon svgIcon="gns3"></mat-icon>
+    </button>
+    <button *ngIf="!isLoginPage && router.url != '/controllers'"  mat-icon-button matTooltip="Open menu" matTooltipClass="custom-tooltip" [matMenuTriggerFor]="mainMenu">
+      <mat-icon svgIcon="gns3"></mat-icon>
+    </button>
 
-    <button mat-button routerLink="/controllers">Controllers</button>
 
     <button *ngIf="!recentlyOpenedProjectId && controllerIdProjectList" mat-button (click)="listProjects()">
       Projects
     </button>
 
-    <button *ngIf="recentlyOpenedProjectId && recentlyOpenedcontrollerId && !isLoginPage" mat-button (click)="backToProject()">
+    <button
+      *ngIf="recentlyOpenedProjectId && recentlyOpenedcontrollerId && !isLoginPage"
+      mat-button
+      (click)="backToProject()"
+    >
       Back to project
     </button>
 
     <span class="fill-space"></span>
 
-    <button mat-button *ngIf="!isLoginPage && router.url !='/controllers'" [matMenuTriggerFor]="menu">
+    <button mat-button *ngIf="!isLoginPage && router.url != '/controllers'" [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
-
+<!-- GNS3 right menu  -->
     <mat-menu #menu="matMenu">
-      <button mat-menu-item
-              [disabled]="!controllerId"
-              [routerLink]="['controller', controllerId, 'systemstatus']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'systemstatus']">
         <mat-icon>info</mat-icon>
         <span>System status</span>
       </button>
-      <button mat-menu-item
-              [disabled]="!controllerId"
-              [routerLink]="['controller', controllerId, 'preferences']">
-        <mat-icon>settings_applications</mat-icon>
-        <span>Template preferences</span>
-      </button>
-      <button mat-menu-item
-              [disabled]="!controllerId"
-              [routerLink]="['controller', controllerId, 'image-manager']">
-
-        <mat-icon>collections</mat-icon>
-        <span>Image manager</span>
-      </button>
-      <button mat-menu-item
-      [disabled]="!controllerId"
-      [routerLink]="['controller', controllerId, 'settings']"
-      >
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'settings']">
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
-      <button mat-menu-item
-              [disabled]="!controllerId"
-              [routerLink]="['controller', controllerId, 'management', 'users']">
+      <button
+        mat-menu-item
+        [disabled]="!controllerId"
+        [routerLink]="['controller', controllerId, 'management', 'users']"
+      >
         <mat-icon>groups</mat-icon>
         <span>Management</span>
       </button>
-      <button mat-menu-item 
-      [disabled]="!controllerId"
-      [routerLink]="['controller', controllerId, 'help']"
-      >
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'help']">
         <mat-icon>help</mat-icon>
         <span>Help</span>
       </button>
-      <button
-        [disabled]="!controllerId"
-        [routerLink]="['/controller', controllerId, 'loggeduser']"
-        mat-menu-item>
+      <button [disabled]="!controllerId" [routerLink]="['/controller', controllerId, 'loggeduser']" mat-menu-item>
         <mat-icon>person</mat-icon>
         <span>User info</span>
       </button>
@@ -72,6 +58,29 @@
       <button mat-menu-item [disabled]="!controllerId" (click)="logout()">
         <mat-icon>highlight_off</mat-icon>
         <span>Logout</span>
+      </button>
+    </mat-menu>
+    <!-- GNS3 left menu -->
+    <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
+      <button mat-menu-item [routerLink]="['/controllers']">
+        <mat-icon>developer_board</mat-icon>
+        <span>Controllers</span>
+      </button>
+      <button mat-menu-item [routerLink]="['/controller', controllerId, 'projects']">
+        <mat-icon>work</mat-icon>
+        <span>Projects</span>
+      </button>
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'preferences']">
+        <mat-icon>settings_applications</mat-icon>
+        <span>Template preferences</span>
+      </button>
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'image-manager']">
+        <mat-icon>collections</mat-icon>
+        <span>Image manager</span>
+      </button>
+      <button mat-menu-item (click)="addNewTemplate()">
+        <mat-icon>control_point</mat-icon>
+        <span>New template</span>
       </button>
     </mat-menu>
   </mat-toolbar>

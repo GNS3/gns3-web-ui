@@ -55,19 +55,20 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field class="form-field">
+          <mat-select placeholder="Platform" [(ngModel)]="qemuTemplate.platform">
+            <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
+              {{ platform }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="form-field">
           <input matInput type="number" [(ngModel)]="qemuTemplate.ram" placeholder="RAM" />
           <span matSuffix>MB</span>
         </mat-form-field>
         <mat-form-field class="form-field">
           <input matInput type="number" [(ngModel)]="qemuTemplate.cpus" placeholder="vCPUs" />
         </mat-form-field>
-        <mat-form-field class="form-field">
-          <mat-select placeholder="Qemu binary" [(ngModel)]="qemuTemplate.qemu_path">
-            <mat-option *ngFor="let binary of binaries" [value]="binary.path">
-              {{ binary.path }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+       
         <mat-form-field class="form-field">
           <mat-select placeholder="Boot priority" [(ngModel)]="qemuTemplate.boot_priority">
             <mat-option *ngFor="let priority of bootPriorities" [value]="priority[1]">
@@ -193,7 +194,7 @@
         </mat-form-field>
         <mat-form-field class="form-field">
           <mat-select placeholder="Type" [(ngModel)]="qemuTemplate.adapter_type">
-            <mat-option *ngFor="let type of networkTypes" [value]="type[0]"> {{ type[1] }} ({{ type[0] }}) </mat-option>
+            <mat-option *ngFor="let type of networkTypes" [value]="type.value">{{type.name}} ({{type.value}}) </mat-option>
           </mat-select>
         </mat-form-field>
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">

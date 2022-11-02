@@ -68,3 +68,19 @@ mat-menu-panel {
   font-size: 12px !important;
   font-family: monospace;
 }
+.mat-tab-body-content {
+  height: 100%;
+  overflow: initial !important;
+}
+.mat-tab-body.mat-tab-body-active {
+ 
+  overflow-y: clip !important;
+
+}
+.mat-tab-label {
+  padding: 0 10px !important;
+  min-width: 152px !important;
+} 
+.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
+  display: none !important;
+}

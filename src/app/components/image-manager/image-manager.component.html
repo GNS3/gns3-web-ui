@@ -30,13 +30,12 @@
               [checked]="selection.isSelected(row)">
             </mat-checkbox>
           </mat-cell>
-
         </ng-container>
 
         <ng-container matColumnDef="filename">
-          <mat-header-cell *matHeaderCellDef class="mat-cell-file-name-width"> File Name </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="mat-cell-file-name-width">
-            <a class="table-link">{{ row.filename }}</a>
+          <mat-header-cell *matHeaderCellDef> File Name </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-list-item role="listitem">{{ row.filename }}</mat-list-item>
           </mat-cell>
         </ng-container>
 

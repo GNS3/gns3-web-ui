@@ -324,6 +324,7 @@ import { ExportPortableProjectComponent } from './components/export-portable-pro
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { APP_BASE_HREF } from '@angular/common';
+import { ProjectMapLockConfirmationDialogComponent } from './components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -562,6 +563,7 @@ import { APP_BASE_HREF } from '@angular/common';
     ExportPortableProjectComponent,
     NodesMenuConfirmationDialogComponent,
     ConfirmationDeleteAllProjectsComponent,
+    ProjectMapLockConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
