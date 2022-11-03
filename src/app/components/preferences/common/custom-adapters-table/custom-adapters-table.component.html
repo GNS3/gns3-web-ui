@@ -1,4 +1,5 @@
-<table class="table" mat-table [dataSource]="adapters">
+{{adapters | json}}
+  <table class="table" mat-table [dataSource]="adapters">
   <ng-container matColumnDef="adapter_number">
     <th mat-header-cell *matHeaderCellDef>Adapter number</th>
     <td mat-cell *matCellDef="let element">Adapter {{ element.adapter_number }}</td>
@@ -6,18 +7,22 @@
 
   <ng-container matColumnDef="port_name">
     <th mat-header-cell *matHeaderCellDef>Port name</th>
-    <td mat-cell *matCellDef="let element">Ethernet {{ element.adapter_number }}</td>
+    <td mat-cell *matCellDef="let element">{{ element.short_name || element.port_name }}</td>
   </ng-container>
 
   <ng-container matColumnDef="adapter_type">
     <th mat-header-cell *matHeaderCellDef>Adapter type</th>
-    <td mat-cell *matCellDef="let element; let i = index">
+    <td mat-cell *matCellDef="let element; let i = index" style="margin-right: 10px;">
       <mat-select placeholder="Type" [(ngModel)]="element.adapter_type">
         <mat-option *ngFor="let type of networkTypes" [value]="type.value">
-          {{ type.name }}
+          {{type.name}} ({{type.value}})
         </mat-option>
       </mat-select>
     </td>
+  </ng-container>
+  <ng-container matColumnDef="mac_address">
+    <th mat-header-cell *matHeaderCellDef>MAC address</th>
+    <td mat-cell *matCellDef="let element">{{ element.mac_address }}</td>
   </ng-container>
 
   <ng-container matColumnDef="actions">

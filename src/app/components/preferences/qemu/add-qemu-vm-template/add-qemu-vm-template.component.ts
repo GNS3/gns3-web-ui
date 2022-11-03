@@ -104,7 +104,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.controller = controller;
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
-        debugger
         this.qemuTemplate = qemuTemplate;
       });
 
@@ -166,7 +165,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
   }
 
   addTemplate() {
-    debugger
     if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
       this.qemuTemplate.ram = +this.memoryForm.get('ramMemory').value;
       this.qemuTemplate.platform = this.selectedPlatform;
@@ -185,7 +183,6 @@ export class AddQemuVmTemplateComponent implements OnInit {
       //   port_name:this.qemuTemplate.port_name_format
       // };
       // this.qemuTemplate.custom_adapters = this.qemuTemplate.custom_adapters.concat([adapter]);
-debugger
       this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();
       });

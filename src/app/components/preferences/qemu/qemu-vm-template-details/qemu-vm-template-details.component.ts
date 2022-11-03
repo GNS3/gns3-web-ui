@@ -108,7 +108,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
           adapter_number: adapter.adapter_number,
           adapter_type: adapter.adapter_type,
           mac_address:null,
-          port_name:this.qemuTemplate.port_name_format.replace(/[0-9]/g,`${i}`)
+          port_name:this.qemuTemplate.port_name_format +'/'+ `${i}`
         });
       });
     }

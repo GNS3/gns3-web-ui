@@ -27,7 +27,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   bootPriorities = [];
   diskInterfaces: string[] = [];
 
-  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
+  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type','mac_address','actions'];
   networkTypes = [];
   qemuImages: QemuImage[] = [];
   selectPlatform: string[] = [];
