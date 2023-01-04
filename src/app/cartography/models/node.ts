@@ -55,6 +55,7 @@ export class Properties {
   extra_hosts: string;
   extra_volumes: string[];
   replicate_network_connection_state: boolean;
+  tpm: boolean;
 }
 
 export class Node {
