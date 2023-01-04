@@ -54,6 +54,7 @@ export class Properties {
   extra_hosts: string;
   replicate_network_connection_state: boolean;
   memory: number;
+  tpm: boolean;
 }
 
 export class Node {
