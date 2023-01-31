@@ -63,9 +63,6 @@ export class LinkService {
   }
 
   updateLink(server: Server, link: Link) {
-    link.x = Math.round(link.x);
-    link.y = Math.round(link.y);
-
     return this.httpServer.put<Link>(server, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 
