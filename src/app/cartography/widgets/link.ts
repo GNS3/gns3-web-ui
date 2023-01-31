@@ -86,6 +86,7 @@ export class LinkWidget implements Widget {
       .filter((l) => {
         return (
           !l.capturing &&
+          !l.suspend &&
           (l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
         );
       })
@@ -111,8 +112,7 @@ export class LinkWidget implements Widget {
     link_body
       .filter((l) => {
         return (
-          ((!l.capturing && l.suspend)|| l.capturing && l.suspend) &&
-          !(l.filters.bpf || l.filters.corrupt || l.filters.delay || l.filters.frequency_drop || l.filters.packet_loss)
+          l.suspend
         );
       })
       .append<SVGGElement>('g')
