@@ -69,6 +69,12 @@ export class ProjectsComponent implements OnInit {
     this.projectService.projectListSubject.subscribe(() => this.refresh());
   }
 
+  goToSystemStatus() {
+    this.router
+      .navigate(['/server', this.server.id, 'systemstatus'])
+      .catch((error) => this.toasterService.error('Cannot navigate to the system status'));
+  }
+
   refresh() {
     this.projectService.list(this.controller).subscribe(
       (projects: Project[]) => {

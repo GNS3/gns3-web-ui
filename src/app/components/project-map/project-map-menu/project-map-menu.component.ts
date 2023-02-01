@@ -207,7 +207,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       });
     });
   }
-  
+
   public changeLockValue() {
     this.isLocked = !this.isLocked;
     this.mapSettingsService.changeMapLockValue(this.isLocked);
@@ -269,7 +269,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   private createSvgFileForImage(image: string | ArrayBuffer, imageToUpload: HTMLImageElement) {
-    return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\" 
+    return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\"
                 width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`;
   }
 
