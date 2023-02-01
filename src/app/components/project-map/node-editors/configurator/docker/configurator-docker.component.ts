@@ -55,15 +55,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
           this.name = node.name;
           this.getConfiguration();
           if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
-          if (this.node.properties.extra_volumes && this.node.properties.extra_volumes.length>0) {
-            for (let index = 0; index < this.node.properties.extra_volumes.length - 1; index++) {
-              this.additionalDirectories = this.additionalDirectories + this.node.properties.extra_volumes[index] + "\n";
-            }
-            this.additionalDirectories = this.additionalDirectories + this.node.properties.extra_volumes[this.node.properties.extra_volumes.length - 1];
-          }
       });
   }
-
 
   getConfiguration() {
     this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
@@ -84,16 +77,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   onSaveClick() {
-    var extraVolumes = this.additionalDirectories.split("\n").filter(elem => elem != "");
-    for (const item of extraVolumes) {
-      console.log(item);
-      if (!item.startsWith("/")) {
-        this.toasterService.error(`Wrong format for additional directories.`);
-        return;
-      }
-    }
     if (this.generalSettingsForm.valid) {
-      this.node.properties.extra_volumes = extraVolumes;
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
