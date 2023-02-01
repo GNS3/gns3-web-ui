@@ -9,8 +9,8 @@ import { Font } from '../models/font';
 export class FontFixer {
   static DEFAULT_FONT = 'TypeWriter';
   static DEFAULT_SIZE = 10;
-  static REPLACE_BY_FONT = 'Arial';
-  static REPLACE_BY_SIZE = 12;
+  static REPLACE_BY_FONT = 'Noto Sans';
+  static REPLACE_BY_SIZE = 11;
 
   public fix(font: Font): Font {
     if (font.font_family === FontFixer.DEFAULT_FONT && font.font_size === FontFixer.DEFAULT_SIZE) {

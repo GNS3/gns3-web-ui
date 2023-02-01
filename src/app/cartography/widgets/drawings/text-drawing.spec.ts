@@ -42,7 +42,7 @@ describe('TextDrawingWidget', () => {
     const text_element = drew.nodes()[0];
     expect(text_element.innerHTML).toEqual('<tspan xml:space="preserve" x="0" dy="0em">THIS IS TEXT</tspan>');
     expect(text_element.getAttribute('fill')).toEqual('#000000');
-    expect(text_element.getAttribute('style')).toEqual('font-family: "Arial"; font-size: 12pt; font-weight: bold');
+    expect(text_element.getAttribute('style')).toEqual('font-family: "Noto Sans"; font-size: 11pt; font-weight: bold');
     expect(text_element.getAttribute('text-decoration')).toEqual('line-through');
   });
 

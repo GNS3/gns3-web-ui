@@ -97,9 +97,9 @@ export class InterfaceStatusWidget implements Widget {
           .attr('y', (ls: LinkStatus) => ls.y - 10)
           .attr('rx', 8)
           .attr('ry', 8)
-          .style('fill', '#c7ffdf')
+          .style('fill', 'white')
           .attr('stroke', '#2ecc71')
-          .attr('stroke-width', 2);
+          .attr('stroke-width', 3);
         status_started.exit().remove();
         const status_started_label = link_group
           .selectAll<SVGTextElement, LinkStatus>('text.status_started_label')
@@ -111,7 +111,7 @@ export class InterfaceStatusWidget implements Widget {
           .text((ls: LinkStatus) => ls.port)
           .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
-          .attr('fill', `#0e9647`);
+          .attr('fill', `black`);
         status_started_label.exit().remove();
 
         const status_stopped = link_group
@@ -129,9 +129,9 @@ export class InterfaceStatusWidget implements Widget {
           .attr('y', (ls: LinkStatus) => ls.y - 10)
           .attr('rx', 8)
           .attr('ry', 8)
-          .style('fill', '#ffe3e3')
+          .style('fill', 'white')
           .attr('stroke', 'red')
-          .attr('stroke-width', 2);
+          .attr('stroke-width', 3);
         status_stopped.exit().remove();
         const status_stopped_label = link_group
           .selectAll<SVGTextElement, LinkStatus>('text.status_stopped_label')
@@ -143,7 +143,7 @@ export class InterfaceStatusWidget implements Widget {
           .text((ls: LinkStatus) => ls.port)
           .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
-          .attr('fill', `red`);
+          .attr('fill', `black`);
         status_stopped_label.exit().remove();
 
         const status_suspended = link_group
@@ -162,8 +162,8 @@ export class InterfaceStatusWidget implements Widget {
           .attr('rx', 8)
           .attr('ry', 8)
           .style('fill', 'white')
-          .attr('stroke', '#fffbc3')
-          .attr('stroke-width', 2);
+          .attr('stroke', '#FFFF00')
+          .attr('stroke-width', 3);
         status_suspended.exit().remove();
         const status_suspended_label = link_group
           .selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label')
@@ -175,7 +175,7 @@ export class InterfaceStatusWidget implements Widget {
           .text((ls: LinkStatus) => ls.port)
           .attr('x', (ls: LinkStatus) => ls.x - 25)
           .attr('y', (ls: LinkStatus) => ls.y + 5)
-          .attr('fill', `#6b5633`);
+          .attr('fill', `black`);
         status_suspended_label.exit().remove();
       } else {
         const status_started = link_group

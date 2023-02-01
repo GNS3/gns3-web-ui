@@ -1,7 +1,6 @@
 ::ng-deep .mat-menu-panel {
   max-width: 400px;
-  max-height: 640px;
-  border-radius: 8px;
+  max-height: 500px;
 }
 
 .menu {
@@ -9,26 +8,6 @@
   overflow-y: scroll;
   scrollbar-color: darkgrey #263238;
   scrollbar-width: thin;
-  font-size: 12px;
-}
-
-.templateMenuHeader {
-   border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.templateFilterBar {
-   padding: 10px 2%;
-   background-color: rgba(0,0,0,0.2);
-   margin-bottom: 10px;
-}
-
-.templateFilterBar > .form-field {
-   font-size: 12px;
-}
-
-.templateFilterBar .searchIcon {
-   position: relative;
-   top: 5px;
 }
 
 ::-webkit-scrollbar {
@@ -45,22 +24,20 @@
 }
 
 .form-field {
-  width: 44%;
-  margin-left: 3%;
-  margin-right: 3%;
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .image {
-  display: inline-block;
-  width: 55px;
-  height: 55px;
+  width: 65px;
+  height: 65px;
   filter: invert(0);
   --webkit-filter: invert(0) !important;
 }
 
 .templateList {
   width: 100%;
-  padding: 10px;
 }
 
 .templateRow {
@@ -78,23 +55,6 @@
 }
 
 .templateIcon {
-  width: 90px !important;
-  padding: 2px 5px;
-  text-align: center;
-  margin: 3px;
-}
-
-.templateIcon > .iconContainer {
-   display: inline-flex;
-   align-items: center;
-   justify-content: center;
-   width: 70px;
-   height: 70px;
-   margin-bottom: 10px;
-   border-radius: 50%;
-   cursor: move;
-}
-
-.templateIcon > .iconContainer:hover {
-   background-color: rgba(237, 246, 231, 0.08);
+  width: 80px !important;
+  padding: 10px;
 }
