@@ -74,11 +74,13 @@ export interface Appliance {
   maintainer_email: string;
   name: string;
   port_name_format: string;
+  port_segment_size: number;
   product_name: string;
   product_url: string;
   registry_version: number;
   status: string;
   symbol: string;
+  default_name_format: string;
   usage: string;
   vendor_name: string;
   vendor_url: string;
