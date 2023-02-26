@@ -637,6 +637,9 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = version.images.hda_disk_image;
     qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
+    qemuTemplate.hdc_disk_image = version.images.hdc_disk_image;
+    qemuTemplate.hdd_disk_image = version.images.hdd_disk_image;
+    qemuTemplate.cdrom_image = version.images.cdrom_image;
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = this.applianceToInstall.usage;
 
