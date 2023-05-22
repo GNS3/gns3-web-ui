@@ -61,7 +61,7 @@
                 {{ node.name }}
               </div>
               <div *ngIf="node.console != null && node.console != undefined && node.console_type != 'none'">
-                {{ node.console_type }} {{ node.console_host }}:{{ node.console }}
+                {{ node.console_type }}://{{ node.console_host }}:{{ node.console }}
               </div>
               <div *ngIf="node.console === null || node.console === undefined || node.console_type === 'none'">
                 none

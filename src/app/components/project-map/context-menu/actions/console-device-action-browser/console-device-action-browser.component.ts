@@ -69,6 +69,9 @@ export class ConsoleDeviceActionBrowserComponent {
           uri = `gns3+vnc://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
         } else if (this.node.console_type.startsWith('spice')) {
           uri = `gns3+spice://${this.node.console_host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
+        } else if (this.node.console_type.startsWith('http')) {
+          uri = `${this.node.console_type}://${this.node.console_host}:${this.node.console}`
+          return window.open(uri);  // open an http console directly in a new window/tab
         } else {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
         }
