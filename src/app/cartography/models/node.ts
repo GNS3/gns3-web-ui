@@ -55,6 +55,7 @@ export class Properties {
   replicate_network_connection_state: boolean;
   memory: number;
   tpm: boolean;
+  uefi: boolean;
 }
 
 export class Node {
