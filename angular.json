@@ -27,7 +27,11 @@
                             "rxjs-compat/add/operator/map",
                             "classnames",
                             "stylenames",
-                            "source-map-js"
+                            "source-map-js",
+                            "spark-md5",
+                            "xterm",
+                            "xterm-addon-attach",
+                            "xterm-addon-fit"
                         ],
                         "outputPath": "dist",
                         "index": "src/index.html",
