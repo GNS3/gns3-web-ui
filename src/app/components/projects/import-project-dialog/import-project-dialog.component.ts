@@ -52,7 +52,7 @@ export class ImportProjectDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({});
+    this.uploader = new FileUploader({url: ''});
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };

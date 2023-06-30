@@ -7094,12 +7094,12 @@ ng-circle-progress@^1.6.0:
   dependencies:
     tslib "^2.0.0"
 
-ng2-file-upload@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/ng2-file-upload/-/ng2-file-upload-1.4.0.tgz#8dea28d573234c52af474ad2a4001b335271e5c4"
-  integrity sha512-3J/KPU/tyh/ad6TFeUbrxX+SihUj0iOEt2Zsg4EX7mB3GFiQscXOfcUOxCkBtPWWWaqt3azrYbVGzsYa3/7NzQ==
+ng2-file-upload@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ng2-file-upload/-/ng2-file-upload-3.0.0.tgz#55ce8752a93cf234a754fe1009ceff40c625582c"
+  integrity sha512-Xz7Pa9bC9loZ7eu1EzdAyPb3dpLbGe1G1nHgf+YUvtqQepxdQ3OBtd04Jbg3yx8r+nhi8tKGmdajsBAkeA87rA==
   dependencies:
-    tslib "^1.9.0"
+    tslib "^2.3.0"
 
 ngx-childprocess@^0.0.6:
   version "0.0.6"
