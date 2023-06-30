@@ -15,7 +15,7 @@ import {ActivatedRoute} from "@angular/router";
 import {Controller} from "@models/controller";
 import {Group} from "@models/groups/group";
 import {User} from "@models/users/user";
-import {FormControl, FormGroup} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {AddUserToGroupDialogComponent} from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
 import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
@@ -34,7 +34,7 @@ export class GroupDetailsComponent implements OnInit {
   controller: Controller;
   group: Group;
   members: User[];
-  editGroupForm: FormGroup;
+  editGroupForm: UntypedFormGroup;
   pageEvent: PageEvent | undefined;
   searchMembers: string;
   roles: Role[];
@@ -44,8 +44,8 @@ export class GroupDetailsComponent implements OnInit {
               private groupService: GroupService,
               private toastService: ToasterService) {
 
-    this.editGroupForm = new FormGroup({
-      groupname: new FormControl(''),
+    this.editGroupForm = new UntypedFormGroup({
+      groupname: new UntypedFormControl(''),
     });
 
     this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], roles: Role[] }) => {

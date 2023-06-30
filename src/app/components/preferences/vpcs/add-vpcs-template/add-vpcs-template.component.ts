@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
@@ -19,7 +19,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
 export class AddVpcsTemplateComponent implements OnInit {
   controller:Controller ;
   templateName: string = '';
-  templateNameForm: FormGroup;
+  templateNameForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -29,11 +29,11 @@ export class AddVpcsTemplateComponent implements OnInit {
     private router: Router,
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private computeService: ComputeService
   ) {
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(null, [Validators.required]),
+      templateName: new UntypedFormControl(null, [Validators.required]),
     });
   }
 

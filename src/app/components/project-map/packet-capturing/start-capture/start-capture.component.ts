@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { CapturingSettings } from '../../../../models/capturingSettings';
@@ -22,20 +22,20 @@ export class StartCaptureDialogComponent implements OnInit {
   project: Project;
   link: Link;
   linkTypes = [];
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   startProgram: boolean;
 
   constructor(
     private dialogRef: MatDialogRef<PacketFiltersDialogComponent>,
     private linkService: LinkService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private toasterService: ToasterService,
     private nodesDataSource: NodesDataSource,
     private packetCaptureService: PacketCaptureService
   ) {
     this.inputForm = this.formBuilder.group({
-      linkType: new FormControl('', Validators.required),
-      fileName: new FormControl('', Validators.required),
+      linkType: new UntypedFormControl('', Validators.required),
+      fileName: new UntypedFormControl('', Validators.required),
     });
   }
 

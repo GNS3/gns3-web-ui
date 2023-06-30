@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
@@ -18,18 +18,18 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private ethernetSwitchesConfigurationService: BuiltInTemplatesConfigurationService
   ) {
     this.inputForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
   }
 

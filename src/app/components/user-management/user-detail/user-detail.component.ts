@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {Group} from "@models/groups/group";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
@@ -22,7 +22,7 @@ import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-
 })
 export class UserDetailComponent implements OnInit {
 
-  editUserForm: FormGroup;
+  editUserForm: UntypedFormGroup;
   groups: Group[];
   user: User;
   controller: Controller;
@@ -53,17 +53,17 @@ export class UserDetailComponent implements OnInit {
   }
 
   initForm() {
-    this.editUserForm = new FormGroup({
-      username: new FormControl(this.user.username, [
+    this.editUserForm = new UntypedFormGroup({
+      username: new UntypedFormControl(this.user.username, [
           Validators.required,
           Validators.minLength(3),
           Validators.pattern("[a-zA-Z0-9_-]+$")],
         [userNameAsyncValidator(this.controller, this.userService, this.user.username)]),
-      full_name: new FormControl(this.user.full_name),
-      email: new FormControl(this.user.email,
+      full_name: new UntypedFormControl(this.user.full_name),
+      email: new UntypedFormControl(this.user.email,
         [Validators.email, Validators.required],
         [userEmailAsyncValidator(this.controller, this.userService, this.user.email)]),
-      is_active: new FormControl(this.user.is_active)
+      is_active: new UntypedFormControl(this.user.is_active)
     });
   }
 

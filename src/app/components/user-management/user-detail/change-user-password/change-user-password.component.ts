@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
+import {AbstractControl, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {User} from "@models/users/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
@@ -14,7 +14,7 @@ import {matchingPassword} from "@components/user-management/ConfirmPasswordValid
 })
 export class ChangeUserPasswordComponent implements OnInit {
 
-  editPasswordForm: FormGroup;
+  editPasswordForm: UntypedFormGroup;
   user: User;
 
   constructor(private dialogRef: MatDialogRef<ChangeUserPasswordComponent>,
@@ -24,10 +24,10 @@ export class ChangeUserPasswordComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.data.user;
-    this.editPasswordForm = new FormGroup({
-      password: new FormControl(null,
+    this.editPasswordForm = new UntypedFormGroup({
+      password: new UntypedFormControl(null,
         [Validators.minLength(6), Validators.maxLength(100), Validators.required] ),
-      confirmPassword: new FormControl(null,
+      confirmPassword: new UntypedFormControl(null,
         [Validators.minLength(6), Validators.maxLength(100), Validators.required] ),
     },{
       validators: [matchingPassword]

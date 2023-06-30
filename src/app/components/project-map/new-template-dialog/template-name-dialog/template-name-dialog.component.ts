@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import{ Controller } from '../../../../models/controller';
@@ -17,14 +17,14 @@ import { ProjectNameValidator } from '../../../projects/models/projectNameValida
 })
 export class TemplateNameDialogComponent implements OnInit {
   controller:Controller ;
-  templateNameForm: FormGroup;
+  templateNameForm: UntypedFormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<TemplateNameDialogComponent>,
     private router: Router,
     private dialog: MatDialog,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private templateNameValidator: ProjectNameValidator,
     private templateService: TemplateService,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -33,7 +33,7 @@ export class TemplateNameDialogComponent implements OnInit {
   ngOnInit() {
     let name = this.data['name'];
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(
+      templateName: new UntypedFormControl(
         name,
         [Validators.required, this.templateNameValidator.get],
         [templateNameAsyncValidator(this.controller, this.templateService)]

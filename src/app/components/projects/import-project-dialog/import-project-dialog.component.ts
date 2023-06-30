@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToasterService } from '../../../services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -28,7 +28,7 @@ export class ImportProjectDialogComponent implements OnInit {
   isFinishEnabled: boolean = false;
   isDeleteVisible: boolean = false;
   resultMessage: string = 'The project is being imported... Please wait';
-  projectNameForm: FormGroup;
+  projectNameForm: UntypedFormGroup;
   submitted: boolean = false;
   isFirstStepCompleted: boolean = false;
   uuid: string;
@@ -38,7 +38,7 @@ export class ImportProjectDialogComponent implements OnInit {
     private dialog: MatDialog,
     public dialogRef: MatDialogRef<ImportProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private projectService: ProjectService,
     private projectNameValidator: ProjectNameValidator,
     private toasterService : ToasterService,
@@ -47,7 +47,7 @@ export class ImportProjectDialogComponent implements OnInit {
 
   ) {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new FormControl(null, [Validators.required, projectNameValidator.get]),
+      projectName: new UntypedFormControl(null, [Validators.required, projectNameValidator.get]),
     });
   }
 

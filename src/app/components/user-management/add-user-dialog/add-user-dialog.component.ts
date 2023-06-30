@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
 import {Controller} from "@models/controller";
@@ -33,12 +33,12 @@ import {matchingPassword} from "@components/user-management/ConfirmPasswordValid
   styleUrls: ['./add-user-dialog.component.scss']
 })
 export class AddUserDialogComponent implements OnInit {
-  addUserForm: FormGroup;
+  addUserForm: UntypedFormGroup;
   controller: Controller;
 
   groups: Group[];
   groupsToAdd: Set<Group> = new Set([]);
-  autocompleteControl = new FormControl();
+  autocompleteControl = new UntypedFormControl();
   filteredGroups: Observable<Group[]>;
 
   constructor(public dialogRef: MatDialogRef<AddUserDialogComponent>,
@@ -47,21 +47,21 @@ export class AddUserDialogComponent implements OnInit {
               private groupService: GroupService) { }
 
   ngOnInit(): void {
-    this.addUserForm = new FormGroup({
-      username: new FormControl(null, [
+    this.addUserForm = new UntypedFormGroup({
+      username: new UntypedFormControl(null, [
         Validators.required,
         Validators.minLength(3),
         Validators.pattern("[a-zA-Z0-9_-]+$")],
         [userNameAsyncValidator(this.controller, this.userService)]),
-      full_name: new FormControl(),
-      email: new FormControl(null,
+      full_name: new UntypedFormControl(),
+      email: new UntypedFormControl(null,
         [Validators.email, Validators.required],
         [userEmailAsyncValidator(this.controller, this.userService)]),
-      password: new FormControl(null,
+      password: new UntypedFormControl(null,
         [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
-      confirmPassword: new FormControl(null,
+      confirmPassword: new UntypedFormControl(null,
         [Validators.minLength(6), Validators.maxLength(100), Validators.required] ),
-      is_active: new FormControl(true)
+      is_active: new UntypedFormControl(true)
     },{
       validators: [matchingPassword]
     });

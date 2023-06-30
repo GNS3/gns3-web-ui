@@ -9,7 +9,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../cartography/models/drawing';
@@ -63,7 +63,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   public style: object = {};
   public isDraggingEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
-  public selected = new FormControl(0);
+  public selected = new UntypedFormControl(0);
 
   constructor(
     private projectWebServiceHandler: ProjectWebServiceHandler,

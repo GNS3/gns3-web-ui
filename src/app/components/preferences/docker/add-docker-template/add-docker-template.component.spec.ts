@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AbstractControlDirective, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControlDirective, UntypedFormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCommonModule } from '@angular/material/core';
@@ -77,7 +77,7 @@ xdescribe('AddDockerTemplateComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
         { provide: DockerConfigurationService, useClass: DockerConfigurationService },
-        { provide: AbstractControlDirective, useExisting: FormControl, useMulti: true },
+        { provide: AbstractControlDirective, useExisting: UntypedFormControl, useMulti: true },
       ],
       declarations: [AddDockerTemplateComponent],
     }).compileComponents();

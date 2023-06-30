@@ -215,7 +215,6 @@
             }
         }
     },
-    "defaultProject": "gns3-web-ui",
     "schematics": {
         "@schematics/angular:component": {
             "prefix": "app",

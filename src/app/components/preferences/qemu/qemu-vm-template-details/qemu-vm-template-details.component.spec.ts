@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {  ComponentFixture, TestBed } from '@angular/core/testing';
-import { AbstractControlDirective, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControlDirective, UntypedFormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -66,7 +66,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
         { provide: QemuService, useValue: mockedQemuService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: QemuConfigurationService, useClass: QemuConfigurationService },
-        { provide: AbstractControlDirective, useExisting: FormControl, useMulti: true },
+        { provide: AbstractControlDirective, useExisting: UntypedFormControl, useMulti: true },
       ],
       declarations: [QemuVmTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],

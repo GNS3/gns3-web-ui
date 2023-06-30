@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Controller} from "@models/controller";
 import {GroupNameValidator} from "@components/group-management/add-group-dialog/GroupNameValidator";
@@ -25,17 +25,17 @@ import {groupNameAsyncValidator} from "@components/group-management/add-group-di
 })
 export class AddRoleDialogComponent implements OnInit {
 
-  roleNameForm: FormGroup;
+  roleNameForm: UntypedFormGroup;
 
   constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
-              private formBuilder: FormBuilder) {
+              private formBuilder: UntypedFormBuilder) {
   }
 
   ngOnInit(): void {
     this.roleNameForm = this.formBuilder.group({
-      name: new FormControl(),
-      description: new FormControl()
+      name: new UntypedFormControl(),
+      description: new UntypedFormControl()
     });
   }
 

@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Project } from '../../models/project';
 import{ Controller } from '../../models/controller';
@@ -11,7 +11,7 @@ import { ProjectService } from '../../services/project.service';
   styleUrls: ['./export-portable-project.component.scss'],
 })
 export class ExportPortableProjectComponent implements OnInit {
-  export_project_form: FormGroup;
+  export_project_form: UntypedFormGroup;
   chosenImage: string = '';
   compression_methods: any = [];
   compression_level: any = [];
@@ -26,7 +26,7 @@ export class ExportPortableProjectComponent implements OnInit {
     public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private projectService: ProjectService,
-    private _fb: FormBuilder
+    private _fb: UntypedFormBuilder
   ) {}
 
   async ngOnInit() {

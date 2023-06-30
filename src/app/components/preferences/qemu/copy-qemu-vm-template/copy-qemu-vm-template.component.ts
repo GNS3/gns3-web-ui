@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
@@ -18,7 +18,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   controller:Controller ;
   templateName: string = '';
   qemuTemplate: QemuTemplate;
-  nameForm: FormGroup;
+  nameForm: UntypedFormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,10 +26,10 @@ export class CopyQemuVmTemplateComponent implements OnInit {
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.nameForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
     });
   }
 

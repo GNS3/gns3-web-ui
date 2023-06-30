@@ -1,5 +1,5 @@
 import { Component, DoCheck, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthResponse } from '../../models/authResponse';
 import{ Controller } from '../../models/controller';
@@ -26,9 +26,9 @@ export class LoginComponent implements OnInit, DoCheck {
   public isRememberMe: boolean = false;
   public isRememberMeCheked: boolean = false;
 
-  loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required]),
+  loginForm = new UntypedFormGroup({
+    username: new UntypedFormControl('', [Validators.required]),
+    password: new UntypedFormControl('', [Validators.required]),
   });
 
   constructor(

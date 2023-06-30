@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import{ Controller } from '../../models/controller';
 import { ControllerDatabase } from '../../services/controller.database';
@@ -27,10 +27,10 @@ export class DirectLinkComponent implements OnInit {
     { key: 'remote', name: 'Remote' },
   ];
 
-  controllerForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    location: new FormControl(''),
-    protocol: new FormControl('http:')
+  controllerForm = new UntypedFormGroup({
+    name: new UntypedFormControl('', [Validators.required]),
+    location: new UntypedFormControl(''),
+    protocol: new UntypedFormControl('http:')
   });
 
   constructor(

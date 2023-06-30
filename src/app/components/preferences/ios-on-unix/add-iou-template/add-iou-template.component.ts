@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
@@ -32,8 +32,8 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   iouImages: IouImage[] = [];
   uploader: FileUploader;
 
-  templateNameForm: FormGroup;
-  imageForm: FormGroup;
+  templateNameForm: UntypedFormGroup;
+  imageForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
   uploadProgress: number = 0
   subscription: Subscription;
@@ -44,7 +44,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     private iouService: IouService,
     private toasterService: ToasterService,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private templateMocksService: TemplateMocksService,
     private computeService: ComputeService,
     private uploadServiceService: UploadServiceService,
@@ -53,11 +53,11 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     this.iouTemplate = new IouTemplate();
 
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(null, Validators.required),
+      templateName: new UntypedFormControl(null, Validators.required),
     });
 
     this.imageForm = this.formBuilder.group({
-      imageName: new FormControl('', Validators.required),
+      imageName: new UntypedFormControl('', Validators.required),
     });
   }
 

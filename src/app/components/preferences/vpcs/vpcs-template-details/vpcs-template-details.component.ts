@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import{ Controller } from '../../../../models/controller';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
@@ -16,7 +16,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
 export class VpcsTemplateDetailsComponent implements OnInit {
   controller:Controller ;
   vpcsTemplate: VpcsTemplate;
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
   consoleTypes: string[] = [];
   categories = [];
@@ -26,15 +26,15 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     private controllerService: ControllerService,
     private vpcsService: VpcsService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private vpcsConfigurationService: VpcsConfigurationService,
     private router: Router
   ) {
     this.inputForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      scriptFile: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      scriptFile: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
     });
   }
 

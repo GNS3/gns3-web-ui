@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import{ Controller } from '../../../../models/controller';
@@ -20,7 +20,7 @@ export class AddVmwareTemplateComponent implements OnInit {
   virtualMachines: VmwareVm[];
   selectedVM: VmwareVm;
   vmwareTemplate: VmwareTemplate;
-  templateNameForm: FormGroup;
+  templateNameForm: UntypedFormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,10 +29,10 @@ export class AddVmwareTemplateComponent implements OnInit {
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.templateNameForm = this.formBuilder.group({
-      templateName: new FormControl(null, [Validators.required]),
+      templateName: new UntypedFormControl(null, [Validators.required]),
     });
   }
 

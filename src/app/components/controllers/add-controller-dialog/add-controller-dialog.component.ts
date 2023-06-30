@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
 import { Controller } from '../../../models/controller';
@@ -17,14 +17,14 @@ export class AddControllerDialogComponent implements OnInit {
   ];
   locations = [];
 
-  controllerForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    location: new FormControl(''),
-    path: new FormControl(''),
-    ubridge_path: new FormControl(''),
-    host: new FormControl('', [Validators.required]),
-    port: new FormControl('', [Validators.required, Validators.min(1)]),
-    protocol: new FormControl('http:')
+  controllerForm = new UntypedFormGroup({
+    name: new UntypedFormControl('', [Validators.required]),
+    location: new UntypedFormControl(''),
+    path: new UntypedFormControl(''),
+    ubridge_path: new UntypedFormControl(''),
+    host: new UntypedFormControl('', [Validators.required]),
+    port: new UntypedFormControl('', [Validators.required, Validators.min(1)]),
+    protocol: new UntypedFormControl('http:')
   });
 
   constructor(

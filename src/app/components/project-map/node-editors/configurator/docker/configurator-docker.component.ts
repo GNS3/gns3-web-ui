@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -19,7 +19,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   consoleResolutions: string[] = ['2560x1440', '1920x1080', '1680x1050', '1440x900', '1366x768', '1280x1024', '1280x800', '1024x768', '800x600', '640x480'];
   private conf = {
@@ -33,19 +33,19 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       public dialogReference: MatDialogRef<ConfiguratorDialogDockerComponent>,
       public nodeService: NodeService,
       private toasterService: ToasterService,
-      private formBuilder: FormBuilder,
+      private formBuilder: UntypedFormBuilder,
       private dockerConfigurationService: DockerConfigurationService,
       private nonNegativeValidator: NonNegativeValidator,
       private dialog: MatDialog
   ) {
       this.generalSettingsForm = this.formBuilder.group({
-          name: new FormControl('', Validators.required),
-          adapter: new FormControl('', Validators.required),
-          memory: new FormControl('', nonNegativeValidator.get),
-          cpus: new FormControl('', nonNegativeValidator.get),
-          startCommand: new FormControl(''),
-          consoleHttpPort: new FormControl('', Validators.required),
-          consoleHttpPath: new FormControl('', Validators.required)
+          name: new UntypedFormControl('', Validators.required),
+          adapter: new UntypedFormControl('', Validators.required),
+          memory: new UntypedFormControl('', nonNegativeValidator.get),
+          cpus: new UntypedFormControl('', nonNegativeValidator.get),
+          startCommand: new UntypedFormControl(''),
+          consoleHttpPort: new UntypedFormControl('', Validators.required),
+          consoleHttpPath: new UntypedFormControl('', Validators.required)
       });
   }
 

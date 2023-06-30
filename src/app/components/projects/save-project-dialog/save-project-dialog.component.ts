@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
@@ -17,7 +17,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 export class SaveProjectDialogComponent implements OnInit {
   controller:Controller ;
   project: Project;
-  projectNameForm: FormGroup;
+  projectNameForm: UntypedFormGroup;
   onAddProject = new EventEmitter<string>();
 
   constructor(
@@ -25,11 +25,11 @@ export class SaveProjectDialogComponent implements OnInit {
     private projectService: ProjectService,
     private nodesDataSource: NodesDataSource,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private projectNameValidator: ProjectNameValidator
   ) {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new FormControl(null, [Validators.required, projectNameValidator.get]),
+      projectName: new UntypedFormControl(null, [Validators.required, projectNameValidator.get]),
     });
   }
 

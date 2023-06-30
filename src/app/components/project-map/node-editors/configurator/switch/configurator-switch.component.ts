@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -15,8 +15,8 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  nameForm: FormGroup;
-  inputForm: FormGroup;
+  nameForm: UntypedFormGroup;
+  inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
 
   nodeMappings = new Map<string, string>();
@@ -33,17 +33,17 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.nameForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
 
     this.inputForm = this.formBuilder.group({
-      sourcePort: new FormControl('', Validators.required),
-      sourceDlci: new FormControl('', Validators.required),
-      destinationPort: new FormControl('', Validators.required),
-      destinationDlci: new FormControl('', Validators.required),
+      sourcePort: new UntypedFormControl('', Validators.required),
+      sourceDlci: new UntypedFormControl('', Validators.required),
+      destinationPort: new UntypedFormControl('', Validators.required),
+      destinationDlci: new UntypedFormControl('', Validators.required),
     });
   }
 
