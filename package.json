@@ -1,6 +1,6 @@
 {
   "name": "gns3-web-ui",
-  "version": "3.0.0a3",
+  "version": "3.0.0.dev7",
   "author": {
     "name": "GNS3 Technology Inc.",
     "email": "developers@gns3.com"
