@@ -320,17 +320,17 @@ export class NewTemplateDialogComponent implements OnInit {
         setTimeout(() => {
           if (this.qemuBinaries.length) {
             if (this.applianceToInstall.qemu.arch === 'x86_64') {
-              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.includes('qemu-system-x86_64'));
+              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.endsWith('qemu-system-x86_64'));
               if (filtered_binaries.length) {
                 this.selectedBinary = filtered_binaries[0];
               }
             } else if (this.applianceToInstall.qemu.arch === 'i386') {
-              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.includes('qemu-system-i386'));
+              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.endsWith('qemu-system-i386'));
               if (filtered_binaries.length) {
                 this.selectedBinary = filtered_binaries[0];
               }
-            } else if (this.applianceToInstall.qemu.arch === 'x86_64') {
-              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.includes('qemu-system-arm'));
+            } else if (this.applianceToInstall.qemu.arch === 'arm') {
+              let filtered_binaries = this.qemuBinaries.filter((n) => n.path.endsWith('qemu-system-arm'));
               if (filtered_binaries.length) {
                 this.selectedBinary = filtered_binaries[0];
               }
@@ -364,7 +364,7 @@ export class NewTemplateDialogComponent implements OnInit {
           autoFocus: false,
           disableClose: true,
         });
-        dialogRef.componentInstance.confirmationMessage = `This is not the correct file. 
+        dialogRef.componentInstance.confirmationMessage = `This is not the correct file.
                     The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {
@@ -485,7 +485,7 @@ export class NewTemplateDialogComponent implements OnInit {
     iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
     iouTemplate.builtin = this.applianceToInstall.builtin;
     iouTemplate.category = this.getCategory();
-    iouTemplate.default_name_format = this.applianceToInstall.port_name_format;
+    iouTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iouTemplate.symbol = this.applianceToInstall.symbol;
     iouTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
     iouTemplate.template_id = uuid();
@@ -534,7 +534,7 @@ export class NewTemplateDialogComponent implements OnInit {
     iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
     iosTemplate.builtin = this.applianceToInstall.builtin;
     iosTemplate.category = this.getCategory();
-    iosTemplate.default_name_format = this.applianceToInstall.port_name_format;
+    iosTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iosTemplate.symbol = this.applianceToInstall.symbol;
     iosTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
     iosTemplate.template_id = uuid();
@@ -572,7 +572,7 @@ export class NewTemplateDialogComponent implements OnInit {
     dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
     dockerTemplate.builtin = this.applianceToInstall.builtin;
     dockerTemplate.category = this.getCategory();
-    dockerTemplate.default_name_format = this.applianceToInstall.port_name_format;
+    dockerTemplate.default_name_format = this.applianceToInstall.default_name_format;
     dockerTemplate.symbol = this.applianceToInstall.symbol;
     dockerTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
     dockerTemplate.template_id = uuid();
@@ -629,12 +629,17 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.category = this.getCategory();
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
+    qemuTemplate.port_segment_size = this.applianceToInstall.port_segment_size;
+    qemuTemplate.default_name_format = this.applianceToInstall.default_name_format
     qemuTemplate.symbol = this.applianceToInstall.symbol;
     qemuTemplate.qemu_path = this.selectedBinary.path;
     qemuTemplate.compute_id = this.isGns3VmChosen ? 'vm' : 'local';
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = version.images.hda_disk_image;
     qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
+    qemuTemplate.hdc_disk_image = version.images.hdc_disk_image;
+    qemuTemplate.hdd_disk_image = version.images.hdd_disk_image;
+    qemuTemplate.cdrom_image = version.images.cdrom_image;
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = this.applianceToInstall.usage;
 
