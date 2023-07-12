@@ -56,6 +56,7 @@ export class Properties {
   extra_volumes: string[];
   replicate_network_connection_state: boolean;
   tpm: boolean;
+  uefi: boolean;
 }
 
 export class Node {

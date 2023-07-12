@@ -91,6 +91,7 @@ export class ImportApplianceComponent implements OnInit {
         template.console_auto_start = appliance.iou.console_auto_start;
         template.ethernet_adapters = appliance.iou.ethernet_adapters;
         template.l1_keepalives = appliance.iou.l1_keepalives;
+        template.use_default_iou_values = appliance.iou.use_default_iou_values;
         template.nvram = appliance.iou.nvram;
         template.ram = appliance.iou.ram;
         template.serial_adapters = appliance.iou.serial_adapters;
