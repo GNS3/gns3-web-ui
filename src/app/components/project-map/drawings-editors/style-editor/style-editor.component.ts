@@ -60,6 +60,7 @@ export class StyleEditorDialogComponent implements OnInit {
 
     if (this.drawing.element instanceof RectElement) {
         this.element.rx = this.drawing.element.rx;
+        this.element.ry = this.drawing.element.ry;
       }
 
     if (this.element.stroke_width === undefined) this.element.stroke_width = 0;
@@ -89,7 +90,7 @@ export class StyleEditorDialogComponent implements OnInit {
 
       if (this.drawing.element instanceof RectElement) {
         this.drawing.element.rx = this.element.rx;
-        this.drawing.element.ry = this.element.rx;
+        this.drawing.element.ry = this.element.rx;  // set ry with rx because we don't have ry in the form
       }
 
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
