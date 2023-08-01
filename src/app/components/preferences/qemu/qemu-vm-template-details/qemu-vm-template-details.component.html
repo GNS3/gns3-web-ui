@@ -191,8 +191,10 @@
         </mat-form-field>
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
           Configure custom adapters</button
-        ><br />
-        <mat-checkbox [(ngModel)]="qemuTemplate.legacy_networking"> Use the legacy networking mode </mat-checkbox>
+        >
+        <br /><mat-checkbox [(ngModel)]="qemuTemplate.legacy_networking"> Use the legacy networking mode </mat-checkbox>
+        <br /><mat-checkbox [(ngModel)]="qemuTemplate.replicate_network_connection_state"> Replicate network connection state </mat-checkbox>
+
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -271,6 +273,8 @@
               <input matInput type="text" [(ngModel)]="qemuTemplate.options" placeholder="Options" />
             </mat-form-field>
             <mat-checkbox [(ngModel)]="qemuTemplate.linked_clone"> Use as a linked base VM </mat-checkbox>
+            <br /><mat-checkbox [(ngModel)]="qemuTemplate.tpm"> Enable the Trusted Platform Module (TPM)</mat-checkbox>
+            <br /><mat-checkbox [(ngModel)]="qemuTemplate.uefi"> Enable the UEFI boot mode </mat-checkbox>
           </mat-card-content>
         </mat-card>
       </mat-expansion-panel>
