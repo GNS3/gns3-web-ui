@@ -33,7 +33,9 @@ export class RectDrawingWidget implements DrawingShapeWidget {
       .attr('stroke-width', (rect) => rect.stroke_width)
       .attr('stroke-dasharray', (rect) => this.qtDasharrayFixer.fix(rect.stroke_dasharray))
       .attr('width', (rect) => rect.width)
-      .attr('height', (rect) => rect.height);
+      .attr('height', (rect) => rect.height)
+      .attr('rx', (rect) => rect.rx)
+      .attr('ry', (rect) => rect.ry);
 
     drawing.exit().remove();
   }

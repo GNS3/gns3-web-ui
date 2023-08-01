@@ -8,4 +8,6 @@ export class RectElement implements DrawingElement {
   stroke: string;
   stroke_width: number;
   stroke_dasharray: string;
+  rx: number;
+  ry: number;
 }
