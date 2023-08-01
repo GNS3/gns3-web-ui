@@ -17,6 +17,8 @@ describe('RectConverter', () => {
 
     element.setAttribute('width', '100px');
     element.setAttribute('height', '200px');
+    element.setAttribute('rx', '0');
+    element.setAttribute('ry', '0');
 
     const drawing = rectConverter.convert(element);
     expect(drawing.fill).toEqual('#ffffff');
@@ -25,6 +27,8 @@ describe('RectConverter', () => {
     expect(drawing.stroke_dasharray).toEqual('5,25,25');
     expect(drawing.width).toEqual(100);
     expect(drawing.height).toEqual(200);
+    expect(drawing.rx).toEqual(0);
+    expect(drawing.ry).toEqual(0);
   });
 
   it('should parse with no attributes', () => {
@@ -37,5 +41,7 @@ describe('RectConverter', () => {
     expect(drawing.stroke_dasharray).toBeUndefined();
     expect(drawing.width).toBeUndefined();
     expect(drawing.height).toBeUndefined();
+    expect(drawing.rx).toBeUndefined();
+    expect(drawing.ry).toBeUndefined();
   });
 });

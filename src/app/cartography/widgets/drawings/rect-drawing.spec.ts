@@ -28,6 +28,8 @@ describe('RectDrawingWidget', () => {
     rect.stroke_dasharray = '5,25,25';
     rect.width = 100;
     rect.height = 200;
+    rect.rx = 0;
+    rect.ry = 0;
     drawing.element = rect;
 
     const drawings = svg.canvas.selectAll<SVGGElement, MapDrawing>('g.drawing').data([drawing]);
@@ -46,5 +48,7 @@ describe('RectDrawingWidget', () => {
     expect(rect_element.getAttribute('stroke-dasharray')).toEqual('5,25,25');
     expect(rect_element.getAttribute('width')).toEqual('100');
     expect(rect_element.getAttribute('height')).toEqual('200');
+    expect(rect_element.getAttribute('rx')).toEqual('0');
+    expect(rect_element.getAttribute('ry')).toEqual('0');
   });
 });
