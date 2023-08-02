@@ -40,6 +40,16 @@ export class RectConverter implements SvgConverter {
       drawing.height = parseInt(height.value, 10);
     }
 
+    const rx = element.attributes.getNamedItem('rx');
+    if (rx) {
+      drawing.rx = parseInt(rx.value, 0);
+    }
+
+    const ry = element.attributes.getNamedItem('ry');
+    if (ry) {
+      drawing.ry = parseInt(ry.value, 0);
+    }
+
     return drawing;
   }
 }

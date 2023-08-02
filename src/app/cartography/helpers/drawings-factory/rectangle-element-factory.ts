@@ -13,6 +13,8 @@ export class RectangleElementFactory implements DrawingElementFactory {
     rectElement.stroke_width = 2;
     rectElement.width = 200;
     rectElement.height = 100;
+    rectElement.rx = 0;
+    rectElement.ry = 0;
     return rectElement;
   }
 }

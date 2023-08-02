@@ -69,6 +69,11 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.stroke_width = this.drawing.element.stroke_width;
     }
 
+    if (this.drawing.element instanceof RectElement) {
+        this.element.rx = this.drawing.element.rx;
+        this.element.ry = this.drawing.element.ry;
+      }
+
     if (this.element.stroke_width === undefined) this.element.stroke_width = 0;
     this.formGroup.controls['borderWidth'].setValue(this.element.stroke_width);
     this.formGroup.controls['rotation'].setValue(this.drawing.rotation);
@@ -105,6 +110,12 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
       }
+
+      if (this.drawing.element instanceof RectElement) {
+        this.drawing.element.rx = this.element.rx;
+        this.drawing.element.ry = this.element.rx;  // set ry with rx because we don't have ry in the form
+      }
+
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
       mapDrawing.element = this.drawing.element;
 
@@ -125,4 +136,6 @@ export class ElementData {
   stroke: string;
   stroke_width: number;
   stroke_dasharray: string;
+  rx: number;
+  ry: number;
 }
