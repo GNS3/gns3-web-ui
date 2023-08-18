@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import{ Controller } from '../../../../models/controller';
@@ -20,7 +20,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   virtualMachines: VirtualBoxVm[];
   selectedVM: VirtualBoxVm;
   virtualBoxTemplate: VirtualBoxTemplate;
-  vmForm: FormGroup;
+  vmForm: UntypedFormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,14 +29,15 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.vmForm = this.formBuilder.group({
-      vm: new FormControl('', Validators.required),
+      vm: new UntypedFormControl('', Validators.required),
     });
   }
 
   ngOnInit() {
+    this.toasterService.error(`VirtualBox VM support is deprecated and will be removed in a future version, please use Qemu VMs instead`);
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
       this.controller = controller;

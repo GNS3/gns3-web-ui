@@ -1,6 +1,6 @@
 import { DataSource } from '@angular/cdk/collections';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -32,8 +32,8 @@ export class TemplateListDialogComponent implements OnInit {
     'qemu',
   ];
   selectedType: string;
-  configurationForm: FormGroup;
-  positionForm: FormGroup;
+  configurationForm: UntypedFormGroup;
+  positionForm: UntypedFormGroup;
   templates: Template[];
   filteredTemplates: Template[];
   selectedTemplate: Template;
@@ -44,7 +44,7 @@ export class TemplateListDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<TemplateListDialogComponent>,
     private templateService: TemplateService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private toasterService: ToasterService,
     private nonNegativeValidator: NonNegativeValidator
@@ -52,11 +52,11 @@ export class TemplateListDialogComponent implements OnInit {
     this.controller = data['controller'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
-      numberOfNodes: new FormControl(1, [ Validators.compose([Validators.required, nonNegativeValidator.get])]),
+      numberOfNodes: new UntypedFormControl(1, [ Validators.compose([Validators.required, nonNegativeValidator.get])]),
     });
     this.positionForm = this.formBuilder.group({
-      top: new FormControl(0, Validators.required),
-      left: new FormControl(0, Validators.required),
+      top: new UntypedFormControl(0, Validators.required),
+      left: new UntypedFormControl(0, Validators.required),
     });
   }
 

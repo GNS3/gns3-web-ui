@@ -57,7 +57,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
     private symbolService: SymbolService,
     private domSanitizer: DomSanitizer,
     private themeService: ThemeService,
-    private overlayContainer: OverlayContainer, 
+    private overlayContainer: OverlayContainer,
   ) {
     this.overlay = overlayContainer.getContainerElement();
   }

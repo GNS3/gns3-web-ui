@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../cartography/models/node';
 import{ Controller } from '../../../models/controller';
@@ -14,17 +14,17 @@ import { ToasterService } from '../../../services/toaster.service';
 export class ChangeHostnameDialogComponent implements OnInit {
   controller:Controller ;
   node: Node;
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   name: string;
 
   constructor(
     public dialogRef: MatDialogRef<ChangeHostnameDialogComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.inputForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
   }
 

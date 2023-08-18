@@ -68,7 +68,7 @@
         <mat-form-field class="form-field">
           <input matInput type="number" [(ngModel)]="qemuTemplate.cpus" placeholder="vCPUs" />
         </mat-form-field>
-       
+
         <mat-form-field class="form-field">
           <mat-select placeholder="Boot priority" [(ngModel)]="qemuTemplate.boot_priority">
             <mat-option *ngFor="let priority of bootPriorities" [value]="priority[1]">
@@ -200,6 +200,7 @@
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
           Configure custom adapters</button
         ><br />
+        <mat-checkbox [(ngModel)]="qemuTemplate.replicate_network_connection_state"> Replicate network connection state </mat-checkbox>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -278,6 +279,8 @@
               <input matInput type="text" [(ngModel)]="qemuTemplate.options" placeholder="Options" />
             </mat-form-field>
             <mat-checkbox [(ngModel)]="qemuTemplate.linked_clone"> Use as a linked base VM </mat-checkbox>
+            <br /><mat-checkbox [(ngModel)]="qemuTemplate.tpm"> Enable the Trusted Platform Module (TPM)</mat-checkbox>
+            <br /><mat-checkbox [(ngModel)]="qemuTemplate.uefi"> Enable the UEFI boot mode </mat-checkbox>
           </mat-card-content>
         </mat-card>
       </mat-expansion-panel>

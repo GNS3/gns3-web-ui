@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { ElectronService } from 'ngx-electron';
@@ -11,19 +11,19 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./screenshot-dialog.component.scss'],
 })
 export class ScreenshotDialogComponent implements OnInit {
-  nameForm: FormGroup;
+  nameForm: UntypedFormGroup;
   isPngAvailable: boolean;
   filetype: string = 'svg';
 
   constructor(
     public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private electronService: ElectronService,
     private deviceService: DeviceDetectorService
   ) {
     this.nameForm = this.formBuilder.group({
-      screenshotName: new FormControl(`screenshot-${Date.now()}`, [Validators.required]),
+      screenshotName: new UntypedFormControl(`screenshot-${Date.now()}`, [Validators.required]),
     });
     this.isPngAvailable = this.electronService.isWindows || this.deviceService.getDeviceInfo().os === 'Windows';
   }

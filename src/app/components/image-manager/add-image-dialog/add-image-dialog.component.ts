@@ -36,9 +36,9 @@ export class AddImageDialogComponent implements OnInit {
   ) {}
 
   public ngOnInit() {
-    this.controller =this.data;
+    this.controller = this.data;
 
-    this.uploaderImage = new FileUploader({});
+    this.uploaderImage = new FileUploader({url: ''});
     this.uploaderImage.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };

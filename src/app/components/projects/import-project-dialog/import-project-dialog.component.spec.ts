@@ -148,7 +148,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should call uploading item with correct arguments', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
     fileSelectDirective.uploader.queue.push(fileItem);
     spyOn(fileSelectDirective.uploader, 'uploadItem');
 
@@ -167,7 +167,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should clear queue after calling delete', () => {
-    fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {}));
+    fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''}));
     spyOn(fileSelectDirective.uploader.queue, 'pop');
 
     component.onDeleteClick();
@@ -177,7 +177,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should prepare correct upload path for file', () => {
-    fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {}));
+    fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''}));
     component.projectNameForm.controls['projectName'].setValue('newProject');
 
     component.onImportClick();
@@ -187,7 +187,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should navigate to progress view after clicking import', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
     fileSelectDirective.uploader.queue.push(fileItem);
 
     component.onImportClick();
@@ -227,7 +227,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should show delete button after selecting project', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {
@@ -240,7 +240,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should hide delete button after deselecting project', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {

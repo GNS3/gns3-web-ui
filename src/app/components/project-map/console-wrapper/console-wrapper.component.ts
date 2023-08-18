@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
@@ -37,7 +37,7 @@ export class ConsoleWrapperComponent implements OnInit {
   ) {}
 
   nodes: Node[] = [];
-  selected = new FormControl(0);
+  selected = new UntypedFormControl(0);
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'

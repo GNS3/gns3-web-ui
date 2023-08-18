@@ -79,13 +79,15 @@ export class NodeConsoleService {
     let nodesToStart = 'Please start the following nodes if you want to open consoles for them: ';
     let nodesToStartCounter = 0;
     nodes.forEach((n) => {
-      if (n.status === 'started') {
-        this.mapSettingsService.logConsoleSubject.next(true);
-        // this timeout is required due to xterm.js implementation
-        setTimeout(() => { this.openConsoleForNode(n); }, 500);
-      } else {
-        nodesToStartCounter++;
-        nodesToStart += n.name + ' '
+      if (n.console_type !== "none") {
+        if (n.status === 'started') {
+          this.mapSettingsService.logConsoleSubject.next(true);
+          // this timeout is required due to xterm.js implementation
+          setTimeout(() => { this.openConsoleForNode(n); }, 500);
+        } else {
+          nodesToStartCounter++;
+          nodesToStart += n.name + ' '
+        }
       }
     });
     if (nodesToStartCounter > 0) {
@@ -94,16 +96,19 @@ export class NodeConsoleService {
   }
 
   openConsolesForAllNodesInNewTabs(nodes: Node[]) {
-    let nodesToStart = 'Please start the following nodes if you want to open consoles for them: ';
+    let nodesToStart = 'Please start the following nodes if you want to open consoles in tabs for them: ';
     let nodesToStartCounter = 0;
     nodes.forEach((n) => {
-      if (n.status === 'started') {
-        let url = this.router.url.split('/');
-        let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;
-        window.open(urlString);
-      } else {
-        nodesToStartCounter++;
-        nodesToStart += n.name + ' '
+      // opening a console in tab is only supported for telnet type
+      if (n.console_type === "telnet") {
+        if (n.status === 'started') {
+          let url = this.router.url.split('/');
+          let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;
+          window.open(urlString);
+        } else {
+          nodesToStartCounter++;
+          nodesToStart += n.name + ' '
+        }
       }
     });
     if (nodesToStartCounter > 0) {

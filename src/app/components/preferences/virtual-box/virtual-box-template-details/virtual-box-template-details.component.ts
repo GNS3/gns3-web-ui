@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import{ Controller } from '../../../../models/controller';
@@ -25,8 +25,8 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   networkTypes = [];
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   isConfiguratorOpened: boolean = false;
-  generalSettingsForm: FormGroup;
-  networkForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
+  networkForm: UntypedFormGroup;
 
   @ViewChild('customAdaptersConfigurator')
   customAdaptersConfigurator: CustomAdaptersComponent;
@@ -36,21 +36,21 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     private controllerService: ControllerService,
     private virtualBoxService: VirtualBoxService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private virtualBoxConfigurationService: VirtualBoxConfigurationService,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
-      ram: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
+      ram: new UntypedFormControl('', Validators.required),
     });
 
     this.networkForm = this.formBuilder.group({
-      adapters: new FormControl('', Validators.required),
-      nameFormat: new FormControl('', Validators.required),
-      size: new FormControl('', Validators.required),
+      adapters: new UntypedFormControl('', Validators.required),
+      nameFormat: new UntypedFormControl('', Validators.required),
+      size: new UntypedFormControl('', Validators.required),
     });
   }
 

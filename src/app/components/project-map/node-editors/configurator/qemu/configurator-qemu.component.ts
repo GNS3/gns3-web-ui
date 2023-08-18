@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
@@ -21,7 +21,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   onCloseOptions = [];
   bootPriorities = [];
@@ -46,13 +46,13 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogQemuComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private qemuService: QemuService,
     private qemuConfigurationService: QemuConfigurationService
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
-      ram: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
+      ram: new UntypedFormControl('', Validators.required),
     });
   }
 

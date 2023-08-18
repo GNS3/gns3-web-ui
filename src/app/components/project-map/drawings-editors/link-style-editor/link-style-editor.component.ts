@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Link } from '../../../../models/link';
 import { Project } from '../../../../models/project';
@@ -20,12 +20,12 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   controller:Controller ;
   project: Project;
   link: Link;
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   borderTypes = ["Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
 
   constructor(
     public dialogRef: MatDialogRef<LinkStyleEditorDialogComponent>,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private toasterService: ToasterService,
     private linkService: LinkService,
     private linksDataSource: LinksDataSource,
@@ -34,9 +34,9 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     private nonNegativeValidator: NonNegativeValidator
   ) {
     this.formGroup = this.formBuilder.group({
-      color: new FormControl('', [Validators.required]),
-      width: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      type: new FormControl('', [Validators.required])
+      color: new UntypedFormControl('', [Validators.required]),
+      width: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      type: new UntypedFormControl('', [Validators.required])
     });
   }
 

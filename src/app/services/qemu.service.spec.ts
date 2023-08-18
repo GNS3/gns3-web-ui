@@ -78,6 +78,9 @@ describe('QemuService', () => {
       template_id: '1',
       template_type: 'qemu',
       usage: '',
+      replicate_network_connection_state: true,
+      tpm: false,
+      uefi: false,
     };
 
     service.saveTemplate(controller, template).subscribe();
@@ -130,6 +133,9 @@ describe('QemuService', () => {
       template_id: '',
       template_type: 'qemu',
       usage: '',
+      replicate_network_connection_state: true,
+      tpm: false,
+      uefi: false,
     };
 
     service.addTemplate(controller, template).subscribe();

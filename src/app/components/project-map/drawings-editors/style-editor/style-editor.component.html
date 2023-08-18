@@ -2,7 +2,7 @@
 
 <div class="modal-form-container">
   <form [formGroup]="formGroup">
-    <mat-form-field class="form-field">
+    <mat-form-field class="form-field" *ngIf="element.fill !== undefined">
       <input
         matInput
         [ngModelOptions]="{ standalone: true }"
@@ -23,12 +23,30 @@
     </mat-form-field>
 
     <mat-form-field class="form-field">
-      <input matInput formControlName="borderWidth" placeholder="Border width" type="number" />
+      <input
+        matInput formControlName="borderWidth"
+        placeholder="Border width"
+        type="number"
+        min="0"
+        max="100"
+      />
     </mat-form-field>
     <mat-form-field class="form-field">
       <mat-select placeholder="Border style" [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.stroke_dasharray">
         <mat-option *ngFor="let type of borderTypes" [value]="type.value"> {{ type.name }} </mat-option>
       </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="form-field" *ngIf="element.rx !== undefined">
+      <input
+        matInput
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Corner radius"
+        type="number"
+        min="0"
+        max="100"
+        [(ngModel)]="element.rx"
+      />
     </mat-form-field>
 
     <mat-form-field class="form-field">

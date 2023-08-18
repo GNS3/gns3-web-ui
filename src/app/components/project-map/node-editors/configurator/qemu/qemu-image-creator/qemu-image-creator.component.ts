@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { QemuImg } from '../../../../../../models/qemu/qemu-img';
 import{ Controller } from '../../../../../../models/controller';
@@ -75,19 +75,19 @@ export class QemuImageCreatorComponent implements OnInit {
   lazyRefcountsOptions: string[] = ['off', 'on'];
   refcountBitsOptions: number[] = [1, 2, 4, 8, 16, 32, 64];
   zeroedGrainOptions: string[] = ['on', 'off'];
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<QemuImageCreatorComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private qemuService: QemuService
   ) {
     this.inputForm = this.formBuilder.group({
-      qemu_img: new FormControl('', Validators.required),
-      path: new FormControl('', Validators.required),
-      size: new FormControl('', Validators.required),
+      qemu_img: new UntypedFormControl('', Validators.required),
+      path: new UntypedFormControl('', Validators.required),
+      size: new UntypedFormControl('', Validators.required),
     });
   }
 

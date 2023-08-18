@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
@@ -27,9 +27,9 @@ export class AddDockerTemplateComponent implements OnInit {
   selectedImage: DockerImage;
   newImageSelected: boolean = false;
 
-  virtualMachineForm: FormGroup;
-  containerNameForm: FormGroup;
-  networkAdaptersForm: FormGroup;
+  virtualMachineForm: UntypedFormGroup;
+  containerNameForm: UntypedFormGroup;
+  networkAdaptersForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -38,7 +38,7 @@ export class AddDockerTemplateComponent implements OnInit {
     private dockerService: DockerService,
     private toasterService: ToasterService,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private templateMocksService: TemplateMocksService,
     private configurationService: DockerConfigurationService,
     private computeService: ComputeService
@@ -46,15 +46,15 @@ export class AddDockerTemplateComponent implements OnInit {
     this.dockerTemplate = new DockerTemplate();
 
     this.virtualMachineForm = this.formBuilder.group({
-      filename: new FormControl(null, Validators.required),
+      filename: new UntypedFormControl(null, Validators.required),
     });
 
     this.containerNameForm = this.formBuilder.group({
-      templateName: new FormControl(null, Validators.required),
+      templateName: new UntypedFormControl(null, Validators.required),
     });
 
     this.networkAdaptersForm = this.formBuilder.group({
-      adapters: new FormControl('1', Validators.required),
+      adapters: new UntypedFormControl('1', Validators.required),
     });
   }
 

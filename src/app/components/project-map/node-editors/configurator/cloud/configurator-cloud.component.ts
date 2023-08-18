@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
@@ -19,7 +19,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   onCloseOptions = [];
   bootPriorities = [];
@@ -41,11 +41,11 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogCloudComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
   }
 

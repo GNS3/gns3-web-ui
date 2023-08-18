@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -16,24 +16,24 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  generalSettingsForm: FormGroup;
-  networkForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
+  networkForm: UntypedFormGroup;
   consoleTypes: string[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogIouComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private configurationService: IouConfigurationService
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
 
     this.networkForm = this.formBuilder.group({
-      ethernetAdapters: new FormControl('', Validators.required),
-      serialAdapters: new FormControl('', Validators.required),
+      ethernetAdapters: new UntypedFormControl('', Validators.required),
+      serialAdapters: new UntypedFormControl('', Validators.required),
     });
   }
 

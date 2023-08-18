@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import{ Controller } from '../../../../../models/controller';
 import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
@@ -18,7 +18,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
   controller:Controller ;
   ethernetSwitchTemplate: EthernetSwitchTemplate;
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
   categories = [];
   consoleTypes: string[] = [];
@@ -28,14 +28,14 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     private controllerService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
     private router: Router
   ) {
     this.inputForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
     });
   }
 

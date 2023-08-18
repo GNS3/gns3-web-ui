@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import{ Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
@@ -24,8 +24,8 @@ export class IouTemplateDetailsComponent implements OnInit {
   consoleResolutions: string[] = [];
   categories = [];
 
-  generalSettingsForm: FormGroup;
-  networkForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
+  networkForm: UntypedFormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,19 +34,19 @@ export class IouTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private configurationService: IouConfigurationService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
-      path: new FormControl('', Validators.required),
-      initialConfig: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
+      path: new UntypedFormControl('', Validators.required),
+      initialConfig: new UntypedFormControl('', Validators.required),
     });
 
     this.networkForm = this.formBuilder.group({
-      ethernetAdapters: new FormControl('', Validators.required),
-      serialAdapters: new FormControl('', Validators.required),
+      ethernetAdapters: new UntypedFormControl('', Validators.required),
+      serialAdapters: new UntypedFormControl('', Validators.required),
     });
   }
 

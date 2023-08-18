@@ -27,7 +27,11 @@
                             "rxjs-compat/add/operator/map",
                             "classnames",
                             "stylenames",
-                            "source-map-js"
+                            "source-map-js",
+                            "spark-md5",
+                            "xterm",
+                            "xterm-addon-attach",
+                            "xterm-addon-fit"
                         ],
                         "outputPath": "dist",
                         "index": "src/index.html",
@@ -215,7 +219,6 @@
             }
         }
     },
-    "defaultProject": "gns3-web-ui",
     "schematics": {
         "@schematics/angular:component": {
             "prefix": "app",

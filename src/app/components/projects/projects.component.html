@@ -77,17 +77,17 @@
               matTooltip="Export project"
               matTooltipClass="custom-tooltip"
               (click)="exportSelectProject(row)"
-              
+
             >
             <mat-icon aria-label="Export project">arrow_downward</mat-icon>
 
             </button>
-            
+
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="delete" >
-          <mat-header-cell *matHeaderCellDef  class="action"> 
+          <mat-header-cell *matHeaderCellDef  class="action">
             <button mat-button   matTooltip="Delete all projects"   matTooltipClass="custom-tooltip"*ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
              <mat-icon>delete</mat-icon>
             </button>

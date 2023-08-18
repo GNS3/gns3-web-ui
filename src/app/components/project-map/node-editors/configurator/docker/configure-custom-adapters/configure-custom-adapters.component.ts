@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
 import{ Controller } from '../../../../../../models/controller';
@@ -22,7 +22,7 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfigureCustomAdaptersDialogComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private dockerConfigurationService: DockerConfigurationService
   ) {}
 

@@ -10,14 +10,14 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { timer } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { Controller } from "../../../models/controller";
 import { GroupService } from "../../../services/group.service";
 
 export const groupNameAsyncValidator = (controller: Controller, groupService: GroupService) => {
-  return (control: FormControl) => {
+  return (control: UntypedFormControl) => {
     return timer(500).pipe(
       switchMap(() => groupService.getGroups(controller)),
       map((response) => {

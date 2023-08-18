@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConsoleService } from '../../../services/settings/console.service';
 import { ToasterService } from '../../../services/toaster.service';
@@ -10,8 +10,8 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./console.component.scss'],
 })
 export class ConsoleComponent implements OnInit {
-  consoleForm = new FormGroup({
-    command: new FormControl(''),
+  consoleForm = new UntypedFormGroup({
+    command: new UntypedFormControl(''),
   });
 
   constructor(private router: Router, private consoleService: ConsoleService, private toasterService: ToasterService) {}

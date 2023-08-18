@@ -150,7 +150,7 @@ describe('DrawingService', () => {
     drawing.z = 1;
     drawing.rotation = 0;
     drawing.svg =
-      '<svg height="100" width="200"><rect fill="#ffffff" fill-opacity="1.0" height="100" stroke="#000000" stroke-width="2" width="200" /></svg>';
+      '<svg height="100" width="200"><rect fill="#ffffff" fill-opacity="1.0" height="100" stroke="#000000" stroke-width="2" width="200" rx="0" ry="0" /></svg>';
 
     service.duplicate(controller, drawing.project_id, drawing).subscribe();
 
