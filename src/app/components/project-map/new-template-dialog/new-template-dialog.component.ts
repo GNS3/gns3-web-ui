@@ -488,7 +488,7 @@ export class NewTemplateDialogComponent implements OnInit {
     iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
     iouTemplate.builtin = this.applianceToInstall.builtin;
     iouTemplate.category = this.getCategory();
-    iouTemplate.default_name_format = this.applianceToInstall.port_name_format;
+    iouTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iouTemplate.symbol = this.applianceToInstall.symbol;
     iouTemplate.compute_id = 'local';
     iouTemplate.template_id = uuid();
@@ -536,7 +536,7 @@ export class NewTemplateDialogComponent implements OnInit {
     iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
     iosTemplate.builtin = this.applianceToInstall.builtin;
     iosTemplate.category = this.getCategory();
-    iosTemplate.default_name_format = this.applianceToInstall.port_name_format;
+    iosTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iosTemplate.symbol = this.applianceToInstall.symbol;
     iosTemplate.compute_id = 'local';
     iosTemplate.template_id = uuid();
@@ -574,7 +574,7 @@ export class NewTemplateDialogComponent implements OnInit {
     dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
     dockerTemplate.builtin = this.applianceToInstall.builtin;
     dockerTemplate.category = this.getCategory();
-    dockerTemplate.default_name_format = this.applianceToInstall.port_name_format;
+    dockerTemplate.default_name_format = this.applianceToInstall.default_name_format;
     dockerTemplate.symbol = this.applianceToInstall.symbol;
     dockerTemplate.compute_id = 'local';
     dockerTemplate.template_id = uuid();
@@ -626,11 +626,16 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.category = this.getCategory();
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
+    qemuTemplate.port_segment_size = this.applianceToInstall.port_segment_size;
+    qemuTemplate.default_name_format = this.applianceToInstall.default_name_format
     qemuTemplate.symbol = this.applianceToInstall.symbol;
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = version.images.hda_disk_image;
     qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
+    qemuTemplate.hdc_disk_image = version.images.hdc_disk_image;
+    qemuTemplate.hdd_disk_image = version.images.hdd_disk_image;
+    qemuTemplate.cdrom_image = version.images.cdrom_image;
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = this.applianceToInstall.usage;
     qemuTemplate.platform = this.applianceToInstall.qemu.arch;

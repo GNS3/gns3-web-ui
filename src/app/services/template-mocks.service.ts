@@ -58,6 +58,9 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'qemu',
       usage: '',
+      replicate_network_connection_state: true,
+      tpm: false,
+      uefi: false,
     };
 
     return of(template);
