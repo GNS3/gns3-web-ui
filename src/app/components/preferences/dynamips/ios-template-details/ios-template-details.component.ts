@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import{ Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
@@ -31,40 +31,40 @@ export class IosTemplateDetailsComponent implements OnInit {
   networkAdaptersForPlatform = {};
   networkModules = {};
 
-  generalSettingsForm: FormGroup;
-  memoryForm: FormGroup;
-  advancedForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
+  memoryForm: UntypedFormGroup;
+  advancedForm: UntypedFormGroup;
 
   constructor(
     private route: ActivatedRoute,
     private controllerService: ControllerService,
     private iosService: IosService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private iosConfigurationService: IosConfigurationService,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
-      path: new FormControl('', Validators.required),
-      initialConfig: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
+      path: new UntypedFormControl('', Validators.required),
+      initialConfig: new UntypedFormControl('', Validators.required),
     });
 
     this.memoryForm = this.formBuilder.group({
-      ram: new FormControl('', Validators.required),
-      nvram: new FormControl('', Validators.required),
-      iomemory: new FormControl('', Validators.required),
-      disk0: new FormControl('', Validators.required),
-      disk1: new FormControl('', Validators.required),
+      ram: new UntypedFormControl('', Validators.required),
+      nvram: new UntypedFormControl('', Validators.required),
+      iomemory: new UntypedFormControl('', Validators.required),
+      disk0: new UntypedFormControl('', Validators.required),
+      disk1: new UntypedFormControl('', Validators.required),
     });
 
     this.advancedForm = this.formBuilder.group({
-      systemId: new FormControl('', Validators.required),
-      idlemax: new FormControl('', Validators.required),
-      idlesleep: new FormControl('', Validators.required),
-      execarea: new FormControl('', Validators.required),
+      systemId: new UntypedFormControl('', Validators.required),
+      idlemax: new UntypedFormControl('', Validators.required),
+      idlesleep: new UntypedFormControl('', Validators.required),
+      execarea: new UntypedFormControl('', Validators.required),
     });
   }
 

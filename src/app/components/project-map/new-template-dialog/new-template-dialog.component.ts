@@ -149,7 +149,7 @@ export class NewTemplateDialogComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
 
-    this.uploader = new FileUploader({});
+    this.uploader = new FileUploader({url: ''});
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -168,7 +168,7 @@ export class NewTemplateDialogComponent implements OnInit {
       this.getAppliance(item.url);
     };
 
-    this.uploaderImage = new FileUploader({});
+    this.uploaderImage = new FileUploader({url: ''});
     this.uploaderImage.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };

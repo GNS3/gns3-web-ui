@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
@@ -40,7 +40,7 @@ export class TextEditorDialogComponent implements OnInit {
   element: TextElement;
   rotation: string;
   isTextEditable: boolean;
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
 
   constructor(
     private dialogRef: MatDialogRef<TextEditorDialogComponent>,
@@ -53,7 +53,7 @@ export class TextEditorDialogComponent implements OnInit {
     private nodesDataSource: NodesDataSource,
     private linkService: LinkService,
     private linksDataSource: LinksDataSource,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private toasterService: ToasterService,
     private rotationValidator: RotationValidator,
     private fontFixer: FontFixer
@@ -61,7 +61,7 @@ export class TextEditorDialogComponent implements OnInit {
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({
-      rotation: new FormControl('', [Validators.required, this.rotationValidator.get]),
+      rotation: new UntypedFormControl('', [Validators.required, this.rotationValidator.get]),
     });
 
     if (this.label && this.node) {

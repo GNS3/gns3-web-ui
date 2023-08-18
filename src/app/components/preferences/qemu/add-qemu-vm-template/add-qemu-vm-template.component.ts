@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UploadServiceService } from '../../../../common/uploading-processbar/upload-service.service';
@@ -38,9 +38,9 @@ export class AddQemuVmTemplateComponent implements OnInit {
   uploadedFile: boolean = false;
   uploadProgress: number = 0;
 
-  nameForm: FormGroup;
-  memoryForm: FormGroup;
-  diskForm: FormGroup;
+  nameForm: UntypedFormGroup;
+  memoryForm: UntypedFormGroup;
+  diskForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -49,7 +49,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private templateMocksService: TemplateMocksService,
     private configurationService: QemuConfigurationService,
     private computeService: ComputeService,
@@ -59,20 +59,20 @@ export class AddQemuVmTemplateComponent implements OnInit {
     this.qemuTemplate = new QemuTemplate();
 
     this.nameForm = this.formBuilder.group({
-      templateName: new FormControl(null, Validators.required),
+      templateName: new UntypedFormControl(null, Validators.required),
     });
 
     this.memoryForm = this.formBuilder.group({
-      ramMemory: new FormControl('256', Validators.required),
+      ramMemory: new UntypedFormControl('256', Validators.required),
     });
 
     this.diskForm = this.formBuilder.group({
-      fileName: new FormControl('', Validators.required),
+      fileName: new UntypedFormControl('', Validators.required),
     });
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({});
+    this.uploader = new FileUploader({url: ''});
 
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;

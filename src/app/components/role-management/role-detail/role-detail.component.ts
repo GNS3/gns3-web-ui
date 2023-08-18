@@ -16,7 +16,7 @@ import {ActivatedRoute} from "@angular/router";
 import {Controller} from "@models/controller";
 import {ControllerService} from "@services/controller.service";
 import {Role} from "@models/api/role";
-import {FormControl, FormGroup} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {ToasterService} from "@services/toaster.service";
 import {HttpErrorResponse} from "@angular/common/http";
 
@@ -28,16 +28,16 @@ import {HttpErrorResponse} from "@angular/common/http";
 export class RoleDetailComponent implements OnInit {
   controller: Controller;
   role: Role;
-  editRoleForm: FormGroup;
+  editRoleForm: UntypedFormGroup;
 
   constructor(private roleService: RoleService,
               private controllerService: ControllerService,
               private toastService: ToasterService,
               private route: ActivatedRoute) {
 
-    this.editRoleForm = new FormGroup({
-      rolename: new FormControl(),
-      description: new FormControl(),
+    this.editRoleForm = new UntypedFormGroup({
+      rolename: new UntypedFormControl(),
+      description: new UntypedFormControl(),
     });
   }
 

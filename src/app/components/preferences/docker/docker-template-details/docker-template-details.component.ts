@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import{ Controller } from '../../../../models/controller';
@@ -26,7 +26,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   adapters: CustomAdapter[] = [];
   displayedColumns: string[] = ['adapter_number', 'port_name'];
 
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,14 +34,14 @@ export class DockerTemplateDetailsComponent implements OnInit {
     private dockerService: DockerService,
     private toasterService: ToasterService,
     private configurationService: DockerConfigurationService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      adapter: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      adapter: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
     });
   }
 

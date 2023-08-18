@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
@@ -26,7 +26,7 @@ export class StyleEditorDialogComponent implements OnInit {
   project: Project;
   drawing: Drawing;
   element: ElementData;
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   borderTypes = [
     { qt: 'none', value: 'none', name: 'Solid' },
     { qt: '10, 2', value: '25, 25', name: 'Dash' },
@@ -42,15 +42,15 @@ export class StyleEditorDialogComponent implements OnInit {
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private drawingService: DrawingService,
     private drawingsDataSource: DrawingsDataSource,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private toasterService: ToasterService,
     private nonNegativeValidator: NonNegativeValidator,
     private rotationValidator: RotationValidator,
     private qtDasharrayFixer: QtDasharrayFixer
   ) {
     this.formGroup = this.formBuilder.group({
-      borderWidth: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      rotation: new FormControl('', [Validators.required, rotationValidator.get]),
+      borderWidth: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      rotation: new UntypedFormControl('', [Validators.required, rotationValidator.get]),
     });
   }
 

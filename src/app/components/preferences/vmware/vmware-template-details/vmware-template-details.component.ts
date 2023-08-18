@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
 import{ Controller } from '../../../../models/controller';
@@ -18,7 +18,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
 export class VmwareTemplateDetailsComponent implements OnInit {
   controller:Controller ;
   vmwareTemplate: VmwareTemplate;
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   isConfiguratorOpened: boolean = false;
   isSymbolSelectionOpened: boolean = false;
@@ -35,14 +35,14 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     private controllerService: ControllerService,
     private vmwareService: VmwareService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private vmwareConfigurationService: VmwareConfigurationService,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
     });
   }
 

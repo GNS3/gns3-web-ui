@@ -12,7 +12,7 @@
 */
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
 import {GroupNameValidator} from "@components/group-management/add-group-dialog/GroupNameValidator";
 import {GroupService} from "../../../services/group.service";
@@ -34,20 +34,20 @@ import {map, startWith} from "rxjs/operators";
 })
 export class AddGroupDialogComponent implements OnInit {
 
-  groupNameForm: FormGroup;
+  groupNameForm: UntypedFormGroup;
   controller: Controller;
 
   users: User[];
   usersToAdd: Set<User> = new Set([]);
   filteredUsers: Observable<User[]>
   loading = false;
-  autocompleteControl = new FormControl();
+  autocompleteControl = new UntypedFormControl();
 
 
 
   constructor(private dialogRef: MatDialogRef<AddGroupDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
-              private formBuilder: FormBuilder,
+              private formBuilder: UntypedFormBuilder,
               private groupNameValidator: GroupNameValidator,
               private groupService: GroupService,
               private userService: UserService,
@@ -57,7 +57,7 @@ export class AddGroupDialogComponent implements OnInit {
   ngOnInit(): void {
     this.controller = this.data.controller;
     this.groupNameForm = this.formBuilder.group({
-      groupName: new FormControl(
+      groupName: new UntypedFormControl(
         null,
         [Validators.required, this.groupNameValidator.get],
         [groupNameAsyncValidator(this.data.controller, this.groupService)]

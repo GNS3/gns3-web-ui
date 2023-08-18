@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
@@ -30,7 +30,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   activateCpuThrottling: boolean = true;
   isConfiguratorOpened: boolean = false;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
   selectPlatform: string[] = [];
   selectedPlatform: string;
 
@@ -44,13 +44,13 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private configurationService: QemuConfigurationService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
     });
   }
 
