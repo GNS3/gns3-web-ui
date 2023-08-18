@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
@@ -29,9 +29,9 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
 
-  iosImageForm: FormGroup;
-  iosNameForm: FormGroup;
-  iosMemoryForm: FormGroup;
+  iosImageForm: UntypedFormGroup;
+  iosNameForm: UntypedFormGroup;
+  iosMemoryForm: UntypedFormGroup;
   selectedPlatform: string;
 
   networkAdaptersForTemplate: string[] = [];
@@ -59,7 +59,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     private controllerService: ControllerService,
     private iosService: IosService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private templateMocksService: TemplateMocksService,
     private iosConfigurationService: IosConfigurationService,
@@ -70,22 +70,22 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.iosTemplate = new IosTemplate();
 
     this.iosImageForm = this.formBuilder.group({
-      imageName: new FormControl(null, [Validators.required]),
+      imageName: new UntypedFormControl(null, [Validators.required]),
     });
 
     this.iosNameForm = this.formBuilder.group({
-      templateName: new FormControl(null, [Validators.required]),
-      platform: new FormControl(null, [Validators.required]),
-      chassis: new FormControl(null, [Validators.required]),
+      templateName: new UntypedFormControl(null, [Validators.required]),
+      platform: new UntypedFormControl(null, [Validators.required]),
+      chassis: new UntypedFormControl(null, [Validators.required]),
     });
 
     this.iosMemoryForm = this.formBuilder.group({
-      memory: new FormControl(null, [Validators.required]),
+      memory: new UntypedFormControl(null, [Validators.required]),
     });
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({});
+    this.uploader = new FileUploader({url: ''});
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -16,24 +16,24 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  generalSettingsForm: FormGroup;
-  memoryForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
+  memoryForm: UntypedFormGroup;
   consoleTypes: string[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogIosComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private configurationService: IosConfigurationService
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
 
     this.memoryForm = this.formBuilder.group({
-      ram: new FormControl('', Validators.required),
-      nvram: new FormControl('', Validators.required),
+      ram: new UntypedFormControl('', Validators.required),
+      nvram: new UntypedFormControl('', Validators.required),
     });
   }
 

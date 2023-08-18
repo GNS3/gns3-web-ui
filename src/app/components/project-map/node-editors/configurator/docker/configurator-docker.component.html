@@ -40,7 +40,7 @@
               <mat-form-field class="form-field">
                   <input formControlName="cpus" matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
               </mat-form-field>
-              
+
               <button mat-button class="form-field" (click)="configureCustomAdapters()">
                   Configure custom adapters
               </button>
@@ -108,7 +108,7 @@
               <textarea matInput type="text" [(ngModel)]="node.properties.extra_hosts"></textarea></mat-form-field
             ><br />
 
-            <h6>Additional directories</h6>
+            <h6>Additional volumes</h6>
             <mat-form-field class="form-field">
               <textarea matInput type="text" [(ngModel)]="node.properties.extra_volumes"></textarea>
             </mat-form-field>

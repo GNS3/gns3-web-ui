@@ -11,13 +11,13 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Controller} from "../../../models/controller";
-import {FormControl} from "@angular/forms";
+import {UntypedFormControl} from "@angular/forms";
 import {timer} from "rxjs";
 import {map, switchMap} from "rxjs/operators";
 import {UserService} from "../../../services/user.service";
 
 export const userNameAsyncValidator = (controller: Controller, userService: UserService, except: string = '') => {
-  return (control: FormControl) => {
+  return (control: UntypedFormControl) => {
     return timer(500).pipe(
       switchMap(() => userService.list(controller)),
       map((response) => {

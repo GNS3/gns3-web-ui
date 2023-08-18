@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -15,16 +15,16 @@ export class ConfiguratorDialogNatComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  generalSettingsForm: FormGroup;
+  generalSettingsForm: UntypedFormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogNatComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.generalSettingsForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
   }
 

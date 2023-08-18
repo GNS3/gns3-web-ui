@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Project, ProjectVariable } from '../../../models/project';
 import{ Controller } from '../../../models/controller';
@@ -18,8 +18,8 @@ export class EditProjectDialogComponent implements OnInit {
 
   controller:Controller ;
   project: Project;
-  formGroup: FormGroup;
-  variableFormGroup: FormGroup;
+  formGroup: UntypedFormGroup;
+  variableFormGroup: UntypedFormGroup;
   projectVariables: ProjectVariable[];
 
   displayedColumns: string[] = ['name', 'value', 'actions'];
@@ -29,22 +29,22 @@ export class EditProjectDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<EditProjectDialogComponent>,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private projectService: ProjectService,
     private toasterService: ToasterService,
     private nonNegativeValidator: NonNegativeValidator
   ) {
     this.formGroup = this.formBuilder.group({
-      projectName: new FormControl('', [Validators.required]),
-      width: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      height: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      nodeGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      drawingGridSize: new FormControl('', [Validators.required, nonNegativeValidator.get]),
+      projectName: new UntypedFormControl('', [Validators.required]),
+      width: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      height: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      nodeGridSize: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      drawingGridSize: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
     });
 
     this.variableFormGroup = this.formBuilder.group({
-      name: new FormControl('', [Validators.required]),
-      value: new FormControl('', [Validators.required]),
+      name: new UntypedFormControl('', [Validators.required]),
+      value: new UntypedFormControl('', [Validators.required]),
     });
   }
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -15,9 +15,9 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   controller:Controller ;
   node: Node;
   name: string;
-  nameForm: FormGroup;
-  inputForm: FormGroup;
-  abstractForm: FormGroup;
+  nameForm: UntypedFormGroup;
+  inputForm: UntypedFormGroup;
+  abstractForm: UntypedFormGroup;
   consoleTypes: string[] = [];
 
   nodeMappings = new Map<string, string>();
@@ -38,22 +38,22 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogAtmSwitchComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     this.nameForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
 
     this.inputForm = this.formBuilder.group({
-      sourcePort: new FormControl('', Validators.required),
-      sourceVci: new FormControl('', Validators.required),
-      destinationPort: new FormControl('', Validators.required),
-      destinationVci: new FormControl('', Validators.required),
+      sourcePort: new UntypedFormControl('', Validators.required),
+      sourceVci: new UntypedFormControl('', Validators.required),
+      destinationPort: new UntypedFormControl('', Validators.required),
+      destinationVci: new UntypedFormControl('', Validators.required),
     });
 
     this.abstractForm = this.formBuilder.group({
-      sourceVpi: new FormControl('', Validators.required),
-      destinationVpi: new FormControl('', Validators.required),
+      sourceVpi: new UntypedFormControl('', Validators.required),
+      destinationVpi: new UntypedFormControl('', Validators.required),
     });
   }
 

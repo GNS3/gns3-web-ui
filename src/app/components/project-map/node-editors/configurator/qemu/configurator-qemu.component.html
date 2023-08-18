@@ -32,7 +32,7 @@
             <mat-form-field class="form-field">
               <input matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="vCPUs" />
             </mat-form-field>
-    
+
             <mat-form-field class="form-field">
               <mat-select placeholder="Boot priority" [(ngModel)]="node.properties.boot_priority">
                 <mat-option *ngFor="let priority of bootPriorities" [value]="priority[1]">
@@ -237,6 +237,12 @@
                 <mat-form-field class="form-field">
                   <input matInput type="text" [(ngModel)]="node.properties.options" placeholder="Options" />
                 </mat-form-field>
+                <br /><mat-checkbox [(ngModel)]="node.properties.tpm">
+                   Enable the Trusted Platform Module (TPM)
+                 </mat-checkbox>
+                <br /><mat-checkbox [(ngModel)]="node.properties.uefi">
+                   Enable the UEFI boot mode
+                 </mat-checkbox>
               </mat-card-content>
             </mat-card>
           </mat-tab>

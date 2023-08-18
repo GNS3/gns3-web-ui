@@ -9,7 +9,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../cartography/models/drawing';
@@ -63,7 +63,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   public style: object = {};
   public isDraggingEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
-  public selected = new FormControl(0);
+  public selected = new UntypedFormControl(0);
 
   constructor(
     private projectWebServiceHandler: ProjectWebServiceHandler,
@@ -232,12 +232,14 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
               location.assign(
                 `gns3+vnc://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
-            } else if (node.console_type === 'spice') {
+            } else if (node.console_type.startsWith('spice')) {
               location.assign(
                 `gns3+spice://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
+            } else if (node.console_type.startsWith('http')) {
+               window.open(`${node.console_type}://${node.console_host}:${node.console}`);
             } else {
-              this.showCommand('Supported console types: telnet, vnc, spice.');
+              this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
             }
           } else {
             this.showCommand(`This node must be started before a console can be opened.`);

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
@@ -19,7 +19,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 })
 export class AddBlankProjectDialogComponent implements OnInit {
   controller:Controller ;
-  projectNameForm: FormGroup;
+  projectNameForm: UntypedFormGroup;
   uuid: string;
   onAddProject = new EventEmitter<string>();
 
@@ -29,13 +29,13 @@ export class AddBlankProjectDialogComponent implements OnInit {
     private dialog: MatDialog,
     private projectService: ProjectService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private projectNameValidator: ProjectNameValidator
   ) {}
 
   ngOnInit() {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new FormControl(
+      projectName: new UntypedFormControl(
         null,
         [Validators.required, this.projectNameValidator.get],
         [projectNameAsyncValidator(this.controller, this.projectService)]

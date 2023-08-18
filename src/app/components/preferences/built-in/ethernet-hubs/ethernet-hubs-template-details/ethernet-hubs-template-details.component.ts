@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import{ Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
@@ -17,7 +17,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   controller:Controller ;
   ethernetHubTemplate: EthernetHubTemplate;
   numberOfPorts: number;
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
 
   categories = [];
@@ -27,14 +27,14 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     private controllerService: ControllerService,
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
     private router: Router
   ) {
     this.inputForm = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      defaultName: new FormControl('', Validators.required),
-      symbol: new FormControl('', Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      defaultName: new UntypedFormControl('', Validators.required),
+      symbol: new UntypedFormControl('', Validators.required),
     });
   }
 

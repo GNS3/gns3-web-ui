@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
@@ -18,13 +18,13 @@ export class CreateSnapshotDialogComponent {
   controller:Controller ;
   project: Project;
   snapshot: Snapshot = new Snapshot();
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   snapshots: string[] = [];
   isInRunningState: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private toasterService: ToasterService,
     private snapshotService: SnapshotService,
     private nodesDataSource: NodesDataSource,
@@ -34,7 +34,7 @@ export class CreateSnapshotDialogComponent {
     this.project = data['project'];
 
     this.inputForm = this.formBuilder.group({
-      snapshotName: new FormControl('', Validators.required),
+      snapshotName: new UntypedFormControl('', Validators.required),
     });
 
     if (this.project && this.project.project_id) {

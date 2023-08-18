@@ -998,7 +998,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.exportPortableProjectDialog();
     }
   }
-  
+
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
       width: '700px',

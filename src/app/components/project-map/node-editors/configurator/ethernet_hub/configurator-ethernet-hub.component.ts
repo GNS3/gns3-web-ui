@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import{ Controller } from '../../../../../models/controller';
@@ -16,7 +16,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   controller:Controller ;
   node: Node;
   numberOfPorts: number;
-  inputForm: FormGroup;
+  inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   categories = [];
   name: string;
@@ -25,11 +25,11 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogEthernetHubComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private vpcsConfigurationService: VpcsConfigurationService
   ) {
     this.inputForm = this.formBuilder.group({
-      name: new FormControl('', Validators.required),
+      name: new UntypedFormControl('', Validators.required),
     });
   }
 

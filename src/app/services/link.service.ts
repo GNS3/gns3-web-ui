@@ -63,9 +63,6 @@ export class LinkService {
   }
 
   updateLink(controller:Controller , link: Link) {
-    link.x = Math.round(link.x);
-    link.y = Math.round(link.y);
-
     return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 

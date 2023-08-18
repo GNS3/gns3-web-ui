@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
@@ -26,7 +26,7 @@ export class StyleEditorDialogComponent implements OnInit {
   project: Project;
   drawing: Drawing;
   element: ElementData;
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   borderTypes = [
     { qt: 'none', value: 'none', name: 'Solid' },
     { qt: '10, 2', value: '25, 25', name: 'Dash' },
@@ -42,15 +42,15 @@ export class StyleEditorDialogComponent implements OnInit {
     private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
     private drawingService: DrawingService,
     private drawingsDataSource: DrawingsDataSource,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private toasterService: ToasterService,
     private nonNegativeValidator: NonNegativeValidator,
     private rotationValidator: RotationValidator,
     private qtDasharrayFixer: QtDasharrayFixer
   ) {
     this.formGroup = this.formBuilder.group({
-      borderWidth: new FormControl('', [Validators.required, nonNegativeValidator.get]),
-      rotation: new FormControl('', [Validators.required, rotationValidator.get]),
+      borderWidth: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      rotation: new UntypedFormControl('', [Validators.required, rotationValidator.get]),
     });
   }
 
@@ -68,6 +68,11 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.stroke_dasharray = (this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined ) ? '': this.drawing.element.stroke_dasharray ?? 'none' ;
       this.element.stroke_width = this.drawing.element.stroke_width;
     }
+
+    if (this.drawing.element instanceof RectElement) {
+        this.element.rx = this.drawing.element.rx;
+        this.element.ry = this.drawing.element.ry;
+      }
 
     if (this.element.stroke_width === undefined) this.element.stroke_width = 0;
     this.formGroup.controls['borderWidth'].setValue(this.element.stroke_width);
@@ -105,6 +110,12 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
       }
+
+      if (this.drawing.element instanceof RectElement) {
+        this.drawing.element.rx = this.element.rx;
+        this.drawing.element.ry = this.element.rx;  // set ry with rx because we don't have ry in the form
+      }
+
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
       mapDrawing.element = this.drawing.element;
 
@@ -125,4 +136,6 @@ export class ElementData {
   stroke: string;
   stroke_width: number;
   stroke_dasharray: string;
+  rx: number;
+  ry: number;
 }

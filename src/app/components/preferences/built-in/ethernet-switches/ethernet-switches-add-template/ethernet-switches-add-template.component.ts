@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../../models/compute';
@@ -19,7 +19,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 export class EthernetSwitchesAddTemplateComponent implements OnInit {
   controller:Controller ;
   templateName: string = '';
-  formGroup: FormGroup;
+  formGroup: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
   constructor(
@@ -29,12 +29,12 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
     private router: Router,
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private computeService: ComputeService
   ) {
     this.formGroup = this.formBuilder.group({
-      templateName: new FormControl('', Validators.required),
-      numberOfPorts: new FormControl(8, Validators.required),
+      templateName: new UntypedFormControl('', Validators.required),
+      numberOfPorts: new UntypedFormControl(8, Validators.required),
     });
   }
 
