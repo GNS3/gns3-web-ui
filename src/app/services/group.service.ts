@@ -29,46 +29,46 @@ export class GroupService {
   }
 
   getGroups(controller: Controller) {
-    return this.httpController.get<Group[]>(controller, '/groups');
+    return this.httpController.get<Group[]>(controller, '/access/groups');
   }
 
   getGroupMember(controller: Controller, groupId: string) {
-    return this.httpController.get<User[]>(controller, `/groups/${groupId}/members`);
+    return this.httpController.get<User[]>(controller, `/access/groups/${groupId}/members`);
   }
 
   addGroup(controller: Controller, name: string): Observable<Group> {
-    return this.httpController.post<Group>(controller, `/groups`, {name});
+    return this.httpController.post<Group>(controller, `/access/groups`, {name});
   }
 
   delete(controller: Controller, user_group_id: string) {
-    return this.httpController.delete(controller, `/groups/${user_group_id}`);
+    return this.httpController.delete(controller, `/access/groups/${user_group_id}`);
   }
 
   get(controller: Controller, user_group_id: string) {
-    return this.httpController.get(controller, `/groups/${user_group_id}`);
+    return this.httpController.get(controller, `/access/groups/${user_group_id}`);
   }
 
   addMemberToGroup(controller: Controller, group: Group, user: User) {
-    return this.httpController.put(controller, `/groups/${group.user_group_id}/members/${user.user_id}`, {});
+    return this.httpController.put(controller, `/access/groups/${group.user_group_id}/members/${user.user_id}`, {});
   }
 
   removeUser(controller: Controller, group: Group, user: User) {
-    return this.httpController.delete(controller, `/groups/${group.user_group_id}/members/${user.user_id}`);
+    return this.httpController.delete(controller, `/access/groups/${group.user_group_id}/members/${user.user_id}`);
   }
 
   update(controller: Controller, group: Group) {
-    return this.httpController.put(controller, `/groups/${group.user_group_id}`, {name: group.name});
+    return this.httpController.put(controller, `/access/groups/${group.user_group_id}`, {name: group.name});
   }
 
   getGroupRole(controller: Controller, groupId: string) {
-    return this.httpController.get<Role[]>(controller, `/groups/${groupId}/roles`);
+    return this.httpController.get<Role[]>(controller, `/access/groups/${groupId}/roles`);
   }
 
   removeRole(controller: Controller, group: Group, role: Role) {
-    return this.httpController.delete(controller, `/groups/${group.user_group_id}/roles/${role.role_id}`);
+    return this.httpController.delete(controller, `/access/groups/${group.user_group_id}/roles/${role.role_id}`);
   }
 
   addRoleToGroup(controller: Controller, group: Group, role: Role) {
-    return this.httpController.put(controller, `/groups/${group.user_group_id}/roles/${role.role_id}`, {});
+    return this.httpController.put(controller, `/access/groups/${group.user_group_id}/roles/${role.role_id}`, {});
   }
 }

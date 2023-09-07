@@ -14,42 +14,42 @@ export class UserService {
   ) {}
 
   getInformationAboutLoggedUser(controller: Controller) {
-    return this.httpController.get<User>(controller, '/users/me/');
+    return this.httpController.get<User>(controller, '/access/users/me/');
   }
 
   get(controller: Controller, user_id: string) {
-    return this.httpController.get<User>(controller, `/users/${user_id}`);
+    return this.httpController.get<User>(controller, `/access/users/${user_id}`);
   }
 
   list(controller: Controller) {
-    return this.httpController.get<User[]>(controller, '/users');
+    return this.httpController.get<User[]>(controller, '/access/users');
   }
 
   add(controller: Controller, user: any): Observable<User> {
-    return this.httpController.post<User>(controller, `/users`, user);
+    return this.httpController.post<User>(controller, `/access/users`, user);
   }
 
   delete(controller: Controller, user_id: string) {
-    return this.httpController.delete(controller, `/users/${user_id}`);
+    return this.httpController.delete(controller, `/access/users/${user_id}`);
   }
 
   update(controller: Controller, user: any): Observable<User> {
-    return this.httpController.put<User>(controller, `/users/${user.user_id}`, user);
+    return this.httpController.put<User>(controller, `/access/users/${user.user_id}`, user);
   }
 
   getGroupsByUserId(controller: Controller, user_id: string) {
-    return this.httpController.get<Group[]>(controller, `/users/${user_id}/groups`);
+    return this.httpController.get<Group[]>(controller, `/access/users/${user_id}/groups`);
   }
 
   getPermissionsByUserId(controller: Controller, user_id: string) {
-    return this.httpController.get<Permission[]>(controller, `/users/${user_id}/permissions`);
+    return this.httpController.get<Permission[]>(controller, `/access/users/${user_id}/permissions`);
   }
 
   addPermission(controller: Controller, user_id: string, permission: Permission) {
-    return this.httpController.put(controller, `/users/${user_id}/permissions/${permission.permission_id}`, {});
+    return this.httpController.put(controller, `/access/users/${user_id}/permissions/${permission.permission_id}`, {});
   }
 
   removePermission(controller: Controller, user_id: string, permission: Permission) {
-    return this.httpController.delete(controller, `/users/${user_id}/permissions/${permission.permission_id}`);
+    return this.httpController.delete(controller, `/access/users/${user_id}/permissions/${permission.permission_id}`);
   }
 }
