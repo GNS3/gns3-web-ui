@@ -80,21 +80,6 @@
           </ul>
         </div>
       </mat-tab>
-      <mat-tab label="Permissions">
-        <div>
-          <button
-            mat-button
-            [routerLink]="['/controller', controller.id, 'management', 'users', user.user_id, 'permissions']">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </div>
-
-        <app-editable-permission
-          [permission]="permission"
-          [controller]="controller"
-          *ngFor="let permission of permissions">
-        </app-editable-permission>
-      </mat-tab>
     </mat-tab-group>
 
   </div>

@@ -295,25 +295,10 @@ import { RoleFilterPipe } from './components/role-management/role-filter.pipe';
 import { AddRoleDialogComponent } from './components/role-management/add-role-dialog/add-role-dialog.component';
 import { DeleteRoleDialogComponent } from './components/role-management/delete-role-dialog/delete-role-dialog.component';
 import { RoleDetailComponent } from './components/role-management/role-detail/role-detail.component';
-import { PermissionEditorComponent } from './components/role-management/role-detail/permission-editor/permission-editor.component';
-import { EditablePermissionComponent } from './components/role-management/role-detail/permission-editor/editable-permission/editable-permission.component';
-import { PermissionEditorValidateDialogComponent } from './components/role-management/role-detail/permission-editor/permission-editor-validate-dialog/permission-editor-validate-dialog.component';
-import { PermissionsManagementComponent } from './components/permissions-management/permissions-management.component';
-import { PermissionEditLineComponent } from '@components/permissions-management/permission-edit-line/permission-edit-line.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import { UserPermissionsComponent } from './components/user-management/user-detail/user-permissions/user-permissions.component';
-import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {PathAutoCompleteComponent} from './components/permissions-management/add-permission-line/path-auto-complete/path-auto-complete.component';
-import {FilterCompletePipe} from './components/permissions-management/add-permission-line/path-auto-complete/filter-complete.pipe';
-import { AddPermissionLineComponent } from './components/permissions-management/add-permission-line/add-permission-line.component';
-import { MethodButtonComponent } from './components/permissions-management/method-button/method-button.component';
-import { ActionButtonComponent } from './components/permissions-management/action-button/action-button.component';
-import { DeletePermissionDialogComponent } from './components/permissions-management/delete-permission-dialog/delete-permission-dialog.component';
+import {MatAutocompleteModule} from "@angular/material/autocomplete";;
 import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
-import { PermissionsFilterPipe } from './components/permissions-management/permissions-filter.pipe';
-import { DisplayPathPipe } from './components/permissions-management/display-path.pipe';
-import {RolePermissionsComponent} from "@components/role-management/role-detail/role-permissions/role-permissions.component";
 import { ChangeUserPasswordComponent } from './components/user-management/user-detail/change-user-password/change-user-password.component';
 import {MatMenuModule} from "@angular/material/menu";
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
@@ -533,26 +518,9 @@ import { ProjectMapLockConfirmationDialogComponent } from './components/project-
         AddRoleDialogComponent,
         DeleteRoleDialogComponent,
         RoleDetailComponent,
-        PermissionEditorComponent,
-        EditablePermissionComponent,
-        PermissionEditorValidateDialogComponent,
         RemoveToGroupDialogComponent,
-        PermissionsManagementComponent,
         AddRoleToGroupComponent,
-        PermissionEditLineComponent,
-        AddPermissionLineComponent,
-        MethodButtonComponent,
-        ActionButtonComponent,
-        DeletePermissionDialogComponent,
-        PathAutoCompleteComponent,
-        FilterCompletePipe,
-        UserPermissionsComponent,
-        PermissionsFilterPipe,
-        RolePermissionsComponent,
-        DisplayPathPipe,
         ChangeUserPasswordComponent,
-        FilterCompletePipe,
-        DisplayPathPipe,
         ChangeUserPasswordComponent,
         ProjectReadmeComponent,
         ImageManagerComponent,

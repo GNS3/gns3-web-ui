@@ -51,18 +51,7 @@
                  class="overflow-col">{{ row.description }}</div>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="permissions">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>Permissions (Allow)</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <div class="permissions-list">
-              <div class="overflow-col permission" *ngFor="let permission of row.permissions">
-                <div>{{permission.action}}</div>
-                <div>{{permission.methods.join(',')}}</div>
-                <div>{{permission.path}}</div>
-              </div>
-              </div>
-          </mat-cell>
-        </ng-container>
+
         <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef class="small-col"></mat-header-cell>
           <mat-cell *matCellDef="let row" class="small-col">

@@ -38,23 +38,7 @@
         </div>
       </div>
       <mat-divider [vertical]="true"></mat-divider>
-      <div class="permissions">
-        <div class="header">
-          <div>Permissions</div>
-          <div>
-            <button
-              mat-button
-              [routerLink]="['/controller', controller.id, 'management', 'roles', role.role_id, 'permissions']">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </div>
-        </div>
-        <app-editable-permission
-          [permission]="permission"
-          [controller]="controller"
-          *ngFor="let permission of role.permissions">
-        </app-editable-permission>
-      </div>
+
     </div>
   </div>
 </div>

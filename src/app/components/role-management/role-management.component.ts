@@ -37,7 +37,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 export class RoleManagementComponent implements OnInit {
   controller: Controller;
   dataSource = new MatTableDataSource<Role>();
-  displayedColumns = ['select', 'name', 'description', 'permissions', 'delete'];
+  displayedColumns = ['select', 'name', 'description', 'delete'];
   selection = new SelectionModel<Role>(true, []);
   searchText = '';
 
