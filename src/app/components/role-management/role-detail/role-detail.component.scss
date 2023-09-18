@@ -10,11 +10,22 @@
   justify-content: center;
 }
 
-.permissions {
+.privileges {
   width: 35vw;
   display: flex;
   flex-direction: column;
-  justify-content: stretch;
+  justify-content: center;
+
+}
+.clickable {
+  cursor: pointer;
+}
+
+.privilege {
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  justify-content: space-between;
 }
 
 .permission {
@@ -33,7 +44,7 @@
   flex-direction: row;
   justify-content: space-between;
   padding-bottom: 20px;
-
+  padding-left: 10px;
 }
 .header > div {
   font-size: 2em;

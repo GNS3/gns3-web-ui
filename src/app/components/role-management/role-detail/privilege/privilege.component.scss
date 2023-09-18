@@ -1,0 +1,32 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  padding-left: 10px;
+}
+
+.title {
+  justify-content: center;
+}
+
+.header > div > button {
+  margin: 10px;
+}
+
+.privilege {
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  justify-content: space-between;
+}
+
+.add {
+  color: green;
+}
+
+.delete {
+  color: red;
+  text-decoration: line-through;
+}

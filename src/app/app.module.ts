@@ -309,6 +309,7 @@ import { ExportPortableProjectComponent } from './components/export-portable-pro
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { ProjectMapLockConfirmationDialogComponent } from './components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
+import { PrivilegeComponent } from './components/role-management/role-detail/privilege/privilege.component';
 
 @NgModule({
     declarations: [
@@ -531,6 +532,7 @@ import { ProjectMapLockConfirmationDialogComponent } from './components/project-
         NodesMenuConfirmationDialogComponent,
         ConfirmationDeleteAllProjectsComponent,
         ProjectMapLockConfirmationDialogComponent,
+        PrivilegeComponent,
     ],
     imports: [
         BrowserModule,

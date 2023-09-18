@@ -1,3 +1,5 @@
+import {Privilege} from "@models/api/Privilege";
+
 export interface Role {
   name: string;
   description: string;
@@ -5,4 +7,5 @@ export interface Role {
   updated_at: string;
   role_id: string;
   is_builtin: boolean;
+  privileges: Privilege[];
 }

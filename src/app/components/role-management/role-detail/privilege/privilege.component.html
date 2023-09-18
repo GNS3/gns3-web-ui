@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="privilege.component.scss">
+<div class="privileges">
+  <div class="header">
+    <div class="title">Privileges</div>
+    <div *ngIf="!disable">
+      <button mat-button *ngIf="!editMode">
+        <mat-icon (click)="editMode = true">edit</mat-icon>
+      </button>
+      <button *ngIf="editMode" mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
+      <button *ngIf="editMode" mat-raised-button color="primary" (click)="close()">Update</button>
+    </div>
+  </div>
+  <div *ngFor="let privilege of privileges">
+    <div class="privilege">
+      <mat-checkbox
+        *ngIf="editMode"
+        [checked]="ownedPrivilegesList.includes(privilege.privilege_id)"
+        (change)="onPrivilegeChange($event.checked, privilege)"></mat-checkbox>
+      <div *ngIf="editMode; else actualPrivileges">
+        <div
+          [ngClass]="{add: changer.isAdded(privilege.privilege_id), delete: changer.isDeleted(privilege.privilege_id)}">
+          {{privilege.name}}</div>
+      </div>
+      <ng-template #actualPrivileges>
+        <div *ngIf="ownedPrivilegesList.includes(privilege.privilege_id)">{{privilege.name}}</div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+

@@ -15,6 +15,7 @@ import {HttpController} from "./http-controller.service";
 import {Controller} from "../models/controller";
 import {Group} from "../models/groups/group";
 import {Role} from "../models/api/role";
+import {Privilege} from "@models/api/Privilege";
 
 @Injectable({
   providedIn: 'root'
@@ -42,4 +43,13 @@ export class RoleService {
   update(controller: Controller, role: Role) {
     return this.httpController.put(controller, `/access/roles/${role.role_id}`, {name: role.name, description: role.description});
   }
+
+  setPrivileges(controller: Controller, roleId: string, privilegeId: string) {
+    return this.httpController.put(controller, `/access/roles/${roleId}/privileges/${privilegeId}`, undefined);
+  }
+
+  removePrivileges(controller: Controller, roleId: string, privilegeId: string) {
+    return this.httpController.delete(controller, `/access/roles/${roleId}/privileges/${privilegeId}`);
+  }
+
 }
