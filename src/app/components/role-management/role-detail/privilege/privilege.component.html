@@ -10,21 +10,33 @@
       <button *ngIf="editMode" mat-raised-button color="primary" (click)="close()">Update</button>
     </div>
   </div>
-  <div *ngFor="let privilege of privileges">
-    <div class="privilege">
-      <mat-checkbox
-        *ngIf="editMode"
-        [checked]="ownedPrivilegesList.includes(privilege.privilege_id)"
-        (change)="onPrivilegeChange($event.checked, privilege)"></mat-checkbox>
-      <div *ngIf="editMode; else actualPrivileges">
-        <div
-          [ngClass]="{add: changer.isAdded(privilege.privilege_id), delete: changer.isDeleted(privilege.privilege_id)}">
-          {{privilege.name}}</div>
+  <div *ngFor="let privilegeName of privileges | groupPrivileges">
+    <div *ngIf="editMode; else normalMode">
+      <div class="privilege">
+        <div class="key">{{privilegeName.key}}:</div>
+        <div class="values">
+          <div class="box" *ngFor="let privilegeVerb of privilegeName.values">
+            <mat-checkbox
+              (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
+              [checked]="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)"></mat-checkbox>
+            <div
+              [ngClass]="{add: changer.isAdded(privilegeVerb.privilege.privilege_id), delete: changer.isDeleted(privilegeVerb.privilege.privilege_id)}">
+              {{privilegeVerb.verb}}</div>
+          </div>
+        </div>
       </div>
-      <ng-template #actualPrivileges>
-        <div *ngIf="ownedPrivilegesList.includes(privilege.privilege_id)">{{privilege.name}}</div>
-      </ng-template>
     </div>
+    <ng-template #normalMode>
+      <div class="privilege" *ngIf="ownedPrivilegesName.includes(privilegeName.key)">
+        <div class="key">{{privilegeName.key}}:</div>
+        <div class="values">
+          <div *ngFor="let privilegeVerb of privilegeName.values">
+            <div [ngClass]="{box: ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)}"
+                 *ngIf="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)">{{privilegeVerb.verb}}</div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
   </div>
 </div>
 

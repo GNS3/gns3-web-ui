@@ -33,8 +33,8 @@ export class RoleDetailComponent implements OnInit {
   controller: Controller;
   $role: ReplaySubject<Role> = new ReplaySubject<Role>(1);
   editRoleForm: UntypedFormGroup;
-  $ownedPrivilegesId: Observable<string[]> =  this.$role.pipe(map((role: Role) => {
-    return role.privileges.map((p: Privilege) => p.privilege_id);
+  $ownedPrivilegesId: Observable<Privilege[]> =  this.$role.pipe(map((role: Role) => {
+    return role.privileges
   }));
 
   privileges: Observable<Privilege[]>;

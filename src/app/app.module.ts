@@ -310,6 +310,7 @@ import { NodesMenuConfirmationDialogComponent } from './components/project-map/n
 import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { ProjectMapLockConfirmationDialogComponent } from './components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { PrivilegeComponent } from './components/role-management/role-detail/privilege/privilege.component';
+import { GroupPrivilegesPipe } from './components/role-management/role-detail/privilege/group-privileges.pipe';
 
 @NgModule({
     declarations: [
@@ -533,6 +534,7 @@ import { PrivilegeComponent } from './components/role-management/role-detail/pri
         ConfirmationDeleteAllProjectsComponent,
         ProjectMapLockConfirmationDialogComponent,
         PrivilegeComponent,
+        GroupPrivilegesPipe,
     ],
     imports: [
         BrowserModule,

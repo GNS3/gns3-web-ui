@@ -12,9 +12,16 @@ export class PrivilegeComponent implements OnInit {
 
   @Input() disable = true;
   @Input() privileges: Privilege[] = [];
-  @Input() ownedPrivilegesList: string[] = []
+  @Input() set ownedPrivilege(privileges: Privilege[]) {
+    if(privileges) {
+      this.ownedPrivilegesName = privileges.map((p: Privilege) => p.name.split(".")[0])
+      this.ownedPrivilegesList = privileges.map((p: Privilege) => p.privilege_id);
+    }
+  }
   @Output() update: EventEmitter<IPrivilegesChange> = new EventEmitter<IPrivilegesChange>();
 
+  ownedPrivilegesName: string[] = [];
+  ownedPrivilegesList: string[] = [];
   changer = new PrivilegeChange(this.ownedPrivilegesList);
   private editModeState = false;
 

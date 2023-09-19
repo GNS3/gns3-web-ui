@@ -10,13 +10,7 @@
   justify-content: center;
 }
 
-.privileges {
-  width: 35vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 
-}
 .clickable {
   cursor: pointer;
 }
@@ -45,6 +39,7 @@
   justify-content: space-between;
   padding-bottom: 20px;
   padding-left: 10px;
+
 }
 .header > div {
   font-size: 2em;

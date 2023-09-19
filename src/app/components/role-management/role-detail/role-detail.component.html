@@ -40,7 +40,7 @@
       <mat-divider [vertical]="true"></mat-divider>
       <app-privilege
         [disable]="($role | async)?.is_builtin"
-        [ownedPrivilegesList]="$ownedPrivilegesId | async"
+        [ownedPrivilege]="$ownedPrivilegesId | async"
       [privileges]="privileges | async"
       (update)="onPrivilegesUpdate($event)"></app-privilege>
     </div>
