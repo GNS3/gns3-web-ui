@@ -8,27 +8,27 @@
         [routerLink]="['/controller', controller.id, 'management', 'roles']">
         <mat-icon aria-label="Back to role management">keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Role {{role.name}} details</h1>
+      <h1 class="col">Role {{($role | async)?.name}} details</h1>
     </div>
     <div class="main">
       <div class="details">
         <div>
           <mat-form-field>
             <mat-label>Role name:</mat-label>
-            <input matInput type="text" [ngModel]="role.name">
+            <input matInput type="text" [ngModel]="($role | async)?.name">
           </mat-form-field>
         </div>
         <div>
           <mat-form-field>
             <mat-label>Description:</mat-label>
-            <input matInput type="text" [ngModel]="role.description">
+            <input matInput type="text" [ngModel]="($role | async)?.description">
           </mat-form-field>
         </div>
-        <div>Creation date:   {{role.created_at}}</div>
-        <div>Last update Date:   {{role.updated_at}}</div>
-        <div>UUID:   {{role.role_id}}</div>
+        <div>Creation date:   {{($role | async)?.created_at}}</div>
+        <div>Last update Date:   {{($role | async )?.updated_at}}</div>
+        <div>UUID:   {{($role | async)?.role_id}}</div>
         <div>
-          <mat-checkbox [checked]="role.is_builtin" disabled>Is build in</mat-checkbox>
+          <mat-checkbox [checked]="($role | async)?.is_builtin" disabled>Is build in</mat-checkbox>
         </div>
         <div mat-dialog-actions class="button-div">
           <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
@@ -38,23 +38,11 @@
         </div>
       </div>
       <mat-divider [vertical]="true"></mat-divider>
-      <div class="permissions">
-        <div class="header">
-          <div>Permissions</div>
-          <div>
-            <button
-              mat-button
-              [routerLink]="['/controller', controller.id, 'management', 'roles', role.role_id, 'permissions']">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </div>
-        </div>
-        <app-editable-permission
-          [permission]="permission"
-          [controller]="controller"
-          *ngFor="let permission of role.permissions">
-        </app-editable-permission>
-      </div>
+      <app-privilege
+        [disable]="($role | async)?.is_builtin"
+        [ownedPrivilege]="$ownedPrivilegesId | async"
+      [privileges]="privileges | async"
+      (update)="onPrivilegesUpdate($event)"></app-privilege>
     </div>
   </div>
 </div>

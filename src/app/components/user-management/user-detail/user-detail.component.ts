@@ -8,7 +8,6 @@ import {Controller} from "@models/controller";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
 import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Permission} from "@models/api/permission";
 import {Role} from "@models/api/role";
 import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -27,7 +26,6 @@ export class UserDetailComponent implements OnInit {
   user: User;
   controller: Controller;
   user_id: string;
-  permissions: Permission[];
   changingPassword: boolean = false;
 
   constructor(public userService: UserService,
@@ -42,11 +40,10 @@ export class UserDetailComponent implements OnInit {
     this.controller = this.route.snapshot.data['controller'];
     if (!this.controller) this.router.navigate(['/controllers']);
 
-    this.route.data.subscribe((d: { controller: Controller; user: User, groups: Group[], permissions: Permission[]}) => {
+    this.route.data.subscribe((d: { controller: Controller; user: User, groups: Group[]}) => {
       this.user = d.user;
       this.user_id = this.user.user_id;
       this.groups = d.groups;
-      this.permissions = d.permissions;
       this.initForm();
     });
 

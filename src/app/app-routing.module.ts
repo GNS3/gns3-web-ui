@@ -60,20 +60,15 @@ import { ImageManagerComponent } from './components/image-manager/image-manager.
 import { UserDetailComponent } from "./components/user-management/user-detail/user-detail.component";
 import { UserDetailResolver } from "./resolvers/user-detail.resolver";
 import { ManagementComponent } from "./components/management/management.component";
-import { PermissionResolver } from "./resolvers/permission.resolver";
 import { UserGroupsResolver } from "./resolvers/user-groups.resolver";
-import { UserPermissionsResolver } from "./resolvers/user-permissions.resolver";
 import { GroupManagementComponent } from "./components/group-management/group-management.component";
 import { RoleManagementComponent } from "./components/role-management/role-management.component";
-import { PermissionsManagementComponent } from "./components/permissions-management/permissions-management.component";
 import { GroupDetailsComponent } from "./components/group-details/group-details.component";
 import { GroupMembersResolver } from "./resolvers/group-members.resolver";
 import { GroupResolver } from "./resolvers/group.resolver";
 import { GroupRoleResolver } from "./resolvers/group-role.resolver";
 import { RoleDetailComponent } from "./components/role-management/role-detail/role-detail.component";
 import { RoleDetailResolver } from "./resolvers/role-detail.resolver";
-import { RolePermissionsComponent } from "./components/role-management/role-detail/role-permissions/role-permissions.component";
-import { UserPermissionsComponent } from "./components/user-management/user-detail/user-permissions/user-permissions.component";
 
 const routes: Routes = [
   {
@@ -102,7 +97,6 @@ const routes: Routes = [
         resolve: {
           user: UserDetailResolver,
           groups: UserGroupsResolver,
-          permissions: UserPermissionsResolver,
           controller: ControllerResolve},
       },
       { path: 'installed-software', component: InstalledSoftwareComponent },
@@ -237,10 +231,6 @@ const routes: Routes = [
           {
             path: 'roles',
             component: RoleManagementComponent
-          },
-          {
-            path: 'permissions',
-            component: PermissionsManagementComponent
           }
         ]
       },
@@ -262,25 +252,6 @@ const routes: Routes = [
           controller: ControllerResolve
         }
       },
-      {
-        path: 'controller/:controller_id/management/roles/:role_id/permissions',
-        component: RolePermissionsComponent,
-        resolve: {
-          role: RoleDetailResolver,
-          controller: ControllerResolve,
-          permissions: PermissionResolver
-        }
-      },
-      {
-        path: 'controller/:controller_id/management/users/:user_id/permissions',
-        component: UserPermissionsComponent,
-        resolve: {
-          user: UserDetailResolver,
-          userPermissions: UserPermissionsResolver,
-          controller: ControllerResolve,
-          permissions: PermissionResolver
-        }
-      }
     ],
   },
   {
