@@ -28,7 +28,7 @@
         <div>Last update Date:   {{($role | async )?.updated_at}}</div>
         <div>UUID:   {{($role | async)?.role_id}}</div>
         <div>
-          <mat-checkbox [checked]="($role | async)?.is_builtin" disabled>Is build in</mat-checkbox>
+          <mat-checkbox [checked]="($role | async)?.is_builtin" disabled>Is built-in</mat-checkbox>
         </div>
         <div mat-dialog-actions class="button-div">
           <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
