@@ -311,6 +311,12 @@ import { ConfirmationDeleteAllProjectsComponent } from './components/projects/co
 import { ProjectMapLockConfirmationDialogComponent } from './components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { PrivilegeComponent } from './components/role-management/role-detail/privilege/privilege.component';
 import { GroupPrivilegesPipe } from './components/role-management/role-detail/privilege/group-privileges.pipe';
+import { ResourcePoolsManagementComponent } from './components/resource-pools-management/resource-pools-management.component';
+import { AddResourcePoolDialogComponent } from './components/resource-pools-management/add-resource-pool-dialog/add-resource-pool-dialog.component';
+import { DeleteResourcePoolComponent } from './components/resource-pools-management/delete-resource-pool/delete-resource-pool.component';
+import { ResourcePoolsFilterPipe } from './components/resource-pools-management/resource-pools-filter.pipe';
+import { ResourcePoolDetailsComponent } from './components/resource-pool-details/resource-pool-details.component';
+import { DeleteResourceConfirmationDialogComponent } from './components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
 
 @NgModule({
     declarations: [
@@ -535,6 +541,12 @@ import { GroupPrivilegesPipe } from './components/role-management/role-detail/pr
         ProjectMapLockConfirmationDialogComponent,
         PrivilegeComponent,
         GroupPrivilegesPipe,
+        ResourcePoolsManagementComponent,
+        AddResourcePoolDialogComponent,
+        DeleteResourcePoolComponent,
+        ResourcePoolsFilterPipe,
+        ResourcePoolDetailsComponent,
+        DeleteResourceConfirmationDialogComponent,
     ],
     imports: [
         BrowserModule,

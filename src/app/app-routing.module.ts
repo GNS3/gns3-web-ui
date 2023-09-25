@@ -69,6 +69,9 @@ import { GroupResolver } from "./resolvers/group.resolver";
 import { GroupRoleResolver } from "./resolvers/group-role.resolver";
 import { RoleDetailComponent } from "./components/role-management/role-detail/role-detail.component";
 import { RoleDetailResolver } from "./resolvers/role-detail.resolver";
+import {ResourcePoolsManagementComponent} from "@components/resource-pools-management/resource-pools-management.component";
+import {ResourcePoolDetailsComponent} from "@components/resource-pool-details/resource-pool-details.component";
+import {ResourcePoolsResolver} from "@resolvers/resource-pools.resolver";
 
 const routes: Routes = [
   {
@@ -98,6 +101,15 @@ const routes: Routes = [
           user: UserDetailResolver,
           groups: UserGroupsResolver,
           controller: ControllerResolve},
+      },
+      {
+        path: 'controller/:controller_id/management/resourcePools/:pool_id',
+        component: ResourcePoolDetailsComponent,
+        canActivate: [LoginGuard],
+        resolve: {
+          pool: ResourcePoolsResolver,
+          controller: ControllerResolve
+        }
       },
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
@@ -231,6 +243,10 @@ const routes: Routes = [
           {
             path: 'roles',
             component: RoleManagementComponent
+          },
+          {
+            path: "resourcePools",
+            component: ResourcePoolsManagementComponent
           }
         ]
       },

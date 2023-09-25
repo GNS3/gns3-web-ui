@@ -27,6 +27,7 @@ export class ToasterService {
   constructor(private snackbar: MatSnackBar, private zone: NgZone) {}
 
   public error(message: string) {
+    console.error(message);
     this.zone.run(() => {
       this.snackbar.open(message, 'Close', this.snackBarConfigForError);
     });
