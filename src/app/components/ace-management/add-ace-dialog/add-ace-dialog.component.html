@@ -1,0 +1,108 @@
+<h1 mat-dialog-title>Create new ACE</h1>
+<form [formGroup]="addAceForm" class="input-field d-flex" style="height: 380px">
+  <div style="width: 75%; float: left; overflow-y: auto" class="d-inline-block">
+    <cdk-tree [dataSource]="treeDataSource" [treeControl]="treeControl">
+      <!-- This is the tree node template for leaf nodes -->
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="example-tree-node">
+        <!-- use a disabled button to provide padding for tree leaf -->
+        <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+          <button mat-icon-button disabled></button>
+          {{node.name}}
+          <button mat-icon-button (click)="endpointSelection(node)">
+            <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
+              <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
+            </div>
+            <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint" >
+              <mat-icon class="align-middle">check_circle</mat-icon>
+            </div>
+          </button>
+        </div>
+      </cdk-nested-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="example-tree-node" >
+        <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+          <button mat-icon-button [attr.aria-label]="'Toggle ' + node.name" cdkTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          {{node.name}}
+          <button mat-icon-button (click)="endpointSelection(node)">
+            <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
+              <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
+            </div>
+            <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+              <mat-icon class="align-middle">check_circle</mat-icon>
+            </div>
+          </button>
+        </div>
+
+        <div [class.example-tree-invisible]="!treeControl.isExpanded(node)">
+          <ng-container cdkTreeNodeOutlet></ng-container>
+        </div>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+  </div>
+  <mat-divider [vertical]="true"  style="height: auto;"></mat-divider>
+
+  <div class="form-div d-inline-block h-100">
+    <div>
+      <div class="typeSelect">
+        <mat-select placeholder="User/Group" formControlName="type">
+          <mat-option *ngFor="let t of types" [value]="t">{{t.charAt(0).toUpperCase() + t.slice(1)}}</mat-option>
+        </mat-select>
+      </div>
+
+      <app-autocomplete *ngIf="form.type.value === 'user'"
+                        [data]="users"
+                        [eltType]="'Users'"
+                        [displayFn]="displayFnUser"
+                        [filterFn]="_filterUser"
+                        (onSelection)="userSelection($event)">
+      </app-autocomplete>
+
+      <app-autocomplete *ngIf="form.type.value === 'group'"
+                        [data]="groups"
+                        [eltType]="'Groups'"
+                        [displayFn]="displayFn"
+                        [filterFn]="_filter"
+                        (onSelection)="groupSelection($event)">
+      </app-autocomplete>
+
+      <app-autocomplete
+        [data]="roles"
+        [eltType]="'Roles'"
+        [displayFn]="displayFn"
+        [filterFn]="_filter"
+        (onSelection)="roleSelection($event)">
+      </app-autocomplete>
+
+      <div class="d-flex justify-content-between">
+        <div class="d-inline-block" style="float:left;">
+          <mat-checkbox formControlName="propagate" >Propagate</mat-checkbox>
+        </div>
+        <mat-divider [vertical]="true"  style="height: auto;"></mat-divider>
+        <div class="d-inline-block" style="float: right">
+          <button *ngIf="allowed" class="allow "
+                  mat-button
+                  (click)="changeAllowed()">ALLOWED
+          </button>
+          <button *ngIf="!allowed" class="deny"
+                  mat-button
+                  (click)="changeAllowed()">DENY
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div mat-dialog-actions class="button-div">
+      <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+      <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
+              [disabled]="!addAceForm.valid">
+        Add ACE
+      </button>
+    </div>
+  </div>
+
+</form>

@@ -69,6 +69,7 @@ import { GroupResolver } from "./resolvers/group.resolver";
 import { GroupRoleResolver } from "./resolvers/group-role.resolver";
 import { RoleDetailComponent } from "./components/role-management/role-detail/role-detail.component";
 import { RoleDetailResolver } from "./resolvers/role-detail.resolver";
+import {AceManagementComponent} from "@components/ace-management/ace-management.component";
 import {ResourcePoolsManagementComponent} from "@components/resource-pools-management/resource-pools-management.component";
 import {ResourcePoolDetailsComponent} from "@components/resource-pool-details/resource-pool-details.component";
 import {ResourcePoolsResolver} from "@resolvers/resource-pools.resolver";
@@ -247,6 +248,10 @@ const routes: Routes = [
           {
             path: "resourcePools",
             component: ResourcePoolsManagementComponent
+          },
+          {
+            path: 'aces',
+            component: AceManagementComponent
           }
         ]
       },

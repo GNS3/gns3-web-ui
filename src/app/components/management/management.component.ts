@@ -23,7 +23,7 @@ import {ControllerService} from "@services/controller.service";
 export class ManagementComponent implements OnInit {
 
   controller: Controller;
-  links = ['users', 'groups', 'roles', 'resourcePools'];
+  links = ['users', 'groups', 'roles', 'resourcePools', 'aces'];
   activeLink: string = this.links[0];
 
   constructor(
