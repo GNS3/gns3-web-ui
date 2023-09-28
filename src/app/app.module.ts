@@ -309,8 +309,22 @@ import { ExportPortableProjectComponent } from './components/export-portable-pro
 import { NodesMenuConfirmationDialogComponent } from './components/project-map/nodes-menu/nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 import { ConfirmationDeleteAllProjectsComponent } from './components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { ProjectMapLockConfirmationDialogComponent } from './components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
+import {AceManagementComponent} from "@components/ace-management/ace-management.component";
+import { AddAceDialogComponent } from './components/ace-management/add-ace-dialog/add-ace-dialog.component';
+import { AutocompleteComponent } from './components/ace-management/add-ace-dialog/autocomplete/autocomplete.component';
+import { DeleteAceDialogComponent } from './components/ace-management/delete-ace-dialog/delete-ace-dialog.component';
+import { AceFilterPipe } from './filters/ace-filter.pipe';
+import {CdkAccordionModule} from "@angular/cdk/accordion";
+import {CdkTreeModule} from "@angular/cdk/tree";
+
 import { PrivilegeComponent } from './components/role-management/role-detail/privilege/privilege.component';
 import { GroupPrivilegesPipe } from './components/role-management/role-detail/privilege/group-privileges.pipe';
+import { ResourcePoolsManagementComponent } from './components/resource-pools-management/resource-pools-management.component';
+import { AddResourcePoolDialogComponent } from './components/resource-pools-management/add-resource-pool-dialog/add-resource-pool-dialog.component';
+import { DeleteResourcePoolComponent } from './components/resource-pools-management/delete-resource-pool/delete-resource-pool.component';
+import { ResourcePoolsFilterPipe } from './components/resource-pools-management/resource-pools-filter.pipe';
+import { ResourcePoolDetailsComponent } from './components/resource-pool-details/resource-pool-details.component';
+import { DeleteResourceConfirmationDialogComponent } from './components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
 
 @NgModule({
     declarations: [
@@ -533,8 +547,19 @@ import { GroupPrivilegesPipe } from './components/role-management/role-detail/pr
         NodesMenuConfirmationDialogComponent,
         ConfirmationDeleteAllProjectsComponent,
         ProjectMapLockConfirmationDialogComponent,
+        AceManagementComponent,
+        AddAceDialogComponent,
+        AutocompleteComponent,
+        DeleteAceDialogComponent,
+        AceFilterPipe,
         PrivilegeComponent,
         GroupPrivilegesPipe,
+        ResourcePoolsManagementComponent,
+        AddResourcePoolDialogComponent,
+        DeleteResourcePoolComponent,
+        ResourcePoolsFilterPipe,
+        ResourcePoolDetailsComponent,
+        DeleteResourceConfirmationDialogComponent,
     ],
     imports: [
         BrowserModule,
@@ -560,6 +585,8 @@ import { GroupPrivilegesPipe } from './components/role-management/role-detail/pr
         MatSlideToggleModule,
         MatCheckboxModule,
         MatAutocompleteModule,
+        CdkAccordionModule,
+        CdkTreeModule,
     ],
     providers: [
         SettingsService,

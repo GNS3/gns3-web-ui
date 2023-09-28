@@ -1,0 +1,62 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row align-items-center">
+      <a
+        mat-icon-button
+        matTooltip="back to resource pools management"
+        mattooltipclass="custom-tooltip"
+        [routerLink]="['/controller', controller.id, 'management', 'resourcePools']">
+        <mat-icon aria-label="back to resource pools management">keyboard_arrow_left</mat-icon>
+      </a>
+      <h1 class="col">role {{pool.name}} details</h1>
+    </div>
+    <div class="main">
+      <div class="details">
+        <div>
+          <mat-form-field>
+            <mat-label>pool name:</mat-label>
+            <input matInput type="text" [(ngModel)]="pool.name">
+          </mat-form-field>
+        </div>
+        <div>creation date:   {{pool.created_at}}</div>
+        <div>last update date:   {{pool.updated_at}}</div>
+        <div>uuid:   {{pool.resource_pool_id}}</div>
+        <div mat-dialog-actions class="button-div">
+          <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary">
+            update role
+          </button>
+        </div>
+      </div>
+      <mat-divider [vertical]="true"></mat-divider>
+      <div class="resources">
+        <div class="addResource">
+          <div >
+            <input type="text"
+                   placeholder="add project to resource pool"
+                   matInput
+                   [formControl]="addResourceFormControl"
+                   [matAutocomplete]="auto">
+            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+              <mat-option *ngFor="let option of addResourceFilteredOptions | async" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </div>
+          <div>
+            <button mat-button>
+              <mat-icon (click)="addResource()">add</mat-icon>
+            </button>
+          </div>
+        </div>
+          <div class="ownedResources" *ngFor="let resource of pool.resources">
+            <div>{{resource.name}}</div>
+            <div>
+              <button mat-button>
+                <mat-icon (click)="deleteResource(resource)">delete</mat-icon>
+              </button>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

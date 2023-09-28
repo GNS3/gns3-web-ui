@@ -1,0 +1,71 @@
+.input-field {
+  width: 100%;
+}
+
+.height-100 {
+  height: 100%;
+}
+
+.button-div {
+  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.allow {
+  background-color: green;
+}
+
+.deny {
+  background-color: darkred;
+}
+
+.typeSelect {
+  height: 25px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.groupList {
+  display: flex;
+  margin: 10px;
+  justify-content: space-between;
+  flex: 1 1 auto
+}
+
+.groups {
+  display: flex;
+  height: 180px;
+  overflow: auto;
+  flex-direction: column;
+}
+
+.example-tree-invisible {
+  display: none;
+}
+
+.example-tree ul,
+.example-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+.example-tree-node {
+  display: block;
+}
+
+.example-tree-node .example-tree-node {
+  padding-left: 40px;
+}
+
+.form-div {
+  position: relative;
+  width: 25%;
+  float:right;
+  margin-left: 20px;
+}
+
+.selected {
+  color: green
+}

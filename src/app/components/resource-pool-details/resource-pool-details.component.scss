@@ -1,0 +1,67 @@
+.main {
+  display: flex;
+  justify-content: space-around;
+}
+
+.details {
+  width: 30vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.clickable {
+  cursor: pointer;
+}
+
+.privilege {
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  justify-content: space-between;
+}
+
+.permission {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border: 1px solid;
+  padding: 5px;
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  padding-left: 10px;
+
+}
+.header > div {
+  font-size: 2em;
+}
+
+.resources {
+  display: flex;
+  flex-direction: column;
+}
+
+.ownedResources {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.addResource {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
