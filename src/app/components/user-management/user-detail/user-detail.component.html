@@ -80,6 +80,37 @@
           </ul>
         </div>
       </mat-tab>
+
+      <mat-tab label="Aces">
+        <div class="default-content">
+          <table mat-table [dataSource]="aceDatasource" class="mat-elevation-z8">
+
+            <ng-container matColumnDef="endpoint">
+              <th mat-header-cell *matHeaderCellDef> Endpoint </th>
+              <td mat-cell *matCellDef="let element">{{element.endpoint_name}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef > Role </th>
+              <td mat-cell *matCellDef="let element"> {{element.role_name}} </td>
+            </ng-container>
+            <ng-container matColumnDef="propagate">
+              <th mat-header-cell *matHeaderCellDef > Propagate </th>
+              <td mat-cell *matCellDef="let element"> {{element.propagate}} </td>
+            </ng-container>
+            <ng-container matColumnDef="allowed">
+              <th mat-header-cell *matHeaderCellDef> Allowed </th>
+              <td mat-cell *matCellDef="let element"> {{element.allowed}} </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns;"></tr>
+
+
+          </table>
+        </div>
+      </mat-tab>
     </mat-tab-group>
 
   </div>

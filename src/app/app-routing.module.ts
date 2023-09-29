@@ -73,6 +73,8 @@ import {AceManagementComponent} from "@components/ace-management/ace-management.
 import {ResourcePoolsManagementComponent} from "@components/resource-pools-management/resource-pools-management.component";
 import {ResourcePoolDetailsComponent} from "@components/resource-pool-details/resource-pool-details.component";
 import {ResourcePoolsResolver} from "@resolvers/resource-pools.resolver";
+import {GroupAcesResolver} from "@resolvers/group-ace.resolver.ts.resolver";
+import {UserAcesResolver} from "@resolvers/user-aces.resolver";
 
 const routes: Routes = [
   {
@@ -101,6 +103,7 @@ const routes: Routes = [
         resolve: {
           user: UserDetailResolver,
           groups: UserGroupsResolver,
+          aces: UserAcesResolver,
           controller: ControllerResolve},
       },
       {
@@ -262,7 +265,7 @@ const routes: Routes = [
           members: GroupMembersResolver,
           controller: ControllerResolve,
           group: GroupResolver,
-          roles: GroupRoleResolver
+          aces: GroupAcesResolver
         }
       },
       {

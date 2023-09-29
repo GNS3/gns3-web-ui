@@ -8,11 +8,15 @@ import {Controller} from "@models/controller";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
 import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Role} from "@models/api/role";
-import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ChangeUserPasswordComponent} from "@components/user-management/user-detail/change-user-password/change-user-password.component";
-import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
+import {ACE, ACEDetailed} from "@models/api/ACE";
+import {MatTableDataSource} from "@angular/material/table";
+import {AclService} from "@services/acl.service";
+import {RoleService} from "@services/role.service";
+import {Role} from "@models/api/role";
+import {Endpoint} from "@models/api/endpoint";
+
 
 @Component({
   selector: 'app-user-detail',
@@ -27,12 +31,17 @@ export class UserDetailComponent implements OnInit {
   controller: Controller;
   user_id: string;
   changingPassword: boolean = false;
+  aces: ACE[];
+  aceDatasource = new MatTableDataSource<ACEDetailed>();
+  public aceDisplayedColumns = ['endpoint', 'role', 'propagate', 'allowed'];
 
   constructor(public userService: UserService,
               private toasterService: ToasterService,
               private route: ActivatedRoute,
               private router: Router,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private aclService: AclService,
+              private roleService: RoleService) {
 
   }
 
@@ -40,11 +49,22 @@ export class UserDetailComponent implements OnInit {
     this.controller = this.route.snapshot.data['controller'];
     if (!this.controller) this.router.navigate(['/controllers']);
 
-    this.route.data.subscribe((d: { controller: Controller; user: User, groups: Group[]}) => {
+    this.route.data.subscribe((d: { controller: Controller; user: User, groups: Group[], aces: ACE[]}) => {
       this.user = d.user;
       this.user_id = this.user.user_id;
       this.groups = d.groups;
+      this.aces = d.aces;
       this.initForm();
+
+      this.roleService.get(this.controller).subscribe((roles: Role[]) => {
+        this.aclService.getEndpoints(this.controller).subscribe((endps: Endpoint[]) => {
+          this.aceDatasource.data = this.aces.map((ace: ACE) => {
+            const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0]
+            const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0]
+            return {...ace, endpoint_name: endpoint.name, role_name: role.name}
+          })
+        })
+      })
     });
 
   }
