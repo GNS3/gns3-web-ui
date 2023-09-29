@@ -3,6 +3,10 @@ export enum AceType {
   user = "user"
 }
 
+export interface ACEDetailed extends ACE{
+  endpoint_name: string;
+  role_name: string;
+}
 
 export interface ACE {
   ace_id: string;
