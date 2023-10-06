@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Create new pool</h1>
+<h1 mat-dialog-title>Create new resource pool</h1>
 <form [formGroup]="poolNameForm" class="file-name-form">
   <mat-form-field class="file-name-form-field">
     <input
@@ -7,16 +7,16 @@
       type="text"
       formControlName="poolName"
       [ngClass]="{ 'is-invalid': form.poolName?.errors }"
-      placeholder="Please enter a pool name"
+      placeholder="Please enter a resource pool name"
     />
     <mat-error *ngIf="form.poolName?.touched && form.poolName?.errors && form.poolName?.errors.required"
-    >Pool name is required</mat-error
+    >Resource pool name is required</mat-error
     >
     <mat-error *ngIf="form.poolName?.errors && form.poolName?.errors.invalidName"
-    >Pool name is incorrect</mat-error
+    >Resource pool name is incorrect</mat-error
     >
     <mat-error *ngIf="form.poolName?.errors && form.poolName?.errors.projectExist"
-    >Pool with this name exists</mat-error
+    >Resource pool with this name exists</mat-error
     >
   </mat-form-field>
 </form>
@@ -24,7 +24,7 @@
   <div mat-dialog-actions class="button-div">
     <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
     <button mat-button (click)="onAddClick()" tabindex="2" class="add-project-button" mat-raised-button color="primary">
-      Add Pool
+      Add resource pool
     </button>
   </div>
 

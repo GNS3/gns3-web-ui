@@ -18,7 +18,7 @@
   <mat-form-field (click)="$event.stopPropagation()" class="form-field" floatPlaceholder="never">
     <input
       matInput
-      placeholder="Search by name"
+      placeholder="Search template by name"
       (keyup)="filterTemplates($event)"
       [(ngModel)]="searchText"
       [ngModelOptions]="{ standalone: true }"
