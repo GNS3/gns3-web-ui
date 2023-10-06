@@ -26,18 +26,18 @@ import {AclService} from "@services/acl.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
-import {AddAceDialogComponent} from "@components/ace-management/add-ace-dialog/add-ace-dialog.component";
+import {AddAceDialogComponent} from "@components/acl-management/add-ace-dialog/add-ace-dialog.component";
 import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
-import {DeleteAceDialogComponent} from "@components/ace-management/delete-ace-dialog/delete-ace-dialog.component";
+import {DeleteAceDialogComponent} from "@components/acl-management/delete-ace-dialog/delete-ace-dialog.component";
 import {User} from "@models/users/user";
 import {Endpoint} from "@models/api/endpoint";
 
 @Component({
-  selector: 'app-ace-management',
-  templateUrl: './ace-management.component.html',
-  styleUrls: ['./ace-management.component.scss']
+  selector: 'app-acl-management',
+  templateUrl: './acl-management.component.html',
+  styleUrls: ['./acl-management.component.scss']
 })
-export class AceManagementComponent implements OnInit {
+export class AclManagementComponent implements OnInit {
 
 
   @ViewChildren('acesPaginator') acesPaginator: QueryList<MatPaginator>;

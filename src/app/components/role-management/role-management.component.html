@@ -1,7 +1,7 @@
 <div class="content" *ngIf="isReady; else loading">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Roles Management</h1>
+      <h1 class="col">Roles</h1>
       <button class="col" mat-raised-button color="primary" (click)="onDelete(selection.selected)" class="add-button"
               [disabled]="selection.selected.length == 0">
         Delete roles

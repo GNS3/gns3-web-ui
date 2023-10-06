@@ -1,4 +1,4 @@
-import {EndpointTreeAdapter} from "@components/ace-management/add-ace-dialog/EndpointTreeAdapter";
+import {EndpointTreeAdapter} from "@components/acl-management/add-ace-dialog/EndpointTreeAdapter";
 import {Endpoint, RessourceType} from "@models/api/endpoint";
 
 const endpoint1: Endpoint = {

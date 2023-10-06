@@ -27,7 +27,7 @@ import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
 import {NestedTreeControl} from "@angular/cdk/tree";
 import {ArrayDataSource} from "@angular/cdk/collections";
-import {EndpointNode, EndpointTreeAdapter} from "@components/ace-management/add-ace-dialog/EndpointTreeAdapter";
+import {EndpointNode, EndpointTreeAdapter} from "@components/acl-management/add-ace-dialog/EndpointTreeAdapter";
 
 
 

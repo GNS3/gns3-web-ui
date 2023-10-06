@@ -69,12 +69,12 @@ import { GroupResolver } from "./resolvers/group.resolver";
 import { GroupRoleResolver } from "./resolvers/group-role.resolver";
 import { RoleDetailComponent } from "./components/role-management/role-detail/role-detail.component";
 import { RoleDetailResolver } from "./resolvers/role-detail.resolver";
-import {AceManagementComponent} from "@components/ace-management/ace-management.component";
-import {ResourcePoolsManagementComponent} from "@components/resource-pools-management/resource-pools-management.component";
-import {ResourcePoolDetailsComponent} from "@components/resource-pool-details/resource-pool-details.component";
-import {ResourcePoolsResolver} from "@resolvers/resource-pools.resolver";
-import {GroupAcesResolver} from "@resolvers/group-ace.resolver.ts.resolver";
-import {UserAcesResolver} from "@resolvers/user-aces.resolver";
+import { AclManagementComponent } from "@components/acl-management/acl-management.component";
+import { ResourcePoolsManagementComponent } from "@components/resource-pools-management/resource-pools-management.component";
+import { ResourcePoolDetailsComponent } from "@components/resource-pool-details/resource-pool-details.component";
+import { ResourcePoolsResolver } from "@resolvers/resource-pools.resolver";
+import { GroupAcesResolver } from "@resolvers/group-ace.resolver.ts.resolver";
+import { UserAcesResolver } from "@resolvers/user-aces.resolver";
 
 const routes: Routes = [
   {
@@ -249,12 +249,12 @@ const routes: Routes = [
             component: RoleManagementComponent
           },
           {
-            path: "resourcePools",
+            path: "pools",
             component: ResourcePoolsManagementComponent
           },
           {
-            path: 'aces',
-            component: AceManagementComponent
+            path: 'ACL',
+            component: AclManagementComponent
           }
         ]
       },

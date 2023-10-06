@@ -1,7 +1,7 @@
 <div class="content" *ngIf="isReady; else loading">
     <div class="default-header">
         <div class="row">
-            <h1 class="col">Resource Pools management</h1>
+            <h1 class="col">Resource pools</h1>
             <button class="col" mat-raised-button color="primary" (click)="onDelete(selection.selected)"
                     class="add-ressourcePool-button" [disabled]="selection.selected.length == 0">
                 Delete selected pools
@@ -14,7 +14,7 @@
 
     <form>
         <mat-form-field class="full-width">
-            <input matInput placeholder="Search by name" [(ngModel)]="searchText"
+            <input matInput placeholder="Search resource pool by name" [(ngModel)]="searchText"
                    [ngModelOptions]="{ standalone: true }"/>
         </mat-form-field>
     </form>

@@ -8,13 +8,13 @@
         [routerLink]="['/controller', controller.id, 'management', 'resourcePools']">
         <mat-icon aria-label="back to resource pools management">keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Pool {{pool.name}} details</h1>
+      <h1 class="col">Resource pool {{pool.name}}</h1>
     </div>
     <div class="main">
       <div class="details">
         <div>
           <mat-form-field>
-            <mat-label>pool name:</mat-label>
+            <mat-label>Resource pool name:</mat-label>
             <input matInput type="text" [(ngModel)]="pool.name">
           </mat-form-field>
         </div>
@@ -23,7 +23,7 @@
         <div>uuid:   {{pool.resource_pool_id}}</div>
         <div mat-dialog-actions class="button-div">
           <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary">
-            update pool
+            Update resource pool
           </button>
         </div>
       </div>

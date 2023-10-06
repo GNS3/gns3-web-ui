@@ -1,7 +1,7 @@
 <div class="content" *ngIf="isReady; else loading">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Groups management</h1>
+      <h1 class="col">Groups</h1>
       <button class="col" mat-raised-button color="primary" (click)="onDelete(selection.selected)" class="add-group-button" [disabled]="selection.selected.length == 0">
         Delete selected groups
       </button>
@@ -13,7 +13,7 @@
 
   <form>
     <mat-form-field class="full-width">
-      <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+      <input matInput placeholder="Search group by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
     </mat-form-field>
   </form>
 

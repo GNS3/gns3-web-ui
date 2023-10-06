@@ -8,7 +8,7 @@
         [routerLink]="['/controller', controller.id, 'management', 'groups']">
         <mat-icon aria-label="Back to group management">keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Groups {{group.name}} details</h1>
+      <h1 class="col">Group {{group.name}}</h1>
     </div>
     <mat-tab-group>
       <mat-tab label="Details" class="details">
@@ -56,7 +56,7 @@
                          [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
         </div>
       </mat-tab>
-      <mat-tab label="Aces">
+      <mat-tab label="ACEs">
         <div class="default-content">
           <table mat-table [dataSource]="aceDatasource" class="mat-elevation-z8">
 
