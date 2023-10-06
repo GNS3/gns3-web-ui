@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AceManagementComponent } from './ace-management.component';
+import { AclManagementComponent } from './acl-management.component';
 
-describe('AceManagementComponent', () => {
-  let component: AceManagementComponent;
-  let fixture: ComponentFixture<AceManagementComponent>;
+describe('AclManagementComponent', () => {
+  let component: AclManagementComponent;
+  let fixture: ComponentFixture<AclManagementComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AceManagementComponent ]
+      declarations: [ AclManagementComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AceManagementComponent);
+    fixture = TestBed.createComponent(AclManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
