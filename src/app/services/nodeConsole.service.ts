@@ -72,7 +72,7 @@ export class NodeConsoleService {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws?token=${controller.authToken}`
   }
 
   openConsolesForAllNodesInWidget(nodes: Node[]) {
