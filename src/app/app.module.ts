@@ -289,18 +289,18 @@ import { RemoveToGroupDialogComponent } from '@components/group-details/remove-t
 import { PaginatorPipe } from './components/group-details/paginator.pipe';
 import { MembersFilterPipe } from './components/group-details/members-filter.pipe';
 import { ManagementComponent } from './components/management/management.component';
-import {MatCheckboxModule} from "@angular/material/checkbox";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { RoleManagementComponent } from './components/role-management/role-management.component';
 import { RoleFilterPipe } from './components/role-management/role-filter.pipe';
 import { AddRoleDialogComponent } from './components/role-management/add-role-dialog/add-role-dialog.component';
 import { DeleteRoleDialogComponent } from './components/role-management/delete-role-dialog/delete-role-dialog.component';
 import { RoleDetailComponent } from './components/role-management/role-detail/role-detail.component';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {MatAutocompleteModule} from "@angular/material/autocomplete";;
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatAutocompleteModule } from "@angular/material/autocomplete";;
 import { AddRoleToGroupComponent } from './components/group-details/add-role-to-group/add-role-to-group.component';
-import {MatFormFieldModule} from "@angular/material/form-field";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { ChangeUserPasswordComponent } from './components/user-management/user-detail/change-user-password/change-user-password.component';
-import {MatMenuModule} from "@angular/material/menu";
+import { MatMenuModule } from "@angular/material/menu";
 import { ImageManagerComponent } from './components/image-manager/image-manager.component';
 import { AddImageDialogComponent } from './components/image-manager/add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from './components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
@@ -316,7 +316,6 @@ import { DeleteAceDialogComponent } from './components/acl-management/delete-ace
 import { AceFilterPipe } from './filters/ace-filter.pipe';
 import { CdkAccordionModule } from "@angular/cdk/accordion";
 import { CdkTreeModule } from "@angular/cdk/tree";
-
 import { PrivilegeComponent } from './components/role-management/role-detail/privilege/privilege.component';
 import { GroupPrivilegesPipe } from './components/role-management/role-detail/privilege/group-privileges.pipe';
 import { ResourcePoolsManagementComponent } from './components/resource-pools-management/resource-pools-management.component';

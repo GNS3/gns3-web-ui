@@ -3,7 +3,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
