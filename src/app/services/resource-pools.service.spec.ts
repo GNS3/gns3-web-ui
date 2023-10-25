@@ -1,16 +1,22 @@
-import { TestBed } from '@angular/core/testing';
+import {ResourcePoolsService} from "@services/resource-pools.service";
+import {HttpController} from "@services/http-controller.service";
+import {ProjectService} from "@services/project.service";
 
-import { ResourcePoolsService } from './resource-pools.service';
+class  FakeHttpController {
+
+}
+
+class FakeProjectService {
+
+}
 
 describe('ResourcePoolsService', () => {
-  let service: ResourcePoolsService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ResourcePoolsService);
-  });
 
   it('should be created', () => {
+    const service = new ResourcePoolsService(
+      new FakeHttpController() as HttpController,
+      new FakeProjectService() as ProjectService)
     expect(service).toBeTruthy();
   });
 });

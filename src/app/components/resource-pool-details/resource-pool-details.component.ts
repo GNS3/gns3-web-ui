@@ -5,10 +5,9 @@ import {ToasterService} from "@services/toaster.service";
 import {ActivatedRoute} from "@angular/router";
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
 import {ResourcePoolsService} from "@services/resource-pools.service";
-import {ProjectService} from "@services/project.service";
-import {filter, map, startWith, switchMap} from "rxjs/operators";
+import {map, startWith} from "rxjs/operators";
 import {Project} from "@models/project";
-import {BehaviorSubject, Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {Resource} from "@models/resourcePools/Resource";
 import {MatDialog} from "@angular/material/dialog";
 import {

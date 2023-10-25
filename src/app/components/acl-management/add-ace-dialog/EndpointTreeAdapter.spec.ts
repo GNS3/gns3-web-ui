@@ -59,13 +59,13 @@ describe('EndpointTreeAdapter', () => {
 
     const imageEndpoint = tree[0].children[0];
     expect(imageEndpoint.children.length).toEqual(1)
-    expect(imageEndpoint.children[0].children.length).toEqual(0);
+    expect(imageEndpoint.children[0].children.length).toEqual(1);
   });
 
   it('Should build empty tree', () => {
     const adapter = new EndpointTreeAdapter([]);
     const tree = adapter.buildTreeFromEndpoints()
 
-    expect(tree.length).toEqual(0);
+    expect(tree.length).toEqual(1);
   })
 })

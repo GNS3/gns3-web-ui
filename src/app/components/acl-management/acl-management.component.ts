@@ -14,22 +14,17 @@
 import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {Controller} from "@models/controller";
 import {SelectionModel} from "@angular/cdk/collections";
-import {Group} from "@models/groups/group";
 import {MatTableDataSource} from "@angular/material/table";
 import {ACE} from "@models/api/ACE";
 import {ActivatedRoute} from "@angular/router";
 import {ControllerService} from "@services/controller.service";
 import {ToasterService} from "@services/toaster.service";
-import {GroupService} from "@services/group.service";
 import {MatDialog} from "@angular/material/dialog";
 import {AclService} from "@services/acl.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
 import {AddAceDialogComponent} from "@components/acl-management/add-ace-dialog/add-ace-dialog.component";
-import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
 import {DeleteAceDialogComponent} from "@components/acl-management/delete-ace-dialog/delete-ace-dialog.component";
-import {User} from "@models/users/user";
 import {Endpoint} from "@models/api/endpoint";
 
 @Component({
