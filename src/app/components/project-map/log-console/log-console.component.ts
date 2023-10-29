@@ -226,18 +226,18 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
             if (node.console_type === 'telnet') {
               location.assign(
-                `gns3+telnet://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+telnet://[${node.console_host}]:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type === 'vnc') {
               location.assign(
-                `gns3+vnc://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+vnc://[${node.console_host}]:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('spice')) {
               location.assign(
-                `gns3+spice://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+spice://[${node.console_host}]:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('http')) {
-               window.open(`${node.console_type}://${node.console_host}:${node.console}`);
+               window.open(`${node.console_type}://[${node.console_host}]:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
             }
