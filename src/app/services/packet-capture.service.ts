@@ -9,7 +9,7 @@ export class PacketCaptureService {
 
   startCapture(server: Server, project: Project, link: Link, name: string) {
     location.assign(
-      `gns3+pcap://${server.host}:${server.port}?protocol=${server.protocol}&project_id=${project.project_id}&link_id=${link.link_id}&project=${project.name}&name=${name}`
+      `gns3+pcap://${server.host}:${server.port}?protocol=${server.protocol.slice(0, -1)}&project_id=${project.project_id}&link_id=${link.link_id}&project=${project.name}&name=${name}`
     );
   }
 }
