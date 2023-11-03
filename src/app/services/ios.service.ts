@@ -14,7 +14,7 @@ export class IosService {
   }
 
   getImagePath(server: Server, filename: string): string {
-    return `${server.protocol}//${server.host}:${server.port}/v2/compute/dynamips/images/${filename}`;
+    return `${server.protocol}://${server.host}:${server.port}/v2/compute/dynamips/images/${filename}`;
   }
 
   getTemplates(server: Server): Observable<IosTemplate[]> {

@@ -67,7 +67,7 @@ export class NodeConsoleService {
 
   getUrl(server: Server, node: Node) {
     let protocol:string = "ws"
-	  if (server.protocol === "https:") {
+	  if (server.protocol === "https") {
 		  protocol = "wss"
 	  }
 

@@ -83,7 +83,7 @@ export class ServerService {
   }
 
   public getServerUrl(server: Server) {
-    return `${server.protocol}//${server.host}:${server.port}/`;
+    return `${server.protocol}://${server.host}:${server.port}/`;
   }
 
   public checkServerVersion(server: Server): Observable<any> {

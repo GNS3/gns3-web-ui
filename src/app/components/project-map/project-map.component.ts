@@ -174,7 +174,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
     private cd: ChangeDetectorRef,
-    private cfr: ComponentFactoryResolver, 
+    private cfr: ComponentFactoryResolver,
     private injector: Injector
   ) {}
 
@@ -229,7 +229,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.instance.instance.ngOnDestroy();
         this.instance.destroy();
       }
-    } 
+    }
   }
 
   addSubscriptions() {
@@ -250,7 +250,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.server) return;
         nodes.forEach(async (node: Node) => {
-          node.symbol_url = `${this.server.protocol}//${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
+          node.symbol_url = `${this.server.protocol}://${this.server.host}:${this.server.port}/v2/symbols/${node.symbol}/raw`;
 
           // if (node.width == 0 && node.height == 0) {
           //   let symbolDimensions = await this.symbolService.getDimensions(this.server, node.symbol).toPromise();
@@ -990,8 +990,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     fileReader.onloadend = () => {
       let image = fileReader.result;
-      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\"
                 xlink:href=\"${image}\"/>\n</svg>`;
       this.drawingService
         .add(this.server, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)

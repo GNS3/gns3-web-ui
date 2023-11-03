@@ -23,8 +23,8 @@ export class DirectLinkComponent implements OnInit {
     { key: 'basic', name: 'Basic authorization' },
   ];
   protocols = [
-    { key: 'http:', name: 'HTTP' },
-    { key: 'https:', name: 'HTTPS' },
+    { key: 'http', name: 'HTTP' },
+    { key: 'https', name: 'HTTPS' },
   ];
   locations = [
     { key: 'local', name: 'Local' },
@@ -34,7 +34,7 @@ export class DirectLinkComponent implements OnInit {
   serverForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     location: new FormControl(''),
-    protocol: new FormControl('http:'),
+    protocol: new FormControl('http'),
     authorization: new FormControl('none'),
     login: new FormControl(''),
     password: new FormControl(''),

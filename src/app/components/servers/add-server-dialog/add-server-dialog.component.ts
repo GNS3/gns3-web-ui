@@ -16,8 +16,8 @@ export class AddServerDialogComponent implements OnInit {
     { key: 'basic', name: 'Basic authorization' },
   ];
   protocols = [
-    { key: 'http:', name: 'HTTP' },
-    { key: 'https:', name: 'HTTPS' },
+    { key: 'http', name: 'HTTP' },
+    { key: 'https', name: 'HTTPS' },
   ];
   locations = [];
 
@@ -28,7 +28,7 @@ export class AddServerDialogComponent implements OnInit {
     ubridge_path: new FormControl(''),
     host: new FormControl('', [Validators.required]),
     port: new FormControl('', [Validators.required, Validators.min(1)]),
-    protocol: new FormControl('http:'),
+    protocol: new FormControl('http'),
     authorization: new FormControl('none'),
     login: new FormControl(''),
     password: new FormControl(''),
