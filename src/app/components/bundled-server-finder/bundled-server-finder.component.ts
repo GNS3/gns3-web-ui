@@ -22,10 +22,10 @@ export class BundledServerFinderComponent implements OnInit {
     this.progressService.activate();
     setTimeout(() => {
       let port;
-      
+
       if (parseInt(this.document.location.port, 10)) {
         port = parseInt(this.document.location.port, 10);
-      } else if (this.document.location.protocol == "https:") {
+      } else if (this.document.location.protocol == "https") {
         port = 443;
       } else {
         port = 80;
