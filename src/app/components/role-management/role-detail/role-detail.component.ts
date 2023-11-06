@@ -15,14 +15,15 @@ import {RoleService} from "@services/role.service";
 import {ActivatedRoute} from "@angular/router";
 import {Controller} from "@models/controller";
 import {Role} from "@models/api/role";
-import {UntypedFormControl, UntypedFormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {ToasterService} from "@services/toaster.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Privilege} from "@models/api/Privilege";
 import {PrivilegeService} from "@services/privilege.service";
-import {Observable, ReplaySubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {IPrivilegesChange} from "@components/role-management/role-detail/privilege/IPrivilegesChange";
 import {map} from "rxjs/operators";
+import {string} from "yargs";
 
 @Component({
   selector: 'app-role-detail',
@@ -31,8 +32,8 @@ import {map} from "rxjs/operators";
 })
 export class RoleDetailComponent implements OnInit {
   controller: Controller;
-  $role: ReplaySubject<Role> = new ReplaySubject<Role>(1);
-  editRoleForm: UntypedFormGroup;
+  $role: BehaviorSubject<Role> = new BehaviorSubject<Role>({role_id: "", description: "", updated_at: "", is_builtin: false, privileges: [], name: "", created_at:""});
+  editRoleForm: FormGroup;
   $ownedPrivilegesId: Observable<Privilege[]> =  this.$role.pipe(map((role: Role) => {
     return role.privileges
   }));
@@ -44,11 +45,16 @@ export class RoleDetailComponent implements OnInit {
               private toastService: ToasterService,
               private route: ActivatedRoute,
               private privilegeService: PrivilegeService,
+              private fb : FormBuilder,
   ) {
 
-    this.editRoleForm = new UntypedFormGroup({
-      rolename: new UntypedFormControl(),
-      description: new UntypedFormControl(),
+
+
+    this.$role.subscribe((role) => {
+      this.editRoleForm = fb.group({
+        rolename: [role.name],
+        description: [role.description],
+      });
     });
   }
 
@@ -61,7 +67,9 @@ export class RoleDetailComponent implements OnInit {
     });
   }
   onUpdate() {
-    this.$role.subscribe((role) => {
+      const role = this.$role.value;
+      role.name = this.editRoleForm.get("rolename").value;
+      role.description = this.editRoleForm.get("description").value;
       this.roleService.update(this.controller, role)
         .subscribe(() => {
             this.toastService.success(`role: ${role.name} was updated`);
@@ -71,7 +79,6 @@ export class RoleDetailComponent implements OnInit {
             this.toastService.error(`${error.message}
         ${error.error.message}`);
           });
-    })
 
   }
 
