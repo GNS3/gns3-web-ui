@@ -49,6 +49,8 @@ export class StyleEditorDialogComponent implements OnInit {
 
     if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
       this.element.fill = this.drawing.element.fill;
+      this.element.width = this.drawing.element.width;
+      this.element.height = this.drawing.element.height;
       this.element.stroke = this.drawing.element.stroke;
       this.element.stroke_dasharray = this.drawing.element.stroke_dasharray;
       this.element.stroke_width = this.drawing.element.stroke_width;
@@ -79,6 +81,8 @@ export class StyleEditorDialogComponent implements OnInit {
 
       if (this.drawing.element instanceof RectElement || this.drawing.element instanceof EllipseElement) {
         this.drawing.element.fill = this.element.fill;
+        this.drawing.element.width = this.element.width;
+        this.drawing.element.height = this.element.height;
         this.drawing.element.stroke = this.element.stroke;
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width;
@@ -110,6 +114,8 @@ export class StyleEditorDialogComponent implements OnInit {
 
 export class ElementData {
   fill: string;
+  width: number;
+  height: number;
   stroke: string;
   stroke_width: number;
   stroke_dasharray: string;
