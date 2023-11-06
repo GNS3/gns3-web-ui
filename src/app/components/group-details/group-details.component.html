@@ -14,10 +14,12 @@
       <mat-tab label="Details" class="details">
         <div>
           <div>
-            <mat-form-field>
-              <mat-label>Group name:</mat-label>
-              <input matInput type="text" [ngModel]="group.name">
-            </mat-form-field>
+            <form [formGroup]="editGroupForm" class="input-field">
+              <mat-form-field>
+                <mat-label>Group name:</mat-label>
+                <input matInput type="text" formControlName="groupname">
+              </mat-form-field>
+            </form>
           </div>
 
           <div>

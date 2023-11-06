@@ -15,7 +15,7 @@ import {ActivatedRoute} from "@angular/router";
 import {Controller} from "@models/controller";
 import {Group} from "@models/groups/group";
 import {User} from "@models/users/user";
-import {UntypedFormControl, UntypedFormGroup} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {AddUserToGroupDialogComponent} from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
 import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
@@ -54,9 +54,7 @@ export class GroupDetailsComponent implements OnInit {
               private aclService: AclService,
               private roleService: RoleService) {
 
-    this.editGroupForm = new UntypedFormGroup({
-      groupname: new UntypedFormControl(''),
-    });
+
 
     this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], aces: ACE[] }) => {
 
@@ -64,7 +62,9 @@ export class GroupDetailsComponent implements OnInit {
       this.group = d.group;
       this.aces = d.aces;
       this.members = d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
-      this.editGroupForm.setValue({groupname: this.group.name});
+      this.editGroupForm = new UntypedFormGroup({
+        groupname: new UntypedFormControl(this.group.name, [Validators.required]),
+      });
     });
 
 
@@ -84,6 +84,8 @@ export class GroupDetailsComponent implements OnInit {
   }
 
   onUpdate() {
+    this.group.name = this.editGroupForm.get('groupname').value
+    console.log(this.editGroupForm.get('groupname'))
     this.groupService.update(this.controller, this.group)
       .subscribe(() => {
         this.toastService.success(`group updated`);
