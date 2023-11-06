@@ -32,7 +32,7 @@
         </div>
         <div mat-dialog-actions class="button-div">
           <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
-                  [disabled]="!editRoleForm.valid">
+                  [disabled]="!editRoleForm.valid || ($role | async)?.is_builtin">
             Update Role
           </button>
         </div>
