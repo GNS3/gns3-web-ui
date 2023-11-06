@@ -25,7 +25,7 @@
           </div>
           <div mat-dialog-actions class="button-div">
             <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
-                    [disabled]="!editGroupForm.valid">
+                    [disabled]="!editGroupForm.valid || group.is_builtin">
               Update Group
             </button>
           </div>
