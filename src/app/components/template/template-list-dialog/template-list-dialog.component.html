@@ -15,14 +15,14 @@
     <h6>Template</h6>
   </div>
   <mat-form-field class="form-field" floatPlaceholder="never">
-    <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+    <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" ngDefaultControl/>
   </mat-form-field>
   <mat-form-field class="form-field">
     <mat-select
       [ngModelOptions]="{ standalone: true }"
       placeholder="Filter templates by type"
       (selectionChange)="filterTemplates($event)"
-      [(ngModel)]="selectedType"
+      [(ngModel)]="selectedType" ngDefaultControl
     >
       <mat-option *ngFor="let type of templateTypes" [value]="type">
         {{ type }}
@@ -34,7 +34,7 @@
       [ngModelOptions]="{ standalone: true }"
       placeholder="Choose template"
       (selectionChange)="chooseTemplate($event)"
-      [(ngModel)]="selectedTemplate"
+      [(ngModel)]="selectedTemplate" ngDefaultControl
     >
       <mat-option *ngFor="let template of filteredTemplates | templatefilter: searchText" [value]="template">
         {{ template.name }}
