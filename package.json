@@ -38,7 +38,7 @@
     "postbuildforelectron": "node set-variables-in-env.js --unset src/environments/environment.electron.prod.ts",
     "postinstall": "ngcc --properties es2020 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\" && ngcc --properties es2020 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\"",
     "snyk-protect": "snyk-protect",
-    "prepare": "yarn run snyk-protect"
+    "prepare": "husky install"
   },
   "private": true,
   "dependencies": {
@@ -108,6 +108,7 @@
     "electron": "13.6.6",
     "electron-builder": "^23.0.3",
     "file-loader": "^6.2.0",
+    "husky": "^8.0.3",
     "jasmine-core": "^4.1.0",
     "jasmine-spec-reporter": "^7.0.0",
     "jquery": "^3.6.0",

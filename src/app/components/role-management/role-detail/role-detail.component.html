@@ -12,27 +12,30 @@
     </div>
     <div class="main">
       <div class="details">
-        <div>
-          <mat-form-field>
-            <mat-label>Role name:</mat-label>
-            <input matInput type="text" [ngModel]="($role | async)?.name">
-          </mat-form-field>
-        </div>
-        <div>
-          <mat-form-field>
-            <mat-label>Description:</mat-label>
-            <input matInput type="text" [ngModel]="($role | async)?.description">
-          </mat-form-field>
-        </div>
+        <form [formGroup]="editRoleForm">
+          <div>
+            <mat-form-field>
+              <mat-label>Role name:</mat-label>
+              <input matInput type="text" formControlName="rolename">
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>Description:</mat-label>
+              <input matInput type="text" formControlName="description">
+            </mat-form-field>
+          </div>
+        </form>
         <div>Creation date:   {{($role | async)?.created_at}}</div>
-        <div>Last update Date:   {{($role | async )?.updated_at}}</div>
+        <div>Last update Date:   {{($role | async)?.updated_at}}</div>
         <div>UUID:   {{($role | async)?.role_id}}</div>
         <div>
           <mat-checkbox [checked]="($role | async)?.is_builtin" disabled>Is built-in</mat-checkbox>
         </div>
         <div mat-dialog-actions class="button-div">
           <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
-                  [disabled]="!editRoleForm.valid">
+                  [disabled]="(!(editRoleForm.valueChanges | async) && editRoleForm.valid) || ($role | async)?.is_builtin">
+
             Update Role
           </button>
         </div>
@@ -41,8 +44,8 @@
       <app-privilege
         [disable]="($role | async)?.is_builtin"
         [ownedPrivilege]="$ownedPrivilegesId | async"
-      [privileges]="privileges | async"
-      (update)="onPrivilegesUpdate($event)"></app-privilege>
+        [privileges]="privileges | async"
+        (update)="onPrivilegesUpdate($event)"></app-privilege>
     </div>
   </div>
 </div>

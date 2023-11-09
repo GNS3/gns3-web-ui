@@ -11,6 +11,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { NonNegativeValidator } from 'app/validators/non-negative-validator';
 import { TemplateListDialogComponent } from './template-list-dialog.component';
+import {TemplateFilter} from "@filters/templateFilter.pipe";
 
 
 
@@ -20,7 +21,7 @@ describe('TemplateListDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TemplateListDialogComponent],
+      declarations: [TemplateListDialogComponent, TemplateFilter],
       imports: [ReactiveFormsModule, FormsModule,RouterTestingModule],
       providers: [
         { provide: TemplateService, useClass: TemplateMocksService },

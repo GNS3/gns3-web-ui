@@ -21,7 +21,6 @@ export const groupNameAsyncValidator = (controller: Controller, groupService: Gr
     return timer(500).pipe(
       switchMap(() => groupService.getGroups(controller)),
       map((response) => {
-        console.log(response);
         return (response.find((n) => n.name === control.value) ? { projectExist: true } : null);
       })
     );
