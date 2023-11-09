@@ -43,7 +43,7 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
   }
 
-  add(controller:Controller , symbolName: string, symbol: string) {
+  add(controller:Controller, symbolName: string, symbol: string) {
     this.cache = null;
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
