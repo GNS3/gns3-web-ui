@@ -49,7 +49,7 @@
             </mat-form-field>
           </div>
           <div *ngFor="let user of members | membersFilter: searchMembers | paginator: pageEvent">
-            <a href="/controller/{{controller.id}}/management/users/{{user.user_id}}">
+            <a [routerLink]="['/controller', controller.id, 'management','users', user.user_id]">
               <div>{{user.username}}</div>
             </a>
             <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
