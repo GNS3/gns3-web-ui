@@ -88,7 +88,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   goToDocumentation() {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
-      (window as any).open(`http://${controller.host}:${controller.port}/docs`);
+      (window as any).open(`${controller.protocol}//${controller.host}:${controller.port}/docs`);
     });
   }
 
