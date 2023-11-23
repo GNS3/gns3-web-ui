@@ -86,7 +86,7 @@ const routes: Routes = [
       { path: 'bundled', component: BundledControllerFinderComponent },
       { path: 'controller/:controller_id/login', component: LoginComponent },
       { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
-      {path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
+      { path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
       {
         path: 'controller/:controller_id/projects',
         component: ProjectsComponent,
@@ -107,7 +107,7 @@ const routes: Routes = [
           controller: ControllerResolve},
       },
       {
-        path: 'controller/:controller_id/management/resourcePools/:pool_id',
+        path: 'controller/:controller_id/management/pools/:pool_id',
         component: ResourcePoolDetailsComponent,
         canActivate: [LoginGuard],
         resolve: {
