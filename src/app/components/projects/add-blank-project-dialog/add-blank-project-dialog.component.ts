@@ -75,7 +75,12 @@ export class AddBlankProjectDialogComponent implements OnInit {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);
         this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
-      });
+      },
+      (error) => {
+          this.toasterService.error("Cannot create new project");
+          console.log(error);
+      }
+    );
   }
 
   onKeyDown(event) {

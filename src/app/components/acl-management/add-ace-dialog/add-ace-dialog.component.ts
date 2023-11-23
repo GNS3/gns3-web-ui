@@ -120,7 +120,7 @@ export class AddAceDialogComponent implements OnInit {
             this.toasterService.success(`ACE was added for path ${ACE.path}`);
           },
           (error) => {
-            this.toasterService.error(`Cannot create ACE : ${error.error.message}`)
+            this.toasterService.error(`Cannot create ACE: ${error.error.message}`)
           })
       this.dialogRef.close();
     }
