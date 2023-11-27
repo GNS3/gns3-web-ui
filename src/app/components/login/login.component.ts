@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit, DoCheck {
   public loginError: boolean = false;
   public returnUrl: string = '';
   public isRememberMe: boolean = false;
-  public isRememberMeCheked: boolean = false;
+  public isRememberMeChecked: boolean = false;
 
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit, DoCheck {
     if (getCurrentUser && getCurrentUser.isRememberMe) {
       this.loginForm.get('username').setValue(getCurrentUser.username);
       this.loginForm.get('password').setValue(getCurrentUser.password);
-      this.isRememberMeCheked = getCurrentUser.isRememberMe;
+      this.isRememberMeChecked = getCurrentUser.isRememberMe;
     }
   }
 
@@ -101,13 +101,13 @@ export class LoginComponent implements OnInit, DoCheck {
 
   rememberMe(ev) {
     if (ev.checked) {
-      let curren_user = {
+      let current_user = {
         username: this.loginForm.get('username').value,
         password: this.loginForm.get('password').value,
         isRememberMe: ev.checked,
       };
-      this.isRememberMeCheked = ev.checked;
-      localStorage.setItem(`isRememberMe`, JSON.stringify(curren_user));
+      this.isRememberMeChecked = ev.checked;
+      localStorage.setItem(`isRememberMe`, JSON.stringify(current_user));
     } else {
       localStorage.removeItem(`isRememberMe`);
       this.loginForm.reset();

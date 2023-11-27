@@ -60,7 +60,7 @@ export class MapSettingsService {
     localStorage.setItem('consoleContextMenu', action);
   }
 
-  getConsoleContextManuAction(): string {
+  getConsoleContextMenuAction(): string {
     return localStorage.getItem('consoleContextMenu');
   }
 

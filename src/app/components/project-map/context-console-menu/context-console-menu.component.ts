@@ -64,7 +64,7 @@ export class ContextConsoleMenuComponent implements OnInit {
 
   public openMenu(node: Node, top: number, left: number) {
     this.node = node;
-    let action = this.mapSettingsService.getConsoleContextManuAction();
+    let action = this.mapSettingsService.getConsoleContextMenuAction();
     if (action) {
       if (action === 'web console') {
         this.openWebConsole();
@@ -97,7 +97,6 @@ export class ContextConsoleMenuComponent implements OnInit {
       this.componentBrowserRef = this.container.createComponent(factory);
       this.componentBrowserRef.instance.controller = this.controller;
       this.componentBrowserRef.instance.node = this.node;
-
       this.componentBrowserRef.instance.openConsole();
     }
   }

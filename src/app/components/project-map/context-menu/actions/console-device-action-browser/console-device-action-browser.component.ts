@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
 
@@ -13,7 +13,11 @@ export class ConsoleDeviceActionBrowserComponent {
   @Input() controller:Controller ;
   @Input() node: Node;
 
-  constructor(private toasterService: ToasterService, private nodeService: NodeService, private deviceService: DeviceDetectorService) {}
+  constructor(
+  private toasterService: ToasterService,
+  private nodeService: NodeService,
+  private deviceService: DeviceDetectorService
+  ) {}
 
   openConsole() {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
@@ -36,6 +40,7 @@ export class ConsoleDeviceActionBrowserComponent {
 
       if (!iframe) {
           iframe = this.createHiddenIframe(document.body, "about:blank");
+          //setTimeout(() => { iframe.parentNode.removeChild(iframe); }, 0);
       }
 
       try {
@@ -76,6 +81,7 @@ export class ConsoleDeviceActionBrowserComponent {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
         }
 
+        console.log("Opening external console using " + device.browser + " browser");
         if (device.browser === "Firefox") {
             // Use a hidden iframe otherwise Firefox will disconnect
             // from the GNS3 controller websocket if we use location.assign()
