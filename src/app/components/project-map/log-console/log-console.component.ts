@@ -26,6 +26,7 @@ import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ThemeService } from '../../../services/theme.service';
 import { version } from '../../../version';
 import { LogEventsDataSource } from './log-events-datasource';
+import * as ipaddr from 'ipaddr.js';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -224,20 +225,24 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (this.regexConsole.test(this.command)) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
+            var host = node.console_host;
+            if (ipaddr.IPv6.isValid(host)) {
+               host = `[${host}]`;
+            }
             if (node.console_type === 'telnet') {
               location.assign(
-                `gns3+telnet://[${node.console_host}]:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+telnet://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type === 'vnc') {
               location.assign(
-                `gns3+vnc://[${node.console_host}]:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+vnc://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('spice')) {
               location.assign(
-                `gns3+spice://[${node.console_host}]:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+                `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('http')) {
-               window.open(`${node.console_type}://[${node.console_host}]:${node.console}`);
+               window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
             }

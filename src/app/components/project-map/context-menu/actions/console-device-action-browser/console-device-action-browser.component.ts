@@ -4,6 +4,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';
+import * as ipaddr from 'ipaddr.js';
 
 @Component({
   selector: 'app-console-device-action-browser',
@@ -68,14 +69,18 @@ export class ConsoleDeviceActionBrowserComponent {
 
       try {
         var uri;
+        var host = this.node.console_host;
+        if (ipaddr.IPv6.isValid(host)) {
+           host = `[${host}]`;
+        }
         if (this.node.console_type === 'telnet') {
-          uri = `gns3+telnet://[${this.node.console_host}]:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
+          uri = `gns3+telnet://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
         } else if (this.node.console_type === 'vnc') {
-          uri = `gns3+vnc://[${this.node.console_host}]:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
+          uri = `gns3+vnc://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
         } else if (this.node.console_type.startsWith('spice')) {
-          uri = `gns3+spice://[${this.node.console_host}]:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
+          uri = `gns3+spice://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
         } else if (this.node.console_type.startsWith('http')) {
-          uri = `${this.node.console_type}://[${this.node.console_host}]:${this.node.console}`
+          uri = `${this.node.console_type}://${host}:${this.node.console}`
           return window.open(uri);  // open an http console directly in a new window/tab
         } else {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
