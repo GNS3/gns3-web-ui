@@ -27,7 +27,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   bootPriorities = [];
   diskInterfaces: string[] = [];
 
-  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
+  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type','mac_address','actions'];
   networkTypes = [];
   qemuImages: QemuImage[] = [];
   selectPlatform: string[] = [];
@@ -105,10 +105,12 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
       this.node.custom_adapters = [];
-      this.customAdapters.adapters.forEach((n) => {
+      this.customAdapters.adapters.forEach((n,i) => {
         this.node.custom_adapters.push({
           adapter_number: n.adapter_number,
           adapter_type: n.adapter_type,
+          mac_address: n.mac_address ??  n.mac_address,
+          port_name: n.port_name ?? this.node.port_name_format.replace(/[0-9]/g,`${i}`)
         });
       });
 

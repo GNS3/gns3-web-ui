@@ -30,6 +30,8 @@ export class CustomAdaptersComponent {
       this.adapters.push({
         adapter_number: n.adapter_number,
         adapter_type: n.adapter_type,
+        mac_address:n.mac_address,
+        port_name:n.port_name
       });
     });
 
