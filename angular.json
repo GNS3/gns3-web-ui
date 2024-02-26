@@ -26,8 +26,9 @@
 							"rxjs/add/operator/map",
 							"rxjs-compat/add/operator/map",
 							"classnames",
-							"stylenames"
-						],
+							"stylenames",
+              "ipaddr.js"
+            ],
 						"outputPath": "dist",
 						"index": "src/index.html",
 						"main": "src/main.ts",
