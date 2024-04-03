@@ -401,7 +401,8 @@ export class NewTemplateDialogComponent implements OnInit {
       this.progressService.activate();
     };
 
-    fileReader.readAsText(file);
+    //fileReader.readAsText(file); //web browser out ouf memory when upload large image file
+    fileReader.onloadend(undefined);
   }
 
   checkImageFromVersion(image: string): boolean {
