@@ -276,6 +276,9 @@
           <mat-card-subtitle> Additional settings </mat-card-subtitle>
           <mat-card-content>
             <mat-form-field class="form-field">
+              <input matInput type="text" [(ngModel)]="qemuTemplate.qemu_path" placeholder="Custom Qemu binary path" />
+            </mat-form-field>
+            <mat-form-field class="form-field">
               <input matInput type="text" [(ngModel)]="qemuTemplate.options" placeholder="Options" />
             </mat-form-field>
             <mat-checkbox [(ngModel)]="qemuTemplate.linked_clone"> Use as a linked base VM </mat-checkbox>
