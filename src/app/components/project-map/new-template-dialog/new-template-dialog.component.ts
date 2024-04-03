@@ -393,7 +393,8 @@ export class NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.uploadItem(itemToUpload);
     };
 
-    fileReader.readAsText(file);
+    //fileReader.readAsText(file); //web browser out ouf memory when upload large image file
+    fileReader.onloadend(undefined);
   }
 
   cancelUploading() {
