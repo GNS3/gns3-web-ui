@@ -215,6 +215,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { MATERIAL_IMPORTS } from './material.imports';
 import { ServerResolve } from './resolvers/server-resolve';
 import { ApplianceService } from './services/appliances.service';
+import { ProtocolHandlerService } from './services/protocol-handler.service';
 import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from './services/built-in-templates.service';
 import { ComputeService } from './services/compute.service';
@@ -538,6 +539,7 @@ import { RotationValidator } from './validators/rotation-validator';
     ComputeService,
     TracengService,
     PacketCaptureService,
+    ProtocolHandlerService,
     NotificationService,
     Gns3vmService,
     ThemeService,
