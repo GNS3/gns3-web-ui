@@ -48,6 +48,10 @@ export class ConsoleDeviceActionBrowserComponent {
           var console_port;
           if (auxiliary === true) {
             console_port = this.node.properties.aux;
+            if (console_port === undefined) {
+              this.toasterService.error('Auxiliary console port is not set.');
+              return;
+            }
           } else {
             console_port = this.node.console;
           }
@@ -61,6 +65,7 @@ export class ConsoleDeviceActionBrowserComponent {
           return window.open(uri);  // open an http console directly in a new window/tab
         } else {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
+          return;
         }
 
         this.protocolHandlerService.open(uri);
