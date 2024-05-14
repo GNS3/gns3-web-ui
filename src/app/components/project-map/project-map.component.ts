@@ -67,6 +67,7 @@ import { SymbolService } from '../../services/symbol.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToasterService } from '../../services/toaster.service';
 import { ToolsService } from '../../services/tools.service';
+import { ProtocolHandlerService } from '../../services/protocol-handler.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
@@ -173,8 +174,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private title: Title,
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
+    private protocolHandlerService: ProtocolHandlerService,
     private cd: ChangeDetectorRef,
-    private cfr: ComponentFactoryResolver, 
+    private cfr: ComponentFactoryResolver,
     private injector: Injector
   ) {}
 
@@ -229,7 +231,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.instance.instance.ngOnDestroy();
         this.instance.destroy();
       }
-    } 
+    }
   }
 
   addSubscriptions() {
@@ -975,7 +977,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     ) {
       this.toasterService.error('Project with running nodes cannot be exported.');
     } else {
-      location.assign(this.projectService.getExportPath(this.server, this.project));
+      this.protocolHandlerService.open(this.projectService.getExportPath(this.server, this.project));
     }
   }
 
@@ -990,8 +992,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     fileReader.onloadend = () => {
       let image = fileReader.result;
-      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" 
+      let svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+                height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\"
                 xlink:href=\"${image}\"/>\n</svg>`;
       this.drawingService
         .add(this.server, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)

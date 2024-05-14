@@ -238,6 +238,7 @@ import { NodeService } from './services/node.service';
 import { NodeConsoleService } from './services/nodeConsole.service';
 import { NotificationService } from './services/notification.service';
 import { PacketCaptureService } from './services/packet-capture.service';
+import { ProtocolHandlerService } from './services/protocol-handler.service';
 import { PlatformService } from './services/platform.service';
 import { ProjectService } from './services/project.service';
 import { QemuConfigurationService } from './services/qemu-configuration.service';
@@ -538,6 +539,7 @@ import { RotationValidator } from './validators/rotation-validator';
     ComputeService,
     TracengService,
     PacketCaptureService,
+    ProtocolHandlerService,
     NotificationService,
     Gns3vmService,
     ThemeService,
