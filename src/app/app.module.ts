@@ -215,6 +215,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { MATERIAL_IMPORTS } from './material.imports';
 import { ServerResolve } from './resolvers/server-resolve';
 import { ApplianceService } from './services/appliances.service';
+import { ProtocolHandlerService } from './services/protocol-handler.service';
 import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from './services/built-in-templates.service';
 import { ComputeService } from './services/compute.service';
@@ -238,7 +239,6 @@ import { NodeService } from './services/node.service';
 import { NodeConsoleService } from './services/nodeConsole.service';
 import { NotificationService } from './services/notification.service';
 import { PacketCaptureService } from './services/packet-capture.service';
-import { ProtocolHandlerService } from './services/protocol-handler.service';
 import { PlatformService } from './services/platform.service';
 import { ProjectService } from './services/project.service';
 import { QemuConfigurationService } from './services/qemu-configuration.service';
