@@ -18,14 +18,14 @@ export class ConsoleDeviceActionBrowserComponent {
 
   constructor(private toasterService: ToasterService, private nodeService: NodeService, private protocolHandlerService: ProtocolHandlerService) {}
 
-  openConsole() {
+  openConsole(auxiliary: boolean = false) {
     this.nodeService.getNode(this.server, this.node).subscribe((node: Node) => {
       this.node = node;
-      this.startConsole();
+      this.startConsole(auxiliary);
     });
   }
 
-  startConsole() {
+  startConsole(auxiliary: boolean) {
     if (this.node.status !== 'started') {
       this.toasterService.error('This node must be started before a console can be opened');
     } else {
@@ -44,7 +44,14 @@ export class ConsoleDeviceActionBrowserComponent {
            host = `[${host}]`;
         }
         if (this.node.console_type === 'telnet') {
-          uri = `gns3+telnet://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
+
+          var console_port;
+          if (auxiliary === true) {
+            console_port = this.node.properties.aux;
+          } else {
+            console_port = this.node.console;
+          }
+          uri = `gns3+telnet://${host}:${console_port}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
         } else if (this.node.console_type === 'vnc') {
           uri = `gns3+vnc://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
         } else if (this.node.console_type.startsWith('spice')) {
