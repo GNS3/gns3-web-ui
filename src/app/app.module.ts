@@ -217,6 +217,7 @@ import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.
 import { MATERIAL_IMPORTS } from './material.imports';
 import { ControllerResolve } from './resolvers/controller-resolve';
 import { ApplianceService } from './services/appliances.service';
+import { ProtocolHandlerService } from './services/protocol-handler.service';
 import { BuiltInTemplatesConfigurationService } from './services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from './services/built-in-templates.service';
 import { ComputeService } from './services/compute.service';
@@ -651,6 +652,7 @@ import { DeleteResourceConfirmationDialogComponent } from './components/resource
         InfoService,
         ComputeService,
         PacketCaptureService,
+        ProtocolHandlerService,
         NotificationService,
         ThemeService,
         GoogleAnalyticsService,
