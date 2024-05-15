@@ -23,6 +23,7 @@ import { Server } from '../../../models/server';
 import { HttpServer } from '../../../services/http-server.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { ProtocolHandlerService } from '../../../services/protocol-handler.service';
 import { ThemeService } from '../../../services/theme.service';
 import { version } from '../../../version';
 import { LogEventsDataSource } from './log-events-datasource';
@@ -70,6 +71,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private nodeService: NodeService,
     private nodesDataSource: NodesDataSource,
+    private protocolHandlerService: ProtocolHandlerService,
     private logEventsDataSource: LogEventsDataSource,
     private httpService: HttpServer,
     private themeService: ThemeService,
@@ -230,15 +232,15 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                host = `[${host}]`;
             }
             if (node.console_type === 'telnet') {
-              location.assign(
+              this.protocolHandlerService.open(
                 `gns3+telnet://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type === 'vnc') {
-              location.assign(
+              this.protocolHandlerService.open(
                 `gns3+vnc://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('spice')) {
-              location.assign(
+              this.protocolHandlerService.open(
                 `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('http')) {
