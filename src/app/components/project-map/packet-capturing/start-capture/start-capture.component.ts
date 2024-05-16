@@ -6,7 +6,7 @@ import { CapturingSettings } from '../../../../models/capturingSettings';
 import { Link } from '../../../../models/link';
 import { LinkNode } from '../../../../models/link-node';
 import { Project } from '../../../../models/project';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { LinkService } from '../../../../services/link.service';
 import { PacketCaptureService } from '../../../../services/packet-capture.service';
 import { ToasterService } from '../../../../services/toaster.service';

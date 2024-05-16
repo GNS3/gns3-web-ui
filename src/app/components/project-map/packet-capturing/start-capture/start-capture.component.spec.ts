@@ -57,9 +57,8 @@ describe('StartCaptureDialogComponent', () => {
       declarations: [StartCaptureDialogComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-
     protocolHandlerService = TestBed.inject(ProtocolHandlerService);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(StartCaptureDialogComponent);
