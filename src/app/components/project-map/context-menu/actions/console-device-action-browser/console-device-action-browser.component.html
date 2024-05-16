@@ -4,7 +4,7 @@
 </button>
 <button
   mat-menu-item
-  *ngIf="node.node_type === 'docker' || node.node_type === 'dynamips'"
+  *ngIf="node.node_type === 'docker' || node.node_type === 'dynamips' || node.node_type === 'qemu'"
   (click)="openConsole(auxiliary=true)"
 >
   <mat-icon>web_asset</mat-icon>
