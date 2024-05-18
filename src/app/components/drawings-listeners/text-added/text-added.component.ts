@@ -9,7 +9,7 @@ import { Context } from '../../../cartography/models/context';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ElectronService } from 'ngx-electron';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { ControllerManagementService } from './controller-management.service';
 
 describe('ControllerManagementService', () => {

@@ -6,7 +6,7 @@ import { DrawingsEventSource } from '../../../cartography/events/drawings-event-
 import { ResizedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({

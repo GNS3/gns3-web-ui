@@ -7,7 +7,7 @@ import { Node } from '../../cartography/models/node';
 import { Compute } from '../../models/compute';
 import { Project } from '../../models/project';
 import { ProjectStatistics } from '../../models/project-statistics';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { ComputeService } from '../../services/compute.service';
 import { ProjectService } from '../../services/project.service';
 import { ThemeService } from '../../services/theme.service';

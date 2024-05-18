@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouService } from '../../../../services/iou.service';
 import { ControllerService } from '../../../../services/controller.service';

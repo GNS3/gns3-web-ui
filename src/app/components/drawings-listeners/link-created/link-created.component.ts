@@ -7,7 +7,7 @@ import { MapLinkCreated } from '../../../cartography/events/links';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { Link } from '../../../models/link';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { LinkService } from '../../../services/link.service';
 import { ProjectService } from '../../../services/project.service';
 

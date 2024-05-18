@@ -6,7 +6,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({

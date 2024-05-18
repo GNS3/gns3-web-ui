@@ -16,7 +16,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';
 import { IosService } from '../../../../services/ios.service';

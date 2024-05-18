@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Link } from '../../../../../models/link';
 import { Project } from '../../../../../models/project';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { PacketCaptureService } from '../../../../../services/packet-capture.service';
 
 @Component({

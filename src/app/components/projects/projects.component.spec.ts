@@ -17,7 +17,7 @@ import { of } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { MockedProjectService } from '../../services/project.service.spec';
 import { ControllerService } from '../../services/controller.service';

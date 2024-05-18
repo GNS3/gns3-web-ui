@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { VmwareTemplate } from '../models/templates/vmware-template';
 import { VmwareVm } from '../models/vmware/vmware-vm';
 import { HttpController } from './http-controller.service';

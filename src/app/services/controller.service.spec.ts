@@ -1,4 +1,4 @@
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 
 export class MockedControllerService {
   public controllers:Controller [] = [];

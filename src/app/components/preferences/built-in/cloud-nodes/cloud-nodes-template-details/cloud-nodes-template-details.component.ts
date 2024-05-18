@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';

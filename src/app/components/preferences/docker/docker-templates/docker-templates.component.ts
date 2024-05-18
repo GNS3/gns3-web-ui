@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { DockerService } from '../../../../services/docker.service';
 import { ControllerService } from '../../../../services/controller.service';

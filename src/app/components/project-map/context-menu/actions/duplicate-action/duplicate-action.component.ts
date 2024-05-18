@@ -4,7 +4,7 @@ import { NodesDataSource } from '../../../../../cartography/datasources/nodes-da
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '../../../../../models/project';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { NodeService } from '../../../../../services/node.service';
 import { ToasterService } from '../../../../../services/toaster.service';

@@ -2,7 +2,7 @@ import { Component, DoCheck, OnInit, ViewEncapsulation } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthResponse } from '../../models/authResponse';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { Version } from '../../models/version';
 import { LoginService } from '../../services/login.service';
 import { ControllerDatabase } from '../../services/controller.database';

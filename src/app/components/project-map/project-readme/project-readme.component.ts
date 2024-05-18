@@ -1,6 +1,6 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { Project } from '../../../models/project';
 import { ProjectService } from '../../../services/project.service';
 import * as marked from 'marked';
@@ -17,7 +17,7 @@ export class ProjectReadmeComponent implements AfterViewInit {
   controller:Controller ;
   project: Project;
   @ViewChild('text', {static: false}) text: ElementRef;
-  
+
   constructor(
     public dialogRef: MatDialogRef<ProjectReadmeComponent>,
     private projectService: ProjectService,

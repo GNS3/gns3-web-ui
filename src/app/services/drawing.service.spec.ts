@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '../models/project';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { DrawingService } from './drawing.service';
 import { HttpController } from './http-controller.service';

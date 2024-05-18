@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { IosService } from '../../../../services/ios.service';
 import { ControllerService } from '../../../../services/controller.service';

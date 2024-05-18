@@ -3,7 +3,7 @@ import { Template } from '../models/template';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { Symbol } from '../models/symbol';
 import { HttpController } from './http-controller.service';
 import { environment } from 'environments/environment';

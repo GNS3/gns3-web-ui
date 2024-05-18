@@ -5,7 +5,7 @@ import { FilterDescription } from '../../../../models/filter-description';
 import { Link } from '../../../../models/link';
 import { Message } from '../../../../models/message';
 import { Project } from '../../../../models/project';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { LinkService } from '../../../../services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 

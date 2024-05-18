@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
 import { IosService } from '../../../../services/ios.service';

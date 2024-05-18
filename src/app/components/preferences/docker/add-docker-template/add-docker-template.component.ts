@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { DockerImage } from '../../../../models/docker/docker-image';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { DockerTemplate } from '../../../../models/templates/docker-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { DockerConfigurationService } from '../../../../services/docker-configuration.service';

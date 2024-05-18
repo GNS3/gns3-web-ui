@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { ProjectNameValidator } from '../models/projectNameValidator';

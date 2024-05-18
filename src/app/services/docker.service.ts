@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { DockerImage } from '../models/docker/docker-image';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { DockerTemplate } from '../models/templates/docker-template';
 import { HttpController } from './http-controller.service';
 

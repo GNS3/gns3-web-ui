@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { DateFilter } from '../../../filters/dateFilter.pipe';
 import { NameFilter } from '../../../filters/nameFilter.pipe';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
 import { ControllerResolve } from '../../../resolvers/controller-resolve';
 import { SnapshotService } from '../../../services/snapshot.service';

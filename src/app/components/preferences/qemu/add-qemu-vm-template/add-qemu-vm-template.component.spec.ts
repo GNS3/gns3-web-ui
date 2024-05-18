@@ -15,7 +15,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../services/qemu.service';

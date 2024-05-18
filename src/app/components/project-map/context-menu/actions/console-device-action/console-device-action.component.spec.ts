@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { ControllerService } from '../../../../../services/controller.service';
 import { MockedControllerService } from '../../../../../services/controller.service.spec';

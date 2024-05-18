@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { Snapshot } from '../models/snapshot';
 import { HttpController } from './http-controller.service';
 

@@ -4,7 +4,7 @@ import { ControllerService } from '../../../services/controller.service';
 import { UserService } from '../../../services/user.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { User } from '../../../models/users/user';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 
 @Component({
   selector: 'app-logged-user',

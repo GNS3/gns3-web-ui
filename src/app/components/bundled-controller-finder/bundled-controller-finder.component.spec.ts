@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProgressService } from '../../common/progress/progress.service';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { ControllerService } from '../../services/controller.service';
 import { MockedControllerService } from '../../services/controller.service.spec';
 import { MockedProgressService } from '../project-map/project-map.component.spec';
@@ -24,7 +24,7 @@ describe('BundledControllerFinderComponent', () => {
       navigate: jasmine.createSpy('navigate'),
     };
 
-    
+
 
     controllerServiceMock = jasmine.createSpyObj<ControllerService>([
       "getLocalController"

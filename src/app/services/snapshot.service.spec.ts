@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { Snapshot } from '../models/snapshot';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';

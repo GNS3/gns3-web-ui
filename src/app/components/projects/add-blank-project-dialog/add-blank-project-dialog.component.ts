@@ -4,7 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';

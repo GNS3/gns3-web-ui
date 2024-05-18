@@ -7,7 +7,7 @@ import { AddedDataEvent } from '../../../cartography/events/event-source';
 import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { DrawingService } from '../../../services/drawing.service';
 
 @Component({

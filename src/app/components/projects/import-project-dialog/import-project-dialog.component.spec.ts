@@ -15,7 +15,7 @@ import { environment } from 'environments/environment';
 import { FileItem, FileSelectDirective, FileUploadModule } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
 import { ToasterService } from '../../../services/toaster.service';

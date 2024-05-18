@@ -6,7 +6,7 @@ import { FilterDescription } from '../models/filter-description';
 import { Link } from '../models/link';
 import { LinkNode } from '../models/link-node';
 import { Port } from '../models/port';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Link } from '../../../../../models/link';
 import { Project } from '../../../../../models/project';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({

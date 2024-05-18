@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import * as marked from 'marked';
 import { ProjectService } from '../../../../services/project.service';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { Project } from '../../../../models/project';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '../../../models/project';

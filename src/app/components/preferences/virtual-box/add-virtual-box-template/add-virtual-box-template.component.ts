@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
 import { VirtualBoxVm } from '../../../../models/virtualBox/virtual-box-vm';
 import { ControllerService } from '../../../../services/controller.service';

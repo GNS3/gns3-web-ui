@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IouImage } from '../../../../models/iou/iou-image';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { IouService } from '../../../../services/iou.service';

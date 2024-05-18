@@ -10,7 +10,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';

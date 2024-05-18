@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { NodeConsoleService } from '../../../../../services/nodeConsole.service';
 
 @Component({

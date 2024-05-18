@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IouTemplate } from '../../../../models/templates/iou-template';
 import { IouConfigurationService } from '../../../../services/iou-configuration.service';
 import { IouService } from '../../../../services/iou.service';

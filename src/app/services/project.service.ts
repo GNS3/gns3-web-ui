@@ -5,7 +5,7 @@ import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
 import { Link } from '../models/link';
 import { Project } from '../models/project';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { HttpController } from './http-controller.service';
 import { RecentlyOpenedProjectService } from './recentlyOpenedProject.service';
 import { SettingsService } from './settings.service';

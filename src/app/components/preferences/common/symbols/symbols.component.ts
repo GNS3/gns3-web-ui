@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { environment } from 'environments/environment';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { Symbol } from '../../../../models/symbol';
 import { SymbolService } from '../../../../services/symbol.service';
 
@@ -73,7 +73,7 @@ export class SymbolsComponent implements OnInit {
   }
 
   private createSvgFileForImage(image: string | ArrayBuffer, imageToUpload: HTMLImageElement) {
-    return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\" 
+    return `<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"${imageToUpload.height}\"
                 width=\"${imageToUpload.width}\">\n<image height=\"${imageToUpload.height}\" width=\"${imageToUpload.width}\" xlink:href=\"${image}\"/>\n</svg>`;
   }
 

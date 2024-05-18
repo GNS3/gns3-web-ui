@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 
 @Component({

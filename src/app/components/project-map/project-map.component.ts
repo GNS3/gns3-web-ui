@@ -62,7 +62,7 @@ import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { Symbol } from '../../models/symbol';
 import { DrawingService } from '../../services/drawing.service';
 import { MapScaleService } from '../../services/mapScale.service';

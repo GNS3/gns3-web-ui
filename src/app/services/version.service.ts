@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { Version } from '../models/version';
 import { HttpController } from './http-controller.service';
 

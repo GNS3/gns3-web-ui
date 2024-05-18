@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '../models/project';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

@@ -2,7 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { Observable } from 'rxjs/Rx';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { Version } from '../../../models/version';
 import { ControllerDatabase } from '../../../services/controller.database';
 import { ControllerService } from '../../../services/controller.service';

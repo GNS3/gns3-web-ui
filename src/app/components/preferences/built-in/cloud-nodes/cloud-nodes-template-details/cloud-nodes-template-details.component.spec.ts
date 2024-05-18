@@ -11,7 +11,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { CloudTemplate } from '../../../../../models/templates/cloud-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';

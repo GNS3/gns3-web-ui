@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../models/qemu/qemu-image';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';

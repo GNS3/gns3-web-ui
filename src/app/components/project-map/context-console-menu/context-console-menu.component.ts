@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ToasterService } from '../../../services/toaster.service';

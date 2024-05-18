@@ -46,7 +46,7 @@ import { ProjectWebServiceHandler } from '../../handlers/project-web-service-han
 import { CapturingSettings } from '../../models/capturingSettings';
 import { Link } from '../../models/link';
 import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { DrawingService } from '../../services/drawing.service';
 import { LinkService } from '../../services/link.service';
 import { MapScaleService } from '../../services/mapScale.service';

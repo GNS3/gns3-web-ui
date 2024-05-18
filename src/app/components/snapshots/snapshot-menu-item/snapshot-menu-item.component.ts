@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { Snapshot } from '../../../models/snapshot';
 import { SnapshotService } from '../../../services/snapshot.service';
 import { ToasterService } from '../../../services/toaster.service';

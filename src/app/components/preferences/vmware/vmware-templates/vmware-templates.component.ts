@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { VmwareTemplate } from '../../../../models/templates/vmware-template';
 import { ControllerService } from '../../../../services/controller.service';
 import { VmwareService } from '../../../../services/vmware.service';

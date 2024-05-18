@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { DockerTemplate } from '../../../models/templates/docker-template';
 import { IosTemplate } from '../../../models/templates/ios-template';
 import { IouTemplate } from '../../../models/templates/iou-template';

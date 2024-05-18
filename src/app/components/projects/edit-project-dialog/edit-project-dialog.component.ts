@@ -2,7 +2,7 @@ import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Project, ProjectVariable } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ProjectService } from '../../../services/project.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';

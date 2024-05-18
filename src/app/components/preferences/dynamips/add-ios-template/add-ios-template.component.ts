@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '../../../../models/compute';
 import { IosImage } from '../../../../models/images/ios-image';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { IosTemplate } from '../../../../models/templates/ios-template';
 import { ComputeService } from '../../../../services/compute.service';
 import { IosConfigurationService } from '../../../../services/ios-configuration.service';

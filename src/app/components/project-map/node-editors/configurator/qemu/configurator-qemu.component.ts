@@ -5,7 +5,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
 import { QemuImage } from '../../../../../models/qemu/qemu-image';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { NodeService } from '../../../../../services/node.service';
 import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
 import { QemuService } from '../../../../../services/qemu.service';

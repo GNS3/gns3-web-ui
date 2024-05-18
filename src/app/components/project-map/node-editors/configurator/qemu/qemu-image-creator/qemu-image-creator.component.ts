@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { QemuImg } from '../../../../../../models/qemu/qemu-img';
-import{ Controller } from '../../../../../../models/controller';
+import { Controller } from '../../../../../../models/controller';
 import { NodeService } from '../../../../../../services/node.service';
 import { QemuService } from '../../../../../../services/qemu.service';
 import { ToasterService } from '../../../../../../services/toaster.service';

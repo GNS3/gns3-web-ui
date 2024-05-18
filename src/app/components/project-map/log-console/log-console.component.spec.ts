@@ -10,7 +10,7 @@ import { ProtocolHandlerService } from '../../../services/protocol-handler.servi
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { HttpController, ControllerErrorHandler } from '../../../services/http-controller.service';
 import { NodeService } from '../../../services/node.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';

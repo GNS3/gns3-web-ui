@@ -10,7 +10,7 @@ import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { ProgressService } from '../../common/progress/progress.service';
 import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { ProjectService } from '../../services/project.service';
 import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '../../services/settings.service';

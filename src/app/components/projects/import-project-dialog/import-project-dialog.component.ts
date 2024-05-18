@@ -5,7 +5,7 @@ import { ToasterService } from '../../../services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { ControllerResponse } from '../../../models/controllerResponse';
 import { ProjectService } from '../../../services/project.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';

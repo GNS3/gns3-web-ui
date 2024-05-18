@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { LoginService } from '@services/login.service';
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 import { ControllerService } from '../services/controller.service';
 
 @Injectable()

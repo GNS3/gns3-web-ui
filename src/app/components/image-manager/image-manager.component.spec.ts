@@ -9,7 +9,7 @@ import { ImageManagerService } from 'app/services/image-manager.service';
 import { ControllerService } from 'app/services/controller.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
 import { of } from 'rxjs';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 
 import { ImageManagerComponent } from './image-manager.component';
 import { Image } from '../../models/images';

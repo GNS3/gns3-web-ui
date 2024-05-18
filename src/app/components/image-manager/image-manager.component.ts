@@ -4,7 +4,7 @@ import { ControllerService } from '../../services/controller.service';
 import { VersionService } from '../../services/version.service';
 import { ProgressService } from 'app/common/progress/progress.service';
 import { Image } from '../../models/images';
-import{ Controller } from '../../models/controller';
+import { Controller } from '../../models/controller';
 import { ImageManagerService } from "../../services/image-manager.service";
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
@@ -60,7 +60,7 @@ export class ImageManagerComponent implements OnInit {
       },
       (error) => {
         this.toasterService.error(error.error.message)
-      
+
       }
     );
   }

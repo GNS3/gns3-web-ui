@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
 import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import{ Controller } from '../../../../models/controller';
+import { Controller } from '../../../../models/controller';
 import { QemuTemplate } from '../../../../models/templates/qemu-template';
 import { QemuService } from '../../../../services/qemu.service';
 import { ControllerService } from '../../../../services/controller.service';

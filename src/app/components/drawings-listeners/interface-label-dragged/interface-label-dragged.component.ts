@@ -5,7 +5,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '../../../models/link';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { LinkService } from '../../../services/link.service';
 
 @Component({

@@ -6,7 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { MapSettingsService } from '../../../services/mapsettings.service';
 import { NodeConsoleService } from '../../../services/nodeConsole.service';
 import { ProjectService } from '../../../services/project.service';

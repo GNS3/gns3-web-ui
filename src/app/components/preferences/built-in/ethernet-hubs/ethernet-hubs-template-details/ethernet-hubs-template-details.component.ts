@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../../models/controller';
+import { Controller } from '../../../../../models/controller';
 import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
 import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';

@@ -1,4 +1,4 @@
-import{ Controller } from '../models/controller';
+import { Controller } from '../models/controller';
 
 export function getTestController():Controller  {
   const controller = new Controller  ();
