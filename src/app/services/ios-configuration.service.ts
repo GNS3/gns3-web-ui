@@ -16,6 +16,18 @@ export class IosConfigurationService {
     return ['telnet', 'none'];
   }
 
+  getCategories() {
+    let categories = [
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ];
+
+    return categories;
+  }
+
   getDefaultRamSettings() {
     return {
       c1700: 160,

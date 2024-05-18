@@ -22,6 +22,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   networkAdaptersForTemplate: string[] = [];
   platforms: string[] = [];
   consoleTypes: string[] = [];
+  categories = [];
   platformsWithEtherSwitchRouterOption = {};
   platformsWithChassis = {};
   chassis = {};
@@ -93,6 +94,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.chassis = this.iosConfigurationService.getChassis();
     this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
     this.consoleTypes = this.iosConfigurationService.getConsoleTypes();
+    this.categories = this.iosConfigurationService.getCategories();
   }
 
   fillAdaptersData() {
