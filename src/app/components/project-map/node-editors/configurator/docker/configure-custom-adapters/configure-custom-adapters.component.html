@@ -1,3 +1,4 @@
+
 <h1 mat-dialog-title>Configure custom adapters for node {{ node.name }}</h1>
 
 <div *ngIf="node" class="modal-form-container">
@@ -8,11 +9,11 @@
 
   <div>
     <mat-list>
-      <mat-list-item *ngFor="let adapter of adapters; index as i">
+      <mat-list-item *ngFor="let adapter of node.ports; index as i">
         <div class="header">
           <span class="column"> Adapter {{ adapter.adapter_number }} </span>
           <span class="column">
-            <input matInput type="text" [(ngModel)]="adapter.port_name" placeholder="Edit port name" />
+            <input matInput type="text" [(ngModel)]="adapter.short_name " placeholder="Edit port name" readonly/>
           </span>
         </div>
       </mat-list-item>

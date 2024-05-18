@@ -88,6 +88,9 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.customAdaptersConfigurator.adapters.push({
           adapter_number: adapter.adapter_number,
           adapter_type: adapter.adapter_type,
+          mac_address:adapter.mac_address,
+          port_name:adapter.port_name
+
         });
       });
     }
@@ -109,6 +112,8 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.virtualBoxTemplate.custom_adapters.push({
           adapter_number: i,
           adapter_type: 'e1000',
+          mac_address:'',
+          port_name:''
         });
       }
     }
