@@ -13,6 +13,8 @@ import { Link } from '../../../../../models/link';
 import { DrawingService } from '../../../../../services/drawing.service';
 import { LinkService } from '../../../../../services/link.service';
 import { NodeService } from '../../../../../services/node.service';
+import { ToasterService } from '../../../../../services/toaster.service';
+import { MockedToasterService } from '../../../../../services/toaster.service.spec';
 import { MockedDrawingService, MockedLinkService, MockedNodeService } from '../../../project-map.component.spec';
 import { DeleteActionComponent } from './delete-action.component';
 
@@ -22,6 +24,7 @@ describe('DeleteActionComponent', () => {
   let mockedNodeService: MockedNodeService = new MockedNodeService();
   let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
   let mockedLinkService: MockedLinkService = new MockedLinkService();
+  let mockedToasterService = new MockedToasterService();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -33,6 +36,7 @@ describe('DeleteActionComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: LinkService, useValue: mockedLinkService },
+        { provide: ToasterService, useValue: mockedToasterService},
       ],
       declarations: [DeleteActionComponent],
     }).compileComponents();
