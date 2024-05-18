@@ -39,14 +39,17 @@ export class InfoService {
     if (node.console_type !== 'none' && node.console_type !== 'null') {
       infoList.push(`Console is on port ${node.console} and type is ${node.console_type}.`);
     }
-    infoList = infoList.concat(this.getInfoAboutPorts(node.ports));
+    node.ports.forEach((port) => {
+      infoList.push(`Port ${port.name} is ${port.link_type}.`);
+    });
+    //infoList = infoList.concat(this.getInfoAboutPorts(node.ports));
     return infoList;
   }
 
   getInfoAboutPorts(ports: Port[]): string {
     let response: string = `Ports: `;
     ports.forEach((port) => {
-      response += `link_type: ${port.link_type},
+      response += `link_type: ${port.link_type},\n
                         name: ${port.name}; `;
     });
     response = response.substring(0, response.length - 2);
