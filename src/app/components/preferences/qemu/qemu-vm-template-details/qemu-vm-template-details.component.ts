@@ -21,6 +21,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   qemuTemplate: QemuTemplate;
   isSymbolSelectionOpened: boolean = false;
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   diskInterfaces: string[] = [];
   networkTypes = [];
   bootPriorities = [];
@@ -72,6 +73,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   getConfiguration() {
     this.consoleTypes = this.configurationService.getConsoleTypes();
+    this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
     this.diskInterfaces = this.configurationService.getDiskInterfaces();
     this.networkTypes = this.configurationService.getNetworkTypes();
     this.bootPriorities = this.configurationService.getBootPriorities();

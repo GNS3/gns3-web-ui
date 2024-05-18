@@ -54,6 +54,13 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
+            <mat-form-field class="select">
+              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.aux_type">
+                <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
             <mat-checkbox [(ngModel)]="node.properties.console_auto_start"> Auto start console </mat-checkbox>
           </mat-tab>
           <mat-tab label="HDD">

@@ -6,6 +6,7 @@ export class IosTemplate {
   compute_id: string;
   console_auto_start: boolean;
   console_type: string;
+  aux_type: string;
   default_name_format: string;
   disk0: number;
   disk1: number;

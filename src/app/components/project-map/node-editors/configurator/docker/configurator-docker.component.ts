@@ -21,6 +21,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   name: string;
   generalSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   consoleResolutions: string[] = ['2560x1440', '1920x1080', '1680x1050', '1440x900', '1366x768', '1280x1024', '1280x800', '1024x768', '800x600', '640x480'];
   private conf = {
     autoFocus: false,
@@ -60,6 +61,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
 
   getConfiguration() {
     this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
+    this.auxConsoleTypes = this.dockerConfigurationService.getAuxConsoleTypes();
   }
 
   configureCustomAdapters() {

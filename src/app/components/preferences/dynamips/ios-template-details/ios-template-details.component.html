@@ -31,8 +31,10 @@
           </mat-form-field>
           <mat-label>Platform - {{ iosTemplate.platform }}</mat-label
           ><br /><br />
+          <div *ngIf="iosTemplate.chassis">
           <mat-label>Chassis - {{ iosTemplate.chassis }}</mat-label
           ><br /><br />
+          </div>
           <mat-form-field class="form-field">
             <input
               matInput
@@ -84,6 +86,13 @@
         </form>
         <mat-form-field class="select">
           <mat-select placeholder="Console type" [(ngModel)]="iosTemplate.console_type">
+            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="select">
+          <mat-select placeholder="Auxiliary console type" [(ngModel)]="iosTemplate.aux_type">
             <mat-option *ngFor="let type of consoleTypes" [value]="type">
               {{ type }}
             </mat-option>

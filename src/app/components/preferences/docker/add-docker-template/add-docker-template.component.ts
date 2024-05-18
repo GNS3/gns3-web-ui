@@ -22,6 +22,7 @@ export class AddDockerTemplateComponent implements OnInit {
   controller:Controller ;
   dockerTemplate: DockerTemplate;
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   isRemoteComputerChosen: boolean = false;
   dockerImages: DockerImage[] = [];
   selectedImage: DockerImage;
@@ -64,6 +65,7 @@ export class AddDockerTemplateComponent implements OnInit {
       this.controller = controller;
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
+      this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
 
       this.templateMocksService.getDockerTemplate().subscribe((dockerTemplate: DockerTemplate) => {
         this.dockerTemplate = dockerTemplate;
