@@ -86,6 +86,17 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <mat-form-field class="select">
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="Auxiliary console type"
+              [(ngModel)]="dockerTemplate.aux_type"
+            >
+              <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
           <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="dockerTemplate.console_auto_start">
             Auto start console
           </mat-checkbox>

@@ -66,6 +66,20 @@
           </mat-form-field>
         </mat-step>
 
+        <mat-step label="Auxiliary console type" [completed]="qemuTemplate.aux_type">
+          <mat-form-field class="form-field">
+            <mat-select
+              placeholder="Auxiliary console type"
+              [(ngModel)]="qemuTemplate.aux_type"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-step>
+
         <mat-step label="Disk image">
           <form [formGroup]="diskForm">
             <mat-radio-group class="radio-group">

@@ -29,6 +29,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   selectedPlatform: string;
   ramMemory: number;
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   newImageSelected: boolean = false;
   qemuImages: QemuImage[] = [];
   selectedImage: QemuImage;
@@ -113,6 +114,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.selectPlatform = this.configurationService.getPlatform();
       this.selectedPlatform = this.selectPlatform[0];
       this.consoleTypes = this.configurationService.getConsoleTypes();
+      this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
     });
 
     this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {

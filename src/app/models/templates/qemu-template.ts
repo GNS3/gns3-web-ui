@@ -11,6 +11,7 @@ export class QemuTemplate {
   compute_id: string;
   console_auto_start: boolean;
   console_type: string;
+  aux_type: string;
   cpu_throttling: number;
   cpus: number;
   custom_adapters: CustomAdapter[];

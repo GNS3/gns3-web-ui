@@ -21,6 +21,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   isSymbolSelectionOpened: boolean = false;
 
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   consoleResolutions: string[] = [];
   categories = [];
   adapters: CustomAdapter[] = [];
@@ -60,6 +61,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
 
   getConfiguration() {
     this.consoleTypes = this.configurationService.getConsoleTypes();
+    this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
     this.categories = this.configurationService.getCategories();
     this.consoleResolutions = this.configurationService.getConsoleResolutions();
   }

@@ -6,6 +6,10 @@ export class DockerConfigurationService {
     return ['telnet', 'vnc', 'http', 'https', 'none'];
   }
 
+  getAuxConsoleTypes() {
+    return ['telnet', 'none'];
+  }
+
   getCategories() {
     let categories = [
       ['Default', 'guest'],

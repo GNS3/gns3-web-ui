@@ -39,6 +39,10 @@ export class QemuConfigurationService {
     return ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
   }
 
+  getAuxConsoleTypes() {
+    return ['telnet', 'none'];
+  }
+
   getDiskInterfaces() {
     return ['ide', 'sata', 'scsi', 'sd', 'mtd', 'floppy', 'pflash', 'virtio', 'nvme', 'none'];
   }

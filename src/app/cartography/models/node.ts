@@ -14,6 +14,7 @@ export class Properties {
   headless: boolean;
   linked_clone: boolean;
   on_close: string;
+  aux_type: boolean;
   aux: number;
   ram: number;
   nvram: number;
