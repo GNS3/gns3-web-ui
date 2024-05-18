@@ -15,7 +15,7 @@ import { InformationDialogComponent } from '../../../components/dialogs/informat
 import { Appliance, Image, Version } from '../../../models/appliance';
 import { Project } from '../../../models/project';
 import { QemuBinary } from '../../../models/qemu/qemu-binary';
-import{ Controller } from '../../../models/controller';
+import { Controller } from '../../../models/controller';
 import { Template } from '../../../models/template';
 import { DockerTemplate } from '../../../models/templates/docker-template';
 import { IosTemplate } from '../../../models/templates/ios-template';
@@ -179,7 +179,7 @@ export class NewTemplateDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.error('An error has occured because image already exists');
+      this.toasterService.error('An error has occurred because image already exists');
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
@@ -190,7 +190,7 @@ export class NewTemplateDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.success('Image imported succesfully');
+      this.toasterService.success('Image successfully imported');
       this.refreshImages();
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
@@ -418,23 +418,6 @@ export class NewTemplateDialogComponent implements OnInit {
     return false;
   }
 
-  checkImages(version: Version): boolean {
-    if (version.images.hdb_disk_image) {
-      if (
-        this.checkImageFromVersion(version.images.hda_disk_image) &&
-        this.checkImageFromVersion(version.images.hdb_disk_image)
-      )
-        return true;
-      return false;
-    }
-
-    if (this.checkImageFromVersion(version.images.hda_disk_image)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   openConfirmationDialog(message: string, link: string) {
     const dialogRef = this.dialog.open(InformationDialogComponent, {
       width: '400px',
@@ -481,19 +464,26 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createIouTemplate(image: Image) {
+
+    let iou_image = image.filename;
+    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === iou_image)[0];
+    let imageToUse = this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum);
+    if (imageToUse.length > 0) {
+      iou_image = imageToUse[0].filename; // use the image name from the controller
+    }
+
     let iouTemplate: IouTemplate = new IouTemplate();
     iouTemplate.nvram = this.applianceToInstall.iou.nvram;
     iouTemplate.ram = this.applianceToInstall.iou.ram;
     iouTemplate.ethernet_adapters = this.applianceToInstall.iou.ethernet_adapters;
     iouTemplate.serial_adapters = this.applianceToInstall.iou.serial_adapters;
     iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
-    iouTemplate.builtin = this.applianceToInstall.builtin;
     iouTemplate.category = this.getCategory();
     iouTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iouTemplate.symbol = this.applianceToInstall.symbol;
     iouTemplate.compute_id = 'local';
     iouTemplate.template_id = uuid();
-    iouTemplate.path = image.filename;
+    iouTemplate.path = iou_image;
     iouTemplate.template_type = 'iou';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
@@ -521,6 +511,14 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createIosTemplate(image: Image) {
+
+    let ios_image = image.filename;
+    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === ios_image)[0];
+    let imageToUse = this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum);
+    if (imageToUse.length > 0) {
+      ios_image = imageToUse[0].filename; // use the image name from the controller
+    }
+
     let iosTemplate: IosTemplate = new IosTemplate();
     iosTemplate.chassis = this.applianceToInstall.dynamips.chassis;
     iosTemplate.nvram = this.applianceToInstall.dynamips.nvram;
@@ -535,13 +533,12 @@ export class NewTemplateDialogComponent implements OnInit {
     iosTemplate.slot5 = this.applianceToInstall.dynamips.slot5;
     iosTemplate.slot6 = this.applianceToInstall.dynamips.slot6;
     iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
-    iosTemplate.builtin = this.applianceToInstall.builtin;
     iosTemplate.category = this.getCategory();
     iosTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iosTemplate.symbol = this.applianceToInstall.symbol;
     iosTemplate.compute_id = 'local';
     iosTemplate.template_id = uuid();
-    iosTemplate.image = image.filename;
+    iosTemplate.image = ios_image;
     iosTemplate.template_type = 'dynamips';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
@@ -573,7 +570,6 @@ export class NewTemplateDialogComponent implements OnInit {
     let dockerTemplate: DockerTemplate = new DockerTemplate();
     dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
     dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
-    dockerTemplate.builtin = this.applianceToInstall.builtin;
     dockerTemplate.category = this.getCategory();
     dockerTemplate.default_name_format = this.applianceToInstall.default_name_format;
     dockerTemplate.symbol = this.applianceToInstall.symbol;
@@ -607,12 +603,19 @@ export class NewTemplateDialogComponent implements OnInit {
     });
   }
 
-  createQemuTemplateFromVersion(version: Version) {
-    if (!this.checkImages(version)) {
-      this.toasterService.error('Please install required images first');
-      return;
-    }
+  findControllerImageName(image_name) {
 
+      if (image_name) {
+        let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image_name)[0];
+        let imageToUse = this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum);
+        if (imageToUse.length > 0) {
+          image_name = imageToUse[0].filename; // use the image name from the controller
+        }
+      }
+      return image_name;
+  }
+
+  createQemuTemplateFromVersion(version: Version) {
     let qemuTemplate: QemuTemplate = new QemuTemplate();
     qemuTemplate.ram = this.applianceToInstall.qemu.ram;
     qemuTemplate.adapters = this.applianceToInstall.qemu.adapters;
@@ -623,7 +626,6 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.hdb_disk_interface = this.applianceToInstall.qemu.hdb_disk_interface;
     qemuTemplate.hdc_disk_interface = this.applianceToInstall.qemu.hdc_disk_interface;
     qemuTemplate.hdd_disk_interface = this.applianceToInstall.qemu.hdd_disk_interface;
-    qemuTemplate.builtin = this.applianceToInstall.builtin;
     qemuTemplate.category = this.getCategory();
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
@@ -632,11 +634,11 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.symbol = this.applianceToInstall.symbol;
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
-    qemuTemplate.hda_disk_image = version.images.hda_disk_image;
-    qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
-    qemuTemplate.hdc_disk_image = version.images.hdc_disk_image;
-    qemuTemplate.hdd_disk_image = version.images.hdd_disk_image;
-    qemuTemplate.cdrom_image = version.images.cdrom_image;
+    qemuTemplate.hda_disk_image = this.findControllerImageName(version.images.hda_disk_image);
+    qemuTemplate.hdb_disk_image = this.findControllerImageName(version.images.hdb_disk_image);
+    qemuTemplate.hdc_disk_image = this.findControllerImageName(version.images.hdc_disk_image);
+    qemuTemplate.hdd_disk_image = this.findControllerImageName(version.images.hdd_disk_image);
+    qemuTemplate.cdrom_image = this.findControllerImageName(version.images.cdrom_image);
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = this.applianceToInstall.usage;
     qemuTemplate.platform = this.applianceToInstall.qemu.arch;

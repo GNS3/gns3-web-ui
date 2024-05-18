@@ -141,7 +141,7 @@
           >
             <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
           ><br />
-          <div> 
+          <div>
             <div *ngFor="let version of applianceToInstall.versions">
               <div class="list-item">
                 <span>{{ applianceToInstall.name }} version {{ version.name }}</span>
@@ -212,7 +212,7 @@
                     [uploader]="uploaderImage"
                   />
                   <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                 
+
                   <button
                     class="button"
                     mat-raised-button
@@ -356,7 +356,7 @@
       </div>
 
       <div *ngIf="applianceToInstall.docker">
-        
+
         <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">
           Create docker template
         </button>
@@ -364,7 +364,7 @@
 
       <div *ngIf="applianceToInstall.dynamips">
         <div>
-          Install required files
+          Install the required images
           <button
             mat-icon-button
             matTooltip="Refresh list of images"
@@ -376,10 +376,16 @@
           <mat-list>
             <mat-list-item *ngFor="let image of applianceToInstall.images">
               <div class="list-item">
-                <div>
+                <span>
                   {{ image.filename }}
-                </div>
+                </span>
                 <div>
+                  <span *ngIf="checkImageFromVersion(image.filename)"
+                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                  </span>
+                  <span *ngIf="!checkImageFromVersion(image.filename)"
+                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                  </span>
                   <input
                     type="file"
                     class="non-visible"
@@ -401,7 +407,7 @@
 
       <div *ngIf="applianceToInstall.iou">
         <div>
-          Install required files
+          Install required images
           <button
             mat-icon-button
             matTooltip="Refresh list of images"
@@ -417,6 +423,12 @@
                   {{ image.filename }}
                 </div>
                 <div>
+                  <span *ngIf="checkImageFromVersion(image.filename)"
+                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                  </span>
+                  <span *ngIf="!checkImageFromVersion(image.filename)"
+                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                  </span>
                   <input
                     type="file"
                     class="non-visible"
