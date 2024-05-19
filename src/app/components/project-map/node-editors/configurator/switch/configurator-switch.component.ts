@@ -90,9 +90,9 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 
   clearUserInput() {
     this.sourcePort = '0';
-    this.sourceDlci = '0';
+    this.sourceDlci = '1';
     this.destinationPort = '0';
-    this.destinationDlci = '0';
+    this.destinationDlci = '1';
   }
 
   strMapToObj(strMap) {
