@@ -33,10 +33,10 @@
 </table>
 <br />
 <mat-form-field class="form-field">
-  <input matInput type="number" [(ngModel)]="newPort.port_number" placeholder="Port" />
+  <input matInput type="number" min="0" [(ngModel)]="newPort.port_number" placeholder="Port" />
 </mat-form-field>
 <mat-form-field class="form-field">
-  <input matInput type="number" [(ngModel)]="newPort.vlan" placeholder="VLAN" />
+  <input matInput type="number" min="1" max="65535" [(ngModel)]="newPort.vlan" placeholder="VLAN" />
 </mat-form-field>
 <mat-form-field class="select">
   <mat-select placeholder="Type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.type">

@@ -159,6 +159,8 @@
                 <mat-form-field class="form-field">
                     <input
                         matInput type="number"
+                        min="1"
+                        max="65535"
                         [(ngModel)]="newPort.lport"
                         placeholder="Local port">
                 </mat-form-field>
@@ -171,6 +173,8 @@
                 <mat-form-field class="form-field">
                     <input
                         matInput type="number"
+                        min="1"
+                        max="65535"
                         [(ngModel)]="newPort.rport"
                         placeholder="Remote port">
                 </mat-form-field>

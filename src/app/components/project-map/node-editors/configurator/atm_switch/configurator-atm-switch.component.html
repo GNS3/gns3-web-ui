@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
+<h1 mat-dialog-title>Configurator for ATM switch {{ name }}</h1>
 
 <div class="modal-form-container">
   <div class="content">
@@ -45,17 +45,17 @@
         <form [formGroup]="inputForm">
           Source
           <mat-form-field class="form-field">
-            <input matInput type="number" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
+            <input matInput type="number" min="0" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
           </mat-form-field>
         </form>
         <form [formGroup]="abstractForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
+            <input matInput type="number" min="0" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
           </mat-form-field>
         </form>
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
+            <input matInput type="number" min="0" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
           </mat-form-field>
           Destination
           <mat-form-field class="form-field">

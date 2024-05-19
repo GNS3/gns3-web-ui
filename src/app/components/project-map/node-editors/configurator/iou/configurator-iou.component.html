@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
+<h1 mat-dialog-title>Configurator for IOU device {{ name }}</h1>
 
 <div class="modal-form-container">
   <div class="content">
@@ -22,11 +22,11 @@
             <mat-checkbox [(ngModel)]="node.console_auto_start"> Auto start console </mat-checkbox><br />
             <mat-checkbox [(ngModel)]="node.properties.use_default_iou_values"> Use default IOU values for memories </mat-checkbox>
             <mat-form-field class="form-field" *ngIf="!node.properties.use_default_iou_values">
-              <input matInput type="number" [(ngModel)]="node.properties.ram" placeholder="RAM size" />
+              <input matInput type="number" min="1" [(ngModel)]="node.properties.ram" placeholder="RAM size" />
               <span matSuffix>MB</span>
             </mat-form-field>
             <mat-form-field class="form-field" *ngIf="!node.properties.use_default_iou_values">
-              <input matInput type="number" [(ngModel)]="node.properties.nvram" placeholder="NVRAM size" />
+              <input matInput type="number" min="1" [(ngModel)]="node.properties.nvram" placeholder="NVRAM size" />
               <span matSuffix>KB</span>
             </mat-form-field>
           </mat-tab>

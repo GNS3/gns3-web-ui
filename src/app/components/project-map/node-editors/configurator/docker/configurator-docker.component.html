@@ -33,12 +33,12 @@
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                  <input formControlName="memory" matInput type="number" [(ngModel)]="node.properties.memory" placeholder="Maximum memory">
+                  <input formControlName="memory" matInput type="number" min="1" [(ngModel)]="node.properties.memory" placeholder="Maximum memory">
                   <span matSuffix>MB</span>
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                  <input formControlName="cpus" matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
+                  <input formControlName="cpus" matInput type="number" min="1" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
               </mat-form-field>
 
               <button mat-button class="form-field" (click)="configureCustomAdapters()">

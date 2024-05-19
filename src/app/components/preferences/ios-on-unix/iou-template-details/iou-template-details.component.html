@@ -109,11 +109,11 @@
         ><br />
         <mat-checkbox [(ngModel)]="iouTemplate.use_default_iou_values"> Use default IOU values for memories </mat-checkbox>
         <mat-form-field class="form-field" *ngIf="!iouTemplate.use_default_iou_values">
-          <input matInput type="number" [(ngModel)]="iouTemplate.ram" placeholder="RAM size" />
+          <input matInput type="number" min="1" [(ngModel)]="iouTemplate.ram" placeholder="RAM size" />
           <span matSuffix>MB</span>
         </mat-form-field>
         <mat-form-field class="form-field" *ngIf="!iouTemplate.use_default_iou_values">
-          <input matInput type="number" [(ngModel)]="iouTemplate.nvram" placeholder="NVRAM size" />
+          <input matInput type="number" min="1" [(ngModel)]="iouTemplate.nvram" placeholder="NVRAM size" />
           <span matSuffix>KB</span>
         </mat-form-field>
       </mat-expansion-panel>

@@ -119,7 +119,7 @@
         </mat-expansion-panel-header>
         <form [formGroup]="memoryForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" formControlName="ram" [(ngModel)]="iosTemplate.ram" placeholder="RAM size" />
+            <input matInput type="number" min="1" formControlName="ram" [(ngModel)]="iosTemplate.ram" placeholder="RAM size" />
             <span matSuffix>MB</span>
           </mat-form-field>
           <mat-form-field class="form-field">
