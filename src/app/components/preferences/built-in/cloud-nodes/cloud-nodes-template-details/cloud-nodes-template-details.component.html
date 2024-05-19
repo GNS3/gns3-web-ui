@@ -1,8 +1,22 @@
 <div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Cloud node template configuration</h1>
+      <div class="col-md-1">
+        <button
+        *ngIf="controller"
+        class="top-button"
+        class="cancel-button"
+        (click)="goBack()"
+        mat-button
+      >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">Cloud node template configuration</h1>
+      </div>
     </div>
+  </div>
     <div class="default-content" *ngIf="cloudNodeTemplate">
         <mat-accordion>
             <mat-expansion-panel>
@@ -111,7 +125,7 @@
                         UDP tunnels
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <table *ngIf="dataSourceUdp.length" class="table" mat-table [dataSource]="dataSourceUdp">
+                <table *ngIf="dataSourceUdp.length" mat-table [dataSource]="dataSourceUdp">
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef> Name </th>
                         <td mat-cell *matCellDef="let element"> {{element.name}} </td>

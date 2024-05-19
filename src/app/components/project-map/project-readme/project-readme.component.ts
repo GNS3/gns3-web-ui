@@ -3,7 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Controller } from '../../../models/controller';
 import { Project } from '../../../models/project';
 import { ProjectService } from '../../../services/project.service';
-import * as marked from 'marked';
+import { marked } from 'marked';
 import { ElementRef } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { ViewChild } from '@angular/core';

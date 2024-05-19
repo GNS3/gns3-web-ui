@@ -11,7 +11,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 @Component({
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
-  styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
+  styleUrls: ['../../../preferences.component.scss'],
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
   controller:Controller ;

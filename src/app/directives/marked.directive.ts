@@ -1,5 +1,5 @@
 import { Directive, ElementRef, OnInit, Renderer2, Input, OnChanges } from '@angular/core';
-import * as marked from 'marked';
+import { marked } from 'marked';
 
 @Directive({
     selector: '[appMarked]'

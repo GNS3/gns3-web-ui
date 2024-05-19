@@ -4,7 +4,7 @@
   <div class="content">
     <div class="default-content">
       <mat-card>
-        <table *ngIf="nodeMappingsDataSource.length" class="table" mat-table [dataSource]="nodeMappingsDataSource">
+        <table *ngIf="nodeMappingsDataSource.length" mat-table [dataSource]="nodeMappingsDataSource">
           <ng-container matColumnDef="portIn">
             <th mat-header-cell *matHeaderCellDef>Port : DLCI</th>
             <td mat-cell *matCellDef="let element">{{ element.portIn }}</td>
