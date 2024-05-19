@@ -50,18 +50,19 @@
         </form>
         <form [formGroup]="abstractForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="0" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
+            <input matInput type="number" min="1" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
           </mat-form-field>
         </form>
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="0" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
+            <input matInput type="number" min="1" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
           </mat-form-field>
           Destination
           <mat-form-field class="form-field">
             <input
               matInput
               type="number"
+              min="0"
               [(ngModel)]="destinationPort"
               formControlName="destinationPort"
               placeholder="Port"
@@ -73,6 +74,7 @@
             <input
               matInput
               type="number"
+              min="1"
               [(ngModel)]="destinationVpi"
               formControlName="destinationVpi"
               placeholder="VPI"
@@ -84,6 +86,7 @@
             <input
               matInput
               type="number"
+              min="1"
               [(ngModel)]="destinationVci"
               formControlName="destinationVci"
               placeholder="VCI"
