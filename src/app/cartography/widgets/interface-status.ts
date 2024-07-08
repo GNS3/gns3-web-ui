@@ -90,7 +90,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_started_enter)
           .attr('class', 'status_started')
           .attr('width', (ls: LinkStatus) => {
-            return ls.port.length * 8 + 10;
+            return ls.port.length * 10 + 5;
           })
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)
@@ -122,7 +122,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_stopped_enter)
           .attr('class', 'status_stopped')
           .attr('width', (ls: LinkStatus) => {
-            return ls.port.length * 8 + 10;
+            return ls.port.length * 10 + 5;
           })
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)
@@ -154,7 +154,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_suspended_enter)
           .attr('class', 'status_suspended')
           .attr('width', (ls: LinkStatus) => {
-            return ls.port.length * 8 + 10;
+            return ls.port.length * 10 + 5;
           })
           .attr('height', 20)
           .attr('x', (ls: LinkStatus) => ls.x - 30)
