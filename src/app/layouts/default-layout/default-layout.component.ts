@@ -17,6 +17,7 @@ import { version } from './../../version';
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
   public uiVersion = version;
+  public currentYear = new Date().getFullYear();
 
   serverStatusSubscription: Subscription;
   shouldStopServersOnClosing = true;
