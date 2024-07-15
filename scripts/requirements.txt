@@ -1,4 +1,4 @@
-setuptools==65.5.1
+setuptools==70.0.0
 cx_Freeze==5.1.1
 requests==2.32.0
 packaging==20.9
