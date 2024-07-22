@@ -25,6 +25,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public uiVersion = version;
   public isLoginPage = false;
   public routeSubscription;
+  public currentYear = new Date().getFullYear();
 
   controllerStatusSubscription: Subscription;
   shouldStopControllersOnClosing = true;
