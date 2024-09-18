@@ -10,6 +10,7 @@ export class DockerTemplate {
   console_http_port: number;
   console_resolution: string;
   console_type: string;
+  mac_address: string;
   custom_adapters: CustomAdapter[];
   default_name_format: string;
   environment: string;

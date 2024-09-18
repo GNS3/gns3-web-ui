@@ -256,6 +256,7 @@ export class TemplateMocksService {
       console_http_port: 80,
       console_resolution: '1024x768',
       console_type: 'telnet',
+      mac_address: '',
       custom_adapters: [],
       default_name_format: '{name}-{0}',
       environment: '',
