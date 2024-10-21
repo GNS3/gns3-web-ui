@@ -61,6 +61,15 @@
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
+              matInput
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="dockerTemplate.mac_address"
+              placeholder="Base MAC"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
               formControlName="adapter"
               matInput
               type="number"
