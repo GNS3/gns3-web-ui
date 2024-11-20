@@ -11,6 +11,7 @@ export class DockerTemplate {
   console_resolution: string;
   console_type: string;
   aux_type: string;
+  mac_address: string;
   custom_adapters: CustomAdapter[];
   default_name_format: string;
   environment: string;
