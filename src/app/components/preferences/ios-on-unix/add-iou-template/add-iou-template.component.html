@@ -67,7 +67,7 @@
             <div *ngIf="newImageSelected">
               <input
                 type="file"
-                accept=".bin"
+                accept=".bin, .image, .iol"
                 #file
                 class="nonvisible"
                 (change)="uploadImageFile($event)"
