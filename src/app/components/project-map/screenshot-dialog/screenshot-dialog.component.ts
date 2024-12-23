@@ -25,7 +25,7 @@ export class ScreenshotDialogComponent implements OnInit {
     this.nameForm = this.formBuilder.group({
       screenshotName: new UntypedFormControl(`screenshot-${Date.now()}`, [Validators.required]),
     });
-    this.isPngAvailable = this.electronService.isWindows || this.deviceService.getDeviceInfo().os === 'Windows';
+    this.isPngAvailable = true;
   }
 
   ngOnInit() {}
