@@ -21,8 +21,18 @@ export class ReadmeEditorComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe(file => {
-            if (file) this.markdown = file;
+        this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe({
+            next: (file) => {
+                if (file) {
+                    this.markdown = file;
+                }
+            },
+            error: (err) => {
+                if (err.status === 404) {
+                    // File doesn't exist yet, which is fine
+                    this.markdown = '';
+                }
+            }
         });
     }
 }
