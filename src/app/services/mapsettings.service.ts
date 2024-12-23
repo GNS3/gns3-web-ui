@@ -37,6 +37,12 @@ export class MapSettingsService {
     } else {
       localStorage.setItem('openReadme', 'false');
     }
+
+    if (localStorage.getItem('showInterfaceLabels')) {
+      this.showInterfaceLabels = localStorage.getItem('showInterfaceLabels') === 'true' ? true : false;
+    } else {
+      localStorage.setItem('showInterfaceLabels', 'true');
+    }
   }
 
   public getSymbolScaling(): boolean {
@@ -78,6 +84,12 @@ export class MapSettingsService {
 
   toggleShowInterfaceLabels(value: boolean) {
     this.showInterfaceLabels = value;
+    localStorage.removeItem('showInterfaceLabels');
+    if (value) {
+      localStorage.setItem('showInterfaceLabels', 'true');
+    } else {
+      localStorage.setItem('showInterfaceLabels', 'false');
+    }
   }
 
   toggleIntegrateInterfaceLabels(value: boolean) {
