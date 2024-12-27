@@ -341,8 +341,6 @@ export class NewTemplateDialogComponent implements OnInit {
     dialogRef.componentInstance.appliance = object;
   }
 
-
-
   importImage(event, imageName) {
     this.computeChecksumMd5(event.target.files[0], false).then((output) => {
       let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === imageName)[0];
@@ -359,22 +357,21 @@ export class NewTemplateDialogComponent implements OnInit {
                     The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {
-            this.importImageFile(event);
+            this.importImageFile(event, imageName);
             this.openSnackBar()
           } else {
             this.uploaderImage.clearQueue();
           }
         });
       } else {
-        this.importImageFile(event);
+        this.importImageFile(event, imageName);
         this.openSnackBar()
       }
     });
   }
 
-  importImageFile(event) {
+  importImageFile(event, imageName) {
     let name = event.target.files[0].name.split('-')[0];
-    let fileName = event.target.files[0].name;
     let file = event.target.files[0];
     let fileReader: FileReader = new FileReader();
     let emulator;
@@ -384,7 +381,7 @@ export class NewTemplateDialogComponent implements OnInit {
       if (this.applianceToInstall.dynamips) emulator = 'dynamips';
       if (this.applianceToInstall.iou) emulator = 'iou';
 
-      const url = this.applianceService.getUploadPath(this.controller, emulator, fileName);
+      const url = this.applianceService.getUploadPath(this.controller, emulator, imageName);
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];
