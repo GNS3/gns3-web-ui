@@ -266,7 +266,7 @@ export class NewTemplateDialogComponent implements OnInit {
       if (appliance.iou) emulator = 'iou';
       if (appliance.qemu) emulator = 'qemu';
 
-      const url = this.applianceService.getUploadPath(this.controller, emulator, fileName);
+      const url = this.applianceService.getUploadPath(this.controller, fileName);
       this.uploader.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploader.queue[0];
@@ -381,7 +381,7 @@ export class NewTemplateDialogComponent implements OnInit {
       if (this.applianceToInstall.dynamips) emulator = 'dynamips';
       if (this.applianceToInstall.iou) emulator = 'iou';
 
-      const url = this.applianceService.getUploadPath(this.controller, emulator, imageName);
+      const url = this.applianceService.getUploadPath(this.controller, imageName);
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];

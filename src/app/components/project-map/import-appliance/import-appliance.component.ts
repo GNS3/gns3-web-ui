@@ -142,7 +142,7 @@ export class ImportApplianceComponent implements OnInit {
       }
       this.template = template;
 
-      const url = this.getUploadPath(this.controller, template.template_type, name);
+      const url = this.getUploadPath(this.controller, name);
       this.uploader.queue.forEach((elem) => (elem.url = url));
       const itemToUpload = this.uploader.queue[0];
       this.uploader.uploadItem(itemToUpload);
@@ -150,7 +150,7 @@ export class ImportApplianceComponent implements OnInit {
     fileReader.readAsText(file);
   }
 
-  private getUploadPath(controller:Controller , emulator: string, filename: string) {
-    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
+  private getUploadPath(controller:Controller , filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 }

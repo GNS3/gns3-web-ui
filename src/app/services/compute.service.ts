@@ -14,10 +14,6 @@ export class ComputeService {
     return this.httpController.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
   }
 
-  getUploadPath(controller:Controller , emulator: string, filename: string) {
-    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
-  }
-
   getStatistics(controller:Controller ): Observable<ComputeStatistics[]> {
     return this.httpController.get(controller, `/statistics`);
   }

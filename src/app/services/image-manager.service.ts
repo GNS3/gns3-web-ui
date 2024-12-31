@@ -20,10 +20,6 @@ export class ImageManagerService {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${image_path}?install_appliances=${install_appliance}`;
   }
 
-  getUploadPath(controller:Controller , emulator: string, filename: string) {
-    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
-  }
-
   uploadedImage(controller :Controller, install_appliance, image_path, flie){
     return this.httpController.post<Image[]>(controller, `/images/upload/${image_path}?install_appliances=${install_appliance}`,flie) as Observable<Image[]>;
   }

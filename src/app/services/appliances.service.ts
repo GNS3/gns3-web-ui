@@ -17,8 +17,8 @@ export class ApplianceService {
     return this.httpController.get<Appliance>(controller, url) as Observable<Appliance>;
   }
 
-  getUploadPath(controller:Controller , emulator: string, filename: string) {
-    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}?allow_raw_image=true`;
+  getUploadPath(controller:Controller, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
   updateAppliances(controller:Controller ): Observable<Appliance[]> {
