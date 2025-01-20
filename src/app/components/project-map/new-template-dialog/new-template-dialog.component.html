@@ -132,7 +132,7 @@
     <mat-card [hidden]="!(!isLinuxPlatform || applianceToInstall.dynamips)">
       <div *ngIf="applianceToInstall.qemu">
         <div>
-          Install required files
+          Install the required files
           <button
             mat-icon-button
             matTooltip="Refresh list of images"
@@ -380,11 +380,11 @@
                   {{ image.filename }}
                 </span>
                 <div>
-                  <span *ngIf="checkImageFromVersion(image.filename)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                  <span *ngIf="checkImageFromVersion(image.filename)">
+                    <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
                   </span>
-                  <span *ngIf="!checkImageFromVersion(image.filename)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                  <span *ngIf="!checkImageFromVersion(image.filename)">
+                    <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
                   </span>
                   <input
                     type="file"
@@ -407,7 +407,7 @@
 
       <div *ngIf="applianceToInstall.iou">
         <div>
-          Install required images
+          Install the required images
           <button
             mat-icon-button
             matTooltip="Refresh list of images"
@@ -419,16 +419,16 @@
           <mat-list>
             <mat-list-item *ngFor="let image of applianceToInstall.images">
               <div class="list-item">
-                <div>
+                <span>
                   {{ image.filename }}
-                </div>
+                </span>
+                <span *ngIf="checkImageFromVersion(image.filename)">
+                  <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                </span>
+                <span *ngIf="!checkImageFromVersion(image.filename)">
+                  <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                </span>
                 <div>
-                  <span *ngIf="checkImageFromVersion(image.filename)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
-                  </span>
-                  <span *ngIf="!checkImageFromVersion(image.filename)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
-                  </span>
                   <input
                     type="file"
                     class="non-visible"
