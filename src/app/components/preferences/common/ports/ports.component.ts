@@ -30,6 +30,7 @@ export class PortsComponent implements OnInit {
   }
 
   onAdd() {
+    this.newPort.name = "Ethernet" + this.newPort.port_number;
     this.ethernetPorts.push(this.newPort);
 
     this.newPort = {
