@@ -102,6 +102,10 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke = this.element.stroke ?? "#000000";
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width;
+      if (this.drawing.element instanceof EllipseElement) {
+         this.drawing.element.rx = this.element.width / 2;
+         this.drawing.element.ry = this.element.height / 2;
+        }
       } else if (this.drawing.element instanceof LineElement) {
         if (this.element.stroke_dasharray != '') {
           this.drawing.element.stroke = this.element.stroke ?? "#000000";
