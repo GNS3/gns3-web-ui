@@ -40,7 +40,7 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field class="select">
-              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.aux_type">
+              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.properties.aux_type">
                 <mat-option *ngFor="let type of consoleTypes" [value]="type">
                   {{ type }}
                 </mat-option>

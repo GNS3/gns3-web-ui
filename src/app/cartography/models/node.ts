@@ -14,6 +14,8 @@ export class Properties {
   headless: boolean;
   linked_clone: boolean;
   on_close: string;
+  aux: number;
+  aux_type: boolean;
   ram: number;
   system_id: string;
   npe?: string;
@@ -92,8 +94,6 @@ export class Node {
   console_auto_start: boolean;
   console_host: string;
   console_type: string;
-  aux: number;
-  aux_type: boolean;
   custom_adapters?: any[];
   ethernet_adapters?: any;
   serial_adapters?: any;
