@@ -18,7 +18,14 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   name: string;
   generalSettingsForm: UntypedFormGroup;
   memoryForm: UntypedFormGroup;
+  advancedSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
+  NPETypes: string[] = [];
+  MidplaneTypes: string[] = [];
+  networkAdaptersForNode: string[] = [];
+  wicsForNode: string[] = [];
+  adapterMatrix = {};
+  wicMatrix = {};
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogIosComponent>,
@@ -29,11 +36,19 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      path: new UntypedFormControl('', Validators.required),
     });
 
     this.memoryForm = this.formBuilder.group({
       ram: new UntypedFormControl('', Validators.required),
       nvram: new UntypedFormControl('', Validators.required),
+    });
+
+    const mac_regex = /^([0-9a-fA-F]{4}\.){2}[0-9a-fA-F]{4}$|^$/
+    const idlepc_regex = /^(0x[0-9a-fA-F]+)?$|^$/;
+    this.advancedSettingsForm = this.formBuilder.group({
+      mac_addr: new UntypedFormControl('', Validators.pattern(mac_regex)),
+      idlepc: new UntypedFormControl('', Validators.pattern(idlepc_regex)),
     });
   }
 
@@ -42,15 +57,61 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
+      this.fillSlotsData();
     });
   }
 
   getConfiguration() {
     this.consoleTypes = this.configurationService.getConsoleTypes();
+    this.NPETypes = this.configurationService.getNPETypes();
+    this.MidplaneTypes = this.configurationService.getMidplaneTypes();
+    this.adapterMatrix = this.configurationService.getAdapterMatrix();
+    this.wicMatrix = this.configurationService.getWicMatrix();
+  }
+
+  fillSlotsData() {
+
+    // load network adapters
+    for (let i = 0; i <= 6; i++) {
+      if (this.node.properties[`slot${i}`]) {
+        this.networkAdaptersForNode[i] = this.node.properties[`slot${i}`];
+      }
+    }
+
+    // load WICs
+    for (let i = 0; i <= 3; i++) {
+      if (this.node.properties[`wic${i}`]) {
+        this.wicsForNode[i] = this.node.properties[`wic${i}`];
+      }
+    }
+  }
+
+  saveSlotsData() {
+
+    // save network adapters
+    for (let i = 0; i <= 6; i++) {
+      if (this.adapterMatrix[this.node.properties.platform][this.node.properties.chassis || ''][i]) {
+        if (this.networkAdaptersForNode[i] === undefined)
+          this.node.properties[`slot${i}`] = ""
+        else
+          this.node.properties[`slot${i}`] = this.networkAdaptersForNode[i];
+      }
+    }
+
+    // save WICs
+    for (let i = 0; i <= 3; i++) {
+      if (this.wicMatrix[this.node.properties.platform][i]) {
+        if (this.wicsForNode[i] === undefined)
+          this.node.properties[`wic${i}`] = ""
+        else
+          this.node.properties[`wic${i}`] = this.wicsForNode[i];
+      }
+    }
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid && this.memoryForm.valid) {
+    if (this.generalSettingsForm.valid && this.memoryForm.valid && this.advancedSettingsForm.valid) {
+      this.saveSlotsData();
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

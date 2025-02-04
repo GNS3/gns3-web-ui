@@ -14,10 +14,12 @@ export class Properties {
   headless: boolean;
   linked_clone: boolean;
   on_close: string;
-  aux_type: boolean;
-  aux: number;
   ram: number;
+  system_id: string;
+  npe?: string;
+  midplane?: string;
   nvram: number;
+  image: string;
   usage: string;
   use_any_adapter: boolean;
   vmname: string;
@@ -48,8 +50,20 @@ export class Properties {
   kernel_image: string;
   kernel_image_md5sum?: any;
   mac_address: string;
+  mac_addr: string;
   options: string;
   platform: string;
+  chassis?: string;
+  iomem?: number;
+  disk0: number;
+  disk1: number;
+  idlepc: string;
+  idlemax: number;
+  idlesleep: number;
+  exec_area: number;
+  mmap: boolean;
+  sparsemem: boolean;
+  auto_delete_disks: boolean;
   process_priority: string;
   qemu_path: string;
   environment: string;
@@ -58,6 +72,17 @@ export class Properties {
   memory: number;
   tpm: boolean;
   uefi: boolean;
+  slot0?: string;
+  slot1?: string;
+  slot2?: string;
+  slot3?: string;
+  slot4?: string;
+  slot5?: string;
+  slot6?: string;
+  slot7?: string;
+  wic0?: string;
+  wic1?: string;
+  wic2?: string;
 }
 
 export class Node {
@@ -67,6 +92,8 @@ export class Node {
   console_auto_start: boolean;
   console_host: string;
   console_type: string;
+  aux: number;
+  aux_type: boolean;
   custom_adapters?: any[];
   ethernet_adapters?: any;
   serial_adapters?: any;
