@@ -32,11 +32,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   iosImageForm: UntypedFormGroup;
   iosNameForm: UntypedFormGroup;
   iosMemoryForm: UntypedFormGroup;
+  iosIdlePCForm: UntypedFormGroup;
   selectedPlatform: string;
-
-  networkAdaptersForTemplate: string[] = [];
-  networkModulesForTemplate: string[] = [];
-
   iosImages: IosImage[] = [];
   platforms: string[] = [];
   platformsWithEtherSwitchRouterOption = {};
@@ -44,9 +41,10 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   chassis = {};
   defaultRam = {};
   defaultNvram = {};
-  networkAdapters = {};
-  networkAdaptersForPlatform = {};
-  networkModules = {};
+  networkAdaptersForTemplate: string[] = [];
+  wicsForTemplate: string[] = [];
+  adapterMatrix = {};
+  wicMatrix = {};
 
   ciscoUrl: string = 'https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp';
   uploader: FileUploader;
@@ -81,6 +79,10 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
     this.iosMemoryForm = this.formBuilder.group({
       memory: new UntypedFormControl(null, [Validators.required]),
+    });
+
+    this.iosIdlePCForm = this.formBuilder.group({
+      idlepc: new UntypedFormControl(null, [Validators.pattern(this.iosConfigurationService.getIdlepcRegex())]),
     });
   }
 
@@ -120,17 +122,29 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
       this.templateMocksService.getIosTemplate().subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate = iosTemplate;
-
-        this.networkModules = this.iosConfigurationService.getNetworkModules();
-        this.networkAdaptersForPlatform = this.iosConfigurationService.getNetworkAdaptersForPlatform();
-        this.networkAdapters = this.iosConfigurationService.getNetworkAdapters();
         this.platforms = this.iosConfigurationService.getAvailablePlatforms();
         this.platformsWithEtherSwitchRouterOption = this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption();
         this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
         this.chassis = this.iosConfigurationService.getChassis();
         this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
+        this.adapterMatrix = this.iosConfigurationService.getAdapterMatrix();
+        this.wicMatrix = this.iosConfigurationService.getWicMatrix();
       });
     });
+  }
+
+  fillDefaultSlots() {
+
+    console.log("Fill default slots");
+    if (this.iosNameForm.get('platform').value) {
+      for (let i = 0; i <= 6; i++) {
+        let adapters = this.adapterMatrix[this.iosNameForm.get('platform').value][this.iosNameForm.get('chassis').value || ''][i];
+        if (adapters && (adapters.length === 1 || adapters[0].startsWith('C7200'))) {
+          console.log("Set default adapter for slot" + i + " to " + adapters[0]);
+          this.networkAdaptersForTemplate[i] = adapters[0];
+        }
+      }
+    }
   }
 
   setControllerType(controllerType: string) {
@@ -166,6 +180,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     if (
       !this.iosImageForm.invalid &&
       !this.iosMemoryForm.invalid &&
+      !this.iosIdlePCForm.invalid &&
       this.iosNameForm.get('templateName').value &&
       this.iosNameForm.get('platform').value
     ) {
@@ -184,7 +199,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       }
 
       if (this.networkAdaptersForTemplate.length > 0) this.completeAdaptersData();
-      if (this.networkModulesForTemplate.length > 0) this.completeModulesData();
+      if (this.wicsForTemplate.length > 0) this.completeWicsData();
       this.iosTemplate.compute_id = 'local';
 
       this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
@@ -196,44 +211,25 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   completeAdaptersData() {
-    if (this.chassis[this.iosTemplate.platform]) {
-      if (Object.keys(this.networkAdapters[this.iosTemplate.chassis])) {
-        for (let i = 0; i < Object.keys(this.networkAdapters[this.iosTemplate.chassis]).length; i++) {
-          if (!this.networkAdaptersForTemplate[i]) this.networkAdaptersForTemplate[i] = '';
-        }
-      }
-    } else {
-      if (this.networkAdaptersForPlatform[this.iosNameForm.get('platform').value]) {
-        for (
-          let i = 0;
-          i < Object.keys(this.networkAdaptersForPlatform[this.iosNameForm.get('platform').value]).length;
-          i++
-        ) {
-          if (!this.networkAdaptersForTemplate[i]) this.networkAdaptersForTemplate[i] = '';
-        }
+    for (let i = 0; i <= 6; i++) {
+      if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
+        if (this.networkAdaptersForTemplate[i] === undefined)
+          this.iosTemplate[`slot${i}`] = ""
+        else
+          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
       }
     }
-
-    if (this.networkAdaptersForTemplate[0]) this.iosTemplate.slot0 = this.networkAdaptersForTemplate[0];
-    if (this.networkAdaptersForTemplate[1]) this.iosTemplate.slot1 = this.networkAdaptersForTemplate[1];
-    if (this.networkAdaptersForTemplate[2]) this.iosTemplate.slot2 = this.networkAdaptersForTemplate[2];
-    if (this.networkAdaptersForTemplate[3]) this.iosTemplate.slot3 = this.networkAdaptersForTemplate[3];
-    if (this.networkAdaptersForTemplate[4]) this.iosTemplate.slot4 = this.networkAdaptersForTemplate[4];
-    if (this.networkAdaptersForTemplate[5]) this.iosTemplate.slot5 = this.networkAdaptersForTemplate[5];
-    if (this.networkAdaptersForTemplate[6]) this.iosTemplate.slot6 = this.networkAdaptersForTemplate[6];
-    if (this.networkAdaptersForTemplate[7]) this.iosTemplate.slot7 = this.networkAdaptersForTemplate[7];
   }
 
-  completeModulesData() {
-    if (Object.keys(this.networkModules[this.iosTemplate.platform])) {
-      for (let i = 0; i < Object.keys(this.networkModules[this.iosTemplate.platform]).length; i++) {
-        if (!this.networkModulesForTemplate[i]) this.networkModulesForTemplate[i] = '';
+  completeWicsData() {
+    for (let i = 0; i <= 3; i++) {
+      if (this.wicMatrix[this.iosTemplate.platform][i]) {
+        if (this.wicsForTemplate[i] === undefined)
+          this.iosTemplate[`wic${i}`] = ""
+        else
+          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
       }
     }
-
-    if (this.networkModulesForTemplate[0]) this.iosTemplate.wic0 = this.networkModulesForTemplate[0];
-    if (this.networkModulesForTemplate[1]) this.iosTemplate.wic1 = this.networkModulesForTemplate[1];
-    if (this.networkModulesForTemplate[2]) this.iosTemplate.wic2 = this.networkModulesForTemplate[2];
   }
 
   goBack() {
@@ -252,25 +248,31 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.selectedPlatform = name;
     }
 
-    if (name === 'c1700') {
-      this.iosNameForm.controls['chassis'].setValue('1720');
+    if (name === 'c3620' || name === 'c3640' || name === 'c3660')
+      this.iosNameForm.controls['chassis'].setValue(name.substring(1));
+    else if (name === 'c1700') {
+      this.iosNameForm.controls['chassis'].setValue('1760');
     } else if (name === 'c2600') {
-      this.iosNameForm.controls['chassis'].setValue('2610');
+      this.iosNameForm.controls['chassis'].setValue('2651XM');
     } else {
       this.iosNameForm.controls['chassis'].setValue('');
     }
-
-    this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[name]);
+    this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[this.selectedPlatform]);
+    this.fillDefaultSlots();
   }
 
   onPlatformChosen() {
     this.iosTemplate.chassis = '';
     this.networkAdaptersForTemplate = [];
-    this.networkModulesForTemplate = [];
+    this.wicsForTemplate = [];
+    if (!this.chassis[this.iosNameForm.get('platform').value])
+      this.fillDefaultSlots();
   }
 
   onChassisChosen() {
     this.networkAdaptersForTemplate = [];
+    if (this.chassis[this.iosNameForm.get('platform').value])
+      this.fillDefaultSlots();
   }
 
   cancelUploading() {

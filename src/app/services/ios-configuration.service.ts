@@ -46,10 +46,7 @@ export class IosConfigurationService {
       c1700: 128,
       c2600: 128,
       c2691: 256,
-      c3600: 192,
-      c3620: 192,
-      c3640: 192,
-      c3660: 192,
+      c3600: 256,
       c3725: 256,
       c3745: 256,
       c7200: 512,
@@ -163,7 +160,7 @@ export class IosConfigurationService {
     }
 
     // 7206s allow an IO controller in slot 0, and a generic PA in slots 1-6
-    adapter_matrix["c7200"][""] = { 0: ["IO_C7200"] };
+    adapter_matrix["c7200"][""] = { 0: this.c7200_io };
     for (let slot = 1; slot < 7; slot++) {
       adapter_matrix["c7200"][""][slot] = this.c7200_pas;
     }
@@ -182,170 +179,11 @@ export class IosConfigurationService {
     return wic_matrix;
   }
 
-  getNetworkModules() {
-    return {
-      c1700: {
-        0: this.c1700_wics,
-        1: this.c1700_wics,
-      },
-      c2600: {
-        0: this.c2600_wics,
-        1: this.c2600_wics,
-        2: this.c2600_wics,
-      },
-      c2691: {
-        0: this.c3700_wics,
-        1: this.c3700_wics,
-        2: this.c3700_wics,
-      },
-      c3725: {
-        0: this.c3700_wics,
-        1: this.c3700_wics,
-        2: this.c3700_wics,
-      },
-      c3745: {
-        0: this.c3700_wics,
-        1: this.c3700_wics,
-        2: this.c3700_wics,
-      },
-    };
+  getIdlepcRegex() {
+    return /^(0x[0-9a-fA-F]+)?$|^$/;
   }
 
-  getNetworkAdapters() {
-    return {
-      '1720': {
-        0: ['C1700-MB-1FE'],
-      },
-      '1721': {
-        0: ['C1700-MB-1FE'],
-      },
-      '1750': {
-        0: ['C1700-MB-1FE'],
-      },
-      '1751': {
-        0: ['C1700-MB-1FE'],
-        1: ['C1700-MB-WIC1'],
-      },
-      '1760': {
-        0: ['C1700-MB-1FE'],
-        1: ['C1700-MB-WIC1'],
-      },
-      '2610': {
-        0: ['C2600-MB-1E'],
-        1: this.c2600_nms,
-      },
-      '2611': {
-        0: ['C2600-MB-2E'],
-        1: this.c2600_nms,
-      },
-      '2620': {
-        0: ['C2600-MB-1FE'],
-        1: this.c2600_nms,
-      },
-      '2621': {
-        0: ['C2600-MB-2FE'],
-        1: this.c2600_nms,
-      },
-      '2610XM': {
-        0: ['C2600-MB-1FE'],
-        1: this.c2600_nms,
-      },
-      '2611XM': {
-        0: ['C2600-MB-2FE'],
-        1: this.c2600_nms,
-      },
-      '2620XM': {
-        0: ['C2600-MB-1FE'],
-        1: this.c2600_nms,
-      },
-      '2621XM': {
-        0: ['C2600-MB-2FE'],
-        1: this.c2600_nms,
-      },
-      '2650XM': {
-        0: ['C2600-MB-1FE'],
-        1: this.c2600_nms,
-      },
-      '2651XM': {
-        0: ['C2600-MB-2FE'],
-        1: this.c2600_nms,
-      },
-      '3620': {
-        0: this.c3600_nms,
-        1: this.c3600_nms,
-      },
-      '3640': {
-        0: this.c3600_nms,
-        1: this.c3600_nms,
-        2: this.c3600_nms,
-        3: this.c3600_nms,
-      },
-      '3660': {
-        0: ['Leopard-2FE'],
-        1: this.c3600_nms,
-        2: this.c3600_nms,
-        3: this.c3600_nms,
-        4: this.c3600_nms,
-        5: this.c3600_nms,
-        6: this.c3600_nms,
-      },
-    };
-  }
-
-  getNetworkAdaptersForPlatform() {
-    let networkAdaptersForPlatform = {};
-    networkAdaptersForPlatform['c2691'] = {
-      0: ['GT96100-FE'],
-      1: this.c3700_nms,
-    };
-    networkAdaptersForPlatform['c3725'] = {
-      0: ['GT96100-FE'],
-      1: this.c3700_nms,
-      2: this.c3700_nms,
-    };
-    networkAdaptersForPlatform['c3745'] = {
-      0: ['GT96100-FE'],
-      1: this.c3700_nms,
-      2: this.c3700_nms,
-      3: this.c3700_nms,
-      4: this.c3700_nms,
-    };
-    networkAdaptersForPlatform['c7200'] = {
-      0: this.c7200_io,
-      1: this.c7200_pas,
-      2: this.c7200_pas,
-      3: this.c7200_pas,
-      4: this.c7200_pas,
-      5: this.c7200_pas,
-      6: this.c7200_pas,
-    };
-
-    return {
-      c2691: {
-        0: ['GT96100-FE'],
-        1: this.c3700_nms,
-      },
-      c3725: {
-        0: ['GT96100-FE'],
-        1: this.c3700_nms,
-        2: this.c3700_nms,
-      },
-      c3745: {
-        0: ['GT96100-FE'],
-        1: this.c3700_nms,
-        2: this.c3700_nms,
-        3: this.c3700_nms,
-        4: this.c3700_nms,
-      },
-      c7200: {
-        0: this.c7200_io,
-        1: this.c7200_pas,
-        2: this.c7200_pas,
-        3: this.c7200_pas,
-        4: this.c7200_pas,
-        5: this.c7200_pas,
-        6: this.c7200_pas,
-      },
-    };
+  getMacAddrRegex() {
+    return /^([0-9a-fA-F]{4}\.){2}[0-9a-fA-F]{4}$|^$/;
   }
 }

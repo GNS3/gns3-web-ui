@@ -44,11 +44,9 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       nvram: new UntypedFormControl('', Validators.required),
     });
 
-    const mac_regex = /^([0-9a-fA-F]{4}\.){2}[0-9a-fA-F]{4}$|^$/
-    const idlepc_regex = /^(0x[0-9a-fA-F]+)?$|^$/;
     this.advancedSettingsForm = this.formBuilder.group({
-      mac_addr: new UntypedFormControl('', Validators.pattern(mac_regex)),
-      idlepc: new UntypedFormControl('', Validators.pattern(idlepc_regex)),
+      mac_addr: new UntypedFormControl('', Validators.pattern(this.configurationService.getMacAddrRegex())),
+      idlepc: new UntypedFormControl('', Validators.pattern(this.configurationService.getIdlepcRegex())),
     });
   }
 
