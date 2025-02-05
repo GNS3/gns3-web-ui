@@ -109,32 +109,24 @@
         </mat-step>
 
         <mat-step label="Network adapters">
-          <!-- <div *ngIf="chassis[iosNameForm.get('platform').value]">
-                        <div *ngFor="let index of [0,1,2,3,4,5,6,7]">
-                            <mat-select
-                                placeholder="Slot {{index}}"
-                                [(ngModel)]="networkAdaptersForTemplate[index]"
-                                [ngModelOptions]="{standalone: true}"
-                                *ngIf="networkAdapters[iosNameForm.get('chassis').value] && networkAdapters[iosNameForm.get('chassis').value][index]">
-                                <mat-option *ngFor="let option of networkAdapters[iosNameForm.get('chassis').value][index]" [value]="option">
-                                    {{option}}
-                                </mat-option>
-                            </mat-select>
-                        </div>
-                    </div> -->
-          <div *ngIf="selectedPlatform">
-            <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6, 7]">
+          <div *ngIf="iosNameForm.get('platform').value">
+            <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]">
               <mat-select
                 placeholder="Slot {{ index }}"
                 [(ngModel)]="networkAdaptersForTemplate[index]"
                 [ngModelOptions]="{ standalone: true }"
-                *ngIf="
-                  networkAdaptersForPlatform[iosNameForm.get('platform').value] &&
-                  networkAdaptersForPlatform[iosNameForm.get('platform').value][index]
-                "
+                *ngIf="adapterMatrix[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || '']
+                && adapterMatrix[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || ''][index]"
               >
                 <mat-option
-                  *ngFor="let option of networkAdaptersForPlatform[iosNameForm.get('platform').value][index]"
+                  *ngIf="adapterMatrix[iosNameForm.get('platform').value][iosNameForm.get('chassis').value|| ''][index].length > 1 &&
+                  !adapterMatrix[iosNameForm.get('platform').value][iosNameForm.get('chassis').value|| ''][index][0].startsWith('C7200')"
+                  [value]=""
+                >
+                  {{ "" }}
+                </mat-option>
+                <mat-option
+                  *ngFor="let option of adapterMatrix[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || ''][index]"
                   [value]="option"
                 >
                   {{ option }}
@@ -144,33 +136,33 @@
           </div>
         </mat-step>
 
-        <mat-step label="WIC modules">
-          <div *ngIf="iosNameForm.get('platform').value">
-            <div *ngFor="let index of [0, 1, 2, 3]">
-              <mat-select
-                placeholder="WIC {{ index }}"
-                [(ngModel)]="networkModulesForTemplate[index]"
-                [ngModelOptions]="{ standalone: true }"
-                *ngIf="
-                  networkModules[iosNameForm.get('platform').value] &&
-                  networkModules[iosNameForm.get('platform').value][index]
-                "
+        <mat-step label="WIC modules" *ngIf="iosNameForm.get('platform').value && wicMatrix[iosNameForm.get('platform').value]">
+          <div *ngFor="let index of [0, 1, 2]">
+            <mat-select
+              placeholder="WIC {{ index }}"
+              [(ngModel)]="wicsForTemplate[index]"
+              [ngModelOptions]="{ standalone: true }"
+              *ngIf="wicMatrix[iosNameForm.get('platform').value] && wicMatrix[iosNameForm.get('platform').value][index]"
+            >
+              <mat-option [value]="">
+                {{ "" }}
+              </mat-option>
+              <mat-option
+                *ngFor="let option of wicMatrix[iosNameForm.get('platform').value][index]"
+                [value]="option"
               >
-                <mat-option
-                  *ngFor="let option of networkModules[iosNameForm.get('platform').value][index]"
-                  [value]="option"
-                >
-                  {{ option }}
-                </mat-option>
-              </mat-select>
-            </div>
+                {{ option }}
+              </mat-option>
+            </mat-select>
           </div>
         </mat-step>
 
         <mat-step label="Idle-PC">
-          <mat-form-field class="form-field">
-            <input matInput type="text" [(ngModel)]="iosTemplate.idlepc" placeholder="Idle-PC" />
-          </mat-form-field>
+          <form [formGroup]="iosIdlePCForm">
+            <mat-form-field class="form-field">
+              <input matInput type="text" formControlName="idlepc" [(ngModel)]="iosTemplate.idlepc" placeholder="Idle-PC" />
+            </mat-form-field>
+          </form>
         </mat-step>
       </mat-vertical-stepper>
     </div>

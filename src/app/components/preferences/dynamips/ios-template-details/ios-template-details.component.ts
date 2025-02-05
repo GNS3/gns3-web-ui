@@ -16,10 +16,7 @@ import { ToasterService } from '../../../../services/toaster.service';
 export class IosTemplateDetailsComponent implements OnInit {
   controller:Controller ;
   iosTemplate: IosTemplate;
-
   isSymbolSelectionOpened: boolean = false;
-
-  networkAdaptersForTemplate: string[] = [];
   platforms: string[] = [];
   consoleTypes: string[] = [];
   categories = [];
@@ -28,9 +25,10 @@ export class IosTemplateDetailsComponent implements OnInit {
   chassis = {};
   defaultRam = {};
   defaultNvram = {};
-  networkAdapters = {};
-  networkAdaptersForPlatform = {};
-  networkModules = {};
+  networkAdaptersForTemplate: string[] = [];
+  wicsForTemplate: string[] = [];
+  adapterMatrix = {};
+  wicMatrix = {};
 
   generalSettingsForm: UntypedFormGroup;
   memoryForm: UntypedFormGroup;
@@ -66,6 +64,8 @@ export class IosTemplateDetailsComponent implements OnInit {
       idlemax: new UntypedFormControl('', Validators.required),
       idlesleep: new UntypedFormControl('', Validators.required),
       execarea: new UntypedFormControl('', Validators.required),
+      idlepc: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getIdlepcRegex())),
+      mac_addr: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getMacAddrRegex())),
     });
   }
 
@@ -78,16 +78,12 @@ export class IosTemplateDetailsComponent implements OnInit {
       this.getConfiguration();
       this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate = iosTemplate;
-
-        this.fillAdaptersData();
+        this.fillSlotsData();
       });
     });
   }
 
   getConfiguration() {
-    this.networkModules = this.iosConfigurationService.getNetworkModules();
-    this.networkAdaptersForPlatform = this.iosConfigurationService.getNetworkAdaptersForPlatform();
-    this.networkAdapters = this.iosConfigurationService.getNetworkAdapters();
     this.platforms = this.iosConfigurationService.getAvailablePlatforms();
     this.platformsWithEtherSwitchRouterOption = this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption();
     this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
@@ -95,35 +91,55 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
     this.consoleTypes = this.iosConfigurationService.getConsoleTypes();
     this.categories = this.iosConfigurationService.getCategories();
+    this.adapterMatrix = this.iosConfigurationService.getAdapterMatrix();
+    this.wicMatrix = this.iosConfigurationService.getWicMatrix();
   }
 
-  fillAdaptersData() {
-    if (this.iosTemplate.slot0) this.networkAdaptersForTemplate[0] = this.iosTemplate.slot0;
-    if (this.iosTemplate.slot1) this.networkAdaptersForTemplate[1] = this.iosTemplate.slot1;
-    if (this.iosTemplate.slot2) this.networkAdaptersForTemplate[2] = this.iosTemplate.slot2;
-    if (this.iosTemplate.slot3) this.networkAdaptersForTemplate[3] = this.iosTemplate.slot3;
-    if (this.iosTemplate.slot4) this.networkAdaptersForTemplate[4] = this.iosTemplate.slot4;
-    if (this.iosTemplate.slot5) this.networkAdaptersForTemplate[5] = this.iosTemplate.slot5;
-    if (this.iosTemplate.slot6) this.networkAdaptersForTemplate[6] = this.iosTemplate.slot6;
-    if (this.iosTemplate.slot7) this.networkAdaptersForTemplate[7] = this.iosTemplate.slot7;
+  fillSlotsData() {
+
+    // load network adapters
+    for (let i = 0; i <= 6; i++) {
+      if (this.iosTemplate[`slot${i}`]) {
+        this.networkAdaptersForTemplate[i] = this.iosTemplate[`slot${i}`];
+      }
+    }
+
+    // load WICs
+    for (let i = 0; i <= 3; i++) {
+      if (this.iosTemplate[`wic${i}`]) {
+        this.wicsForTemplate[i] = this.iosTemplate[`wic${i}`];
+      }
+    }
   }
 
-  completeAdaptersData() {
-    if (this.networkAdaptersForTemplate[0]) this.iosTemplate.slot0 = this.networkAdaptersForTemplate[0];
-    if (this.networkAdaptersForTemplate[1]) this.iosTemplate.slot1 = this.networkAdaptersForTemplate[1];
-    if (this.networkAdaptersForTemplate[2]) this.iosTemplate.slot2 = this.networkAdaptersForTemplate[2];
-    if (this.networkAdaptersForTemplate[3]) this.iosTemplate.slot3 = this.networkAdaptersForTemplate[3];
-    if (this.networkAdaptersForTemplate[4]) this.iosTemplate.slot4 = this.networkAdaptersForTemplate[4];
-    if (this.networkAdaptersForTemplate[5]) this.iosTemplate.slot5 = this.networkAdaptersForTemplate[5];
-    if (this.networkAdaptersForTemplate[6]) this.iosTemplate.slot6 = this.networkAdaptersForTemplate[6];
-    if (this.networkAdaptersForTemplate[7]) this.iosTemplate.slot7 = this.networkAdaptersForTemplate[7];
+  saveSlotsData() {
+
+    // save network adapters
+    for (let i = 0; i <= 6; i++) {
+      if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
+        if (this.networkAdaptersForTemplate[i] === undefined)
+          this.iosTemplate[`slot${i}`] = ""
+        else
+          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+      }
+    }
+
+    // save WICs
+    for (let i = 0; i <= 3; i++) {
+      if (this.wicMatrix[this.iosTemplate.platform][i]) {
+        if (this.wicsForTemplate[i] === undefined)
+          this.iosTemplate[`wic${i}`] = ""
+        else
+          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+      }
+    }
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid || this.memoryForm.invalid || this.advancedForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
-      this.completeAdaptersData();
+      this.saveSlotsData();
 
       this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
         this.toasterService.success('Changes saved');

@@ -27,4 +27,8 @@ export class DockerConfigurationService {
 
     return consoleResolutions;
   }
+
+  getMacAddrRegex() {
+    return /^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/;
+  }
 }

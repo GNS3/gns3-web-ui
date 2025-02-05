@@ -22,6 +22,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;
+  networkSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   onCloseOptions = [];
   bootPriorities = [];
@@ -53,6 +54,10 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
       ram: new UntypedFormControl('', Validators.required),
+    });
+
+    this.networkSettingsForm = this.formBuilder.group({
+      mac_address: new UntypedFormControl('', Validators.pattern(this.qemuConfigurationService.getMacAddrRegex())),
     });
   }
 
@@ -103,16 +108,16 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid) {
-      this.node.custom_adapters = [];
-      this.customAdapters.adapters.forEach((n) => {
-        this.node.custom_adapters.push({
-          adapter_number: n.adapter_number,
-          adapter_type: n.adapter_type,
-        });
-      });
-
-      this.node.properties.adapters = this.node.custom_adapters.length;
+    if (this.generalSettingsForm.valid && this.networkSettingsForm.valid) {
+      // this.node.custom_adapters = [];
+      // this.customAdapters.adapters.forEach((n) => {
+      //   this.node.custom_adapters.push({
+      //     adapter_number: n.adapter_number,
+      //     adapter_type: n.adapter_type,
+      //   });
+      // });
+      //
+      // this.node.properties.adapters = this.node.custom_adapters.length;
 
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);

@@ -7,11 +7,31 @@
         <mat-tab-group *ngIf="name">
           <mat-tab label="General settings">
             <br />
+            <mat-label>Platform: {{ node.properties.platform }}</mat-label>
+            <mat-label *ngIf="node.properties.chassis"> (chassis: {{ node.properties.chassis }})</mat-label>
+            <br /><br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
               </mat-form-field>
+              <mat-form-field class="form-field">
+                <input matInput type="text" formControlName="path" [(ngModel)]="node.properties.image" placeholder="IOS image path"/>
+              </mat-form-field>
             </form>
+            <mat-form-field class="select" *ngIf="node.properties.midplane">
+              <mat-select placeholder="Midplane" [(ngModel)]="node.properties.midplane">
+                <mat-option *ngFor="let type of MidplaneTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="select" *ngIf="node.properties.npe">
+              <mat-select placeholder="NPE" [(ngModel)]="node.properties.npe">
+                <mat-option *ngFor="let type of NPETypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
             <mat-form-field class="select">
               <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
                 <mat-option *ngFor="let type of consoleTypes" [value]="type">
@@ -20,7 +40,7 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field class="select">
-              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.aux_type">
+              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.properties.aux_type">
                 <mat-option *ngFor="let type of consoleTypes" [value]="type">
                   {{ type }}
                 </mat-option>
@@ -36,23 +56,144 @@
                 <input
                   matInput
                   type="number"
+                  min="0"
                   formControlName="ram"
                   [(ngModel)]="node.properties.ram"
                   placeholder="RAM size"
                 />
-                <span matSuffix>MB</span>
+                <span matSuffix>MiB</span>
               </mat-form-field>
               <mat-form-field class="form-field">
                 <input
                   matInput
                   type="number"
+                  min="0"
                   formControlName="nvram"
                   [(ngModel)]="node.properties.nvram"
                   placeholder="NVRAM size"
                 />
-                <span matSuffix>MB</span>
+                <span matSuffix>MiB</span>
               </mat-form-field>
             </form>
+            <mat-form-field class="form-field" *ngIf="node.properties.iomem">
+              <input
+                matInput
+                type="number"
+                min="0"
+                max="100"
+                [(ngModel)]="node.properties.iomem"
+                placeholder="I/O memory"
+              />
+              <span matSuffix>%</span>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="0"
+                [(ngModel)]="node.properties.disk0"
+                placeholder="PCMCIA disk0"
+              />
+              <span matSuffix>MiB</span>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="0"
+                [(ngModel)]="node.properties.disk1"
+                placeholder="PCMCIA disk1"
+              />
+              <span matSuffix>MiB</span>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="node.properties.auto_delete_disks"> Automatically delete NVRAM and disk files </mat-checkbox><br />
+          </mat-tab>
+
+          <mat-tab label="Slots">
+            <br />
+            <h6>Adapters</h6>
+            <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]">
+              <mat-select
+                placeholder="Slot {{ index }}"
+                [(ngModel)]="networkAdaptersForNode[index]"
+                [ngModelOptions]="{ standalone: true }"
+                *ngIf="adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]"
+              >
+                <mat-option
+                  *ngIf="adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
+                  !adapterMatrix[node.properties.platform][node.properties.chassis || ''][index][0].startsWith('C7200')"
+                  [value]=""
+                >
+                  {{ "" }}
+                </mat-option>
+                <mat-option
+                  *ngFor="let option of adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]"
+                  [value]="option"
+                >
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+            </div>
+            <br />
+            <div *ngIf="wicMatrix[node.properties.platform]">
+              <h6>WICs</h6>
+              <div *ngFor="let index of [0, 1, 2]">
+                <mat-select
+                  placeholder="WIC {{ index }}"
+                  [(ngModel)]="wicsForNode[index]"
+                  [ngModelOptions]="{ standalone: true }"
+                  *ngIf="wicMatrix[node.properties.platform][index]"
+                >
+                  <mat-option [value]="">
+                    {{ "" }}
+                  </mat-option>
+                  <mat-option *ngFor="let option of wicMatrix[node.properties.platform][index]" [value]="option">
+                    {{ option }}
+                  </mat-option>
+                </mat-select>
+              </div>
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Advanced">
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> System </mat-card-subtitle>
+              <mat-card-content>
+                <mat-form-field class="form-field">
+                  <input matInput type="text" [(ngModel)]="node.properties.system_id" placeholder="System ID" />
+                </mat-form-field>
+                <form [formGroup]="advancedSettingsForm">
+                <mat-form-field class="form-field">
+                  <input matInput formControlName="mac_addr" type="text" [(ngModel)]="node.properties.mac_addr" placeholder="Base MAC" />
+                </mat-form-field>
+                </form>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> Optimizations </mat-card-subtitle>
+              <mat-card-content>
+                <form [formGroup]="advancedSettingsForm">
+                <mat-form-field class="form-field">
+                  <input matInput type="text" formControlName="idlepc" [(ngModel)]="node.properties.idlepc" placeholder="Idle-PC" />
+                </mat-form-field>
+                </form>
+                <mat-form-field class="form-field">
+                  <input matInput type="number" min="0" [(ngModel)]="node.properties.idlemax" placeholder="Idlemax" />
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <input matInput type="number" min="0" [(ngModel)]="node.properties.idlesleep" placeholder="Idlesleep" />
+                  <span matSuffix>ms</span>
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <input matInput type="number" min="0" [(ngModel)]="node.properties.exec_area" placeholder="Exec area" />
+                  <span matSuffix>MiB</span>
+                </mat-form-field>
+                <mat-checkbox [(ngModel)]="node.properties.mmap"> Enable mmap support </mat-checkbox><br />
+                <mat-checkbox [(ngModel)]="node.properties.sparsemem"> Enable sparse memory support </mat-checkbox><br />
+              </mat-card-content>
+            </mat-card>
           </mat-tab>
 
           <mat-tab label="Usage">

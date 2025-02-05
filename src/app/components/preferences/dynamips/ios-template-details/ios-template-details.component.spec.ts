@@ -94,9 +94,10 @@ describe('IosTemplateDetailsComponent', () => {
     component.advancedForm.controls['idlemax'].setValue('0');
     component.advancedForm.controls['idlesleep'].setValue('0');
     component.advancedForm.controls['execarea'].setValue('0');
-
+    component.advancedForm.controls['idlepc'].setValue('0x0');
+    component.advancedForm.controls['mac_addr'].setValue('');
+    spyOn(component, 'saveSlotsData').and.returnValue();
     component.onSave();
-
     expect(mockedIosService.saveTemplate).toHaveBeenCalled();
   });
 });
