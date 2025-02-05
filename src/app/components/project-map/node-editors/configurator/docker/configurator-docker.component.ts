@@ -42,6 +42,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       this.generalSettingsForm = this.formBuilder.group({
           name: new UntypedFormControl('', Validators.required),
           adapter: new UntypedFormControl('', Validators.required),
+          mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
           memory: new UntypedFormControl('', nonNegativeValidator.get),
           cpus: new UntypedFormControl('', nonNegativeValidator.get),
           startCommand: new UntypedFormControl(''),

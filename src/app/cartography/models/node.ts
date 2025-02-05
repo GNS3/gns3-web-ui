@@ -70,6 +70,7 @@ export class Properties {
   qemu_path: string;
   environment: string;
   extra_hosts: string;
+  start_command: string;
   replicate_network_connection_state: boolean;
   memory: number;
   tpm: boolean;

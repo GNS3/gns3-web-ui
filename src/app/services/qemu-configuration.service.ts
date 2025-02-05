@@ -76,34 +76,6 @@ export class QemuConfigurationService {
       { value: 'vmxnet3', name: 'VMWare Paravirtualized Ethernet v3' },
     ];
 
-    // let networkTypes = [
-    //   'e1000',
-    //   'e1000-82544gc',
-    //   'e1000-82545em',
-    //   'e1000e',
-    //   'rocker',
-    //   'Intel Gigabit Ethernet',
-    //   'i82550',
-    //   'i82551',
-    //   'i82557a',
-    //   'i82557b',
-    //   'i82557c',
-    //   'i82558a',
-    //   'i82558b',
-    //   'i82559a',
-    //   'i82559b',
-    //   'i82559c',
-    //   'i82559er',
-    //   'i82562',
-    //   'i82801',
-    //   'ne2k_pci',
-    //   'pcnet',
-    //   'rtl8139',
-    //   'virtio',
-    //   'virtio-net-pci',
-    //   'vmxnet3',
-    // ];
-
     return networkTypes;
   }
 
@@ -145,5 +117,9 @@ export class QemuConfigurationService {
     let priorities = ['realtime', 'very high', 'high', 'normal', 'low', 'very low'];
 
     return priorities;
+  }
+
+  getMacAddrRegex() {
+    return /^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/;
   }
 }

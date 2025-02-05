@@ -152,15 +152,43 @@
           </mat-tab>
           <mat-tab label="Network">
             <br />
-            <br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                min=0
+                type="number"
+                [(ngModel)]="node.properties.adapters"
+                placeholder="Adapters"
+              />
+            </mat-form-field>
+            <form [formGroup]="networkSettingsForm">
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  formControlName="mac_address"
+                  type="text"
+                  [(ngModel)]="node.properties.mac_address"
+                  placeholder="Base MAC"
+                />
+              </mat-form-field>
+            </form>
+            <mat-select placeholder="Type" [(ngModel)]="node.properties.adapter_type">
+              <mat-option *ngFor="let type of networkTypes" [value]="type.value">
+                {{ type.name }} ({{ type.value }})
+              </mat-option>
+            </mat-select>
+<!--            <button mat-button class="form-field" (click)="setCustomAdaptersConfiguratorState(true)">-->
+<!--              Configure custom adapters-->
+<!--            </button>-->
+            <br /><br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
               Replicate network connection state
             </mat-checkbox>
-            <app-custom-adapters-table
-              #customAdapters
-              [networkTypes]="networkTypes"
-              [displayedColumns]="displayedColumns"
-              [adapters]="node.ports"
-            ></app-custom-adapters-table>
+<!--            <app-custom-adapters-table-->
+<!--              #customAdapters-->
+<!--              [networkTypes]="networkTypes"-->
+<!--              [displayedColumns]="displayedColumns"-->
+<!--              [adapters]="node.ports"-->
+<!--            ></app-custom-adapters-table>-->
           </mat-tab>
           <mat-tab label="Advanced">
             <mat-card>
