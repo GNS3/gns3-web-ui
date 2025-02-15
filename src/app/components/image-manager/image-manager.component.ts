@@ -6,12 +6,13 @@ import { ProgressService } from 'app/common/progress/progress.service';
 import { Image } from '../../models/images';
 import { Controller } from '../../models/controller';
 import { ImageManagerService } from "../../services/image-manager.service";
-import { DataSource, SelectionModel } from '@angular/cdk/collections';
+import { SelectionModel } from '@angular/cdk/collections';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ToasterService } from '../../services/toaster.service';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { imageDataSource, imageDatabase } from "./image-database-file";
+import { QuestionDialogComponent } from "@components/dialogs/question-dialog/question-dialog.component";
 
 @Component({
   selector: 'app-image-manager',
@@ -36,7 +37,6 @@ export class ImageManagerComponent implements OnInit {
     private versionService: VersionService,
     private dialog: MatDialog,
     private toasterService: ToasterService,
-
   ) { }
 
   ngOnInit(): void {
@@ -60,7 +60,6 @@ export class ImageManagerComponent implements OnInit {
       },
       (error) => {
         this.toasterService.error(error.error.message)
-
       }
     );
   }
@@ -98,6 +97,49 @@ export class ImageManagerComponent implements OnInit {
   allChecked() {
     this.imageDatabase.data.forEach(row => this.selection.select(row))
     this.isAllDelete = true;
+  }
+
+  installAllImages() {
+    const dialogRef = this.dialog.open(QuestionDialogComponent, {
+      width: '450px',
+      data: { title: 'Install all images', question: 'This will attempt to automatically create templates based on image checksums. Continue?'}
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.imageService.installImages(this.controller).subscribe(() => {
+            this.toasterService.success('Images installed');
+          },
+          (error) => {
+            this.toasterService.error(error.error.message)
+          }
+        );
+      }
+    });
+  }
+
+  pruneImages() {
+    const dialogRef = this.dialog.open(QuestionDialogComponent, {
+      width: '450px',
+      data: { title: 'Prune images', question: 'Delete all images not used by a template? This cannot be reverted.'}
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.imageService.pruneImages(this.controller).subscribe(
+          () => {
+            this.getImages()
+            this.unChecked()
+            this.toasterService.success('Images pruned');
+          },
+          (error) => {
+            this.getImages()
+            this.unChecked()
+            this.toasterService.error(error.error.message)
+          }
+        );
+      }
+    });
   }
 
   public addImageDialog() {

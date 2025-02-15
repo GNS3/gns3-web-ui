@@ -31,7 +31,8 @@ import { ProgressComponent } from './common/progress/progress.component';
 import { ProgressService } from './common/progress/progress.service';
 import { AdbutlerComponent } from './components/adbutler/adbutler.component';
 import { BundledControllerFinderComponent } from './components/bundled-controller-finder/bundled-controller-finder.component';
-import { InformationDialogComponent } from './components/dialogs/information-dialog.component';
+import { InformationDialogComponent } from './components/dialogs/information-dialog/information-dialog.component';
+import { QuestionDialogComponent } from "./components/dialogs/question-dialog/question-dialog.component";
 import { DirectLinkComponent } from './components/direct-link/direct-link.component';
 import { DrawingAddedComponent } from './components/drawings-listeners/drawing-added/drawing-added.component';
 import { DrawingDraggedComponent } from './components/drawings-listeners/drawing-dragged/drawing-dragged.component';
@@ -511,6 +512,7 @@ import { DeleteResourceConfirmationDialogComponent } from './components/resource
         ReadmeEditorComponent,
         MarkedDirective,
         InformationDialogComponent,
+        QuestionDialogComponent,
         TemplateNameDialogComponent,
         ConfigureCustomAdaptersDialogComponent,
         EditNetworkConfigurationDialogComponent,

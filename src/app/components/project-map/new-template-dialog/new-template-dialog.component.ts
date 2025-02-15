@@ -11,7 +11,7 @@ import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import * as SparkMD5 from 'spark-md5';
 import { v4 as uuid } from 'uuid';
 import { ProgressService } from '../../../common/progress/progress.service';
-import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
+import { InformationDialogComponent } from '../../../components/dialogs/information-dialog/information-dialog.component';
 import { Appliance, Image, Version } from '../../../models/appliance';
 import { Project } from '../../../models/project';
 import { QemuBinary } from '../../../models/qemu/qemu-binary';

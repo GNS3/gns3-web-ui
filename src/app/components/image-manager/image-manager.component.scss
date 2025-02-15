@@ -2,12 +2,22 @@
     display: none;
   }
 
-.img-btn{
-    margin: auto;
-  }
-.btn-box{
-    display: flex; 
-    margin-top: 10px;
+.install-all-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+.prune-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+.add-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
 }
 
 mat-header-cell, mat-cell {
@@ -21,4 +31,3 @@ mat-cell, mat-header-cell, mat-footer-cell {
   min-height: inherit;
 }
 
-  

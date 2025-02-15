@@ -1,19 +1,19 @@
 <div class="content">
   <div class="default-header">
     <div class="row">
-      <div class="col-md-9">
-        <h1>Image Manager</h1>
-      </div>
-      <div class="col-md-3 btn-box">
-        <button class="img-btn" mat-button
-          (click)="addImageDialog()">
-          <mat-icon>add</mat-icon> Add Image
-        </button>
-      </div>
+      <h1 class="col">Image Manager</h1>
+      <button mat-raised-button color="primary" (click)="installAllImages()" class="install-all-button">
+        <mat-icon>done_all</mat-icon> Install all images
+      </button>
+      <button mat-raised-button color="primary" (click)="pruneImages()" class="prune-button">
+        <mat-icon>delete</mat-icon> Prune Images
+      </button>
+      <button mat-raised-button color="primary" (click)="addImageDialog()" class="add-button">
+        <mat-icon>add</mat-icon> Add Image
+      </button>
     </div>
-
-
   </div>
+
   <div class="default-content">
     <app-controller-discovery></app-controller-discovery>
 
@@ -49,9 +49,9 @@
           <mat-header-cell *matHeaderCellDef> Image Size </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ (row.image_size/1000000).toFixed()}} MB </mat-cell>
         </ng-container>
-       
+
         <ng-container matColumnDef="delete" >
-          <mat-header-cell *matHeaderCellDef> 
+          <mat-header-cell *matHeaderCellDef>
             <button mat-button *ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
               <mat-icon>delete</mat-icon>
             </button>
