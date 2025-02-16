@@ -59,6 +59,7 @@ describe('NodeDraggedComponent', () => {
       portNameFormat: 'samplePortNameFormat',
       portSegmentSize: 0,
       ports: [],
+      properties: undefined,
       projectId: 'sampleProjectId',
       status: 'sampleStatus',
       symbol: 'sampleSymbol',
