@@ -189,7 +189,7 @@ export class NodeService {
     } else if (node.node_type === 'iou') {
       urlPath += '/files/startup-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_startup-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_startup-config.cfg`;
     }
 
     return this.httpController.get(controller, urlPath, { responseType: 'text' as 'json' });
@@ -201,7 +201,7 @@ export class NodeService {
     if (node.node_type === 'iou') {
       urlPath += '/files/private-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_private-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_private-config.cfg`;
     }
 
     return this.httpController.get(controller, urlPath, { responseType: 'text' as 'json' });
@@ -215,7 +215,7 @@ export class NodeService {
     } else if (node.node_type === 'iou') {
       urlPath += '/files/startup-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_startup-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_startup-config.cfg`;
     }
 
     return this.httpController.post(controller, urlPath, configuration);
@@ -227,7 +227,7 @@ export class NodeService {
     if (node.node_type === 'iou') {
       urlPath += '/files/private-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_private-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_private-config.cfg`;
     }
 
     return this.httpController.post(controller, urlPath, configuration);

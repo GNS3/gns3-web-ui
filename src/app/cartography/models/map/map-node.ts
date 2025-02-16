@@ -1,6 +1,7 @@
 import { Indexed } from '../../datasources/map-datasource';
 import { MapLabel } from './map-label';
 import { MapPort } from './map-port';
+import { Properties } from '../node';
 
 export class MapNode implements Indexed {
   id: string;
@@ -19,6 +20,7 @@ export class MapNode implements Indexed {
   portNameFormat: string;
   portSegmentSize: number;
   ports: MapPort[];
+  properties: Properties;
   projectId: string;
   status: string;
   symbol: string;

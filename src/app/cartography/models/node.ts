@@ -18,6 +18,7 @@ export class Properties {
   aux_type: boolean;
   ram: number;
   system_id: string;
+  dynamips_id?: number;
   npe?: string;
   midplane?: string;
   nvram: number;

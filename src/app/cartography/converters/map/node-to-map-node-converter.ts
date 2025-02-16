@@ -38,6 +38,7 @@ export class NodeToMapNodeConverter implements Converter<Node, MapNode> {
     mapNode.portNameFormat = node.port_name_format;
     mapNode.portSegmentSize = node.port_segment_size;
     mapNode.ports = node.ports ? node.ports.map((port) => this.portToMapPort.convert(port)) : [];
+    mapNode.properties = node.properties;
     mapNode.projectId = node.project_id;
     mapNode.status = node.status;
     mapNode.symbol = node.symbol;
