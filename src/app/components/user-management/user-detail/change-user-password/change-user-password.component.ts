@@ -18,7 +18,7 @@ export class ChangeUserPasswordComponent implements OnInit {
   user: User;
 
   constructor(private dialogRef: MatDialogRef<ChangeUserPasswordComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller },
+              @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller, self_update: boolean },
               private userService: UserService,
               private toasterService: ToasterService) { }
 
@@ -52,16 +52,14 @@ export class ChangeUserPasswordComponent implements OnInit {
     updatedUser['password'] = this.editPasswordForm.get('password').value;
     updatedUser['user_id'] = this.user.user_id;
 
-    console.log(updatedUser);
-
-    this.userService.update(this.data.controller, updatedUser)
+    this.userService.update(this.data.controller, updatedUser, this.data.self_update)
       .subscribe((user: User) => {
           this.toasterService.success(`User ${user.username} password updated`);
           this.editPasswordForm.reset();
           this.dialogRef.close(true);
         },
         (error) => {
-          this.toasterService.error('Cannot update password for user : ' + error);
+          this.toasterService.error('Cannot update password for user: ' + error);
         })
   }
 }

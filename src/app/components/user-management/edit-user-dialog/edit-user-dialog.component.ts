@@ -67,7 +67,7 @@ export class EditUserDialogComponent implements OnInit {
 
     updatedUser.user_id = this.data.user.user_id;
     console.log(updatedUser)
-    this.userService.update(this.data.controller, updatedUser)
+    this.userService.update(this.data.controller, updatedUser, false)
       .subscribe((user: User) => {
           console.log("Done ", user)
           this.toasterService.success(`User ${user.username} updated`);

@@ -5,6 +5,8 @@ import { UserService } from '../../../services/user.service';
 import { ToasterService } from '../../../services/toaster.service';
 import { User } from '../../../models/users/user';
 import { Controller } from '../../../models/controller';
+import { ChangeUserPasswordComponent } from "@components/user-management/user-detail/change-user-password/change-user-password.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: 'app-logged-user',
@@ -19,7 +21,8 @@ export class LoggedUserComponent implements OnInit {
         private route: ActivatedRoute,
         private controllerService: ControllerService,
         private userService: UserService,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        public dialog: MatDialog
     ) {}
 
     ngOnInit() {
@@ -30,6 +33,11 @@ export class LoggedUserComponent implements OnInit {
                 this.user = response;
             });
         });
+    }
+
+    changePassword() {
+        this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent,
+          {width: '400px', height: '300px', data: {user: this.user, controller: this.controller, self_update: true}});
     }
 
     copyToken() {

@@ -96,7 +96,7 @@ export class UserDetailComponent implements OnInit {
     const updatedUser = this.getUpdatedValues();
     updatedUser['user_id'] = this.user.user_id;
 
-    this.userService.update(this.controller, updatedUser)
+    this.userService.update(this.controller, updatedUser, false)
       .subscribe((user: User) => {
           this.toasterService.success(`User ${user.username} updated`);
         },

@@ -5,6 +5,7 @@ import { Controller } from '../models/controller';
 import { HttpController } from './http-controller.service';
 import { User } from '../models/users/user';
 import { Group } from "@models/groups/group";
+import {Image} from "@models/images";
 
 @Injectable()
 export class UserService {
@@ -32,7 +33,10 @@ export class UserService {
     return this.httpController.delete(controller, `/access/users/${user_id}`);
   }
 
-  update(controller: Controller, user: any): Observable<User> {
+  update(controller: Controller, user: any, self_update: boolean): Observable<User> {
+    if (self_update) {
+      return this.httpController.put<User>(controller, `/access/users/me`, user);
+    }
     return this.httpController.put<User>(controller, `/access/users/${user.user_id}`, user);
   }
 
