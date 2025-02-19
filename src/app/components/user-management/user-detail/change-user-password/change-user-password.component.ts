@@ -23,12 +23,13 @@ export class ChangeUserPasswordComponent implements OnInit {
               private toasterService: ToasterService) { }
 
   ngOnInit(): void {
+    const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8}$/;
     this.user = this.data.user;
     this.editPasswordForm = new UntypedFormGroup({
       password: new UntypedFormControl(null,
-        [Validators.minLength(6), Validators.maxLength(100), Validators.required] ),
+        [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(password_regex), Validators.required] ),
       confirmPassword: new UntypedFormControl(null,
-        [Validators.minLength(6), Validators.maxLength(100), Validators.required] ),
+        [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(password_regex), Validators.required] ),
     },{
       validators: [matchingPassword]
     })
