@@ -7,6 +7,7 @@ import { IosConfigurationService } from '../../../../services/ios-configuration.
 import { IosService } from '../../../../services/ios.service';
 import { ControllerService } from '../../../../services/controller.service';
 import { ToasterService } from '../../../../services/toaster.service';
+import { ProgressService } from "../../../../common/progress/progress.service";
 
 @Component({
   selector: 'app-ios-template-details',
@@ -14,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IosTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   iosTemplate: IosTemplate;
   isSymbolSelectionOpened: boolean = false;
   platforms: string[] = [];
@@ -41,6 +42,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private iosConfigurationService: IosConfigurationService,
+    private progressService: ProgressService,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
@@ -93,6 +95,27 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.categories = this.iosConfigurationService.getCategories();
     this.adapterMatrix = this.iosConfigurationService.getAdapterMatrix();
     this.wicMatrix = this.iosConfigurationService.getWicMatrix();
+  }
+
+  findIdlePC() {
+    let data = {
+      "image": this.iosTemplate.image,
+      "platform": this.iosTemplate.platform,
+      "ram": this.iosTemplate.ram
+    };
+    this.progressService.activate();
+    this.iosService.findIdlePC(this.controller, data).subscribe((result: any) => {
+      this.progressService.deactivate();
+      if (result.idlepc !== null) {
+        this.iosTemplate.idlepc = result.idlepc;
+        this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
+      }
+    },
+      (error) => {
+        this.progressService.deactivate();
+        this.toasterService.error(`Error while finding an idle-PC value`);
+      }
+      );
   }
 
   fillSlotsData() {
