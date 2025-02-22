@@ -10,7 +10,7 @@ import { ProjectService } from '../../../services/project.service';
   styleUrls: ['./choose-name-dialog.component.scss'],
 })
 export class ChooseNameDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   name: string;
 

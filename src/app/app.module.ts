@@ -119,6 +119,8 @@ import { EditTextActionComponent } from './components/project-map/context-menu/a
 import { ExportConfigActionComponent } from './components/project-map/context-menu/actions/export-config/export-config-action.component';
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
 import { HttpConsoleActionComponent } from './components/project-map/context-menu/actions/http-console/http-console-action.component';
+import { IdlePcActionComponent } from "./components/project-map/context-menu/actions/idle-pc-action/idle-pc-action.component";
+import { AutoIdlePcActionComponent } from "./components/project-map/context-menu/actions/auto-idle-pc-action/auto-idle-pc-action.component";
 import { ImportConfigActionComponent } from './components/project-map/context-menu/actions/import-config/import-config-action.component';
 import { LockActionComponent } from './components/project-map/context-menu/actions/lock-action/lock-action.component';
 import { MoveLayerDownActionComponent } from './components/project-map/context-menu/actions/move-layer-down-action/move-layer-down-action.component';
@@ -134,11 +136,12 @@ import { StartNodeActionComponent } from './components/project-map/context-menu/
 import { StopCaptureActionComponent } from './components/project-map/context-menu/actions/stop-capture/stop-capture-action.component';
 import { IsolateNodeActionComponent } from './components/project-map/context-menu/actions/isolate-node-action/isolate-node-action.component';
 import { UnisolateNodeActionComponent } from './components/project-map/context-menu/actions/unisolate-node-action/unisolate-node-action.component';
-import {StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
+import { StopNodeActionComponent } from './components/project-map/context-menu/actions/stop-node-action/stop-node-action.component';
 import { SuspendLinkActionComponent } from './components/project-map/context-menu/actions/suspend-link/suspend-link-action.component';
 import { SuspendNodeActionComponent } from './components/project-map/context-menu/actions/suspend-node-action/suspend-node-action.component';
 import { ContextMenuComponent } from './components/project-map/context-menu/context-menu.component';
 import { ConfigDialogComponent } from './components/project-map/context-menu/dialogs/config-dialog/config-dialog.component';
+import { IdlePCDialogComponent } from "./components/project-map/context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component";
 import { DrawLinkToolComponent } from './components/project-map/draw-link-tool/draw-link-tool.component';
 import { StyleEditorDialogComponent } from './components/project-map/drawings-editors/style-editor/style-editor.component';
 import { LinkStyleEditorDialogComponent } from './components/project-map/drawings-editors/link-style-editor/link-style-editor.component';
@@ -494,6 +497,7 @@ import { DeleteResourceConfirmationDialogComponent } from './components/resource
         AlignVerticallyActionComponent,
         ConfirmationBottomSheetComponent,
         ConfigDialogComponent,
+        IdlePCDialogComponent,
         ImportApplianceComponent,
         DirectLinkComponent,
         SystemStatusComponent,
@@ -501,6 +505,8 @@ import { DeleteResourceConfirmationDialogComponent } from './components/resource
         StatusChartComponent,
         OpenFileExplorerActionComponent,
         HttpConsoleActionComponent,
+        IdlePcActionComponent,
+        AutoIdlePcActionComponent,
         WebConsoleComponent,
         ConsoleWrapperComponent,
         HttpConsoleNewTabActionComponent,

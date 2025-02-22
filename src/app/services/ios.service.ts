@@ -37,4 +37,9 @@ export class IosService {
       iosTemplate
     ) as Observable<IosTemplate>;
   }
+
+  findIdlePC(controller:Controller, body: any) {
+    return this.httpController.post(controller, `/computes/${environment.compute_id}/dynamips/auto_idlepc`, body);
+  }
+
 }

@@ -232,4 +232,12 @@ export class NodeService {
 
     return this.httpController.post(controller, urlPath, configuration);
   }
+
+  getIdlePCProposals(controller:Controller, node: Node) {
+    return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/idlepc_proposals`);
+  }
+
+  getAutoIdlePC(controller:Controller, node: Node) {
+    return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/auto_idlepc`);
+  }
 }
