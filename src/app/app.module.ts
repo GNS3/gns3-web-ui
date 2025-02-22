@@ -120,6 +120,7 @@ import { ExportConfigActionComponent } from './components/project-map/context-me
 import { HttpConsoleNewTabActionComponent } from './components/project-map/context-menu/actions/http-console-new-tab/http-console-new-tab-action.component';
 import { HttpConsoleActionComponent } from './components/project-map/context-menu/actions/http-console/http-console-action.component';
 import { IdlePcActionComponent } from "./components/project-map/context-menu/actions/idle-pc-action/idle-pc-action.component";
+import { AutoIdlePcActionComponent } from "./components/project-map/context-menu/actions/auto-idle-pc-action/auto-idle-pc-action.component";
 import { ImportConfigActionComponent } from './components/project-map/context-menu/actions/import-config/import-config-action.component';
 import { LockActionComponent } from './components/project-map/context-menu/actions/lock-action/lock-action.component';
 import { MoveLayerDownActionComponent } from './components/project-map/context-menu/actions/move-layer-down-action/move-layer-down-action.component';
@@ -505,6 +506,7 @@ import { DeleteResourceConfirmationDialogComponent } from './components/resource
         OpenFileExplorerActionComponent,
         HttpConsoleActionComponent,
         IdlePcActionComponent,
+        AutoIdlePcActionComponent,
         WebConsoleComponent,
         ConsoleWrapperComponent,
         HttpConsoleNewTabActionComponent,

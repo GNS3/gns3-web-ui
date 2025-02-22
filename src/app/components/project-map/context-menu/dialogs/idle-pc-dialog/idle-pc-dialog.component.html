@@ -11,6 +11,8 @@
       placeholder="Idle-PC"
       [ngModelOptions]="{standalone: true}"
       [(ngModel)]="idlePC"
+      [matTooltip]="getTooltip()"
+      matTooltipClass="multiline-tooltip"
     >
       <mat-option *ngFor="let idlepc of idlepcs" [value]="idlepc.key"> {{ idlepc.name }} </mat-option>
     </mat-select>

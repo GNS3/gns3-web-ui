@@ -99,6 +99,11 @@
       [controller]="controller"
       [node]="nodes[0]"
     ></app-idle-pc-action>
+    <app-auto-idle-pc-action
+      *ngIf="nodes.length === 1 && nodes[0].node_type === 'dynamips'"
+      [controller]="controller"
+      [node]="nodes[0]"
+    ></app-auto-idle-pc-action>
     <app-move-layer-up-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [controller]="controller"

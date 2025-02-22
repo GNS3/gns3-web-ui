@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, Inject, Input, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 import {Controller} from "@models/controller";
 import {Node} from '../../../../../cartography/models/node';
 import {NodeService} from "@services/node.service";
@@ -9,6 +9,7 @@ import {ToasterService} from "@services/toaster.service";
   selector: 'app-idle-pc-dialog',
   templateUrl: './idle-pc-dialog.component.html',
   styleUrls: ['./idle-pc-dialog.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class IdlePCDialogComponent implements OnInit {
   @Input() controller: Controller;
@@ -21,10 +22,15 @@ export class IdlePCDialogComponent implements OnInit {
   constructor(
     private nodeService: NodeService,
     public dialogRef: MatDialogRef<IdlePCDialogComponent>,
-    private toasterService: ToasterService) {}
+    private toasterService: ToasterService
+  ) {}
 
   ngOnInit() {
     this.onCompute();
+  }
+
+  getTooltip(){
+    return "Best Idle-PC values are obtained when IOS is in idle state, after the 'Press RETURN to get started' message has appeared on the console, messages have finished displaying on the console and you have have actually pressed the RETURN key.\n\nFinding the right idle-pc value is a trial and error process, consisting of applying different Idle-PC values and monitoring the CPU usage.\n\nSelect each value that appears in the list and click Apply, and note the CPU usage a few moments later. When you have found the value that minimises the CPU usage, apply that value.";
   }
 
   onCompute() {
