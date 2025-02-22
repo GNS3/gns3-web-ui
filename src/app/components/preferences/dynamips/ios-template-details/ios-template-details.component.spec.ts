@@ -20,6 +20,8 @@ import { ToasterService } from '../../../../services/toaster.service';
 import { MockedToasterService } from '../../../../services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplateDetailsComponent } from './ios-template-details.component';
+import { MockedProgressService } from "@components/project-map/project-map.component.spec";
+import {ProgressService} from "../../../../common/progress/progress.service";
 
 export class MockedIosService {
   public getTemplate(controller:Controller , template_id: string) {
@@ -38,6 +40,7 @@ describe('IosTemplateDetailsComponent', () => {
   let mockedControllerService = new MockedControllerService();
   let mockedIosService = new MockedIosService();
   let mockedToasterService = new MockedToasterService();
+  let mockedProgressService = new MockedProgressService()
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(async() => {
@@ -61,6 +64,7 @@ describe('IosTemplateDetailsComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
         { provide: ToasterService, useValue: mockedToasterService },
+        { provide: ProgressService, useValue: mockedProgressService },
         { provide: IosConfigurationService, useClass: IosConfigurationService },
       ],
       declarations: [IosTemplateDetailsComponent],
