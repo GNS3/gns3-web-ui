@@ -94,6 +94,11 @@
       [controller]="controller"
       [node]="nodes[0]"
     ></app-import-config-action>
+    <app-idle-pc-action
+      *ngIf="nodes.length === 1 && nodes[0].node_type === 'dynamips'"
+      [controller]="controller"
+      [node]="nodes[0]"
+    ></app-idle-pc-action>
     <app-move-layer-up-action
       *ngIf="!projectService.isReadOnly(project) && (drawings.length || nodes.length)"
       [controller]="controller"
