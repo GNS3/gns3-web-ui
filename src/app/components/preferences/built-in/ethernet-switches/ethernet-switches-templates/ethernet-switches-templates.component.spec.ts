@@ -9,11 +9,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Controller } from '../../../../../models/controller';
-import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { MockedControllerService } from '../../../../../services/controller.service.spec';
+import { Controller } from '@models/controller';
+import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetSwitchesTemplatesComponent } from './ethernet-switches-templates.component';
 

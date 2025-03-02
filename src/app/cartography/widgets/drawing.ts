@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { SelectionManager } from '../managers/selection-manager';
 import { EllipseElement } from '../models/drawings/ellipse-element';
 import { LineElement } from '../models/drawings/line-element';

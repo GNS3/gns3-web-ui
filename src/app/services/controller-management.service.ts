@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
-import { Controller } from '../models/controller';
+import { Controller } from '@models/controller';
 
 export interface ControllerStateEvent {
   controllerName: string;

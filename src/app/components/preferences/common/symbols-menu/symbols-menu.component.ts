@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Controller } from '../../../../models/controller';
+import { Controller } from '@models/controller';
 
 @Component({
   selector: 'app-symbols-menu',

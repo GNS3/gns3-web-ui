@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ControllerService } from '../../../services/controller.service';
-import { UserService } from '../../../services/user.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { User } from '../../../models/users/user';
-import { Controller } from '../../../models/controller';
+import { ControllerService } from '@services/controller.service';
+import { UserService } from '@services/user.service';
+import { ToasterService } from '@services/toaster.service';
+import { User } from '@models/users/user';
+import { Controller } from '@models/controller';
 import { ChangeUserPasswordComponent } from "@components/user-management/user-detail/change-user-password/change-user-password.component";
 import { MatDialog } from "@angular/material/dialog";
 

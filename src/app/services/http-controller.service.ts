@@ -3,7 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {Controller, ControllerProtocol } from '../models/controller';
+import {Controller, ControllerProtocol } from '@models/controller';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {

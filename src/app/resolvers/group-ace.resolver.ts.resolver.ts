@@ -5,10 +5,10 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable,Subscriber} from 'rxjs';
-import {ACE} from "../models/api/ACE";
-import {ControllerService} from "../services/controller.service";
-import {AclService} from "../services/acl.service";
-import {Controller} from "../models/controller";
+import {ACE} from "@models/api/ACE";
+import {ControllerService} from "@services/controller.service";
+import {AclService} from "@services/acl.service";
+import {Controller} from "@models/controller";
 import {UserService} from "@services/user.service";
 import {GroupService} from "@services/group.service";
 import {RoleService} from "@services/role.service";

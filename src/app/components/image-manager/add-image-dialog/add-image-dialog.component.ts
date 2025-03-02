@@ -3,9 +3,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { Controller } from '../../../models/controller';
-import { ImageManagerService } from '../../../services/image-manager.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { ImageManagerService } from '@services/image-manager.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-add-image-dialog',

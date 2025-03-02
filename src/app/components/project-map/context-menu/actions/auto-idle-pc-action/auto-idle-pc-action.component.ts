@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '../../../../../models/controller';
+import { Controller } from '@models/controller';
 import { NodeService } from "@services/node.service";
 import { ToasterService } from "@services/toaster.service";
 import { ProgressService } from "../../../../../common/progress/progress.service";

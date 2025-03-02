@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Symbol } from '../../../models/symbol';
+import { Symbol } from '@models/symbol';
 import { MapSymbol } from '../../models/map/map-symbol';
 import { Converter } from '../converter';
 

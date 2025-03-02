@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
-import { Symbol } from '../../../../models/symbol';
+import { Symbol } from '@models/symbol';
 import { DraggedDataEvent } from '../../../events/event-source';
 import { NodesEventSource } from '../../../events/nodes-event-source';
 import { CssFixer } from '../../../helpers/css-fixer';

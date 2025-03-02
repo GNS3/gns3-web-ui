@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
 
 @Component({
   selector: 'app-align-horizontally-action',

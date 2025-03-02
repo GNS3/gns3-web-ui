@@ -1,15 +1,15 @@
 import { Component, DoCheck, OnInit, ViewEncapsulation } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthResponse } from '../../models/authResponse';
-import { Controller } from '../../models/controller';
-import { Version } from '../../models/version';
-import { LoginService } from '../../services/login.service';
-import { ControllerDatabase } from '../../services/controller.database';
-import { ControllerService } from '../../services/controller.service';
-import { ThemeService } from '../../services/theme.service';
-import { ToasterService } from '../../services/toaster.service';
-import { VersionService } from '../../services/version.service';
+import { AuthResponse } from '@models/authResponse';
+import { Controller } from '@models/controller';
+import { Version } from '@models/version';
+import { LoginService } from '@services/login.service';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
+import { ThemeService } from '@services/theme.service';
+import { ToasterService } from '@services/toaster.service';
+import { VersionService } from '@services/version.service';
 
 @Component({
   selector: 'app-login',

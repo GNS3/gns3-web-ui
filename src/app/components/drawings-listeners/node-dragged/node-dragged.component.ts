@@ -5,9 +5,9 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { Node } from '../../../cartography/models/node';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { NodeService } from '../../../services/node.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
 
 @Component({
   selector: 'app-node-dragged',

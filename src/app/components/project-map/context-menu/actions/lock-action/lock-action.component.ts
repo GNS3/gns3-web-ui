@@ -3,10 +3,10 @@ import { DrawingsDataSource } from '../../../../../cartography/datasources/drawi
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '../../../../../models/controller';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ProjectService } from '../../../../../services/project.service';
+import { Controller } from '@models/controller';
+import { DrawingService } from '@services/drawing.service';
+import { NodeService } from '@services/node.service';
+import { ProjectService } from '@services/project.service';
 
 @Component({
   selector: 'app-lock-action',

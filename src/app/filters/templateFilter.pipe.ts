@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Template } from '../models/template';
+import { Template } from '@models/template';
 
 @Pipe({
   name: 'templatefilter',

@@ -1,7 +1,7 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoginService } from '../services/login.service';
-import { ControllerService } from '../services/controller.service';
+import { LoginService } from '@services/login.service';
+import { ControllerService } from '@services/controller.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 

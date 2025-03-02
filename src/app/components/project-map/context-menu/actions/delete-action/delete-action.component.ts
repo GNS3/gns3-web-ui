@@ -6,12 +6,12 @@ import { LinksDataSource } from '../../../../../cartography/datasources/links-da
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import { Link } from '../../../../../models/link';
-import { Controller } from '../../../../../models/controller';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { LinkService } from '../../../../../services/link.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Link } from '@models/link';
+import { Controller } from '@models/controller';
+import { DrawingService } from '@services/drawing.service';
+import { LinkService } from '@services/link.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-delete-action',

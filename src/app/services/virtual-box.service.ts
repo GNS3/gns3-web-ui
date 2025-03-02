@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-import { Controller } from '../models/controller';
-import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
-import { VirtualBoxVm } from '../models/virtualBox/virtual-box-vm';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { VirtualBoxVm } from '@models/virtualBox/virtual-box-vm';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

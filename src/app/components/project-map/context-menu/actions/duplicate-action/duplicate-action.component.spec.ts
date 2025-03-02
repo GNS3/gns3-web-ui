@@ -7,10 +7,10 @@ import { DrawingsDataSource } from '../../../../../cartography/datasources/drawi
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { DrawingService } from '@services/drawing.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedDrawingService, MockedNodeService } from '../../../project-map.component.spec';
 import { DuplicateActionComponent } from './duplicate-action.component';
 

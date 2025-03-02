@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpController } from '../../../services/http-controller.service';
+import { HttpController } from '@services/http-controller.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
 import { TemplateMocksService } from 'app/services/template-mocks.service';
 import { TemplateService } from 'app/services/template.service';

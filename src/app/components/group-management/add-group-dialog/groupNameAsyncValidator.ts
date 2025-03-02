@@ -13,8 +13,8 @@
 import { UntypedFormControl } from '@angular/forms';
 import { timer } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { Controller } from "../../../models/controller";
-import { GroupService } from "../../../services/group.service";
+import { Controller } from "@models/controller";
+import { GroupService } from "@services/group.service";
 
 export const groupNameAsyncValidator = (controller: Controller, groupService: GroupService) => {
   return (control: UntypedFormControl) => {

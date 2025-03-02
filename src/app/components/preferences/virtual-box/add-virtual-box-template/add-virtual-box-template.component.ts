@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Controller } from '../../../../models/controller';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { VirtualBoxVm } from '../../../../models/virtualBox/virtual-box-vm';
-import { ControllerService } from '../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { VirtualBoxVm } from '@models/virtualBox/virtual-box-vm';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { VirtualBoxService } from '@services/virtual-box.service';
 
 @Component({
   selector: 'app-add-virtual-box-template',

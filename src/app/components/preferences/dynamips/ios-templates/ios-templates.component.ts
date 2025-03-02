@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Controller } from '../../../../models/controller';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { IosService } from '../../../../services/ios.service';
-import { ControllerService } from '../../../../services/controller.service';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { IosService } from '@services/ios.service';
+import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({

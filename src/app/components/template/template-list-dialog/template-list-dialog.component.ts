@@ -4,11 +4,11 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { Template } from '../../../models/template';
-import { TemplateService } from '../../../services/template.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 
 @Component({

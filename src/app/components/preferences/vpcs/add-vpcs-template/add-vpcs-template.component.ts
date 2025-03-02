@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '../../../../models/compute';
-import { Controller } from '../../../../models/controller';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ComputeService } from '../../../../services/compute.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VpcsService } from '../../../../services/vpcs.service';
+import { Compute } from '@models/compute';
+import { Controller } from '@models/controller';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { VpcsService } from '@services/vpcs.service';
 
 @Component({
   selector: 'app-add-vpcs-template',

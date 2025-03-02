@@ -12,9 +12,9 @@
 */
 import { Injectable } from '@angular/core';
 import {HttpController} from "./http-controller.service";
-import {Controller} from "../models/controller";
-import {Group} from "../models/groups/group";
-import {Role} from "../models/api/role";
+import {Controller} from "@models/controller";
+import {Group} from "@models/groups/group";
+import {Role} from "@models/api/role";
 import {Privilege} from "@models/api/Privilege";
 
 @Injectable({

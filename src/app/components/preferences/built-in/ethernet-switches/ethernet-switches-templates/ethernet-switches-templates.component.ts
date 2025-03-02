@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Controller } from '../../../../../models/controller';
-import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ControllerService } from '../../../../../services/controller.service';
+import { Controller } from '@models/controller';
+import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 @Component({

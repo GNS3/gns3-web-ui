@@ -6,17 +6,17 @@ import { UploadServiceService } from '../../../../common/uploading-processbar/up
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
 import { FileItem, FileUploader, FileUploaderOptions, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '../../../../models/compute';
-import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import { QemuImage } from '../../../../models/qemu/qemu-image';
-import { Controller } from '../../../../models/controller';
-import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { ComputeService } from '../../../../services/compute.service';
-import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
-import { QemuService } from '../../../../services/qemu.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Compute } from '@models/compute';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { QemuImage } from '@models/qemu/qemu-image';
+import { Controller } from '@models/controller';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { ComputeService } from '@services/compute.service';
+import { QemuConfigurationService } from '@services/qemu-configuration.service';
+import { QemuService } from '@services/qemu.service';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-add-qemu-virtual-machine-template',

@@ -9,11 +9,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Controller } from '../../../../models/controller';
-import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { QemuService } from '../../../../services/qemu.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
+import { Controller } from '@models/controller';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { QemuService } from '@services/qemu.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuVmTemplatesComponent } from './qemu-vm-templates.component';
 

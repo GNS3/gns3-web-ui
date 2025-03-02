@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Controller } from '../../../../models/controller';
-import { QemuSettings } from '../../../../models/settings/qemu-settings';
-import { ControllerSettingsService } from '../../../../services/controller-settings.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { QemuSettings } from '@models/settings/qemu-settings';
+import { ControllerSettingsService } from '@services/controller-settings.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-qemu-preferences',

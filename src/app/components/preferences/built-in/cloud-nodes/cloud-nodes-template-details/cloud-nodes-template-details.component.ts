@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
-import { Controller } from '../../../../../models/controller';
-import { CloudTemplate } from '../../../../../models/templates/cloud-template';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
+import { Controller } from '@models/controller';
+import { CloudTemplate } from '@models/templates/cloud-template';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-cloud-nodes-template-details',

@@ -2,9 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
-import { Controller } from '../../../models/controller';
-import { ControllerService } from '../../../services/controller.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-add-controller-dialog',

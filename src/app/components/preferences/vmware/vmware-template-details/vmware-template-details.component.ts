@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import { Controller } from '../../../../models/controller';
-import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
-import { VmwareService } from '../../../../services/vmware.service';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
+import { Controller } from '@models/controller';
+import { VmwareTemplate } from '@models/templates/vmware-template';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { VmwareConfigurationService } from '@services/vmware-configuration.service';
+import { VmwareService } from '@services/vmware.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({

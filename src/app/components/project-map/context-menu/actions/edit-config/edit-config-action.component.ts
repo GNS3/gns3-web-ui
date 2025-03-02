@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Project } from '../../../../../models/project';
-import { Controller } from '../../../../../models/controller';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
 import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor/config-editor.component';
 
 @Component({

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Node } from '../cartography/models/node';
-import { CapturingSettings } from '../models/capturingSettings';
-import { FilterDescription } from '../models/filter-description';
-import { Link } from '../models/link';
-import { LinkNode } from '../models/link-node';
-import { Port } from '../models/port';
-import { Controller } from '../models/controller';
+import { CapturingSettings } from '@models/capturingSettings';
+import { FilterDescription } from '@models/filter-description';
+import { Link } from '@models/link';
+import { LinkNode } from '@models/link-node';
+import { Port } from '@models/port';
+import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

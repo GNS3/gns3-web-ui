@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Link } from '../../../models/link';
+import { Link } from '@models/link';
 import { MapLink } from '../../models/map/map-link';
 import { Converter } from '../converter';
 import { MapLinkNodeToLinkNodeConverter } from './map-link-node-to-link-node-converter';

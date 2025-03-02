@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Controller } from '../../../../models/controller';
-import { ControllerSettingsService } from '../../../../services/controller-settings.service';
-import { ControllerService } from '../../../../services/controller.service';
+import { Controller } from '@models/controller';
+import { ControllerSettingsService } from '@services/controller-settings.service';
+import { ControllerService } from '@services/controller.service';
 
 @Component({
   selector: 'app-dynamips-preferences',

@@ -9,11 +9,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Controller } from '../../../../models/controller';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { VirtualBoxService } from '@services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxTemplatesComponent } from './virtual-box-templates.component';
 

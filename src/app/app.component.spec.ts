@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { AppComponent } from './app.component';
 import { ProgressService } from './common/progress/progress.service';
-import { SettingsService } from './services/settings.service';
+import { SettingsService } from '@services/settings.service';
 
 import createSpyObj = jasmine.createSpyObj;
 // import 'jasmine';

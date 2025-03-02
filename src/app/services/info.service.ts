@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Node } from '../cartography/models/node';
-import { Port } from '../models/port';
-import { Controller } from '../models/controller';
+import { Port } from '@models/port';
+import { Controller } from '@models/controller';
 
 @Injectable()
 export class InfoService {

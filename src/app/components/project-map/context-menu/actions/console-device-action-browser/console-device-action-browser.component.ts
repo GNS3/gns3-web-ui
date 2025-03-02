@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { ProtocolHandlerService } from '../../../../../services/protocol-handler.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
+import { ProtocolHandlerService } from '@services/protocol-handler.service';
 
 import * as ipaddr from 'ipaddr.js';
 

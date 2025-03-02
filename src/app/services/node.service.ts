@@ -3,9 +3,9 @@ import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
-import { Project } from '../models/project';
-import { Controller } from '../models/controller';
-import { Template } from '../models/template';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

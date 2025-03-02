@@ -3,11 +3,11 @@ import { DrawingsDataSource } from '../../../../../cartography/datasources/drawi
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Node } from '../../../../../cartography/models/node';
-import { Project } from '../../../../../models/project';
-import { Controller } from '../../../../../models/controller';
-import { DrawingService } from '../../../../../services/drawing.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { DrawingService } from '@services/drawing.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-duplicate-action',

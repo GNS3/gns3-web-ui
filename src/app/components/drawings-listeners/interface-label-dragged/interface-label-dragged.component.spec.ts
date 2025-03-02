@@ -6,8 +6,8 @@ import { LinksEventSource } from '../../../cartography/events/links-event-source
 import { Label } from '../../../cartography/models/label';
 import { MapLabel } from '../../../cartography/models/map/map-label';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
-import { Link } from '../../../models/link';
-import { LinkService } from '../../../services/link.service';
+import { Link } from '@models/link';
+import { LinkService } from '@services/link.service';
 import { MockedLinkService } from '../../project-map/project-map.component.spec';
 import { InterfaceLabelDraggedComponent } from './interface-label-dragged.component';
 

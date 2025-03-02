@@ -17,11 +17,11 @@ import {
   ActivatedRouteSnapshot
 } from '@angular/router';
 import {Observable, of, Subscriber} from 'rxjs';
-import {Group} from "../models/groups/group";
-import {User} from "../models/users/user";
-import {Controller} from "../models/controller";
-import {ControllerService} from "../services/controller.service";
-import {UserService} from "../services/user.service";
+import {Group} from "@models/groups/group";
+import {User} from "@models/users/user";
+import {Controller} from "@models/controller";
+import {ControllerService} from "@services/controller.service";
+import {UserService} from "@services/user.service";
 
 @Injectable({
   providedIn: 'root'

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
-import { Controller } from '../models/controller';
-import { ControllerService } from '../services/controller.service';
+import { Controller } from '@models/controller';
+import { ControllerService } from '@services/controller.service';
 
 @Injectable()
 export class ControllerResolve implements Resolve<Controller> {

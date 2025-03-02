@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
-import { Controller } from '../../../../../../models/controller';
-import { DockerConfigurationService } from '../../../../../../services/docker-configuration.service';
-import { NodeService } from '../../../../../../services/node.service';
-import { ToasterService } from '../../../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { DockerConfigurationService } from '@services/docker-configuration.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-configure-custom-adapters',

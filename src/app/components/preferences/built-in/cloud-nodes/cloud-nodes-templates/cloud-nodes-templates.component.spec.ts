@@ -9,11 +9,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Controller } from '../../../../../models/controller';
-import { CloudTemplate } from '../../../../../models/templates/cloud-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { MockedControllerService } from '../../../../../services/controller.service.spec';
+import { Controller } from '@models/controller';
+import { CloudTemplate } from '@models/templates/cloud-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesTemplatesComponent } from './cloud-nodes-templates.component';
 

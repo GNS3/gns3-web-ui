@@ -12,10 +12,10 @@ import { FontFixer } from '../../../cartography/helpers/font-fixer';
 import { MapLabel } from '../../../cartography/models/map/map-label';
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
-import { Project } from '../../../models/project';
-import { LinkService } from '../../../services/link.service';
-import { ProjectService } from '../../../services/project.service';
-import { MockedProjectService } from '../../../services/project.service.spec';
+import { Project } from '@models/project';
+import { LinkService } from '@services/link.service';
+import { ProjectService } from '@services/project.service';
+import { MockedProjectService } from '@services/project.service.spec';
 import { MockedLinkService } from '../../project-map/project-map.component.spec';
 import { LinkCreatedComponent } from './link-created.component';
 

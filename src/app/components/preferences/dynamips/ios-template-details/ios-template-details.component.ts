@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Controller } from '../../../../models/controller';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosConfigurationService } from '../../../../services/ios-configuration.service';
-import { IosService } from '../../../../services/ios.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IosConfigurationService } from '@services/ios-configuration.service';
+import { IosService } from '@services/ios.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from "../../../../common/progress/progress.service";
 
 @Component({

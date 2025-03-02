@@ -7,11 +7,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ElectronService } from 'ngx-electron';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { NodeService } from '../../../services/node.service';
-import { ControllerService } from '../../../services/controller.service';
-import { SettingsService } from '../../../services/settings.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { NodeService } from '@services/node.service';
+import { ControllerService } from '@services/controller.service';
+import { SettingsService } from '@services/settings.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
 import { NodesMenuComponent } from './nodes-menu.component';
 

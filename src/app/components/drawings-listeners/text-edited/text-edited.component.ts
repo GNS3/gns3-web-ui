@@ -7,8 +7,8 @@ import { TextEditedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { Controller } from '../../../models/controller';
-import { DrawingService } from '../../../services/drawing.service';
+import { Controller } from '@models/controller';
+import { DrawingService } from '@services/drawing.service';
 
 @Component({
   selector: 'app-text-edited',

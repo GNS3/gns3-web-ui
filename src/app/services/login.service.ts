@@ -1,9 +1,9 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { Controller } from '../models/controller';
+import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
-import { AuthResponse } from '../models/authResponse';
+import { AuthResponse } from '@models/authResponse';
 
 @Injectable()
 export class LoginService {

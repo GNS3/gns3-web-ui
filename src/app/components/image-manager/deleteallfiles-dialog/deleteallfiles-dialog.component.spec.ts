@@ -9,9 +9,9 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { Server } from 'http';
 import { of } from 'rxjs';
-import { ImageManagerService } from '../../../services/image-manager.service';
-import { ControllerService } from '../../../services/controller.service';
-import { MockedControllerService } from '../../../services/controller.service.spec';
+import { ImageManagerService } from '@services/image-manager.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
 import { ImageManagerComponent } from '../image-manager.component';
 
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';

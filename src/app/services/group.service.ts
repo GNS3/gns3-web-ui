@@ -12,9 +12,9 @@
 */
 import {Injectable} from '@angular/core';
 import {HttpController} from "./http-controller.service";
-import {Controller} from "../models/controller";
-import {Group} from "../models/groups/group";
-import {User} from "../models/users/user";
+import {Controller} from "@models/controller";
+import {Group} from "@models/groups/group";
+import {User} from "@models/users/user";
 import {Observable} from "rxjs";
 import {Role} from "@models/api/role";
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PortsMappingEntity } from '../../../../models/ethernetHub/ports-mapping-enity';
-import { BuiltInTemplatesConfigurationService } from '../../../../services/built-in-templates-configuration.service';
+import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { ToasterService } from "@services/toaster.service";
 
 @Component({

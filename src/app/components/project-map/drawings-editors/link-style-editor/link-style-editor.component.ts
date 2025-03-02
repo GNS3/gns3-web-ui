@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Link } from '../../../../models/link';
-import { Project } from '../../../../models/project';
-import { Controller } from '../../../../models/controller';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Link } from '@models/link';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
-import { LinkService } from '../../../../services/link.service';
+import { LinkService } from '@services/link.service';
 import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 import { LinksEventSource } from '../../../../cartography/events/links-event-source';
 import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';

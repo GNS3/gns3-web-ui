@@ -1,10 +1,10 @@
 import { Renderer2 } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MockedLinkService } from '../../../components/project-map/project-map.component.spec';
-import { LinkService } from '../../../services/link.service';
-import { MapScaleService } from '../../../services/mapScale.service';
-import { ToolsService } from '../../../services/tools.service';
+import { MockedLinkService } from '@components/project-map/project-map.component.spec';
+import { LinkService } from '@services/link.service';
+import { MapScaleService } from '@services/mapScale.service';
+import { ToolsService } from '@services/tools.service';
 import { LinksDataSource } from '../../datasources/links-datasource';
 import { NodesDataSource } from '../../datasources/nodes-datasource';
 import { DrawingsEventSource } from '../../events/drawings-event-source';

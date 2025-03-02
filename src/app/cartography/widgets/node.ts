@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { event, select } from 'd3-selection';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
 import { NodeClicked, NodeContextMenu } from '../events/nodes';
 import { NodesEventSource } from '../events/nodes-event-source';

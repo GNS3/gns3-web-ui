@@ -9,15 +9,15 @@ import { ImageManagerService } from 'app/services/image-manager.service';
 import { ControllerService } from 'app/services/controller.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
 import { of } from 'rxjs';
-import { Controller } from '../../models/controller';
+import { Controller } from '@models/controller';
 
 import { ImageManagerComponent } from './image-manager.component';
-import { Image } from '../../models/images';
+import { Image } from '@models/images';
 import { ProgressService } from 'app/common/progress/progress.service';
 import { MockedProgressService } from '../project-map/project-map.component.spec';
 import { MockedActivatedRoute } from '../preferences/preferences.component.spec';
 import { ActivatedRoute } from '@angular/router';
-import { MockedVersionService } from '../../services/version.service.spec';
+import { MockedVersionService } from '@services/version.service.spec';
 import { VersionService } from 'app/services/version.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';

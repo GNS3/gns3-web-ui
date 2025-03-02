@@ -12,8 +12,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Link } from '../../../models/link';
-import { Symbol } from '../../../models/symbol';
+import { Link } from '@models/link';
+import { Symbol } from '@models/symbol';
 import { CanvasSizeDetector } from '../../helpers/canvas-size-detector';
 import { GraphDataManager } from '../../managers/graph-data-manager';
 import { LayersManager } from '../../managers/layers-manager';

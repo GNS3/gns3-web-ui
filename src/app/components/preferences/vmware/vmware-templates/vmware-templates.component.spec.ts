@@ -9,11 +9,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Controller } from '../../../../models/controller';
-import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { VmwareService } from '../../../../services/vmware.service';
+import { Controller } from '@models/controller';
+import { VmwareTemplate } from '@models/templates/vmware-template';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { VmwareService } from '@services/vmware.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplatesComponent } from './vmware-templates.component';
 

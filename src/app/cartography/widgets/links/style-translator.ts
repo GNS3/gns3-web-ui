@@ -1,4 +1,4 @@
-import { LinkStyle } from '../../../models/link-style';
+import { LinkStyle } from '@models/link-style';
 
 export class StyleTranslator {
     static getLinkStyle(linkStyle: LinkStyle) {

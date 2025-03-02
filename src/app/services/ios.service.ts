@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-import { IosImage } from '../models/images/ios-image';
-import { Controller } from '../models/controller';
-import { IosTemplate } from '../models/templates/ios-template';
+import { IosImage } from '@models/images/ios-image';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

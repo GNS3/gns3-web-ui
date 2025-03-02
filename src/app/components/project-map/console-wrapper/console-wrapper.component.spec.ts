@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ToasterService } from '../../../services/toaster.service';
-import { MapSettingsService } from '../../../services/mapsettings.service';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { ThemeService } from '../../../services/theme.service';
+import { ToasterService } from '@services/toaster.service';
+import { MapSettingsService } from '@services/mapsettings.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ThemeService } from '@services/theme.service';
 import { ConsoleWrapperComponent } from './console-wrapper.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 

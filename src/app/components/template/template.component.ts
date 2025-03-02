@@ -1,14 +1,14 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ThemeService } from '../../services/theme.service';
+import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
-import { Project } from '../../models/project';
-import { Controller } from '../../models/controller';
-import { Template } from '../../models/template';
-import { MapScaleService } from '../../services/mapScale.service';
-import { SymbolService } from '../../services/symbol.service';
-import { TemplateService } from '../../services/template.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
+import { MapScaleService } from '@services/mapScale.service';
+import { SymbolService } from '@services/symbol.service';
+import { TemplateService } from '@services/template.service';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
 

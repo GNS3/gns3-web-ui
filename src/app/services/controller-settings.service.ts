@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Controller } from '../models/controller';
-import { ControllerSettings } from '../models/controllerSettings';
-import { QemuSettings } from '../models/settings/qemu-settings';
+import { Controller } from '@models/controller';
+import { ControllerSettings } from '@models/controllerSettings';
+import { QemuSettings } from '@models/settings/qemu-settings';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

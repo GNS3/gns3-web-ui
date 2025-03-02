@@ -14,11 +14,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { MapSettingsService } from '../../../services/mapsettings.service';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { MapSettingsService } from '@services/mapsettings.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ToasterService } from '@services/toaster.service';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
 

@@ -3,11 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { forkJoin, from } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { Observable } from 'rxjs/Rx';
-import { Controller, ControllerProtocol } from '../../../models/controller';
-import { Version } from '../../../models/version';
-import { ControllerDatabase } from '../../../services/controller.database';
-import { ControllerService } from '../../../services/controller.service';
-import { VersionService } from '../../../services/version.service';
+import { Controller, ControllerProtocol } from '@models/controller';
+import { Version } from '@models/version';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
+import { VersionService } from '@services/version.service';
 
 @Component({
   selector: 'app-controller-discovery',

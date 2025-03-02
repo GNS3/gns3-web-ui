@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { DockerTemplate } from '../../../models/templates/docker-template';
-import { IosTemplate } from '../../../models/templates/ios-template';
-import { IouTemplate } from '../../../models/templates/iou-template';
-import { QemuTemplate } from '../../../models/templates/qemu-template';
-import { DockerService } from '../../../services/docker.service';
-import { IosService } from '../../../services/ios.service';
-import { IouService } from '../../../services/iou.service';
-import { QemuService } from '../../../services/qemu.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { DockerTemplate } from '@models/templates/docker-template';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IouTemplate } from '@models/templates/iou-template';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { DockerService } from '@services/docker.service';
+import { IosService } from '@services/ios.service';
+import { IouService } from '@services/iou.service';
+import { QemuService } from '@services/qemu.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-import-appliance',

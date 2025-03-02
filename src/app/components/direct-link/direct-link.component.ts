@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Controller } from '../../models/controller';
-import { ControllerDatabase } from '../../services/controller.database';
-import { ControllerService } from '../../services/controller.service';
-import { ToasterService } from '../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-direct-link',

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Link } from '../models/link';
-import { Project } from '../models/project';
-import { Controller } from '../models/controller';
+import { Link } from '@models/link';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
 import { ProtocolHandlerService } from './protocol-handler.service';
 
 @Injectable()

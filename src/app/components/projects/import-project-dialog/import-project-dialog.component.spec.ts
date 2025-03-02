@@ -14,12 +14,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'environments/environment';
 import { FileItem, FileSelectDirective, FileUploadModule } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { ProjectService } from '../../../services/project.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ProjectService } from '@services/project.service';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
-import { ToasterService } from '../../../services/toaster.service';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 

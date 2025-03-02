@@ -12,14 +12,14 @@ import { TextElement } from '../../../../cartography/models/drawings/text-elemen
 import { Font } from '../../../../cartography/models/font';
 import { Label } from '../../../../cartography/models/label';
 import { Node } from '../../../../cartography/models/node';
-import { Link } from '../../../../models/link';
-import { LinkNode } from '../../../../models/link-node';
-import { Project } from '../../../../models/project';
-import { Controller } from '../../../../models/controller';
-import { DrawingService } from '../../../../services/drawing.service';
-import { LinkService } from '../../../../services/link.service';
-import { NodeService } from '../../../../services/node.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Link } from '@models/link';
+import { LinkNode } from '@models/link-node';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { DrawingService } from '@services/drawing.service';
+import { LinkService } from '@services/link.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({

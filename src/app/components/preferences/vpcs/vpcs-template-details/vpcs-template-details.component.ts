@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Controller } from '../../../../models/controller';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
-import { VpcsService } from '../../../../services/vpcs.service';
+import { Controller } from '@models/controller';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
+import { VpcsService } from '@services/vpcs.service';
 
 @Component({
   selector: 'app-vpcs-template-details',

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { select } from 'd3-selection';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { LinkStatus } from '../models/link-status';
 import { MapLink } from '../models/map/map-link';
 import { SVGSelection } from '../models/types';

@@ -4,7 +4,7 @@ import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import { BehaviorSubject, Observable, Subscription, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Image } from '../../models/images';
+import { Image } from '@models/images';
 
 
 export class imageDatabase {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Controller } from '../models/controller';
+import { Controller } from '@models/controller';
 
 @Injectable()
 export class ControllerDatabase {

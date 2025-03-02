@@ -5,7 +5,7 @@ import { DrawingsDataSource } from '../../../cartography/datasources/drawings-da
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { TextEditedDataEvent } from '../../../cartography/events/event-source';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
-import { DrawingService } from '../../../services/drawing.service';
+import { DrawingService } from '@services/drawing.service';
 import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
 import { TextEditedComponent } from './text-edited.component';
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Controller } from '../models/controller';
+import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { Observable } from 'rxjs';
-import { Image } from "../models/images";
+import { Image } from "@models/images";
 import { environment } from 'environments/environment';
 
 @Injectable({

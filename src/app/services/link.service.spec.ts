@@ -3,8 +3,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Node } from '../cartography/models/node';
-import { Port } from '../models/port';
-import { Controller } from '../models/controller';
+import { Port } from '@models/port';
+import { Controller } from '@models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { LinkService } from './link.service';

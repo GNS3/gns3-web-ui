@@ -1,7 +1,7 @@
 import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
-import { MapScaleService } from '../../services/mapScale.service';
+import { MapScaleService } from '@services/mapScale.service';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
 

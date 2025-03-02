@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConsoleService } from '../../../services/settings/console.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { ConsoleService } from '@services/settings/console.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-console',

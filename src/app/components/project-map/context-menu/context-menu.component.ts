@@ -6,11 +6,11 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Label } from '../../../cartography/models/label';
 import { Node } from '../../../cartography/models/node';
-import { Link } from '../../../models/link';
-import { LinkNode } from '../../../models/link-node';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { ProjectService } from '../../../services/project.service';
+import { Link } from '@models/link';
+import { LinkNode } from '@models/link-node';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ProjectService } from '@services/project.service';
 
 @Component({
   selector: 'app-context-menu',

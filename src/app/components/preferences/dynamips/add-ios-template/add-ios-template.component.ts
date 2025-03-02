@@ -8,16 +8,16 @@ import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/up
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '../../../../models/compute';
-import { IosImage } from '../../../../models/images/ios-image';
-import { Controller } from '../../../../models/controller';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { ComputeService } from '../../../../services/compute.service';
-import { IosConfigurationService } from '../../../../services/ios-configuration.service';
-import { IosService } from '../../../../services/ios.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Compute } from '@models/compute';
+import { IosImage } from '@models/images/ios-image';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
+import { ComputeService } from '@services/compute.service';
+import { IosConfigurationService } from '@services/ios-configuration.service';
+import { IosService } from '@services/ios.service';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-add-ios-template',

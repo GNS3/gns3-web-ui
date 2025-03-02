@@ -7,10 +7,10 @@ import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
 import { merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {Controller, ControllerProtocol } from '../../models/controller';
-import { ControllerManagementService } from '../../services/controller-management.service';
-import { ControllerDatabase } from '../../services/controller.database';
-import { ControllerService } from '../../services/controller.service';
+import {Controller, ControllerProtocol } from '@models/controller';
+import { ControllerManagementService } from '@services/controller-management.service';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 

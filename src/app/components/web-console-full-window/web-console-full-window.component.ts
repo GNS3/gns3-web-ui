@@ -6,10 +6,10 @@ import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
 import { Node } from '../../cartography/models/node';
-import { Controller } from '../../models/controller';
-import { NodeService } from '../../services/node.service';
-import { NodeConsoleService } from '../../services/nodeConsole.service';
-import { ControllerService } from '../../services/controller.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ControllerService } from '@services/controller.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,

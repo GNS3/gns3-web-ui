@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Observable } from 'rxjs';
-import { Controller } from '../models/controller';
+import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
-import { User } from '../models/users/user';
+import { User } from '@models/users/user';
 import { Group } from "@models/groups/group";
 import {Image} from "@models/images";
 

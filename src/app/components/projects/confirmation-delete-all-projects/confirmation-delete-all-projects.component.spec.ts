@@ -4,12 +4,12 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MockedProjectService } from '../../../services/project.service.spec';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
-import { ProjectService } from '../../../services/project.service';
-import { ControllerService } from '../../../services/controller.service';
-import { MockedControllerService } from '../../../services/controller.service.spec';
-import { ToasterService } from '../../../services/toaster.service';
+import { MockedProjectService } from '@services/project.service.spec';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { ProjectService } from '@services/project.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { ToasterService } from '@services/toaster.service';
 
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects.component';
 

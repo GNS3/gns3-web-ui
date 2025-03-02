@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ComputeStatistics } from '../../../models/computeStatistics';
-import { Controller } from '../../../models/controller';
-import { ComputeService } from '../../../services/compute.service';
-import { ControllerService } from '../../../services/controller.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { ComputeStatistics } from '@models/computeStatistics';
+import { Controller } from '@models/controller';
+import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-status-info',

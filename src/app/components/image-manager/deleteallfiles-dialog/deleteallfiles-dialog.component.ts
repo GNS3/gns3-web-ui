@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ImageManagerService } from '../../../services/image-manager.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { ImageManagerService } from '@services/image-manager.service';
+import { ToasterService } from '@services/toaster.service';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ImageData } from '../../../models/images';
+import { ImageData } from '@models/images';
 
 @Component({
   selector: 'app-deleteallfiles-dialog',

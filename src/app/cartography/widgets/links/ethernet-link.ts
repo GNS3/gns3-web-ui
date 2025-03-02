@@ -4,7 +4,7 @@ import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
 import { Widget } from '../widget';
-import { LinkStyle } from '../../../models/link-style';
+import { LinkStyle } from '@models/link-style';
 import { StyleTranslator} from './style-translator';
 
 class EthernetLinkPath {

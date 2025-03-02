@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Link } from '../../../../../models/link';
-import { Project } from '../../../../../models/project';
-import { Controller } from '../../../../../models/controller';
+import { Link } from '@models/link';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
 import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-style-editor/link-style-editor.component';
 
 @Component({

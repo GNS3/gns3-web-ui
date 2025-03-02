@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Link } from '../../models/link';
-import { Symbol } from '../../models/symbol';
+import { Link } from '@models/link';
+import { Symbol } from '@models/symbol';
 import { DrawingToMapDrawingConverter } from '../converters/map/drawing-to-map-drawing-converter';
 import { LinkToMapLinkConverter } from '../converters/map/link-to-map-link-converter';
 import { NodeToMapNodeConverter } from '../converters/map/node-to-map-node-converter';

@@ -1,7 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { select } from 'd3-selection';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { LinksEventSource } from '../../events/links-event-source';

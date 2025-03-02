@@ -5,8 +5,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { ProgressService } from './common/progress/progress.service';
-import { SettingsService } from './services/settings.service';
-import { ThemeService } from './services/theme.service';
+import { SettingsService } from '@services/settings.service';
+import { ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-root',

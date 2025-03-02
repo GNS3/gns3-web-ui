@@ -3,10 +3,10 @@ import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
 import { Node } from '../../../cartography/models/node';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { ThemeService } from '../../../services/theme.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ThemeService } from '@services/theme.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,

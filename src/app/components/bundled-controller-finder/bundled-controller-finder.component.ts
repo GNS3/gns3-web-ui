@@ -2,8 +2,8 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressService } from '../../common/progress/progress.service';
-import { Controller } from '../../models/controller';
-import { ControllerService } from '../../services/controller.service';
+import { Controller } from '@models/controller';
+import { ControllerService } from '@services/controller.service';
 
 @Component({
   selector: 'app-bundled-controller-finder',

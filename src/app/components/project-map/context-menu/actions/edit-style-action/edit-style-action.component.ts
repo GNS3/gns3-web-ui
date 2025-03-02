@@ -2,8 +2,8 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { ImageElement } from '../../../../../cartography/models/drawings/image-element';
-import { Project } from '../../../../../models/project';
-import { Controller } from '../../../../../models/controller';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
 import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
 
 @Component({

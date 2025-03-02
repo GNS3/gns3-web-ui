@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { Project } from '../../../models/project';
-import { Controller } from '../../../models/controller';
-import { MapSettingsService } from '../../../services/mapsettings.service';
-import { NodeService } from '../../../services/node.service';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { ControllerService } from '../../../services/controller.service';
-import { SettingsService } from '../../../services/settings.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { MapSettingsService } from '@services/mapsettings.service';
+import { NodeService } from '@services/node.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ControllerService } from '@services/controller.service';
+import { SettingsService } from '@services/settings.service';
+import { ToasterService } from '@services/toaster.service';
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 
 @Component({

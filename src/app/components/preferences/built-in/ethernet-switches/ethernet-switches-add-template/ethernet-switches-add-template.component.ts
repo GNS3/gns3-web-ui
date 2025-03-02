@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '../../../../../models/compute';
-import { Controller } from '../../../../../models/controller';
-import { EthernetSwitchTemplate } from '../../../../../models/templates/ethernet-switch-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ComputeService } from '../../../../../services/compute.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Compute } from '@models/compute';
+import { Controller } from '@models/controller';
+import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-ethernet-switches-add-template',

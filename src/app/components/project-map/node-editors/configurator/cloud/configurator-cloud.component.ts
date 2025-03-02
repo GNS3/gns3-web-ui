@@ -2,13 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { UdpTunnelsComponent } from '../../../../../components/preferences/common/udp-tunnels/udp-tunnels.component';
-import { PortsMappingEntity } from '../../../../../models/ethernetHub/ports-mapping-enity';
-import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
-import { Controller } from '../../../../../models/controller';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
+import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { Controller } from '@models/controller';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-configurator-cloud',

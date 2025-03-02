@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Controller } from '../../../../models/controller';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { ControllerService } from '@services/controller.service';
+import { VirtualBoxService } from '@services/virtual-box.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({

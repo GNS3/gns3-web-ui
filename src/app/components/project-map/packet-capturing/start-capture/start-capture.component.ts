@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
-import { CapturingSettings } from '../../../../models/capturingSettings';
-import { Link } from '../../../../models/link';
-import { LinkNode } from '../../../../models/link-node';
-import { Project } from '../../../../models/project';
-import { Controller } from '../../../../models/controller';
-import { LinkService } from '../../../../services/link.service';
-import { PacketCaptureService } from '../../../../services/packet-capture.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { CapturingSettings } from '@models/capturingSettings';
+import { Link } from '@models/link';
+import { LinkNode } from '@models/link-node';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { LinkService } from '@services/link.service';
+import { PacketCaptureService } from '@services/packet-capture.service';
+import { ToasterService } from '@services/toaster.service';
 import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 
 @Component({

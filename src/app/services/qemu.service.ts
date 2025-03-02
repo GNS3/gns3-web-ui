@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { QemuBinary } from '../models/qemu/qemu-binary';
-import { QemuImage } from '../models/qemu/qemu-image';
-import { QemuImg } from '../models/qemu/qemu-img';
-import { Controller } from '../models/controller';
-import { QemuTemplate } from '../models/templates/qemu-template';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { QemuImage } from '@models/qemu/qemu-image';
+import { QemuImg } from '@models/qemu/qemu-img';
+import { Controller } from '@models/controller';
+import { QemuTemplate } from '@models/templates/qemu-template';
 import { HttpController } from './http-controller.service';
 
 @Injectable()

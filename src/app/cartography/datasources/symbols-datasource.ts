@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Symbol } from '../../models/symbol';
+import { Symbol } from '@models/symbol';
 import { DataSource } from './datasource';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import {Endpoint, RessourceType} from "../../../models/api/endpoint";
+import {Endpoint, RessourceType} from "@models/api/endpoint";
 
 export interface EndpointNode {
   endpoint: string;

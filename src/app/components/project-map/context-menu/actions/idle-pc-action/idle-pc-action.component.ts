@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '../../../../../models/controller';
+import { Controller } from '@models/controller';
 import { IdlePCDialogComponent } from "@components/project-map/context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component";
 import { NodeService } from "@services/node.service";
 

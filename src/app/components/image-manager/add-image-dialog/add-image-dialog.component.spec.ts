@@ -5,10 +5,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ImageManagerService } from 'app/services/image-manager.service';
-import { ControllerService } from '../../../services/controller.service';
-import { MockedControllerService } from '../../../services/controller.service.spec';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
 import { of } from 'rxjs';
-import { Controller } from '../../../models/controller';
+import { Controller } from '@models/controller';
 
 import { AddImageDialogComponent } from './add-image-dialog.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';

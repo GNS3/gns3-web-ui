@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '../../../../../models/controller';
-import { NodeConsoleService } from '../../../../../services/nodeConsole.service';
+import { Controller } from '@models/controller';
+import { NodeConsoleService } from '@services/nodeConsole.service';
 
 @Component({
   selector: 'app-http-console-action',

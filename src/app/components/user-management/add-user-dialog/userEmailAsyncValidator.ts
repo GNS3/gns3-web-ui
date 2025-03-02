@@ -10,8 +10,8 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Controller} from "../../../models/controller";
-import {UserService} from "../../../services/user.service";
+import {Controller} from "@models/controller";
+import {UserService} from "@services/user.service";
 import {UntypedFormControl} from "@angular/forms";
 import {timer} from "rxjs";
 import {map, switchMap} from "rxjs/operators";

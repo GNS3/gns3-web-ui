@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { select } from 'd3-selection';
 import { merge, Subscription } from 'rxjs';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { DraggedDataEvent } from '../../events/event-source';

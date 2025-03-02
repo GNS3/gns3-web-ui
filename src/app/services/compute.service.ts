@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
-import { Compute } from '../models/compute';
-import { ComputeStatistics } from '../models/computeStatistics';
-import { Controller } from '../models/controller';
+import { Compute } from '@models/compute';
+import { ComputeStatistics } from '@models/computeStatistics';
+import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()
