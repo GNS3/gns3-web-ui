@@ -33,7 +33,7 @@ xdescribe('ProjectsComponent', () => {
   let settingsService: SettingsService;
   let projectService: ProjectService;
   let controllerService: ControllerService;
-  let controller:Controller ;
+  let controller: Controller;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
   let electronService;

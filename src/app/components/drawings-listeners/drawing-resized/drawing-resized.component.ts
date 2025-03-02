@@ -15,7 +15,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-resized.component.scss'],
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   private drawingResized: Subscription;
 
   constructor(

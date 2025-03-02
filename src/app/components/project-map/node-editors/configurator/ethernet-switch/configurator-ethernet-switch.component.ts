@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   inputForm: UntypedFormGroup;

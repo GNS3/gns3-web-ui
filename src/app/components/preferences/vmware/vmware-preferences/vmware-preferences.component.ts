@@ -9,7 +9,7 @@ import { ControllerService } from '../../../../services/controller.service';
   styleUrls: ['./vmware-preferences.component.scss'],
 })
 export class VmwarePreferencesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   vmrunPath: string;
 
   constructor(private route: ActivatedRoute, private controllerService: ControllerService) {}
@@ -17,7 +17,7 @@ export class VmwarePreferencesComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
 
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
     });
   }

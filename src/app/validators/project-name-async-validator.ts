@@ -4,7 +4,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { Controller } from '../models/controller';
 import { ProjectService } from '../services/project.service';
 
-export const projectNameAsyncValidator = (controller:Controller , projectService: ProjectService) => {
+export const projectNameAsyncValidator = (controller: Controller, projectService: ProjectService) => {
   return (control: UntypedFormControl) => {
     return timer(500).pipe(
       switchMap(() => projectService.list(controller)),

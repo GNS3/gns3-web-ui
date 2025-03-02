@@ -66,7 +66,7 @@ export class NodeConsoleService {
     return this.defaultConsoleHeight / this.defaultNumberOfRows;
   }
 
-  getUrl(controller:Controller , node: Node) {
+  getUrl(controller: Controller, node: Node) {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"

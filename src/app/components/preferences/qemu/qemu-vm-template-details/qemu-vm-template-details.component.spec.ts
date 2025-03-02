@@ -23,16 +23,16 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuVmTemplateDetailsComponent } from './qemu-vm-template-details.component';
 
 export class MockedQemuService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({} as QemuTemplate);
   }
 
-  public saveTemplate(controller:Controller , qemuTemplate: QemuTemplate) {
+  public saveTemplate(controller: Controller, qemuTemplate: QemuTemplate) {
     return of(qemuTemplate);
   }
 
 
-  public getImages(controller:Controller ) {
+  public getImages(controller: Controller ) {
     return of([]);
   }
 }

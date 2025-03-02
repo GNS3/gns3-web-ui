@@ -14,7 +14,7 @@ export class LinkService {
   constructor(private httpController: HttpController) {}
 
   createLink(
-    controller:Controller ,
+    controller: Controller,
     source_node: Node,
     source_port: Port,
     target_node: Node,
@@ -54,30 +54,30 @@ export class LinkService {
     });
   }
 
-  getLink(controller:Controller , projectId: string, linkId: string) {
+  getLink(controller: Controller, projectId: string, linkId: string) {
     return this.httpController.get<Link>(controller, `/projects/${projectId}/links/${linkId}`);
   }
 
-  deleteLink(controller:Controller , link: Link) {
+  deleteLink(controller: Controller, link: Link) {
     return this.httpController.delete(controller, `/projects/${link.project_id}/links/${link.link_id}`);
   }
 
-  updateLink(controller:Controller , link: Link) {
+  updateLink(controller: Controller, link: Link) {
     return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 
-  updateLinkStyle(controller:Controller , link: Link) {
+  updateLinkStyle(controller: Controller, link: Link) {
     return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
   }
 
-  getAvailableFilters(controller:Controller , link: Link) {
+  getAvailableFilters(controller: Controller, link: Link) {
     return this.httpController.get<FilterDescription[]>(
       controller,
       `/projects/${link.project_id}/links/${link.link_id}/available_filters`
     );
   }
 
-  updateNodes(controller:Controller , link: Link, nodes: LinkNode[]) {
+  updateNodes(controller: Controller, link: Link, nodes: LinkNode[]) {
     const requestNodes = nodes.map((linkNode) => {
       return {
         node_id: linkNode.node_id,
@@ -96,19 +96,19 @@ export class LinkService {
     return this.httpController.put(controller, `/projects/${link.project_id}/links/${link.link_id}`, { nodes: requestNodes });
   }
 
-  startCaptureOnLink(controller:Controller , link: Link, settings: CapturingSettings) {
+  startCaptureOnLink(controller: Controller, link: Link, settings: CapturingSettings) {
     return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/start`, settings);
   }
 
-  stopCaptureOnLink(controller:Controller , link: Link) {
+  stopCaptureOnLink(controller: Controller, link: Link) {
     return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/stop`, {});
   }
 
-  resetLink(controller:Controller , link: Link) {
+  resetLink(controller: Controller, link: Link) {
     return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/reset`, {});
   }
 
-  streamPcap(controller:Controller , link: Link) {
+  streamPcap(controller: Controller, link: Link) {
     return this.httpController.get(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/stream`);
   }
 }

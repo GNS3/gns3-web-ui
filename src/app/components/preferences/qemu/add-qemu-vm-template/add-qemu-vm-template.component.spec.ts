@@ -28,11 +28,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 
 export class MockedQemuService {
-  public addTemplate(controller:Controller , qemuTemplate: QemuTemplate) {
+  public addTemplate(controller: Controller, qemuTemplate: QemuTemplate) {
     return of(qemuTemplate);
   }
 
-  public getImages(controller:Controller ) {
+  public getImages(controller: Controller ) {
     return of([]);
   }
 }
@@ -102,7 +102,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     component.diskForm.controls['fileName'].setValue('file name');
     component.chosenImage = 'path';
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -117,7 +117,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     component.diskForm.controls['fileName'].setValue('file name');
     component.chosenImage = 'path';
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -131,7 +131,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     component.diskForm.controls['fileName'].setValue('file name');
     component.chosenImage = 'path';
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

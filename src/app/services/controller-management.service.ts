@@ -25,7 +25,7 @@ export class ControllerManagementService implements OnDestroy {
     return 'local-controller-status-events';
   }
 
-  async start(controller:Controller ) {
+  async start(controller: Controller ) {
     var startingEvent: ControllerStateEvent = {
       controllerName: controller.name,
       status: 'starting',
@@ -35,7 +35,7 @@ export class ControllerManagementService implements OnDestroy {
     return await this.electronService.remote.require('./local-controller.js').startLocalController(controller);
   }
 
-  async stop(controller:Controller ) {
+  async stop(controller: Controller ) {
     return await this.electronService.remote.require('./local-controller.js').stopLocalController(controller);
   }
 

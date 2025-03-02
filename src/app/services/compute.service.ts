@@ -10,11 +10,11 @@ import { HttpController } from './http-controller.service';
 export class ComputeService {
   constructor(private httpController: HttpController) {}
 
-  getComputes(controller:Controller ): Observable<Compute[]> {
+  getComputes(controller: Controller ): Observable<Compute[]> {
     return this.httpController.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
   }
 
-  getStatistics(controller:Controller ): Observable<ComputeStatistics[]> {
+  getStatistics(controller: Controller ): Observable<ComputeStatistics[]> {
     return this.httpController.get(controller, `/statistics`);
   }
 }

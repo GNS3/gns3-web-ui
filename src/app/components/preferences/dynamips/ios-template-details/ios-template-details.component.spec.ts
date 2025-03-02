@@ -24,11 +24,11 @@ import { MockedProgressService } from "@components/project-map/project-map.compo
 import {ProgressService} from "../../../../common/progress/progress.service";
 
 export class MockedIosService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({} as IosTemplate);
   }
 
-  public saveTemplate(controller:Controller , iosTemplate: IosTemplate) {
+  public saveTemplate(controller: Controller, iosTemplate: IosTemplate) {
     return of(iosTemplate);
   }
 }

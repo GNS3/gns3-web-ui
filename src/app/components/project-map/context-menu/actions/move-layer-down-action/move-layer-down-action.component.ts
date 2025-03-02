@@ -12,7 +12,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './move-layer-down-action.component.html',
 })
 export class MoveLayerDownActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
 

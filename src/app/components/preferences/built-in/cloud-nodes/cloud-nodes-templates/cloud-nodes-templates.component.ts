@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
   styleUrls: ['./cloud-nodes-templates.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesTemplatesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   cloudNodesTemplates: CloudTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -24,7 +24,7 @@ export class CloudNodesTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

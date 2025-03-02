@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
   ],
 })
 export class AddImageDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
   selectFile: any = [];

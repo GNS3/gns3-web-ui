@@ -8,19 +8,19 @@ import { HttpController } from './http-controller.service';
 export class ControllerSettingsService {
   constructor(private httpController: HttpController) {}
 
-  get(controller:Controller ) {
+  get(controller: Controller ) {
     return this.httpController.get<ControllerSettings>(controller, `/settings`);
   }
 
-  update(controller:Controller , controllerSettings: ControllerSettings) {
+  update(controller: Controller, controllerSettings: ControllerSettings) {
     return this.httpController.post<ControllerSettings>(controller, `/settings`, controllerSettings);
   }
 
-  getSettingsForQemu(controller:Controller ) {
+  getSettingsForQemu(controller: Controller ) {
     return this.httpController.get<QemuSettings>(controller, `/settings/qemu`);
   }
 
-  updateSettingsForQemu(controller:Controller , qemuSettings: QemuSettings) {
+  updateSettingsForQemu(controller: Controller, qemuSettings: QemuSettings) {
     return this.httpController.put<QemuSettings>(controller, `/settings/qemu`, {
       enable_hardware_acceleration: qemuSettings.enable_hardware_acceleration,
       require_hardware_acceleration: qemuSettings.require_hardware_acceleration,

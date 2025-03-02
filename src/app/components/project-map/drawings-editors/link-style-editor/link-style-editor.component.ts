@@ -17,7 +17,7 @@ import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/l
   styleUrls: ['./link-style-editor.component.scss'],
 })
 export class LinkStyleEditorDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   link: Link;
   formGroup: UntypedFormGroup;

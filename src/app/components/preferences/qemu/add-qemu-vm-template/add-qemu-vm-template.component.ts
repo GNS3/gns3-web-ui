@@ -24,7 +24,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddQemuVmTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   selectPlatform: string[] = [];
   selectedPlatform: string;
   ramMemory: number;
@@ -100,7 +100,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {

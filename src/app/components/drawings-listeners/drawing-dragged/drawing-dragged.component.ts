@@ -15,7 +15,7 @@ import { DrawingService } from '../../../services/drawing.service';
   styleUrls: ['./drawing-dragged.component.scss'],
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   private drawingDragged: Subscription;
 

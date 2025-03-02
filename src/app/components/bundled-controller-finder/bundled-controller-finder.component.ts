@@ -31,7 +31,7 @@ export class BundledControllerFinderComponent implements OnInit {
         port = 80;
       }
 
-      this.controllerService.getLocalController(this.document.location.hostname, port).then((controller:Controller ) => {
+      this.controllerService.getLocalController(this.document.location.hostname, port).then((controller: Controller ) => {
         this.router.navigate(['/controller', controller.id, 'projects']);
         this.progressService.deactivate();
       });

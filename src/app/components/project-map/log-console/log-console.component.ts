@@ -36,7 +36,7 @@ import * as ipaddr from 'ipaddr.js';
   styleUrls: ['./log-console.component.scss'],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
 
   @ViewChild('console') console: ElementRef;

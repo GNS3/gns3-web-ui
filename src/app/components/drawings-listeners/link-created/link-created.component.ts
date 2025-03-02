@@ -17,7 +17,7 @@ import { ProjectService } from '../../../services/project.service';
   styleUrls: ['./link-created.component.scss'],
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   private linkCreated: Subscription;
 

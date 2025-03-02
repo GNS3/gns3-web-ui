@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplatesComponent } from './ios-templates.component';
 
 export class MockedIosService {
-  public getTemplates(controller:Controller ) {
+  public getTemplates(controller: Controller ) {
     return of([{} as IosTemplate]);
   }
 }

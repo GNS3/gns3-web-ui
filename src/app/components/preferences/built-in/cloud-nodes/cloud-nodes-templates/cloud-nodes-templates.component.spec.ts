@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesTemplatesComponent } from './cloud-nodes-templates.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplates(controller:Controller ) {
+  public getTemplates(controller: Controller ) {
     return of([{} as CloudTemplate]);
   }
 }

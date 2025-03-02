@@ -7,7 +7,7 @@ import { Controller } from '../../../../models/controller';
   styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],
 })
 export class SymbolsMenuComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() symbol: string;
   @Output() symbolChangedEmitter = new EventEmitter<string>();
 

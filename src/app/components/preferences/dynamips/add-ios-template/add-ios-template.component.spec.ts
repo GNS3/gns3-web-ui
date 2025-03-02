@@ -29,7 +29,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddIosTemplateComponent } from './add-ios-template.component';
 
 export class MockedIosService {
-  public addTemplate(controller:Controller , iosTemplate: IosTemplate) {
+  public addTemplate(controller: Controller, iosTemplate: IosTemplate) {
     return of(iosTemplate);
   }
 }
@@ -95,7 +95,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
     component.iosMemoryForm.controls['memory'].setValue(0);
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -109,7 +109,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
     component.iosMemoryForm.controls['memory'].setValue(0);
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -122,7 +122,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
     component.iosMemoryForm.controls['memory'].setValue(0);
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -135,7 +135,7 @@ xdescribe('AddIosTemplateComponent', () => {
     component.iosNameForm.controls['templateName'].setValue('template name');
     component.iosNameForm.controls['platform'].setValue('platform');
     component.iosNameForm.controls['chassis'].setValue('chassis');
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

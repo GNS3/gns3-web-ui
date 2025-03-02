@@ -16,7 +16,7 @@ export class ExportPortableProjectComponent implements OnInit {
   compression_methods: any = [];
   compression_level: any = [];
   compression_filter_value: any = [];
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   index: number = 4;
   fileName: string;

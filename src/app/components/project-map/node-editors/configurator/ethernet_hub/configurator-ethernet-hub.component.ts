@@ -13,7 +13,7 @@ import { VpcsConfigurationService } from '../../../../../services/vpcs-configura
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   numberOfPorts: number;
   inputForm: UntypedFormGroup;

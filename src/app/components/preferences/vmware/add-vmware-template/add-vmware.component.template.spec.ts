@@ -23,11 +23,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVmwareTemplateComponent } from './add-vmware-template.component';
 
 export class MockedVmwareService {
-  public addTemplate(controller:Controller , vmwareTemplate: VmwareTemplate) {
+  public addTemplate(controller: Controller, vmwareTemplate: VmwareTemplate) {
     return of(vmwareTemplate);
   }
 
-  public getVirtualMachines(controller:Controller ) {
+  public getVirtualMachines(controller: Controller ) {
     return of([]);
   }
 }
@@ -87,7 +87,7 @@ describe('AddVmwareTemplateComponent', () => {
 
     component.vmwareTemplate = {} as VmwareTemplate;
     component.selectedVM = template;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
     component.templateNameForm.controls['templateName'].setValue('template name');
 
     component.addTemplate();
@@ -97,7 +97,7 @@ describe('AddVmwareTemplateComponent', () => {
 
   it('should not call save template when virtual machine is not selected', () => {
     spyOn(mockedVmwareService, 'addTemplate').and.returnValue(of({} as VmwareTemplate));
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

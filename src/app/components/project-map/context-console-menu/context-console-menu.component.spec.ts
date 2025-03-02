@@ -62,7 +62,7 @@ describe('ContextConsoleMenuComponent', () => {
 beforeEach(() => {
   fixture = TestBed.createComponent(ContextConsoleMenuComponent);
   component = fixture.componentInstance;
-  component.controller = { location: 'local' } as Controller ;
+  component.controller = { location: 'local' } as Controller;
   fixture.detectChanges();
 });
 

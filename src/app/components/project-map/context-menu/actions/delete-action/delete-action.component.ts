@@ -18,7 +18,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './delete-action.component.html',
 })
 export class DeleteActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   @Input() links: Link[];

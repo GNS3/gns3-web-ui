@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './isolate-node-action.component.html',
 })
 export class IsolateNodeActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private toasterService: ToasterService) {}

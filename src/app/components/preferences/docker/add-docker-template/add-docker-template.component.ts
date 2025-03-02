@@ -19,7 +19,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddDockerTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   dockerTemplate: DockerTemplate;
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
@@ -61,7 +61,7 @@ export class AddDockerTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.consoleTypes = this.configurationService.getConsoleTypes();

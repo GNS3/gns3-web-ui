@@ -16,7 +16,7 @@ import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 export class EditProjectDialogComponent implements OnInit {
   @ViewChild('editor') editor: ReadmeEditorComponent;
 
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   formGroup: UntypedFormGroup;
   variableFormGroup: UntypedFormGroup;

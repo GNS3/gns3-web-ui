@@ -22,11 +22,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVirtualBoxTemplateComponent } from './add-virtual-box-template.component';
 
 export class MockedVirtualBoxService {
-  public addTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate) {
+  public addTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate) {
     return of(virtualBoxTemplate);
   }
 
-  public getVirtualMachines(controller:Controller ) {
+  public getVirtualMachines(controller: Controller ) {
     return of([]);
   }
 }
@@ -106,7 +106,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
     };
     component.virtualBoxTemplate = {} as VirtualBoxTemplate;
     component.selectedVM = template;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
     component.vmForm.controls['vm'].setValue('virtual machine');
 
     component.addTemplate();
@@ -116,7 +116,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
 
   it('should not call save template when virtual machine is not selected', () => {
     spyOn(mockedVirtualBoxService, 'addTemplate').and.returnValue(of({} as VirtualBoxTemplate));
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

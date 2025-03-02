@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['./configure-custom-adapters.component.scss'],
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   displayedColumns: string[] = ['adapter_number', 'port_name'];
   adapters: CustomAdapter[] = [];

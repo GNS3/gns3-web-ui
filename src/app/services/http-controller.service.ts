@@ -3,7 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {Controller , ControllerProtocol } from '../models/controller';
+import {Controller, ControllerProtocol } from '../models/controller';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -103,7 +103,7 @@ export class HttpController {
 
   constructor(private http: HttpClient, private errorHandler: ControllerErrorHandler) {}
 
-  get<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
+  get<T>(controller: Controller, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController<JsonOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
@@ -113,7 +113,7 @@ export class HttpController {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  getText(controller:Controller , url: string, options?: TextOptions): Observable<string> {
+  getText(controller: Controller, url: string, options?: TextOptions): Observable<string> {
     options = this.getTextOptions(options);
     const intercepted = this.getOptionsForController<TextOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
@@ -123,7 +123,7 @@ export class HttpController {
       .pipe(catchError(this.errorHandler.handleError));
   }
 
-  getBlob(controller:Controller , url: string, options?: BlobOptions): Observable<Blob> {
+  getBlob(controller: Controller, url: string, options?: BlobOptions): Observable<Blob> {
     options = this.getBlobOptions(options);
     const intercepted = this.getOptionsForController<BlobOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`GET ${intercepted.url}`);
@@ -133,7 +133,7 @@ export class HttpController {
       .pipe(catchError(this.errorHandler.handleError));
   }
 
-  post<T>(controller:Controller , url: string, body: any | null, options?: JsonOptions): Observable<T> {
+  post<T>(controller: Controller, url: string, body: any | null, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController(controller, url, options);
     this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
@@ -143,7 +143,7 @@ export class HttpController {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  put<T>(controller:Controller , url: string, body: any, options?: JsonOptions): Observable<T> {
+  put<T>(controller: Controller, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController(controller, url, options);
     this.requestsNotificationEmitter.emit(`PUT ${intercepted.url}`);
@@ -153,7 +153,7 @@ export class HttpController {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  delete<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
+  delete<T>(controller: Controller, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController(controller, url, options);
     this.requestsNotificationEmitter.emit(`DELETE ${intercepted.url}`);
@@ -163,7 +163,7 @@ export class HttpController {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  patch<T>(controller:Controller , url: string, body: any, options?: JsonOptions): Observable<T> {
+  patch<T>(controller: Controller, url: string, body: any, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController(controller, url, options);
     return this.http
@@ -171,7 +171,7 @@ export class HttpController {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  head<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
+  head<T>(controller: Controller, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController(controller, url, options);
     return this.http
@@ -179,7 +179,7 @@ export class HttpController {
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
   }
 
-  options<T>(controller:Controller , url: string, options?: JsonOptions): Observable<T> {
+  options<T>(controller: Controller, url: string, options?: JsonOptions): Observable<T> {
     options = this.getJsonOptions(options);
     const intercepted = this.getOptionsForController(controller, url, options);
     return this.http
@@ -214,7 +214,7 @@ export class HttpController {
     return options;
   }
 
-  private getOptionsForController<T extends HeadersOptions>(controller:Controller , url: string, options: T) {
+  private getOptionsForController<T extends HeadersOptions>(controller: Controller, url: string, options: T) {
     if (controller && controller.host && controller.port) {
       if (!controller.protocol) {
         controller.protocol = location.protocol as ControllerProtocol;

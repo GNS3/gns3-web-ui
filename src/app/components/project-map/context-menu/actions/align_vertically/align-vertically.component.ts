@@ -9,7 +9,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './align-vertically.component.html',
 })
 export class AlignVerticallyActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
 
   constructor(private nodesDataSource: NodesDataSource, private nodeService: NodeService) {}

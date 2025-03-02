@@ -51,11 +51,11 @@ export class MockedProjectService {
     return of(this.projects);
   }
 
-  getUploadPath(controller:Controller , uuid: string, project_name: string) {
+  getUploadPath(controller: Controller, uuid: string, project_name: string) {
     return `http://${controller.host}:${controller.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
   }
 
-  getExportPath(controller:Controller , project: Project) {
+  getExportPath(controller: Controller, project: Project) {
     return `http://${controller.host}:${controller.port}/${environment.current_version}/projects/${project.project_id}/export`;
   }
 }
@@ -63,7 +63,7 @@ export class MockedProjectService {
 describe('ImportProjectDialogComponent', () => {
   let component: ImportProjectDialogComponent;
   let fixture: ComponentFixture<ImportProjectDialogComponent>;
-  let controller:Controller ;
+  let controller: Controller;
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
   let mockedToasterService = new MockedToasterService()

@@ -15,7 +15,7 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   styleUrls: ['./packet-filters.component.scss'],
 })
 export class PacketFiltersDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   link: Link;
   filters: Filter;

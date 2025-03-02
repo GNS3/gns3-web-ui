@@ -15,7 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./create-snapshot-dialog.component.scss'],
 })
 export class CreateSnapshotDialogComponent {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   snapshot: Snapshot = new Snapshot();
   inputForm: UntypedFormGroup;

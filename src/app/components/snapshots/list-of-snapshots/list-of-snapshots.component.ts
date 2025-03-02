@@ -15,7 +15,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./list-of-snapshots.component.scss'],
 })
 export class ListOfSnapshotsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   projectId: string;
   snapshots: Snapshot[];
   displayedColumns = ['name', 'creationDate', 'actions'];

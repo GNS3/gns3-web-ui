@@ -17,7 +17,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   qemuTemplate: QemuTemplate;
   isSymbolSelectionOpened: boolean = false;
   consoleTypes: string[] = [];
@@ -58,7 +58,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

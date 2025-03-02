@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./vpcs-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VpcsTemplatesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   vpcsTemplates: VpcsTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -20,7 +20,7 @@ export class VpcsTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

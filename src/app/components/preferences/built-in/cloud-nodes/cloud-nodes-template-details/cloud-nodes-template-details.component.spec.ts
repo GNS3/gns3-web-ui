@@ -23,11 +23,11 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesTemplateDetailsComponent } from './cloud-nodes-template-details.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({ ports_mapping: [] } as CloudTemplate);
   }
 
-  public saveTemplate(controller:Controller , cloudTemplate: CloudTemplate) {
+  public saveTemplate(controller: Controller, cloudTemplate: CloudTemplate) {
     return of(cloudTemplate);
   }
 }

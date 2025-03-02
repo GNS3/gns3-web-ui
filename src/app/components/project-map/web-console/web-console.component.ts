@@ -15,7 +15,7 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() node: Node;
 

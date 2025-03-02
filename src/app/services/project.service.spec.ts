@@ -18,15 +18,15 @@ import { getTestController } from './testing';
 export class MockedProjectService {
   public projects: Project[] = [];
 
-  list(controller:Controller ) {
+  list(controller: Controller ) {
     return of(this.projects);
   }
 
-  open(controller:Controller , project: Project) {
+  open(controller: Controller, project: Project) {
     return of(project);
   }
 
-  close(controller:Controller , project: Project) {
+  close(controller: Controller, project: Project) {
     return of(project);
   }
 
@@ -34,22 +34,22 @@ export class MockedProjectService {
     return project.readonly;
   }
 
-  links(controller:Controller , project_id: string) {
+  links(controller: Controller, project_id: string) {
     return of([]);
   }
 
-  delete(controller:Controller , project_id: string) {
+  delete(controller: Controller, project_id: string) {
     return of(project_id);
   }
 
-  duplicate(controller:Controller , project_id: string) {
+  duplicate(controller: Controller, project_id: string) {
     return of(project_id);
   }
 
-  getStatistics(controller:Controller , project_id: string) {
+  getStatistics(controller: Controller, project_id: string) {
     return of({});
   }
-  exportPortableProject(controller:Controller , formData:{}) {
+  exportPortableProject(controller: Controller, formData:{}) {
     return of({});
   }
   getCompression() {
@@ -65,7 +65,7 @@ describe('ProjectService', () => {
   let httpTestingController: HttpTestingController;
   let httpController: HttpController;
   let service: ProjectService;
-  let controller:Controller ;
+  let controller: Controller;
   let settingsService: SettingsService;
 
   beforeEach(() => {

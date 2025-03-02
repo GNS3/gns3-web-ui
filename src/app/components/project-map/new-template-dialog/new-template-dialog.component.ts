@@ -47,7 +47,7 @@ import { environment } from 'environments/environment';
   ],
 })
 export class NewTemplateDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
 
   uploader: FileUploader;

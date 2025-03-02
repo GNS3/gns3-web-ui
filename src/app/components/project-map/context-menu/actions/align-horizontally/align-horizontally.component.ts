@@ -9,7 +9,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './align-horizontally.component.html',
 })
 export class AlignHorizontallyActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
 
   constructor(private nodesDataSource: NodesDataSource, private nodeService: NodeService) {}

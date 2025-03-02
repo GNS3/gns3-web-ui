@@ -10,7 +10,7 @@ import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor
   templateUrl: './edit-config-action.component.html',
 })
 export class EditConfigActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() node: Node;
 

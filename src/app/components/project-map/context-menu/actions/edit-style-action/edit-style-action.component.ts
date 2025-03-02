@@ -11,7 +11,7 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
   templateUrl: './edit-style-action.component.html',
 })
 export class EditStyleActionComponent implements OnChanges {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() drawing: Drawing;
   isImageDrawing: boolean = false;

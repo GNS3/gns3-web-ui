@@ -10,7 +10,7 @@ import { PacketFiltersDialogComponent } from '../../../packet-capturing/packet-f
   templateUrl: './packet-filters-action.component.html',
 })
 export class PacketFiltersActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() link: Link;
 

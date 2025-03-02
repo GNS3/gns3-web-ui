@@ -16,7 +16,7 @@ import { ProjectNameValidator } from '../../../projects/models/projectNameValida
   providers: [ProjectNameValidator],
 })
 export class TemplateNameDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   templateNameForm: UntypedFormGroup;
 
   constructor(

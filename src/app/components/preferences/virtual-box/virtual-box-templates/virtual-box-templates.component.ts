@@ -13,7 +13,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./virtual-box-templates.component.scss', '../../preferences.component.scss'],
 })
 export class VirtualBoxTemplatesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   virtualBoxTemplates: VirtualBoxTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -25,7 +25,7 @@ export class VirtualBoxTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

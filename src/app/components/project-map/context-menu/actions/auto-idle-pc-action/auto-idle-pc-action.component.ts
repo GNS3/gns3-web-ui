@@ -10,7 +10,7 @@ import { ProgressService } from "../../../../../common/progress/progress.service
   templateUrl: './auto-idle-pc-action.component.html',
 })
 export class AutoIdlePcActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(

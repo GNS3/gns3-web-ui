@@ -28,7 +28,7 @@ import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog
   styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   projectDatabase = new ProjectDatabase();
   dataSource: ProjectDataSource;
   displayedColumns = ['select', 'name', 'actions', 'delete'];

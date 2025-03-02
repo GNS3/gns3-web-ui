@@ -23,7 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
   uploadProgress: number = 0;
-  controller:Controller ;
+  controller: Controller;
   isImportEnabled: boolean = false;
   isFinishEnabled: boolean = false;
   isDeleteVisible: boolean = false;

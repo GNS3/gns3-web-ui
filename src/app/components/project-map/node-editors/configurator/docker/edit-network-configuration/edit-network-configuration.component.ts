@@ -11,7 +11,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['./edit-network-configuration.component.scss'],
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   configuration: string;
 

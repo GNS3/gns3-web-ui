@@ -10,7 +10,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   templateUrl: './export-config-action.component.html',
 })
 export class ExportConfigActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private dialog: MatDialog) {}

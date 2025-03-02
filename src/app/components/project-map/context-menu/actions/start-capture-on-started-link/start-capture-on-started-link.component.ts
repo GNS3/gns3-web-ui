@@ -9,7 +9,7 @@ import { PacketCaptureService } from '../../../../../services/packet-capture.ser
   templateUrl: './start-capture-on-started-link.component.html',
 })
 export class StartCaptureOnStartedLinkActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() link: Link;
 

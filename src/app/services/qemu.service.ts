@@ -11,32 +11,32 @@ import { HttpController } from './http-controller.service';
 export class QemuService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller:Controller ): Observable<QemuTemplate[]> {
+  getTemplates(controller: Controller ): Observable<QemuTemplate[]> {
     return this.httpController.get<QemuTemplate[]>(controller, '/templates') as Observable<QemuTemplate[]>;
   }
 
-  getTemplate(controller:Controller , template_id: string): Observable<QemuTemplate> {
+  getTemplate(controller: Controller, template_id: string): Observable<QemuTemplate> {
     return this.httpController.get<QemuTemplate>(controller, `/templates/${template_id}`) as Observable<QemuTemplate>;
   }
 
-  getImagePath(controller:Controller , filename: string): string {
+  getImagePath(controller: Controller, filename: string): string {
     return `${controller.protocol}//${controller.host}:${controller.port}/images/upload/${filename}`;
   }
 
 
-  getImages(controller:Controller ): Observable<any> {
+  getImages(controller: Controller ): Observable<any> {
     return this.httpController.get<QemuImage[]>(controller, '/images?image_type=qemu') as Observable<QemuImage[]>;
   }
 
-  addImage(controller:Controller , qemuImg: QemuImg): Observable<QemuImg> {
+  addImage(controller: Controller, qemuImg: QemuImg): Observable<QemuImg> {
     return this.httpController.post<QemuImg>(controller, '/images/upload', qemuImg) as Observable<QemuImg>;
   }
 
-  addTemplate(controller:Controller , qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+  addTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
     return this.httpController.post<QemuTemplate>(controller, `/templates`, qemuTemplate) as Observable<QemuTemplate>;
   }
 
-  saveTemplate(controller:Controller , qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+  saveTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
     return this.httpController.put<QemuTemplate>(
       controller,
       `/templates/${qemuTemplate.template_id}`,

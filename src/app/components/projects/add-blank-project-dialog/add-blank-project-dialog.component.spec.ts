@@ -53,7 +53,7 @@ export class MockedProjectService {
 describe('AddBlankProjectDialogComponent', () => {
   let component: AddBlankProjectDialogComponent;
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
-  let controller:Controller ;
+  let controller: Controller;
   let router = {
     navigate: jasmine.createSpy('navigate'),
   };

@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
 })
 export class ImportApplianceComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('controller') controller:Controller ;
+  @Input('controller') controller: Controller;
   uploader: FileUploader;
   template;
 
@@ -150,7 +150,7 @@ export class ImportApplianceComponent implements OnInit {
     fileReader.readAsText(file);
   }
 
-  private getUploadPath(controller:Controller , filename: string) {
+  private getUploadPath(controller: Controller, filename: string) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 }

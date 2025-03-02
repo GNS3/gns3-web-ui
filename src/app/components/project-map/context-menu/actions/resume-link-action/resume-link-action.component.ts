@@ -8,7 +8,7 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './resume-link-action.component.html',
 })
 export class ResumeLinkActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}

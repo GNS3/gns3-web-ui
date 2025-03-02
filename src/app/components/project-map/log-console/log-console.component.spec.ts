@@ -70,7 +70,7 @@ describe('LogConsoleComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LogConsoleComponent);
     component = fixture.componentInstance;
-    component.controller = { location: 'local' } as Controller ;
+    component.controller = { location: 'local' } as Controller;
     fixture.detectChanges();
   });
 

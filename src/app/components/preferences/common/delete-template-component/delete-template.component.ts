@@ -11,7 +11,7 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
   styleUrls: ['./delete-template.component.scss'],
 })
 export class DeleteTemplateComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Output() deleteEvent = new EventEmitter<string>();
 
   constructor(

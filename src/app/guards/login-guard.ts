@@ -15,7 +15,7 @@ export class LoginGuard implements CanActivate {
     try {
       await this.loginService.getLoggedUser(controller);
     } catch (e) {}
-    return this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    return this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       if (controller.authToken && !controller.tokenExpired) {
         return true;
       }

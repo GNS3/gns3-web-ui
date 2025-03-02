@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class DockerTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   dockerTemplate: DockerTemplate;
 
   isSymbolSelectionOpened: boolean = false;
@@ -49,7 +49,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

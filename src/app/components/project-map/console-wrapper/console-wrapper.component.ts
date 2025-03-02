@@ -14,7 +14,7 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['./console-wrapper.component.scss'],
 })
 export class ConsoleWrapperComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Output() closeConsole = new EventEmitter<boolean>();
 

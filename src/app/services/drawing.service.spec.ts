@@ -15,7 +15,7 @@ describe('DrawingService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpController: HttpController;
-  let controller:Controller ;
+  let controller: Controller;
   let project: Project = new Project();
 
   beforeEach(() => {

@@ -8,21 +8,21 @@ export class ControllerDatabase {
 
   constructor() {}
 
-  get data():Controller [] {
+  get data(): Controller [] {
     return this.dataChange.value;
   }
 
-  public addController(controller:Controller ) {
+  public addController(controller: Controller ) {
     const controllers = this.data.slice();
     controllers.push(controller);
     this.dataChange.next(controllers);
   }
 
-  public addControllers(controllers:Controller []) {
+  public addControllers(controllers: Controller []) {
     this.dataChange.next(controllers);
   }
 
-  public remove(controller:Controller ) {
+  public remove(controller: Controller ) {
     const index = this.data.indexOf(controller);
     if (index >= 0) {
       this.data.splice(index, 1);
@@ -38,7 +38,7 @@ export class ControllerDatabase {
     return this.data.findIndex((controller) => controller.name === controllerName);
   }
 
-  public update(controller:Controller ) {
+  public update(controller: Controller ) {
     const index = this.findIndex(controller.name);
     if (index >= 0) {
       this.data[index] = controller;

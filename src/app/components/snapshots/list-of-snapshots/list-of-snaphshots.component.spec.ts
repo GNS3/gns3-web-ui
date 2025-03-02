@@ -47,15 +47,15 @@ export class MockedActivatedRoute {
 }
 
 export class MockedSnapshotService {
-  public list(controller:Controller , project_id: string) {
+  public list(controller: Controller, project_id: string) {
     return of([]);
   }
 
-  public delete(controller:Controller , project_id: string, snapshot_id: string) {
+  public delete(controller: Controller, project_id: string, snapshot_id: string) {
     return of({});
   }
 
-  public restore(controller:Controller , project_id: string, snapshot_id: string) {
+  public restore(controller: Controller, project_id: string, snapshot_id: string) {
     return of({});
   }
 }

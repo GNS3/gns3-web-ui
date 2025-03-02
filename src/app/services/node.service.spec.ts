@@ -17,7 +17,7 @@ describe('NodeService', () => {
   let httpTestingController: HttpTestingController;
   let httpController: HttpController;
   let service: NodeService;
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

@@ -23,11 +23,11 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 
 export class MockedImageManagerService {
-  public getImages(controller:Controller ) {
+  public getImages(controller: Controller ) {
     return of();
   }
 
-  public deleteFile(controller:Controller , image_path) {
+  public deleteFile(controller: Controller, image_path) {
     return of();
   }
 

@@ -10,7 +10,7 @@ import { NodeService } from "@services/node.service";
   templateUrl: './idle-pc-action.component.html',
 })
 export class IdlePcActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private dialog: MatDialog) {}

@@ -11,7 +11,7 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
   templateUrl: './edit-link-style-action.component.html',
 })
 export class EditLinkStyleActionComponent implements OnChanges {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() link: Link;
 

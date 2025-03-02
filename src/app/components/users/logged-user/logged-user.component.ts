@@ -15,7 +15,7 @@ import { MatDialog } from "@angular/material/dialog";
 })
 export class LoggedUserComponent implements OnInit {
     public user: User;
-    public controller:Controller ;
+    public controller: Controller;
 
     constructor(
         private route: ActivatedRoute,
@@ -27,7 +27,7 @@ export class LoggedUserComponent implements OnInit {
 
     ngOnInit() {
         let controllerId = this.route.snapshot.paramMap.get('controller_id');
-        this.controllerService.get(+controllerId).then((controller:Controller ) => {
+        this.controllerService.get(+controllerId).then((controller: Controller ) => {
             this.controller = controller;
             this.userService.getInformationAboutLoggedUser(controller).subscribe((response: any) => {
                 this.user = response;

@@ -14,7 +14,7 @@ import { VmwareConfigurationService } from '../../../../../services/vmware-confi
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogVmwareComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;

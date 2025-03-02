@@ -23,11 +23,11 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsTemplateDetailsComponent } from './ethernet-hubs-template-details.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({ ports_mapping: [] } as EthernetHubTemplate);
   }
 
-  public saveTemplate(controller:Controller , cloudTemplate: EthernetHubTemplate) {
+  public saveTemplate(controller: Controller, cloudTemplate: EthernetHubTemplate) {
     return of(cloudTemplate);
   }
 }

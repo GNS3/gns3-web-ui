@@ -8,7 +8,7 @@ import { LinkService } from '../../../../../services/link.service';
   templateUrl: './suspend-link-action.component.html',
 })
 export class SuspendLinkActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() link: Link;
 
   constructor(private linkService: LinkService) {}

@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxTemplatesComponent } from './virtual-box-templates.component';
 
 export class MockedVirtualBoxService {
-  public getTemplates(controller:Controller ) {
+  public getTemplates(controller: Controller ) {
     return of([{} as VirtualBoxTemplate]);
   }
 }

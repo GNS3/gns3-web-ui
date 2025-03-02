@@ -12,7 +12,7 @@ import { NodeService } from '../../../../../services/node.service';
   templateUrl: './bring-to-front-action.component.html',
 })
 export class BringToFrontActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
 

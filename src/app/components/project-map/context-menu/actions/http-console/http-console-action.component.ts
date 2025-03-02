@@ -8,7 +8,7 @@ import { NodeConsoleService } from '../../../../../services/nodeConsole.service'
   templateUrl: './http-console-action.component.html',
 })
 export class HttpConsoleActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
 
   constructor(private nodeConsoleService: NodeConsoleService) {}

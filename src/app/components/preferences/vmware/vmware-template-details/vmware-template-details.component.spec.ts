@@ -23,11 +23,11 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplateDetailsComponent } from './vmware-template-details.component';
 
 export class MockedVmwareService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({} as VmwareTemplate);
   }
 
-  public saveTemplate(controller:Controller , vmwareTemplate: VmwareTemplate) {
+  public saveTemplate(controller: Controller, vmwareTemplate: VmwareTemplate) {
     return of(vmwareTemplate);
   }
 }

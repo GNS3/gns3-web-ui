@@ -14,7 +14,7 @@ import { LinkService } from '../../../services/link.service';
   styleUrls: ['./interface-label-dragged.component.scss'],
 })
 export class InterfaceLabelDraggedComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   private interfaceDragged: Subscription;
 
   constructor(

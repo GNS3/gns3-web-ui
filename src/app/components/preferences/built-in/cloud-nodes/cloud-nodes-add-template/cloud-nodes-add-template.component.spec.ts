@@ -24,7 +24,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesAddTemplateComponent } from './cloud-nodes-add-template.component';
 
 export class MockedBuiltInTemplatesService {
-  public addTemplate(controller:Controller , cloudTemplate: CloudTemplate) {
+  public addTemplate(controller: Controller, cloudTemplate: CloudTemplate) {
     return of(cloudTemplate);
   }
 }
@@ -80,7 +80,7 @@ describe('CloudNodesAddTemplateComponent', () => {
   it('should call add template', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
     component.templateName = 'sample name';
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
     component.formGroup.controls['templateName'].setValue('template name');
 
     component.addTemplate();
@@ -92,7 +92,7 @@ describe('CloudNodesAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = '';
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

@@ -12,7 +12,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./change-hostname-dialog.component.scss'],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   inputForm: UntypedFormGroup;
   name: string;

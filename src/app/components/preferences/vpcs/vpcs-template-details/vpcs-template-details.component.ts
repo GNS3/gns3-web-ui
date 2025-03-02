@@ -14,7 +14,7 @@ import { VpcsService } from '../../../../services/vpcs.service';
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   vpcsTemplate: VpcsTemplate;
   inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
@@ -41,7 +41,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();

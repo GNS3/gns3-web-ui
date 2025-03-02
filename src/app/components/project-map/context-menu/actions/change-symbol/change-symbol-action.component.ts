@@ -9,7 +9,7 @@ import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/chang
   templateUrl: './change-symbol-action.component.html',
 })
 export class ChangeSymbolActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private dialog: MatDialog) {}

@@ -10,7 +10,7 @@ import { InfoService } from '../../../services/info.service';
   styleUrls: ['./info-dialog.component.scss'],
 })
 export class InfoDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
   infoList: string[] = [];
   usage: string = '';

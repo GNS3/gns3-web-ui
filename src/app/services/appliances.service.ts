@@ -9,19 +9,19 @@ import { HttpController } from './http-controller.service';
 export class ApplianceService {
   constructor(private httpController: HttpController) {}
 
-  getAppliances(controller:Controller ): Observable<Appliance[]> {
+  getAppliances(controller: Controller ): Observable<Appliance[]> {
     return this.httpController.get<Appliance[]>(controller, '/appliances') as Observable<Appliance[]>;
   }
 
-  getAppliance(controller:Controller , url): Observable<Appliance> {
+  getAppliance(controller: Controller, url): Observable<Appliance> {
     return this.httpController.get<Appliance>(controller, url) as Observable<Appliance>;
   }
 
-  getUploadPath(controller:Controller, filename: string) {
+  getUploadPath(controller: Controller, filename: string) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-  updateAppliances(controller:Controller ): Observable<Appliance[]> {
+  updateAppliances(controller: Controller ): Observable<Appliance[]> {
     return this.httpController.get<Appliance[]>(controller, '/appliances?update=yes') as Observable<Appliance[]>;
   }
 }

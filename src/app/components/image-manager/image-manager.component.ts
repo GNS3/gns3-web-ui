@@ -20,7 +20,7 @@ import { QuestionDialogComponent } from "@components/dialogs/question-dialog/que
   styleUrls: ['./image-manager.component.scss']
 })
 export class ImageManagerComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   public version: string;
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
@@ -41,7 +41,7 @@ export class ImageManagerComponent implements OnInit {
 
   ngOnInit(): void {
     let controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'));
-    this.controllerService.get(controller_id).then((controller:Controller ) => {
+    this.controllerService.get(controller_id).then((controller: Controller ) => {
       this.controller = controller;
       if (controller.authToken) {
         this.getImages()

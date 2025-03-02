@@ -18,7 +18,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
   styleUrls: ['./start-capture.component.scss'],
 })
 export class StartCaptureDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   link: Link;
   linkTypes = [];

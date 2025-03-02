@@ -104,7 +104,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
   public project: Project;
-  public controller:Controller ;
+  public controller: Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -333,7 +333,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       from(this.controllerService.get(controller_id))
         .pipe(
-          mergeMap((controller:Controller ) => {
+          mergeMap((controller: Controller ) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
             return this.projectService.get(controller, paramMap.get('project_id')).pipe(

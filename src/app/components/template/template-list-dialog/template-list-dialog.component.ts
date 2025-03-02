@@ -17,7 +17,7 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
   styleUrls: ['./template-list-dialog.component.scss'],
 })
 export class TemplateListDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   templateTypes: string[] = [
     'cloud',
@@ -136,7 +136,7 @@ export class TemplateDatabase {
     return this.dataChange.value;
   }
 
-  constructor(private controller:Controller , private templateService: TemplateService) {
+  constructor(private controller: Controller, private templateService: TemplateService) {
     this.templateService.list(this.controller).subscribe((templates) => {
       this.dataChange.next(templates);
     });

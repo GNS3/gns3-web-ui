@@ -16,7 +16,7 @@ import { ConfigEditorDialogComponent } from './config-editor.component';
 describe('ConfigEditorDialogComponent', () => {
   let component: ConfigEditorDialogComponent;
   let fixture: ComponentFixture<ConfigEditorDialogComponent>;
-  let controller:Controller ;
+  let controller: Controller;
   let node: Node;
   let toaster = {
     success: jasmine.createSpy('success'),

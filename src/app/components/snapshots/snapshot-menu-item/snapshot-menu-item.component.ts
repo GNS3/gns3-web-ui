@@ -16,7 +16,7 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
 })
 export class SnapshotMenuItemComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('controller') controller:Controller ;
+  @Input('controller') controller: Controller;
 
   constructor(
     private dialog: MatDialog,

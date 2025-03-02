@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
 })
 export class ConfiguratorDialogSwitchComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   nameForm: UntypedFormGroup;

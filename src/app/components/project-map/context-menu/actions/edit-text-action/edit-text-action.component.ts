@@ -14,7 +14,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   templateUrl: './edit-text-action.component.html',
 })
 export class EditTextActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() drawing: Drawing;
   @Input() node: Node;

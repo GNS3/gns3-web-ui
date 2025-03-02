@@ -9,7 +9,7 @@ import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/c
   templateUrl: './change-hostname-action.component.html',
 })
 export class ChangeHostnameActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private dialog: MatDialog) {}

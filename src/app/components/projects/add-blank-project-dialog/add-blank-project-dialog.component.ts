@@ -18,7 +18,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   providers: [ProjectNameValidator],
 })
 export class AddBlankProjectDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   projectNameForm: UntypedFormGroup;
   uuid: string;
   onAddProject = new EventEmitter<string>();

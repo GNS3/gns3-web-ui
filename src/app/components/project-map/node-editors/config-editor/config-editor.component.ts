@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./config-editor.component.scss'],
 })
 export class ConfigEditorDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   node: Node;
 

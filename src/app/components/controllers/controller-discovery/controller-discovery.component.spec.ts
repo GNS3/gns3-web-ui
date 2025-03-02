@@ -112,7 +112,7 @@ describe('discovery', () => {
 });
 
 describe('discoverFirstAvailableController', () => {
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(function () {
     controller = new Controller  ();
@@ -142,7 +142,7 @@ describe('discoverFirstAvailableController', () => {
 });
 
 describe('accepting and ignoring found controller', () => {
-  let controller:Controller ;
+  let controller: Controller;
   beforeEach(() => {
     controller = new Controller  ();
     (controller.host = '199.111.111.1'), (controller.port = 3333);

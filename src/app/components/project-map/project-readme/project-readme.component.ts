@@ -14,7 +14,7 @@ import { ViewChild } from '@angular/core';
   styleUrls: ['./project-readme.component.scss']
 })
 export class ProjectReadmeComponent implements AfterViewInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   @ViewChild('text', {static: false}) text: ElementRef;
 

@@ -55,7 +55,7 @@ describe('HttpController', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: HttpController;
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

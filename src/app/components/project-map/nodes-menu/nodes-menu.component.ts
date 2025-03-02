@@ -20,7 +20,7 @@ import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-
 })
 export class NodesMenuComponent {
   @Input('project') project: Project;
-  @Input('controller') controller:Controller ;
+  @Input('controller') controller: Controller;
 
   constructor(
     private nodeService: NodeService,

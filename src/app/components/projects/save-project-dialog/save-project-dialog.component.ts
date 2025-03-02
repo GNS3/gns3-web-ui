@@ -15,7 +15,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   providers: [ProjectNameValidator],
 })
 export class SaveProjectDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   projectNameForm: UntypedFormGroup;
   onAddProject = new EventEmitter<string>();

@@ -10,7 +10,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./change-symbol-dialog.component.scss'],
 })
 export class ChangeSymbolDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
   symbol: string;
 

@@ -16,7 +16,7 @@ describe('ConsoleDeviceActionComponent', () => {
   let component: ConsoleDeviceActionComponent;
   let fixture: ComponentFixture<ConsoleDeviceActionComponent>;
   let electronService;
-  let controller:Controller ;
+  let controller: Controller;
   let settingsService: SettingsService;
   let mockedControllerService: MockedControllerService;
   let mockedToaster: MockedToasterService;
@@ -37,7 +37,7 @@ describe('ConsoleDeviceActionComponent', () => {
     mockedControllerService = new MockedControllerService();
     mockedToaster = new MockedToasterService();
 
-    controller = { host: 'localhost', port: 222 } as Controller ;
+    controller = { host: 'localhost', port: 222 } as Controller;
   });
 
   beforeEach(async() => {

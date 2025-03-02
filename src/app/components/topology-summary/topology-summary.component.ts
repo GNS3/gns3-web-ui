@@ -19,7 +19,7 @@ import { ThemeService } from '../../services/theme.service';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
 
   @Output() closeTopologySummary = new EventEmitter<boolean>();

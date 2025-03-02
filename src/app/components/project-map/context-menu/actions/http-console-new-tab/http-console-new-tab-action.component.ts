@@ -8,7 +8,7 @@ import { Controller } from '../../../../../models/controller';
   templateUrl: './http-console-new-tab-action.component.html',
 })
 export class HttpConsoleNewTabActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
 
   constructor(private nodeConsoleService: NodeConsoleService) {}

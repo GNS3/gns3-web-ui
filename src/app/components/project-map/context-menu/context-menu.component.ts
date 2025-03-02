@@ -19,7 +19,7 @@ import { ProjectService } from '../../../services/project.service';
 })
 export class ContextMenuComponent implements OnInit {
   @Input() project: Project;
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 

@@ -7,7 +7,7 @@ import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
 import { merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {Controller , ControllerProtocol } from '../../models/controller';
+import {Controller, ControllerProtocol } from '../../models/controller';
 import { ControllerManagementService } from '../../services/controller-management.service';
 import { ControllerDatabase } from '../../services/controller.database';
 import { ControllerService } from '../../services/controller.service';
@@ -41,7 +41,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
   getControllers() {
     const runningControllerNames = this.controllerManagement.getRunningControllers();
 
-    this.controllerService.findAll().then((controllers:Controller []) => {
+    this.controllerService.findAll().then((controllers: Controller []) => {
       controllers.forEach((controller) => {
         const controllerIndex = runningControllerNames.findIndex((controllerName) => controller.name === controllerName);
         if (controllerIndex >= 0) {
@@ -122,14 +122,14 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
-        this.controllerService.create(controller).then((created:Controller ) => {
+        this.controllerService.create(controller).then((created: Controller ) => {
           this.controllerDatabase.addController(created);
         });
       }
     });
   }
 
-  getControllerStatus(controller:Controller ) {
+  getControllerStatus(controller: Controller ) {
     if (controller.location === 'local') {
       if (controller.status === undefined) {
         return 'stopped';
@@ -138,7 +138,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteController(controller:Controller ) {
+  deleteController(controller: Controller ) {
     this.bottomSheet.open(ConfirmationBottomSheetComponent);
     let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
     bottomSheetRef.instance.message = 'Do you want to delete the controller?';
@@ -151,11 +151,11 @@ export class ControllersComponent implements OnInit, OnDestroy {
     });
   }
 
-  async startController(controller:Controller ) {
+  async startController(controller: Controller ) {
     await this.controllerManagement.start(controller);
   }
 
-  async stopController(controller:Controller ) {
+  async stopController(controller: Controller ) {
     await this.controllerManagement.stop(controller);
   }
 }

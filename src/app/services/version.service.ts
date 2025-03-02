@@ -8,7 +8,7 @@ import { HttpController } from './http-controller.service';
 export class VersionService {
   constructor(private httpController: HttpController) {}
 
-  get(controller:Controller ) {
+  get(controller: Controller ) {
     return this.httpController.get<Version>(controller, '/version');
   }
 }

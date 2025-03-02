@@ -30,7 +30,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
 export class TextEditorDialogComponent implements OnInit {
   @ViewChild('textArea', { static: true }) textArea: ElementRef;
 
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   drawing: Drawing;
   node: Node;

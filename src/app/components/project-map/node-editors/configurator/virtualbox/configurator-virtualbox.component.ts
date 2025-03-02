@@ -14,7 +14,7 @@ import { VirtualBoxConfigurationService } from '../../../../../services/virtual-
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;

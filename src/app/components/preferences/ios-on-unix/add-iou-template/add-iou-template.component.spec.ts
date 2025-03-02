@@ -29,7 +29,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddIouTemplateComponent } from './add-iou-template.component';
 
 export class MockedIouService {
-  public addTemplate(controller:Controller , iouTemplate: IouTemplate) {
+  public addTemplate(controller: Controller, iouTemplate: IouTemplate) {
     return of(iouTemplate);
   }
 }
@@ -93,7 +93,7 @@ xdescribe('AddIouTemplateComponent', () => {
     component.templateNameForm.controls['templateName'].setValue('sample name');
     component.imageForm.controls['imageName'].setValue('sample name');
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -104,7 +104,7 @@ xdescribe('AddIouTemplateComponent', () => {
     spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
     component.imageForm.controls['imageName'].setValue('sample name');
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -115,7 +115,7 @@ xdescribe('AddIouTemplateComponent', () => {
     spyOn(mockedIouService, 'addTemplate').and.returnValue(of({} as IouTemplate));
     component.templateNameForm.controls['templateName'].setValue('sample name');
     component.newImageSelected = true;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

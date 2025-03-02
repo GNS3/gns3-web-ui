@@ -72,7 +72,7 @@ export class DirectLinkComponent implements OnInit {
       return;
     }
 
-    let controllerToAdd:Controller  = new Controller  ();
+    let controllerToAdd: Controller  = new Controller  ();
     controllerToAdd.host = this.controllerIp;
     controllerToAdd.port = this.controllerPort;
 
@@ -80,7 +80,7 @@ export class DirectLinkComponent implements OnInit {
     controllerToAdd.location = this.controllerForm.get('location').value;
     controllerToAdd.protocol = this.controllerForm.get('protocol').value;
 
-    this.controllerService.create(controllerToAdd).then((addedController:Controller ) => {
+    this.controllerService.create(controllerToAdd).then((addedController: Controller ) => {
       this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
     });
   }

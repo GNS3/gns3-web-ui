@@ -8,7 +8,7 @@ import { Controller } from '../../../../../models/controller';
   templateUrl: './open-file-explorer-action.component.html',
 })
 export class OpenFileExplorerActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private electronService: ElectronService) {}

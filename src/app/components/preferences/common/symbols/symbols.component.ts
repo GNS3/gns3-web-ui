@@ -10,7 +10,7 @@ import { SymbolService } from '../../../../services/symbol.service';
   styleUrls: ['./symbols.component.scss'],
 })
 export class SymbolsComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() symbol: string;
   @Output() symbolChanged = new EventEmitter<string>();
 

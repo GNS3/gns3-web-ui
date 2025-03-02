@@ -12,7 +12,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   styleUrls: ['./import-config-action.component.scss'],
 })
 export class ImportConfigActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
   @ViewChild('fileInput') fileInput: ElementRef;
   configType: string;

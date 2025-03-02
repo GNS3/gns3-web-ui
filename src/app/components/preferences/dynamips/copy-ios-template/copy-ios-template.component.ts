@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-ios-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyIosTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   templateName: string = '';
   iosTemplate: IosTemplate;
   formGroup: UntypedFormGroup;
@@ -35,7 +35,7 @@ export class CopyIosTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {

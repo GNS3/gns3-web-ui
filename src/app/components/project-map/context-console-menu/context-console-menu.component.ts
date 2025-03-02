@@ -29,7 +29,7 @@ import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-de
 })
 export class ContextConsoleMenuComponent implements OnInit {
   @Input() project: Project;
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
   @ViewChild('container', { read: ViewContainerRef }) container;
   componentRef: ComponentRef<ConsoleDeviceActionComponent>;

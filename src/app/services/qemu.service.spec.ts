@@ -13,7 +13,7 @@ describe('QemuService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpController: HttpController;
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './duplicate-action.component.html',
 })
 export class DuplicateActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() drawings: Drawing[];
   @Input() nodes: Node[];

@@ -14,7 +14,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-docker-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyDockerTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   templateName: string = '';
   dockerTemplate: DockerTemplate;
   templateNameForm: UntypedFormGroup;
@@ -35,7 +35,7 @@ export class CopyDockerTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {

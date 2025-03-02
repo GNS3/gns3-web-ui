@@ -1,9 +1,9 @@
 import { Controller } from '../models/controller';
 
 export class MockedControllerService {
-  public controllers:Controller [] = [];
+  public controllers: Controller [] = [];
 
-  public create(controller:Controller ) {
+  public create(controller: Controller ) {
     return new Promise((resolve, reject) => {
       this.controllers.push(controller);
       resolve(controller);
@@ -30,7 +30,7 @@ export class MockedControllerService {
     });
   }
 
-  public getControllerUrl(controller:Controller) {
+  public getControllerUrl(controller: Controller) {
     return `${controller.host}:${controller.port}`;
   }
 }

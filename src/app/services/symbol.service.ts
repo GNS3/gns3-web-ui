@@ -26,7 +26,7 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
   }
 
-  getDimensions(controller:Controller , symbol_id: string): Observable<SymbolDimension> {
+  getDimensions(controller: Controller, symbol_id: string): Observable<SymbolDimension> {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpController.get(controller, `/symbols/${encoded_uri}/dimensions`);
   }
@@ -43,16 +43,16 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
   }
 
-  add(controller:Controller, symbolName: string, symbol: string) {
+  add(controller: Controller, symbolName: string, symbol: string) {
     this.cache = null;
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
-  load(controller:Controller ): Observable<Symbol[]> {
+  load(controller: Controller ): Observable<Symbol[]> {
     return this.httpController.get<Symbol[]>(controller, '/symbols');
   }
 
-  list(controller:Controller ) {
+  list(controller: Controller ) {
     if (!this.cache) {
       this.cache = this.load(controller).pipe(shareReplay(CACHE_SIZE));
     }
@@ -60,12 +60,12 @@ export class SymbolService {
     return this.cache;
   }
 
-  raw(controller:Controller , symbol_id: string) {
+  raw(controller: Controller, symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpController.getText(controller, `/symbols/${encoded_uri}/raw`);
   }
 
-  getSymbolFromTemplate(controller:Controller , template: Template) {
+  getSymbolFromTemplate(controller: Controller, template: Template) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/symbols/${template.symbol}/raw`;
   }
 }

@@ -124,7 +124,7 @@ export class AddControllerDialogComponent implements OnInit {
       return;
     }
 
-    const controller:Controller  = Object.assign({}, this.controllerForm.value);
+    const controller: Controller  = Object.assign({}, this.controllerForm.value);
     this.controllerService.checkControllerVersion(controller).subscribe(
       (controllerInfo) => {
         if (controllerInfo.version.split('.')[0] >= 3) {

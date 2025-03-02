@@ -10,7 +10,7 @@ import { StartCaptureDialogComponent } from '../../../packet-capturing/start-cap
   templateUrl: './start-capture-action.component.html',
 })
 export class StartCaptureActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() link: Link;
 

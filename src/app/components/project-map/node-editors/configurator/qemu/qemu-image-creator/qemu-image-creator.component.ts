@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['../../configurator.component.scss'],
 })
 export class QemuImageCreatorComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   qemuImg: QemuImg;
 
   formatOptions: string[] = ['qcow2', 'qcow', 'vhd', 'vdi', 'vmdk', 'raw'];

@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './console-device-action.component.html',
 })
 export class ConsoleDeviceActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
 
   constructor(

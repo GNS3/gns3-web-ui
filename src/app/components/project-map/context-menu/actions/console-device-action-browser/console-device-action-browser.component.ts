@@ -13,7 +13,7 @@ import * as ipaddr from 'ipaddr.js';
   templateUrl: './console-device-action-browser.component.html',
 })
 export class ConsoleDeviceActionBrowserComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(

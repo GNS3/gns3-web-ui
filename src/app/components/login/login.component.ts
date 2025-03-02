@@ -18,7 +18,7 @@ import { VersionService } from '../../services/version.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit, DoCheck {
-  private controller:Controller ;
+  private controller: Controller;
   public version: string;
   public isLightThemeEnabled: boolean = false;
   public loginError: boolean = false;
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, DoCheck {
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       if (controller.authToken) {

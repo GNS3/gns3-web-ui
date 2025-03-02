@@ -11,7 +11,7 @@ import { Project } from '../../../../models/project';
     styleUrls: ['./readme-editor.component.scss']
 })
 export class ReadmeEditorComponent implements OnInit {
-    @Input() controller:Controller ;
+    @Input() controller: Controller;
     @Input() project: Project;
 
     public markdown = ``;

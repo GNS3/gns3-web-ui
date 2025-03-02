@@ -29,7 +29,7 @@ export class StatusInfoComponent implements OnInit {
   }
 
   getStatistics() {
-    this.controllerService.get(Number(this.controllerId)).then((controller:Controller ) => {
+    this.controllerService.get(Number(this.controllerId)).then((controller: Controller ) => {
       this.computeService.getStatistics(controller).subscribe((statistics: ComputeStatistics[]) => {
         this.computeStatistics = statistics;
         setTimeout(() => {

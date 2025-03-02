@@ -5,7 +5,7 @@ import { Controller } from '../models/controller';
 
 @Injectable()
 export class InfoService {
-  getInfoAboutNode(node: Node, controller:Controller ): string[] {
+  getInfoAboutNode(node: Node, controller: Controller ): string[] {
     let infoList: string[] = [];
     if (node.node_type === 'cloud') {
       infoList.push(`Cloud ${node.name} is always on.`);

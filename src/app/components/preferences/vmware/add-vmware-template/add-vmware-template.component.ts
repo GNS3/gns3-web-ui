@@ -16,7 +16,7 @@ import { VmwareService } from '../../../../services/vmware.service';
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddVmwareTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   virtualMachines: VmwareVm[];
   selectedVM: VmwareVm;
   vmwareTemplate: VmwareTemplate;
@@ -39,7 +39,7 @@ export class AddVmwareTemplateComponent implements OnInit {
   ngOnInit() {
     this.toasterService.error(`VMware VM support is deprecated and will be removed in a future version, please use Qemu VMs instead`);
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.vmwareService.getVirtualMachines(this.controller).subscribe((virtualMachines: VmwareVm[]) => {

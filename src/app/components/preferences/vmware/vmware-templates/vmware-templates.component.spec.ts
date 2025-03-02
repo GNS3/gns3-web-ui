@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplatesComponent } from './vmware-templates.component';
 
 export class MockedVmwareService {
-  public getTemplates(controller:Controller ) {
+  public getTemplates(controller: Controller ) {
     return of([{} as VmwareTemplate]);
   }
 }

@@ -10,7 +10,7 @@ import { ControllerService } from '../../../../services/controller.service';
   styleUrls: ['./dynamips-preferences.component.scss'],
 })
 export class DynamipsPreferencesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   dynamipsPath: string;
 
   constructor(
@@ -21,7 +21,7 @@ export class DynamipsPreferencesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
     });
   }

@@ -15,7 +15,7 @@ import { NodeService } from '../../../services/node.service';
   styleUrls: ['./node-label-dragged.component.scss'],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   private nodeLabelDragged: Subscription;
 
   constructor(

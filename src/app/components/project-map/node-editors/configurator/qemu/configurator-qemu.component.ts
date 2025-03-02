@@ -18,7 +18,7 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;

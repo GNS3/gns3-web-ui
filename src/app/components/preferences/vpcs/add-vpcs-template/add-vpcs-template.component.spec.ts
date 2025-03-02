@@ -23,13 +23,13 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
 
 export class MockedComputeService {
-  getComputes(controller:Controller ) {
+  getComputes(controller: Controller ) {
     return of([]);
   }
 }
 
 export class MockedVpcsService {
-  public addTemplate(controller:Controller , vpcsTemplate: VpcsTemplate) {
+  public addTemplate(controller: Controller, vpcsTemplate: VpcsTemplate) {
     return of(vpcsTemplate);
   }
 }
@@ -86,7 +86,7 @@ describe('AddVpcsTemplateComponent', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     component.templateName = 'sample name';
     component.templateNameForm.controls['templateName'].setValue('template name');
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -97,7 +97,7 @@ describe('AddVpcsTemplateComponent', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = ' ';
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

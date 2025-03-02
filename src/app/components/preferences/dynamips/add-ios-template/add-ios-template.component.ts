@@ -25,7 +25,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
-  controller:Controller ;
+  controller: Controller;
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
 
@@ -115,7 +115,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     })
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getImages();

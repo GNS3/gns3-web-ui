@@ -13,7 +13,7 @@ import { VpcsConfigurationService } from '../../../../../services/vpcs-configura
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogVpcsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   inputForm: UntypedFormGroup;

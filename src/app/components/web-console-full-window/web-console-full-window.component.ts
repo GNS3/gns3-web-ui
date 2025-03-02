@@ -22,7 +22,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
   private projectId: string;
   private nodeId: string;
   private subscriptions: Subscription = new Subscription();
-  private controller:Controller ;
+  private controller: Controller;
   private node: Node;
 
   public term: Terminal = new Terminal();
@@ -59,7 +59,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
       this.fitAddon.fit();
     });
 
-    this.controllerService.get(+this.controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller: Controller ) => {
       this.controller = controller;
       this.nodeService.getNodeById(this.controller, this.projectId, this.nodeId).subscribe((node: Node) => {
         this.node = node;

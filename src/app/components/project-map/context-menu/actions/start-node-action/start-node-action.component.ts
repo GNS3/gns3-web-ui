@@ -9,7 +9,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   templateUrl: './start-node-action.component.html',
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
 

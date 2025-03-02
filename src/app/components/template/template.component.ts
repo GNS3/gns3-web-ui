@@ -18,7 +18,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./template.component.scss'],
 })
 export class TemplateComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
   overlay;

@@ -4,7 +4,7 @@ import { Controller } from '../models/controller';
 
 @Injectable()
 export class NotificationService {
-  notificationsPath(controller:Controller ): string {
+  notificationsPath(controller: Controller ): string {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"
@@ -14,7 +14,7 @@ export class NotificationService {
   }
 
 
-  projectNotificationsPath(controller:Controller , project_id: string): string {
+  projectNotificationsPath(controller: Controller, project_id: string): string {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"

@@ -21,7 +21,7 @@ import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configura
   templateUrl: './config-action.component.html',
 })
 export class ConfigActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
   private conf = {
     autoFocus: false,
