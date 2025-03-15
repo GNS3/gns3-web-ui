@@ -11,11 +11,12 @@ export class HttpRequestsInterceptor implements HttpInterceptor {
   intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(httpRequest).pipe(
       catchError((err) => {
-        if (err.status === 401 || err.status === 403) {
-          this.call();
-        } else {
-          return throwError(err);
-        }
+        return throwError(err);
+        // if (err.status === 401 || err.status === 403) {
+        //   this.call();
+        // } else {
+        //   return throwError(err);
+        // }
       })
     );
   }

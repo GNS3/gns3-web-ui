@@ -89,9 +89,9 @@ export class ControllerErrorHandler {
       err = ControllerError.fromError('Controller is unreachable', error);
     }
 
-    if (error.status === 401) {
-      window.location.reload();
-    }
+    //if (error.status === 401) {
+    //  window.location.reload();
+    //}
 
     return throwError(err);
   }

@@ -94,6 +94,7 @@ export class LoginComponent implements OnInit, DoCheck {
         }
       },
       (error) => {
+        this.isRememberMe = false;
         this.loginError = true;
       }
     );
