@@ -23,7 +23,7 @@ export class ChangeUserPasswordComponent implements OnInit {
               private toasterService: ToasterService) { }
 
   ngOnInit(): void {
-    const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8}$/;
+    const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     this.user = this.data.user;
     this.editPasswordForm = new UntypedFormGroup({
       password: new UntypedFormControl(null,
