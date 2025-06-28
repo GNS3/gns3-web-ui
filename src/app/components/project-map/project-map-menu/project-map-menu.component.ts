@@ -98,25 +98,42 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   private async saveImage(screenshotProperties: Screenshot) {
     if (screenshotProperties.filetype === 'png') {
-      let splittedSvg = document.getElementsByTagName('svg')[0].outerHTML.split('image');
-      let i = 1;
+      try {
+        // Get the SVG element and clone it to avoid modifying the original
+        const originalSvg = document.getElementsByTagName('svg')[0];
+        const svgClone = originalSvg.cloneNode(true) as SVGElement;
 
-      while (i < splittedSvg.length) {
-        let splittedImage = splittedSvg[i].split('"');
-        let splittedUrl = splittedImage[1].split('/');
+        // Process any embedded images
+        const images = svgClone.getElementsByTagName('image');
+        for (let i = 0; i < images.length; i++) {
+          const image = images[i];
+          const href = image.getAttribute('href') || image.getAttribute('xlink:href');
+          if (href) {
+            const urlParts = href.split('/');
+            const symbolId = urlParts[urlParts.length - 1];
+            try {
+              const rawSvg = await this.symbolService.raw(this.controller, symbolId).toPromise();
+              if (rawSvg) {
+                // Extract SVG content, fallback to raw content if parsing fails
+                const svgContent = rawSvg.includes('-->') ?
+                  rawSvg.split('-->')[1].trim() :
+                  rawSvg.trim();
+                image.outerHTML = svgContent;
+              }
+            } catch (err) {
+              console.warn(`Failed to process embedded image: ${symbolId}`, err);
+            }
+          }
+        }
 
-        let elem = await this.symbolService.raw(this.controller, splittedUrl[7]).toPromise();
-        let splittedElement = elem.split('-->');
-        splittedSvg[i] = splittedElement[1].substring(2);
-        i += 2;
+        // Create a temporary container and save as PNG
+        const container = document.createElement('div');
+        container.appendChild(svgClone);
+        svg.saveSvgAsPng(svgClone, `${screenshotProperties.name}.png`);
+      } catch (err) {
+        console.error('Failed to save PNG:', err);
+        throw err;
       }
-      let svgString = splittedSvg.join();
-
-      let placeholder = document.createElement('div');
-      placeholder.innerHTML = svgString;
-      let element = placeholder.firstChild;
-
-      svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
     } else {
       var svg_el = select('svg').attr('version', 1.1).attr('xmlns', 'http://www.w3.org/2000/svg').node();
       downloadSvg(select('svg').node(), `${screenshotProperties.name}`);
