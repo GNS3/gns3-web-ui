@@ -1625,6 +1625,15 @@
     "@angular-devkit/schematics" "12.2.13"
     jsonc-parser "3.0.0"
 
+"@sentry-internal/tracing@7.120.3":
+  version "7.120.3"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.120.3.tgz#a54e67c39d23576a72b3f349c1a3fae13e27f2f1"
+  integrity sha512-Ausx+Jw1pAMbIBHStoQ6ZqDZR60PsCByvHdw/jdH9AqPrNE9xlBSf9EwcycvmrzwyKspSLaB52grlje2cRIUMg==
+  dependencies:
+    "@sentry/core" "7.120.3"
+    "@sentry/types" "7.120.3"
+    "@sentry/utils" "7.120.3"
+
 "@sentry/browser@6.7.1":
   version "6.7.1"
   resolved "https://registry.npmjs.org/@sentry/browser/-/browser-6.7.1.tgz"
@@ -1679,6 +1688,14 @@
     "@sentry/utils" "6.7.1"
     tslib "^1.9.3"
 
+"@sentry/core@7.120.3":
+  version "7.120.3"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.120.3.tgz#88ae2f8c242afce59e32bdee7f866d8788e86c03"
+  integrity sha512-vyy11fCGpkGK3qI5DSXOjgIboBZTriw0YDx/0KyX5CjIjDDNgp5AGgpgFkfZyiYiaU2Ww3iFuKo4wHmBusz1uA==
+  dependencies:
+    "@sentry/types" "7.120.3"
+    "@sentry/utils" "7.120.3"
+
 "@sentry/electron@^2.5.4":
   version "2.5.4"
   resolved "https://registry.npmjs.org/@sentry/electron/-/electron-2.5.4.tgz"
@@ -1709,6 +1726,16 @@
     "@sentry/types" "6.7.1"
     "@sentry/utils" "6.7.1"
     tslib "^1.9.3"
+
+"@sentry/integrations@7.120.3":
+  version "7.120.3"
+  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-7.120.3.tgz#ea6812b77dea7d0090a5cf85383f154b3bd5b073"
+  integrity sha512-6i/lYp0BubHPDTg91/uxHvNui427df9r17SsIEXa2eKDwQ9gW2qRx5IWgvnxs2GV/GfSbwcx4swUB3RfEWrXrQ==
+  dependencies:
+    "@sentry/core" "7.120.3"
+    "@sentry/types" "7.120.3"
+    "@sentry/utils" "7.120.3"
+    localforage "^1.8.1"
 
 "@sentry/minimal@6.14.1":
   version "6.14.1"
@@ -1743,6 +1770,17 @@
     lru_map "^0.3.3"
     tslib "^1.9.3"
 
+"@sentry/node@^7.36.0":
+  version "7.120.3"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.120.3.tgz#59a54e1bfccffd28e7d502a5eefea615f07e13f5"
+  integrity sha512-t+QtekZedEfiZjbkRAk1QWJPnJlFBH/ti96tQhEq7wmlk3VszDXraZvLWZA0P2vXyglKzbWRGkT31aD3/kX+5Q==
+  dependencies:
+    "@sentry-internal/tracing" "7.120.3"
+    "@sentry/core" "7.120.3"
+    "@sentry/integrations" "7.120.3"
+    "@sentry/types" "7.120.3"
+    "@sentry/utils" "7.120.3"
+
 "@sentry/tracing@6.7.1":
   version "6.7.1"
   resolved "https://registry.npmjs.org/@sentry/tracing/-/tracing-6.7.1.tgz"
@@ -1764,6 +1802,11 @@
   resolved "https://registry.npmjs.org/@sentry/types/-/types-6.7.1.tgz"
   integrity sha512-9AO7HKoip2MBMNQJEd6+AKtjj2+q9Ze4ooWUdEvdOVSt5drg7BGpK221/p9JEOyJAZwEPEXdcMd3VAIMiOb4MA==
 
+"@sentry/types@7.120.3":
+  version "7.120.3"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.120.3.tgz#25f69ae27f0c8430f1863ad2a9ee9cab7fccf232"
+  integrity sha512-C4z+3kGWNFJ303FC+FxAd4KkHvxpNFYAFN8iMIgBwJdpIl25KZ8Q/VdGn0MLLUEHNLvjob0+wvwlcRBBNLXOow==
+
 "@sentry/utils@6.14.1":
   version "6.14.1"
   resolved "https://registry.npmjs.org/@sentry/utils/-/utils-6.14.1.tgz"
@@ -1779,6 +1822,13 @@
   dependencies:
     "@sentry/types" "6.7.1"
     tslib "^1.9.3"
+
+"@sentry/utils@7.120.3":
+  version "7.120.3"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.120.3.tgz#0cc891c315d3894eb80c2e7298efd7437e939a5d"
+  integrity sha512-UDAOQJtJDxZHQ5Nm1olycBIsz2wdGX8SdzyGVHmD8EOQYAeDZQyIlQYohDe9nazdIOQLZCIc3fU0G9gqVLkaGQ==
+  dependencies:
+    "@sentry/types" "7.120.3"
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -7013,6 +7063,13 @@ license-webpack-plugin@2.3.20:
     "@types/webpack-sources" "^0.1.5"
     webpack-sources "^1.2.0"
 
+lie@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==
+  dependencies:
+    immediate "~3.0.5"
+
 lie@~3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/lie/-/lie-3.3.0.tgz#dcf82dee545f46074daf200c7c1c5a08e0f40f6a"
@@ -7052,6 +7109,13 @@ loader-utils@^1.4.0:
     big.js "^5.2.2"
     emojis-list "^3.0.0"
     json5 "^1.0.1"
+
+localforage@^1.8.1:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
+  integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
+  dependencies:
+    lie "3.1.1"
 
 locate-path@^3.0.0:
   version "3.0.0"
@@ -9848,10 +9912,13 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-snyk@^1.1064.0:
-  version "1.1064.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1064.0.tgz#e73b3a1aff585f6266f73ddd498c5cfd5e67aff0"
-  integrity sha512-f9mNO5rUc5nVVZ1sN+do2i5/RGHKlOQoNk5HiEO9WkPEn2pFllJv2XAw5Bn7sFj1eLXNFVUOUlo6SVqGnX7lXw==
+snyk@^1.1297.3:
+  version "1.1297.3"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1297.3.tgz#0b4b75d40529560498d375e88e6a892484def35c"
+  integrity sha512-D4gj5Yeg0IdLUfrYObaj/qhg/k7ONO/OmPY8aa3JpZoo/dH3kecUjUqyPgfL9mq7kFswZO5Piwno6PmZ7Dv8Ig==
+  dependencies:
+    "@sentry/node" "^7.36.0"
+    global-agent "^3.0.0"
 
 socket.io-adapter@~2.5.2:
   version "2.5.5"
