@@ -1,0 +1,41 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <div class="col col-md-1">
+        <button
+        *ngIf="controller"
+        class="top-button"
+        class="cancel-button col"
+        (click)="goBack()"
+        mat-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">New Ethernet switch template</h1>
+      </div>
+    </div>
+  </div>
+  <div class="default-content">
+    <mat-card class="matCard">
+      <mat-radio-group class="radio-group">
+        <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
+          >Run the Ethernet switch locally</mat-radio-button
+        >
+      </mat-radio-group>
+
+      <form [formGroup]="formGroup">
+        <mat-form-field class="form-field">
+          <input formControlName="templateName" matInput type="text" placeholder="Template name" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input formControlName="numberOfPorts" matInput type="number" min="0" placeholder="Number of ports" />
+        </mat-form-field>
+      </form>
+    </mat-card>
+    <div class="buttons-bar">
+      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+    </div>
+  </div>
+</div>

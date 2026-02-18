@@ -1,0 +1,82 @@
+language: node_js
+
+node_js:
+   - '11' # use node for latest
+
+# Issue with Travis: https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524
+sudo: required
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+dist: xenial
+
+addons:
+apt:
+  sources:
+    - google-chrome
+    - ubuntu-toolchain-r-test
+  packages:
+    - google_chrome
+    - g++-4.8
+
+services:
+  - xvfb
+
+before_install:
+  # greenkeeper-lockfile support
+  - yarn global add greenkeeper-lockfile@1
+  - |
+    python3 -V
+    wget -qO- https://bootstrap.pypa.io/get-pip.py | sudo python3
+    python3 -m pip -V
+
+
+before_script:
+  # greenkeeper-lockfile support
+   - greenkeeper-lockfile-update
+  #  - npm install -g codecov
+
+script: yarn coverage
+
+after_success:
+  # - codecov
+
+after_script:
+  # greenkeeper-lockfile support
+  - greenkeeper-lockfile-upload
+# publish on gns3.github.io
+  - yarn buildforgithub --base-href /${TRAVIS_BRANCH}/
+  - export GIT_LAST_LOG="$(git log -1 --pretty=%B)"
+  - git clone https://${GITHUB_CREDENTIALS}@github.com/GNS3/gns3.github.io.git github-pages
+  - mkdir -p github-pages/${TRAVIS_BRANCH}
+  - rsync -r --delete dist/ github-pages/${TRAVIS_BRANCH}
+  - cd github-pages/${TRAVIS_BRANCH}
+  - git config user.email "developers@gns3.net"
+  - git config user.name "GNS3 Build"
+  - git add -A
+  - git commit -m "Deploy - $GIT_LAST_LOG"
+  - git push origin master
+  - cd $TRAVIS_BUILD_DIR
+
+# publish
+  - yarn buildforelectron
+  - |
+    python3 -m pip install -r scripts/requirements.txt
+    python3 scripts/build.py download -a
+    python3 scripts/build.py build_exe -b dist/exe.gns3server -s
+    python3 scripts/build.py validate -b dist
+  - yarn electron-builder --linux --x64 --publish always
+
+# build sourcemaps and upload to Sentry
+  # fix node issue with memory
+  - |
+    if [ -n "$TRAVIS_TAG" ]; then
+      export NODE_OPTIONS=--max_old_space_size=4096
+      export RELEASE_VERSION=$(node -e "const fs = require('fs'); let p = fs.readFileSync('package.json'); console.log(JSON.parse(p).version);")
+      yarn ng build --configuration=production --base-href /static/web-ui/
+      yarn sentry-cli releases new $RELEASE_VERSION
+      yarn sentry-cli releases files $RELEASE_VERSION upload-sourcemaps dist/
+    fi

@@ -1,0 +1,9 @@
+<nav mat-tab-nav-bar>
+  <a mat-tab-link *ngFor="let link of links"
+     (click)="activeLink = link"
+     routerLink="./{{link}}"
+     routerLinkActive
+     [active]="rla.isActive"
+     #rla="routerLinkActive">{{link.charAt(0).toUpperCase() + link.slice(1)}} </a>
+</nav>
+<router-outlet></router-outlet>

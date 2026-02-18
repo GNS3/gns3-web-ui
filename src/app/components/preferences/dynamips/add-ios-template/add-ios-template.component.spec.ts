@@ -1,0 +1,144 @@
+import { CommonModule } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IosConfigurationService } from '@services/ios-configuration.service';
+import { IosService } from '@services/ios.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { MockedActivatedRoute } from '../../preferences.component.spec';
+import { AddIosTemplateComponent } from './add-ios-template.component';
+
+export class MockedIosService {
+  public addTemplate(controller: Controller, iosTemplate: IosTemplate) {
+    return of(iosTemplate);
+  }
+}
+
+//Tests disabled due to instability
+xdescribe('AddIosTemplateComponent', () => {
+  let component: AddIosTemplateComponent;
+  let fixture: ComponentFixture<AddIosTemplateComponent>;
+
+  let mockedControllerService = new MockedControllerService();
+  let mockedIosService = new MockedIosService();
+  let mockedToasterService = new MockedToasterService();
+  let activatedRoute = new MockedActivatedRoute().get();
+
+  beforeEach(async() => {
+   await TestBed.configureTestingModule({
+      imports: [
+        MatStepperModule,
+        FormsModule,
+        MatTableModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        CommonModule,
+        NoopAnimationsModule,
+        RouterTestingModule.withRoutes([
+          { path: 'controller/1/preferences/dynamips/templates', component: AddIosTemplateComponent },
+        ]),
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: ControllerService, useValue: mockedControllerService },
+        { provide: IosService, useValue: mockedIosService },
+        { provide: ToasterService, useValue: mockedToasterService },
+        { provide: TemplateMocksService, useClass: TemplateMocksService },
+        { provide: IosConfigurationService, useClass: IosConfigurationService },
+      ],
+      declarations: [AddIosTemplateComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AddIosTemplateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should call add template', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosImageForm.controls['imageName'].setValue('image name');
+    component.iosNameForm.controls['templateName'].setValue('template name');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.iosMemoryForm.controls['memory'].setValue(0);
+    component.controller = { id: 1 } as Controller;
+
+    component.addTemplate();
+
+    expect(mockedIosService.addTemplate).toHaveBeenCalled();
+  });
+
+  it('should not call add template when template name is not defined', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosImageForm.controls['imageName'].setValue('image name');
+    component.iosNameForm.controls['templateName'].setValue('');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.iosMemoryForm.controls['memory'].setValue(0);
+    component.controller = { id: 1 } as Controller;
+
+    component.addTemplate();
+
+    expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
+  });
+
+  it('should not call add template when image name is not defined', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosNameForm.controls['templateName'].setValue('template name');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.iosMemoryForm.controls['memory'].setValue(0);
+    component.controller = { id: 1 } as Controller;
+
+    component.addTemplate();
+
+    expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
+  });
+
+  it('should not call add template when memory is not defined', () => {
+    spyOn(mockedIosService, 'addTemplate').and.returnValue(of({} as IosTemplate));
+    component.iosImageForm.controls['imageName'].setValue('image name');
+    component.iosNameForm.controls['templateName'].setValue('template name');
+    component.iosNameForm.controls['platform'].setValue('platform');
+    component.iosNameForm.controls['chassis'].setValue('chassis');
+    component.controller = { id: 1 } as Controller;
+
+    component.addTemplate();
+
+    expect(mockedIosService.addTemplate).not.toHaveBeenCalled();
+  });
+});

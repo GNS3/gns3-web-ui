@@ -1,0 +1,76 @@
+html,
+body {
+  height: 100%;
+}
+
+app-root,
+app-default-layout {
+  height: 100%;
+}
+
+app-default-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content {
+  /*flex: 1 0 auto;*/
+}
+
+.footer {
+  /*flex-shrink: 0;*/
+  padding: 20px;
+  margin: auto 0 0 0;
+  /*background-color: #0097a7;*/
+}
+
+.default-content {
+  margin: 0 auto;
+  max-width: 940px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+header {
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  z-index: 10;
+}
+
+/*main {*/
+/*height: 100%;*/
+/*}*/
+
+.default-header h1 {
+  font-weight: 300;
+  margin: 0;
+  font-size: 20px;
+  padding: 28px 8px;
+}
+
+.default-header {
+  margin: 0 auto;
+  max-width: 940px;
+  /*background-color: #0097a7;*/
+}
+
+.buttons-bar {
+  padding-top: 10px;
+  text-align: right;
+}
+
+.fill-space {
+  flex: 1 1 auto;
+}
+
+.container > * {
+  width: 100%;
+}
+
+.container {
+  padding: 0%;
+}
+
+.mat-dialog-content > * {
+  width: 100%;
+}

@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>Create new user</h1>
+<form [formGroup]="addUserForm" class="input-field">
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="username"  placeholder="Username" />
+    <mat-error *ngIf="form.username?.touched && form.username?.errors && form.username?.errors.required"
+    >Username is required</mat-error>
+    <mat-error *ngIf="form.username?.errors && form.username?.errors.pattern"
+    >Username is incorrect</mat-error>
+    <mat-error *ngIf="form.username?.errors && form.username?.errors.userExists"
+    >User with this username exists</mat-error>
+  </mat-form-field>
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="full_name" placeholder="Full name" />
+  </mat-form-field>
+  <mat-form-field class="input-field">
+    <input matInput type="text" formControlName="email" placeholder="Email" />
+    <mat-error *ngIf="form.email?.touched && form.email?.errors && form.email?.errors.required"
+    >Email is required</mat-error>
+    <mat-error *ngIf="form.email?.errors && form.email?.errors.email"
+    >Email is invalid</mat-error>
+  </mat-form-field>
+
+
+  <mat-form-field class="input-field">
+    <input matInput type="password" formControlName="password" placeholder="Password" />
+    <mat-error *ngIf="form.password?.touched && form.password?.errors"
+    >A password between 6 and 100 characters is required.</mat-error>
+  </mat-form-field>
+  <mat-form-field class="input-field">
+    <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm Password"/>
+    <mat-error *ngIf="form.confirmPassword?.touched && form.confirmPassword?.errors"
+    >Password and Confirm password must be the same.
+    </mat-error>
+  </mat-form-field>
+
+  <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+  <mat-divider class="my-2"></mat-divider>
+  <h6> Add user to groups : </h6>
+
+  <mat-form-field class="input-field">
+    <mat-label>Groups</mat-label>
+    <input type="text"
+           matInput
+           [matAutocomplete]="auto"
+           [formControl]="autocompleteControl">
+    <mat-autocomplete #auto="matAutocomplete"[displayWith]="displayFn" (optionSelected)='selectedGroup($event.option.value)'>
+      <mat-option *ngFor="let group of filteredGroups | async" [value]="group" >
+        {{group.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <div class="groups">
+    <div  *ngFor="let group of groupsToAdd">
+      <div class="groupList">
+        <div>{{group.name}}</div>
+        <mat-icon (click)="deleteGroup(group)" >delete</mat-icon>
+      </div>
+    </div>
+  </div>
+
+
+  <div mat-dialog-actions class="button-div">
+    <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
+            [disabled]="!addUserForm.valid">
+      Add user
+    </button>
+  </div>
+</form>

@@ -1,0 +1,86 @@
+body {
+  background-color: #e8ecef;
+}
+
+img.logo-header {
+  width: 50px;
+}
+
+a.table-link {
+  color: #0097a7;
+}
+
+.snackabar-success {
+  background: #0097a7 !important;
+  color: white !important;
+}
+.uplaoding-file-snackabar {
+  background: #263238 !important;
+  color: white !important;
+  max-width: 80% !important;
+}
+
+.snackbar-warning {
+  background: rgb(197, 199, 64) !important;
+  color: white !important;
+}
+
+.snackbar-error {
+  background: #b00020 !important;
+  color: white !important;
+  white-space: pre-wrap !important;
+}
+
+.mat-dialog-actions {
+  margin-bottom: -12px !important;
+}
+
+@-moz-document url-prefix() {
+  .temporaryElement {
+    line-height: 1.4em;
+  }
+}
+
+.full-width-field {
+  width: 100%;
+}
+
+app-root {
+  width: 100%;
+}
+
+mat-menu-panel {
+  min-height: 0px;
+}
+
+.custom-tooltip {
+  background-color: grey;
+  color: #ffffff;
+}
+
+.permission-tooltip {
+  max-width: unset !important;
+  background-color: grey;
+  color: #ffffff;
+  background-color: grey;
+  color: #ffffff;
+  white-space: pre-line;
+  font-size: 12px !important;
+  font-family: monospace;
+}
+.mat-tab-body-content {
+  height: 100%;
+  overflow: initial !important;
+}
+.mat-tab-body.mat-tab-body-active {
+ 
+  overflow-y: clip !important;
+
+}
+.mat-tab-label {
+  padding: 0 10px !important;
+  min-width: 152px !important;
+} 
+.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
+  display: none !important;
+}

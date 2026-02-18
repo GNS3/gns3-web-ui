@@ -1,0 +1,107 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Projects</h1>
+      <button class="col" mat-raised-button color="primary" (click)="addBlankProject()" class="add-button">
+        Add blank project
+      </button>
+      <button class="col" mat-raised-button color="primary" (click)="importProject()" class="import-button">
+        Import project
+      </button>
+    </div>
+  </div>
+
+  <form>
+    <mat-form-field class="full-width">
+      <input matInput placeholder="Search project by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+    </mat-form-field>
+  </form>
+
+  <div class="default-content">
+    <div class="mat-elevation-z8">
+      <mat-table #table [dataSource]="dataSource | projectsfilter: searchText" matSort>
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? selectAllImages() : null" [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+              [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </mat-cell>
+
+        </ng-container>
+
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <a [routerLink]="['/controller', controller.id, 'project', row.project_id]" class="table-link">{{ row.name }}</a>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef class="action"> Actions </mat-header-cell>
+          <mat-cell  class="action" *matCellDef="let row" style="text-align: right">
+            <button
+              mat-icon-button
+              matTooltip="Open project"
+              matTooltipClass="custom-tooltip"
+              (click)="open(row)"
+              *ngIf="row.status == 'closed'"
+            >
+              <mat-icon aria-label="Open project">play_arrow</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Close project"
+              matTooltipClass="custom-tooltip"
+              (click)="close(row)"
+              *ngIf="row.status == 'opened'"
+            >
+              <mat-icon aria-label="Close project">pause</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Save project as"
+              matTooltipClass="custom-tooltip"
+              (click)="duplicate(row)"
+              *ngIf="row.status == 'closed'"
+            >
+              <mat-icon aria-label="Save project as">save</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Export project"
+              matTooltipClass="custom-tooltip"
+              (click)="exportSelectProject(row)"
+
+            >
+            <mat-icon aria-label="Export project">arrow_downward</mat-icon>
+
+            </button>
+
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="delete" >
+          <mat-header-cell *matHeaderCellDef  class="action">
+            <button mat-button   matTooltip="Delete all projects"   matTooltipClass="custom-tooltip"*ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+             <mat-icon>delete</mat-icon>
+            </button>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"   class="action">
+            <button  mat-icon-button  matTooltip="Delete project"   matTooltipClass="custom-tooltip" (click)="delete(row)" *ngIf="row.status == 'closed' && selection.isSelected(row)" aria-label="Example icon button with a delete icon" >
+            <mat-icon aria-label="Delete project">delete</mat-icon>
+          </button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </div>
+  </div>
+</div>

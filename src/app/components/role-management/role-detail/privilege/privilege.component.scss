@@ -1,0 +1,69 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  padding-left: 10px;
+}
+
+.privileges {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+}
+
+.title {
+  justify-content: center;
+}
+
+.header > div > button {
+  margin: 10px;
+}
+
+.box > mat-checkbox {
+  margin-right: 10px;
+}
+
+.box {
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.privilege {
+  width: 32vw;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  justify-content: center;
+  border: solid white 1px;
+}
+
+.key {
+  color: gray;
+  display: flex;
+  width: 15%;
+  margin-left: 10px;
+}
+
+.values {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.values > div {
+  width: 20%;
+}
+
+.add {
+  color: green;
+}
+
+.delete {
+  color: red;
+  text-decoration: line-through;
+}

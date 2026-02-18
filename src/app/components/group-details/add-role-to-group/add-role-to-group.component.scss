@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.title {
+  width: 100%;
+  text-align: center;
+}
+
+.filter {
+  display: flex;
+  width: 600px;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+mat-form-field {
+  width: 600px;
+}
+
+input {
+  width: 100%;
+}
+
+.userList {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+mat-spinner {
+  width: 36px;
+}

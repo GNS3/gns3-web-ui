@@ -1,0 +1,119 @@
+# iOS CircleCI 2.1 configuration file
+version: 2.1
+
+orbs:
+  node: circleci/node@4.2.0
+
+jobs:
+  build:
+    macos:
+      xcode: "10.1.0"
+
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+
+      - run:
+          name: Update BREW and print configs
+          command: |
+            brew update
+            brew analytics off
+            brew --env
+            brew --config
+
+      - run:
+          name: Set timezone and check current datetime
+          command: |
+            sudo systemsetup -settimezone Europe/Warsaw
+            echo "Today is $(date +"%Y-%m-%d %T")"
+
+      - run:
+          name: Set ENV variables
+          command: |
+            echo 'export HOMEBREW_NO_AUTO_UPDATE=1' >> ~/.envs
+
+      - run:
+          name: Install Python version 3.6.5 & readline 7.0.5
+          command: |
+            source ~/.envs
+            curl -o /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/python.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb
+            curl -o /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/readline.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/b1bd1c4a62e1336422de3614d1fc49ffbce589a8/Formula/readline.rb
+            # remove check for old compilers which creates the error described in https://github.com/sashkab/homebrew-python/issues/36
+            sed -i.bak -e '58,61d' /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/python.rb
+            # remove 'do devel' block to avoid error: Calling 'devel' blocks in formulae is disabled!
+            sed -i.bak -e '14,17d' /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/python.rb
+            brew unlink python
+            brew uninstall --ignore-dependencies readline
+            brew install readline
+            brew info readline
+            brew pin readline
+            # --ignore-dependencies is used to prevent this issue: https://github.com/tensorflow/tensorflow/issues/25093
+            brew install --ignore-dependencies python
+            #brew link python 3.6.5_1
+            brew info python
+            brew pin python
+
+      - run:
+          name: Installed python and pip version
+          command: |
+            python3 -V
+            pip3 -V
+
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: Install project
+          # increased timeout is for material-design-icons
+          command: |
+            yarn install --network-timeout 1000000
+
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+      - run:
+          name: Building WebUI for distribution
+          command: |
+            yarn buildforelectron
+
+      - run:
+          name: Building gns3server
+          command: |
+            python3 -V
+            python3 -m pip install -U pip
+            python3 -m pip install -r scripts/requirements.txt
+            python3 scripts/build.py download -a
+            # necessary because of https://github.com/GNS3/gns3-gui/issues/2849
+            python3 -m pip install jsonschema==2.6.0
+            python3 scripts/build.py build_exe -b dist/exe.gns3server -s
+            python3 scripts/build.py validate -b dist
+
+      - run:
+          name: Dist project
+          command: |
+            yarn electron-builder --mac --x64 --publish always
+
+      - run:
+          name: Gather artifacts
+          command: |
+            mkdir artifacts
+            cp build/*.dmg artifacts/
+
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /v.*/

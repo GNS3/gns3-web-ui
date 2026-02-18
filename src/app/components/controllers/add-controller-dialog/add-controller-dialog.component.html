@@ -1,0 +1,41 @@
+<h1 mat-dialog-title>Add controller</h1>
+<form [formGroup]="controllerForm">
+  <div mat-dialog-content>
+    <mat-form-field>
+      <input matInput tabindex="1" formControlName="name" placeholder="Name" />
+      <mat-error *ngIf="controllerForm.get('name').hasError('required')">You must enter a value</mat-error>
+    </mat-form-field>
+
+    <!-- <mat-form-field>
+      <mat-select placeholder="Location" formControlName="location">
+        <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
+      </mat-select>
+    </mat-form-field> -->
+
+    <!-- <mat-form-field *ngIf="controllerForm.get('location').value === 'local'">
+      <input matInput tabindex="1" formControlName="path" placeholder="Local controller path" />
+    </mat-form-field>
+
+    <mat-form-field *ngIf="controllerForm.get('location').value === 'local'">
+      <input matInput tabindex="1" formControlName="ubridge_path" placeholder="Ubridge path" />
+    </mat-form-field> -->
+
+    <mat-form-field>
+      <input matInput tabindex="1" formControlName="host" placeholder="Host" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput tabindex="1" formControlName="port" placeholder="Port" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select placeholder="Protocol" formControlName="protocol">
+        <mat-option *ngFor="let protocol of protocols" [value]="protocol.key"> {{ protocol.name }} </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Cancel</button>
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add</button>
+  </div>
+</form>

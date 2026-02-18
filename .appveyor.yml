@@ -1,0 +1,40 @@
+version: 1.0.{build}
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+cache:
+  - node_modules -> .appveyor.yml,package.json,yarn.lock
+  - '%LOCALAPPDATA%\Yarn -> .appveyor.yml,package.json,yarn.lock'
+
+platform:
+  - x64
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node 12 x64
+  - yarn install
+
+build_script:
+  - cmd: set NODE_OPTIONS=--max-old-space-size=8092
+  - yarn buildforelectron
+  - "%PYTHON%\\python.exe -m pip install -U pip"
+  - "%PYTHON%\\python.exe -m pip install -r scripts\\requirements.txt"
+  - "%PYTHON%\\python.exe scripts\\build.py download -a"
+  - "%PYTHON%\\python.exe scripts\\build.py build_exe -b dist/exe.gns3server -s"
+  - "%PYTHON%\\python.exe scripts\\build.py validate -b dist"
+  - "%PYTHON%\\python.exe scripts\\build.py download_dependencies -b dist"
+  - yarn electron-builder --win --x64 --publish always
+
+test: off
+
+artifacts:
+  - path: 'gns3-web-ui*.exe'
+    name: gns3-web-ui
+
+environment:
+  GH_TOKEN:
+    secure: Zb0F4wfA/3zXZBQiEmEGpKIP17hD9gb/CNwxQE2N3J4Eq3z58mp0K0ey5g8Dupsb
+  PYTHON: "C:\\Python36-x64"

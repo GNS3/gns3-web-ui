@@ -1,0 +1,16 @@
+<div class="title">
+  <h3>Add User To group: {{data.group.name}}</h3>
+</div>
+<div class="filter">
+  <mat-form-field class="input-field">
+    <mat-label>Search user </mat-label>
+    <input matInput  type="text" [(ngModel)]="searchText" (keydown)="onSearch()">
+  </mat-form-field>
+</div>
+
+<div class="userList" *ngFor="let user of displayedUsers | async">
+  <div>{{user.username}}</div>
+  <div>{{user.email}}</div>
+  <mat-icon (click)="addUser(user)" *ngIf="!loading">add</mat-icon>
+  <mat-spinner *ngIf="loading"></mat-spinner>
+</div>

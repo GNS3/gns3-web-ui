@@ -1,0 +1,25 @@
+<div *ngIf="isComputing">
+  <h6 align="center">Computing Idle-PC values, please wait...</h6>
+  <div mat-dialog-content align="center">
+    <mat-spinner color="accent"></mat-spinner>
+  </div>
+</div>
+<div *ngIf="!isComputing">
+<h1 mat-dialog-title>Choose an Idle-PC value</h1>
+  <mat-form-field class="form-field">
+    <mat-select
+      placeholder="Idle-PC"
+      [ngModelOptions]="{standalone: true}"
+      [(ngModel)]="idlePC"
+      [matTooltip]="getTooltip()"
+      matTooltipClass="multiline-tooltip"
+    >
+      <mat-option *ngFor="let idlepc of idlepcs" [value]="idlepc.key"> {{ idlepc.name }} </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button *ngIf="!isComputing" (click)="onCompute()" color="accent">Compute</button>
+  <button mat-button *ngIf="!isComputing" (click)="onApply()" color="accent">Apply</button>
+  <button mat-button (click)="onClose()" color="accent">Close</button>
+</div>

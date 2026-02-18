@@ -1,0 +1,3 @@
+<button mat-button color="primary" (click)="install()" [disabled]="disabled">
+  <ng-container *ngIf="readyToInstall">{{ buttonText }}</ng-container>
+</button>

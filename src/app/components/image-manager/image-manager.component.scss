@@ -1,0 +1,33 @@
+.non-visible {
+    display: none;
+  }
+
+.install-all-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+.prune-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+.add-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+mat-header-cell, mat-cell {
+  justify-content: center;
+}
+mat-cell, mat-header-cell, mat-footer-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  overflow: initial;
+  min-height: inherit;
+}
+

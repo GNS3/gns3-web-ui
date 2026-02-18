@@ -1,0 +1,4 @@
+[defaults]
+url = https://sentry.io/
+org = gns3
+project = gns3-web-ui

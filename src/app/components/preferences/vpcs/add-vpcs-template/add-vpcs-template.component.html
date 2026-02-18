@@ -1,0 +1,39 @@
+<div class="content">
+  <div class="default-header">
+    <div class="row">
+      <div class="col col-md-1">
+        <button
+          class="top-button"
+          *ngIf="controller"
+          class="cancel-button"
+          mat-button
+          (click)="goBack()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col col-md-11">
+        <h1 class="col">New VPCS node template</h1>
+      </div>
+    </div>
+  </div>
+  <div class="default-content">
+    <mat-card class="matCard">
+      <mat-radio-group class="radio-group">
+        <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
+          >Run the VPCS node locally</mat-radio-button
+        >
+      </mat-radio-group>
+
+      <form [formGroup]="templateNameForm">
+        <mat-form-field class="form-field">
+          <input matInput formControlName="templateName" type="text" placeholder="Template name" />
+        </mat-form-field>
+      </form>
+    </mat-card>
+    <div class="buttons-bar">
+      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+    </div>
+  </div>
+</div>

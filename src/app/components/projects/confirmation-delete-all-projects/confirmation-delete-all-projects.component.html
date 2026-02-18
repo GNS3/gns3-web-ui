@@ -1,0 +1,34 @@
+<div *ngIf="!isDelete && !isUsedFiles">
+    <h1 mat-dialog-title>Do you want delete all projects?</h1>
+    <div mat-dialog-content>
+        <p>Your selected projects</p>
+        <p *ngFor="let file of deleteData?.deleteFilesPaths; let i = index">{{i+1}}. {{file?.filename}}</p>
+    </div>
+    <div mat-dialog-actions align="end">
+        <button mat-button (click)="deleteAll()">Delete</button>
+        <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
+    </div>
+</div>
+<div *ngIf="isDelete && !isUsedFiles">
+    <h1 align="center" mat-dialog-title>Please wait.</h1>
+
+    <div mat-dialog-content align="center">
+        <mat-spinner color="accent"></mat-spinner>
+
+    </div>
+</div>
+
+<div *ngIf="isDelete && isUsedFiles">
+    <div mat-dialog-content>
+        <div *ngIf="deleteFliesDetails.length > 0">
+            <h5>Project can't be deleted because image used in one or more template.</h5>
+            <p *ngFor="let message of deleteFliesDetails; let i = index" [ngClass]="{'deleted-error-text': message?.error?.message}"><span *ngIf="message !=null">{{i+1}}. {{message?.error?.message}}</span></p>
+        </div>
+        <div *ngIf="fileNotDeleted.length > 0">
+            <h5 class="delete-text">{{fileNotDeleted.length}} Projects deleted successfully.</h5>
+        </div>
+    </div>
+    <div mat-dialog-actions align="end">
+        <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
+    </div>
+</div>

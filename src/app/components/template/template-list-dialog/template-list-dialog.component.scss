@@ -1,0 +1,62 @@
+.header {
+  min-height: 64px;
+  display: flex;
+  align-items: baseline;
+  padding: 8px 24px 0;
+  font-size: 20px;
+  justify-content: space-between;
+}
+
+.mat-table {
+  height: 200px;
+  overflow: scroll;
+}
+
+.mat-form-field {
+  font-size: 16px;
+  flex-grow: 1;
+}
+
+.form-field {
+  width: 100%;
+}
+
+div {
+  scrollbar-color: darkgrey #263238;
+  scrollbar-width: thin;
+}
+
+h6 {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  color: #0097a7;
+}
+
+mat-table {
+  scrollbar-color: darkgrey #263238;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid #263238;
+}
+
+.filterBox {
+  display: flex;
+  justify-content: space-between;
+}
+
+.title-container {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}

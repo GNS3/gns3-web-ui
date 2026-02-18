@@ -1,0 +1,48 @@
+<div class="content">
+  <div class="default-header"><h1>Settings</h1></div>
+  <div class="default-content">
+    <div class="container mat-elevation-z8">
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Local settings </mat-panel-title>
+            <mat-panel-description> Customize your local settings </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div>
+            <mat-checkbox [(ngModel)]="settings.crash_reports">Send anonymous crash reports</mat-checkbox><br/>
+            <mat-checkbox [(ngModel)]="integrateLinksLabelsToLinks">Integrate link labels to links</mat-checkbox><br/>
+            <mat-checkbox [(ngModel)]="openReadme">Automatically open project README files</mat-checkbox><br/>
+            <mat-checkbox [(ngModel)]="settings.anonymous_statistics">Send anonymous usage statistics</mat-checkbox><br />
+            <mat-checkbox [(ngModel)]="openConsolesInWidget">Open consoles in the widget instead of in new tabs after clicking start consoles for all nodes</mat-checkbox>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Theme settings </mat-panel-title>
+            <mat-panel-description> Customize theme settings </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="theme-panel">
+            <button mat-raised-button (click)="setDarkMode(false)">Switch to light theme</button>
+            <button mat-raised-button (click)="setDarkMode(true)">Switch to dark theme</button>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Updates </mat-panel-title>
+            <mat-panel-description> Check for updates </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="theme-panel">
+            <button mat-raised-button (click)="checkForUpdates()" class="fullWidth">Check for updates</button>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+
+    <div class="buttons-bar"><button mat-raised-button color="primary" (click)="save()">Save settings</button></div>
+  </div>
+</div>

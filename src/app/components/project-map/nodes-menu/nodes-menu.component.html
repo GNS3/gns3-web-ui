@@ -1,0 +1,57 @@
+<div class="menu-button-group">
+  <button
+    matTooltip="Console connect to all nodes"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="startConsoleForAllNodes()"
+    class="menu-button"
+  >
+    <mat-icon>web_asset</mat-icon>
+  </button>
+  <button
+    matTooltip="Start/Resume all nodes"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="confirmControlsActions('start')"
+    class="menu-button"
+  >
+    <mat-icon>play_arrow</mat-icon>
+  </button>
+  <button
+    matTooltip="Suspend all nodes"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="confirmControlsActions('suspend')"
+    class="menu-button"
+  >
+    <mat-icon>pause</mat-icon>
+  </button>
+  <button
+    matTooltip="Stop all nodes"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="confirmControlsActions('stop')"
+    class="menu-button"
+  >
+    <mat-icon>stop</mat-icon>
+  </button>
+  <button
+    matTooltip="Reload all nodes"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="confirmControlsActions('reload')"
+    class="menu-button"
+  >
+    <mat-icon>replay</mat-icon>
+  </button>
+
+  <button
+    matTooltip="Reset all console connections"
+    matTooltipClass="custom-tooltip"
+    mat-icon-button
+    (click)="confirmControlsActions('reset')"
+    class="menu-button"
+  >
+    <mat-icon>compare_arrows</mat-icon>
+  </button>
+</div>

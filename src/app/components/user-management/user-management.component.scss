@@ -1,0 +1,42 @@
+.add-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px;
+}
+
+.full-width {
+  width: 940px;
+  margin-left: -470px;
+  left: 50%;
+}
+
+.small-col {
+  flex-grow: 0.3;
+}
+
+.active-col {
+  flex-grow: 0.5;
+}
+
+.overflow-col {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 5px;
+}
+
+.custom-tooltip {
+  font-size:100px;
+  white-space: pre-line;
+}
+
+.loader {
+  position: absolute;
+  margin: auto;
+  height: 175px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 175px;
+}
