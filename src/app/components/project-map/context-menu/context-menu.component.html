@@ -17,6 +17,11 @@
       [controller]="controller"
       [nodes]="nodes"
     ></app-http-console-new-tab-action>
+    <app-http-vnc-console-new-tab-action
+      *ngIf="!projectService.isReadOnly(project) && nodes.length > 0"
+      [controller]="controller"
+      [nodes]="nodes"
+    ></app-http-vnc-console-new-tab-action>
     <app-console-device-action
       *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
       [controller]="controller"
