@@ -126,7 +126,7 @@
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "4.2.3",
-    "webpack": "5.76.0",
+    "webpack": "5.104.1",
     "yarn-upgrade-all": "^0.5.4"
   },
   "greenkeeper": {
