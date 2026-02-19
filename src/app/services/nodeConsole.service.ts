@@ -115,34 +115,6 @@ export class NodeConsoleService {
       this.toasterService.error(nodesToStart);
     }
   }
-  /*
-  openVncConsolesForAllNodesInNewTabs(nodes: Node[]) {
-    let nodesToStart = 'Please start the following VNC nodes if you want to open consoles in tabs for them: ';
-    let nodesToStartCounter = 0;
-    this.toasterService.error("You have run the open vnc console function");
-
-    nodes.forEach((n) => {
-      if (n.console_type === 'vnc') {
-        if (n.status === 'started') {
-          let url = this.router.url.split('/');
-          const nodeWithController = n as Node & { controller?: { authToken?: string } };
-          const token = nodeWithController.controller?.authToken;
-          const path = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}/console/vnc${
-            token ? `?token=${encodeURIComponent(token)}` : ''
-          }`;
-          const urlString = `/static/web-ui/novnc/noVNC-1.6.0/vnc.html?path=${encodeURIComponent(path)}`;
-          window.open(urlString);
-        } else {
-          nodesToStartCounter++;
-          nodesToStart += n.name + ' ';
-        }
-      }
-    });
-
-    if (nodesToStartCounter > 0) {
-      this.toasterService.error(nodesToStart);
-    }
-  }*/
 
   openVncConsolesForAllNodesInNewTabs(nodes: Node[], controller?: Controller) {
     let nodesToStart = 'Please start the following VNC nodes if you want to open consoles in tabs for them: ';
