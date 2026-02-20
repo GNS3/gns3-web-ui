@@ -70,6 +70,15 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="iosTemplate.vendor" placeholder="Vendor" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="iosTemplate.model" placeholder="Model" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="iosTemplate.netmiko_device_type" placeholder="Netmiko device type" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
             <input
               matInput
               type="text"

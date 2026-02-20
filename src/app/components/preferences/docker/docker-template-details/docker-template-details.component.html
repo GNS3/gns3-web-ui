@@ -48,6 +48,15 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="dockerTemplate.vendor" placeholder="Vendor" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="dockerTemplate.model" placeholder="Model" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="dockerTemplate.netmiko_device_type" placeholder="Netmiko device type" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
             <input
               formControlName="symbol"
               matInput

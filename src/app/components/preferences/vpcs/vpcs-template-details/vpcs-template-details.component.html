@@ -62,6 +62,15 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="vpcsTemplate.vendor" placeholder="Vendor" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="vpcsTemplate.model" placeholder="Model" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="vpcsTemplate.netmiko_device_type" placeholder="Netmiko device type" />
+        </mat-form-field>
         <mat-form-field class="select">
           <mat-select
             placeholder="Console type"

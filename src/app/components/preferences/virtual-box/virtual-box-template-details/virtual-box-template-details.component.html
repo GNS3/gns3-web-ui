@@ -57,6 +57,15 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="virtualBoxTemplate.vendor" placeholder="Vendor" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="virtualBoxTemplate.model" placeholder="Model" />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input matInput type="text" [(ngModel)]="virtualBoxTemplate.netmiko_device_type" placeholder="Netmiko device type" />
+          </mat-form-field>
           <mat-form-field class="select">
             <mat-select
               [ngModelOptions]="{ standalone: true }"
