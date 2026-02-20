@@ -23,4 +23,7 @@ export class VmwareTemplate {
   usage: string;
   use_any_adapter: boolean;
   vmx_path: string;
+  vendor?: string;
+  model?: string;
+  netmiko_device_type?: string;
 }

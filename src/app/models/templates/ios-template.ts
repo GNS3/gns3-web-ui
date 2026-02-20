@@ -38,6 +38,9 @@ export class IosTemplate {
   template_id: string;
   template_type: string;
   usage: string;
+  vendor?: string;
+  model?: string;
+  netmiko_device_type?: string;
   wic0?: string;
   wic1?: string;
   wic2?: string;

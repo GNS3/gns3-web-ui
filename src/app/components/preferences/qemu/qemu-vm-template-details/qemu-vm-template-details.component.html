@@ -55,6 +55,15 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="qemuTemplate.vendor" placeholder="Vendor" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="qemuTemplate.model" placeholder="Model" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <input matInput type="text" [(ngModel)]="qemuTemplate.netmiko_device_type" placeholder="Netmiko device type" />
+        </mat-form-field>
+        <mat-form-field class="form-field">
           <mat-select placeholder="Platform" [(ngModel)]="qemuTemplate.platform">
             <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
               {{ platform }}

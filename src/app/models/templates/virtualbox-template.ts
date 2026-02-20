@@ -24,4 +24,7 @@ export interface VirtualBoxTemplate {
   usage: string;
   use_any_adapter: boolean;
   vmname: string;
+  vendor?: string;
+  model?: string;
+  netmiko_device_type?: string;
 }

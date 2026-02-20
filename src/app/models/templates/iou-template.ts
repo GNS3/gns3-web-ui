@@ -19,4 +19,7 @@ export class IouTemplate {
   template_type: string;
   usage: string;
   use_default_iou_values: boolean;
+  vendor?: string;
+  model?: string;
+  netmiko_device_type?: string;
 }

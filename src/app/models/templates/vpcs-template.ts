@@ -10,4 +10,7 @@ export interface VpcsTemplate {
   symbol: string;
   template_id: string;
   template_type: string;
+  vendor?: string;
+  model?: string;
+  netmiko_device_type?: string;
 }
