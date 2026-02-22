@@ -154,22 +154,26 @@ export class IosTemplateDetailsComponent implements OnInit {
   saveSlotsData() {
 
     // save network adapters
-    for (let i = 0; i <= 6; i++) {
-      if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
-        if (this.networkAdaptersForTemplate[i] === undefined)
-          this.iosTemplate[`slot${i}`] = ""
-        else
-          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+    if (this.adapterMatrix[this.iosTemplate.platform] && this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || '']) {
+      for (let i = 0; i <= 6; i++) {
+        if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
+          if (this.networkAdaptersForTemplate[i] === undefined)
+            this.iosTemplate[`slot${i}`] = ""
+          else
+            this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+        }
       }
     }
 
     // save WICs
-    for (let i = 0; i <= 3; i++) {
-      if (this.wicMatrix[this.iosTemplate.platform][i]) {
-        if (this.wicsForTemplate[i] === undefined)
-          this.iosTemplate[`wic${i}`] = ""
-        else
-          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+    if (this.wicMatrix[this.iosTemplate.platform]) {
+      for (let i = 0; i <= 3; i++) {
+        if (this.wicMatrix[this.iosTemplate.platform][i]) {
+          if (this.wicsForTemplate[i] === undefined)
+            this.iosTemplate[`wic${i}`] = ""
+          else
+            this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+        }
       }
     }
   }

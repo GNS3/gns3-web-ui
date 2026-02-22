@@ -86,6 +86,7 @@
               [(ngModel)]="iosTemplate.startup_config"
               placeholder="Initial startup-config"
             />
+            <mat-hint>Filename only (e.g., ios-config.txt). Leave empty to start without config. Files are stored in the project directory on the server.</mat-hint>
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
@@ -140,6 +141,7 @@
               [(ngModel)]="iosTemplate.iomem"
               placeholder="I/O memory"
             />
+            <mat-hint>Percentage of RAM for I/O memory (e.g., 5). Leave empty to use IOS defaults.</mat-hint>
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
@@ -170,44 +172,46 @@
         </mat-expansion-panel-header>
         <h6>Adapters</h6>
         <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]">
-          <mat-select
-            placeholder="Slot {{ index }}"
-            [(ngModel)]="networkAdaptersForTemplate[index]"
-            [ngModelOptions]="{ standalone: true }"
-            *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]"
-          >
-            <mat-option
-              *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
-              !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')"
-              [value]=""
+          <ng-container *ngIf="adapterMatrix[iosTemplate.platform] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]">
+            <mat-select
+              placeholder="Slot {{ index }}"
+              [(ngModel)]="networkAdaptersForTemplate[index]"
+              [ngModelOptions]="{ standalone: true }"
             >
-              {{ "" }}
-            </mat-option>
-            <mat-option
-              *ngFor="let option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]"
-              [value]="option"
-            >
-              {{ option }}
-            </mat-option>
-          </mat-select>
+              <mat-option
+                *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
+                !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')"
+                [value]=""
+              >
+                {{ "" }}
+              </mat-option>
+              <mat-option
+                *ngFor="let option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]"
+                [value]="option"
+              >
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </ng-container>
         </div>
         <br />
         <div *ngIf="wicMatrix[iosTemplate.platform]">
           <h6>WICs</h6>
           <div *ngFor="let index of [0, 1, 2]">
-            <mat-select
-              placeholder="WIC {{ index }}"
-              [(ngModel)]="wicsForTemplate[index]"
-              [ngModelOptions]="{ standalone: true }"
-              *ngIf="wicMatrix[iosTemplate.platform][index]"
-            >
-              <mat-option [value]="">
-                {{ "" }}
-              </mat-option>
-              <mat-option *ngFor="let option of wicMatrix[iosTemplate.platform][index]" [value]="option">
-                {{ option }}
-              </mat-option>
-            </mat-select>
+            <ng-container *ngIf="wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]">
+              <mat-select
+                placeholder="WIC {{ index }}"
+                [(ngModel)]="wicsForTemplate[index]"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <mat-option [value]="">
+                  {{ "" }}
+                </mat-option>
+                <mat-option *ngFor="let option of wicMatrix[iosTemplate.platform][index]" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
           </div>
         </div>
       </mat-expansion-panel>
