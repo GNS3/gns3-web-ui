@@ -231,9 +231,11 @@
               formControlName="mac_addr"
               type="text"
               [(ngModel)]="iosTemplate.mac_addr"
-              placeholder="Base MAC"
+              placeholder="Base MAC (format: xxxx.xxxx.xxxx)"
             />
+            <mat-hint>Example: aaaa.bbbb.cccc</mat-hint>
           </mat-form-field>
+          <button mat-button class="generateButton" (click)="generateBaseMAC()">Generate Base MAC</button><br /><br />
           <mat-form-field class="form-field">
             <input
               matInput
