@@ -86,7 +86,7 @@
               [(ngModel)]="iosTemplate.startup_config"
               placeholder="Initial startup-config"
             />
-            <mat-hint>Filename only (e.g., ios-config.txt). Leave empty to start without config. Files are stored in the project directory on the server.</mat-hint>
+            <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
@@ -96,6 +96,7 @@
               [(ngModel)]="iosTemplate.private_config"
               placeholder="Initial private-config"
             />
+            <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
           </mat-form-field>
         </form>
         <mat-form-field class="select">
@@ -120,13 +121,23 @@
         </mat-expansion-panel-header>
         <form [formGroup]="memoryForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" formControlName="ram" [(ngModel)]="iosTemplate.ram" placeholder="RAM size" />
+            <input
+              matInput
+              type="number"
+              min="32"
+              step="32"
+              formControlName="ram"
+              [(ngModel)]="iosTemplate.ram"
+              placeholder="RAM size"
+            />
             <span matSuffix>MB</span>
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
               matInput
               type="number"
+              min="32"
+              step="32"
               formControlName="nvram"
               [(ngModel)]="iosTemplate.nvram"
               placeholder="NVRAM size"
@@ -137,16 +148,22 @@
             <input
               matInput
               type="number"
+              min="0"
+              max="100"
+              step="5"
               formControlName="iomemory"
               [(ngModel)]="iosTemplate.iomem"
               placeholder="I/O memory"
             />
-            <mat-hint>Percentage of RAM for I/O memory (e.g., 5). Leave empty to use IOS defaults.</mat-hint>
+            <mat-hint>Percentage of RAM for I/O memory</mat-hint>
           </mat-form-field>
+          <br /><br />
           <mat-form-field class="form-field">
             <input
               matInput
               type="number"
+              min="0"
+              step="4"
               formControlName="disk0"
               [(ngModel)]="iosTemplate.disk0"
               placeholder="PCMCIA disk0"
@@ -156,6 +173,8 @@
             <input
               matInput
               type="number"
+              min="0"
+              step="4"
               formControlName="disk1"
               [(ngModel)]="iosTemplate.disk1"
               placeholder="PCMCIA disk1"
@@ -237,9 +256,10 @@
               [(ngModel)]="iosTemplate.mac_addr"
               placeholder="Base MAC (format: xxxx.xxxx.xxxx)"
             />
-            <mat-hint>Example: aaaa.bbbb.cccc</mat-hint>
+            <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
           </mat-form-field>
-          <button mat-button class="generateButton" (click)="generateBaseMAC()">Generate Base MAC</button><br /><br />
+          <button mat-button class="generateButton" (click)="generateBaseMAC()">Generate Base MAC</button>
+          <br /><br />
           <mat-form-field class="form-field">
             <input
               matInput
@@ -255,6 +275,8 @@
               matInput
               formControlName="idlemax"
               type="number"
+              min="100"
+              step="100"
               [(ngModel)]="iosTemplate.idlemax"
               placeholder="Idlemax"
             />
@@ -264,6 +286,8 @@
               matInput
               formControlName="idlesleep"
               type="number"
+              min="1"
+              step="10"
               [(ngModel)]="iosTemplate.idlesleep"
               placeholder="Idlesleep"
             />
@@ -273,6 +297,8 @@
               matInput
               formControlName="execarea"
               type="number"
+              min="0"
+              step="4"
               [(ngModel)]="iosTemplate.exec_area"
               placeholder="Exec area"
             />
