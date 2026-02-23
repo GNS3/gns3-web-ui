@@ -80,7 +80,19 @@ mat-menu-panel {
 .mat-tab-label {
   padding: 0 10px !important;
   min-width: 152px !important;
-} 
+}
 .mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
   display: none !important;
+}
+
+/* Link hover effects - simple line thickening */
+.ethernet_link,
+.serial_link {
+  transition: stroke-width 0.2s ease-in-out;
+}
+
+.ethernet_link:hover,
+.serial_link:hover {
+  stroke-width: 6px !important;
+  cursor: pointer;
 }

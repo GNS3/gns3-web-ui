@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { path } from 'd3-path';
+import { event } from 'd3-selection';
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
@@ -15,7 +16,7 @@ class EthernetLinkPath {
 export class EthernetLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
   private defaultEthernetLinkStyle : LinkStyle = {
-    color: "#000",
+    color: "#000000",
     width: 2,
     type: 0
   };

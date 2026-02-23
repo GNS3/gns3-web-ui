@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { path } from 'd3-path';
+import { event } from 'd3-selection';
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
@@ -21,7 +22,7 @@ class SerialLinkPath {
 export class SerialLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
   private defaultSerialLinkStyle : LinkStyle = {
-    color: "#B22222",
+    color: "#000000",
     width: 2,
     type: 0
   };
@@ -79,9 +80,7 @@ export class SerialLinkWidget implements Widget {
         let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      });
-
-    link_enter
+      })
       .attr('stroke', (datum) => {
         return datum.style.color;
       })
