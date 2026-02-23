@@ -487,33 +487,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLinkContextMenu = this.linkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
     });
 
     const onEthernetLinkContextMenu = this.ethernetLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
     });
 
     const onSerialLinkContextMenu = this.serialLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
     });
 
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.contextMenu.openMenuForNode(node, eventNode.event.pageY, eventNode.event.pageX);
+      this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
     });
 
     const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
       const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
-      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.pageY, eventDrawing.event.pageX);
+      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
     });
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
       const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
-      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.screenY - 60, eventLabel.event.screenX);
+      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
     });
 
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
@@ -523,8 +523,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.contextMenu.openMenuForInterfaceLabel(
           linkNode,
           link,
-          eventInterfaceLabel.event.pageY,
-          eventInterfaceLabel.event.pageX
+          eventInterfaceLabel.event.clientY,
+          eventInterfaceLabel.event.clientX
         );
       }
     );
@@ -550,7 +550,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
+      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.clientY, event.clientX);
     });
 
     this.projectMapSubscription.add(onLinkContextMenu);
