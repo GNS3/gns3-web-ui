@@ -118,6 +118,22 @@ export class IosTemplateDetailsComponent implements OnInit {
       );
   }
 
+  generateBaseMAC() {
+    // Generate a random MAC address in format xxxx.xxxx.xxxx
+    const hexChars = '0123456789abcdef';
+    let mac = '';
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        mac += hexChars[Math.floor(Math.random() * 16)];
+      }
+      if (i < 2) {
+        mac += '.';
+      }
+    }
+    this.iosTemplate.mac_addr = mac;
+    this.toasterService.success(`Base MAC generated: ${mac}`);
+  }
+
   fillSlotsData() {
 
     // load network adapters
@@ -138,29 +154,86 @@ export class IosTemplateDetailsComponent implements OnInit {
   saveSlotsData() {
 
     // save network adapters
-    for (let i = 0; i <= 6; i++) {
-      if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
-        if (this.networkAdaptersForTemplate[i] === undefined)
-          this.iosTemplate[`slot${i}`] = ""
-        else
-          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+    if (this.adapterMatrix[this.iosTemplate.platform] && this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || '']) {
+      for (let i = 0; i <= 6; i++) {
+        if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
+          if (this.networkAdaptersForTemplate[i] === undefined)
+            this.iosTemplate[`slot${i}`] = ""
+          else
+            this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+        }
       }
     }
 
     // save WICs
-    for (let i = 0; i <= 3; i++) {
-      if (this.wicMatrix[this.iosTemplate.platform][i]) {
-        if (this.wicsForTemplate[i] === undefined)
-          this.iosTemplate[`wic${i}`] = ""
-        else
-          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+    if (this.wicMatrix[this.iosTemplate.platform]) {
+      for (let i = 0; i <= 3; i++) {
+        if (this.wicMatrix[this.iosTemplate.platform][i]) {
+          if (this.wicsForTemplate[i] === undefined)
+            this.iosTemplate[`wic${i}`] = ""
+          else
+            this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+        }
       }
     }
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid || this.memoryForm.invalid || this.advancedForm.invalid) {
-      this.toasterService.error(`Fill all required fields`);
+      const missingFields: string[] = [];
+
+      // Check general settings form
+      if (this.generalSettingsForm.get('templateName').invalid) {
+        missingFields.push('Template name');
+      }
+      if (this.generalSettingsForm.get('defaultName').invalid) {
+        missingFields.push('Default name format');
+      }
+      if (this.generalSettingsForm.get('symbol').invalid) {
+        missingFields.push('Symbol');
+      }
+      if (this.generalSettingsForm.get('path').invalid) {
+        missingFields.push('IOS image path');
+      }
+      if (this.generalSettingsForm.get('initialConfig').invalid) {
+        missingFields.push('Initial startup-config');
+      }
+
+      // Check memory form
+      if (this.memoryForm.get('ram').invalid) {
+        missingFields.push('RAM size');
+      }
+      if (this.memoryForm.get('nvram').invalid) {
+        missingFields.push('NVRAM size');
+      }
+      if (this.memoryForm.get('iomemory').invalid) {
+        missingFields.push('I/O memory');
+      }
+      if (this.memoryForm.get('disk0').invalid) {
+        missingFields.push('PCMCIA disk0');
+      }
+      if (this.memoryForm.get('disk1').invalid) {
+        missingFields.push('PCMCIA disk1');
+      }
+
+      // Check advanced form
+      if (this.advancedForm.get('systemId').invalid) {
+        missingFields.push('System ID');
+      }
+      if (this.advancedForm.get('mac_addr').invalid) {
+        missingFields.push('Base MAC (format: xxxx.xxxx.xxxx)');
+      }
+      if (this.advancedForm.get('idlemax').invalid) {
+        missingFields.push('Idlemax');
+      }
+      if (this.advancedForm.get('idlesleep').invalid) {
+        missingFields.push('Idlesleep');
+      }
+      if (this.advancedForm.get('execarea').invalid) {
+        missingFields.push('Exec area');
+      }
+
+      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
     } else {
       this.saveSlotsData();
 
