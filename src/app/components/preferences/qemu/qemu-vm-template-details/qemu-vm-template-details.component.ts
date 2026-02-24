@@ -141,7 +141,19 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   onSave() {
     if (this.generalSettingsForm.invalid) {
-      this.toasterService.error(`Fill all required fields`);
+      const missingFields: string[] = [];
+
+      if (this.generalSettingsForm.get('templateName').invalid) {
+        missingFields.push('Template name');
+      }
+      if (this.generalSettingsForm.get('defaultName').invalid) {
+        missingFields.push('Default name format');
+      }
+      if (this.generalSettingsForm.get('symbol').invalid) {
+        missingFields.push('Symbol');
+      }
+
+      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
     } else {
       if (!this.activateCpuThrottling) {
         this.qemuTemplate.cpu_throttling = 0;
