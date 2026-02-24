@@ -56,11 +56,18 @@ export class SerialLinkWidget implements Widget {
       target.y - dy / 2.0 - 15 * vect_rot[1],
     ];
 
-    const style: LinkStyle = link.link_style && link.link_style.color
-      ? link.link_style
+    const hasValidColor = link.link_style && link.link_style.color;
+    const hasValidWidth = link.link_style?.width && link.link_style.width >= this.defaultSerialLinkStyle.width;
+
+    const style: LinkStyle = hasValidColor
+      ? {
+          color: link.link_style.color,
+          width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
+          type: link.link_style.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
+        }
       : {
           color: this.defaultSerialLinkStyle.color,
-          width: link.link_style?.width !== undefined ? link.link_style.width : this.defaultSerialLinkStyle.width,
+          width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
           type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
         };
 
