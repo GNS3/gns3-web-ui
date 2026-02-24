@@ -62,8 +62,6 @@ mat-menu-panel {
   max-width: unset !important;
   background-color: grey;
   color: #ffffff;
-  background-color: grey;
-  color: #ffffff;
   white-space: pre-line;
   font-size: 12px !important;
   font-family: monospace;
@@ -73,7 +71,7 @@ mat-menu-panel {
   overflow: initial !important;
 }
 .mat-tab-body.mat-tab-body-active {
- 
+
   overflow-y: clip !important;
 
 }
@@ -93,6 +91,6 @@ mat-menu-panel {
 
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke-width: 6px !important;
+  stroke-width: 4px !important;
   cursor: pointer;
 }
