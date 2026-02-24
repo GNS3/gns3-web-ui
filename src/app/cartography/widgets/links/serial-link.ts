@@ -56,7 +56,13 @@ export class SerialLinkWidget implements Widget {
       target.y - dy / 2.0 - 15 * vect_rot[1],
     ];
 
-    const style = link.link_style && link.link_style.color ? link.link_style : this.defaultSerialLinkStyle;
+    const style: LinkStyle = link.link_style && link.link_style.color
+      ? link.link_style
+      : {
+          color: this.defaultSerialLinkStyle.color,
+          width: link.link_style?.width !== undefined ? link.link_style.width : this.defaultSerialLinkStyle.width,
+          type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
+        };
 
     return new SerialLinkPath(
       [source.x, source.y],
@@ -78,6 +84,7 @@ export class SerialLinkWidget implements Widget {
       .enter()
       .append<SVGPathElement>('path')
       .attr('class', 'serial_link')
+      .attr('fill', 'none')
       .on('contextmenu', (datum) => {
         let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
@@ -96,6 +103,7 @@ export class SerialLinkWidget implements Widget {
     const link_merge = link.merge(link_enter);
 
     link_merge
+      .attr('fill', 'none')
       .attr('stroke', (datum) => {
         return datum.style.color;
       })
