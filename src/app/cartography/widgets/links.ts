@@ -11,7 +11,6 @@ export class LinksWidget implements Widget {
   constructor(private multiLinkCalculatorHelper: MultiLinkCalculatorHelper, private linkWidget: LinkWidget) {}
 
   public redrawLink(view: SVGSelection, link: MapLink) {
-    console.log('redraw called');
     this.linkWidget.draw(this.selectLink(view, link));
   }
 
