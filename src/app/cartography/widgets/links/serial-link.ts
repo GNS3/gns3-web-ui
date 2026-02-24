@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { path } from 'd3-path';
-import { event, select } from 'd3-selection';
+import { event } from 'd3-selection';
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
@@ -56,12 +56,14 @@ export class SerialLinkWidget implements Widget {
       target.y - dy / 2.0 - 15 * vect_rot[1],
     ];
 
+    const style = link.link_style && link.link_style.color ? link.link_style : this.defaultSerialLinkStyle;
+
     return new SerialLinkPath(
       [source.x, source.y],
       angle_source,
       angle_target,
       [target.x, target.y],
-      link.link_style.color ? link.link_style : this.defaultSerialLinkStyle);
+      style);
   }
 
   public draw(view: SVGSelection) {
@@ -81,16 +83,6 @@ export class SerialLinkWidget implements Widget {
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       })
-      .on('mouseenter', function() {
-        select(this)
-          .attr('stroke', '#ff0000')
-          .attr('data-original-color', select(this).attr('stroke'));
-      })
-      .on('mouseleave', function() {
-        const originalColor = select(this).attr('data-original-color');
-        select(this)
-          .attr('stroke', originalColor || '#800000');
-      })
       .attr('stroke', (datum) => {
         return datum.style.color;
       })
@@ -103,13 +95,23 @@ export class SerialLinkWidget implements Widget {
 
     const link_merge = link.merge(link_enter);
 
-    link_merge.attr('d', (serial) => {
-      const line_generator = path();
-      line_generator.moveTo(serial.source[0], serial.source[1]);
-      line_generator.lineTo(serial.source_angle[0], serial.source_angle[1]);
-      line_generator.lineTo(serial.target_angle[0], serial.target_angle[1]);
-      line_generator.lineTo(serial.target[0], serial.target[1]);
-      return line_generator.toString();
-    });
+    link_merge
+      .attr('stroke', (datum) => {
+        return datum.style.color;
+      })
+      .attr('stroke-width', (datum) => {
+        return datum.style.width;
+      })
+      .attr('stroke-dasharray', (datum) => {
+        return StyleTranslator.getLinkStyle(datum.style);
+      })
+      .attr('d', (serial) => {
+        const line_generator = path();
+        line_generator.moveTo(serial.source[0], serial.source[1]);
+        line_generator.lineTo(serial.source_angle[0], serial.source_angle[1]);
+        line_generator.lineTo(serial.target_angle[0], serial.target_angle[1]);
+        line_generator.lineTo(serial.target[0], serial.target[1]);
+        return line_generator.toString();
+      });
   }
 }

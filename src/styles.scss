@@ -86,11 +86,12 @@ mat-menu-panel {
 /* Link hover effects - simple line thickening */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width 0.2s ease-in-out;
+  transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out;
 }
 
 .ethernet_link:hover,
 .serial_link:hover {
   stroke-width: 4px !important;
   cursor: pointer;
+  stroke: #ff0000 !important;
 }

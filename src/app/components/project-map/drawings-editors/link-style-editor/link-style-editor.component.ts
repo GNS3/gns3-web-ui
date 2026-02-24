@@ -47,10 +47,11 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.formGroup.controls['color'].setValue(this.link.link_style.color);
     }
 
-    this.formGroup.controls['width'].setValue(this.link.link_style.width);
+    const width = this.link.link_style?.width !== undefined ? this.link.link_style.width : 2;
+    this.formGroup.controls['width'].setValue(width);
 
     let type = this.borderTypes[0];
-    if (this.link.link_style?.type) {
+    if (this.link.link_style?.type !== undefined) {
         type = this.borderTypes[this.link.link_style.type];
     }
     this.formGroup.controls['type'].setValue(type);
