@@ -45,7 +45,6 @@ export class GraphDataManager {
 
   public setLinks(links: Link[]) {
     if (links) {
-      console.log("from set links");
       const mapLinks = links.map((l) => this.linkToMapLink.convert(l));
       this.mapLinksDataSource.set(mapLinks);
 
@@ -89,7 +88,6 @@ export class GraphDataManager {
   private onDataUpdate() {
     this.layersManager.clear();
     this.layersManager.setNodes(this.getNodes());
-    console.log(this.getLinks());
     this.layersManager.setLinks(this.getLinks());
     this.layersManager.setDrawings(this.getDrawings());
   }
