@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { QemuBinary } from '@models/qemu/qemu-binary';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
@@ -34,6 +36,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   generalSettingsForm: UntypedFormGroup;
   selectPlatform: string[] = [];
   selectedPlatform: string;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
 
   @ViewChild('customAdaptersConfigurator')
@@ -64,6 +67,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       this.getConfiguration();
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
+        if (!this.qemuTemplate.tags) {
+          this.qemuTemplate.tags = [];
+        }
         this.fillCustomAdapters();
       });
     });
@@ -173,5 +179,32 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.qemuTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.qemuTemplate) {
+      if (!this.qemuTemplate.tags) {
+        this.qemuTemplate.tags = [];
+      }
+      this.qemuTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.qemuTemplate.tags) {
+      return;
+    }
+    const index = this.qemuTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.qemuTemplate.tags.splice(index, 1);
+    }
   }
 }

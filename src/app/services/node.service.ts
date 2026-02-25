@@ -132,6 +132,7 @@ export class NodeService {
       locked: node.locked,
       name: node.name,
       properties: node.properties,
+      tags: node.tags,
     });
   }
 
@@ -142,6 +143,7 @@ export class NodeService {
       custom_adapters: node.custom_adapters,
       name: node.name,
       properties: node.properties,
+      tags: node.tags,
     });
   }
 

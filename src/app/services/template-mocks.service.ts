@@ -62,6 +62,7 @@ export class TemplateMocksService {
       replicate_network_connection_state: true,
       tpm: false,
       uefi: false,
+      tags: [],
     };
 
     return of(template);
@@ -196,6 +197,7 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'dynamips',
       usage: '',
+      tags: [],
     };
 
     return of(template);

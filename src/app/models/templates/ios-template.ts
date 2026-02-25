@@ -41,4 +41,5 @@ export class IosTemplate {
   wic0?: string;
   wic1?: string;
   wic2?: string;
+  tags: string[];
 }

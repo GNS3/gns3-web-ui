@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
 import { IosConfigurationService } from '@services/ios-configuration.service';
@@ -30,6 +32,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   wicsForTemplate: string[] = [];
   adapterMatrix = {};
   wicMatrix = {};
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   generalSettingsForm: UntypedFormGroup;
   memoryForm: UntypedFormGroup;
@@ -80,6 +83,9 @@ export class IosTemplateDetailsComponent implements OnInit {
       this.getConfiguration();
       this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate = iosTemplate;
+        if (!this.iosTemplate.tags) {
+          this.iosTemplate.tags = [];
+        }
         this.fillSlotsData();
       });
     });
@@ -254,5 +260,32 @@ export class IosTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.iosTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.iosTemplate) {
+      if (!this.iosTemplate.tags) {
+        this.iosTemplate.tags = [];
+      }
+      this.iosTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.iosTemplate.tags) {
+      return;
+    }
+    const index = this.iosTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.iosTemplate.tags.splice(index, 1);
+    }
   }
 }
