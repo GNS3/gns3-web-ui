@@ -42,12 +42,28 @@ table {
   background: inherit;
 }
 
-.mat-elevation-z8 {
-  overflow-x: auto;
+.table-container {
+  overflow: visible;
   -webkit-overflow-scrolling: touch;
 }
 
+.mat-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.mat-table-sticky {
+  top: 0 !important;
+  z-index: 3 !important;
+}
+
 @media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
   .row {
     align-items: stretch;
     flex-direction: column;

@@ -18,7 +18,7 @@
   </form>
 
   <div class="default-content">
-    <div class="mat-elevation-z8">
+    <div class="mat-elevation-z8 table-container">
       <mat-table #table [dataSource]="dataSource | projectsfilter: searchText" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
