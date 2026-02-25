@@ -3,41 +3,73 @@
   <div class="default-content">
     <app-controller-discovery></app-controller-discovery>
 
+    <form>
+      <mat-form-field class="full-width controllers-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Search controllers"
+          [(ngModel)]="searchText"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </mat-form-field>
+    </form>
+
     <div class="mat-elevation-z8">
-      <mat-table #table [dataSource]="dataSource">
+      <mat-table #table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ row.id }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <a
-              *ngIf="getControllerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
+              *ngIf="getControllerStatus(row) === 'running'"
               [routerLink]="['/controller', row.id, 'login']"
               class="table-link"
               >{{ row.name }}</a
             >
+            <span *ngIf="getControllerStatus(row) != 'running'">{{ row.name }}</span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+          <mat-cell *matCellDef="let row">
             <span
-              *ngIf="getControllerStatus(row) != 'running' && row.location !== 'remote' && row.location !== 'bundled'"
-              >{{ row.name }}</span
+              class="status-chip"
+              [ngClass]="{
+                'status-running': getControllerStatus(row) === 'running',
+                'status-starting': getControllerStatus(row) === 'starting',
+                'status-stopped': getControllerStatus(row) === 'stopped'
+              }"
             >
+              {{
+                getControllerStatus(row) === 'starting'
+                  ? 'Starting'
+                  : getControllerStatus(row) === 'running'
+                    ? 'Running'
+                    : 'Stopped'
+              }}
+            </span>
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="location">
-          <mat-header-cell *matHeaderCellDef> Location </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Location </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ row.location }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="ip">
-          <mat-header-cell *matHeaderCellDef> Host </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Host </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ row.host }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="port">
-          <mat-header-cell *matHeaderCellDef> Port </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Port </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ row.port }} </mat-cell>
         </ng-container>
 
@@ -49,7 +81,7 @@
               matTooltip="Go to projects"
               matTooltipClass="custom-tooltip"
               (click)="openProjects(row)"
-              *ngIf="getControllerStatus(row) === 'running' || row.location === 'remote' || row.location === 'bundled'"
+              *ngIf="getControllerStatus(row) === 'running'"
             >
               <mat-icon aria-label="Go to projects">arrow_forward</mat-icon>
             </button>
@@ -90,7 +122,7 @@
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
     </div>

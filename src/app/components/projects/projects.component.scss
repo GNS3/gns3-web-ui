@@ -1,23 +1,26 @@
 .import-button {
   height: 40px;
   width: 160px;
-  margin: 20px;
+  margin: 20px 0 20px 20px;
 }
 
 .add-button {
   height: 40px;
   width: 160px;
-  margin: 20px;
+  margin: 20px 0 20px 20px;
 }
 
 .full-width {
-  width: 940px;
-  margin-left: -470px;
-  left: 50%;
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  display: block;
 }
 
 .row {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 table {
   width: 100%;
@@ -29,4 +32,39 @@ table {
 
 .action{
   justify-content: center;
+}
+
+.mat-header-row {
+  z-index: 1;
+}
+
+.mat-header-cell {
+  background: inherit;
+}
+
+.mat-elevation-z8 {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .row h1 {
+    margin-bottom: 0;
+  }
+
+  .add-button,
+  .import-button {
+    width: 100%;
+    margin: 0;
+  }
+
+  .action {
+    justify-content: flex-end;
+  }
 }

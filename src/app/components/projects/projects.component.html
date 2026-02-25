@@ -2,10 +2,10 @@
   <div class="default-header">
     <div class="row">
       <h1 class="col">Projects</h1>
-      <button class="col" mat-raised-button color="primary" (click)="addBlankProject()" class="add-button">
+      <button class="col add-button" mat-raised-button color="primary" (click)="addBlankProject()">
         Add blank project
       </button>
-      <button class="col" mat-raised-button color="primary" (click)="importProject()" class="import-button">
+      <button class="col import-button" mat-raised-button color="primary" (click)="importProject()">
         Import project
       </button>
     </div>
@@ -88,7 +88,7 @@
 
         <ng-container matColumnDef="delete" >
           <mat-header-cell *matHeaderCellDef  class="action">
-            <button mat-button   matTooltip="Delete all projects"   matTooltipClass="custom-tooltip"*ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+            <button mat-button   matTooltip="Delete all projects"   matTooltipClass="custom-tooltip"*ngIf="selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
              <mat-icon>delete</mat-icon>
             </button>
           </mat-header-cell>
@@ -99,7 +99,7 @@
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
     </div>

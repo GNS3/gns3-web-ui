@@ -74,3 +74,37 @@ header {
 .mat-dialog-content > * {
   width: 100%;
 }
+
+@media (max-width: 768px) {
+  .default-content,
+  .default-header {
+    max-width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .default-header h1 {
+    font-size: 18px;
+    padding: 18px 0;
+  }
+
+  .buttons-bar {
+    text-align: left;
+  }
+
+  .footer {
+    font-size: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .mat-toolbar {
+    min-height: 56px;
+    padding: 0 8px;
+  }
+
+  .mat-toolbar-row,
+  .mat-toolbar-single-row {
+    height: 56px;
+  }
+}

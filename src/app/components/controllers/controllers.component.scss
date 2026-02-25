@@ -9,6 +9,57 @@ table {
   width: 100%;
 }
 
+.full-width {
+  width: 100%;
+}
+
+.controllers-search {
+  margin-top: 12px;
+}
+
 mat-header-cell, mat-cell {
   justify-content: center;
+}
+
+.mat-header-row {
+  z-index: 1;
+}
+
+.mat-header-cell {
+  background: inherit;
+}
+
+.mat-elevation-z8 {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.status-chip {
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 10px;
+}
+
+.status-running {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-starting {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-stopped {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+@media (max-width: 768px) {
+  .button {
+    margin: 10px 0 !important;
+    width: 100%;
+  }
 }
