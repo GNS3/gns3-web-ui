@@ -162,6 +162,7 @@ export class TemplateMocksService {
       symbol: 'ethernet_switch',
       template_id: '',
       template_type: 'ethernet_switch',
+      tags: [],
     };
 
     return of(template);
