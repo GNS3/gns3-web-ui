@@ -15,6 +15,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ImageUploadSessionService } from '@services/image-upload-session.service';
 
 export class MockedImageManagerService {
   public getImages(controller: Controller ) {
@@ -30,6 +31,7 @@ describe('AddImageDialogComponent', () => {
   let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
+  let mockedImageUploadSessionService = jasmine.createSpyObj('ImageUploadSessionService', ['emit']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -47,6 +49,7 @@ describe('AddImageDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
+        { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
       ],
       declarations: [ AddImageDialogComponent ],
       schemas: [NO_ERRORS_SCHEMA],

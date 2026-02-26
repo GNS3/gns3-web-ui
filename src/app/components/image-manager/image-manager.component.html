@@ -1,14 +1,14 @@
 <div class="content">
   <div class="default-header">
-    <div class="row">
-      <h1 class="col">Image Manager</h1>
-      <button mat-raised-button color="primary" (click)="installAllImages()" class="install-all-button">
+    <div class="row image-manager-header">
+      <h1 class="col title">Image Manager</h1>
+      <button mat-raised-button color="primary" (click)="installAllImages()" class="install-all-button action-button">
         <mat-icon>done_all</mat-icon> Install all images
       </button>
-      <button mat-raised-button color="primary" (click)="pruneImages()" class="prune-button">
+      <button mat-raised-button color="primary" (click)="pruneImages()" class="prune-button action-button">
         <mat-icon>delete</mat-icon> Prune Images
       </button>
-      <button mat-raised-button color="primary" (click)="addImageDialog()" class="add-button">
+      <button mat-raised-button color="primary" (click)="addImageDialog()" class="add-button action-button">
         <mat-icon>add</mat-icon> Add Image
       </button>
     </div>
@@ -17,52 +17,92 @@
   <div class="default-content">
     <app-controller-discovery></app-controller-discovery>
 
-    <div class="mat-elevation-z8">
-      <mat-table #table [dataSource]="dataSource">
+    <form>
+      <mat-form-field class="full-width images-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Search images"
+          [(ngModel)]="searchText"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </mat-form-field>
+    </form>
+
+    <div class="mat-elevation-z8 table-container">
+      <mat-table #table [dataSource]="dataSource" [trackBy]="trackByRow" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? selectAllImages() : null" [checked]="selection.hasValue() && isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()">
+            <mat-checkbox
+              (change)="$event ? selectAllImages() : null"
+              [checked]="hasSelection() && isAllSelected()"
+              [indeterminate]="hasSelection() && !isAllSelected()">
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-              [checked]="selection.isSelected(row)">
+            <mat-checkbox (click)="onRowCheckboxClick($event, row)"
+              [checked]="isRowSelected(row)"
+              [disabled]="!isPersistedRow(row)">
             </mat-checkbox>
           </mat-cell>
 
         </ng-container>
 
         <ng-container matColumnDef="filename">
-          <mat-header-cell *matHeaderCellDef> File Name </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> File Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <mat-list-item role="listitem">{{ row.filename }}</mat-list-item>
+            <div class="row-content">
+              <mat-list-item role="listitem">{{ row.filename }}</mat-list-item>
+              <div *ngIf="hasUploadState(row)" class="upload-status">
+                <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0"></mat-progress-bar>
+                <span class="upload-text" [ngClass]="{ 'upload-error': row.uploadStatus === 'error' }">
+                  {{ row.uploadStatus | titlecase }} {{ row.uploadProgress || 0 }}%
+                  <span *ngIf="row.errorMessage"> - {{ row.errorMessage }}</span>
+                </span>
+              </div>
+            </div>
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="image_type">
-          <mat-header-cell *matHeaderCellDef> Image Type </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Image Type </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ row.image_type }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="image_size">
-          <mat-header-cell *matHeaderCellDef> Image Size </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ (row.image_size/1000000).toFixed()}} MB </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Image Size </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ formatImageSize(row) }} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="created_at">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Created </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.created_at ? (row.created_at | date:'short') : '-' }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="delete" >
           <mat-header-cell *matHeaderCellDef>
-            <button mat-button *ngIf="(selection.hasValue() && isAllSelected())  || selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+            <button mat-button *ngIf="(hasSelection() && isAllSelected()) || selectedCount() > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-header-cell>
           <mat-cell *matCellDef="let row" >
-            <button mat-button  *ngIf="selection.isSelected(row)" (click)="deleteFile(row.path)" aria-label="Example icon button with a delete icon">
+            <button mat-button *ngIf="isPersistedRow(row) && isRowSelected(row)" (click)="deleteFile(row.path)" aria-label="Example icon button with a delete icon">
               <mat-icon>delete</mat-icon>
+            </button>
+            <button
+              mat-button
+              *ngIf="hasUploadState(row) && (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued')"
+              (click)="cancelUpload(row)"
+              matTooltip="Cancel upload"
+              matTooltipClass="custom-tooltip"
+              aria-label="Cancel upload"
+            >
+              <mat-icon>cancel</mat-icon>
             </button>
           </mat-cell>
         </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
     </div>

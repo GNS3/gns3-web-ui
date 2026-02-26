@@ -21,6 +21,8 @@ import { MockedVersionService } from '@services/version.service.spec';
 import { VersionService } from 'app/services/version.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
+import { ImageUploadSessionService } from '@services/image-upload-session.service';
+import { Subject } from 'rxjs';
 
 export class MockedImageManagerService {
   public getImages(controller: Controller ) {
@@ -43,6 +45,7 @@ describe('ImageManagerComponent', () => {
   let mockedVersionService = new MockedVersionService()
   let mockedToasterService = new MockedToasterService()
   let activatedRoute = new MockedActivatedRoute().get();
+  let mockedImageUploadSessionService = { events$: new Subject() };
 
 
   beforeEach(async () => {
@@ -64,6 +67,7 @@ describe('ImageManagerComponent', () => {
         { provide: ProgressService, useValue: mockedProgressService },
         { provide: VersionService, useValue: mockedVersionService },
         { provide: ToasterService, useValue: mockedToasterService },
+        { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
       ],
       declarations: [ImageManagerComponent],
       schemas: [NO_ERRORS_SCHEMA],
