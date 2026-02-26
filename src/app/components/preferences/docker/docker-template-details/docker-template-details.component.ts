@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
@@ -19,6 +21,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
   dockerTemplate: DockerTemplate;
 
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
@@ -55,6 +58,9 @@ export class DockerTemplateDetailsComponent implements OnInit {
       this.getConfiguration();
       this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {
         this.dockerTemplate = dockerTemplate;
+        if (!this.dockerTemplate.tags) {
+          this.dockerTemplate.tags = [];
+        }
       });
     });
   }
@@ -86,5 +92,32 @@ export class DockerTemplateDetailsComponent implements OnInit {
 
   symbolChanged(chosenSymbol: string) {
     this.dockerTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.dockerTemplate) {
+      if (!this.dockerTemplate.tags) {
+        this.dockerTemplate.tags = [];
+      }
+      this.dockerTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.dockerTemplate.tags) {
+      return;
+    }
+    const index = this.dockerTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.dockerTemplate.tags.splice(index, 1);
+    }
   }
 }

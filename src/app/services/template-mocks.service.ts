@@ -256,6 +256,7 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'docker',
       usage: '',
+      tags: [],
     };
 
     return of(template);
