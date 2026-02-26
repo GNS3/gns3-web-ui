@@ -81,6 +81,7 @@ export class TemplateMocksService {
       symbol: 'vpcs_guest',
       template_id: '',
       template_type: 'vpcs',
+      tags: [],
     };
 
     return of(template);
