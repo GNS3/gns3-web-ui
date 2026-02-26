@@ -4,6 +4,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
@@ -15,7 +18,7 @@ import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-s
 import { ActivatedRoute, Router } from '@angular/router';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { MockedRouter } from 'app/common/progress/progress.component.spec';
 import { of } from 'rxjs';
 
@@ -51,7 +54,10 @@ describe('ControllersComponent', () => {
       imports: [
         MatDialogModule,
         RouterTestingModule,
-        MatBottomSheetModule
+        MatBottomSheetModule,
+        MatTableModule,
+        MatSortModule,
+        NoopAnimationsModule
       ],
       providers: [
         MatDialog,
@@ -64,13 +70,25 @@ describe('ControllersComponent', () => {
         { provide: ControllerManagementService, useValue: mockedControllerManagementService },
         { provide: ActivatedRoute, useValue: mockedActivatedRoute },
         { provide: Router, useValue: mockedRouter },
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ControllersComponent);
     component = fixture.componentInstance;
+
+    // Initialize the sort property before detectChanges to prevent undefined error
+    component.sort = {
+      sort: jasmine.createSpy('sort'),
+      sortChange: of({}),
+      direction: '',
+      disableClear: false,
+      start: 'asc',
+      active: 'id'
+    } as any;
+
     fixture.detectChanges();
   });
   it('should create', () => {
