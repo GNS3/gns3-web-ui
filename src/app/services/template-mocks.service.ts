@@ -284,6 +284,7 @@ export class TemplateMocksService {
       template_type: 'iou',
       usage: '',
       use_default_iou_values: true,
+      tags: [],
     };
 
     return of(template);
