@@ -17,6 +17,7 @@ import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-sna
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChangeDetectorRef } from '@angular/core';
 import { MockedRouter } from 'app/common/progress/progress.component.spec';
+import { of } from 'rxjs';
 
 describe('ControllersComponent', () => {
   let component: ControllersComponent;
@@ -24,11 +25,26 @@ describe('ControllersComponent', () => {
   let controllerMockedService: MockedControllerService
   let mockedActivatedRoute: MockedActivatedRoute
   let mockedRouter: MockedRouter
+  let mockedControllerManagementService: any;
 
   beforeEach(async () => {
     controllerMockedService = new MockedControllerService();
+    // Add missing properties that the component expects
+    controllerMockedService['isServiceInitialized'] = true;
+    controllerMockedService['serviceInitialized'] = of(true);
+    controllerMockedService['checkControllerVersion'] = jasmine.createSpy('checkControllerVersion').and.returnValue(of({ version: '3.0.0' }));
+    controllerMockedService['delete'] = jasmine.createSpy('delete').and.returnValue(Promise.resolve());
+
     mockedActivatedRoute = new MockedActivatedRoute();
     mockedRouter = new MockedRouter();
+
+    // Mock ControllerManagementService
+    mockedControllerManagementService = {
+      getRunningControllers: jasmine.createSpy('getRunningControllers').and.returnValue([]),
+      controllerStatusChanged: of({}),
+      start: jasmine.createSpy('start').and.returnValue(Promise.resolve()),
+      stop: jasmine.createSpy('stop').and.returnValue(Promise.resolve())
+    };
 
     await TestBed.configureTestingModule({
       declarations: [ControllersComponent],
@@ -40,12 +56,12 @@ describe('ControllersComponent', () => {
       providers: [
         MatDialog,
         ControllerDatabase,
-        ControllerManagementService,
         ElectronService,
         MatBottomSheet,
         ChildProcessService,
         ChangeDetectorRef,
         { provide: ControllerService, useValue: controllerMockedService },
+        { provide: ControllerManagementService, useValue: mockedControllerManagementService },
         { provide: ActivatedRoute, useValue: mockedActivatedRoute },
         { provide: Router, useValue: mockedRouter },
       ]
