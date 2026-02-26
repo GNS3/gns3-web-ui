@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { IouConfigurationService } from '@services/iou-configuration.service';
@@ -18,6 +20,7 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   name: string;
   generalSettingsForm: UntypedFormGroup;
   networkForm: UntypedFormGroup;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
 
   constructor(
@@ -42,6 +45,9 @@ export class ConfiguratorDialogIouComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
     });
   }
 
@@ -62,5 +68,32 @@ export class ConfiguratorDialogIouComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

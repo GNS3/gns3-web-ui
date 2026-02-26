@@ -10,4 +10,5 @@ export interface EthernetHubTemplate {
   symbol: string;
   template_id: string;
   template_type: string;
+  tags?: string[];
 }

@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
 import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
@@ -19,6 +21,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   controller: Controller;
   virtualBoxTemplate: VirtualBoxTemplate;
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   onCloseOptions = [];
   categories = [];
@@ -65,6 +68,9 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         .getTemplate(this.controller, template_id)
         .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
           this.virtualBoxTemplate = virtualBoxTemplate;
+          if (!this.virtualBoxTemplate.tags) {
+            this.virtualBoxTemplate.tags = [];
+          }
           this.fillCustomAdapters();
         });
     });
@@ -139,5 +145,32 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.virtualBoxTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.virtualBoxTemplate) {
+      if (!this.virtualBoxTemplate.tags) {
+        this.virtualBoxTemplate.tags = [];
+      }
+      this.virtualBoxTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.virtualBoxTemplate.tags) {
+      return;
+    }
+    const index = this.virtualBoxTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.virtualBoxTemplate.tags.splice(index, 1);
+    }
   }
 }

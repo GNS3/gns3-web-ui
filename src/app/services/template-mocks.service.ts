@@ -62,6 +62,7 @@ export class TemplateMocksService {
       replicate_network_connection_state: true,
       tpm: false,
       uefi: false,
+      tags: [],
     };
 
     return of(template);
@@ -80,6 +81,7 @@ export class TemplateMocksService {
       symbol: 'vpcs_guest',
       template_id: '',
       template_type: 'vpcs',
+      tags: [],
     };
 
     return of(template);
@@ -110,6 +112,7 @@ export class TemplateMocksService {
       usage: '',
       use_any_adapter: false,
       vmname: '',
+      tags: [],
     };
 
     return of(template);
@@ -127,6 +130,7 @@ export class TemplateMocksService {
       symbol: 'cloud',
       template_id: '',
       template_type: 'cloud',
+      tags: [],
     } as CloudTemplate;
 
     return of(template);
@@ -143,6 +147,7 @@ export class TemplateMocksService {
       symbol: 'hub',
       template_id: '',
       template_type: 'ethernet_hub',
+      tags: [],
     };
 
     return of(template);
@@ -160,6 +165,7 @@ export class TemplateMocksService {
       symbol: 'ethernet_switch',
       template_id: '',
       template_type: 'ethernet_switch',
+      tags: [],
     };
 
     return of(template);
@@ -196,6 +202,7 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'dynamips',
       usage: '',
+      tags: [],
     };
 
     return of(template);
@@ -225,6 +232,7 @@ export class TemplateMocksService {
       usage: '',
       use_any_adapter: false,
       vmx_path: '',
+      tags: [],
     };
 
     return of(template);
@@ -254,6 +262,7 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'docker',
       usage: '',
+      tags: [],
     };
 
     return of(template);
@@ -281,6 +290,7 @@ export class TemplateMocksService {
       template_type: 'iou',
       usage: '',
       use_default_iou_values: true,
+      tags: [],
     };
 
     return of(template);

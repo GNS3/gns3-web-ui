@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { Node } from '../../../../../cartography/models/node';
 import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
@@ -20,6 +22,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   onCloseOptions = [];
   bootPriorities = [];
@@ -54,6 +57,10 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
+
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
 
       this.portsMappingEthernet = this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet');
 
@@ -108,5 +115,32 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

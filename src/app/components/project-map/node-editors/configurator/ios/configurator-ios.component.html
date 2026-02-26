@@ -14,6 +14,19 @@
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
               </mat-form-field>
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-list #chipList>
+                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                </mat-chip-list>
+                <input matInput placeholder="Add tags"
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       (matChipInputTokenEnd)="addTag($event)" />
+              </mat-form-field>
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="path" [(ngModel)]="node.properties.image" placeholder="IOS image path"/>
               </mat-form-field>

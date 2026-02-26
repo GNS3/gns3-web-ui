@@ -24,4 +24,5 @@ export interface VirtualBoxTemplate {
   usage: string;
   use_any_adapter: boolean;
   vmname: string;
+  tags?: string[];
 }

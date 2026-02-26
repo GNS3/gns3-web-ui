@@ -8,7 +8,7 @@ import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol } from '@models/controller';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
