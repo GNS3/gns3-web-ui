@@ -130,6 +130,7 @@ export class TemplateMocksService {
       symbol: 'cloud',
       template_id: '',
       template_type: 'cloud',
+      tags: [],
     } as CloudTemplate;
 
     return of(template);

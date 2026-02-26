@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { Controller } from '@models/controller';
 import { CloudTemplate } from '@models/templates/cloud-template';
@@ -11,13 +13,14 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
-  styleUrls: ['../../../preferences.component.scss'],
+  styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
   controller: Controller;
   cloudNodeTemplate: CloudTemplate;
 
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   categories = [];
   consoleTypes: string[] = [];
@@ -57,6 +60,10 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
         .getTemplate(this.controller, template_id)
         .subscribe((cloudNodeTemplate: CloudTemplate) => {
           this.cloudNodeTemplate = cloudNodeTemplate;
+
+          if (!this.cloudNodeTemplate.tags) {
+            this.cloudNodeTemplate.tags = [];
+          }
 
           this.portsMappingEthernet = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'ethernet');
 
@@ -127,5 +134,32 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.cloudNodeTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.cloudNodeTemplate) {
+      if (!this.cloudNodeTemplate.tags) {
+        this.cloudNodeTemplate.tags = [];
+      }
+      this.cloudNodeTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.cloudNodeTemplate.tags) {
+      return;
+    }
+    const index = this.cloudNodeTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.cloudNodeTemplate.tags.splice(index, 1);
+    }
   }
 }
