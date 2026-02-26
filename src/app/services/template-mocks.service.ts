@@ -232,6 +232,7 @@ export class TemplateMocksService {
       usage: '',
       use_any_adapter: false,
       vmx_path: '',
+      tags: [],
     };
 
     return of(template);

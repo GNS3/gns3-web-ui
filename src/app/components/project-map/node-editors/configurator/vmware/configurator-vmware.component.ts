@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { Controller } from '@models/controller';
@@ -18,6 +20,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   onCloseOptions = [];
 
@@ -43,6 +46,9 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
     });
   }
 
@@ -75,5 +81,32 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }
