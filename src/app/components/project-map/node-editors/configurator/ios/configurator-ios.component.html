@@ -88,7 +88,7 @@
                 <span matSuffix>MiB</span>
               </mat-form-field>
             </form>
-            <mat-form-field class="form-field" *ngIf="node.properties.iomem">
+            <mat-form-field class="form-field" *ngIf="['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(node.properties.platform)">
               <input
                 matInput
                 type="number"

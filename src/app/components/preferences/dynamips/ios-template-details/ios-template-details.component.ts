@@ -59,7 +59,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.memoryForm = this.formBuilder.group({
       ram: new UntypedFormControl('', Validators.required),
       nvram: new UntypedFormControl('', Validators.required),
-      iomemory: new UntypedFormControl('', Validators.required),
+      iomemory: new UntypedFormControl(''),
       disk0: new UntypedFormControl('', Validators.required),
       disk1: new UntypedFormControl('', Validators.required),
     });
@@ -211,9 +211,6 @@ export class IosTemplateDetailsComponent implements OnInit {
       }
       if (this.memoryForm.get('nvram').invalid) {
         missingFields.push('NVRAM size');
-      }
-      if (this.memoryForm.get('iomemory').invalid) {
-        missingFields.push('I/O memory');
       }
       if (this.memoryForm.get('disk0').invalid) {
         missingFields.push('PCMCIA disk0');

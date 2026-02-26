@@ -157,7 +157,7 @@
             />
             <span matSuffix>MB</span>
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field class="form-field" *ngIf="['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)">
             <input
               matInput
               type="number"
