@@ -23,9 +23,13 @@ describe('ControllersComponent', () => {
   let fixture: ComponentFixture<ControllersComponent>;
   let controllerMockedService: MockedControllerService
   let mockedActivatedRoute: MockedActivatedRoute
-  let mockedRouter  : MockedRouter
+  let mockedRouter: MockedRouter
 
   beforeEach(async () => {
+    controllerMockedService = new MockedControllerService();
+    mockedActivatedRoute = new MockedActivatedRoute();
+    mockedRouter = new MockedRouter();
+
     await TestBed.configureTestingModule({
       declarations: [ControllersComponent],
       imports: [
