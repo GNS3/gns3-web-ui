@@ -144,6 +144,7 @@ export class TemplateMocksService {
       symbol: 'hub',
       template_id: '',
       template_type: 'ethernet_hub',
+      tags: [],
     };
 
     return of(template);
