@@ -111,6 +111,7 @@ export class TemplateMocksService {
       usage: '',
       use_any_adapter: false,
       vmname: '',
+      tags: [],
     };
 
     return of(template);
