@@ -62,6 +62,118 @@ This document outlines the step-by-step plan to upgrade GNS3 Web UI from Angular
 5. **Standalone Components** - New feature (optional to adopt)
 6. **Router migrations** - Check for router configuration changes
 
+### Upgrade Method Assessment
+
+#### Current Project Status
+- **Current Angular Version**: 14.3.0
+- **Current TypeScript**: 4.6.4
+- **Current RxJS**: 6.6.7 (with rxjs-compat)
+- **Current Zone.js**: 0.11.5
+- **Current Node.js**: v24.13.0 ✅ (Meets Angular 15 requirements)
+
+#### Angular 15 Requirements
+- **Node.js**: ^14.20.0 || ^16.13.0 || ^18.10.0
+- **TypeScript**: ~4.8.2
+- **RxJS**: ^6.5.3 || ^7.4.0
+
+#### ✅ Recommended: Use `ng update` for Migration
+
+**Why use `ng update`:**
+1. **Automated Migration Scripts** - Angular 15 provides built-in migration schematics that handle many breaking changes automatically
+2. **Lower Risk** - Official tool that has been thoroughly tested
+3. **Time Saving** - Automates most of the tedious update work
+4. **Version Consistency** - Ensures all related packages are coordinated
+
+**Two-Step Upgrade Process:**
+
+**Step 1: Update Angular Core**
+```bash
+ng update @angular/core @angular/cli --from 14 --to 15
+```
+This will automatically:
+- Update dependencies in package.json
+- Run migration schematics
+- Update TypeScript to 4.8.x
+- Handle most breaking changes
+
+**Step 2: Update Angular Material**
+```bash
+ng update @angular/material @angular/cdk --from 14 --to 15
+```
+This will run Material-specific migrations
+
+#### ⚠️ Manual Changes Required
+
+Even with `ng update`, these items need manual attention:
+
+**1. RxJS 6 → 7 Upgrade (Critical)**
+```json
+// Remove from package.json
+"rxjs-compat": "^6.6.7"  // ❌ Delete this
+
+// Update rxjs
+"rxjs": "^7.5.0"  // ✅ Upgrade to 7.x
+```
+RxJS 7 removed many deprecated APIs. The `rxjs-compat` package is for backward compatibility and is no longer needed in RxJS 7.
+
+**2. Zone.js Upgrade**
+```json
+"zone.js": "^0.12.0"  // Update from 0.11.5
+```
+
+**3. Third-Party Dependency Compatibility**
+Verify these packages for Angular 15 compatibility:
+- `angular-draggable-droppable` (6.1.0) - Check for updates
+- `angular-resizable-element` (3.4.0) - Verify compatibility
+- `ng-circle-progress` (1.6.0) - May need replacement
+- `ng2-file-upload` (3.0.0) - Check Angular 15+ support
+- `ngx-device-detector` (4.0.1) - Verify compatibility
+- `d3-ng2-service` (2.2.0) - Check for updates
+
+**4. Expected Common Issues**
+- RxJS operator import errors (mostly auto-fixed by ng update)
+- Angular Material component API changes
+- TypeScript type errors (TypeScript 4.8 has stricter typing)
+
+#### Complete Upgrade Workflow
+
+```bash
+# 1. Create backup branch
+git checkout -b upgrade/angular-14-to-15
+
+# 2. Clean dependencies
+rm -rf node_modules yarn.lock
+
+# 3. Update Angular core
+ng update @angular/core @angular/cli --from 14 --to 15
+
+# 4. Manually edit package.json: remove rxjs-compat, update rxjs to ^7.5.0
+
+# 5. Update Angular Material
+ng update @angular/material @angular/cdk --from 14 --to 15
+
+# 6. Reinstall dependencies
+yarn install
+
+# 7. Build and check for errors
+ng build
+
+# 8. Run tests
+ng test
+
+# 9. Fix linting
+ng lint --fix
+
+# 10. Format code
+yarn prettier:write
+```
+
+#### Risk Assessment
+**Risk Level: Medium**
+- Angular 14→15 is a relatively smooth upgrade
+- Most changes can be handled automatically by ng update
+- Main effort is in RxJS upgrade and third-party dependency verification
+
 ### Migration Steps
 
 1. Update all Angular packages to 15.2.x

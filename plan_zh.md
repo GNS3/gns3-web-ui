@@ -62,6 +62,118 @@
 5. **独立组件** - 新功能（可选采用）
 6. **路由迁移** - 检查路由配置变更
 
+### 升级方法评估
+
+#### 当前项目状态
+- **当前 Angular 版本**：14.3.0
+- **当前 TypeScript**：4.6.4
+- **当前 RxJS**：6.6.7（带有 rxjs-compat）
+- **当前 Zone.js**：0.11.5
+- **当前 Node.js**：v24.13.0 ✅（满足 Angular 15 要求）
+
+#### Angular 15 要求
+- **Node.js**：^14.20.0 || ^16.13.0 || ^18.10.0
+- **TypeScript**：~4.8.2
+- **RxJS**：^6.5.3 || ^7.4.0
+
+#### ✅ 推荐使用 `ng update` 进行迁移
+
+**为什么使用 `ng update`：**
+1. **自动迁移脚本** - Angular 15 提供了内置的迁移 schematic，可以自动处理许多破坏性变更
+2. **降低风险** - 经过充分测试的官方工具
+3. **节省时间** - 自动化大部分繁琐的更新工作
+4. **版本一致性** - 确保所有相关包的版本协调
+
+**两步升级流程：**
+
+**第一步：更新 Angular 核心**
+```bash
+ng update @angular/core @angular/cli --from 14 --to 15
+```
+这将自动：
+- 更新 package.json 中的依赖
+- 运行迁移 schematic
+- 更新 TypeScript 到 4.8.x
+- 处理大部分破坏性变更
+
+**第二步：更新 Angular Material**
+```bash
+ng update @angular/material @angular/cdk --from 14 --to 15
+```
+这将运行 Material 特定的迁移
+
+#### ⚠️ 需要手动处理的变更
+
+即使使用 `ng update`，以下内容仍需手动处理：
+
+**1. RxJS 6 → 7 升级（关键）**
+```json
+// 从 package.json 中移除
+"rxjs-compat": "^6.6.7"  // ❌ 删除这个
+
+// 更新 rxjs
+"rxjs": "^7.5.0"  // ✅ 升级到 7.x
+```
+RxJS 7 移除了许多已废弃的 API。`rxjs-compat` 包是为了向后兼容的，在 RxJS 7 中不再需要。
+
+**2. Zone.js 升级**
+```json
+"zone.js": "^0.12.0"  // 从 0.11.5 升级
+```
+
+**3. 第三方依赖兼容性**
+验证这些包对 Angular 15 的兼容性：
+- `angular-draggable-droppable` (6.1.0) - 检查更新
+- `angular-resizable-element` (3.4.0) - 验证兼容性
+- `ng-circle-progress` (1.6.0) - 可能需要替换
+- `ng2-file-upload` (3.0.0) - 检查 Angular 15+ 支持
+- `ngx-device-detector` (4.0.1) - 验证兼容性
+- `d3-ng2-service` (2.2.0) - 检查更新
+
+**4. 预期的常见问题**
+- RxJS 操作符导入错误（大部分会被 ng update 自动修复）
+- Angular Material 组件 API 变更
+- TypeScript 类型错误（TypeScript 4.8 类型系统更严格）
+
+#### 完整升级流程
+
+```bash
+# 1. 创建备份分支
+git checkout -b upgrade/angular-14-to-15
+
+# 2. 清理依赖
+rm -rf node_modules yarn.lock
+
+# 3. 更新 Angular 核心
+ng update @angular/core @angular/cli --from 14 --to 15
+
+# 4. 手动编辑 package.json：移除 rxjs-compat，更新 rxjs 到 ^7.5.0
+
+# 5. 更新 Angular Material
+ng update @angular/material @angular/cdk --from 14 --to 15
+
+# 6. 重新安装依赖
+yarn install
+
+# 7. 构建并检查错误
+ng build
+
+# 8. 运行测试
+ng test
+
+# 9. 修复 lint
+ng lint --fix
+
+# 10. 格式化代码
+yarn prettier:write
+```
+
+#### 风险评估
+**风险等级：中等**
+- Angular 14→15 是一个相对平滑的升级
+- 大部分变更可以通过 ng update 自动处理
+- 主要工作量在 RxJS 升级和第三方依赖验证
+
 ### 迁移步骤
 
 1. 更新所有 Angular 包到 15.2.x
