@@ -7,11 +7,8 @@ describe('ConsoleService', () => {
   let settings: SettingsService;
 
   beforeEach(() => {
-    let defaultConsoleService = {
-      get: () => 'default',
-    };
     settings = TestBed.inject(SettingsService);
-    service = new ConsoleService(defaultConsoleService as any, settings as any);
+    service = new ConsoleService(settings);
   });
 
   it('should be created', () => {
@@ -23,8 +20,8 @@ describe('ConsoleService', () => {
     expect(service.command).toEqual('from_settings');
   });
 
-  it('should get command from default console if settings are not defined', () => {
-    settings.setConsoleSettings(undefined);
-    expect(service.command).toBe('undefined');
+  it('should get empty string if settings are not defined', () => {
+    localStorage.removeItem('console_command');
+    expect(service.command).toBe('');
   });
 });

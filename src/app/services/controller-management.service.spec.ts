@@ -1,94 +1,52 @@
 import { TestBed } from '@angular/core/testing';
-import { ElectronService } from 'ngx-electron';
 import { Controller } from '@models/controller';
 import { ControllerManagementService } from './controller-management.service';
 
 describe('ControllerManagementService', () => {
-  let electronService;
-  let callbacks;
-  let removed;
-  let controller;
-
-  beforeEach(() => {
-    callbacks = [];
-    removed = [];
-    controller = undefined;
-    electronService = {
-      isElectronApp: true,
-      ipcRenderer: {
-        on: (channel, callback) => {
-          callbacks.push({
-            channel: channel,
-            callback: callback,
-          });
-        },
-        removeAllListeners: (name) => {
-          removed.push(name);
-        },
-      },
-      remote: {
-        require: (file) => {
-          return {
-            startLocalController: (serv) => {
-              controller = serv;
-            },
-            stopLocalController: (serv) => {
-              controller = serv;
-            },
-          };
-        },
-      },
-    };
-  });
+  let service: ControllerManagementService;
 
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [
-        ControllerManagementService,
-        { provide: ElectronService, useValue: electronService },
-      ],
+      providers: [ControllerManagementService],
     })
   );
 
+  beforeEach(() => {
+    service = TestBed.get(ControllerManagementService);
+  });
+
   it('should be created', () => {
-    const service: ControllerManagementService = TestBed.get(ControllerManagementService);
     expect(service).toBeTruthy();
   });
 
-  it('should attach when running as electron app', () => {
-    TestBed.get(ControllerManagementService);
-    expect(callbacks.length).toEqual(1);
-    expect(callbacks[0].channel).toEqual('local-controller-status-events');
+  it('should have status channel', () => {
+    expect(service.statusChannel).toEqual('local-controller-status-events');
   });
 
-  it('should not attach when running as not electron app', () => {
-    electronService.isElectronApp = false;
-    TestBed.get(ControllerManagementService);
-    expect(callbacks.length).toEqual(0);
+  it('should throw error when trying to start local controller', async () => {
+    await expectAsync(service.start({ name: 'test' } as Controller)).toBeRejectedWithError(
+      'Local controller management is not supported in web-only mode. Please use the GNS3 CLI or traditional GNS3 GUI for local controller management.'
+    );
   });
 
-  it('should deattach when running as electron app', () => {
-    const service: ControllerManagementService = TestBed.get(ControllerManagementService);
-    service.ngOnDestroy();
-    expect(removed).toEqual(['local-controller-status-events']);
+  it('should throw error when trying to stop local controller', async () => {
+    await expectAsync(service.stop({ name: 'test' } as Controller)).toBeRejectedWithError(
+      'Local controller management is not supported in web-only mode. Please use the GNS3 CLI or traditional GNS3 GUI for local controller management.'
+    );
   });
 
-  it('should not deattach when running as not electron app', () => {
-    electronService.isElectronApp = false;
-    const service: ControllerManagementService = TestBed.get(ControllerManagementService);
-    service.ngOnDestroy();
-    expect(removed).toEqual([]);
+  it('should throw error when trying to stop all local controllers', async () => {
+    await expectAsync(service.stopAll()).toBeRejectedWithError(
+      'Local controller management is not supported in web-only mode. Please use the GNS3 CLI or traditional GNS3 GUI for local controller management.'
+    );
   });
 
-  it('should start local controller', async () => {
-    const service: ControllerManagementService = TestBed.get(ControllerManagementService);
-    await service.start({ name: 'test' } as Controller );
-    expect(controller).toEqual({ name: 'test' });
+  it('should return empty array for running controllers', () => {
+    const runningControllers = service.getRunningControllers();
+    expect(runningControllers).toEqual([]);
   });
 
-  it('should stop local controller', async () => {
-    const service: ControllerManagementService = TestBed.get(ControllerManagementService);
-    await service.stop({ name: 'test2' } as Controller );
-    expect(controller).toEqual({ name: 'test2' });
+  it('should cleanup on destroy', () => {
+    expect(() => service.ngOnDestroy()).not.toThrow();
   });
 });

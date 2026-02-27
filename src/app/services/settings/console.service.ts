@@ -11,7 +11,7 @@ export class ConsoleService {
 
   get command(): string {
     const command = this.settingsService.getConsoleSettings();
-    if (command === undefined) {
+    if (command === undefined || command === null) {
       // Return empty string as default in web-only mode
       return '';
     }

@@ -1,24 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { ElectronService } from 'ngx-electron';
 import { PlatformService } from './platform.service';
 
-class ElectronServiceMock {
-  process = {
-    platform: 'unknown',
-  };
-}
-
 describe('PlatformService', () => {
-  let electronServiceMock: ElectronServiceMock;
   let service: PlatformService;
 
   beforeEach(() => {
-    electronServiceMock = new ElectronServiceMock();
-  });
-
-  beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [PlatformService, { provide: ElectronService, useValue: electronServiceMock }],
+      providers: [PlatformService],
     });
   });
 
@@ -30,24 +18,48 @@ describe('PlatformService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should be on windows platform', () => {
-    electronServiceMock.process.platform = 'win32';
+  it('should detect Windows platform', () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      configurable: true,
+    });
     expect(service.isWindows()).toBeTruthy();
     expect(service.isDarwin()).toBeFalsy();
     expect(service.isLinux()).toBeFalsy();
+    Object.defineProperty(navigator, 'userAgent', {
+      value: originalUserAgent,
+      configurable: true,
+    });
   });
 
-  it('should be on linux platform', () => {
-    electronServiceMock.process.platform = 'linux';
+  it('should detect Linux platform', () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (X11; Linux x86_64)',
+      configurable: true,
+    });
     expect(service.isWindows()).toBeFalsy();
     expect(service.isDarwin()).toBeFalsy();
     expect(service.isLinux()).toBeTruthy();
+    Object.defineProperty(navigator, 'userAgent', {
+      value: originalUserAgent,
+      configurable: true,
+    });
   });
 
-  it('should be on darwin platform', () => {
-    electronServiceMock.process.platform = 'darwin';
+  it('should detect Darwin/Mac platform', () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+      configurable: true,
+    });
     expect(service.isWindows()).toBeFalsy();
     expect(service.isDarwin()).toBeTruthy();
     expect(service.isLinux()).toBeFalsy();
+    Object.defineProperty(navigator, 'userAgent', {
+      value: originalUserAgent,
+      configurable: true,
+    });
   });
 });

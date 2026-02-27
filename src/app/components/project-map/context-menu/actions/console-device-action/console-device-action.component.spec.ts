@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
-import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -15,7 +14,6 @@ import { ConsoleDeviceActionComponent } from './console-device-action.component'
 describe('ConsoleDeviceActionComponent', () => {
   let component: ConsoleDeviceActionComponent;
   let fixture: ComponentFixture<ConsoleDeviceActionComponent>;
-  let electronService;
   let controller: Controller;
   let settingsService: SettingsService;
   let mockedControllerService: MockedControllerService;
@@ -23,17 +21,6 @@ describe('ConsoleDeviceActionComponent', () => {
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 
   beforeEach(() => {
-    electronService = {
-      isElectronApp: true,
-      remote: {
-        require: (file) => {
-          return {
-            openConsole() {},
-          };
-        },
-      },
-    };
-
     mockedControllerService = new MockedControllerService();
     mockedToaster = new MockedToasterService();
 
@@ -43,7 +30,6 @@ describe('ConsoleDeviceActionComponent', () => {
   beforeEach(async() => {
    await TestBed.configureTestingModule({
       providers: [
-        { provide: ElectronService, useValue: electronService },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: SettingsService },
         { provide: ToasterService, useValue: mockedToaster },
@@ -83,45 +69,26 @@ describe('ConsoleDeviceActionComponent', () => {
       ];
 
       component.nodes = nodes;
-      component.controller =  controller;
+      component.controller = controller;
 
       settingsService.setConsoleSettings('command');
-      spyOn(component, 'openConsole');
     });
 
-    it('should console to device', async () => {
+    it('should show error when trying to use native console in web-only mode', async () => {
       await component.console();
-
-      expect(component.openConsole).toHaveBeenCalledWith({
-        command: 'command',
-        type: 'telnet',
-        host: 'host',
-        port: 999,
-        name: 'Node 1',
-        project_id: '1111',
-        node_id: '2222',
-        controller_url: 'localhost:222',
-      });
+      expect(mockedToaster.errors).toEqual(['Native console launching is not supported in web-only mode. Please use the web console feature.']);
     });
 
-    it('should set command when it is not defined', async () => {
-      settingsService.setConsoleSettings(undefined);
-      await component.console();
-      expect(component.openConsole).toHaveBeenCalled();
-    });
-
-    it('should show message when there is no started nodes', async () => {
+    it('should show error when there is no started nodes', async () => {
       nodes[0]['status'] = 'stopped';
       await component.console();
-      expect(component.openConsole).not.toHaveBeenCalled();
+      expect(mockedToaster.errors).toEqual(['Device needs to be started in order to console to it.']);
     });
 
-    it('should only start running nodes', async () => {
-      nodes.push({
-        status: 'stopped',
-      } as Node);
+    it('should show error when node has no console type', async () => {
+      nodes[0]['console_type'] = 'none';
       await component.console();
-      expect(component.openConsole).toHaveBeenCalledTimes(1);
+      expect(mockedToaster.errors).toEqual(['Device needs to be started in order to console to it.']);
     });
   });
 });
