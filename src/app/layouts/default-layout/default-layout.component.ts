@@ -2,7 +2,6 @@ import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '@services/project.service';
-import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
@@ -28,7 +27,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public currentYear = new Date().getFullYear();
 
   controllerStatusSubscription: Subscription;
-  shouldStopControllersOnClosing = true;
   recentlyOpenedcontrollerId: string;
   recentlyOpenedProjectId: string;
   controllerIdProjectList: string;
@@ -38,7 +36,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private projectMapSubscription: Subscription = new Subscription();
 
   constructor(
-    private electronService: ElectronService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private controllerManagement: ControllerManagementService,
     private toasterService: ToasterService,
@@ -67,8 +64,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.controllerIdProjectList = this.recentlyOpenedProjectService.getcontrollerIdProjectList();
 
-    this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
-
     // attach to notification stream when any of running local controllers experienced issues
     this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe(
       (controllerStatus) => {
@@ -82,9 +77,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
         }
       }
     );
-
-    // stop controllers only when in Electron
-    this.shouldStopControllersOnClosing = this.electronService.isElectronApp;
   }
 
   goToDocumentation() {
@@ -122,20 +114,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       .catch((error) => this.toasterService.error('Cannot navigate to the last opened project'));
   }
 
-  @HostListener('window:beforeunload', ['$event'])
-  async onBeforeUnload($event) {
-    if (!this.shouldStopControllersOnClosing) {
-      return;
-    }
-    $event.preventDefault();
-    $event.returnValue = false;
-    this.progressService.activate();
-    await this.controllerManagement.stopAll();
-    this.shouldStopControllersOnClosing = false;
-    this.progressService.deactivate();
-    window.close();
-    return false;
-  }
   getData() {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.controller = controller;

@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
 import { SettingsService } from '../settings.service';
-import { DefaultConsoleService } from './default-console.service';
 
+/**
+ * Console service for web-only mode.
+ * Default console management has been removed as part of Electron removal.
+ */
 @Injectable()
 export class ConsoleService {
-  constructor(private defaultConsoleService: DefaultConsoleService, private settingsService: SettingsService) {}
+  constructor(private settingsService: SettingsService) {}
 
   get command(): string {
     const command = this.settingsService.getConsoleSettings();
     if (command === undefined) {
-      return this.defaultConsoleService.get();
+      // Return empty string as default in web-only mode
+      return '';
     }
     return command;
   }

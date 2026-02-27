@@ -4,8 +4,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ChildProcessService } from 'ngx-childprocess';
-import { ElectronService } from 'ngx-electron';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
@@ -24,7 +22,6 @@ export class ControllersComponent implements OnInit, OnDestroy {
   dataSource: ControllerDataSource;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
-  isElectronApp: boolean = false;
   searchText: string = '';
   private readonly minStartingDisplayMs = 700;
   private readonly statusRefreshIntervalMs = 5000;
@@ -40,24 +37,16 @@ export class ControllersComponent implements OnInit, OnDestroy {
     private controllerDatabase: ControllerDatabase,
     private controllerManagement: ControllerManagementService,
     private changeDetector: ChangeDetectorRef,
-    private electronService: ElectronService,
-    private childProcessService: ChildProcessService,
     private bottomSheet: MatBottomSheet,
     private route: ActivatedRoute,
     private router: Router
   ) { }
 
   getControllers() {
-    const runningControllerNames = this.controllerManagement.getRunningControllers();
-
+    // In web-only mode, there are no locally running controllers
     this.controllerService.findAll().then((controllers: Controller []) => {
       controllers.forEach((controller) => {
         controller.status = 'stopped';
-
-        const controllerIndex = runningControllerNames.findIndex((controllerName) => controller.name === controllerName);
-        if (controllerIndex >= 0) {
-          controller.status = 'running';
-        }
 
         if (!controller.protocol) {
           controller.protocol = location.protocol as ControllerProtocol;
@@ -73,8 +62,6 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isElectronApp = this.electronService.isElectronApp;
-
     if (this.controllerService && this.controllerService.isServiceInitialized) this.getControllers();
 
     if (this.controllerService && this.controllerService.isServiceInitialized) {

@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Console } from 'console';
 import { Controller } from '@models/controller';
 import { HttpController } from '@services/http-controller.service';
 import { DomSanitizer } from '@angular/platform-browser';

@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -16,7 +15,6 @@ export class ConsoleDeviceActionComponent implements OnInit {
   @Input() nodes: Node[];
 
   constructor(
-    private electronService: ElectronService,
     private controllerService: ControllerService,
     private settingsService: SettingsService,
     private toasterService: ToasterService,
@@ -26,9 +24,6 @@ export class ConsoleDeviceActionComponent implements OnInit {
   ngOnInit() {}
 
   async console() {
-    let consoleCommand = this.settingsService.getConsoleSettings()
-      ? this.settingsService.getConsoleSettings()
-      : this.nodeService.getDefaultCommand();
     const startedNodes = this.nodes.filter((node) => node.status === 'started' && node.console_type !== 'none');
 
     if (startedNodes.length === 0) {
@@ -36,26 +31,8 @@ export class ConsoleDeviceActionComponent implements OnInit {
       return;
     }
 
-    for (var node of this.nodes) {
-      if (node.status !== 'started' && node.console_type !== 'none') {
-        continue;
-      }
-
-      const consoleRequest = {
-        command: consoleCommand,
-        type: node.console_type,
-        host: node.console_host,
-        port: node.console,
-        name: node.name,
-        project_id: node.project_id,
-        node_id: node.node_id,
-        controller_url: this.controllerService.getControllerUrl(this.controller),
-      };
-      await this.openConsole(consoleRequest);
-    }
-  }
-
-  async openConsole(request) {
-    return await this.electronService.remote.require('./console-executor.js').openConsole(request);
+    // Native console launching is not supported in web-only mode.
+    // Use the web console instead (HttpConsoleActionComponent).
+    this.toasterService.error('Native console launching is not supported in web-only mode. Please use the web console feature.');
   }
 }

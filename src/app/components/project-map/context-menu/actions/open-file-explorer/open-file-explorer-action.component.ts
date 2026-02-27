@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-open-file-explorer-action',
@@ -11,11 +11,12 @@ export class OpenFileExplorerActionComponent implements OnInit {
   @Input() controller: Controller;
   @Input() node: Node;
 
-  constructor(private electronService: ElectronService) {}
+  constructor(private toasterService: ToasterService) {}
 
   ngOnInit() {}
 
   open() {
-    this.electronService.shell.openPath(this.node.node_directory);
+    // File explorer integration is not available in web-only mode
+    this.toasterService.error('File explorer integration is not available in web-only mode.');
   }
 }

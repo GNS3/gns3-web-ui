@@ -3,6 +3,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -14,7 +15,6 @@ import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FileUploadModule } from 'ng2-file-upload';
 import { NgxChildProcessModule } from 'ngx-childprocess';
-import { NgxElectronModule } from 'ngx-electron';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CartographyModule } from './cartography/cartography.module';
@@ -44,8 +44,6 @@ import { NodeLabelDraggedComponent } from '@components/drawings-listeners/node-l
 import { TextAddedComponent } from '@components/drawings-listeners/text-added/text-added.component';
 import { TextEditedComponent } from '@components/drawings-listeners/text-edited/text-edited.component';
 import { HelpComponent } from '@components/help/help.component';
-import { InstallSoftwareComponent } from '@components/installed-software/install-software/install-software.component';
-import { InstalledSoftwareComponent } from '@components/installed-software/installed-software.component';
 import { PageNotFoundComponent } from '@components/page-not-found/page-not-found.component';
 import { BuiltInPreferencesComponent } from '@components/preferences/built-in/built-in-preferences.component';
 import { CloudNodesAddTemplateComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
@@ -232,7 +230,6 @@ import { ExternalSoftwareDefinitionService } from '@services/external-software-d
 import { GoogleAnalyticsService } from '@services/google-analytics.service';
 import { HttpController, ControllerErrorHandler } from '@services/http-controller.service';
 import { InfoService } from '@services/info.service';
-import { InstalledSoftwareService } from '@services/installed-software.service';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { IouConfigurationService } from '@services/iou-configuration.service';
@@ -255,7 +252,6 @@ import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
-import { DefaultConsoleService } from '@services/settings/default-console.service';
 import { SnapshotService } from '@services/snapshot.service';
 import { SymbolService } from '@services/symbol.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
@@ -374,7 +370,6 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         ControllerDiscoveryComponent,
         NodeSelectInterfaceComponent,
         DrawLinkToolComponent,
-        InstalledSoftwareComponent,
         DrawingAddedComponent,
         DrawingResizedComponent,
         TextAddedComponent,
@@ -384,7 +379,6 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         DrawingDraggedComponent,
         LinkCreatedComponent,
         InterfaceLabelDraggedComponent,
-        InstallSoftwareComponent,
         StyleEditorDialogComponent,
         LinkStyleEditorDialogComponent,
         TextEditorDialogComponent,
@@ -572,6 +566,7 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
     ],
     imports: [
         BrowserModule,
+        CommonModule,
         HttpClientModule,
         AppRoutingModule,
         FormsModule,
@@ -579,7 +574,6 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         BrowserAnimationsModule,
         CdkTableModule,
         CartographyModule,
-        NgxElectronModule,
         FileUploadModule,
         MatSidenavModule,
         MatFormFieldModule,
@@ -634,7 +628,6 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         VirtualBoxService,
         BuiltInTemplatesService,
         IosService,
-        InstalledSoftwareService,
         ExternalSoftwareDefinitionService,
         PlatformService,
         IosConfigurationService,
@@ -652,7 +645,6 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         ControllerManagementService,
         MapScaleService,
         ConsoleService,
-        DefaultConsoleService,
         NodeCreatedLabelStylesFixer,
         NonNegativeValidator,
         RotationValidator,

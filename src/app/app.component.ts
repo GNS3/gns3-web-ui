@@ -3,7 +3,6 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from '@services/settings.service';
 import { ThemeService } from '@services/theme.service';
@@ -21,7 +20,6 @@ export class AppComponent implements OnInit {
     iconReg: MatIconRegistry,
     sanitizer: DomSanitizer,
     private settingsService: SettingsService,
-    private electronService: ElectronService,
     private themeService: ThemeService,
     private router: Router,
     private progressService: ProgressService

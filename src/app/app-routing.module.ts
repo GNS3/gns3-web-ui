@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { BundledControllerFinderComponent } from '@components/bundled-controller-finder/bundled-controller-finder.component';
 import { DirectLinkComponent } from '@components/direct-link/direct-link.component';
 import { HelpComponent } from '@components/help/help.component';
-import { InstalledSoftwareComponent } from '@components/installed-software/installed-software.component';
 import { LoginComponent } from '@components/login/login.component';
 import { PageNotFoundComponent } from '@components/page-not-found/page-not-found.component';
 import { BuiltInPreferencesComponent } from '@components/preferences/built-in/built-in-preferences.component';
@@ -115,7 +114,6 @@ const routes: Routes = [
           controller: ControllerResolve
         }
       },
-      { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
 
       { path: 'controller/:controller_ip/:controller_port/project/:project_id', component: DirectLinkComponent, canActivate: [LoginGuard] },

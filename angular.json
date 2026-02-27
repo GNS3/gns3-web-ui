@@ -81,33 +81,6 @@
                                 "with": "src/environments/environment.prod.ts"
                             }]
                         },
-                        "electronProd": {
-                            "budgets": [{
-                                "type": "anyComponentStyle",
-                                "maximumWarning": "6kb"
-                            }],
-                            "optimization": true,
-                            "outputHashing": "all",
-                            "sourceMap": false,
-                            "namedChunks": false,
-                            "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.electron.prod.ts"
-                            }]
-                        },
-                        "electronDev": {
-                            "budgets": [{
-                                "type": "anyComponentStyle",
-                                "maximumWarning": "6kb"
-                            }],
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.electron.ts"
-                            }]
-                        },
                         "githubProd": {
                             "budgets": [{
                                 "type": "anyComponentStyle",
@@ -135,12 +108,6 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "gns3-web-ui:build:production"
-                        },
-                        "electronProd": {
-                            "browserTarget": "gns3-web-ui:build:electronProd"
-                        },
-                        "electronDev": {
-                            "browserTarget": "gns3-web-ui:build:electronDev"
                         },
                         "githubProd": {
                             "browserTarget": "gns3-web-ui:build:githubProd"

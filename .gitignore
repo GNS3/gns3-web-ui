@@ -60,3 +60,4 @@ licenses.csv
 
 # external software
 /external
+dist/*
