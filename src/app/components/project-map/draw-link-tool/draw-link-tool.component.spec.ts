@@ -12,6 +12,7 @@ import { FontBBoxCalculator } from 'app/cartography/helpers/font-bbox-calculator
 import { FontFixer } from 'app/cartography/helpers/font-fixer';
 import { DrawingLineWidget } from 'app/cartography/widgets/drawing-line';
 import { DrawLinkToolComponent } from './draw-link-tool.component';
+import { NodeSelectInterfaceComponent } from '../node-select-interface/node-select-interface.component';
 
 describe('DrawLinkToolComponent', () => {
   let component: DrawLinkToolComponent;
@@ -19,7 +20,7 @@ describe('DrawLinkToolComponent', () => {
 
   beforeEach(async() => {
    await TestBed.configureTestingModule({
-      declarations: [DrawLinkToolComponent],
+      declarations: [DrawLinkToolComponent, NodeSelectInterfaceComponent],
       providers:[
         DrawingLineWidget,
         NodesEventSource,

@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ProgressDialogComponent } from './progress-dialog.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ProgressDialogComponent', () => {
   let component: ProgressDialogComponent;
@@ -18,12 +20,14 @@ describe('ProgressDialogComponent', () => {
         MatToolbarModule,
         MatMenuModule,
         MatCheckboxModule,
-        MatDialogModule
+        MatDialogModule,
+        MatProgressBarModule
       ],
       providers:[
         { provide: MatDialogRef, useValue: {}},
         { provide: MAT_DIALOG_DATA, useValue: {}},
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
 

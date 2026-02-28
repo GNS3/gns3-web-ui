@@ -5,6 +5,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { RouterTestingModule } from '@angular/router/testing';
 import { NodesDataSource } from 'app/cartography/datasources/nodes-datasource';
 import { MockedNodesDataSource } from 'app/components/project-map/project-map.component.spec';
 import { SnapshotService } from 'app/services/snapshot.service';
@@ -12,6 +13,9 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { MockedSnapshotService } from '../list-of-snapshots/list-of-snaphshots.component.spec';
 import { CreateSnapshotDialogComponent } from './create-snapshot-dialog.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('CreateSnapshotDialogComponent', () => {
   let component: CreateSnapshotDialogComponent;
@@ -28,8 +32,12 @@ describe('CreateSnapshotDialogComponent', () => {
         MatMenuModule,
         MatCheckboxModule,
         MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
         ReactiveFormsModule,
-        FormsModule
+        FormsModule,
+        RouterTestingModule,
+        BrowserAnimationsModule
       ],
       providers: [
         { provide: MatDialogRef, useValue: {} },

@@ -9,6 +9,7 @@ import {ResourcePoolsService} from "@services/resource-pools.service";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {UntypedFormBuilder} from "@angular/forms";
 import {PoolNameValidator} from "@components/resource-pools-management/add-resource-pool-dialog/PoolNameValidator";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 
 
@@ -46,6 +47,7 @@ describe('AddResourcePoolDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ AddResourcePoolDialogComponent ],
+      imports: [ MatFormFieldModule ],
       providers: [
         {provide: ToasterService, useClass: FakeToastService},
         {provide: ResourcePoolsService, useClass: FakeResourcePoolService},
