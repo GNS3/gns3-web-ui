@@ -7,7 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ImageManagerService } from 'app/services/image-manager.service';
 import { ControllerService } from '@services/controller.service';
 import { MockedControllerService } from '@services/controller.service.spec';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { Controller } from '@models/controller';
 
 import { AddImageDialogComponent } from './add-image-dialog.component';
@@ -31,7 +31,12 @@ describe('AddImageDialogComponent', () => {
   let mockedControllerService = new MockedControllerService();
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
-  let mockedImageUploadSessionService = jasmine.createSpyObj('ImageUploadSessionService', ['emit']);
+  let mockedImageUploadSessionService = {
+    cancelRequests$: new Subject(),
+    emit: jasmine.createSpy('emit'),
+    registerCancelHandler: jasmine.createSpy('registerCancelHandler'),
+    unregisterCancelHandler: jasmine.createSpy('unregisterCancelHandler'),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
