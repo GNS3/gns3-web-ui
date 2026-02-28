@@ -99,12 +99,15 @@ export class GraphDataManager {
     });
 
     this.getLinks().forEach((link: MapLink) => {
-      const source_id = link.nodes[0].nodeId;
-      const target_id = link.nodes[1].nodeId;
-      if (source_id in nodes_by_id) {
+      if (!link.nodes || link.nodes.length < 2) {
+        return;
+      }
+      const source_id = link.nodes[0]?.nodeId;
+      const target_id = link.nodes[1]?.nodeId;
+      if (source_id && source_id in nodes_by_id) {
         link.source = nodes_by_id[source_id];
       }
-      if (target_id in nodes_by_id) {
+      if (target_id && target_id in nodes_by_id) {
         link.target = nodes_by_id[target_id];
       }
 
