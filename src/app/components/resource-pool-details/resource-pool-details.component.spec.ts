@@ -5,7 +5,10 @@ import {ToasterService} from "@services/toaster.service";
 import {ActivatedRoute} from "@angular/router";
 import {ResourcePoolsService} from "@services/resource-pools.service";
 import {MatDialog} from "@angular/material/dialog";
-import {MatAutocomplete} from "@angular/material/autocomplete";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatIconModule} from "@angular/material/icon";
+import {MatDividerModule} from "@angular/material/divider";
 import {of} from "rxjs";
 import {HttpController} from "@services/http-controller.service";
 import {Project} from "@models/project";
@@ -39,7 +42,13 @@ describe('ResourcePoolDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ResourcePoolDetailsComponent, MatAutocomplete],
+      declarations: [ResourcePoolDetailsComponent],
+      imports: [
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatDividerModule
+      ],
       providers: [
         {provide: ToasterService, useClass: FakeToastService},
         {provide: ActivatedRoute, useClass: FakeActivatedRoute},

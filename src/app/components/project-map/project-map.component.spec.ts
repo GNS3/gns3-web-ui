@@ -66,6 +66,7 @@ import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-sna
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectMapComponent } from './project-map.component';
+import { AppTestingModule } from '../../testing/app-testing/app-testing.module';
 
 export class MockedProgressService {
   public activate() {}
@@ -273,6 +274,7 @@ xdescribe('ProjectMapComponent', () => {
         MatCheckboxModule,
         CommonModule,
         NoopAnimationsModule,
+        AppTestingModule,
       ],
       providers: [
         { provide: ActivatedRoute },

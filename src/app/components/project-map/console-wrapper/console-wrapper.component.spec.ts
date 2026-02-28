@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ToasterService } from '@services/toaster.service';
 import { MapSettingsService } from '@services/mapsettings.service';
@@ -6,6 +7,10 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
 import { ConsoleWrapperComponent } from './console-wrapper.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatIconModule } from '@angular/material/icon';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ConsoleWrapperComponent', () => {
   let fixture: ComponentFixture<ConsoleWrapperComponent>;
@@ -18,8 +23,17 @@ describe('ConsoleWrapperComponent', () => {
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, MatSnackBarModule],
-      providers: [NodeConsoleService, ThemeService, MapSettingsService, ToasterService]
+      declarations: [ConsoleWrapperComponent],
+      imports: [
+        CommonModule,
+        RouterTestingModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatIconModule,
+        BrowserAnimationsModule
+      ],
+      providers: [NodeConsoleService, ThemeService, MapSettingsService, ToasterService],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     toasterService = TestBed.inject(ToasterService);

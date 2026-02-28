@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog.component';
 
@@ -21,9 +22,10 @@ describe('NodesMenuConfirmationDialogComponent', () => {
         MatCheckboxModule,
         MatDialogModule,
         MatSnackBarModule,
+        MatDividerModule,
       ],
       providers: [
-       
+
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
       ],

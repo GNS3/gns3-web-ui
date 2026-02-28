@@ -19,6 +19,7 @@ import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.se
 import { ToasterService } from '@services/toaster.service';
 import { MockedToasterService } from '@services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
+import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
 
 class ElectronServiceMock {
   public isElectronApp: boolean;
@@ -52,6 +53,7 @@ describe('DefaultLayoutComponent', () => {
         HttpClientModule,
         RouterTestingModule,
         MatProgressSpinnerModule,
+        AppTestingModule,
       ],
       providers: [
         {
