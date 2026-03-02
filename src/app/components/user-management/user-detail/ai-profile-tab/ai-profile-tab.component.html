@@ -115,8 +115,7 @@
                     mat-icon-button
                     (click)="setActiveProfile(profile.name)"
                     [disabled]="(activeProfile$ | async)?.name === profile.name"
-                    [color]="(activeProfile$ | async)?.name === profile.name ? 'accent' : ''"
-                    matTooltip="Set as active">
+                    [class.active-btn]="(activeProfile$ | async)?.name === profile.name">
                     <mat-icon>check_circle</mat-icon>
                   </button>
                   <button

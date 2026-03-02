@@ -208,6 +208,20 @@
                   height: 20px;
                 }
 
+                &.active-btn {
+                  mat-icon {
+                    color: #4caf50;
+                  }
+
+                  &:hover {
+                    background-color: #e8f5e9;
+                  }
+                }
+
+                &:not(.active-btn):not(.delete-btn):hover {
+                  background-color: #f5f5f5;
+                }
+
                 &.delete-btn:hover {
                   background-color: #ffebee;
                 }
