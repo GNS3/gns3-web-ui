@@ -13,11 +13,9 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Provider</mat-label>
-      <mat-select formControlName="provider">
-        <mat-option *ngFor="let provider of providers" [value]="provider.value">
-          {{ provider.label }}
-        </mat-option>
-      </mat-select>
+      <input matInput formControlName="provider" placeholder="e.g.: openai, qwen, anthropic">
+      <mat-error>Provider is required</mat-error>
+      <mat-hint>Common providers: openai, qwen, anthropic, google, etc.</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">

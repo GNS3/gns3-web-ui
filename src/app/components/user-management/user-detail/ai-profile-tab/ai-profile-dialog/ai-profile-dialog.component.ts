@@ -20,14 +20,6 @@ export class AiProfileDialogComponent implements OnInit {
   mode: 'create' | 'edit';
   existingNames: string[];
 
-  providers = [
-    { value: 'openai', label: 'OpenAI' },
-    { value: 'qwen', label: 'Qwen' },
-    { value: 'anthropic', label: 'Anthropic' },
-    { value: 'google', label: 'Google' },
-    { value: 'custom', label: 'Custom' }
-  ];
-
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AiProfileDialogComponent>,
