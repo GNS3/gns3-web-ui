@@ -42,7 +42,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   currentVersion = 0;
 
   // Table columns
-  displayedColumns: string[] = ['name', 'provider', 'model', 'actions'];
+  displayedColumns: string[] = ['name', 'provider', 'model', 'temperature', 'actions'];
 
   constructor(
     private aiProfilesService: AiProfilesService,
