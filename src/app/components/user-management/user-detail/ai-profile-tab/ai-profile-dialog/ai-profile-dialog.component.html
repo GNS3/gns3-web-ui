@@ -65,7 +65,7 @@
         <mat-label>API Key</mat-label>
         <input matInput formControlName="api_key" type="password">
         <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
-        <mat-hint>API key will be encrypted on the server</mat-hint>
+        <mat-hint>API key will be encrypted on the server. Minimum length: 10 characters</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
