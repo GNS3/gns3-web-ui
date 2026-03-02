@@ -54,6 +54,41 @@
         <input matInput formControlName="top_p" type="number" step="0.1" min="0" max="1">
       </mat-form-field>
     </div>
+
+    <!-- Custom Fields Section -->
+    <div class="custom-fields-section">
+      <div class="section-header">
+        <h4>Custom Fields</h4>
+        <button mat-icon-button (click)="addCustomField()" matTooltip="Add custom field">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="custom-fields-list" *ngIf="customFields.length > 0; else emptyCustomFields">
+        <div class="custom-field-row" *ngFor="let field of customFields; let i = index; trackBy: trackByFn">
+          <mat-form-field appearance="outline" class="field-key">
+            <mat-label>Key</mat-label>
+            <input matInput [(ngModel)]="field.key" [ngModelOptions]="{standalone: true}" placeholder="e.g.: stream">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field-value">
+            <mat-label>Value</mat-label>
+            <input matInput [(ngModel)]="field.value" [ngModelOptions]="{standalone: true}" placeholder="e.g.: true">
+          </mat-form-field>
+
+          <button mat-icon-button (click)="removeCustomField(i)" matTooltip="Remove field" color="warn">
+            <mat-icon>remove_circle</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <ng-template #emptyCustomFields>
+        <div class="empty-custom-fields">
+          <mat-icon class="empty-icon">info</mat-icon>
+          <p>No custom fields. Click the + button to add custom parameters.</p>
+        </div>
+      </ng-template>
+    </div>
   </form>
 </mat-dialog-content>
 

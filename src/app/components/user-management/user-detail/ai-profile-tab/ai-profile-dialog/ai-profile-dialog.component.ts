@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AiProfile } from '@models/ai-profile';
@@ -10,6 +10,14 @@ export interface ProfileDialogData {
   existingNames: string[];
 }
 
+export interface CustomField {
+  key: string;
+  value: string;
+}
+
+// Standard fields that are already in the form
+const STANDARD_FIELDS = ['name', 'provider', 'model', 'api_key', 'base_url', 'temperature', 'max_tokens', 'top_p'];
+
 @Component({
   selector: 'app-ai-profile-dialog',
   templateUrl: './ai-profile-dialog.component.html',
@@ -19,6 +27,7 @@ export class AiProfileDialogComponent implements OnInit {
   form: FormGroup;
   mode: 'create' | 'edit';
   existingNames: string[];
+  customFields: CustomField[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -33,6 +42,11 @@ export class AiProfileDialogComponent implements OnInit {
   ngOnInit(): void {
     if (this.mode === 'edit' && this.data.profile) {
       this.form.patchValue(this.data.profile);
+
+      // Extract custom fields (non-standard fields)
+      this.customFields = Object.entries(this.data.profile)
+        .filter(([key]) => !STANDARD_FIELDS.includes(key))
+        .map(([key, value]) => ({ key, value: String(value) }));
     }
   }
 
@@ -122,6 +136,27 @@ export class AiProfileDialogComponent implements OnInit {
   }
 
   /**
+   * Add a new custom field
+   */
+  addCustomField(): void {
+    this.customFields.push({ key: '', value: '' });
+  }
+
+  /**
+   * Remove a custom field
+   */
+  removeCustomField(index: number): void {
+    this.customFields.splice(index, 1);
+  }
+
+  /**
+   * Track by function for custom fields
+   */
+  trackByFn(index: number, item: CustomField): string {
+    return `${index}-${item.key}`;
+  }
+
+  /**
    * Submit form
    */
   onSubmit(): void {
@@ -149,6 +184,13 @@ export class AiProfileDialogComponent implements OnInit {
     if (value.top_p !== null && value.top_p !== undefined && value.top_p !== '') {
       profile.top_p = value.top_p;
     }
+
+    // Add custom fields
+    this.customFields.forEach(field => {
+      if (field.key && field.key.trim() && field.value !== null && field.value !== undefined && field.value !== '') {
+        profile[field.key.trim()] = field.value;
+      }
+    });
 
     this.dialogRef.close(profile);
   }

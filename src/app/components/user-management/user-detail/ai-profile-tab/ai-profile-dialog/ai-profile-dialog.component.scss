@@ -1,6 +1,6 @@
 .profile-form {
   min-width: 400px;
-  max-width: 500px;
+  max-width: 600px;
 
   .full-width {
     width: 100%;
@@ -15,6 +15,73 @@
     mat-form-field {
       flex: 1;
       min-width: 120px;
+    }
+  }
+
+  .custom-fields-section {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #424242;
+      }
+    }
+
+    .custom-fields-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .custom-field-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+
+        .field-key {
+          flex: 1;
+          min-width: 150px;
+        }
+
+        .field-value {
+          flex: 1;
+          min-width: 150px;
+        }
+
+        button {
+          margin-top: 12px;
+        }
+      }
+    }
+
+    .empty-custom-fields {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #757575;
+      text-align: center;
+
+      .empty-icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+        opacity: 0.5;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
     }
   }
 }
