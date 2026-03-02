@@ -5,10 +5,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #f5f5f5;
-    border-radius: 8px;
+    margin-bottom: 16px;
 
     .toolbar-info {
       h3 {
@@ -20,7 +17,6 @@
       .subtitle {
         margin: 0;
         font-size: 13px;
-        color: #666;
       }
     }
 
@@ -49,7 +45,6 @@
 
     p {
       margin: 0;
-      color: #666;
     }
   }
 
@@ -58,117 +53,171 @@
     flex-direction: column;
     gap: 16px;
 
-    .active-card {
-      border-left: 4px solid #4caf50;
+    mat-card.active-card {
+      border-left: 3px solid #4caf50;
 
-      .active-icon {
-        color: #4caf50;
-        margin-right: 8px;
-        vertical-align: middle;
+      mat-card-header {
+        padding-bottom: 8px;
+
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          font-size: 16px;
+
+          .active-icon {
+            color: #4caf50;
+            margin-right: 8px;
+            font-size: 20px;
+          }
+        }
       }
 
-      .profile-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
+      mat-card-content {
+        padding-top: 0;
 
-        .info-item {
-          .label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 4px;
-          }
+        .profile-info {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 24px;
 
-          .value {
-            font-size: 14px;
-            font-weight: 500;
-
-            &.url {
-              font-family: monospace;
+          .info-item {
+            .label {
+              display: block;
               font-size: 12px;
-              word-break: break-all;
+              margin-bottom: 4px;
             }
-          }
-        }
-      }
-    }
 
-    .no-active-card {
-      border-left: 4px solid #ff9800;
-
-      .no-active-message {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        padding: 20px;
-        color: #666;
-
-        .icon {
-          font-size: 32px;
-          color: #ff9800;
-        }
-
-        p {
-          margin: 0;
-        }
-      }
-    }
-
-    .list-card {
-      .table-container {
-        overflow-x: auto;
-
-        .profiles-table {
-          width: 100%;
-
-          .name-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            .profile-name {
+            .value {
+              font-size: 14px;
               font-weight: 500;
-            }
 
-            mat-chip {
-              height: 20px;
-              font-size: 11px;
-
-              .chip-icon {
-                font-size: 14px;
-                width: 14px;
-                height: 14px;
+              &.url {
+                font-family: monospace;
+                font-size: 12px;
+                word-break: break-all;
               }
             }
           }
+        }
+      }
+    }
 
-          .provider-badge {
-            padding: 4px 8px;
-            background: #e3f2fd;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #1976d2;
+    mat-card.no-active-card {
+      border-left: 3px solid #ff9800;
+
+      mat-card-content {
+        .no-active-message {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px;
+
+          .icon {
+            font-size: 24px;
+            color: #ff9800;
           }
 
-          .model-name {
-            font-family: monospace;
-            font-size: 13px;
+          p {
+            margin: 0;
           }
+        }
+      }
+    }
 
-          .status-icon {
-            &.active-status {
-              color: #4caf50;
+    mat-card.list-card {
+      mat-card-header {
+        mat-card-title {
+          font-size: 16px;
+        }
+      }
+
+      mat-card-content {
+        padding: 0;
+
+        .table-container {
+          overflow-x: auto;
+
+          table.profiles-table {
+            width: 100%;
+
+            mat-header-row {
+              th {
+                font-weight: 500;
+              }
             }
-          }
 
-          .action-buttons {
-            display: flex;
-            gap: 4px;
+            mat-row {
+              td {
+                border-bottom: 1px solid #e0e0e0;
+              }
 
-            .delete-btn:hover {
-              background: #ffebee;
+              &:hover {
+                background-color: rgba(0, 0, 0, 0.04);
+              }
+            }
+
+            .name-cell {
+              display: flex;
+              align-items: center;
+              flex-wrap: nowrap;
+
+              .profile-name {
+                font-weight: 500;
+                flex-shrink: 0;
+              }
+
+              mat-chip-list {
+                display: inline-flex;
+                margin-left: 8px;
+                flex-shrink: 0;
+              }
+
+              mat-chip {
+                height: 20px;
+                font-size: 11px;
+
+                .chip-icon {
+                  font-size: 14px;
+                  width: 14px;
+                  height: 14px;
+                }
+              }
+            }
+
+            .provider-badge {
+              padding: 4px 8px;
+              background: #e3f2fd;
+              border-radius: 4px;
+              font-size: 12px;
+              color: #1976d2;
+            }
+
+            .model-name {
+              font-family: monospace;
+              font-size: 13px;
+            }
+
+            .status-icon {
+              &.active-status {
+                color: #4caf50;
+              }
+            }
+
+            .action-buttons {
+              display: flex;
+              gap: 4px;
+
+              button {
+                mat-icon {
+                  font-size: 20px;
+                  width: 20px;
+                  height: 20px;
+                }
+
+                &.delete-btn:hover {
+                  background-color: #ffebee;
+                }
+              }
             }
           }
         }
@@ -180,7 +229,6 @@
         align-items: center;
         justify-content: center;
         padding: 60px 20px;
-        color: #666;
 
         .empty-icon {
           font-size: 64px;
@@ -193,7 +241,6 @@
 
           &.empty-hint {
             font-size: 13px;
-            color: #999;
           }
         }
       }

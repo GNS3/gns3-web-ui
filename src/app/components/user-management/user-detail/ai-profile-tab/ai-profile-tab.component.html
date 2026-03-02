@@ -72,7 +72,7 @@
       </mat-card-header>
       <mat-card-content>
         <div class="table-container" *ngIf="profiles.length > 0">
-          <table mat-table [dataSource]="profiles" class="mat-elevation-z8 profiles-table">
+          <table mat-table [dataSource]="profiles" class="profiles-table">
 
             <!-- Name column -->
             <ng-container matColumnDef="name">
@@ -80,11 +80,8 @@
               <td mat-cell *matCellDef="let profile">
                 <div class="name-cell">
                   <span class="profile-name">{{ profile.name }}</span>
-                  <mat-chip-list>
-                    <mat-chip
-                      *ngIf="(activeProfile$ | async)?.name === profile.name"
-                      color="accent"
-                      selected>
+                  <mat-chip-list *ngIf="(activeProfile$ | async)?.name === profile.name">
+                    <mat-chip color="accent" selected>
                       <mat-icon class="chip-icon">check</mat-icon>
                       Active
                     </mat-chip>
