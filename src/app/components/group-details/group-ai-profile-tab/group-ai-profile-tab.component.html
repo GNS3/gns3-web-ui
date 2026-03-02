@@ -1,0 +1,113 @@
+<div class="ai-profile-container">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-info">
+      <h3>AI Model Profiles Management</h3>
+      <p class="subtitle">Manage group AI model configuration profiles. API keys are encrypted on the server.</p>
+    </div>
+    <div class="toolbar-actions">
+      <button mat-button (click)="loadProfiles()" [disabled]="loading$ | async">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        New Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-container" *ngIf="loading$ | async">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Content area -->
+  <div class="content-area" *ngIf="!(loading$ | async)">
+
+    <!-- Profiles list -->
+    <mat-card class="list-card">
+      <mat-card-header>
+        <mat-card-title>All Profiles</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-container" *ngIf="profiles.length > 0">
+          <table mat-table [dataSource]="profiles" class="profiles-table">
+
+            <!-- Name column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Name </th>
+              <td mat-cell *matCellDef="let profile">
+                <span class="profile-name">{{ profile.name }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Provider column -->
+            <ng-container matColumnDef="provider">
+              <th mat-header-cell *matHeaderCellDef> Provider </th>
+              <td mat-cell *matCellDef="let profile">
+                <span class="provider-badge">{{ profile.provider }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Model column -->
+            <ng-container matColumnDef="model">
+              <th mat-header-cell *matHeaderCellDef> Model </th>
+              <td mat-cell *matCellDef="let profile">
+                <span class="model-name">{{ profile.model }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Temperature column -->
+            <ng-container matColumnDef="temperature">
+              <th mat-header-cell *matHeaderCellDef> Temperature </th>
+              <td mat-cell *matCellDef="let profile">
+                <span class="temperature-value">{{ profile.temperature }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Actions column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef> Actions </th>
+              <td mat-cell *matCellDef="let profile">
+                <div class="action-buttons">
+                  <button
+                    mat-icon-button
+                    (click)="setActiveProfile(profile.name)"
+                    [disabled]="(activeProfile$ | async)?.name === profile.name || (settingActive$ | async)?.has(profile.name)"
+                    [class.active-btn]="(activeProfile$ | async)?.name === profile.name">
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="openEditDialog(profile)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="deleteProfile(profile)"
+                    color="warn"
+                    class="delete-btn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                [class.active-row]="(activeProfile$ | async)?.name === row.name"></tr>
+          </table>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" *ngIf="profiles.length === 0">
+          <mat-icon class="empty-icon">folder_open</mat-icon>
+          <p>No profiles yet</p>
+          <p class="empty-hint">Click "New Profile" above to create your first profile</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -333,6 +333,7 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
 import { AiProfileTabComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component';
 import { AiProfileDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component';
 import { ConfirmDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component';
+import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component';
 
 @NgModule({
     declarations: [
@@ -575,6 +576,7 @@ import { ConfirmDialogComponent } from '@components/user-management/user-detail/
         AiProfileTabComponent,
         AiProfileDialogComponent,
         ConfirmDialogComponent,
+        GroupAiProfileTabComponent,
     ],
     imports: [
         BrowserModule,
