@@ -61,7 +61,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
 ];
 
 // Standard fields that are already in the form
-const STANDARD_FIELDS = ['name', 'provider', 'model', 'api_key', 'base_url', 'temperature', 'max_tokens', 'top_p'];
+const STANDARD_FIELDS = ['name', 'provider', 'model', 'api_key', 'base_url', 'temperature'];
 
 @Component({
   selector: 'app-ai-profile-dialog',
@@ -126,9 +126,7 @@ export class AiProfileDialogComponent implements OnInit {
       model: ['', Validators.required],
       api_key: ['', [Validators.required, Validators.minLength(10)]],
       base_url: [''],
-      temperature: ['0.3', [Validators.min(0), Validators.max(2)]],
-      max_tokens: [null],
-      top_p: [null]
+      temperature: ['0.3', [Validators.min(0), Validators.max(2)]]
     }, { validators: this.nameUniqueValidator.bind(this) });
   }
 
@@ -149,15 +147,11 @@ export class AiProfileDialogComponent implements OnInit {
     if (matchingPreset) {
       this.selectedPresetId = matchingPreset.id;
       this.selectedPreset = matchingPreset;
-      // Disable fields for preset mode
-      this.form.get('provider')?.disable();
-      this.form.get('base_url')?.disable();
+      this.setPresetMode(true);
     } else {
       this.selectedPresetId = 'custom';
       this.selectedPreset = null;
-      // Enable fields for custom mode
-      this.form.get('provider')?.enable();
-      this.form.get('base_url')?.enable();
+      this.setPresetMode(false);
     }
   }
 
@@ -171,9 +165,7 @@ export class AiProfileDialogComponent implements OnInit {
     if (this.selectedPreset && presetId !== 'custom') {
       // Auto-fill configuration from preset
       this.form.get('provider')?.setValue(this.selectedPreset.provider);
-      this.form.get('provider')?.disable();
       this.form.get('base_url')?.setValue(this.selectedPreset.baseUrl);
-      this.form.get('base_url')?.disable();
 
       // Set first model as default
       if (this.selectedPreset.models.length > 0) {
@@ -185,8 +177,21 @@ export class AiProfileDialogComponent implements OnInit {
       if (this.selectedPreset.defaultTemperature) {
         this.form.get('temperature')?.setValue(this.selectedPreset.defaultTemperature);
       }
+
+      this.setPresetMode(true);
     } else {
-      // Enable fields for custom mode
+      this.setPresetMode(false);
+    }
+  }
+
+  /**
+   * Set preset mode (enable/disable provider and base_url fields)
+   */
+  private setPresetMode(isPreset: boolean): void {
+    if (isPreset) {
+      this.form.get('provider')?.disable();
+      this.form.get('base_url')?.disable();
+    } else {
       this.form.get('provider')?.enable();
       this.form.get('base_url')?.enable();
     }
@@ -308,14 +313,6 @@ export class AiProfileDialogComponent implements OnInit {
       base_url: value.base_url || '',
       temperature: value.temperature.toString()
     };
-
-    // Optional fields
-    if (value.max_tokens) {
-      profile.max_tokens = value.max_tokens;
-    }
-    if (value.top_p !== null && value.top_p !== undefined && value.top_p !== '') {
-      profile.top_p = value.top_p;
-    }
 
     // Add custom fields
     this.customFields.forEach(field => {

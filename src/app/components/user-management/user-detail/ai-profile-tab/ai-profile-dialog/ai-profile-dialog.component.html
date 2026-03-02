@@ -70,9 +70,9 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Temperature</mat-label>
-        <input matInput formControlName="temperature" type="number" step="0.1" min="0" max="2" placeholder="0.7">
+        <input matInput formControlName="temperature" type="number" step="0.1" min="0" max="2" placeholder="0.3">
         <mat-error *ngIf="hasError('temperature')">{{ getErrorMessage('temperature') }}</mat-error>
-        <mat-hint>Controls randomness. Lower = more focused, Higher = more creative. Default: 0.7</mat-hint>
+        <mat-hint>Controls randomness. Lower = more focused, Higher = more creative. Default: 0.3</mat-hint>
       </mat-form-field>
     </div>
 
