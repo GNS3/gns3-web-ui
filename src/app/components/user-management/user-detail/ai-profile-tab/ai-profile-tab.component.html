@@ -75,7 +75,7 @@
                   <button
                     mat-icon-button
                     (click)="setActiveProfile(profile.name)"
-                    [disabled]="(activeProfile$ | async)?.name === profile.name"
+                    [disabled]="(activeProfile$ | async)?.name === profile.name || (settingActive$ | async)?.has(profile.name)"
                     [class.active-btn]="(activeProfile$ | async)?.name === profile.name">
                     <mat-icon>check_circle</mat-icon>
                   </button>

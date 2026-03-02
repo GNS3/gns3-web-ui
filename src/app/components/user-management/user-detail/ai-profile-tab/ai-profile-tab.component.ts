@@ -31,6 +31,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
 
   // Data state
   loading$ = new BehaviorSubject<boolean>(false);
+  settingActive$ = new BehaviorSubject<Set<string>>(new Set());
   error$ = new BehaviorSubject<string | null>(null);
   profiles$ = new BehaviorSubject<AiProfile[]>([]);
   activeProfile$ = new BehaviorSubject<AiProfile | null>(null);
@@ -40,6 +41,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   profiles: AiProfile[] = [];
   activeProfile: AiProfile | null = null;
   currentVersion = 0;
+  settingActiveProfiles = new Set<string>();
 
   // Table columns
   displayedColumns: string[] = ['name', 'provider', 'model', 'temperature', 'actions'];
@@ -247,7 +249,9 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Set active profile
    */
   setActiveProfile(profileName: string): void {
-    this.loading$.next(true);
+    // Add to setting active set (button-level loading state)
+    this.settingActiveProfiles.add(profileName);
+    this.settingActive$.next(new Set(this.settingActiveProfiles));
 
     const request: SetActiveProfileRequest = {
       profile_name: profileName,
@@ -266,10 +270,18 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
             response.profiles.find(p => p.name === response.active) || null
           );
           this.currentVersion$.next(response.version);
-          this.loading$.next(false);
+
+          // Remove from setting active set
+          this.settingActiveProfiles.delete(profileName);
+          this.settingActive$.next(new Set(this.settingActiveProfiles));
+
           this.showSuccess('Active profile set successfully');
         },
         error: (error) => {
+          // Remove from setting active set on error too
+          this.settingActiveProfiles.delete(profileName);
+          this.settingActive$.next(new Set(this.settingActiveProfiles));
+
           if (error.status === 409) {
             this.handleConflict(error);
           } else {
