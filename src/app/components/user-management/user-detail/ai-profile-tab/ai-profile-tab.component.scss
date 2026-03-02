@@ -154,33 +154,23 @@
               &:hover {
                 background-color: rgba(0, 0, 0, 0.04);
               }
+
+              &.active-row {
+                background-color: #e8f5e9;
+
+                td {
+                  border-bottom: 1px solid #c8e6c9;
+                }
+
+                &:hover {
+                  background-color: #c8e6c9;
+                }
+              }
             }
 
             .name-cell {
-              display: flex;
-              align-items: center;
-              flex-wrap: nowrap;
-
               .profile-name {
                 font-weight: 500;
-                flex-shrink: 0;
-              }
-
-              mat-chip-list {
-                display: inline-flex;
-                margin-left: 8px;
-                flex-shrink: 0;
-              }
-
-              mat-chip {
-                height: 20px;
-                font-size: 11px;
-
-                .chip-icon {
-                  font-size: 14px;
-                  width: 14px;
-                  height: 14px;
-                }
               }
             }
 
