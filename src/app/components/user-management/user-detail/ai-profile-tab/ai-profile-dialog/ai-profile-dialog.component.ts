@@ -54,7 +54,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     id: 'deepseek',
     label: 'DeepSeek',
     provider: 'deepseek',
-    baseUrl: 'https://api.deepseek.com',
+    baseUrl: 'https://api.deepseek.com/v1',
     models: ['deepseek-chat', 'deepseek-coder'],
     defaultTemperature: '0.3'
   }
