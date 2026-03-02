@@ -16,6 +16,7 @@ import {
 
 import { AiProfilesService } from '@services/ai-profiles.service';
 import { AiProfileDialogComponent } from './ai-profile-dialog/ai-profile-dialog.component';
+import { ConfirmDialogComponent } from './ai-profile-dialog/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-ai-profile-tab',
@@ -215,34 +216,46 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Delete profile
    */
   deleteProfile(profile: AiProfile): void {
-    if (confirm(`Are you sure you want to delete profile "${profile.name}"?`)) {
-      this.loading$.next(true);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Profile',
+        message: `Are you sure you want to delete profile "${profile.name}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
 
-      this.aiProfilesService.deleteProfile(
-        this.controller,
-        this.user.user_id,
-        profile.name
-      ).pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            const updatedProfiles = this.profiles.filter(p => p.name !== profile.name);
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+      if (result) {
+        this.loading$.next(true);
 
-            // If deleted profile was active, need to set new active
-            let newActive = this.activeProfile;
-            if (this.activeProfile?.name === profile.name) {
-              newActive = updatedProfiles[0] || null;
+        this.aiProfilesService.deleteProfile(
+          this.controller,
+          this.user.user_id,
+          profile.name
+        ).pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              const updatedProfiles = this.profiles.filter(p => p.name !== profile.name);
+
+              // If deleted profile was active, need to set new active
+              let newActive = this.activeProfile;
+              if (this.activeProfile?.name === profile.name) {
+                newActive = updatedProfiles[0] || null;
+              }
+
+              this.profiles$.next(updatedProfiles);
+              this.activeProfile$.next(newActive);
+              this.loading$.next(false);
+              this.showSuccess('Profile deleted successfully');
+            },
+            error: (error) => {
+              this.handleError(error, 'Failed to delete profile');
             }
-
-            this.profiles$.next(updatedProfiles);
-            this.activeProfile$.next(newActive);
-            this.loading$.next(false);
-            this.showSuccess('Profile deleted successfully');
-          },
-          error: (error) => {
-            this.handleError(error, 'Failed to delete profile');
-          }
-        });
-    }
+          });
+      }
+    });
   }
 
   /**
