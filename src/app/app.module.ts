@@ -330,6 +330,8 @@ import { DeleteResourcePoolComponent } from '@components/resource-pools-manageme
 import { ResourcePoolsFilterPipe } from '@components/resource-pools-management/resource-pools-filter.pipe';
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
 import { DeleteResourceConfirmationDialogComponent } from '@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
+import { AiProfileTabComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component';
+import { AiProfileDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component';
 
 @NgModule({
     declarations: [
@@ -569,6 +571,8 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         ResourcePoolsFilterPipe,
         ResourcePoolDetailsComponent,
         DeleteResourceConfirmationDialogComponent,
+        AiProfileTabComponent,
+        AiProfileDialogComponent,
     ],
     imports: [
         BrowserModule,

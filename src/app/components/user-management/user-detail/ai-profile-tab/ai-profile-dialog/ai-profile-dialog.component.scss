@@ -1,0 +1,20 @@
+.profile-form {
+  min-width: 400px;
+  max-width: 500px;
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    mat-form-field {
+      flex: 1;
+      min-width: 120px;
+    }
+  }
+}
