@@ -2,17 +2,17 @@
   <!-- Toolbar -->
   <div class="toolbar">
     <div class="toolbar-info">
-      <h3>AI 模型配置管理</h3>
-      <p class="subtitle">管理用户的 AI 模型配置文件，API Key 将在服务器端加密存储</p>
+      <h3>AI Model Profiles Management</h3>
+      <p class="subtitle">Manage user AI model configuration profiles. API keys are encrypted on the server.</p>
     </div>
     <div class="toolbar-actions">
       <button mat-button (click)="loadProfiles()" [disabled]="loading$ | async">
         <mat-icon>refresh</mat-icon>
-        刷新
+        Refresh
       </button>
       <button mat-raised-button color="primary" (click)="openCreateDialog()">
         <mat-icon>add</mat-icon>
-        新建配置
+        New Profile
       </button>
     </div>
   </div>
@@ -20,7 +20,7 @@
   <!-- Loading state -->
   <div class="loading-container" *ngIf="loading$ | async">
     <mat-spinner diameter="40"></mat-spinner>
-    <p>加载中...</p>
+    <p>Loading...</p>
   </div>
 
   <!-- Content area -->
@@ -31,21 +31,21 @@
       <mat-card-header>
         <mat-card-title>
           <mat-icon class="active-icon">check_circle</mat-icon>
-          当前激活配置
+          Current Active Profile
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="profile-info">
           <div class="info-item">
-            <span class="label">配置名称:</span>
+            <span class="label">Profile Name:</span>
             <span class="value">{{ active.name }}</span>
           </div>
           <div class="info-item">
-            <span class="label">提供商:</span>
+            <span class="label">Provider:</span>
             <span class="value">{{ active.provider }}</span>
           </div>
           <div class="info-item">
-            <span class="label">模型:</span>
+            <span class="label">Model:</span>
             <span class="value">{{ active.model }}</span>
           </div>
           <div class="info-item" *ngIf="active.base_url">
@@ -60,7 +60,7 @@
       <mat-card-content>
         <div class="no-active-message">
           <mat-icon class="icon">info</mat-icon>
-          <p>尚未设置激活的配置文件</p>
+          <p>No active profile set</p>
         </div>
       </mat-card-content>
     </mat-card>
@@ -68,7 +68,7 @@
     <!-- Profiles list -->
     <mat-card class="list-card">
       <mat-card-header>
-        <mat-card-title>所有配置文件</mat-card-title>
+        <mat-card-title>All Profiles</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="table-container" *ngIf="profiles.length > 0">
@@ -76,7 +76,7 @@
 
             <!-- Name column -->
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef> 名称 </th>
+              <th mat-header-cell *matHeaderCellDef> Name </th>
               <td mat-cell *matCellDef="let profile">
                 <div class="name-cell">
                   <span class="profile-name">{{ profile.name }}</span>
@@ -86,7 +86,7 @@
                       color="accent"
                       selected>
                       <mat-icon class="chip-icon">check</mat-icon>
-                      激活中
+                      Active
                     </mat-chip>
                   </mat-chip-list>
                 </div>
@@ -95,7 +95,7 @@
 
             <!-- Provider column -->
             <ng-container matColumnDef="provider">
-              <th mat-header-cell *matHeaderCellDef> 提供商 </th>
+              <th mat-header-cell *matHeaderCellDef> Provider </th>
               <td mat-cell *matCellDef="let profile">
                 <span class="provider-badge">{{ profile.provider }}</span>
               </td>
@@ -103,7 +103,7 @@
 
             <!-- Model column -->
             <ng-container matColumnDef="model">
-              <th mat-header-cell *matHeaderCellDef> 模型 </th>
+              <th mat-header-cell *matHeaderCellDef> Model </th>
               <td mat-cell *matCellDef="let profile">
                 <span class="model-name">{{ profile.model }}</span>
               </td>
@@ -111,7 +111,7 @@
 
             <!-- Status column -->
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef> 状态 </th>
+              <th mat-header-cell *matHeaderCellDef> Status </th>
               <td mat-cell *matCellDef="let profile">
                 <mat-icon
                   [class.active-status]="(activeProfile$ | async)?.name === profile.name"
@@ -123,26 +123,26 @@
 
             <!-- Actions column -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef> 操作 </th>
+              <th mat-header-cell *matHeaderCellDef> Actions </th>
               <td mat-cell *matCellDef="let profile">
                 <div class="action-buttons">
                   <button
                     mat-icon-button
                     (click)="setActiveProfile(profile.name)"
                     [disabled]="(activeProfile$ | async)?.name === profile.name"
-                    matTooltip="设为激活">
+                    matTooltip="Set as active">
                     <mat-icon>check_circle</mat-icon>
                   </button>
                   <button
                     mat-icon-button
                     (click)="openEditDialog(profile)"
-                    matTooltip="编辑">
+                    matTooltip="Edit">
                     <mat-icon>edit</mat-icon>
                   </button>
                   <button
                     mat-icon-button
                     (click)="deleteProfile(profile)"
-                    matTooltip="删除"
+                    matTooltip="Delete"
                     color="warn"
                     class="delete-btn">
                     <mat-icon>delete</mat-icon>
@@ -159,8 +159,8 @@
         <!-- Empty state -->
         <div class="empty-state" *ngIf="profiles.length === 0">
           <mat-icon class="empty-icon">folder_open</mat-icon>
-          <p>暂无配置文件</p>
-          <p class="empty-hint">点击上方"新建配置"按钮创建第一个配置</p>
+          <p>No profiles yet</p>
+          <p class="empty-hint">Click "New Profile" above to create your first profile</p>
         </div>
       </mat-card-content>
     </mat-card>

@@ -1,18 +1,18 @@
 <h2 mat-dialog-title>
-  {{ mode === 'create' ? '创建配置文件' : '编辑配置文件' }}
+  {{ mode === 'create' ? 'Create Profile' : 'Edit Profile' }}
 </h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="profile-form">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>配置文件名称</mat-label>
-      <input matInput formControlName="name" placeholder="例如: openai-gpt4">
+      <mat-label>Profile Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g.: openai-gpt4">
       <mat-error *ngIf="hasError('name')">{{ getErrorMessage('name') }}</mat-error>
-      <mat-hint>1-50 个字符，仅支持字母、数字、下划线和连字符</mat-hint>
+      <mat-hint>1-50 characters, letters, numbers, underscores and hyphens only</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>提供商</mat-label>
+      <mat-label>Provider</mat-label>
       <mat-select formControlName="provider">
         <mat-option *ngFor="let provider of providers" [value]="provider.value">
           {{ provider.label }}
@@ -21,22 +21,22 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>模型</mat-label>
-      <input matInput formControlName="model" placeholder="例如: gpt-4, qwen-max">
-      <mat-error>模型名称不能为空</mat-error>
+      <mat-label>Model</mat-label>
+      <input matInput formControlName="model" placeholder="e.g.: gpt-4, qwen-max">
+      <mat-error>Model name is required</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>API Key</mat-label>
       <input matInput formControlName="api_key" type="password">
       <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
-      <mat-hint>API Key 将在服务器端加密存储</mat-hint>
+      <mat-hint>API key will be encrypted on the server</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Base URL (可选)</mat-label>
-      <input matInput formControlName="base_url" placeholder="例如: https://api.openai.com/v1">
-      <mat-hint>留空使用默认地址</mat-hint>
+      <mat-label>Base URL (Optional)</mat-label>
+      <input matInput formControlName="base_url" placeholder="e.g.: https://api.openai.com/v1">
+      <mat-hint>Leave empty to use default endpoint</mat-hint>
     </mat-form-field>
 
     <div class="row">
@@ -47,12 +47,12 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Max Tokens (可选)</mat-label>
+        <mat-label>Max Tokens (Optional)</mat-label>
         <input matInput formControlName="max_tokens" type="number" min="1">
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Top P (可选)</mat-label>
+        <mat-label>Top P (Optional)</mat-label>
         <input matInput formControlName="top_p" type="number" step="0.1" min="0" max="1">
       </mat-form-field>
     </div>
@@ -60,8 +60,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">取消</button>
+  <button mat-button (click)="onCancel()">Cancel</button>
   <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">
-    {{ mode === 'create' ? '创建' : '保存' }}
+    {{ mode === 'create' ? 'Create' : 'Save' }}
   </button>
 </mat-dialog-actions>

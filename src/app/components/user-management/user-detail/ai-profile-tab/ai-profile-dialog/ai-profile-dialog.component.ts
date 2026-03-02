@@ -25,7 +25,7 @@ export class AiProfileDialogComponent implements OnInit {
     { value: 'qwen', label: 'Qwen' },
     { value: 'anthropic', label: 'Anthropic' },
     { value: 'google', label: 'Google' },
-    { value: 'custom', label: '自定义' }
+    { value: 'custom', label: 'Custom' }
   ];
 
   constructor(
@@ -96,29 +96,29 @@ export class AiProfileDialogComponent implements OnInit {
     const formErrors = this.form.errors;
 
     if (field === 'name') {
-      if (errors.required) return '名称不能为空';
-      if (errors.minlength) return '名称至少需要 1 个字符';
-      if (errors.maxlength) return '名称最多 50 个字符';
-      if (errors.pattern) return '名称只能包含字母、数字、下划线和连字符';
-      if (formErrors?.reservedName) return '"active" 是保留名称';
-      if (formErrors?.duplicateName) return '名称已存在';
-      return '名称格式不正确';
+      if (errors.required) return 'Name is required';
+      if (errors.minlength) return 'Name must be at least 1 character';
+      if (errors.maxlength) return 'Name cannot exceed 50 characters';
+      if (errors.pattern) return 'Name can only contain letters, numbers, underscores and hyphens';
+      if (formErrors?.reservedName) return '"active" is a reserved name';
+      if (formErrors?.duplicateName) return 'Name already exists';
+      return 'Invalid name format';
     }
 
     if (field === 'api_key') {
-      if (errors.required) return 'API Key 不能为空';
-      if (errors.minlength) return 'API Key 长度不足';
-      return 'API Key 格式不正确';
+      if (errors.required) return 'API Key is required';
+      if (errors.minlength) return 'API Key is too short';
+      return 'Invalid API Key format';
     }
 
     if (field === 'temperature') {
-      if (errors.min) return '温度值不能小于 0';
-      if (errors.max) return '温度值不能大于 2';
-      return '温度值格式不正确';
+      if (errors.min) return 'Temperature cannot be less than 0';
+      if (errors.max) return 'Temperature cannot be greater than 2';
+      return 'Invalid temperature value';
     }
 
-    if (errors.required) return '此项不能为空';
-    return '格式不正确';
+    if (errors.required) return 'This field is required';
+    return 'Invalid format';
   }
 
   /**

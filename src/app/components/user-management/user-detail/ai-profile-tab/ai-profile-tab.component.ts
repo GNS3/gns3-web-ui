@@ -103,7 +103,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
           this.loading$.next(false);
         },
         error: (error) => {
-          this.handleError(error, '加载配置文件失败');
+          this.handleError(error, 'Failed to load profiles');
         }
       });
   }
@@ -164,10 +164,10 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
           const updatedProfiles = [...this.profiles, newProfile];
           this.profiles$.next(updatedProfiles);
           this.loading$.next(false);
-          this.showSuccess('配置文件创建成功');
+          this.showSuccess('Profile created successfully');
         },
         error: (error) => {
-          this.handleError(error, '创建配置文件失败');
+          this.handleError(error, 'Failed to create profile');
         }
       });
   }
@@ -197,13 +197,13 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
           this.profiles$.next(updatedProfiles);
           this.currentVersion$.next(this.currentVersion + 1);
           this.loading$.next(false);
-          this.showSuccess('配置文件更新成功');
+          this.showSuccess('Profile updated successfully');
         },
         error: (error) => {
           if (error.status === 409) {
             this.handleConflict(error);
           } else {
-            this.handleError(error, '更新配置文件失败');
+            this.handleError(error, 'Failed to update profile');
           }
         }
       });
@@ -213,7 +213,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Delete profile
    */
   deleteProfile(profile: AiProfile): void {
-    if (confirm(`确定要删除配置文件 "${profile.name}" 吗？`)) {
+    if (confirm(`Are you sure you want to delete profile "${profile.name}"?`)) {
       this.loading$.next(true);
 
       this.aiProfilesService.deleteProfile(
@@ -234,10 +234,10 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
             this.profiles$.next(updatedProfiles);
             this.activeProfile$.next(newActive);
             this.loading$.next(false);
-            this.showSuccess('配置文件删除成功');
+            this.showSuccess('Profile deleted successfully');
           },
           error: (error) => {
-            this.handleError(error, '删除配置文件失败');
+            this.handleError(error, 'Failed to delete profile');
           }
         });
     }
@@ -267,13 +267,13 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
           );
           this.currentVersion$.next(response.version);
           this.loading$.next(false);
-          this.showSuccess('激活配置文件设置成功');
+          this.showSuccess('Active profile set successfully');
         },
         error: (error) => {
           if (error.status === 409) {
             this.handleConflict(error);
           } else {
-            this.handleError(error, '设置激活配置文件失败');
+            this.handleError(error, 'Failed to set active profile');
           }
         }
       });
@@ -285,7 +285,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   private handleConflict(error: any): void {
     // Reload data
     this.loadProfiles();
-    this.showWarning('数据已被其他用户修改，已自动刷新');
+    this.showWarning('Data has been modified by another user, auto-refreshed');
   }
 
   /**
@@ -310,7 +310,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Show success message
    */
   private showSuccess(message: string): void {
-    this.snackBar.open(message, '关闭', {
+    this.snackBar.open(message, 'Close', {
       duration: 3000,
       panelClass: ['success-snackbar']
     });
@@ -320,7 +320,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Show warning message
    */
   private showWarning(message: string): void {
-    this.snackBar.open(message, '关闭', {
+    this.snackBar.open(message, 'Close', {
       duration: 5000,
       panelClass: ['warning-snackbar']
     });
@@ -330,7 +330,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Show error message
    */
   private showError(message: string): void {
-    this.snackBar.open(message, '关闭', {
+    this.snackBar.open(message, 'Close', {
       duration: 5000,
       panelClass: ['error-snackbar']
     });
