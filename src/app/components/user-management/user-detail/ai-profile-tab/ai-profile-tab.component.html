@@ -26,45 +26,6 @@
   <!-- Content area -->
   <div class="content-area" *ngIf="!(loading$ | async)">
 
-    <!-- Active profile card -->
-    <mat-card class="active-card" *ngIf="activeProfile$ | async as active">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon class="active-icon">check_circle</mat-icon>
-          Current Active Profile
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="profile-info">
-          <div class="info-item">
-            <span class="label">Profile Name:</span>
-            <span class="value">{{ active.name }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Provider:</span>
-            <span class="value">{{ active.provider }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Model:</span>
-            <span class="value">{{ active.model }}</span>
-          </div>
-          <div class="info-item" *ngIf="active.base_url">
-            <span class="label">Base URL:</span>
-            <span class="value url">{{ active.base_url }}</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="no-active-card" *ngIf="!(activeProfile$ | async)">
-      <mat-card-content>
-        <div class="no-active-message">
-          <mat-icon class="icon">info</mat-icon>
-          <p>No active profile set</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
     <!-- Profiles list -->
     <mat-card class="list-card">
       <mat-card-header>
