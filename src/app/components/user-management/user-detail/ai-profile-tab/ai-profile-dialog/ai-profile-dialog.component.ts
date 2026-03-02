@@ -22,6 +22,7 @@ export interface ProviderPreset {
   provider: string;
   baseUrl: string;
   models: string[];
+  defaultTemperature?: string;
 }
 
 // Provider presets (exactly from FlowNet-Lab)
@@ -31,7 +32,8 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     label: 'Custom (User Defined)',
     provider: 'openai',
     baseUrl: '',
-    models: []
+    models: [],
+    defaultTemperature: '0.3'
   },
   {
     id: 'openrouter',
@@ -45,14 +47,16 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
       'z-ai/glm-4.7',
       'openai/gpt-4o',
       'google/gemini-2.5-flash'
-    ]
+    ],
+    defaultTemperature: '0.3'
   },
   {
     id: 'deepseek',
     label: 'DeepSeek',
     provider: 'deepseek',
     baseUrl: 'https://api.deepseek.com',
-    models: ['deepseek-chat', 'deepseek-coder']
+    models: ['deepseek-chat', 'deepseek-coder'],
+    defaultTemperature: '0.3'
   }
 ];
 
@@ -75,6 +79,13 @@ export class AiProfileDialogComponent implements OnInit {
   selectedPresetId: string = 'custom';
   selectedPreset: ProviderPreset | null = null;
   useCustomModel: boolean = false;
+
+  /**
+   * Check if using a preset (not custom)
+   */
+  get isPresetSelected(): boolean {
+    return this.selectedPresetId !== 'custom' && this.selectedPreset !== null;
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -115,7 +126,7 @@ export class AiProfileDialogComponent implements OnInit {
       model: ['', Validators.required],
       api_key: ['', [Validators.required, Validators.minLength(10)]],
       base_url: [''],
-      temperature: ['0.7', [Validators.min(0), Validators.max(2)]],
+      temperature: ['0.3', [Validators.min(0), Validators.max(2)]],
       max_tokens: [null],
       top_p: [null]
     }, { validators: this.nameUniqueValidator.bind(this) });
@@ -138,9 +149,15 @@ export class AiProfileDialogComponent implements OnInit {
     if (matchingPreset) {
       this.selectedPresetId = matchingPreset.id;
       this.selectedPreset = matchingPreset;
+      // Disable fields for preset mode
+      this.form.get('provider')?.disable();
+      this.form.get('base_url')?.disable();
     } else {
       this.selectedPresetId = 'custom';
       this.selectedPreset = null;
+      // Enable fields for custom mode
+      this.form.get('provider')?.enable();
+      this.form.get('base_url')?.enable();
     }
   }
 
@@ -154,13 +171,24 @@ export class AiProfileDialogComponent implements OnInit {
     if (this.selectedPreset && presetId !== 'custom') {
       // Auto-fill configuration from preset
       this.form.get('provider')?.setValue(this.selectedPreset.provider);
+      this.form.get('provider')?.disable();
       this.form.get('base_url')?.setValue(this.selectedPreset.baseUrl);
+      this.form.get('base_url')?.disable();
 
       // Set first model as default
       if (this.selectedPreset.models.length > 0) {
         this.form.get('model')?.setValue(this.selectedPreset.models[0]);
         this.useCustomModel = false;
       }
+
+      // Set default temperature from preset
+      if (this.selectedPreset.defaultTemperature) {
+        this.form.get('temperature')?.setValue(this.selectedPreset.defaultTemperature);
+      }
+    } else {
+      // Enable fields for custom mode
+      this.form.get('provider')?.enable();
+      this.form.get('base_url')?.enable();
     }
   }
 
@@ -269,7 +297,8 @@ export class AiProfileDialogComponent implements OnInit {
       return;
     }
 
-    const value = this.form.value;
+    // Use getRawValue() to include disabled fields (provider, base_url when using presets)
+    const value = this.form.getRawValue();
 
     const profile: Partial<AiProfile> = {
       name: value.name,

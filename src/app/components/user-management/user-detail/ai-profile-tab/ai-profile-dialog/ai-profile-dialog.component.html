@@ -50,14 +50,14 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Model Provider</mat-label>
-        <input matInput formControlName="provider" placeholder="Auto-filled from preset">
+        <input matInput formControlName="provider" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
         <mat-error>Provider is required</mat-error>
         <mat-hint>Provider name (e.g., openai, anthropic, deepseek)</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Base URL</mat-label>
-        <input matInput formControlName="base_url" placeholder="Auto-filled from preset">
+        <input matInput formControlName="base_url" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
         <mat-hint>API endpoint URL. Leave empty to use provider default.</mat-hint>
       </mat-form-field>
 
