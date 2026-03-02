@@ -80,8 +80,8 @@
     <div class="custom-fields-section">
       <div class="section-header">
         <h4>Advanced Parameters (Optional)</h4>
-        <button mat-icon-button (click)="addCustomField()" matTooltip="Add custom field">
-          <mat-icon>add</mat-icon>
+        <button mat-icon-button (click)="addCustomField()">
+          <mat-icon>add_circle</mat-icon>
         </button>
       </div>
 
@@ -89,16 +89,16 @@
         <div class="custom-field-row" *ngFor="let field of customFields; let i = index; trackBy: trackByFn">
           <mat-form-field appearance="outline" class="field-key">
             <mat-label>Key</mat-label>
-            <input matInput [(ngModel)]="field.key" [ngModelOptions]="{standalone: true}" placeholder="e.g.: max_tokens">
+            <input matInput [(ngModel)]="field.key" [ngModelOptions]="{standalone: true}">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field-value">
             <mat-label>Value</mat-label>
-            <input matInput [(ngModel)]="field.value" [ngModelOptions]="{standalone: true}" placeholder="e.g.: 2048">
+            <input matInput [(ngModel)]="field.value" [ngModelOptions]="{standalone: true}">
           </mat-form-field>
 
-          <button mat-icon-button (click)="removeCustomField(i)" matTooltip="Remove field" color="warn">
-            <mat-icon>remove_circle</mat-icon>
+          <button mat-icon-button (click)="removeCustomField(i)" color="warn" class="delete-btn">
+            <mat-icon>delete</mat-icon>
           </button>
         </div>
       </div>

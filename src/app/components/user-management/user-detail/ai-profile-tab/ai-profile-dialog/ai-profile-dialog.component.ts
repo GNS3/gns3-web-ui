@@ -289,8 +289,8 @@ export class AiProfileDialogComponent implements OnInit {
   /**
    * Track by function for custom fields
    */
-  trackByFn(index: number, item: CustomField): string {
-    return `${index}-${item.key}`;
+  trackByFn(index: number, item: CustomField): number {
+    return index;
   }
 
   /**
