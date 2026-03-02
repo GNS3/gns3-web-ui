@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AiProfile } from '@models/ai-profile';
@@ -15,6 +15,47 @@ export interface CustomField {
   value: string;
 }
 
+// Provider preset configuration
+export interface ProviderPreset {
+  id: string;
+  label: string;
+  provider: string;
+  baseUrl: string;
+  models: string[];
+}
+
+// Provider presets (exactly from FlowNet-Lab)
+export const PROVIDER_PRESETS: ProviderPreset[] = [
+  {
+    id: 'custom',
+    label: 'Custom (User Defined)',
+    provider: 'openai',
+    baseUrl: '',
+    models: []
+  },
+  {
+    id: 'openrouter',
+    label: 'OpenRouter',
+    provider: 'openai',
+    baseUrl: 'https://openrouter.ai/api/v1',
+    models: [
+      'deepseek/deepseek-v3.2',
+      'x-ai/grok-3',
+      'anthropic/claude-sonnet-4',
+      'z-ai/glm-4.7',
+      'openai/gpt-4o',
+      'google/gemini-2.5-flash'
+    ]
+  },
+  {
+    id: 'deepseek',
+    label: 'DeepSeek',
+    provider: 'deepseek',
+    baseUrl: 'https://api.deepseek.com',
+    models: ['deepseek-chat', 'deepseek-coder']
+  }
+];
+
 // Standard fields that are already in the form
 const STANDARD_FIELDS = ['name', 'provider', 'model', 'api_key', 'base_url', 'temperature', 'max_tokens', 'top_p'];
 
@@ -28,6 +69,12 @@ export class AiProfileDialogComponent implements OnInit {
   mode: 'create' | 'edit';
   existingNames: string[];
   customFields: CustomField[] = [];
+
+  // Provider presets
+  providerPresets = PROVIDER_PRESETS;
+  selectedPresetId: string = 'custom';
+  selectedPreset: ProviderPreset | null = null;
+  useCustomModel: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +94,9 @@ export class AiProfileDialogComponent implements OnInit {
       this.customFields = Object.entries(this.data.profile)
         .filter(([key]) => !STANDARD_FIELDS.includes(key))
         .map(([key, value]) => ({ key, value: String(value) }));
+
+      // Try to find matching preset
+      this.detectPresetFromProfile();
     }
   }
 
@@ -72,18 +122,72 @@ export class AiProfileDialogComponent implements OnInit {
   }
 
   /**
+   * Detect preset from existing profile values
+   */
+  private detectPresetFromProfile(): void {
+    const provider = this.form.get('provider')?.value;
+    const baseUrl = this.form.get('base_url')?.value;
+
+    // Find matching preset
+    const matchingPreset = this.providerPresets.find(preset =>
+      preset.id !== 'custom' &&
+      preset.provider === provider &&
+      preset.baseUrl === baseUrl
+    );
+
+    if (matchingPreset) {
+      this.selectedPresetId = matchingPreset.id;
+      this.selectedPreset = matchingPreset;
+    } else {
+      this.selectedPresetId = 'custom';
+      this.selectedPreset = null;
+    }
+  }
+
+  /**
+   * Handle preset selection change
+   */
+  onPresetChange(presetId: string): void {
+    this.selectedPresetId = presetId;
+    this.selectedPreset = this.providerPresets.find(p => p.id === presetId) || null;
+
+    if (this.selectedPreset && presetId !== 'custom') {
+      // Auto-fill configuration from preset
+      this.form.get('provider')?.setValue(this.selectedPreset.provider);
+      this.form.get('base_url')?.setValue(this.selectedPreset.baseUrl);
+
+      // Set first model as default
+      if (this.selectedPreset.models.length > 0) {
+        this.form.get('model')?.setValue(this.selectedPreset.models[0]);
+        this.useCustomModel = false;
+      }
+    }
+  }
+
+  /**
+   * Handle model selection change
+   */
+  onModelChange(modelValue: string): void {
+    if (modelValue === '__custom__') {
+      this.useCustomModel = true;
+      this.form.get('model')?.setValue('');
+    } else {
+      this.useCustomModel = false;
+      this.form.get('model')?.setValue(modelValue);
+    }
+  }
+
+  /**
    * Name uniqueness validator
    */
   private nameUniqueValidator(group: AbstractControl): ValidationErrors | null {
     const name = group.get('name')?.value;
     if (!name) return null;
 
-    // Cannot use reserved name
     if (name.toLowerCase() === 'active') {
       return { reservedName: true };
     }
 
-    // Cannot duplicate
     if (this.existingNames.includes(name)) {
       return { duplicateName: true };
     }
@@ -167,7 +271,6 @@ export class AiProfileDialogComponent implements OnInit {
 
     const value = this.form.value;
 
-    // Clean empty values
     const profile: Partial<AiProfile> = {
       name: value.name,
       provider: value.provider,

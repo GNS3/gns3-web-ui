@@ -7,19 +7,26 @@
     margin-bottom: 12px;
   }
 
-  .row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+  .manual-config-section {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
 
-    mat-form-field {
-      flex: 1;
-      min-width: 120px;
+    .section-header {
+      margin-bottom: 16px;
+
+      h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #424242;
+      }
     }
   }
 
   .custom-fields-section {
-    margin-top: 24px;
+    margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid #e0e0e0;
 
