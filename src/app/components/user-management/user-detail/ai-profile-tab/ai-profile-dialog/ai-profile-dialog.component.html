@@ -45,18 +45,6 @@
       <mat-hint>Controls randomness. Lower values (0.0-0.5) = more focused, higher values (0.5-2.0) = more creative. Default: 1.0</mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Max Tokens</mat-label>
-      <input matInput formControlName="max_tokens" type="number" min="1" placeholder="e.g.: 2048">
-      <mat-hint>Maximum response length. Leave empty for model default. Typical: 512-4096</mat-hint>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Top P</mat-label>
-      <input matInput formControlName="top_p" type="number" step="0.01" min="0" max="1" placeholder="1.0">
-      <mat-hint>Controls diversity. Lower values (0.1-0.5) = focused, higher values (0.5-1.0) = diverse. Default: 1.0</mat-hint>
-    </mat-form-field>
-
     <!-- Custom Fields Section -->
     <div class="custom-fields-section">
       <div class="section-header">
