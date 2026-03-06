@@ -41,21 +41,20 @@
           <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <a [routerLink]="['/controller', controller.id, 'management','roles', row.role_id]"
-               class="table-link" [matTooltip]="row.name">{{ row.name }}</a>
+               class="table-link">{{ row.name }}</a>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="description">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Description</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div [matTooltip]="row.description" matTooltipClass="custom-tooltip"
-                 class="overflow-col">{{ row.description }}</div>
+            <div class="overflow-col">{{ row.description }}</div>
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef class="small-col"></mat-header-cell>
           <mat-cell *matCellDef="let row" class="small-col">
-            <button mat-button (click)="onDelete([row])">
+            <button mat-icon-button (click)="onDelete([row])" color="warn" class="delete-btn">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-cell>
