@@ -118,6 +118,9 @@ export class StyleEditorDialogComponent implements OnInit {
       if (this.drawing.element instanceof RectElement) {
         this.drawing.element.rx = this.element.rx;
         this.drawing.element.ry = this.element.rx;  // set ry with rx because we don't have ry in the form
+      } else if (this.drawing.element instanceof EllipseElement) {
+        this.drawing.element.rx = this.element.width / 2;
+        this.drawing.element.ry = this.element.height / 2;
       }
 
       let mapDrawing = this.drawingToMapDrawingConverter.convert(this.drawing);
