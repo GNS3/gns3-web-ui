@@ -97,6 +97,15 @@
 >
   <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled }">photo_camera</mat-icon>
 </button>
+<button
+  matTooltip="AI Assistant"
+  matTooltipClass="custom-tooltip"
+  mat-icon-button
+  class="menu-button ai-chat-button"
+  (click)="openAIChat()"
+>
+  <span class="ai-icon">AI</span>
+</button>
 <app-drawing-added
   [controller]="controller"
   [project]="project"

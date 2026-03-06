@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NodeService } from '@services/node.service';
 import { select } from 'd3-selection';
@@ -28,6 +28,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   @Input() project: Project;
   @Input() controller: Controller;
+  @Output() aiChatOpened = new EventEmitter<void>();
   private nodes: Node[] = [];
   private drawing: Drawing[] = [];
 
@@ -275,5 +276,16 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // this.projectSubscription.unsubscribe();
+  }
+
+  /**
+   * Open AI Chat panel
+   */
+  public openAIChat() {
+    if (!this.project || !this.controller) {
+      console.warn('Cannot open AI Chat: project or controller not available');
+      return;
+    }
+    this.aiChatOpened.emit();
   }
 }
