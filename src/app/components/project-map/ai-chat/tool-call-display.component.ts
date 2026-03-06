@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ToolCall } from '@models/ai-chat.interface';
 
 /**
@@ -7,6 +8,18 @@ import { ToolCall } from '@models/ai-chat.interface';
  */
 @Component({
   selector: 'app-tool-call-display',
+  animations: [
+    trigger('expandAnimation', [
+      transition(':enter', [
+        style({ height: '0', opacity: '0' }),
+        animate('300ms ease-out', style({ height: '*', opacity: '1' }))
+      ]),
+      transition(':leave', [
+        style({ height: '*', opacity: '1' }),
+        animate('200ms ease-in', style({ height: '0', opacity: '0' }))
+      ])
+    ])
+  ],
   template: `
     <div class="tool-call-display" [class.executing]="isExecuting" [class.completed]="isCompleted">
       <div class="tool-call-header" (click)="toggleExpanded()">

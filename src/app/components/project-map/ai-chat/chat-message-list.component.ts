@@ -19,6 +19,9 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
         <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
           <!-- User message -->
           <div class="message user-message" *ngIf="message.role === 'user'">
+            <div class="message-avatar user-avatar">
+              <mat-icon>person</mat-icon>
+            </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
                 <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>
@@ -29,6 +32,9 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
 
           <!-- AI assistant message -->
           <div class="message assistant-message" *ngIf="message.role === 'assistant'">
+            <div class="message-avatar assistant-avatar">
+              <span class="avatar-text">AI</span>
+            </div>
             <div class="message-content assistant-content">
               <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
                 <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>
@@ -206,14 +212,28 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
       flex-shrink: 0;
     }
 
+    .message-avatar mat-icon {
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+      color: inherit;
+    }
+
+    .message-avatar .avatar-text {
+      font-size: 12px;
+      font-weight: bold;
+      font-family: 'Roboto', sans-serif;
+      letter-spacing: -0.5px;
+    }
+
     .user-avatar {
-      background: linear-gradient(135deg, var(--mat-app-primary), #7c4dff);
-      color: var(--mat-app-on-primary);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
     }
 
     .assistant-avatar {
-      background: linear-gradient(135deg, var(--mat-app-tertiary), #00bcd4);
-      color: var(--mat-app-on-tertiary);
+      background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+      color: white;
     }
 
     .tool-avatar {
