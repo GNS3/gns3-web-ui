@@ -27,6 +27,18 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+
+  // Minimized state override - make it perfectly circular and clean
+  &.minimized {
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    backdrop-filter: none;
+
+    &::before {
+      display: none;
+    }
+  }
 }
 
 .drag-overlay {
@@ -289,49 +301,52 @@
   }
 }
 
-// Minimized state
-.ai-chat-container.minimized {
-  border-radius: 20px;
-  overflow: visible;
-  flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-}
-
+// Minimized state - floating circular button with GNS3 dark theme style
 .minimized-bar {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
   width: 100%;
   height: 100%;
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease;
-  background: linear-gradient(135deg, #10a37f, #1a7f64);
+  border-radius: 50%;
+  // GNS3 dark theme background
+  background-color: #263238;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: bounceIn 0.3s ease-out;
 
   &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
+    transform: scale(1.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
   }
 
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: white;
+  &:active {
+    transform: scale(0.95);
   }
+}
 
-  .minimized-text {
-    font-size: 14px;
-    font-weight: 500;
-    color: white;
-    white-space: nowrap;
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
   }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.minimized-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  // Light color icon for dark background
+  color: #b0bec5;
 }
 
 // Light theme - maximized and minimized states
@@ -341,12 +356,16 @@
   }
 }
 
+// Light theme styles for minimized button
 .lightTheme .minimized-bar {
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
+  background-color: #f5f5f5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-  .minimized-text {
-    color: black;
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
+}
+
+.lightTheme .minimized-icon {
+  color: #424242;
 }

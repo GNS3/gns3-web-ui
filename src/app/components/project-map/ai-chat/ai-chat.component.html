@@ -7,9 +7,8 @@
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 
   <!-- Minimized state -->
-  <div class="minimized-bar" *ngIf="isMinimized" (click)="restoreChat()">
-    <mat-icon>smart_toy</mat-icon>
-    <span class="minimized-text">AI Assistant</span>
+  <div class="minimized-bar" *ngIf="isMinimized" (click)="restoreChat()" title="Click to restore AI Assistant">
+    <mat-icon class="minimized-icon">chat_bubble_outline</mat-icon>
   </div>
 
   <!-- Normal/Maximized state -->

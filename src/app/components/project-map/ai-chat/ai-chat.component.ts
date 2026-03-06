@@ -631,12 +631,17 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * Apply minimized style
    */
   private applyMinimizedStyle(): void {
+    // Save current state before minimizing
+    if (!this.isMinimized && !Object.keys(this.previousStyle).length) {
+      this.previousStyle = { ...this.style };
+    }
+
     this.style = {
       position: 'fixed',
-      bottom: '10px',
-      left: '10px',
-      width: '200px',
-      height: '40px',
+      bottom: '20px',
+      left: '20px',
+      width: '60px',
+      height: '60px',
     };
   }
 
