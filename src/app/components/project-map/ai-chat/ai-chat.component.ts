@@ -132,6 +132,20 @@ import { ChatInputAreaComponent } from './chat-input-area.component';
       font-size: 16px;
       font-weight: 500;
       color: var(--mat-app-on-surface);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Roboto', sans-serif;
+      letter-spacing: -0.5px;
+      color: var(--mat-app-primary);
     }
 
     .collapse-button {
@@ -167,6 +181,17 @@ import { ChatInputAreaComponent } from './chat-input-area.component';
       font-size: 16px;
       font-weight: 500;
       color: var(--mat-app-on-surface);
+    }
+
+    .ai-logo-small {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      font-family: 'Roboto', sans-serif;
+      letter-spacing: -0.5px;
+      color: var(--mat-app-primary);
     }
 
     .chat-icon {
