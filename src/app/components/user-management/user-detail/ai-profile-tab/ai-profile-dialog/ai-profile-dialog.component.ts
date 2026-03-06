@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -64,22 +64,6 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     baseUrl: 'https://api.deepseek.com/v1',
     models: ['deepseek-chat', 'deepseek-coder'],
     defaultTemperature: 0.3
-  },
-  {
-    id: 'anthropic',
-    label: 'Anthropic',
-    provider: 'anthropic',
-    baseUrl: 'https://api.anthropic.com',
-    models: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022'],
-    defaultTemperature: 0.3
-  },
-  {
-    id: 'openai',
-    label: 'OpenAI',
-    provider: 'openai',
-    baseUrl: 'https://api.openai.com/v1',
-    models: ['gpt-4o', 'gpt-4o-mini', 'o1'],
-    defaultTemperature: 0.3
   }
 ];
 
@@ -114,7 +98,8 @@ const STANDARD_FIELDS = ['name', 'model_type', 'provider', 'model', 'api_key', '
 @Component({
   selector: 'app-ai-profile-dialog',
   templateUrl: './ai-profile-dialog.component.html',
-  styleUrls: ['./ai-profile-dialog.component.scss']
+  styleUrls: ['./ai-profile-dialog.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AiProfileDialogComponent implements OnInit {
   form: FormGroup;

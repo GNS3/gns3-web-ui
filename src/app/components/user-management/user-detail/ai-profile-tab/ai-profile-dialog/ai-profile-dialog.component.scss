@@ -30,17 +30,23 @@
     }
   }
 
+  // Checkbox section
   .checkbox-section {
     margin: 16px 0;
-    padding: 12px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
+
+    mat-checkbox {
+      display: block;
+    }
+
+    ::ng-deep .mat-checkbox-layout {
+      display: block;
+    }
 
     .checkbox-hint {
       display: block;
-      margin-top: 4px;
+      margin-top: 8px;
       margin-left: 28px;
-      font-size: 12px;
+      font-size: 13px;
       color: #757575;
     }
   }
