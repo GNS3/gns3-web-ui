@@ -2,6 +2,7 @@ import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, 
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -29,7 +30,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   // UI state
   sidebarCollapsed = false;
   isStreaming = false;
-  errorMessage: string | null = null;
   isDraggingEnabled = false;
   isLightThemeEnabled = false;
   isMaximized = false;
@@ -55,7 +55,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private aiChatService: AiChatService,
     private controllerService: ControllerService,
-    private aiChatStore: AiChatStore
+    private aiChatStore: AiChatStore,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
@@ -168,13 +169,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       takeUntil(this.destroy$)
     ).subscribe(streaming => {
       this.isStreaming = streaming;
-    });
-
-    // Subscribe to error state
-    this.aiChatStore.getError().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(error => {
-      this.errorMessage = error;
     });
   }
 
@@ -663,19 +657,98 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Show error
+   * Show error using Material Snackbar
    * @param error Error message
    */
   private showError(error: string): void {
-    this.errorMessage = error;
     this.aiChatStore.setError(error);
+
+    // Parse and format error message for user-friendly display
+    const friendlyMessage = this.parseErrorMessage(error);
+
+    // Show error using Material Snackbar
+    this.snackBar.open(friendlyMessage, 'Close', {
+      duration: 6000,
+      panelClass: ['ai-chat-snack-error'],
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      politeness: 'assertive'
+    });
   }
 
   /**
-   * Clear error
+   * Parse error message and convert to user-friendly format
+   * @param error Raw error message
+   * @returns Formatted error message
+   */
+  private parseErrorMessage(error: string): string {
+    if (!error) {
+      return 'An unknown error occurred';
+    }
+
+    // Handle Python dict-style error: "Error code: 401 - {'error': {'message': 'Missing Authentication header', 'code': 401}}"
+    const dictMatch = error.match(/Error code:\s*(\d+)\s*-\s*{.*?['"]message['"]:\s*['"]([^'"]+)['"]/);
+    if (dictMatch) {
+      const code = dictMatch[1];
+      const message = dictMatch[2];
+
+      // Map common error codes to friendly messages
+      const friendlyMessages: Record<string, string> = {
+        '401': 'Authentication failed. Please check your API key or login again.',
+        '403': 'Access denied. You don\'t have permission to perform this action.',
+        '404': 'Resource not found. The requested resource may have been deleted.',
+        '429': 'Too many requests. Please wait a moment and try again.',
+        '500': 'Server error. Please try again later.',
+        '503': 'Service temporarily unavailable. Please try again later.'
+      };
+
+      // Use friendly message if available, otherwise use the original message
+      return friendlyMessages[code] || message;
+    }
+
+    // Handle JSON-style error: {"error": {"message": "...", "code": 401}}
+    if (error.includes('{') && error.includes('}')) {
+      try {
+        const parsed = JSON.parse(error.replace(/'/g, '"'));
+        if (parsed.error?.message) {
+          return this.parseErrorMessage(parsed.error.message);
+        }
+      } catch (e) {
+        // Not valid JSON, continue processing
+      }
+    }
+
+    // Handle "Error code: XXX - YYY" format
+    const errorCodeMatch = error.match(/Error code:\s*(\d+)\s*-\s*(.+)/);
+    if (errorCodeMatch) {
+      const code = errorCodeMatch[1];
+      const message = errorCodeMatch[2];
+      return `Error (${code}): ${message}`;
+    }
+
+    // Handle common Python exception messages
+    const pythonExceptions: Record<string, string> = {
+      'AuthenticationError': 'Authentication failed. Please check your credentials.',
+      'PermissionDenied': 'You don\'t have permission to access this resource.',
+      'ConnectionError': 'Failed to connect to the server. Please check your network.',
+      'TimeoutError': 'Request timed out. Please try again.',
+      'ValidationError': 'Invalid input. Please check your data and try again.'
+    };
+
+    for (const [exception, friendly] of Object.entries(pythonExceptions)) {
+      if (error.includes(exception)) {
+        return friendly;
+      }
+    }
+
+    // Return original error if no patterns match
+    return error;
+  }
+
+  /**
+   * Clear error from store (Snackbar handles its own dismissal)
    */
   clearError(): void {
-    this.errorMessage = null;
     this.aiChatStore.clearError();
   }
 
