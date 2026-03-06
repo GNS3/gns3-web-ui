@@ -1,56 +1,126 @@
 /**
- * AI Profile Model
- * Represents an AI model configuration profile
+ * Model type enumeration
  */
-export interface AiProfile {
-  name: string;           // Profile name (unique per user)
-  provider: string;       // Provider name (openai, qwen, anthropic, etc.)
-  model: string;          // Model name (gpt-4, qwen-max, etc.)
-  api_key: string;        // API key (encrypted on server)
-  base_url: string;       // API endpoint URL
-  temperature: string;    // Temperature parameter
-  // Extended fields (optional)
-  max_tokens?: number;
-  top_p?: number;
-  stream?: boolean;
-  [key: string]: any;     // Support for custom fields
+export type ModelType =
+  | 'text'        // Text generation models
+  | 'vision'      // Vision/image understanding models
+  | 'stt'         // Speech-to-Text models
+  | 'tts'         // Text-to-Speech models
+  | 'multimodal'  // Multimodal models supporting multiple input types
+  | 'embedding'   // Text embedding models
+  | 'reranking'   // Reranking models
+  | 'other';      // Other model types
+
+/**
+ * Context strategy enumeration
+ */
+export type ContextStrategy =
+  | 'conservative'  // 60% of limit
+  | 'balanced'      // 75% of limit (default)
+  | 'aggressive';   // 85% of limit
+
+/**
+ * Copilot mode enumeration
+ */
+export type CopilotMode =
+  | 'teaching_assistant'         // Diagnostics only (default)
+  | 'lab_automation_assistant';  // Full configuration access
+
+/**
+ * LLM Model Configuration Data (nested in config object)
+ */
+export interface LLMModelConfigData {
+  provider: string;              // LLM provider (e.g., "openai", "anthropic", "ollama")
+  base_url: string;              // API base URL
+  model: string;                 // Model name
+  temperature: number;           // Temperature (0.0-2.0)
+  context_limit: number;         // Model context window limit in K tokens (e.g., 128 = 128K)
+  api_key?: string;              // API key (auto-encrypted, may be hidden for inherited configs)
+  max_tokens?: number;           // Max tokens for generation
+  context_strategy?: ContextStrategy;  // Context trimming strategy
+  copilot_mode?: CopilotMode;    // GNS3-Copilot mode
+  [key: string]: any;            // Support for custom fields
 }
 
 /**
- * Profiles list response
+ * LLM Model Configuration Response
  */
-export interface AiProfilesResponse {
-  profiles: AiProfile[];
-  active: string;         // Currently active profile name
-  version: number;        // Optimistic locking version
+export interface LLMModelConfigResponse {
+  config_id: string;             // Configuration ID (UUID)
+  name: string;                  // Configuration name
+  model_type: ModelType;         // Model type
+  config: LLMModelConfigData;    // Configuration data (nested)
+  user_id: string | null;        // Owner user ID
+  group_id: string | null;       // Owner group ID
+  is_default: boolean;           // Default configuration flag
+  version: number;               // Optimistic locking version
+  created_at: string;            // Creation time
+  updated_at: string;            // Last update time
 }
 
 /**
- * Set active profile request
+ * LLM Model Configuration with Source (for inherited configs)
  */
-export interface SetActiveProfileRequest {
-  profile_name: string;
-  expected_version?: number;  // Optional, for optimistic locking
+export interface LLMModelConfigWithSource extends LLMModelConfigResponse {
+  source: 'user' | 'group';      // Source of the configuration
+  group_name: string | null;     // Group name if source is "group"
 }
 
 /**
- * Create profile request
+ * LLM Model Configurations List Response (for user endpoints with inheritance)
  */
-export interface CreateProfileRequest extends Partial<AiProfile> {
-  name: string;
-  provider: string;
-  model: string;
-  api_key: string;
-  base_url?: string;
-  temperature?: string;
+export interface LLMModelConfigInheritedResponse {
+  configs: LLMModelConfigWithSource[];  // Effective configurations (own + inherited)
+  default_config: LLMModelConfigWithSource | null;  // Default configuration
+  total: number;                        // Total count
 }
 
 /**
- * Update profile request
+ * LLM Model Configurations List Response (for group endpoints)
  */
-export interface UpdateProfileRequest {
-  expected_version?: number;
-  [key: string]: any;
+export interface LLMModelConfigListResponse {
+  configs: LLMModelConfigResponse[];    // Configuration list
+  default_config: LLMModelConfigResponse | null;  // Default configuration
+  total: number;                        // Total count
+}
+
+/**
+ * Create LLM Model Configuration Request
+ */
+export interface CreateLLMModelConfigRequest {
+  name: string;                         // Configuration name (1-100 chars)
+  model_type: ModelType;                // Model type
+  provider: string;                     // LLM provider
+  base_url: string;                     // API base URL
+  model: string;                        // Model name
+  temperature: number;                  // Temperature (0.0-2.0, default: 0.7)
+  context_limit: number;                // Model context window limit in K tokens (required)
+  api_key?: string;                     // API key (auto-encrypted)
+  max_tokens?: number;                  // Max tokens for generation
+  context_strategy?: ContextStrategy;   // Context trimming strategy
+  copilot_mode?: CopilotMode;           // GNS3-Copilot mode
+  is_default?: boolean;                 // Set as default (default: false)
+  [key: string]: any;                   // Support for custom fields
+}
+
+/**
+ * Update LLM Model Configuration Request
+ */
+export interface UpdateLLMModelConfigRequest {
+  name?: string;                        // Configuration name
+  model_type?: ModelType;               // Model type
+  provider?: string;                    // LLM provider
+  base_url?: string;                    // API base URL
+  model?: string;                       // Model name
+  temperature?: number;                 // Temperature
+  context_limit?: number;               // Model context window limit in K tokens
+  api_key?: string;                     // API key
+  max_tokens?: number;                  // Max tokens
+  context_strategy?: ContextStrategy;   // Context trimming strategy
+  copilot_mode?: CopilotMode;           // GNS3-Copilot mode
+  is_default?: boolean;                 // Default flag
+  expected_version?: number;            // Optimistic locking version
+  [key: string]: any;                   // Support for custom fields
 }
 
 /**
@@ -59,4 +129,56 @@ export interface UpdateProfileRequest {
 export interface ApiError {
   detail: string;
   status?: number;
+}
+
+/**
+ * Legacy aliases for backward compatibility
+ * @deprecated Use LLMModelConfigResponse instead
+ */
+export interface AiProfile {
+  name: string;
+  provider: string;
+  model: string;
+  api_key: string;
+  base_url?: string;
+  temperature: string | number;
+  [key: string]: any;
+}
+
+/**
+ * @deprecated Use LLMModelConfigInheritedResponse instead
+ */
+export interface AiProfilesResponse {
+  profiles: AiProfile[];
+  active: string;
+  version: number;
+}
+
+/**
+ * @deprecated Use is_default flag instead
+ */
+export interface SetActiveProfileRequest {
+  profile_name: string;
+  expected_version?: number;
+}
+
+/**
+ * @deprecated Use CreateLLMModelConfigRequest instead
+ */
+export interface CreateProfileRequest {
+  name: string;
+  provider: string;
+  model: string;
+  api_key: string;
+  base_url?: string;
+  temperature?: string | number;
+  [key: string]: any;
+}
+
+/**
+ * @deprecated Use UpdateLLMModelConfigRequest instead
+ */
+export interface UpdateProfileRequest {
+  expected_version?: number;
+  [key: string]: any;
 }

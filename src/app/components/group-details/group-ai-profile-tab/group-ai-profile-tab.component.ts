@@ -7,6 +7,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import {
+  LLMModelConfigResponse,
+  LLMModelConfigListResponse,
+  CreateLLMModelConfigRequest,
+  UpdateLLMModelConfigRequest,
+  // Legacy types
   AiProfile,
   AiProfilesResponse,
   CreateProfileRequest,
@@ -32,20 +37,18 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
 
   // Data state
   loading$ = new BehaviorSubject<boolean>(false);
-  settingActive$ = new BehaviorSubject<Set<string>>(new Set());
+  settingDefault$ = new BehaviorSubject<Set<string>>(new Set());
   error$ = new BehaviorSubject<string | null>(null);
-  profiles$ = new BehaviorSubject<AiProfile[]>([]);
-  activeProfile$ = new BehaviorSubject<AiProfile | null>(null);
-  currentVersion$ = new BehaviorSubject<number>(0);
+  configs$ = new BehaviorSubject<LLMModelConfigResponse[]>([]);
+  defaultConfig$ = new BehaviorSubject<LLMModelConfigResponse | null>(null);
 
   // Local data
-  profiles: AiProfile[] = [];
-  activeProfile: AiProfile | null = null;
-  currentVersion = 0;
-  settingActiveProfiles = new Set<string>();
+  configs: LLMModelConfigResponse[] = [];
+  defaultConfig: LLMModelConfigResponse | null = null;
+  settingDefaultConfigs = new Set<string>();
 
-  // Table columns
-  displayedColumns: string[] = ['name', 'provider', 'model', 'temperature', 'actions'];
+  // Table columns - now with model type column
+  displayedColumns: string[] = ['name', 'model_type', 'provider', 'model', 'context_limit', 'actions'];
 
   constructor(
     private aiProfilesService: AiProfilesService,
@@ -54,19 +57,17 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadProfiles();
+    this.loadConfigs();
 
     // Subscribe to data changes
     combineLatest([
-      this.profiles$,
-      this.activeProfile$,
-      this.currentVersion$
+      this.configs$,
+      this.defaultConfig$
     ]).pipe(
       takeUntil(this.destroy$)
-    ).subscribe(([profiles, activeProfile, version]) => {
-      this.profiles = profiles;
-      this.activeProfile = activeProfile;
-      this.currentVersion = version;
+    ).subscribe(([configs, defaultConfig]) => {
+      this.configs = configs;
+      this.defaultConfig = defaultConfig;
     });
 
     // Subscribe to errors
@@ -84,143 +85,137 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load profiles list
+   * Load configurations list
    */
-  loadProfiles(): void {
+  loadConfigs(): void {
     this.loading$.next(true);
     this.error$.next(null);
 
-    this.aiProfilesService.getGroupProfiles(this.controller, this.group.user_group_id)
+    this.aiProfilesService.getGroupConfigs(this.controller, this.group.user_group_id)
       .pipe(
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: (response: AiProfilesResponse) => {
-          this.profiles$.next(response.profiles);
-
-          // Find active profile
-          const active = response.profiles.find(p => p.name === response.active);
-          this.activeProfile$.next(active || null);
-          this.currentVersion$.next(response.version);
-
+        next: (response: LLMModelConfigListResponse) => {
+          this.configs$.next(response.configs);
+          this.defaultConfig$.next(response.default_config);
           this.loading$.next(false);
         },
         error: (error) => {
-          this.handleError(error, 'Failed to load profiles');
+          this.handleError(error, 'Failed to load configurations');
         }
       });
   }
 
   /**
-   * Open create profile dialog
+   * Check if config is default
+   */
+  isDefault(config: LLMModelConfigResponse): boolean {
+    return this.defaultConfig?.config_id === config.config_id;
+  }
+
+  /**
+   * Open create configuration dialog
    */
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: {
         mode: 'create',
-        profile: {},
-        existingNames: this.profiles.map(p => p.name)
+        config: null,
+        existingNames: this.configs.map(c => c.name)
       }
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result) {
-        this.createProfile(result);
+        this.createConfig(result);
       }
     });
   }
 
   /**
-   * Open edit profile dialog
+   * Open edit configuration dialog
    */
-  openEditDialog(profile: AiProfile): void {
+  openEditDialog(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: {
         mode: 'edit',
-        profile: { ...profile },
-        existingNames: this.profiles.map(p => p.name).filter(n => n !== profile.name)
+        config: { ...config },
+        existingNames: this.configs
+          .filter(c => c.config_id !== config.config_id)
+          .map(c => c.name)
       }
     });
 
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
       if (result) {
-        this.updateProfile(profile.name, result);
+        this.updateConfig(config.config_id, result);
       }
     });
   }
 
   /**
-   * Create profile
+   * Create configuration
    */
-  createProfile(profileData: Partial<AiProfile>): void {
+  createConfig(configData: CreateLLMModelConfigRequest): void {
     this.loading$.next(true);
 
-    this.aiProfilesService.createGroupProfile(
+    this.aiProfilesService.createGroupConfig(
       this.controller,
       this.group.user_group_id,
-      profileData as CreateProfileRequest
+      configData
     ).pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (newProfile: AiProfile) => {
-          const updatedProfiles = [...this.profiles, newProfile];
-          this.profiles$.next(updatedProfiles);
-          this.loading$.next(false);
-          this.showSuccess('Profile created successfully');
+        next: () => {
+          // Reload all configs to get fresh data
+          this.loadConfigs();
+          this.showSuccess('Configuration created successfully');
         },
         error: (error) => {
-          this.handleError(error, 'Failed to create profile');
+          this.handleError(error, 'Failed to create configuration');
         }
       });
   }
 
   /**
-   * Update profile
+   * Update configuration
    */
-  updateProfile(profileName: string, updates: Partial<AiProfile>): void {
+  updateConfig(configId: string, updates: UpdateLLMModelConfigRequest): void {
     this.loading$.next(true);
 
-    const request: UpdateProfileRequest = {
-      ...updates,
-      expected_version: this.currentVersion
-    };
-
-    this.aiProfilesService.updateGroupProfile(
+    this.aiProfilesService.updateGroupConfig(
       this.controller,
       this.group.user_group_id,
-      profileName,
-      request
+      configId,
+      updates
     ).pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (updatedProfile: AiProfile) => {
-          const updatedProfiles = this.profiles.map(p =>
-            p.name === profileName ? updatedProfile : p
-          );
-          this.profiles$.next(updatedProfiles);
-          this.currentVersion$.next(this.currentVersion + 1);
-          this.loading$.next(false);
-          this.showSuccess('Profile updated successfully');
+        next: () => {
+          // Reload all configs to get fresh data
+          this.loadConfigs();
+          this.showSuccess('Configuration updated successfully');
         },
         error: (error) => {
           if (error.status === 409) {
             this.handleConflict(error);
           } else {
-            this.handleError(error, 'Failed to update profile');
+            this.handleError(error, 'Failed to update configuration');
           }
         }
       });
   }
 
   /**
-   * Delete profile
+   * Delete configuration
    */
-  deleteProfile(profile: AiProfile): void {
+  deleteConfig(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Delete Profile',
-        message: `Are you sure you want to delete profile "${profile.name}"? This action cannot be undone.`,
+        title: 'Delete Configuration',
+        message: `Are you sure you want to delete configuration "${config.name}"? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel'
       }
@@ -230,28 +225,19 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
       if (result) {
         this.loading$.next(true);
 
-        this.aiProfilesService.deleteGroupProfile(
+        this.aiProfilesService.deleteGroupConfig(
           this.controller,
           this.group.user_group_id,
-          profile.name
+          config.config_id
         ).pipe(takeUntil(this.destroy$))
           .subscribe({
             next: () => {
-              const updatedProfiles = this.profiles.filter(p => p.name !== profile.name);
-
-              // If deleted profile was active, need to set new active
-              let newActive = this.activeProfile;
-              if (this.activeProfile?.name === profile.name) {
-                newActive = updatedProfiles[0] || null;
-              }
-
-              this.profiles$.next(updatedProfiles);
-              this.activeProfile$.next(newActive);
-              this.loading$.next(false);
-              this.showSuccess('Profile deleted successfully');
+              // Reload all configs to get fresh data
+              this.loadConfigs();
+              this.showSuccess('Configuration deleted successfully');
             },
             error: (error) => {
-              this.handleError(error, 'Failed to delete profile');
+              this.handleError(error, 'Failed to delete configuration');
             }
           });
       }
@@ -259,46 +245,38 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Set active profile
+   * Set default configuration
    */
-  setActiveProfile(profileName: string): void {
-    // Add to setting active set (button-level loading state)
-    this.settingActiveProfiles.add(profileName);
-    this.settingActive$.next(new Set(this.settingActiveProfiles));
+  setDefaultConfig(configId: string): void {
+    // Add to setting default set (button-level loading state)
+    this.settingDefaultConfigs.add(configId);
+    this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
-    const request: SetActiveProfileRequest = {
-      profile_name: profileName,
-      expected_version: this.currentVersion
-    };
-
-    this.aiProfilesService.setActiveGroupProfile(
+    this.aiProfilesService.setDefaultGroupConfig(
       this.controller,
       this.group.user_group_id,
-      request
+      configId
     ).pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response: AiProfilesResponse) => {
-          this.profiles$.next(response.profiles);
-          this.activeProfile$.next(
-            response.profiles.find(p => p.name === response.active) || null
-          );
-          this.currentVersion$.next(response.version);
+        next: () => {
+          // Reload all configs to get fresh data
+          this.loadConfigs();
 
-          // Remove from setting active set
-          this.settingActiveProfiles.delete(profileName);
-          this.settingActive$.next(new Set(this.settingActiveProfiles));
+          // Remove from setting default set
+          this.settingDefaultConfigs.delete(configId);
+          this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
-          this.showSuccess('Active profile set successfully');
+          this.showSuccess('Default configuration set successfully');
         },
         error: (error) => {
-          // Remove from setting active set on error too
-          this.settingActiveProfiles.delete(profileName);
-          this.settingActive$.next(new Set(this.settingActiveProfiles));
+          // Remove from setting default set on error too
+          this.settingDefaultConfigs.delete(configId);
+          this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
           if (error.status === 409) {
             this.handleConflict(error);
           } else {
-            this.handleError(error, 'Failed to set active profile');
+            this.handleError(error, 'Failed to set default configuration');
           }
         }
       });
@@ -309,7 +287,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   private handleConflict(error: any): void {
     // Reload data
-    this.loadProfiles();
+    this.loadConfigs();
     this.showWarning('Data has been modified by another user, auto-refreshed');
   }
 

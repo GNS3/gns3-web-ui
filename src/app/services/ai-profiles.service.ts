@@ -4,6 +4,12 @@ import { catchError, map } from 'rxjs/operators';
 import { HttpController } from './http-controller.service';
 import { Controller } from '@models/controller';
 import {
+  LLMModelConfigResponse,
+  LLMModelConfigInheritedResponse,
+  LLMModelConfigListResponse,
+  CreateLLMModelConfigRequest,
+  UpdateLLMModelConfigRequest,
+  // Legacy types for backward compatibility
   AiProfile,
   AiProfilesResponse,
   SetActiveProfileRequest,
@@ -12,7 +18,7 @@ import {
 } from '@models/ai-profile';
 
 /**
- * Service for managing AI model profiles
+ * Service for managing LLM model configurations
  */
 @Injectable({
   providedIn: 'root'
@@ -21,9 +27,263 @@ export class AiProfilesService {
 
   constructor(private httpController: HttpController) {}
 
+  /* ==================== User Configuration Methods ==================== */
+
   /**
+   * Get user's effective configurations (own + inherited from groups)
+   * GET /v3/access/users/{user_id}/llm-model-configs
+   */
+  getConfigs(controller: Controller, userId: string): Observable<LLMModelConfigInheritedResponse> {
+    return this.httpController.get<LLMModelConfigInheritedResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to get user configs:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get user's own configurations only (no inheritance)
+   * GET /v3/access/users/{user_id}/llm-model-configs/own
+   */
+  getOwnConfigs(controller: Controller, userId: string): Observable<LLMModelConfigListResponse> {
+    return this.httpController.get<LLMModelConfigListResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs/own`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to get user own configs:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get user's default configuration
+   * GET /v3/access/users/{user_id}/llm-model-configs/default
+   */
+  getDefaultConfig(controller: Controller, userId: string): Observable<LLMModelConfigResponse> {
+    return this.httpController.get<LLMModelConfigResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs/default`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to get default config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Create a new user configuration
+   * POST /v3/access/users/{user_id}/llm-model-configs
+   */
+  createConfig(
+    controller: Controller,
+    userId: string,
+    config: CreateLLMModelConfigRequest
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.post<LLMModelConfigResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs`,
+      config
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to create config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Update a user configuration
+   * PUT /v3/access/users/{user_id}/llm-model-configs/{config_id}
+   */
+  updateConfig(
+    controller: Controller,
+    userId: string,
+    configId: string,
+    updates: UpdateLLMModelConfigRequest
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.put<LLMModelConfigResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs/${configId}`,
+      updates
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to update config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Delete a user configuration
+   * DELETE /v3/access/users/{user_id}/llm-model-configs/{config_id}
+   */
+  deleteConfig(
+    controller: Controller,
+    userId: string,
+    configId: string
+  ): Observable<void> {
+    return this.httpController.delete<void>(
+      controller,
+      `/access/users/${userId}/llm-model-configs/${configId}`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to delete config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Set default configuration for a user
+   * PUT /v3/access/users/{user_id}/llm-model-configs/default/{config_id}
+   */
+  setDefaultConfig(
+    controller: Controller,
+    userId: string,
+    configId: string
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.put<LLMModelConfigResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs/default/${configId}`,
+      {}
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to set default config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /* ==================== Group Configuration Methods ==================== */
+
+  /**
+   * Get all group configurations
+   * GET /v3/access/groups/{group_id}/llm-model-configs
+   */
+  getGroupConfigs(controller: Controller, groupId: string): Observable<LLMModelConfigListResponse> {
+    return this.httpController.get<LLMModelConfigListResponse>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to get group configs:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get group's default configuration
+   * GET /v3/access/groups/{group_id}/llm-model-configs/default
+   */
+  getDefaultGroupConfig(controller: Controller, groupId: string): Observable<LLMModelConfigResponse> {
+    return this.httpController.get<LLMModelConfigResponse>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs/default`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to get default group config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Create a new group configuration
+   * POST /v3/access/groups/{group_id}/llm-model-configs
+   */
+  createGroupConfig(
+    controller: Controller,
+    groupId: string,
+    config: CreateLLMModelConfigRequest
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.post<LLMModelConfigResponse>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs`,
+      config
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to create group config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Update a group configuration
+   * PUT /v3/access/groups/{group_id}/llm-model-configs/{config_id}
+   */
+  updateGroupConfig(
+    controller: Controller,
+    groupId: string,
+    configId: string,
+    updates: UpdateLLMModelConfigRequest
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.put<LLMModelConfigResponse>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs/${configId}`,
+      updates
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to update group config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Delete a group configuration
+   * DELETE /v3/access/groups/{group_id}/llm-model-configs/{config_id}
+   */
+  deleteGroupConfig(
+    controller: Controller,
+    groupId: string,
+    configId: string
+  ): Observable<void> {
+    return this.httpController.delete<void>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs/${configId}`
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to delete group config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Set default configuration for a group
+   * PUT /v3/access/groups/{group_id}/llm-model-configs/default/{config_id}
+   */
+  setDefaultGroupConfig(
+    controller: Controller,
+    groupId: string,
+    configId: string
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.put<LLMModelConfigResponse>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs/default/${configId}`,
+      {}
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to set default group config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /* ==================== Legacy Methods (for backward compatibility) ==================== */
+
+  /**
+   * @deprecated Use getConfigs() instead
    * Get all profiles for a user
-   * GET /v3/access/users/{user_id}/profiles
    */
   getProfiles(controller: Controller, userId: string): Observable<AiProfilesResponse> {
     return this.httpController.get<AiProfilesResponse>(
@@ -38,11 +298,11 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use getDefaultConfig() instead
    * Get active profile for a user
-   * GET /v3/access/users/{user_id}/profiles/active
    */
-  getActiveProfile(controller: Controller, userId: string): Observable<AiProfile> {
-    return this.httpController.get<AiProfile>(
+  getActiveProfile(controller: Controller, userId: string): Observable<any> {
+    return this.httpController.get<any>(
       controller,
       `/access/users/${userId}/profiles/active`
     ).pipe(
@@ -54,15 +314,15 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use createConfig() instead
    * Create a new profile
-   * POST /v3/access/users/{user_id}/profiles
    */
   createProfile(
     controller: Controller,
     userId: string,
     profile: CreateProfileRequest
-  ): Observable<AiProfile> {
-    return this.httpController.post<AiProfile>(
+  ): Observable<any> {
+    return this.httpController.post<any>(
       controller,
       `/access/users/${userId}/profiles`,
       profile
@@ -75,16 +335,16 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use updateConfig() instead
    * Update a profile
-   * PUT /v3/access/users/{user_id}/profiles/{profile_name}
    */
   updateProfile(
     controller: Controller,
     userId: string,
     profileName: string,
     updates: UpdateProfileRequest
-  ): Observable<AiProfile> {
-    return this.httpController.put<AiProfile>(
+  ): Observable<any> {
+    return this.httpController.put<any>(
       controller,
       `/access/users/${userId}/profiles/${profileName}`,
       updates
@@ -97,15 +357,15 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use setDefaultConfig() instead
    * Set active profile
-   * PUT /v3/access/users/{user_id}/profiles/active
    */
   setActiveProfile(
     controller: Controller,
     userId: string,
     request: SetActiveProfileRequest
-  ): Observable<AiProfilesResponse> {
-    return this.httpController.put<AiProfilesResponse>(
+  ): Observable<any> {
+    return this.httpController.put<any>(
       controller,
       `/access/users/${userId}/profiles/active`,
       request
@@ -118,8 +378,8 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use deleteConfig() instead
    * Delete a profile
-   * DELETE /v3/access/users/{user_id}/profiles/{profile_name}
    */
   deleteProfile(
     controller: Controller,
@@ -137,11 +397,9 @@ export class AiProfilesService {
     );
   }
 
-  /* ==================== Group Profile Methods ==================== */
-
   /**
+   * @deprecated Use getGroupConfigs() instead
    * Get all profiles for a group
-   * GET /v3/access/groups/{group_id}/profiles
    */
   getGroupProfiles(controller: Controller, groupId: string): Observable<AiProfilesResponse> {
     return this.httpController.get<AiProfilesResponse>(
@@ -156,11 +414,11 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use getDefaultGroupConfig() instead
    * Get active profile for a group
-   * GET /v3/access/groups/{group_id}/profiles/active
    */
-  getActiveGroupProfile(controller: Controller, groupId: string): Observable<AiProfile> {
-    return this.httpController.get<AiProfile>(
+  getActiveGroupProfile(controller: Controller, groupId: string): Observable<any> {
+    return this.httpController.get<any>(
       controller,
       `/access/groups/${groupId}/profiles/active`
     ).pipe(
@@ -172,15 +430,15 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use createGroupConfig() instead
    * Create a new group profile
-   * POST /v3/access/groups/{group_id}/profiles
    */
   createGroupProfile(
     controller: Controller,
     groupId: string,
     profile: CreateProfileRequest
-  ): Observable<AiProfile> {
-    return this.httpController.post<AiProfile>(
+  ): Observable<any> {
+    return this.httpController.post<any>(
       controller,
       `/access/groups/${groupId}/profiles`,
       profile
@@ -193,16 +451,16 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use updateGroupConfig() instead
    * Update a group profile
-   * PUT /v3/access/groups/{group_id}/profiles/{profile_name}
    */
   updateGroupProfile(
     controller: Controller,
     groupId: string,
     profileName: string,
     updates: UpdateProfileRequest
-  ): Observable<AiProfile> {
-    return this.httpController.put<AiProfile>(
+  ): Observable<any> {
+    return this.httpController.put<any>(
       controller,
       `/access/groups/${groupId}/profiles/${profileName}`,
       updates
@@ -215,15 +473,15 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use setDefaultGroupConfig() instead
    * Set active group profile
-   * PUT /v3/access/groups/{group_id}/profiles/active
    */
   setActiveGroupProfile(
     controller: Controller,
     groupId: string,
     request: SetActiveProfileRequest
-  ): Observable<AiProfilesResponse> {
-    return this.httpController.put<AiProfilesResponse>(
+  ): Observable<any> {
+    return this.httpController.put<any>(
       controller,
       `/access/groups/${groupId}/profiles/active`,
       request
@@ -236,8 +494,8 @@ export class AiProfilesService {
   }
 
   /**
+   * @deprecated Use deleteGroupConfig() instead
    * Delete a group profile
-   * DELETE /v3/access/groups/{group_id}/profiles/{profile_name}
    */
   deleteGroupProfile(
     controller: Controller,

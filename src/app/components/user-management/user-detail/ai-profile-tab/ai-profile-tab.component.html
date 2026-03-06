@@ -2,17 +2,17 @@
   <!-- Toolbar -->
   <div class="toolbar">
     <div class="toolbar-info">
-      <h3>AI Model Profiles Management</h3>
-      <p class="subtitle">Manage user AI model configuration profiles. API keys are encrypted on the server.</p>
+      <h3>LLM Model Configurations</h3>
+      <p class="subtitle">Manage LLM model configurations. Your configs and configs inherited from your groups are shown below.</p>
     </div>
     <div class="toolbar-actions">
-      <button mat-button (click)="loadProfiles()" [disabled]="loading$ | async">
+      <button mat-button (click)="loadConfigs()" [disabled]="loading$ | async">
         <mat-icon>refresh</mat-icon>
         Refresh
       </button>
       <button mat-raised-button color="primary" (click)="openCreateDialog()">
         <mat-icon>add</mat-icon>
-        New Profile
+        New Configuration
       </button>
     </div>
   </div>
@@ -26,69 +26,99 @@
   <!-- Content area -->
   <div class="content-area" *ngIf="!(loading$ | async)">
 
-    <!-- Profiles list -->
+    <!-- Configurations list -->
     <mat-card class="list-card">
       <mat-card-header>
-        <mat-card-title>All Profiles</mat-card-title>
+        <mat-card-title>All Configurations (Own + Inherited)</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="table-container" *ngIf="profiles.length > 0">
-          <table mat-table [dataSource]="profiles" class="profiles-table">
+        <div class="table-container" *ngIf="configs.length > 0">
+          <table mat-table [dataSource]="configs" class="profiles-table">
 
             <!-- Name column -->
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef> Name </th>
-              <td mat-cell *matCellDef="let profile">
-                <span class="profile-name">{{ profile.name }}</span>
+              <td mat-cell *matCellDef="let config">
+                <span class="profile-name">{{ config.name }}</span>
+                <span *ngIf="config.source === 'group'" class="group-badge">
+                  <mat-icon class="group-icon">group</mat-icon>
+                  {{ config.group_name }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Model Type column -->
+            <ng-container matColumnDef="model_type">
+              <th mat-header-cell *matHeaderCellDef> Type </th>
+              <td mat-cell *matCellDef="let config">
+                <span class="model-type-badge" [class]="'model-type-' + config.model_type">
+                  {{ config.model_type }}
+                </span>
               </td>
             </ng-container>
 
             <!-- Provider column -->
             <ng-container matColumnDef="provider">
               <th mat-header-cell *matHeaderCellDef> Provider </th>
-              <td mat-cell *matCellDef="let profile">
-                <span class="provider-badge">{{ profile.provider }}</span>
+              <td mat-cell *matCellDef="let config">
+                <span class="provider-badge">{{ config.config.provider }}</span>
               </td>
             </ng-container>
 
             <!-- Model column -->
             <ng-container matColumnDef="model">
               <th mat-header-cell *matHeaderCellDef> Model </th>
-              <td mat-cell *matCellDef="let profile">
-                <span class="model-name">{{ profile.model }}</span>
+              <td mat-cell *matCellDef="let config">
+                <span class="model-name">{{ config.config.model }}</span>
               </td>
             </ng-container>
 
-            <!-- Temperature column -->
-            <ng-container matColumnDef="temperature">
-              <th mat-header-cell *matHeaderCellDef> Temperature </th>
-              <td mat-cell *matCellDef="let profile">
-                <span class="temperature-value">{{ profile.temperature }}</span>
+            <!-- Context Limit column -->
+            <ng-container matColumnDef="context_limit">
+              <th mat-header-cell *matHeaderCellDef> Context Limit </th>
+              <td mat-cell *matCellDef="let config">
+                <span class="context-limit-value">{{ config.config.context_limit }}K</span>
+                <span *ngIf="config.config.context_strategy" class="context-strategy-badge">
+                  {{ config.config.context_strategy }}
+                </span>
               </td>
             </ng-container>
 
             <!-- Actions column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef> Actions </th>
-              <td mat-cell *matCellDef="let profile">
+              <td mat-cell *matCellDef="let config">
                 <div class="action-buttons">
+                  <!-- Set Default button (only for user's own configs) -->
                   <button
                     mat-icon-button
-                    (click)="setActiveProfile(profile.name)"
-                    [disabled]="(activeProfile$ | async)?.name === profile.name || (settingActive$ | async)?.has(profile.name)"
-                    [class.active-btn]="(activeProfile$ | async)?.name === profile.name">
+                    (click)="setDefaultConfig(config.config_id)"
+                    [disabled]="isDefault(config) || (settingDefault$ | async)?.has(config.config_id) || !isEditable(config)"
+                    [class.active-btn]="isDefault(config)"
+                    matTooltip="Set as default"
+                    matTooltipPosition="above">
                     <mat-icon>check_circle</mat-icon>
                   </button>
+
+                  <!-- Edit button (only for user's own configs) -->
                   <button
                     mat-icon-button
-                    (click)="openEditDialog(profile)">
+                    (click)="openEditDialog(config)"
+                    [disabled]="!isEditable(config)"
+                    matTooltip="Edit (not available for inherited configs)"
+                    matTooltipPosition="above">
                     <mat-icon>edit</mat-icon>
                   </button>
+
+                  <!-- Delete button (only for user's own configs) -->
                   <button
                     mat-icon-button
-                    (click)="deleteProfile(profile)"
+                    (click)="deleteConfig(config)"
                     color="warn"
-                    class="delete-btn">
+                    class="delete-btn"
+                    [disabled]="!isEditable(config)"
+                    matTooltip="Delete (not available for inherited configs)"
+                    matTooltipPosition="above">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -97,15 +127,16 @@
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                [class.active-row]="(activeProfile$ | async)?.name === row.name"></tr>
+                [class.active-row]="isDefault(row)"
+                [class.inherited-row]="row.source === 'group'"></tr>
           </table>
         </div>
 
         <!-- Empty state -->
-        <div class="empty-state" *ngIf="profiles.length === 0">
+        <div class="empty-state" *ngIf="configs.length === 0">
           <mat-icon class="empty-icon">folder_open</mat-icon>
-          <p>No profiles yet</p>
-          <p class="empty-hint">Click "New Profile" above to create your first profile</p>
+          <p>No configurations yet</p>
+          <p class="empty-hint">Click "New Configuration" above to create your first LLM model configuration</p>
         </div>
       </mat-card-content>
     </mat-card>

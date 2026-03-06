@@ -1,28 +1,53 @@
-.profile-form {
+.config-form {
   min-width: 400px;
-  max-width: 600px;
+  max-width: 700px;
 
   .full-width {
     width: 100%;
     margin-bottom: 12px;
   }
 
-  .manual-config-section {
+  .section-header {
     margin-top: 16px;
     margin-bottom: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
 
-    .section-header {
-      margin-bottom: 16px;
-
-      h4 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 500;
-        color: #424242;
-      }
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #424242;
     }
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .half-width {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .checkbox-section {
+    margin: 16px 0;
+    padding: 12px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+
+    .checkbox-hint {
+      display: block;
+      margin-top: 4px;
+      margin-left: 28px;
+      font-size: 12px;
+      color: #757575;
+    }
+  }
+
+  .option-hint {
+    color: #757575;
+    font-size: 12px;
   }
 
   .custom-fields-section {
@@ -36,7 +61,7 @@
       align-items: center;
       margin-bottom: 16px;
 
-      h4 {
+      h3 {
         margin: 0;
         font-size: 16px;
         font-weight: 500;

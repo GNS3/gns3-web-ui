@@ -1,14 +1,31 @@
 <h2 mat-dialog-title>
-  {{ mode === 'create' ? 'Create Profile' : 'Edit Profile' }}
+  {{ mode === 'create' ? 'Create LLM Model Configuration' : 'Edit LLM Model Configuration' }}
 </h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="profile-form">
+  <form [formGroup]="form" class="config-form">
+    <!-- Basic Configuration Section -->
+    <div class="section-header">
+      <h3>Basic Configuration</h3>
+    </div>
+
+    <!-- Configuration Name -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Profile Name</mat-label>
-      <input matInput formControlName="name" placeholder="e.g.: openai-gpt4">
+      <mat-label>Configuration Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g.: gpt-4o-config">
       <mat-error *ngIf="hasError('name')">{{ getErrorMessage('name') }}</mat-error>
-      <mat-hint>1-50 characters, letters, numbers, underscores and hyphens only</mat-hint>
+      <mat-hint>1-100 characters, letters, numbers, underscores and hyphens only</mat-hint>
+    </mat-form-field>
+
+    <!-- Model Type Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Model Type</mat-label>
+      <mat-select formControlName="model_type">
+        <mat-option *ngFor="let type of modelTypes" [value]="type.value">
+          {{ type.label }} <span class="option-hint">- {{ type.description }}</span>
+        </mat-option>
+      </mat-select>
+      <mat-hint>Select the type of model</mat-hint>
     </mat-form-field>
 
     <!-- Provider Preset Selection -->
@@ -39,47 +56,89 @@
       <mat-label>Model Name</mat-label>
       <input matInput formControlName="model" placeholder="Enter model name">
       <mat-error *ngIf="!form.get('model')?.value">Model name is required</mat-error>
-      <mat-hint>Enter your model name (e.g., gpt-4, deepseek-chat)</mat-hint>
+      <mat-hint>Enter your model name (e.g., gpt-4o, claude-3-5-sonnet-20241022)</mat-hint>
     </mat-form-field>
 
     <!-- Manual Configuration Section -->
-    <div class="manual-config-section">
-      <div class="section-header">
-        <h4>Configuration</h4>
-      </div>
+    <div class="section-header">
+      <h3>API Configuration</h3>
+    </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Model Provider</mat-label>
-        <input matInput formControlName="provider" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
-        <mat-error>Provider is required</mat-error>
-        <mat-hint>Provider name (e.g., openai, anthropic, deepseek)</mat-hint>
-      </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Model Provider</mat-label>
+      <input matInput formControlName="provider" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
+      <mat-error>Provider is required</mat-error>
+      <mat-hint>Provider name (e.g., openai, anthropic, deepseek)</mat-hint>
+    </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Base URL</mat-label>
-        <input matInput formControlName="base_url" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
-        <mat-hint>API endpoint URL. Leave empty to use provider default.</mat-hint>
-      </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Base URL</mat-label>
+      <input matInput formControlName="base_url" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
+      <mat-hint>API endpoint URL. Leave empty to use provider default.</mat-hint>
+    </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>API Key</mat-label>
-        <input matInput formControlName="api_key" type="password">
-        <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
-        <mat-hint>API key will be encrypted on the server. Minimum length: 10 characters</mat-hint>
-      </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>API Key</mat-label>
+      <input matInput formControlName="api_key" type="password">
+      <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
+      <mat-hint>API key will be encrypted on the server. Minimum length: 10 characters</mat-hint>
+    </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
+    <!-- Model Parameters Section -->
+    <div class="section-header">
+      <h3>Model Parameters</h3>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
         <mat-label>Temperature</mat-label>
-        <input matInput formControlName="temperature" type="number" step="0.1" min="0" max="2" placeholder="0.3">
+        <input matInput formControlName="temperature" type="number" step="0.1" min="0" max="2" placeholder="0.7">
         <mat-error *ngIf="hasError('temperature')">{{ getErrorMessage('temperature') }}</mat-error>
-        <mat-hint>Controls randomness. Lower = more focused, Higher = more creative. Default: 0.3</mat-hint>
+        <mat-hint>0.0-2.0</mat-hint>
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Context Limit</mat-label>
+        <input matInput formControlName="context_limit" type="number" min="1" max="10000" placeholder="128">
+        <mat-error *ngIf="hasError('context_limit')">{{ getErrorMessage('context_limit') }}</mat-error>
+        <mat-hint>K tokens (e.g., 128 = 128K)</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Context Strategy</mat-label>
+        <mat-select formControlName="context_strategy">
+          <mat-option *ngFor="let strategy of contextStrategies" [value]="strategy.value">
+            {{ strategy.label }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>{{ getContextStrategyDescription() }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Copilot Mode</mat-label>
+        <mat-select formControlName="copilot_mode">
+          <mat-option *ngFor="let mode of copilotModes" [value]="mode.value">
+            {{ mode.label }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>{{ getCopilotModeDescription() }}</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- Default Configuration Checkbox -->
+    <div class="checkbox-section">
+      <mat-checkbox formControlName="is_default" color="primary">
+        Set as default configuration
+      </mat-checkbox>
+      <mat-hint class="checkbox-hint">If checked, this will be the default configuration for {{ mode === 'create' ? 'this user/group' : 'this user/group' }}</mat-hint>
     </div>
 
     <!-- Custom Fields Section -->
     <div class="custom-fields-section">
       <div class="section-header">
-        <h4>Advanced Parameters (Optional)</h4>
+        <h3>Advanced Parameters (Optional)</h3>
         <button mat-icon-button (click)="addCustomField()">
           <mat-icon>add_circle</mat-icon>
         </button>
@@ -106,7 +165,7 @@
       <ng-template #emptyCustomFields>
         <div class="empty-custom-fields">
           <mat-icon class="empty-icon">info</mat-icon>
-          <p>No custom fields. Click the + button to add advanced parameters like max_tokens, top_p, etc.</p>
+          <p>No custom fields. Click the + button to add advanced parameters like max_tokens, etc.</p>
         </div>
       </ng-template>
     </div>
