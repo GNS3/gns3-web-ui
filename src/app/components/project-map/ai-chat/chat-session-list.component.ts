@@ -481,6 +481,19 @@ export class ChatSessionListComponent implements OnInit {
       return '';
     }
 
+    // Debug: Log the raw timestamp (只打印一次)
+    if (!this['timestampLogged']) {
+      console.log('[ChatSessionList] Raw timestamp:', timestamp);
+      console.log('[ChatSessionList] Local timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+      const date = new Date(timestamp);
+      console.log('[ChatSessionList] Parsed date (ISO):', date.toISOString());
+      console.log('[ChatSessionList] Parsed date (Local):', date.toString());
+      console.log('[ChatSessionList] Parsed date (Locale):', date.toLocaleString());
+
+      this['timestampLogged'] = true;
+    }
+
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();

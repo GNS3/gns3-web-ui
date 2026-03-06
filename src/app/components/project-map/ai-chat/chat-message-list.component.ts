@@ -632,8 +632,16 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       return '';
     }
 
+    // Debug: Log the raw timestamp
+    console.log('[ChatMessageList] Raw timestamp:', timestamp);
+
     const date = new Date(timestamp);
     const now = new Date();
+
+    // Debug: Log parsed date
+    console.log('[ChatMessageList] Parsed date:', date.toString());
+    console.log('[ChatMessageList] Local timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
 
