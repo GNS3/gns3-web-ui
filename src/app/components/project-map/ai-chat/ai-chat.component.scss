@@ -60,7 +60,7 @@
 .sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   cursor: grab;
@@ -79,6 +79,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.sidebar-title.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-title.clickable:hover {
+  opacity: 0.9;
+}
+
+.sidebar-title.clickable:active {
+  opacity: 0.8;
 }
 
 .ai-logo {
@@ -92,13 +107,27 @@
   // ChatGPT-style gradient
   background: linear-gradient(135deg, #10a37f, #1a7f64);
   color: white;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-radius: 6px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
 }
 
-.collapse-button {
-  width: 32px;
-  height: 32px;
+.sidebar-title.clickable:hover .ai-logo {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(16, 163, 127, 0.4);
+}
+
+.sidebar-title.clickable:active .ai-logo {
+  transform: scale(0.95);
+}
+
+.toggle-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
+  margin-left: auto;
 }
 
 .sidebar-content {
@@ -171,31 +200,6 @@
 .chat-input {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
-}
-
-.collapsed-hint {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 12px;
-  text-align: center;
-  cursor: grab;
-  user-select: none;
-}
-
-.collapsed-hint:active {
-  cursor: grabbing;
-}
-
-.collapsed-hint mat-icon {
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-  color: #0097a7;
 }
 
 // Custom Snackbar styles for AI Chat errors

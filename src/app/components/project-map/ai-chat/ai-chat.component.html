@@ -16,17 +16,16 @@
   <ng-container *ngIf="!isMinimized">
     <!-- Session sidebar -->
     <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
-      <div class="sidebar-header" (mousedown)="!isMaximized && toggleDragging(true)">
-        <h3 class="sidebar-title">
+      <div class="sidebar-header">
+        <h3 class="sidebar-title"
+            (mousedown)="$event.stopPropagation()"
+            (click)="toggleSidebar()"
+            [class.clickable]="true"
+            title="Click to toggle sidebar">
           <span class="ai-logo">AI</span>
-          <span class="sidebar-text">Assistant</span>
+          <span class="sidebar-text" *ngIf="!sidebarCollapsed">Assistant</span>
+          <mat-icon class="toggle-icon" *ngIf="!sidebarCollapsed">chevron_left</mat-icon>
         </h3>
-        <button mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="$event.stopPropagation(); toggleSidebar()"
-          class="collapse-button">
-          <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-        </button>
       </div>
 
       <div class="sidebar-content" *ngIf="!sidebarCollapsed">
@@ -46,7 +45,7 @@
     <!-- Chat main area -->
     <div class="chat-main">
       <!-- Chat header -->
-      <div class="chat-header" *ngIf="!sidebarCollapsed" (mousedown)="!isMaximized && toggleDragging(true)">
+      <div class="chat-header" (mousedown)="!isMaximized && toggleDragging(true)">
         <div class="chat-title">
           <span class="ai-logo-small">AI</span>
           <span>{{ currentSessionTitle }}</span>
@@ -77,7 +76,7 @@
       </div>
 
       <!-- Messages list -->
-      <div class="chat-messages" *ngIf="!sidebarCollapsed">
+      <div class="chat-messages">
         <app-chat-message-list
           [messages]="currentMessages"
           [isStreaming]="isStreaming"
@@ -87,17 +86,11 @@
       </div>
 
       <!-- Input area -->
-      <div class="chat-input" *ngIf="!sidebarCollapsed">
+      <div class="chat-input">
         <app-chat-input-area
           [disabled]="isStreaming"
           (messageSent)="onMessageSent($event)">
         </app-chat-input-area>
-      </div>
-
-      <!-- Collapsed state hint -->
-      <div class="collapsed-hint" *ngIf="sidebarCollapsed" (mousedown)="!isMaximized && toggleDragging(true)">
-        <mat-icon>smart_toy</mat-icon>
-        <span>AI Assistant</span>
       </div>
     </div>
   </ng-container>
