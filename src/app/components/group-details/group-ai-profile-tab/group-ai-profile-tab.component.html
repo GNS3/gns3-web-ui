@@ -85,12 +85,14 @@
               <th mat-header-cell *matHeaderCellDef> Actions </th>
               <td mat-cell *matCellDef="let config">
                 <div class="action-buttons">
-                  <!-- Set Default button -->
+                  <!-- Toggle Default button -->
                   <button
                     mat-icon-button
-                    (click)="setDefaultConfig(config.config_id)"
-                    [disabled]="isDefault(config) || (settingDefault$ | async)?.has(config.config_id)"
-                    [class.active-btn]="isDefault(config)">
+                    (click)="toggleDefaultConfig(config)"
+                    [disabled]="(settingDefault$ | async)?.has(config.config_id)"
+                    [class.active-btn]="isDefault(config)"
+                    [matTooltip]="isDefault(config) ? 'Remove as default' : 'Set as default'"
+                    matTooltipClass="custom-tooltip">
                     <mat-icon>check_circle</mat-icon>
                   </button>
 

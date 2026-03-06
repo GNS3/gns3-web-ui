@@ -84,6 +84,18 @@
                 background-color: rgba(0, 0, 0, 0.04);
               }
 
+              &.inherited-row {
+                background-color: #e8f5e9 !important;
+
+                td {
+                  border-bottom: 1px solid #c8e6c9 !important;
+                }
+
+                &:hover {
+                  background-color: #c8e6c9 !important;
+                }
+              }
+
               &.active-row {
                 background-color: #c8e6c9 !important;
 

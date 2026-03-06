@@ -262,41 +262,70 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Set default configuration
+   * Toggle default configuration (set if not default, unset if already default)
+   * Only works for user's own configs, not inherited ones
    */
-  setDefaultConfig(configId: string): void {
+  toggleDefaultConfig(config: LLMModelConfigWithSource): void {
+    const configId = config.config_id;
+    const isCurrentlyDefault = this.isDefault(config);
+
     // Add to setting default set (button-level loading state)
     this.settingDefaultConfigs.add(configId);
     this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
-    this.aiProfilesService.setDefaultConfig(
-      this.controller,
-      this.user.user_id,
-      configId
-    ).pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          // Reload all configs to get fresh data
-          this.loadConfigs();
+    if (isCurrentlyDefault) {
+      this.aiProfilesService.unsetDefaultConfig(this.controller, this.user.user_id, configId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            // Reload all configs to get fresh data
+            this.loadConfigs();
 
-          // Remove from setting default set
-          this.settingDefaultConfigs.delete(configId);
-          this.settingDefault$.next(new Set(this.settingDefaultConfigs));
+            // Remove from setting default set
+            this.settingDefaultConfigs.delete(configId);
+            this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
-          this.showSuccess('Default configuration set successfully');
-        },
-        error: (error) => {
-          // Remove from setting default set on error too
-          this.settingDefaultConfigs.delete(configId);
-          this.settingDefault$.next(new Set(this.settingDefaultConfigs));
+            this.showSuccess('Default configuration removed');
+          },
+          error: (error) => {
+            // Remove from setting default set on error too
+            this.settingDefaultConfigs.delete(configId);
+            this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
-          if (error.status === 409) {
-            this.handleConflict(error);
-          } else {
-            this.handleError(error, 'Failed to set default configuration');
+            if (error.status === 409) {
+              this.handleConflict(error);
+            } else {
+              this.handleError(error, 'Failed to remove default configuration');
+            }
           }
-        }
-      });
+        });
+    } else {
+      this.aiProfilesService.setDefaultConfig(this.controller, this.user.user_id, configId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            // Reload all configs to get fresh data
+            this.loadConfigs();
+
+            // Remove from setting default set
+            this.settingDefaultConfigs.delete(configId);
+            this.settingDefault$.next(new Set(this.settingDefaultConfigs));
+
+            this.showSuccess('Default configuration set successfully');
+          },
+          error: (error) => {
+            // Remove from setting default set on error too
+            this.settingDefaultConfigs.delete(configId);
+            this.settingDefault$.next(new Set(this.settingDefaultConfigs));
+
+            if (error.status === 409) {
+              this.handleConflict(error);
+            } else {
+              this.handleError(error, 'Failed to set default configuration');
+            }
+          }
+        });
+    }
   }
 
   /**

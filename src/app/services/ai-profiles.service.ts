@@ -161,6 +161,27 @@ export class AiProfilesService {
     );
   }
 
+  /**
+   * Unset default configuration for a user
+   * PUT /v3/access/users/{user_id}/llm-model-configs/{config_id} with is_default: false
+   */
+  unsetDefaultConfig(
+    controller: Controller,
+    userId: string,
+    configId: string
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.put<LLMModelConfigResponse>(
+      controller,
+      `/access/users/${userId}/llm-model-configs/${configId}`,
+      { is_default: false }
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to unset default config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   /* ==================== Group Configuration Methods ==================== */
 
   /**
@@ -274,6 +295,27 @@ export class AiProfilesService {
     ).pipe(
       catchError(error => {
         console.error('Failed to set default group config:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Unset default configuration for a group
+   * PUT /v3/access/groups/{group_id}/llm-model-configs/{config_id} with is_default: false
+   */
+  unsetDefaultGroupConfig(
+    controller: Controller,
+    groupId: string,
+    configId: string
+  ): Observable<LLMModelConfigResponse> {
+    return this.httpController.put<LLMModelConfigResponse>(
+      controller,
+      `/access/groups/${groupId}/llm-model-configs/${configId}`,
+      { is_default: false }
+    ).pipe(
+      catchError(error => {
+        console.error('Failed to unset default group config:', error);
         return throwError(() => error);
       })
     );
