@@ -52,7 +52,6 @@
     "@angular/platform-browser": "^14.3.0",
     "@angular/platform-browser-dynamic": "^14.3.0",
     "@angular/router": "^14.3.0",
-    "@sentry/browser": "^6.14.1",
     "@snyk/protect": "^1.972.0",
     "@types/jest": "^27.0.2",
     "@types/mocha": "^9.1.1",
