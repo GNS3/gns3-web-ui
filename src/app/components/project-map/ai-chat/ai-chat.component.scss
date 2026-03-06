@@ -264,16 +264,26 @@
   align-items: center;
   gap: 4px;
 
-  // Icon button color
+  // Icon button color and sizing
   ::ng-deep .mat-icon-button {
     color: white;
     transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   // Header icon SVG styling (dark theme - white icons)
   .header-icon {
     fill: white;
     transition: all 0.2s ease;
+    width: 20px;
+    height: 20px;
   }
 
   // Hover effect for header buttons
