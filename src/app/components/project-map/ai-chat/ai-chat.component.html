@@ -1,78 +1,105 @@
-<div *ngIf="isDraggingEnabled" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
+<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 
 <!-- AI Chat Container -->
-<div class="ai-chat-container" [ngStyle]="style" mwlResizable [validateResize]="validate"
+<div class="ai-chat-container" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
+  mwlResizable [validateResize]="validate"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 
-  <!-- Session sidebar -->
-  <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
-    <div class="sidebar-header" (mousedown)="toggleDragging(true)">
-      <h3 class="sidebar-title">
-        <span class="ai-logo">AI</span>
-        <span class="sidebar-text">Assistant</span>
-      </h3>
-      <button mat-icon-button
-        (mousedown)="$event.stopPropagation()"
-        (click)="$event.stopPropagation(); toggleSidebar()"
-        class="collapse-button">
-        <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-      </button>
-    </div>
-
-    <div class="sidebar-content" *ngIf="!sidebarCollapsed">
-      <app-chat-session-list
-        [sessions]="sessions"
-        [currentSessionId]="currentSessionId"
-        (sessionSelected)="onSessionSelected($event)"
-        (sessionCreated)="onSessionCreated()"
-        (sessionRenamed)="onSessionRenamed($event)"
-        (sessionDeleted)="onSessionDeleted($event)"
-        (sessionPinned)="onSessionPinned($event)"
-        (sessionUnpinned)="onSessionUnpinned($event)">
-      </app-chat-session-list>
-    </div>
+  <!-- Minimized state -->
+  <div class="minimized-bar" *ngIf="isMinimized" (click)="restoreChat()">
+    <mat-icon>smart_toy</mat-icon>
+    <span class="minimized-text">AI Assistant</span>
   </div>
 
-  <!-- Chat main area -->
-  <div class="chat-main">
-    <!-- Chat header -->
-    <div class="chat-header" *ngIf="!sidebarCollapsed" (mousedown)="toggleDragging(true)">
-      <div class="chat-title">
-        <span class="ai-logo-small">AI</span>
-        <span>{{ currentSessionTitle }}</span>
+  <!-- Normal/Maximized state -->
+  <ng-container *ngIf="!isMinimized">
+    <!-- Session sidebar -->
+    <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
+      <div class="sidebar-header" (mousedown)="!isMaximized && toggleDragging(true)">
+        <h3 class="sidebar-title">
+          <span class="ai-logo">AI</span>
+          <span class="sidebar-text">Assistant</span>
+        </h3>
+        <button mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); toggleSidebar()"
+          class="collapse-button">
+          <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+        </button>
       </div>
-      <button mat-icon-button
-        (mousedown)="$event.stopPropagation()"
-        (click)="$event.stopPropagation(); closeChat()"
-        class="close-button">
-        <mat-icon>close</mat-icon>
-      </button>
+
+      <div class="sidebar-content" *ngIf="!sidebarCollapsed">
+        <app-chat-session-list
+          [sessions]="sessions"
+          [currentSessionId]="currentSessionId"
+          (sessionSelected)="onSessionSelected($event)"
+          (sessionCreated)="onSessionCreated()"
+          (sessionRenamed)="onSessionRenamed($event)"
+          (sessionDeleted)="onSessionDeleted($event)"
+          (sessionPinned)="onSessionPinned($event)"
+          (sessionUnpinned)="onSessionUnpinned($event)">
+        </app-chat-session-list>
+      </div>
     </div>
 
-    <!-- Messages list -->
-    <div class="chat-messages" *ngIf="!sidebarCollapsed">
-      <app-chat-message-list
-        [messages]="currentMessages"
-        [isStreaming]="isStreaming"
-        (scrollToEnd)="onScrollToEnd()">
-      </app-chat-message-list>
-    </div>
+    <!-- Chat main area -->
+    <div class="chat-main">
+      <!-- Chat header -->
+      <div class="chat-header" *ngIf="!sidebarCollapsed" (mousedown)="!isMaximized && toggleDragging(true)">
+        <div class="chat-title">
+          <span class="ai-logo-small">AI</span>
+          <span>{{ currentSessionTitle }}</span>
+        </div>
+        <div class="header-actions">
+          <button mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="$event.stopPropagation(); minimizeChat()"
+            class="action-button"
+            matTooltip="Minimize">
+            <mat-icon>minimize</mat-icon>
+          </button>
+          <button mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="$event.stopPropagation(); maximizeChat()"
+            class="action-button"
+            [matTooltip]="isMaximized ? 'Restore' : 'Maximize'">
+            <mat-icon>{{ isMaximized ? 'crop_square' : 'fullscreen' }}</mat-icon>
+          </button>
+          <button mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="$event.stopPropagation(); closeChat()"
+            class="close-button"
+            matTooltip="Close">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
 
-    <!-- Input area -->
-    <div class="chat-input" *ngIf="!sidebarCollapsed">
-      <app-chat-input-area
-        [disabled]="isStreaming"
-        (messageSent)="onMessageSent($event)">
-      </app-chat-input-area>
-    </div>
+      <!-- Messages list -->
+      <div class="chat-messages" *ngIf="!sidebarCollapsed">
+        <app-chat-message-list
+          [messages]="currentMessages"
+          [isStreaming]="isStreaming"
+          (scrollToEnd)="onScrollToEnd()">
+        </app-chat-message-list>
+      </div>
 
-    <!-- Collapsed state hint -->
-    <div class="collapsed-hint" *ngIf="sidebarCollapsed" (mousedown)="toggleDragging(true)">
-      <mat-icon>smart_toy</mat-icon>
-      <span>AI Assistant</span>
+      <!-- Input area -->
+      <div class="chat-input" *ngIf="!sidebarCollapsed">
+        <app-chat-input-area
+          [disabled]="isStreaming"
+          (messageSent)="onMessageSent($event)">
+        </app-chat-input-area>
+      </div>
+
+      <!-- Collapsed state hint -->
+      <div class="collapsed-hint" *ngIf="sidebarCollapsed" (mousedown)="!isMaximized && toggleDragging(true)">
+        <mat-icon>smart_toy</mat-icon>
+        <span>AI Assistant</span>
+      </div>
     </div>
-  </div>
+  </ng-container>
 
   <!-- Error notification -->
   <div class="chat-error" *ngIf="errorMessage">

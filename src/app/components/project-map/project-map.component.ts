@@ -138,6 +138,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
+  @ViewChild(AiChatComponent) aiChatComponent: AiChatComponent;
   @ViewChild('topologySummaryContainer', { read: ViewContainerRef }) topologySummaryContainer: ViewContainerRef;
 
   private projectMapSubscription: Subscription = new Subscription();
@@ -853,7 +854,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public onAIChatOpened() {
     console.log('[Project Map] AI Chat opened event received');
-    this.isAIChatVisible = true;
+
+    // If AI Chat is already visible, restore it if minimized
+    if (this.isAIChatVisible && this.aiChatComponent) {
+      this.aiChatComponent.restoreChat();
+    } else {
+      this.isAIChatVisible = true;
+    }
+
     console.log('[Project Map] isAIChatVisible set to:', this.isAIChatVisible);
   }
 

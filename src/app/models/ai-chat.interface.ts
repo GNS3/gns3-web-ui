@@ -144,8 +144,11 @@ export interface ChatPanelState {
   isOpen: boolean;            // 面板是否打开
   width: number;              // 面板宽度
   height: number;             // 面板高度
+  isMaximized?: boolean;      // 是否最大化
+  isMinimized?: boolean;      // 是否最小化
   position?: {                // 面板位置
     top?: number;
+    right?: number;
     left?: number;
   };
 }

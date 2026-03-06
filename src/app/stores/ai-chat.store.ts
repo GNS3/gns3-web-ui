@@ -35,8 +35,14 @@ export class AiChatStore {
   // 面板状态
   private panelState$ = new BehaviorSubject<ChatPanelState>({
     isOpen: false,
-    width: 600,
-    height: 500
+    width: 700,
+    height: 600,
+    isMaximized: false,
+    isMinimized: false,
+    position: {
+      top: 80,
+      right: 20
+    }
   });
 
   // 会话 UI 状态 (Map: sessionId -> uiState)
@@ -403,6 +409,74 @@ export class AiChatStore {
   closePanel(): void {
     const currentState = this.panelState$.value;
     this.panelState$.next({ ...currentState, isOpen: false });
+    this.savePanelState(this.panelState$.value);
+  }
+
+  /**
+   * 最大化面板
+   */
+  maximizePanel(): void {
+    const currentState = this.panelState$.value;
+    this.panelState$.next({
+      ...currentState,
+      isMaximized: true,
+      isMinimized: false
+    });
+    this.savePanelState(this.panelState$.value);
+  }
+
+  /**
+   * 最小化面板
+   */
+  minimizePanel(): void {
+    const currentState = this.panelState$.value;
+    this.panelState$.next({
+      ...currentState,
+      isMaximized: false,
+      isMinimized: true
+    });
+    this.savePanelState(this.panelState$.value);
+  }
+
+  /**
+   * 恢复面板（从最大化或最小化）
+   */
+  restorePanel(): void {
+    const currentState = this.panelState$.value;
+    this.panelState$.next({
+      ...currentState,
+      isMaximized: false,
+      isMinimized: false
+    });
+    this.savePanelState(this.panelState$.value);
+  }
+
+  /**
+   * 更新面板位置
+   * @param position 位置信息
+   */
+  updatePanelPosition(position: { top?: number; right?: number; left?: number }): void {
+    const currentState = this.panelState$.value;
+    const newPosition = { ...currentState.position, ...position };
+    this.panelState$.next({
+      ...currentState,
+      position: newPosition
+    });
+    this.savePanelState(this.panelState$.value);
+  }
+
+  /**
+   * 更新面板大小
+   * @param width 宽度
+   * @param height 高度
+   */
+  updatePanelSize(width: number, height: number): void {
+    const currentState = this.panelState$.value;
+    this.panelState$.next({
+      ...currentState,
+      width,
+      height
+    });
     this.savePanelState(this.panelState$.value);
   }
 

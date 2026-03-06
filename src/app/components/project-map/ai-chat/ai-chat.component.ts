@@ -32,9 +32,12 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   errorMessage: string | null = null;
   isDraggingEnabled = false;
   isLightThemeEnabled = false;
+  isMaximized = false;
+  isMinimized = false;
 
   // Position and size state
-  public style: object = { top: '80px', right: '20px', width: '700px', height: '600px' };
+  public style: object = {};
+  private previousStyle: object = {}; // 保存最大化前的状态
   public resizedWidth: number = 700;
   public resizedHeight: number = 600;
 
@@ -87,8 +90,56 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Set current project
     this.aiChatStore.setCurrentProjectId(this.project.project_id);
 
+    // Load saved panel state
+    this.loadPanelState();
+
     // Load sessions list
     this.loadSessions();
+  }
+
+  /**
+   * Load panel state from store
+   */
+  private loadPanelState(): void {
+    const panelState = this.aiChatStore.getPanelStateValue();
+
+    this.isMaximized = panelState.isMaximized || false;
+    this.isMinimized = panelState.isMinimized || false;
+
+    // Build style from saved state
+    if (panelState.position) {
+      const pos = panelState.position;
+      this.style = {
+        position: 'fixed',
+        top: pos.top !== undefined ? `${pos.top}px` : '80px',
+        right: pos.right !== undefined ? `${pos.right}px` : undefined,
+        left: pos.left !== undefined ? `${pos.left}px` : undefined,
+        width: `${panelState.width}px`,
+        height: `${panelState.height}px`,
+      };
+
+      // Save for restore
+      this.previousStyle = { ...this.style };
+      this.resizedWidth = panelState.width;
+      this.resizedHeight = panelState.height;
+    } else {
+      // Default style
+      this.style = {
+        position: 'fixed',
+        top: '80px',
+        right: '20px',
+        width: '700px',
+        height: '600px',
+      };
+      this.previousStyle = { ...this.style };
+    }
+
+    // Update maximized state
+    if (this.isMaximized) {
+      this.applyMaximizedStyle();
+    } else if (this.isMinimized) {
+      this.applyMinimizedStyle();
+    }
   }
 
   /**
@@ -519,6 +570,83 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
+   * Maximize chat
+   */
+  maximizeChat(): void {
+    if (this.isMaximized) {
+      this.restoreChat();
+      return;
+    }
+
+    // Save current state
+    this.previousStyle = { ...this.style };
+
+    this.isMaximized = true;
+    this.isMinimized = false;
+    this.aiChatStore.maximizePanel();
+    this.applyMaximizedStyle();
+  }
+
+  /**
+   * Minimize chat
+   */
+  minimizeChat(): void {
+    if (this.isMinimized) {
+      this.restoreChat();
+      return;
+    }
+
+    // Save current state
+    this.previousStyle = { ...this.style };
+
+    this.isMinimized = true;
+    this.isMaximized = false;
+    this.aiChatStore.minimizePanel();
+    this.applyMinimizedStyle();
+  }
+
+  /**
+   * Restore chat
+   */
+  restoreChat(): void {
+    this.isMaximized = false;
+    this.isMinimized = false;
+    this.aiChatStore.restorePanel();
+
+    // Restore previous style
+    if (Object.keys(this.previousStyle).length > 0) {
+      this.style = { ...this.previousStyle };
+    }
+  }
+
+  /**
+   * Apply maximized style
+   */
+  private applyMaximizedStyle(): void {
+    this.style = {
+      position: 'fixed',
+      top: '0',
+      right: '0',
+      left: '0',
+      width: '100vw',
+      height: '100vh',
+    };
+  }
+
+  /**
+   * Apply minimized style
+   */
+  private applyMinimizedStyle(): void {
+    this.style = {
+      position: 'fixed',
+      bottom: '10px',
+      left: '10px',
+      width: '200px',
+      height: '40px',
+    };
+  }
+
+  /**
    * Scroll to end event
    */
   onScrollToEnd(): void {
@@ -617,5 +745,18 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     };
     this.resizedWidth = event.rectangle.width;
     this.resizedHeight = event.rectangle.height;
+
+    // Save size to store
+    this.aiChatStore.updatePanelSize(
+      event.rectangle.width,
+      event.rectangle.height
+    );
+
+    // Save position to store
+    const top = Number(this.style['top']?.split('px')[0]);
+    const right = Number(this.style['right']?.split('px')[0]);
+    if (!isNaN(top)) {
+      this.aiChatStore.updatePanelPosition({ top, right });
+    }
   }
 }
