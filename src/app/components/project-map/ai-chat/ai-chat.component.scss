@@ -40,10 +40,10 @@
   --ai-chat-spacing-lg: 16px;
 
   // Z-index layers
-  --ai-chat-z-overlay: 10000;
-  --ai-chat-z-container: 9999;
+  --ai-chat-z-overlay: 1001;
+  --ai-chat-z-container: 1000;
   --ai-chat-z-sidebar: 100;
-  --ai-chat-z-menu: 10001; // Menu should be above everything
+  --ai-chat-z-menu: 1001; // Menu should be above container
 }
 
 .ai-chat-container {

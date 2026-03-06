@@ -97,37 +97,10 @@ mat-menu-panel {
 }
 
 /* ============================================================================
- * CRITICAL FIX: Material overlays must appear above AI Chat container
- * AI Chat container has z-index: 9999
- * All overlays need z-index: 10001 or higher
+ * Material overlays z-index fix
+ * AI Chat container uses z-index: 1000
+ * Material overlays use default z-index: 1000
  * ============================================================================ */
-
-/* All Material menu and overlay panels */
-.mat-menu-panel,
-.mat-select-panel,
-.mat-autocomplete-panel,
-.mat-mdc-menu-panel,
-.mat-mdc-select-panel,
-.mat-datepicker-content,
-.mat-timepicker-content,
-.mat-colorpicker-content {
-  z-index: 10001 !important;
-}
-
-/* CDK overlay container */
-.cdk-overlay-container {
-  z-index: 10001 !important;
-}
-
-/* CDK overlay backdrop */
-.cdk-overlay-backdrop {
-  z-index: 10000 !important;
-}
-
-/* CDK overlay connection */
-.cdk-overlay-connected-position-bounding-box {
-  z-index: 10001 !important;
-}
 
 /* ============================================================================
  * AI Chat Session Menu Icon Colors

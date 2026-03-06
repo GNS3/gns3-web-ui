@@ -19,9 +19,6 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
         <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
           <!-- User message -->
           <div class="message user-message" *ngIf="message.role === 'user'">
-            <div class="message-avatar user-avatar">
-              <mat-icon>person</mat-icon>
-            </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
                 <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>
@@ -32,9 +29,6 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
 
           <!-- AI assistant message -->
           <div class="message assistant-message" *ngIf="message.role === 'assistant'">
-            <div class="message-avatar assistant-avatar">
-              <mat-icon>smart_toy</mat-icon>
-            </div>
             <div class="message-content assistant-content">
               <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
                 <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>

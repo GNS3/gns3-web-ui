@@ -4,7 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ConfirmationBottomSheetComponent } from '@components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { ChatSession } from '@models/ai-chat.interface';
+import { Controller } from '@models/controller';
+import { AiChatService } from '@services/ai-chat.service';
 
 /**
  * AI Chat Session List Component
@@ -44,9 +48,6 @@ import { ChatSession } from '@models/ai-chat.interface';
             <div class="session-content">
               <!-- Session title -->
               <div class="session-header" *ngIf="!session.editing">
-                <svg class="session-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/>
-                </svg>
                 <div class="session-info">
                   <div class="session-title">{{ session.title || 'New chat' }}</div>
                   <div class="session-preview">
@@ -58,9 +59,6 @@ import { ChatSession } from '@models/ai-chat.interface';
 
               <!-- Edit title -->
               <mat-form-field class="session-edit-field" *ngIf="session.editing" (click)="$event.stopPropagation()">
-                <svg class="session-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                </svg>
                 <input
                   matInput
                   [value]="session.title"
@@ -339,6 +337,8 @@ import { ChatSession } from '@models/ai-chat.interface';
 export class ChatSessionListComponent implements OnInit {
   @Input() sessions: ChatSession[] = [];
   @Input() currentSessionId: string | null = null;
+  @Input() controller: Controller;
+  @Input() projectId: string;
 
   @Output() sessionSelected = new EventEmitter<string>();
   @Output() sessionCreated = new EventEmitter<void>();
@@ -346,6 +346,11 @@ export class ChatSessionListComponent implements OnInit {
   @Output() sessionDeleted = new EventEmitter<string>();
   @Output() sessionPinned = new EventEmitter<string>();
   @Output() sessionUnpinned = new EventEmitter<string>();
+
+  constructor(
+    private bottomSheet: MatBottomSheet,
+    private aiChatService: AiChatService
+  ) {}
 
   /**
    * Sorted sessions list (pinned ones first)
@@ -428,13 +433,42 @@ export class ChatSessionListComponent implements OnInit {
   }
 
   /**
-   * Delete session
+   * Delete session with confirmation dialog
    * @param session Session
    */
   deleteSession(session: ChatSession): void {
-    if (confirm(`Are you sure you want to delete session "${session.title}"?`)) {
-      this.sessionDeleted.emit(session.thread_id);
-    }
+    const message = `Are you sure you want to delete "${session.title || 'New chat'}"?`;
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message },
+      panelClass: 'ai-chat-bottom-sheet',
+      hasBackdrop: false  // Disable backdrop to avoid z-index issues
+    });
+
+    bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+      if (result) {
+        this.delete(session);
+      }
+    });
+  }
+
+  /**
+   * Delete session
+   * @param session Session
+   */
+  delete(session: ChatSession): void {
+    this.aiChatService.deleteSession(
+      this.controller,
+      this.projectId,
+      session.thread_id
+    ).subscribe({
+      next: () => {
+        // Emit event to notify parent to remove from store
+        this.sessionDeleted.emit(session.thread_id);
+      },
+      error: (error) => {
+        console.error('[ChatSessionList] Delete failed:', error);
+      }
+    });
   }
 
   /**

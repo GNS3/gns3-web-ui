@@ -31,6 +31,8 @@
         <app-chat-session-list
           [sessions]="sessions"
           [currentSessionId]="currentSessionId"
+          [controller]="controller"
+          [projectId]="project.project_id"
           (sessionSelected)="onSessionSelected($event)"
           (sessionCreated)="onSessionCreated()"
           (sessionRenamed)="onSessionRenamed($event)"

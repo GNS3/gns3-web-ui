@@ -305,29 +305,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @param sessionId Session ID
    */
   onSessionDeleted(sessionId: string): void {
-    if (!this.controller) {
-      return;
+    // Remove from store after successful deletion
+    this.aiChatStore.deleteSession(sessionId);
+
+    // If deleted session was current, clear current session
+    if (this.currentSessionId === sessionId) {
+      this.currentSessionId = null;
     }
-
-    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
-      this.controller = freshController;
-
-      this.aiChatService.deleteSession(
-        this.controller,
-        this.project.project_id,
-        sessionId
-      ).pipe(
-        tap(() => {
-          this.aiChatStore.deleteSession(sessionId);
-        }),
-        takeUntil(this.destroy$)
-      ).subscribe({
-        error: (error) => {
-          this.logError('Failed to delete session:', error);
-          this.showError('Failed to delete session');
-        }
-      });
-    });
   }
 
   /**
