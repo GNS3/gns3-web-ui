@@ -654,6 +654,15 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
+   * Handle suggestion clicked event
+   * @param suggestion Suggestion text that was clicked
+   */
+  onSuggestionClicked(suggestion: string): void {
+    // Send the suggestion as a message
+    this.onMessageSent(suggestion);
+  }
+
+  /**
    * Show error
    * @param error Error message
    */

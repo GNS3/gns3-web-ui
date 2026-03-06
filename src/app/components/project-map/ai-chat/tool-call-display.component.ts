@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { ToolCall } from '@models/ai-chat.interface';
 
 /**
@@ -20,6 +20,9 @@ import { ToolCall } from '@models/ai-chat.interface';
             <span *ngSwitchCase="'completed'">Completed</span>
           </ng-container>
         </span>
+        <button mat-icon-button class="view-details-button" (click)="onViewDetails(); $event.stopPropagation()" title="View details in dialog">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
         <button mat-icon-button class="toggle-button" (click)="toggleExpanded($event)">
           <mat-icon [class.rotated]="expanded">expand_more</mat-icon>
         </button>
@@ -139,6 +142,25 @@ import { ToolCall } from '@models/ai-chat.interface';
 
     .toggle-button mat-icon.rotated {
       transform: rotate(180deg);
+    }
+
+    .view-details-button {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      opacity: 0.6;
+      transition: all 0.2s ease;
+    }
+
+    .view-details-button:hover {
+      opacity: 1;
+      background-color: rgba(var(--mat-app-primary-rgb), 0.1);
+    }
+
+    .view-details-button mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
 
     .tool-call-body {
@@ -299,6 +321,7 @@ export class ToolCallDisplayComponent implements OnChanges {
   @Input() toolOutput?: string;
   @Input() error?: string;
   @Input() isExecuting = false;
+  @Output() viewDetails = new EventEmitter<ToolCall>();
 
   expanded = true;
   accumulatedPercentage = 0;
@@ -394,6 +417,13 @@ export class ToolCallDisplayComponent implements OnChanges {
       event.stopPropagation();
     }
     this.expanded = !this.expanded;
+  }
+
+  /**
+   * Emit viewDetails event to open draggable dialog
+   */
+  onViewDetails(): void {
+    this.viewDetails.emit(this.toolCall);
   }
 
   /**

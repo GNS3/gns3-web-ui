@@ -1,12 +1,32 @@
 .ai-chat-container {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   position: fixed;
   background-color: #263238;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   z-index: 9999;
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+
+  // ChatGPT-style gradient border effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.3), rgba(63, 81, 181, 0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 }
 
 .drag-overlay {
@@ -28,6 +48,9 @@
   flex-direction: column;
   transition: width 0.3s ease;
   flex-shrink: 0;
+
+  // Subtle gradient overlay
+  background: linear-gradient(180deg, #20313b 0%, #1a252c 100%);
 }
 
 .chat-sidebar.collapsed {
@@ -66,7 +89,11 @@
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
-  color: #0097a7;
+  // ChatGPT-style gradient
+  background: linear-gradient(135deg, #10a37f, #1a7f64);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .collapse-button {
@@ -93,10 +120,13 @@
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: #20313b;
+  background: linear-gradient(180deg, #20313b 0%, #1e2a32 100%);
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
+
+  // ChatGPT-style subtle glow
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .chat-header:active {
@@ -120,7 +150,11 @@
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
-  color: #0097a7;
+  // ChatGPT-style gradient
+  background: linear-gradient(135deg, #10a37f, #1a7f64);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .close-button {
@@ -247,10 +281,12 @@
   width: 32px;
   height: 32px;
   color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
 
   &:hover {
     color: white;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
   }
 }
 
@@ -294,17 +330,19 @@
   height: 100%;
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #10a37f, #1a7f64);
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
   }
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: #0097a7;
+    color: white;
   }
 
   .minimized-text {

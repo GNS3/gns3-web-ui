@@ -81,7 +81,8 @@
         <app-chat-message-list
           [messages]="currentMessages"
           [isStreaming]="isStreaming"
-          (scrollToEnd)="onScrollToEnd()">
+          (scrollToEnd)="onScrollToEnd()"
+          (suggestionClicked)="onSuggestionClicked($event)">
         </app-chat-message-list>
       </div>
 

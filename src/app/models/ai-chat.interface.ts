@@ -66,22 +66,35 @@ export interface ChatSession {
 }
 
 /**
- * 聊天消息角色
+ * Chat message role
+ * Enhanced message types with support for tool calls and results
  */
-export type MessageRole = 'user' | 'assistant' | 'system' | 'tool';
+export type MessageRole =
+  | 'user'          // User message
+  | 'assistant'     // AI assistant message
+  | 'system'        // System message
+  | 'tool'          // Tool execution result (legacy, kept for compatibility)
+  | 'tool_call'     // Tool call request (contains function name and parameters)
+  | 'tool_result';  // Tool execution result (contains output data)
 
 /**
- * 聊天消息
+ * Chat message
+ * Enhanced message interface with support for tool calls and results display
  */
 export interface ChatMessage {
-  id: string;                 // 消息唯一标识
-  role: MessageRole;          // 消息角色
-  content: string;            // 消息内容
-  created_at: string;         // 创建时间 (ISO 8601)
-  tool_calls?: ToolCall[];    // 工具调用列表（assistant 消息）
-  tool_call_id?: string;      // 关联的工具调用 ID（tool 消息）
-  name?: string;              // 工具消息名称（tool 消息）
-  metadata?: any;             // 额外消息元数据
+  id: string;                 // Message unique identifier
+  role: MessageRole;          // Message role
+  content: string;            // Message content
+  created_at: string;         // Creation time (ISO 8601)
+  tool_calls?: ToolCall[];    // Tool call list (assistant message)
+  tool_call_id?: string;      // Associated tool call ID (tool/tool_result message)
+  name?: string;              // Tool message name (tool/tool_result message)
+  metadata?: any;             // Additional message metadata
+
+  // New fields for tool_call and tool_result messages
+  toolCall?: ToolCall;        // Single tool call (tool_call message)
+  toolName?: string;          // Tool name (tool_result message)
+  toolOutput?: any;           // Tool output (tool_result message, can be JSON object or string)
 }
 
 /**

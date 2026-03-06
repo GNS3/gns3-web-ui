@@ -184,6 +184,7 @@ import { ChatSessionListComponent } from '@components/project-map/ai-chat/chat-s
 import { ChatMessageListComponent } from '@components/project-map/ai-chat/chat-message-list.component';
 import { ChatInputAreaComponent } from '@components/project-map/ai-chat/chat-input-area.component';
 import { ToolCallDisplayComponent } from '@components/project-map/ai-chat/tool-call-display.component';
+import { DraggableToolDialogComponent } from '@components/project-map/ai-chat/draggable-tool-dialog.component';
 import { ScreenshotDialogComponent } from '@components/project-map/screenshot-dialog/screenshot-dialog.component';
 import { WebConsoleComponent } from '@components/project-map/web-console/web-console.component';
 import { AddBlankProjectDialogComponent } from '@components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
@@ -538,6 +539,7 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         ChatMessageListComponent,
         ChatInputAreaComponent,
         ToolCallDisplayComponent,
+        DraggableToolDialogComponent,
         AddGroupDialogComponent,
         GroupFilterPipe,
         GroupManagementComponent,

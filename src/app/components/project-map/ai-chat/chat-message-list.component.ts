@@ -4,10 +4,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
+import { DraggableToolDialogComponent } from './draggable-tool-dialog.component';
 
 /**
  * AI Chat Message List Component
- * Displays chat message history
+ * Displays chat message history with enhanced message types
+ * Supports: user, assistant, system, tool_call, tool_result messages
  */
 @Component({
   selector: 'app-chat-message-list',
@@ -44,7 +46,8 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
                 <app-tool-call-display
                   *ngFor="let toolCall of message.tool_calls"
                   [toolCall]="toolCall"
-                  [isExecuting]="isToolCallExecuting(toolCall.id)">
+                  [isExecuting]="isToolCallExecuting(toolCall.id)"
+                  (viewDetails)="openToolCallDialog($event)">
                 </app-tool-call-display>
               </div>
 
@@ -52,7 +55,25 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
             </div>
           </div>
 
-          <!-- Tool message -->
+          <!-- Tool call message (inline display) -->
+          <div class="message tool-call-message" *ngIf="message.role === 'tool_call'">
+            <div class="inline-tool-call" (click)="openToolCallDialog(message.toolCall!)">
+              <mat-icon class="tool-icon">build</mat-icon>
+              <span class="tool-name-text">{{ message.toolCall?.function.name }}</span>
+              <mat-icon class="expand-icon">open_in_new</mat-icon>
+            </div>
+          </div>
+
+          <!-- Tool result message (inline display) -->
+          <div class="message tool-result-message" *ngIf="message.role === 'tool_result'">
+            <div class="inline-tool-result" (click)="openToolResultDialog(message)">
+              <mat-icon class="tool-icon">check_circle</mat-icon>
+              <span class="tool-name-text">result</span>
+              <mat-icon class="expand-icon">open_in_new</mat-icon>
+            </div>
+          </div>
+
+          <!-- Legacy Tool message (for backward compatibility) -->
           <div class="message tool-message" *ngIf="message.role === 'tool'">
             <div class="message-avatar tool-avatar">
               <mat-icon>build</mat-icon>
@@ -84,12 +105,49 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
 
         <!-- Empty state -->
         <div class="empty-state" *ngIf="messages.length === 0">
-          <mat-icon class="empty-icon">chat_bubble_outline</mat-icon>
-          <p class="empty-text">Start new conversation</p>
-          <p class="empty-hint">Ask AI assistant about network topology</p>
+          <div class="empty-content">
+            <div class="empty-icon-wrapper">
+              <mat-icon class="empty-icon">smart_toy</mat-icon>
+            </div>
+            <h3 class="empty-title">Welcome to GNS3 AI Assistant</h3>
+            <p class="empty-description">Ask me anything about network automation and GNS3</p>
+            <div class="empty-suggestions">
+              <div class="suggestion-chip" (click)="sendSuggestion('Help me understand this network topology')">
+                <mat-icon>help_outline</mat-icon>
+                <span>Explain network topology</span>
+              </div>
+              <div class="suggestion-chip" (click)="sendSuggestion('Analyze the network configuration')">
+                <mat-icon>analytics</mat-icon>
+                <span>Analyze configuration</span>
+              </div>
+              <div class="suggestion-chip" (click)="sendSuggestion('Find potential network issues')">
+                <mat-icon>search</mat-icon>
+                <span>Find network issues</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Draggable Tool Call Dialog -->
+    <app-draggable-tool-dialog
+      [isOpen]="toolCallDialogOpen"
+      [type]="'tool_call'"
+      [toolCall]="currentToolCall"
+      [initialPosition]="dialogPosition"
+      (close)="closeToolCallDialog()">
+    </app-draggable-tool-dialog>
+
+    <!-- Draggable Tool Result Dialog -->
+    <app-draggable-tool-dialog
+      [isOpen]="toolResultDialogOpen"
+      [type]="'tool_result'"
+      [toolName]="currentToolResult?.toolName"
+      [toolOutput]="currentToolResult?.toolOutput"
+      [initialPosition]="dialogPosition"
+      (close)="closeToolResultDialog()">
+    </app-draggable-tool-dialog>
   `,
   styles: [`
     .chat-message-list {
@@ -97,6 +155,28 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
       overflow-y: auto;
       padding: 16px;
       background-color: var(--mat-app-background);
+      /* Custom scrollbar styling inspired by ChatGPT */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    }
+
+    /* WebKit scrollbar styling */
+    .chat-message-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-message-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-message-list::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-message-list::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0, 0, 0, 0.3);
     }
 
     .messages-container {
@@ -133,18 +213,18 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
     }
 
     .user-avatar {
-      background-color: var(--mat-app-primary);
+      background: linear-gradient(135deg, var(--mat-app-primary), #7c4dff);
       color: var(--mat-app-on-primary);
     }
 
     .assistant-avatar {
-      background-color: var(--mat-app-tertiary);
+      background: linear-gradient(135deg, var(--mat-app-tertiary), #00bcd4);
       color: var(--mat-app-on-tertiary);
     }
 
     .tool-avatar {
-      background-color: var(--mat-app-secondary);
-      color: var(--mat-app-on-secondary);
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: white;
     }
 
     .message-content {
@@ -170,13 +250,13 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
     }
 
     .user-bubble {
-      background-color: var(--mat-app-primary);
+      background: linear-gradient(135deg, var(--mat-app-primary), #7c4dff);
       color: var(--mat-app-on-primary);
       border-bottom-right-radius: 4px;
     }
 
     .assistant-bubble {
-      background-color: var(--mat-app-surface-container);
+      background: var(--mat-app-surface-container);
       color: var(--mat-app-on-surface);
       border-bottom-left-radius: 4px;
     }
@@ -195,13 +275,14 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
     }
 
     .system-bubble {
-      background-color: var(--mat-app-surface-variant);
+      background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
       color: var(--mat-app-on-surface-variant);
       text-align: center;
       font-size: 12px;
       padding: 8px 16px;
       border-radius: 16px;
       margin: 0 auto;
+      border: 1px solid rgba(255, 193, 7, 0.3);
     }
 
     .error-bubble {
@@ -264,6 +345,161 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
       margin-top: 8px;
     }
 
+    /* Tool call/result inline display styles */
+    .tool-call-message,
+    .tool-result-message {
+      margin-left: 40px;
+      margin-bottom: 4px;
+    }
+
+    .inline-tool-call,
+    .inline-tool-result {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--mat-app-surface-container-low);
+      border: 1px solid var(--mat-app-outline-variant);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .inline-tool-call:hover,
+    .inline-tool-result:hover {
+      background: var(--mat-app-surface-container);
+      border-color: var(--mat-app-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .inline-tool-call .tool-icon {
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+      color: #ff9800;
+    }
+
+    .inline-tool-result .tool-icon {
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+      color: #4caf50;
+    }
+
+    .tool-name-text {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 11px;
+      color: var(--mat-app-on-surface-variant);
+    }
+
+    .expand-icon {
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+      color: var(--mat-app-on-surface-variant);
+      opacity: 0.5;
+    }
+
+    /* Enhanced empty state styles */
+    .empty-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 48px 24px;
+    }
+
+    .empty-content {
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .empty-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1));
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+    }
+
+    .empty-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 48px;
+      color: var(--mat-app-primary);
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--mat-app-on-surface);
+      margin: 0 0 8px 0;
+    }
+
+    .empty-description {
+      font-size: 14px;
+      color: var(--mat-app-on-surface-variant);
+      margin: 0 0 24px 0;
+    }
+
+    .empty-suggestions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .suggestion-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--mat-app-surface-container-low);
+      border: 1px solid var(--mat-app-outline-variant);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      max-width: 280px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .suggestion-chip:hover {
+      background: var(--mat-app-primary-container);
+      border-color: var(--mat-app-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestion-chip mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      color: var(--mat-app-primary);
+    }
+
+    .suggestion-chip span {
+      font-size: 13px;
+      color: var(--mat-app-on-surface);
+    }
+
     .tool-name {
       font-weight: 500;
       font-size: 12px;
@@ -284,54 +520,6 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
       font-family: 'Monaco', 'Menlo', monospace;
     }
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 24px;
-      text-align: center;
-    }
-
-    .empty-icon {
-      width: 64px;
-      height: 64px;
-      font-size: 64px;
-      color: var(--mat-app-outline-variant);
-      margin-bottom: 16px;
-    }
-
-    .empty-text {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--mat-app-on-surface);
-      margin: 0 0 8px 0;
-    }
-
-    .empty-hint {
-      font-size: 14px;
-      color: var(--mat-app-on-surface-variant);
-      margin: 0;
-    }
-
-    /* Scrollbar styles */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--mat-app-surface-container);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--mat-app-outline-variant);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--mat-app-outline);
-    }
-
     /* Auto scroll styles */
     .auto-scroll {
       scroll-behavior: smooth;
@@ -344,10 +532,18 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   @Input() autoScroll = true;
 
   @Output() scrollToEnd = new EventEmitter<void>();
+  @Output() suggestionClicked = new EventEmitter<string>();
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef<HTMLDivElement>;
 
   private shouldScrollToBottom = false;
+
+  // Dialog state for tool calls
+  toolCallDialogOpen = false;
+  toolResultDialogOpen = false;
+  currentToolCall?: ToolCall;
+  currentToolResult?: ChatMessage;
+  dialogPosition = { top: 100, left: 100 };
 
   ngOnChanges(changes: SimpleChanges): void {
     // Mark need to scroll to bottom when messages change
@@ -494,5 +690,55 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    */
   trackByMessageId(index: number, message: ChatMessage): string {
     return message.id;
+  }
+
+  /**
+   * Open tool call dialog
+   * @param toolCall Tool call to display
+   */
+  openToolCallDialog(toolCall: ToolCall): void {
+    this.currentToolCall = toolCall;
+    this.toolCallDialogOpen = true;
+    // Center dialog in viewport
+    this.dialogPosition = {
+      top: Math.max(100, window.innerHeight / 2 - 200),
+      left: Math.max(100, window.innerWidth / 2 - 350)
+    };
+  }
+
+  /**
+   * Close tool call dialog
+   */
+  closeToolCallDialog(): void {
+    this.toolCallDialogOpen = false;
+  }
+
+  /**
+   * Open tool result dialog
+   * @param message Tool result message
+   */
+  openToolResultDialog(message: ChatMessage): void {
+    this.currentToolResult = message;
+    this.toolResultDialogOpen = true;
+    // Center dialog in viewport
+    this.dialogPosition = {
+      top: Math.max(100, window.innerHeight / 2 - 200),
+      left: Math.max(100, window.innerWidth / 2 - 350)
+    };
+  }
+
+  /**
+   * Close tool result dialog
+   */
+  closeToolResultDialog(): void {
+    this.toolResultDialogOpen = false;
+  }
+
+  /**
+   * Send suggestion when user clicks on suggestion chip
+   * @param suggestion Suggestion text
+   */
+  sendSuggestion(suggestion: string): void {
+    this.suggestionClicked.emit(suggestion);
   }
 }
