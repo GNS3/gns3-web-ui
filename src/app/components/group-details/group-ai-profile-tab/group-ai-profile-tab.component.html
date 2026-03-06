@@ -90,18 +90,14 @@
                     mat-icon-button
                     (click)="setDefaultConfig(config.config_id)"
                     [disabled]="isDefault(config) || (settingDefault$ | async)?.has(config.config_id)"
-                    [class.active-btn]="isDefault(config)"
-                    matTooltip="Set as default"
-                    matTooltipPosition="above">
+                    [class.active-btn]="isDefault(config)">
                     <mat-icon>check_circle</mat-icon>
                   </button>
 
                   <!-- Edit button -->
                   <button
                     mat-icon-button
-                    (click)="openEditDialog(config)"
-                    matTooltip="Edit configuration"
-                    matTooltipPosition="above">
+                    (click)="openEditDialog(config)">
                     <mat-icon>edit</mat-icon>
                   </button>
 
@@ -110,9 +106,7 @@
                     mat-icon-button
                     (click)="deleteConfig(config)"
                     color="warn"
-                    class="delete-btn"
-                    matTooltip="Delete configuration"
-                    matTooltipPosition="above">
+                    class="delete-btn">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>

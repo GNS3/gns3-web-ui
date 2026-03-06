@@ -169,7 +169,7 @@
                   }
 
                   &:hover mat-icon {
-                    transform: scale(1.15);
+                    transform: scale(1.35);
                   }
                 }
 
@@ -181,7 +181,7 @@
 
                 &:not(.active-btn):not(.delete-btn):hover mat-icon {
                   color: #1976d2;
-                  transform: scale(1.15);
+                  transform: scale(1.35);
                 }
 
                 // Delete button
@@ -191,7 +191,7 @@
                 }
 
                 &.delete-btn:hover mat-icon {
-                  transform: scale(1.15);
+                  transform: scale(1.35);
                 }
               }
             }
