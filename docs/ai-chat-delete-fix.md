@@ -2,7 +2,7 @@
 
 ## Issue Summary
 
-AI Chat 删除会话功能无法正常工作，点击确认对话框的 Yes/No 按钮后没有任何响应，也没有向服务器发送删除请求。
+The AI Chat delete session feature was not working correctly. Clicking the Yes/No buttons on the confirmation dialog had no response, and no delete request was sent to the server.
 
 ## Root Cause Analysis
 
@@ -236,6 +236,50 @@ Parent removes session from store
 
 4. **Don't access private properties** like `_openedBottomSheetRef`
 
+## Debugging Guide
+
+### Step 1: Verify Data Passing
+```typescript
+// In component ngOnInit()
+console.log('Injected data:', this.data);
+// Should see: { message: "..." }
+```
+
+### Step 2: Check Z-Index
+```typescript
+// In browser console
+const dialog = document.querySelector('.mat-bottom-sheet-container');
+const backdrop = document.querySelector('.cdk-overlay-backdrop');
+
+console.log('Dialog z-index:', window.getComputedStyle(dialog).zIndex);
+console.log('Backdrop z-index:', window.getComputedStyle(backdrop).zIndex);
+```
+
+### Step 3: Test Click Target
+```typescript
+// Check what's actually being clicked
+const button = document.querySelector('button');
+const rect = button.getBoundingClientRect();
+const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+const clickedElement = document.elementFromPoint(center.x, center.y);
+console.log('Clicked element:', clickedElement);
+```
+
+### Step 4: Monitor API Calls
+```typescript
+// In service method
+deleteSession(...) {
+  console.log('[Delete] Sending request:', sessionId);
+  return this.http.delete(...).pipe(
+    tap(() => console.log('[Delete] Success')),
+    catchError(error => {
+      console.error('[Delete] Failed:', error);
+      return throwError(() => error);
+    })
+  );
+}
+```
+
 ## Testing Checklist
 
 - [ ] Delete session works with confirmation
@@ -245,6 +289,128 @@ Parent removes session from store
 - [ ] Node deletion still works (not affected by changes)
 - [ ] Other Material dialogs still work correctly
 - [ ] No z-index conflicts with other floating elements
+- [ ] Dialog buttons are clickable and responsive
+- [ ] Confirmation message displays correctly
+
+## Common Issues and Solutions
+
+### Issue 1: Empty Dialog Message
+
+**Symptom**: Confirmation dialog shows but message is empty
+
+**Solution**: Use data passing pattern instead of setting properties after opening
+
+```typescript
+// ❌ WRONG
+this.bottomSheet.open(Component);
+this.bottomSheetRef.instance.message = 'Hello';
+
+// ✅ CORRECT
+this.bottomSheet.open(Component, { data: { message: 'Hello' } });
+```
+
+### Issue 2: Buttons Not Clickable
+
+**Symptom**: Buttons render but mouse clicks don't work
+
+**Diagnosis**:
+```typescript
+const button = document.querySelector('button');
+const rect = button.getBoundingClientRect();
+const elem = document.elementFromPoint(
+  rect.left + rect.width / 2,
+  rect.top + rect.height / 2
+);
+console.log('Element at button center:', elem.className);
+// If shows 'cdk-overlay-backdrop', z-index issue
+```
+
+**Solutions**:
+1. Lower AI Chat z-index values (preferred)
+2. Disable backdrop: `hasBackdrop: false`
+3. Add targeted z-index fix (last resort)
+
+### Issue 3: Dialog Closes Immediately
+
+**Symptom**: Dialog opens and closes without user action
+
+**Cause**: Click event propagates to parent elements
+
+**Solution**:
+```typescript
+// Stop event propagation
+<button (click)="$event.stopPropagation(); onYesClick()">
+```
+
+### Issue 4: No API Request Sent
+
+**Symptom**: Clicking Yes closes dialog but nothing happens
+
+**Check**:
+```typescript
+// Are you subscribing to afterDismissed?
+bottomSheetRef.afterDismissed().subscribe((result) => {
+  console.log('Result:', result);  // Should be true/false
+  if (result) {
+    this.delete();  // This should be called
+  }
+});
+```
+
+## Performance Considerations
+
+### Z-Index Best Practices
+
+| Layer | Z-Index Range | Examples |
+|-------|---------------|----------|
+| Background | 0-999 | Page content, containers |
+| Floating | 1000-1999 | AI Chat, tooltips, dropdowns |
+| Overlays | 2000-2999 | Dialogs, modals |
+| Notifications | 3000-3999 | Toasts, alerts |
+| Maximum | 4000-4999 | Critical alerts |
+
+**Key Principles**:
+- Use the lowest z-index that works
+- Document z-index hierarchy in project
+- Avoid hardcoding high values (>9999)
+- Use CSS variables for consistency
+
+## Architecture Recommendations
+
+### 1. Centralize Overlay Configuration
+
+```typescript
+// config/overlay.config.ts
+export const OVERLAY_Z_INDEX = {
+  AI_CHAT: 1000,
+  DIALOG: 2000,
+  TOAST: 3000,
+  NOTIFICATION: 4000
+};
+```
+
+### 2. Create Utility Functions
+
+```typescript
+// utils/dialog.util.ts
+export function openConfirmDialog(message: string): Observable<boolean> {
+  return this.bottomSheet.open(ConfirmationDialog, {
+    data: { message },
+    hasBackdrop: false
+  }).afterDismissed();
+}
+```
+
+### 3. Document Component Lifecycle
+
+```typescript
+// Always document data flow
+/**
+ * Opens confirmation dialog
+ * @param message Confirmation message
+ * @returns Observable<boolean> true if confirmed
+ */
+```
 
 ## Related Issues
 
@@ -254,19 +420,81 @@ If you encounter similar issues:
 2. **Empty dialog messages**: Use data passing pattern
 3. **Backdrop covering content**: Consider `hasBackdrop: false` or fix z-index
 4. **Component lifecycle issues**: Remember `ngOnInit()` runs immediately after construction
+5. **Event propagation not working**: Check for `$event.stopPropagation()`
+
+## Migration Guide
+
+### For Other Dialogs
+
+If you have similar dialog implementations, update them following these steps:
+
+1. **Update data passing**:
+   ```typescript
+   // Before
+   this.dialog.open(Component);
+   this.dialogRef.instance.message = '...';
+
+   // After
+   this.dialog.open(Component, { data: { message: '...' } });
+   ```
+
+2. **Update component**:
+   ```typescript
+   // Add injection
+   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+
+   // Update ngOnInit
+   ngOnInit() {
+     this.message = this.data.message;
+   }
+   ```
+
+3. **Check z-index conflicts**:
+   - Review parent container z-index
+   - Test with DevTools
+   - Consider disabling backdrop if in floating window
 
 ## References
 
 - [Angular Material BottomSheet API](https://material.angular.io/components/bottom-sheet/api)
+- [Angular Material Dialog API](https://material.angular.io/components/dialog/api)
 - [MAT_BOTTOM_SHEET_DATA Injection Token](https://material.angular.io/cdk/overlay/api#MAT_BOTTOM_SHEET_DATA)
+- [MAT_DIALOG_DATA Injection Token](https://material.angular.io/cdk/overlay/api#MAT_DIALOG_DATA)
 - [Z-Index Best Practices](https://www.sitepoint.com/z-index-css-property-explained/)
+- [CSS Stacking Context](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index)
+- [Angular Component Lifecycle](https://angular.io/guide/lifecycle-hooks)
+
+## Lessons Learned
+
+1. **Component Lifecycle Matters**: `ngOnInit()` runs before you can set properties externally
+2. **Z-Index Management**: Keep values low and well-documented
+3. **Debug with Tools**: Use `elementFromPoint()` to diagnose click issues
+4. **Use Framework Patterns**: Angular Material provides patterns for a reason
+5. **Test Edge Cases**: Consider floating windows, overlays, and z-index conflicts
+
+## Future Improvements
+
+1. **Create Shared Dialog Service**: Centralize common dialog patterns
+2. **Add E2E Tests**: Automate testing of dialog interactions
+3. **Document Z-Index Hierarchy**: Create visual guide for developers
+4. **Add Lint Rules**: Prevent anti-patterns like `_openedBottomSheetRef`
+5. **Monitor Usage**: Track dialog success rates and errors
 
 ---
 
-**Last Updated**: 2026-03-07
-**Fixed By**: Claude Code
-**Related Files**:
-- `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
-- `src/app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component.ts`
-- `src/app/components/project-map/ai-chat/ai-chat.component.scss`
-- `src/styles.scss`
+**Metadata**:
+- **Last Updated**: 2026-03-07
+- **Fixed By**: Claude Code
+- **Severity**: High (feature broken)
+- **Type**: Bug Fix
+- **Affected Components**:
+  - `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
+  - `src/app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component.ts`
+  - `src/app/components/project-map/ai-chat/ai-chat.component.scss`
+  - `src/styles.scss`
+
+**Related Documents**:
+- [Timestamp Timezone Issue](./troubleshooting/timestamp-timezone-issue.md)
+- [AI Chat Implementation Plan](./todo/ai-chat-implementation-plan.md)
+
+**Keywords**: Angular, Material Design, BottomSheet, dialog, z-index, overlay, click event, component lifecycle, data passing, bug fix

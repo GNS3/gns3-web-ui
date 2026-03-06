@@ -632,18 +632,29 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       return '';
     }
 
-    // Debug: Log the raw timestamp
-    console.log('[ChatMessageList] Raw timestamp:', timestamp);
+    // Fix: Treat timestamp as UTC if no timezone suffix
+    // Backend returns UTC time without 'Z' suffix (e.g., "2026-03-06T16:31:36.547762")
+    // Check for timezone suffix: 'Z' or '+08:00' or '-05:00' (at the end of string)
+    const hasTimezone = /[Z+-]\d{2}:?\d{2}$/.test(timestamp);
+    const normalizedTimestamp = hasTimezone ? timestamp : timestamp + 'Z';
 
-    const date = new Date(timestamp);
+    const date = new Date(normalizedTimestamp);
     const now = new Date();
-
-    // Debug: Log parsed date
-    console.log('[ChatMessageList] Parsed date:', date.toString());
-    console.log('[ChatMessageList] Local timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
-
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
+
+    // Debug log (只打印一次)
+    if (!this['timeDebugLogged']) {
+      console.log('[ChatMessageList] === Time Format Debug ===');
+      console.log('[ChatMessageList] Raw timestamp:', timestamp);
+      console.log('[ChatMessageList] Has timezone suffix:', hasTimezone);
+      console.log('[ChatMessageList] Normalized timestamp:', normalizedTimestamp);
+      console.log('[ChatMessageList] Parsed date (ISO):', date.toISOString());
+      console.log('[ChatMessageList] Parsed date (Local):', date.toLocaleString());
+      console.log('[ChatMessageList] Current time:', now.toLocaleString());
+      console.log('[ChatMessageList] Diff minutes:', diffMins);
+      this['timeDebugLogged'] = true;
+    }
 
     if (diffMins < 1) {
       return 'Just now';
