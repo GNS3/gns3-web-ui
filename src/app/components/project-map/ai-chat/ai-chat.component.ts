@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
@@ -7,6 +7,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ChatMessage, ChatSession, ChatEvent, ToolCall } from '@models/ai-chat.interface';
 import { AiChatService } from '@services/ai-chat.service';
+import { ControllerService } from '@services/controller.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 
 /**
@@ -22,6 +23,8 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
 export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   @Input() project!: Project;
   @Input() controller!: Controller;
+
+  @Output() closed = new EventEmitter<void>();
 
   // UI state
   sidebarCollapsed = false;
@@ -48,6 +51,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private aiChatService: AiChatService,
+    private controllerService: ControllerService,
     private aiChatStore: AiChatStore
   ) {}
 
@@ -131,16 +135,20 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatService.getSessions(this.controller, this.project.project_id).pipe(
-      tap(sessions => {
-        this.aiChatStore.setSessions(sessions);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: (error) => {
-        console.error('Failed to load sessions:', error);
-        this.showError('Failed to load sessions');
-      }
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService.getSessions(this.controller, this.project.project_id).pipe(
+        tap(sessions => {
+          this.aiChatStore.setSessions(sessions);
+        }),
+        takeUntil(this.destroy$)
+      ).subscribe({
+        error: (error) => {
+          console.error('Failed to load sessions:', error);
+          this.showError('Failed to load sessions');
+        }
+      });
     });
   }
 
@@ -153,17 +161,21 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatService.getSessionHistory(this.controller, this.project.project_id, sessionId).pipe(
-      tap(history => {
-        this.aiChatStore.setMessages(sessionId, history.messages);
-        this.currentMessages = history.messages;
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: (error) => {
-        console.error('Failed to load session history:', error);
-        this.showError('Failed to load session history');
-      }
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService.getSessionHistory(this.controller, this.project.project_id, sessionId).pipe(
+        tap(history => {
+          this.aiChatStore.setMessages(sessionId, history.messages);
+          this.currentMessages = history.messages;
+        }),
+        takeUntil(this.destroy$)
+      ).subscribe({
+        error: (error) => {
+          console.error('Failed to load session history:', error);
+          this.showError('Failed to load session history');
+        }
+      });
     });
   }
 
@@ -193,21 +205,25 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatService.renameSession(
-      this.controller,
-      this.project.project_id,
-      event.sessionId,
-      event.title
-    ).pipe(
-      tap(updatedSession => {
-        this.aiChatStore.updateSession(updatedSession);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: (error) => {
-        console.error('Failed to rename session:', error);
-        this.showError('Failed to rename session');
-      }
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService.renameSession(
+        this.controller,
+        this.project.project_id,
+        event.sessionId,
+        event.title
+      ).pipe(
+        tap(updatedSession => {
+          this.aiChatStore.updateSession(updatedSession);
+        }),
+        takeUntil(this.destroy$)
+      ).subscribe({
+        error: (error) => {
+          console.error('Failed to rename session:', error);
+          this.showError('Failed to rename session');
+        }
+      });
     });
   }
 
@@ -220,20 +236,24 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatService.deleteSession(
-      this.controller,
-      this.project.project_id,
-      sessionId
-    ).pipe(
-      tap(() => {
-        this.aiChatStore.deleteSession(sessionId);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: (error) => {
-        console.error('Failed to delete session:', error);
-        this.showError('Failed to delete session');
-      }
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService.deleteSession(
+        this.controller,
+        this.project.project_id,
+        sessionId
+      ).pipe(
+        tap(() => {
+          this.aiChatStore.deleteSession(sessionId);
+        }),
+        takeUntil(this.destroy$)
+      ).subscribe({
+        error: (error) => {
+          console.error('Failed to delete session:', error);
+          this.showError('Failed to delete session');
+        }
+      });
     });
   }
 
@@ -246,20 +266,24 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatService.pinSession(
-      this.controller,
-      this.project.project_id,
-      sessionId
-    ).pipe(
-      tap(updatedSession => {
-        this.aiChatStore.updateSession(updatedSession);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: (error) => {
-        console.error('Failed to pin session:', error);
-        this.showError('Failed to pin session');
-      }
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService.pinSession(
+        this.controller,
+        this.project.project_id,
+        sessionId
+      ).pipe(
+        tap(updatedSession => {
+          this.aiChatStore.updateSession(updatedSession);
+        }),
+        takeUntil(this.destroy$)
+      ).subscribe({
+        error: (error) => {
+          console.error('Failed to pin session:', error);
+          this.showError('Failed to pin session');
+        }
+      });
     });
   }
 
@@ -272,20 +296,24 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatService.unpinSession(
-      this.controller,
-      this.project.project_id,
-      sessionId
-    ).pipe(
-      tap(updatedSession => {
-        this.aiChatStore.updateSession(updatedSession);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      error: (error) => {
-        console.error('Failed to unpin session:', error);
-        this.showError('Failed to unpin session');
-      }
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService.unpinSession(
+        this.controller,
+        this.project.project_id,
+        sessionId
+      ).pipe(
+        tap(updatedSession => {
+          this.aiChatStore.updateSession(updatedSession);
+        }),
+        takeUntil(this.destroy$)
+      ).subscribe({
+        error: (error) => {
+          console.error('Failed to unpin session:', error);
+          this.showError('Failed to unpin session');
+        }
+      });
     });
   }
 
@@ -328,29 +356,41 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.aiChatStore.setStreamingState(true);
-    this.aiChatStore.clearError();
+    // Get fresh controller from localStorage to ensure we have the latest authToken
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      console.log('[AI Chat] Fresh controller loaded:', freshController);
+      console.log('[AI Chat] authToken present:', !!freshController.authToken);
 
-    this.aiChatService.streamChat(this.controller, this.project.project_id, {
-      message,
-      session_id: sessionId,
-      stream: true
-    }).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (event: ChatEvent) => {
-        this.handleChatEvent(event);
-      },
-      error: (error) => {
-        console.error('Chat stream error:', error);
-        this.aiChatStore.setStreamingState(false);
-        this.showError('Chat error occurred');
-      },
-      complete: () => {
-        this.aiChatStore.setStreamingState(false);
-        this.currentToolCalls.clear();
-        this.currentAssistantMessage = null;
-      }
+      // Update the controller reference
+      this.controller = freshController;
+
+      this.aiChatStore.setStreamingState(true);
+      this.aiChatStore.clearError();
+
+      this.aiChatService.streamChat(this.controller, this.project.project_id, {
+        message,
+        session_id: sessionId,
+        stream: true
+      }).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (event: ChatEvent) => {
+          this.handleChatEvent(event);
+        },
+        error: (error) => {
+          console.error('Chat stream error:', error);
+          this.aiChatStore.setStreamingState(false);
+          this.showError('Chat error occurred');
+        },
+        complete: () => {
+          this.aiChatStore.setStreamingState(false);
+          this.currentToolCalls.clear();
+          this.currentAssistantMessage = null;
+        }
+      });
+    }).catch((error) => {
+      console.error('[AI Chat] Failed to get fresh controller:', error);
+      this.showError('Failed to authenticate');
     });
   }
 
@@ -475,6 +515,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   closeChat(): void {
     this.aiChatStore.closePanel();
     this.cleanup();
+    this.closed.emit();
   }
 
   /**

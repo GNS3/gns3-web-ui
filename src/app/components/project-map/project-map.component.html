@@ -256,7 +256,8 @@
   <app-ai-chat
     *ngIf="project && isAIChatVisible"
     [project]="project"
-    [controller]="controller">
+    [controller]="controller"
+    (closed)="closeAIChat()">
   </app-ai-chat>
 </div>
 

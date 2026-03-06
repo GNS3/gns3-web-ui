@@ -12,7 +12,10 @@
         <span class="ai-logo">AI</span>
         <span class="sidebar-text">Assistant</span>
       </h3>
-      <button mat-icon-button (click)="$event.stopPropagation(); toggleSidebar()" class="collapse-button">
+      <button mat-icon-button
+        (mousedown)="$event.stopPropagation()"
+        (click)="$event.stopPropagation(); toggleSidebar()"
+        class="collapse-button">
         <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
       </button>
     </div>
@@ -39,7 +42,10 @@
         <span class="ai-logo-small">AI</span>
         <span>{{ currentSessionTitle }}</span>
       </div>
-      <button mat-icon-button (click)="$event.stopPropagation(); closeChat()" class="close-button">
+      <button mat-icon-button
+        (mousedown)="$event.stopPropagation()"
+        (click)="$event.stopPropagation(); closeChat()"
+        class="close-button">
         <mat-icon>close</mat-icon>
       </button>
     </div>

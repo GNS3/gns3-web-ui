@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, Observer, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap, finalize } from 'rxjs/operators';
 import { HttpController } from './http-controller.service';
+import { ControllerService } from './controller.service';
 import { Controller } from '@models/controller';
 import {
   ChatEvent,
@@ -28,7 +29,8 @@ export class AiChatService {
 
   constructor(
     private http: HttpClient,
-    private httpController: HttpController
+    private httpController: HttpController,
+    private controllerService: ControllerService
   ) {}
 
   /**
@@ -43,7 +45,7 @@ export class AiChatService {
     this.currentProjectId = projectId;
     this.isStreaming.next(true);
 
-    const url = `${this.getControllerUrl(controller)}/projects/${projectId}/chat/stream`;
+    const url = `${this.getControllerUrl(controller)}/v3/projects/${projectId}/chat/stream`;
 
     const authHeaders = this.getAuthHeaders(controller);
     const headersObj: Record<string, string> = {
@@ -57,6 +59,12 @@ export class AiChatService {
         headersObj[key] = value;
       }
     });
+
+    // Debug: log the headers being sent
+    console.log('[AI Chat Service] Request URL:', url);
+    console.log('[AI Chat Service] Request headers:', headersObj);
+    console.log('[AI Chat Service] Controller authToken:', controller.authToken ? 'Present' : 'Missing');
+    console.log('[AI Chat Service] Full controller:', controller);
 
     return new Observable<ChatEvent>((observer) => {
       fetch(url, {
@@ -352,15 +360,16 @@ export class AiChatService {
   private getAuthHeaders(controller: Controller): HttpHeaders {
     const headers = new HttpHeaders();
 
-    if (controller.username && controller.password) {
-      // Basic auth
-      const auth = btoa(`${controller.username}:${controller.password}`);
-      return headers.set('Authorization', `Basic ${auth}`);
-    }
-
-    // Use Bearer token if JWT token is available
+    // Prioritize Bearer token (JWT) over Basic auth
+    // The AI chat endpoint requires JWT authentication
     if (controller.authToken) {
       return headers.set('Authorization', `Bearer ${controller.authToken}`);
+    }
+
+    // Fallback to Basic auth if JWT token is not available
+    if (controller.username && controller.password) {
+      const auth = btoa(`${controller.username}:${controller.password}`);
+      return headers.set('Authorization', `Basic ${auth}`);
     }
 
     return headers;
