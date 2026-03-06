@@ -336,9 +336,7 @@ import { ToolCallDisplayComponent } from './tool-call-display.component';
     .auto-scroll {
       scroll-behavior: smooth;
     }
-  `],
-  standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, ToolCallDisplayComponent]
+  `]
 })
 export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   @Input() messages: ChatMessage[] = [];

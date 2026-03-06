@@ -1,19 +1,13 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter, tap } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
+import { ResizeEvent } from 'angular-resizable-element';
 
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ChatMessage, ChatSession, ChatEvent, ToolCall } from '@models/ai-chat.interface';
 import { AiChatService } from '@services/ai-chat.service';
-import { AiChatStore } from '@stores/ai-chat.store';
-import { ChatSessionListComponent } from './chat-session-list.component';
-import { ChatMessageListComponent } from './chat-message-list.component';
-import { ChatInputAreaComponent } from './chat-input-area.component';
+import { AiChatStore } from '../../../stores/ai-chat.store';
 
 /**
  * AI Chat Main Component
@@ -21,259 +15,9 @@ import { ChatInputAreaComponent } from './chat-input-area.component';
  */
 @Component({
   selector: 'app-ai-chat',
-  template: `
-    <div class="ai-chat-container" *ngIf="project && controller">
-      <!-- Session sidebar -->
-      <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
-        <div class="sidebar-header">
-          <h3 class="sidebar-title">
-            <span class="ai-logo">AI</span>
-            <span class="sidebar-text">Assistant</span>
-          </h3>
-          <button mat-icon-button (click)="toggleSidebar()" class="collapse-button">
-            <mat-icon>{{ sidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-          </button>
-        </div>
-
-        <div class="sidebar-content" *ngIf="!sidebarCollapsed">
-          <app-chat-session-list
-            [sessions]="sessions"
-            [currentSessionId]="currentSessionId"
-            (sessionSelected)="onSessionSelected($event)"
-            (sessionCreated)="onSessionCreated()"
-            (sessionRenamed)="onSessionRenamed($event)"
-            (sessionDeleted)="onSessionDeleted($event)"
-            (sessionPinned)="onSessionPinned($event)"
-            (sessionUnpinned)="onSessionUnpinned($event)"
-          ></app-chat-session-list>
-        </div>
-      </div>
-
-      <!-- Chat main area -->
-      <div class="chat-main">
-        <!-- Chat header -->
-        <div class="chat-header" *ngIf="!sidebarCollapsed">
-          <div class="chat-title">
-            <span class="ai-logo-small">AI</span>
-            <span>{{ currentSessionTitle }}</span>
-          </div>
-          <button mat-icon-button (click)="closeChat()" class="close-button">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-
-        <!-- Messages list -->
-        <div class="chat-messages" *ngIf="!sidebarCollapsed">
-          <app-chat-message-list
-            [messages]="currentMessages"
-            [isStreaming]="isStreaming"
-            (scrollToEnd)="onScrollToEnd()">
-          </app-chat-message-list>
-        </div>
-
-        <!-- Input area -->
-        <div class="chat-input" *ngIf="!sidebarCollapsed">
-          <app-chat-input-area
-            [disabled]="isStreaming"
-            (messageSent)="onMessageSent($event)">
-          </app-chat-input-area>
-        </div>
-
-        <!-- Collapsed state hint -->
-        <div class="collapsed-hint" *ngIf="sidebarCollapsed">
-          <mat-icon>smart_toy</mat-icon>
-          <span>AI Assistant</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Error notification -->
-    <div class="chat-error" *ngIf="errorMessage">
-      <mat-icon>error</mat-icon>
-      <span>{{ errorMessage }}</span>
-      <button mat-icon-button (click)="clearError()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  `,
-  styles: [`
-    .ai-chat-container {
-      display: flex;
-      height: 100%;
-      background-color: var(--mat-app-background);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .chat-sidebar {
-      width: 280px;
-      background-color: var(--mat-app-surface-container);
-      border-right: 1px solid var(--mat-app-outline-variant);
-      display: flex;
-      flex-direction: column;
-      transition: width 0.3s ease;
-    }
-
-    .chat-sidebar.collapsed {
-      width: 48px;
-    }
-
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px;
-      border-bottom: 1px solid var(--mat-app-outline-variant);
-    }
-
-    .sidebar-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--mat-app-on-surface);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ai-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-      font-family: 'Roboto', sans-serif;
-      letter-spacing: -0.5px;
-      color: var(--mat-app-primary);
-    }
-
-    .collapse-button {
-      width: 32px;
-      height: 32px;
-    }
-
-    .sidebar-content {
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .chat-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--mat-app-background);
-    }
-
-    .chat-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--mat-app-outline-variant);
-      background-color: var(--mat-app-surface);
-    }
-
-    .chat-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--mat-app-on-surface);
-    }
-
-    .ai-logo-small {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      font-family: 'Roboto', sans-serif;
-      letter-spacing: -0.5px;
-      color: var(--mat-app-primary);
-    }
-
-    .chat-icon {
-      color: var(--mat-app-primary);
-    }
-
-    .close-button {
-      width: 32px;
-      height: 32px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .chat-input {
-      border-top: 1px solid var(--mat-app-outline-variant);
-    }
-
-    .collapsed-hint {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-      gap: 8px;
-      color: var(--mat-app-on-surface-variant);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .collapsed-hint mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-      color: var(--mat-app-primary);
-    }
-
-    .chat-error {
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      background-color: var(--mat-app-error-container);
-      color: var(--mat-app-error-on-container);
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
-    }
-
-    .chat-error mat-icon {
-      color: var(--mat-app-error-on-container);
-    }
-
-    @media (max-width: 768px) {
-      .chat-sidebar {
-        width: 100%;
-        position: absolute;
-        z-index: 100;
-        height: 100%;
-      }
-
-      .chat-sidebar.collapsed {
-        width: 0;
-      }
-    }
-  `],
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatToolbarModule,
-    ChatSessionListComponent,
-    ChatMessageListComponent,
-    ChatInputAreaComponent
-  ]
+  templateUrl: './ai-chat.component.html',
+  styleUrls: ['./ai-chat.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   @Input() project!: Project;
@@ -283,6 +27,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   sidebarCollapsed = false;
   isStreaming = false;
   errorMessage: string | null = null;
+  isDraggingEnabled = false;
+  isLightThemeEnabled = false;
+
+  // Position and size state
+  public style: object = { top: '80px', right: '20px', width: '700px', height: '600px' };
+  public resizedWidth: number = 700;
+  public resizedHeight: number = 600;
 
   // Data
   sessions: ChatSession[] = [];
@@ -300,12 +51,16 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     private aiChatStore: AiChatStore
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
+    console.log('[AI Chat Component] ngOnInit called');
+    console.log('[AI Chat Component] Project:', this.project);
+    console.log('[AI Chat Component] Controller:', this.controller);
     this.initializeChat();
     this.subscribeToStateChanges();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('[AI Chat Component] ngOnChanges called', changes);
     if (changes.project || changes.controller) {
       this.initializeChat();
     }
@@ -759,5 +514,67 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    */
   private cleanup(): void {
     this.aiChatStore.resetSessionState();
+  }
+
+  /**
+   * Toggle dragging state
+   * @param value Dragging enabled
+   */
+  toggleDragging(value: boolean): void {
+    this.isDraggingEnabled = value;
+  }
+
+  /**
+   * Handle drag event
+   * @param event Mouse event
+   */
+  dragWidget(event: MouseEvent): void {
+    let x: number = event.movementX;
+    let y: number = event.movementY;
+
+    let width: number = Number(this.style['width'].split('px')[0]);
+    let height: number = Number(this.style['height'].split('px')[0]);
+    let right: number = Number(this.style['right'].split('px')[0]) - x;
+    let top: number = Number(this.style['top'].split('px')[0]) + y;
+
+    this.style = {
+      position: 'fixed',
+      right: `${right}px`,
+      top: `${top}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+    };
+  }
+
+  /**
+   * Validate resize event
+   * @param event Resize event
+   * @returns Whether resize is valid
+   */
+  validate(event: ResizeEvent): boolean {
+    if (
+      event.rectangle.width &&
+      event.rectangle.height &&
+      (event.rectangle.width < 500 || event.rectangle.height < 400)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Handle resize end event
+   * @param event Resize event
+   */
+  onResizeEnd(event: ResizeEvent): void {
+    this.style = {
+      position: 'fixed',
+      top: this.style['top'],
+      right: this.style['right'],
+      width: `${event.rectangle.width}px`,
+      height: `${event.rectangle.height}px`,
+    };
+    this.resizedWidth = event.rectangle.width;
+    this.resizedHeight = event.rectangle.height;
   }
 }

@@ -11,18 +11,15 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
   template: `
     <div class="chat-input-area">
       <textarea
-        matInput
         [placeholder]="placeholder"
         [disabled]="disabled"
         [(ngModel)]="message"
         (keydown.enter)="handleKeyDown($event)"
         (input)="onInputChange()"
         [rows]="rows"
-        [maxRows]="maxRows"
+        [maxLength]="maxLength"
         #messageInput
         class="chat-textarea"
-        cdkAutosize
-        cdkTextareaAutosize
       ></textarea>
 
       <div class="chat-input-actions">
@@ -65,9 +62,10 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
       font-family: inherit;
       font-size: 14px;
       line-height: 1.5;
-      resize: none;
+      resize: vertical;
       outline: none;
       transition: border-color 0.2s;
+      box-sizing: border-box;
     }
 
     .chat-textarea:focus {
@@ -125,7 +123,6 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Input() disabled = false;
   @Input() maxLength = 4000;
   @Input() rows = 1;
-  @Input() maxRows = 8;
   @Input() warningThreshold = 0.9; // 90% length triggers warning
 
   @Output() messageSent = new EventEmitter<string>();

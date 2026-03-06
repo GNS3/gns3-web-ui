@@ -226,7 +226,7 @@
       </button>
     </div>
     <div class="section">
-      <app-project-map-menu [controller]="controller" [project]="project"></app-project-map-menu>
+      <app-project-map-menu [controller]="controller" [project]="project" (aiChatOpened)="onAIChatOpened()"></app-project-map-menu>
     </div>
     <div *ngIf="!readonly" class="section">
       <app-snapshot-menu-item [controller]="controller" [project]="project"> </app-snapshot-menu-item>
@@ -251,6 +251,13 @@
       (closeConsole)="toggleShowConsole($event)"
     ></app-console-wrapper>
   </div>
+
+  <!-- AI Chat Panel -->
+  <app-ai-chat
+    *ngIf="project && isAIChatVisible"
+    [project]="project"
+    [controller]="controller">
+  </app-ai-chat>
 </div>
 
 <ng-template #topologySummaryContainer></ng-template>

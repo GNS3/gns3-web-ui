@@ -291,15 +291,7 @@ import { ChatSession } from '@models/ai-chat.interface';
     ::-webkit-scrollbar-thumb:hover {
       background: var(--mat-app-outline);
     }
-  `],
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatInputModule,
-    MatMenuModule,
-    MatButtonModule
-  ]
+  `]
 })
 export class ChatSessionListComponent implements OnInit {
   @Input() sessions: ChatSession[] = [];

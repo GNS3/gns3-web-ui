@@ -282,10 +282,17 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
    * Open AI Chat panel
    */
   public openAIChat() {
+    console.log('[AI Chat] Button clicked');
+    console.log('[AI Chat] Project:', this.project);
+    console.log('[AI Chat] Controller:', this.controller);
+
     if (!this.project || !this.controller) {
-      console.warn('Cannot open AI Chat: project or controller not available');
+      console.warn('[AI Chat] Cannot open: project or controller not available');
       return;
     }
+
+    console.log('[AI Chat] Emitting aiChatOpened event');
     this.aiChatOpened.emit();
+    console.log('[AI Chat] Event emitted');
   }
 }

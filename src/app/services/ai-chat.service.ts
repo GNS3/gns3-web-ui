@@ -45,17 +45,23 @@ export class AiChatService {
 
     const url = `${this.getControllerUrl(controller)}/projects/${projectId}/chat/stream`;
 
-    const httpOptions = {
-      headers: this.getAuthHeaders(controller)
+    const authHeaders = this.getAuthHeaders(controller);
+    const headersObj: Record<string, string> = {
+      'Content-Type': 'application/json'
     };
+
+    // Convert HttpHeaders to plain object
+    authHeaders.keys().forEach(key => {
+      const value = authHeaders.get(key);
+      if (value) {
+        headersObj[key] = value;
+      }
+    });
 
     return new Observable<ChatEvent>((observer) => {
       fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...httpOptions.headers as Record<string, string>
-        },
+        headers: headersObj,
         body: JSON.stringify(request)
       })
       .then(response => {
@@ -334,7 +340,7 @@ export class AiChatService {
    * @returns Full URL
    */
   private getControllerUrl(controller: Controller): string {
-    const protocol = controller.protocol === ControllerProtocol.https ? 'https' : 'http';
+    const protocol = controller.protocol === 'https:' ? 'https' : 'http';
     return `${protocol}://${controller.host}:${controller.port}`;
   }
 
@@ -346,15 +352,15 @@ export class AiChatService {
   private getAuthHeaders(controller: Controller): HttpHeaders {
     const headers = new HttpHeaders();
 
-    if (controller.user && controller.password) {
+    if (controller.username && controller.password) {
       // Basic auth
-      const auth = btoa(`${controller.user}:${controller.password}`);
+      const auth = btoa(`${controller.username}:${controller.password}`);
       return headers.set('Authorization', `Basic ${auth}`);
     }
 
     // Use Bearer token if JWT token is available
-    if ((controller as any).token) {
-      return headers.set('Authorization', `Bearer ${(controller as any).token}`);
+    if (controller.authToken) {
+      return headers.set('Authorization', `Bearer ${controller.authToken}`);
     }
 
     return headers;

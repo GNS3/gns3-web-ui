@@ -179,6 +179,11 @@ import { StartCaptureDialogComponent } from '@components/project-map/packet-capt
 import { ProjectMapMenuComponent } from '@components/project-map/project-map-menu/project-map-menu.component';
 import { ProjectMapComponent } from '@components/project-map/project-map.component';
 import { ProjectReadmeComponent } from '@components/project-map/project-readme/project-readme.component';
+import { AiChatComponent } from '@components/project-map/ai-chat/ai-chat.component';
+import { ChatSessionListComponent } from '@components/project-map/ai-chat/chat-session-list.component';
+import { ChatMessageListComponent } from '@components/project-map/ai-chat/chat-message-list.component';
+import { ChatInputAreaComponent } from '@components/project-map/ai-chat/chat-input-area.component';
+import { ToolCallDisplayComponent } from '@components/project-map/ai-chat/tool-call-display.component';
 import { ScreenshotDialogComponent } from '@components/project-map/screenshot-dialog/screenshot-dialog.component';
 import { WebConsoleComponent } from '@components/project-map/web-console/web-console.component';
 import { AddBlankProjectDialogComponent } from '@components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
@@ -528,6 +533,11 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         EditNetworkConfigurationDialogComponent,
         UserManagementComponent,
         ProjectReadmeComponent,
+        AiChatComponent,
+        ChatSessionListComponent,
+        ChatMessageListComponent,
+        ChatInputAreaComponent,
+        ToolCallDisplayComponent,
         AddGroupDialogComponent,
         GroupFilterPipe,
         GroupManagementComponent,

@@ -91,6 +91,7 @@ import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
+import { AiChatComponent } from './ai-chat/ai-chat.component';
 
 @Component({
   selector: 'app-project-map',
@@ -116,6 +117,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public gridVisibility: boolean = false;
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
+  public isAIChatVisible: boolean = false;
   private instance: ComponentRef<TopologySummaryComponent>;
   // private instance: any
 
@@ -844,6 +846,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleShowConsole(visible: boolean) {
     this.isConsoleVisible = visible;
     this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
+  }
+
+  /**
+   * Handle AI Chat opened event
+   */
+  public onAIChatOpened() {
+    console.log('[Project Map] AI Chat opened event received');
+    this.isAIChatVisible = true;
+    console.log('[Project Map] isAIChatVisible set to:', this.isAIChatVisible);
+  }
+
+  /**
+   * Close AI Chat panel
+   */
+  public closeAIChat() {
+    console.log('[Project Map] Closing AI Chat');
+    this.isAIChatVisible = false;
   }
 
   public toggleShowTopologySummary(visible: boolean) {
