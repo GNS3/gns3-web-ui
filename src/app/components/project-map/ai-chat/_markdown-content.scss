@@ -1,0 +1,145 @@
+/* Markdown content styles for AI Chat messages */
+
+/* Code inline */
+.message-text code {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.9em;
+}
+
+/* Code blocks */
+.message-text pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 4px 0;
+  font-size: 11px;
+}
+
+.message-text pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 11px;
+}
+
+/* Headers */
+.message-text h1,
+.message-text h2,
+.message-text h3,
+.message-text h4,
+.message-text h5,
+.message-text h6 {
+  margin: 8px 0 4px 0;
+  font-weight: 600;
+  color: var(--mat-app-on-surface);
+}
+
+.message-text h1 { font-size: 1.1em; }
+.message-text h2 { font-size: 1em; }
+.message-text h3 { font-size: 0.95em; }
+.message-text h4 { font-size: 0.9em; }
+.message-text h5,
+.message-text h6 { font-size: 0.85em; }
+
+/* Paragraphs */
+.message-text p {
+  margin: 4px 0;
+}
+
+.message-text p:first-child {
+  margin-top: 0;
+}
+
+.message-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists */
+.message-text ul,
+.message-text ol {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+
+.message-text li {
+  margin: 2px 0;
+  line-height: 1.4;
+}
+
+/* Blockquotes */
+.message-text blockquote {
+  margin: 4px 0;
+  padding: 6px 10px;
+  border-left: 3px solid var(--mat-app-primary);
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Links */
+.message-text a {
+  color: var(--mat-app-primary);
+  text-decoration: underline;
+}
+
+/* Horizontal rules */
+.message-text hr {
+  border: none;
+  border-top: 1px solid var(--mat-app-outline-variant);
+  margin: 8px 0;
+}
+
+/* Tables */
+.message-text table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.message-text th,
+.message-text td {
+  border: 1px solid var(--mat-app-outline-variant);
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.message-text th {
+  background-color: rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+/* Syntax highlighting - basic colors */
+.message-text pre code.language-javascript,
+.message-text pre code.language-js,
+.message-text pre code.language-python,
+.message-text pre code.language-py,
+.message-text pre code.language-bash,
+.message-text pre code.language-sh,
+.message-text pre code.language-json,
+.message-text pre code.language-html,
+.message-text pre code.language-css {
+  display: block;
+  overflow-x: auto;
+}
+
+/* Syntax highlighting colors (VS Code inspired) */
+.message-text code .hljs-keyword { color: #c586c0; }
+.message-text code .hljs-string { color: #ce9178; }
+.message-text code .hljs-number { color: #b5cea8; }
+.message-text code .hljs-function { color: #dcdcaa; }
+.message-text code .hljs-title { color: #dcdcaa; }
+.message-text code .hljs-comment { color: #6a9955; }
+.message-text code .hljs-variable { color: #9cdcfe; }
+.message-text code .hljs-built_in { color: #4ec9b0; }
+.message-text code .hljs-literal { color: #569cd6; }
+.message-text code .hljs-type { color: #4ec9b0; }
+.message-text code .hljs-params { color: #9cdcfe; }
+.message-text code .hljs-meta { color: #9b9b9b; }
+
+/* Fallback for non-highlighted code */
+.message-text pre code {
+  color: var(--mat-app-on-surface);
+}

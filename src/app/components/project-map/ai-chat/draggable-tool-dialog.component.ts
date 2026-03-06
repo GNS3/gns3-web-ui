@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { ToolCall } from '@models/ai-chat.interface';
+import { JsonViewerComponent } from './json-viewer.component';
 
 /**
  * Draggable Dialog Component
@@ -11,6 +12,8 @@ import { ToolCall } from '@models/ai-chat.interface';
  */
 @Component({
   selector: 'app-draggable-tool-dialog',
+  standalone: true,
+  imports: [CommonModule, MatIconModule, MatRippleModule, JsonViewerComponent],
   template: `
     <div
       *ngIf="isOpen"
@@ -63,8 +66,8 @@ import { ToolCall } from '@models/ai-chat.interface';
             </div>
             <div class="info-section">
               <div class="info-label">Arguments:</div>
-              <div class="code-block">
-                <pre [innerHTML]="formatArguments(toolCall.function.arguments)"></pre>
+              <div class="json-container">
+                <app-json-viewer [data]="parsedArguments"></app-json-viewer>
               </div>
             </div>
           </ng-container>
@@ -77,8 +80,8 @@ import { ToolCall } from '@models/ai-chat.interface';
             </div>
             <div class="info-section">
               <div class="info-label">Output:</div>
-              <div class="code-block">
-                <pre [innerHTML]="formatOutput(toolOutput)"></pre>
+              <div class="json-container">
+                <app-json-viewer [data]="parsedOutput"></app-json-viewer>
               </div>
             </div>
           </ng-container>
@@ -238,6 +241,15 @@ import { ToolCall } from '@models/ai-chat.interface';
       word-break: break-all;
     }
 
+    .json-container {
+      background: var(--mat-app-surface-container-low);
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
     /* Syntax highlighting for JSON */
     .code-block pre .key {
       color: #0451a5;
@@ -260,7 +272,7 @@ import { ToolCall } from '@models/ai-chat.interface';
     }
   `]
 })
-export class DraggableToolDialogComponent implements OnInit, OnDestroy {
+export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChanges {
   @Input() isOpen = false;
   @Input() type: 'tool_call' | 'tool_result' = 'tool_call';
   @Input() toolCall?: ToolCall;
@@ -276,12 +288,45 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy {
   isDragging = false;
   dragOffset = { x: 0, y: 0 };
 
+  parsedArguments: any = null;
+  parsedOutput: any = null;
+
   get title(): string {
     return this.type === 'tool_call' ? 'Tool Call Details' : 'Execution Result Details';
   }
 
   ngOnInit() {
     this.position = { ...this.initialPosition };
+    this.parseJsonData();
+  }
+
+  ngOnChanges() {
+    this.parseJsonData();
+  }
+
+  private parseJsonData() {
+    // Parse tool call arguments
+    if (this.toolCall?.function?.arguments) {
+      try {
+        const args = this.toolCall.function.arguments;
+        this.parsedArguments = typeof args === 'string' ? JSON.parse(args) : args;
+      } catch (e) {
+        this.parsedArguments = this.toolCall.function.arguments;
+      }
+    }
+
+    // Parse tool output
+    if (this.toolOutput) {
+      if (typeof this.toolOutput === 'string') {
+        try {
+          this.parsedOutput = JSON.parse(this.toolOutput);
+        } catch (e) {
+          this.parsedOutput = this.toolOutput;
+        }
+      } else {
+        this.parsedOutput = this.toolOutput;
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -331,52 +376,5 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy {
   private cleanupDragListeners() {
     document.removeEventListener('mousemove', this.onDrag);
     document.removeEventListener('mouseup', this.stopDrag);
-  }
-
-  formatArguments(args: string): string {
-    if (!args) return '';
-
-    try {
-      const parsed = JSON.parse(args);
-      return this.syntaxHighlight(parsed);
-    } catch (e) {
-      return this.escapeHtml(args);
-    }
-  }
-
-  formatOutput(output: any): string {
-    if (output === null || output === undefined) {
-      return 'No output';
-    }
-
-    if (typeof output === 'string') {
-      try {
-        const parsed = JSON.parse(output);
-        return this.syntaxHighlight(parsed);
-      } catch (e) {
-        return this.escapeHtml(output);
-      }
-    }
-
-    return this.syntaxHighlight(output);
-  }
-
-  private syntaxHighlight(obj: any): string {
-    if (obj === null) return '<span class="null">null</span>';
-    if (obj === undefined) return '<span class="null">undefined</span>';
-
-    const json = JSON.stringify(obj, null, 2);
-    return this.escapeHtml(json)
-      .replace(/&quot;/g, '"')
-      .replace(/"(.*?)":/g, '<span class="key">"$1":</span>')
-      .replace(/: "(.*?)"/g, ': <span class="string">"$1"</span>')
-      .replace(/: (\d+)/g, ': <span class="number">$1</span>')
-      .replace(/: (true|false)/g, ': <span class="boolean">$1</span>');
-  }
-
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
   }
 }

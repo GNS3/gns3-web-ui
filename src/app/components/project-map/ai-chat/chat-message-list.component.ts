@@ -5,6 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { DraggableToolDialogComponent } from './draggable-tool-dialog.component';
+import { marked } from 'marked';
 
 /**
  * AI Chat Message List Component
@@ -13,6 +14,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
  */
 @Component({
   selector: 'app-chat-message-list',
+  styleUrls: ['./chat-message-list.component.scss', './_markdown-content.scss'],
   template: `
     <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll">
       <div class="messages-container">
@@ -57,7 +59,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
 
           <!-- Tool call message (inline display) -->
           <div class="message tool-call-message" *ngIf="message.role === 'tool_call'">
-            <div class="inline-tool-call" (click)="openToolCallDialog(message.toolCall!)">
+            <div class="inline-tool-call" (click)="openToolCallDialog($event, message.toolCall!)">
               <mat-icon class="tool-icon">build</mat-icon>
               <span class="tool-name-text">{{ message.toolCall?.function.name }}</span>
               <mat-icon class="expand-icon">open_in_new</mat-icon>
@@ -66,7 +68,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
 
           <!-- Tool result message (inline display) -->
           <div class="message tool-result-message" *ngIf="message.role === 'tool_result'">
-            <div class="inline-tool-result" (click)="openToolResultDialog(message)">
+            <div class="inline-tool-result" (click)="openToolResultDialog($event, message)">
               <mat-icon class="tool-icon">check_circle</mat-icon>
               <span class="tool-name-text">result</span>
               <mat-icon class="expand-icon">open_in_new</mat-icon>
@@ -79,8 +81,14 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
               <mat-icon>build</mat-icon>
             </div>
             <div class="message-content tool-content">
-              <div class="message-bubble tool-bubble">
-                <div class="tool-name">{{ message.name || 'Tool' }}</div>
+              <div class="tool-header" (click)="toggleToolResult(message.id)">
+                <div class="tool-name">
+                  <mat-icon class="expand-icon">{{ isToolResultExpanded(message.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                  <span>{{ message.name || 'Tool' }}</span>
+                </div>
+                <span class="tool-summary" *ngIf="!isToolResultExpanded(message.id)">{{ getToolResultSummary(message.content) }}</span>
+              </div>
+              <div class="tool-bubble" *ngIf="isToolResultExpanded(message.id)">
                 <pre class="tool-result" [innerHTML]="formatToolResult(message.content)"></pre>
               </div>
               <div class="message-time">{{ formatTime(message.created_at) }}</div>
@@ -148,397 +156,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
       [initialPosition]="dialogPosition"
       (close)="closeToolResultDialog()">
     </app-draggable-tool-dialog>
-  `,
-  styles: [`
-    .chat-message-list {
-      height: 100%;
-      overflow-y: auto;
-      padding: 16px;
-      background-color: var(--mat-app-background);
-      /* Custom scrollbar styling inspired by ChatGPT */
-      scrollbar-width: thin;
-      scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-    }
-
-    /* WebKit scrollbar styling */
-    .chat-message-list::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .chat-message-list::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .chat-message-list::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      transition: background-color 0.3s ease;
-    }
-
-    .chat-message-list::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(0, 0, 0, 0.3);
-    }
-
-    .messages-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .message {
-      display: flex;
-      gap: 8px;
-      animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .message-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .message-avatar mat-icon {
-      width: 20px;
-      height: 20px;
-      font-size: 20px;
-      color: inherit;
-    }
-
-    .message-avatar .avatar-text {
-      font-size: 12px;
-      font-weight: bold;
-      font-family: 'Roboto', sans-serif;
-      letter-spacing: -0.5px;
-    }
-
-    .user-avatar {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: white;
-    }
-
-    .assistant-avatar {
-      background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-      color: white;
-    }
-
-    .tool-avatar {
-      background: linear-gradient(135deg, #ff9800, #f57c00);
-      color: white;
-    }
-
-    .message-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-width: 80%;
-    }
-
-    .user-message {
-      flex-direction: row-reverse;
-    }
-
-    .user-message .message-content {
-      align-items: flex-end;
-    }
-
-    .message-bubble {
-      padding: 10px 14px;
-      border-radius: 12px;
-      position: relative;
-    }
-
-    .user-bubble {
-      background: linear-gradient(135deg, var(--mat-app-primary), #7c4dff);
-      color: var(--mat-app-on-primary);
-      border-bottom-right-radius: 4px;
-    }
-
-    .assistant-bubble {
-      background: var(--mat-app-surface-container);
-      color: var(--mat-app-on-surface);
-      border-bottom-left-radius: 4px;
-    }
-
-    .assistant-bubble.streaming {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .tool-bubble {
-      background-color: var(--mat-app-surface-container-high);
-      color: var(--mat-app-on-surface);
-      border-radius: 8px;
-      padding: 8px;
-    }
-
-    .system-bubble {
-      background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
-      color: var(--mat-app-on-surface-variant);
-      text-align: center;
-      font-size: 12px;
-      padding: 8px 16px;
-      border-radius: 16px;
-      margin: 0 auto;
-      border: 1px solid rgba(255, 193, 7, 0.3);
-    }
-
-    .error-bubble {
-      background-color: var(--mat-app-error-container);
-      color: var(--mat-app-error-on-container);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 8px;
-    }
-
-    .error-icon {
-      color: var(--mat-app-error-on-container);
-    }
-
-    .message-text {
-      line-height: 1.5;
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-
-    .message-text code {
-      background-color: rgba(0, 0, 0, 0.1);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 0.9em;
-    }
-
-    .message-text pre {
-      background-color: rgba(0, 0, 0, 0.05);
-      padding: 8px;
-      border-radius: 4px;
-      overflow-x: auto;
-      margin: 8px 0;
-    }
-
-    .message-text pre code {
-      background-color: transparent;
-      padding: 0;
-    }
-
-    .message-time {
-      font-size: 11px;
-      color: var(--mat-app-on-surface-variant);
-      opacity: 0.7;
-      padding: 0 4px;
-    }
-
-    .streaming-indicator {
-      flex-shrink: 0;
-      margin-top: 4px;
-    }
-
-    .tool-calls-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    /* Tool call/result inline display styles */
-    .tool-call-message,
-    .tool-result-message {
-      margin-left: 40px;
-      margin-bottom: 4px;
-    }
-
-    .inline-tool-call,
-    .inline-tool-result {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: var(--mat-app-surface-container-low);
-      border: 1px solid var(--mat-app-outline-variant);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      user-select: none;
-    }
-
-    .inline-tool-call:hover,
-    .inline-tool-result:hover {
-      background: var(--mat-app-surface-container);
-      border-color: var(--mat-app-primary);
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .inline-tool-call .tool-icon {
-      width: 14px;
-      height: 14px;
-      font-size: 14px;
-      color: #ff9800;
-    }
-
-    .inline-tool-result .tool-icon {
-      width: 14px;
-      height: 14px;
-      font-size: 14px;
-      color: #4caf50;
-    }
-
-    .tool-name-text {
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 11px;
-      color: var(--mat-app-on-surface-variant);
-    }
-
-    .expand-icon {
-      width: 14px;
-      height: 14px;
-      font-size: 14px;
-      color: var(--mat-app-on-surface-variant);
-      opacity: 0.5;
-    }
-
-    /* Enhanced empty state styles */
-    .empty-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 48px 24px;
-    }
-
-    .empty-content {
-      text-align: center;
-      max-width: 500px;
-    }
-
-    .empty-icon-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 24px;
-      background: linear-gradient(135deg, rgba(103, 58, 183, 0.1), rgba(63, 81, 181, 0.1));
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.05);
-        opacity: 0.8;
-      }
-    }
-
-    .empty-icon {
-      width: 48px;
-      height: 48px;
-      font-size: 48px;
-      color: var(--mat-app-primary);
-    }
-
-    .empty-title {
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--mat-app-on-surface);
-      margin: 0 0 8px 0;
-    }
-
-    .empty-description {
-      font-size: 14px;
-      color: var(--mat-app-on-surface-variant);
-      margin: 0 0 24px 0;
-    }
-
-    .empty-suggestions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .suggestion-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: var(--mat-app-surface-container-low);
-      border: 1px solid var(--mat-app-outline-variant);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      max-width: 280px;
-      width: 100%;
-      justify-content: center;
-    }
-
-    .suggestion-chip:hover {
-      background: var(--mat-app-primary-container);
-      border-color: var(--mat-app-primary);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .suggestion-chip mat-icon {
-      width: 18px;
-      height: 18px;
-      font-size: 18px;
-      color: var(--mat-app-primary);
-    }
-
-    .suggestion-chip span {
-      font-size: 13px;
-      color: var(--mat-app-on-surface);
-    }
-
-    .tool-name {
-      font-weight: 500;
-      font-size: 12px;
-      color: var(--mat-app-on-surface-variant);
-      margin-bottom: 4px;
-    }
-
-    .tool-result {
-      margin: 0;
-      padding: 8px;
-      background-color: var(--mat-app-surface);
-      border-radius: 4px;
-      font-size: 12px;
-      line-height: 1.5;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      font-family: 'Monaco', 'Menlo', monospace;
-    }
-
-    /* Auto scroll styles */
-    .auto-scroll {
-      scroll-behavior: smooth;
-    }
-  `]
+  `
 })
 export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   @Input() messages: ChatMessage[] = [];
@@ -551,6 +169,9 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   @ViewChild('messageContainer') private messageContainer!: ElementRef<HTMLDivElement>;
 
   private shouldScrollToBottom = false;
+
+  // Tool result expand/collapse state
+  private expandedToolResults = new Set<string>();
 
   // Dialog state for tool calls
   toolCallDialogOpen = false;
@@ -602,25 +223,14 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       return '';
     }
 
-    // Escape HTML
-    let formatted = this.escapeHtml(content);
-
-    // Simple code block formatting ```code```
-    formatted = formatted.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-
-    // Inline code `code`
-    formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-    // Bold **text**
-    formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
-    // Italic *text*
-    formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
-    // Line breaks
-    formatted = formatted.replace(/\n/g, '<br>');
-
-    return formatted;
+    try {
+      // Use marked library for full markdown support
+      const html = marked.parse(content, { async: false }) as string;
+      return html;
+    } catch (e) {
+      // Fallback to simple rendering if marked fails
+      return this.escapeHtml(content);
+    }
   }
 
   /**
@@ -634,12 +244,105 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
     }
 
     try {
-      // Try to format JSON
+      // Try to parse as JSON
       const parsed = JSON.parse(result);
-      return this.escapeHtml(JSON.stringify(parsed, null, 2));
+
+      // Check if it's an array of device results (common format)
+      if (Array.isArray(parsed)) {
+        return this.formatDeviceResults(parsed);
+      }
+
+      // Single object - format as JSON
+      return this.formatJsonWithHighlight(parsed);
     } catch (e) {
-      return this.escapeHtml(result);
+      // Not JSON - treat as plain text (Cisco IOS output)
+      return this.formatCiscoOutput(result);
     }
+  }
+
+  /**
+   * Format device diagnostic results (array of devices)
+   */
+  private formatDeviceResults(devices: any[]): string {
+    let html = '<div class="device-results">';
+
+    for (const device of devices) {
+      const status = device.status === 'success' ? 'success' : 'error';
+      const statusColor = device.status === 'success' ? '#22c55e' : '#ef4444';
+
+      html += `
+        <div class="device-result">
+          <div class="device-header">
+            <span class="device-name">${this.escapeHtml(device.device_name || 'Unknown')}</span>
+            <span class="device-status" style="color: ${statusColor}">${status}</span>
+          </div>`;
+
+      if (device.output) {
+        html += `<div class="device-output"><pre>${this.formatCiscoOutput(device.output)}</pre></div>`;
+      }
+
+      if (device.diagnostic_commands) {
+        html += `<div class="device-commands">Commands: ${this.escapeHtml(device.diagnostic_commands.join(', '))}</div>`;
+      }
+
+      html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  /**
+   * Format JSON with syntax highlighting
+   */
+  private formatJsonWithHighlight(obj: any): string {
+    const json = JSON.stringify(obj, null, 2);
+    return this.syntaxHighlightJson(json);
+  }
+
+  /**
+   * Format Cisco IOS command output with basic highlighting
+   */
+  private formatCiscoOutput(output: string): string {
+    if (!output) return '';
+
+    let formatted = this.escapeHtml(output);
+
+    // Highlight Cisco IOS commands (lines starting with certain patterns)
+    formatted = formatted
+      // Command prompts like "R1#", "R2#show", etc.
+      .replace(/^([A-Z][A-Za-z0-9]*)#(\S*)/gm, '<span class="cisco-prompt">$1#$2</span>')
+      // Interface names
+      .replace(/\b(GigabitEthernet|Serial|FastEthernet|Ethernet|Loopback|Port-channel|Tunnel|Vlan)\d*\/\d*(\.\d+)?(\s|$)/g, '<span class="cisco-interface">$&</span>')
+      // IP addresses
+      .replace(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/\d{1,2})?\b/g, '<span class="cisco-ip">$1$2</span>')
+      // OSPF area, router ID
+      .replace(/\b(area \d+|router-id \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/gi, '<span class="cisco-ospf">$1</span>')
+      // Network statements
+      .replace(/\b(network \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} area \d+)\b/gi, '<span class="cisco-network">$1</span>')
+      // Show commands
+      .replace(/\b(show \S+)/g, '<span class="cisco-command">$1</span>')
+      // Config keywords
+      .replace(/\b(interface|router|ip address|no shutdown|description|hostname|router ospf|network|passive-interface|redistribute)\b/gi, '<span class="cisco-keyword">$1</span>')
+      // Protocol states
+      .replace(/\b(UP|DOWN|FULL|DR|BDR|2WAY|EXSTART|EXCHANGE|LOADING|FULL)\b/g, '<span class="cisco-state">$1</span>')
+      // Success rate
+      .replace(/(\d+)\s*packets input.*?(\d+)\s*errors?/gi, '<span class="cisco-errors">$1 packets, $2 errors</span>');
+
+    return formatted;
+  }
+
+  /**
+   * Syntax highlight JSON
+   */
+  private syntaxHighlightJson(json: string): string {
+    return json
+      .replace(/&quot;/g, '"')
+      .replace(/"(.*?)":/g, '<span class="json-key">"$1"</span>:')
+      .replace(/: &quot;(.*?)&quot;/g, ': <span class="json-string">"$1"</span>')
+      .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
+      .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>')
+      .replace(/: (null)/g, ': <span class="json-null">$1</span>');
   }
 
   /**
@@ -729,11 +432,74 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * Open tool call dialog
    * @param toolCall Tool call to display
    */
-  openToolCallDialog(toolCall: ToolCall): void {
-    this.currentToolCall = toolCall;
+  openToolCallDialog(event: MouseEvent | ToolCall, toolCall?: ToolCall): void {
+    // Handle both cases: (event, toolCall) or (toolCall) from tool-call-display
+    let tc: ToolCall;
+    let triggerElement: HTMLElement | null = null;
+
+    if (toolCall !== undefined) {
+      // Called as (event, toolCall)
+      tc = toolCall;
+      const mouseEvent = event as MouseEvent;
+      triggerElement = mouseEvent.target as HTMLElement;
+    } else {
+      // Called as (toolCall) from tool-call-display
+      tc = event as ToolCall;
+    }
+
+    this.currentToolCall = tc;
     this.toolCallDialogOpen = true;
-    // Center dialog in viewport
-    this.dialogPosition = {
+
+    // Position dialog near trigger element, or center if no element
+    if (triggerElement) {
+      const rect = triggerElement.getBoundingClientRect();
+      this.dialogPosition = this.calculateDialogPosition(rect);
+    } else {
+      this.dialogPosition = this.getCenterPosition();
+    }
+  }
+
+  /**
+   * Calculate dialog position near trigger element
+   * @param rect Bounding rectangle of trigger element
+   * @returns Position object
+   */
+  private calculateDialogPosition(rect: DOMRect): { top: number; left: number } {
+    const dialogWidth = 700;
+    const dialogHeight = 500;
+    const offset = 10;
+
+    let left = rect.right + offset;
+    let top = rect.top;
+
+    // If dialog would go off right edge, position to the left of the element
+    if (left + dialogWidth > window.innerWidth) {
+      left = rect.left - dialogWidth - offset;
+    }
+
+    // If dialog would go off left edge, center horizontally
+    if (left < 0) {
+      left = (window.innerWidth - dialogWidth) / 2;
+    }
+
+    // If dialog would go off bottom edge, position above the element
+    if (top + dialogHeight > window.innerHeight) {
+      top = window.innerHeight - dialogHeight - offset;
+    }
+
+    // Ensure minimum margins
+    left = Math.max(10, left);
+    top = Math.max(10, top);
+
+    return { top, left };
+  }
+
+  /**
+   * Get centered position in viewport
+   * @returns Position object
+   */
+  private getCenterPosition(): { top: number; left: number } {
+    return {
       top: Math.max(100, window.innerHeight / 2 - 200),
       left: Math.max(100, window.innerWidth / 2 - 350)
     };
@@ -750,14 +516,14 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * Open tool result dialog
    * @param message Tool result message
    */
-  openToolResultDialog(message: ChatMessage): void {
+  openToolResultDialog(event: MouseEvent, message: ChatMessage): void {
     this.currentToolResult = message;
     this.toolResultDialogOpen = true;
-    // Center dialog in viewport
-    this.dialogPosition = {
-      top: Math.max(100, window.innerHeight / 2 - 200),
-      left: Math.max(100, window.innerWidth / 2 - 350)
-    };
+
+    // Position dialog near trigger element
+    const triggerElement = event.target as HTMLElement;
+    const rect = triggerElement.getBoundingClientRect();
+    this.dialogPosition = this.calculateDialogPosition(rect);
   }
 
   /**
@@ -773,5 +539,59 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    */
   sendSuggestion(suggestion: string): void {
     this.suggestionClicked.emit(suggestion);
+  }
+
+  /**
+   * Toggle tool result expand/collapse
+   * @param messageId Message ID
+   */
+  toggleToolResult(messageId: string): void {
+    if (this.expandedToolResults.has(messageId)) {
+      this.expandedToolResults.delete(messageId);
+    } else {
+      this.expandedToolResults.add(messageId);
+    }
+  }
+
+  /**
+   * Check if tool result is expanded
+   * @param messageId Message ID
+   * @returns Whether expanded
+   */
+  isToolResultExpanded(messageId: string): boolean {
+    return this.expandedToolResults.has(messageId);
+  }
+
+  /**
+   * Get summary of tool result for collapsed state
+   * @param content Tool result content
+   * @returns Summary string
+   */
+  getToolResultSummary(content: string): string {
+    if (!content) {
+      return 'Empty result';
+    }
+
+    try {
+      // Try to parse as JSON
+      const parsed = JSON.parse(content);
+
+      if (Array.isArray(parsed)) {
+        // Array of device results
+        const devices = parsed.map(d => d.device_name || 'Unknown').join(', ');
+        return `${parsed.length} device(s): ${devices}`;
+      }
+
+      // Single object
+      if (parsed.device_name) {
+        return `${parsed.device_name}: ${parsed.status || 'completed'}`;
+      }
+
+      return 'JSON result';
+    } catch (e) {
+      // Plain text - show first line or truncate
+      const firstLine = content.split('\n')[0];
+      return firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
+    }
   }
 }
