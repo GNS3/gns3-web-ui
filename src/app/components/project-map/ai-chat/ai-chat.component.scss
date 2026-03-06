@@ -183,11 +183,6 @@
   color: white;
 }
 
-.close-button {
-  width: 32px;
-  height: 32px;
-}
-
 .chat-messages {
   flex: 1;
   overflow: hidden;
@@ -268,18 +263,37 @@
   display: flex;
   align-items: center;
   gap: 4px;
-}
 
-.action-button {
-  width: 32px;
-  height: 32px;
-  color: rgba(255, 255, 255, 0.7);
-  transition: all 0.2s ease;
-
-  &:hover {
+  // Icon button color
+  ::ng-deep .mat-icon-button {
     color: white;
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: scale(1.05);
+    transition: all 0.2s ease;
+  }
+
+  // Header icon SVG styling (dark theme - white icons)
+  .header-icon {
+    fill: white;
+    transition: all 0.2s ease;
+  }
+
+  // Hover effect for header buttons
+  .mat-icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+
+    .header-icon {
+      fill: white;
+      transform: scale(1.1);
+    }
+  }
+
+  // Close button hover effect (red tint)
+  .close-button:hover {
+    background-color: rgba(244, 67, 54, 0.2);
+
+    .header-icon {
+      fill: #ff8a80;
+    }
   }
 }
 
@@ -363,6 +377,13 @@
 
   &:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Light theme - header icons should be dark
+.lightTheme .header-actions {
+  .header-icon {
+    fill: rgba(0, 0, 0, 0.87);
   }
 }
 

@@ -135,17 +135,38 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .send-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 50%;
     }
 
     .send-button:hover:not(:disabled) {
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      transform: scale(1.15);
+      box-shadow: 0 8px 24px rgba(124, 77, 255, 0.5);
+      background: linear-gradient(135deg, #7c4dff, #651fff);
+
+      &::before {
+        opacity: 1;
+      }
     }
 
     .send-button:active:not(:disabled) {
-      transform: scale(0.95);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
     }
 
     .send-button:disabled {
