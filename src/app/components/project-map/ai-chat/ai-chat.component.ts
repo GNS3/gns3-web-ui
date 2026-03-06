@@ -1,8 +1,9 @@
-import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from '../../../../environments/environment';
 
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -19,7 +20,8 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   @Input() project!: Project;
@@ -52,23 +54,44 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   private destroy$ = new Subject<void>();
 
+  // Debounce timer for panel state updates
+  private saveStateTimer: any = null;
+  private dragRafId: number | null = null;
+
   constructor(
     private aiChatService: AiChatService,
     private controllerService: ControllerService,
     private aiChatStore: AiChatStore,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
+  /**
+   * Logger method - disabled in production
+   */
+  private log(...args: any[]): void {
+    if (!environment.production) {
+      console.log('[AI Chat]', ...args);
+    }
+  }
+
+  /**
+   * Error logger - always enabled
+   */
+  private logError(...args: any[]): void {
+    console.error('[AI Chat Error]', ...args);
+  }
+
   ngOnInit() {
-    console.log('[AI Chat Component] ngOnInit called');
-    console.log('[AI Chat Component] Project:', this.project);
-    console.log('[AI Chat Component] Controller:', this.controller);
+    this.log('ngOnInit called');
+    this.log('Project:', this.project);
+    this.log('Controller:', this.controller);
     this.initializeChat();
     this.subscribeToStateChanges();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('[AI Chat Component] ngOnChanges called', changes);
+    this.log('ngOnChanges called', changes);
     if (changes.project || changes.controller) {
       this.initializeChat();
     }
@@ -152,6 +175,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       takeUntil(this.destroy$)
     ).subscribe(sessions => {
       this.sessions = sessions;
+      this.cdr.markForCheck(); // Trigger change detection
     });
 
     // Subscribe to current session
@@ -162,6 +186,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       if (sessionId) {
         this.loadSessionMessages(sessionId);
       }
+      this.cdr.markForCheck(); // Trigger change detection
     });
 
     // Subscribe to streaming state
@@ -169,6 +194,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       takeUntil(this.destroy$)
     ).subscribe(streaming => {
       this.isStreaming = streaming;
+      this.cdr.markForCheck(); // Trigger change detection
     });
   }
 
@@ -190,7 +216,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         takeUntil(this.destroy$)
       ).subscribe({
         error: (error) => {
-          console.error('Failed to load sessions:', error);
+          this.logError('Failed to load sessions:', error);
           this.showError('Failed to load sessions');
         }
       });
@@ -213,11 +239,12 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         tap(history => {
           this.aiChatStore.setMessages(sessionId, history.messages);
           this.currentMessages = history.messages;
+          this.cdr.markForCheck(); // Trigger change detection immediately
         }),
         takeUntil(this.destroy$)
       ).subscribe({
         error: (error) => {
-          console.error('Failed to load session history:', error);
+          this.logError('Failed to load session history:', error);
           this.showError('Failed to load session history');
         }
       });
@@ -239,6 +266,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.aiChatStore.setCurrentSessionId(null);
     this.currentMessages = [];
     this.currentToolCalls.clear();
+    this.cdr.markForCheck(); // Trigger change detection
   }
 
   /**
@@ -265,7 +293,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         takeUntil(this.destroy$)
       ).subscribe({
         error: (error) => {
-          console.error('Failed to rename session:', error);
+          this.logError('Failed to rename session:', error);
           this.showError('Failed to rename session');
         }
       });
@@ -295,7 +323,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         takeUntil(this.destroy$)
       ).subscribe({
         error: (error) => {
-          console.error('Failed to delete session:', error);
+          this.logError('Failed to delete session:', error);
           this.showError('Failed to delete session');
         }
       });
@@ -325,7 +353,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         takeUntil(this.destroy$)
       ).subscribe({
         error: (error) => {
-          console.error('Failed to pin session:', error);
+          this.logError('Failed to pin session:', error);
           this.showError('Failed to pin session');
         }
       });
@@ -355,7 +383,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         takeUntil(this.destroy$)
       ).subscribe({
         error: (error) => {
-          console.error('Failed to unpin session:', error);
+          this.logError('Failed to unpin session:', error);
           this.showError('Failed to unpin session');
         }
       });
@@ -386,6 +414,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       this.currentSessionId || 'temp',
       userMessage
     );
+    this.cdr.markForCheck(); // Trigger change detection
 
     // Start streaming chat
     this.startChatStream(message, this.currentSessionId || undefined);
@@ -403,8 +432,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Get fresh controller from localStorage to ensure we have the latest authToken
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
-      console.log('[AI Chat] Fresh controller loaded:', freshController);
-      console.log('[AI Chat] authToken present:', !!freshController.authToken);
+      this.log('Fresh controller loaded:', freshController);
+      this.log('authToken present:', !!freshController.authToken);
 
       // Update the controller reference
       this.controller = freshController;
@@ -423,7 +452,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
           this.handleChatEvent(event);
         },
         error: (error) => {
-          console.error('Chat stream error:', error);
+          this.logError('Chat stream error:', error);
           this.aiChatStore.setStreamingState(false);
           this.showError('Chat error occurred');
         },
@@ -434,7 +463,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         }
       });
     }).catch((error) => {
-      console.error('[AI Chat] Failed to get fresh controller:', error);
+      this.logError('Failed to get fresh controller:', error);
       this.showError('Failed to authenticate');
     });
   }
@@ -481,9 +510,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         created_at: new Date().toISOString()
       };
       this.currentMessages = [...this.currentMessages, this.currentAssistantMessage];
+      this.cdr.markForCheck(); // Trigger change detection
     } else {
       // Append content
       this.currentAssistantMessage.content += event.content || '';
+      this.cdr.markForCheck(); // Trigger change detection for streaming updates
     }
   }
 
@@ -537,6 +568,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     this.currentMessages = [...this.currentMessages, toolMessage];
+    this.cdr.markForCheck(); // Trigger change detection
   }
 
   /**
@@ -766,13 +798,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Cleanup resources
-   */
-  private cleanup(): void {
-    this.aiChatStore.resetSessionState();
-  }
-
-  /**
    * Toggle dragging state
    * @param value Dragging enabled
    */
@@ -781,25 +806,36 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Handle drag event
+   * Handle drag event with RAF optimization
    * @param event Mouse event
    */
   dragWidget(event: MouseEvent): void {
-    let x: number = event.movementX;
-    let y: number = event.movementY;
+    // Cancel previous RAF if exists
+    if (this.dragRafId !== null) {
+      cancelAnimationFrame(this.dragRafId);
+    }
 
-    let width: number = Number(this.style['width'].split('px')[0]);
-    let height: number = Number(this.style['height'].split('px')[0]);
-    let right: number = Number(this.style['right'].split('px')[0]) - x;
-    let top: number = Number(this.style['top'].split('px')[0]) + y;
+    // Schedule update on next animation frame
+    this.dragRafId = requestAnimationFrame(() => {
+      const x: number = event.movementX;
+      const y: number = event.movementY;
 
-    this.style = {
-      position: 'fixed',
-      right: `${right}px`,
-      top: `${top}px`,
-      width: `${width}px`,
-      height: `${height}px`,
-    };
+      const width: number = Number(this.style['width'].split('px')[0]);
+      const height: number = Number(this.style['height'].split('px')[0]);
+      const right: number = Number(this.style['right'].split('px')[0]) - x;
+      const top: number = Number(this.style['top'].split('px')[0]) + y;
+
+      this.style = {
+        position: 'fixed',
+        right: `${right}px`,
+        top: `${top}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+      };
+
+      // Trigger change detection manually
+      this.cdr.markForCheck();
+    });
   }
 
   /**
@@ -819,7 +855,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Handle resize end event
+   * Handle resize end event with debounced state save
    * @param event Resize event
    */
   onResizeEnd(event: ResizeEvent): void {
@@ -833,17 +869,52 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.resizedWidth = event.rectangle.width;
     this.resizedHeight = event.rectangle.height;
 
-    // Save size to store
-    this.aiChatStore.updatePanelSize(
-      event.rectangle.width,
-      event.rectangle.height
-    );
+    // Debounced state save
+    this.debouncedSavePanelState();
+  }
 
-    // Save position to store
-    const top = Number(this.style['top']?.split('px')[0]);
-    const right = Number(this.style['right']?.split('px')[0]);
-    if (!isNaN(top)) {
-      this.aiChatStore.updatePanelPosition({ top, right });
+  /**
+   * Debounced panel state save (300ms delay)
+   */
+  private debouncedSavePanelState(): void {
+    if (this.saveStateTimer) {
+      clearTimeout(this.saveStateTimer);
+    }
+
+    this.saveStateTimer = setTimeout(() => {
+      const top = Number(this.style['top']?.split('px')[0]);
+      const right = Number(this.style['right']?.split('px')[0]);
+      const width = Number(this.style['width']?.split('px')[0]);
+      const height = Number(this.style['height']?.split('px')[0]);
+
+      // Save size to store
+      if (!isNaN(width) && !isNaN(height)) {
+        this.aiChatStore.updatePanelSize(width, height);
+      }
+
+      // Save position to store
+      if (!isNaN(top) && !isNaN(right)) {
+        this.aiChatStore.updatePanelPosition({ top, right });
+      }
+    }, 300);
+  }
+
+  /**
+   * Cleanup function
+   */
+  private cleanup(): void {
+    // Reset session state
+    this.aiChatStore.resetSessionState();
+
+    // Clear any pending timers
+    if (this.saveStateTimer) {
+      clearTimeout(this.saveStateTimer);
+      this.saveStateTimer = null;
+    }
+
+    if (this.dragRafId !== null) {
+      cancelAnimationFrame(this.dragRafId);
+      this.dragRafId = null;
     }
   }
 }

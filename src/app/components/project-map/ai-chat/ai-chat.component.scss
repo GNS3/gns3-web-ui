@@ -1,13 +1,61 @@
+// CSS Variables for AI Chat Component
+:root {
+  // Layout dimensions
+  --ai-chat-sidebar-width: 280px;
+  --ai-chat-sidebar-collapsed-width: 48px;
+  --ai-chat-header-height: 48px;
+  --ai-chat-button-size: 40px;
+  --ai-chat-icon-size: 20px;
+  --ai-chat-minimized-size: 56px;
+
+  // Colors - Dark theme
+  --ai-chat-bg-dark: #263238;
+  --ai-chat-bg-sidebar: #20313b;
+  --ai-chat-bg-sidebar-gradient: #1a252c;
+  --ai-chat-bg-header: #20313b;
+  --ai-chat-bg-header-gradient: #1e2a32;
+
+  // Borders
+  --ai-chat-border-color: rgba(255, 255, 255, 0.1);
+
+  // Shadows
+  --ai-chat-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --ai-chat-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --ai-chat-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+  // Brand colors
+  --ai-chat-primary-color: #10a37f;
+  --ai-chat-primary-dark: #1a7f64;
+  --ai-chat-accent-color: #7c4dff;
+
+  // Text colors
+  --ai-chat-text-primary: rgba(255, 255, 255, 1);
+  --ai-chat-text-secondary: rgba(255, 255, 255, 0.7);
+  --ai-chat-text-disabled: rgba(255, 255, 255, 0.5);
+
+  // Spacing
+  --ai-chat-spacing-xs: 4px;
+  --ai-chat-spacing-sm: 8px;
+  --ai-chat-spacing-md: 12px;
+  --ai-chat-spacing-lg: 16px;
+
+  // Z-index layers
+  --ai-chat-z-overlay: 10000;
+  --ai-chat-z-container: 9999;
+  --ai-chat-z-sidebar: 100;
+  --ai-chat-z-menu: 10001; // Menu should be above everything
+}
+
 .ai-chat-container {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--ai-chat-shadow-lg);
   position: fixed;
-  background-color: #263238;
+  background-color: var(--ai-chat-bg-dark);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
-  z-index: 9999;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: var(--ai-chat-z-container);
+  color: var(--ai-chat-text-primary);
+  border: 1px solid var(--ai-chat-border-color);
   backdrop-filter: blur(10px);
 
   // ChatGPT-style gradient border effect
@@ -48,33 +96,33 @@
   right: 0;
   bottom: 0;
   background-color: transparent;
-  z-index: 10000;
+  z-index: var(--ai-chat-z-overlay);
   cursor: grabbing;
 }
 
 .chat-sidebar {
-  width: 280px;
-  background-color: #20313b;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  width: var(--ai-chat-sidebar-width);
+  background-color: var(--ai-chat-bg-sidebar);
+  border-right: 1px solid var(--ai-chat-border-color);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
+  transition: width var(--ai-chat-transition-normal);
   flex-shrink: 0;
 
   // Subtle gradient overlay
-  background: linear-gradient(180deg, #20313b 0%, #1a252c 100%);
+  background: linear-gradient(180deg, var(--ai-chat-bg-sidebar) 0%, var(--ai-chat-bg-sidebar-gradient) 100%);
 }
 
 .chat-sidebar.collapsed {
-  width: 48px;
+  width: var(--ai-chat-sidebar-collapsed-width);
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--ai-chat-spacing-md);
+  border-bottom: 1px solid var(--ai-chat-border-color);
   cursor: grab;
   user-select: none;
 }
@@ -87,17 +135,17 @@
   margin: 0;
   font-size: 16px;
   font-weight: 500;
-  color: white;
+  color: var(--ai-chat-text-primary);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--ai-chat-spacing-sm);
   width: 100%;
   justify-content: center;
 }
 
 .sidebar-title.clickable {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--ai-chat-transition-fast);
 }
 
 .sidebar-title.clickable:hover {
@@ -117,11 +165,11 @@
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
   // ChatGPT-style gradient
-  background: linear-gradient(135deg, #10a37f, #1a7f64);
-  color: white;
+  background: linear-gradient(135deg, var(--ai-chat-primary-color), var(--ai-chat-primary-dark));
+  color: var(--ai-chat-text-primary);
   padding: 6px 10px;
   border-radius: 6px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--ai-chat-transition-fast), box-shadow var(--ai-chat-transition-fast);
   flex-shrink: 0;
 }
 
@@ -132,14 +180,6 @@
 
 .sidebar-title.clickable:active .ai-logo {
   transform: scale(0.95);
-}
-
-.toggle-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  opacity: 0.5;
-  margin-left: auto;
 }
 
 .sidebar-content {
@@ -159,15 +199,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, #20313b 0%, #1e2a32 100%);
+  padding: var(--ai-chat-spacing-md) var(--ai-chat-spacing-lg);
+  border-bottom: 1px solid var(--ai-chat-border-color);
+  background: linear-gradient(180deg, var(--ai-chat-bg-header) 0%, var(--ai-chat-bg-header-gradient) 100%);
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
 
   // ChatGPT-style subtle glow
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--ai-chat-shadow-sm);
 }
 
 .chat-header:active {
@@ -177,10 +217,10 @@
 .chat-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--ai-chat-spacing-sm);
   font-size: 16px;
   font-weight: 500;
-  color: white;
+  color: var(--ai-chat-text-primary);
 }
 
 .chat-messages {
@@ -262,16 +302,16 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--ai-chat-spacing-xs);
 
   // Icon button color and sizing
-  ::ng-deep .mat-icon-button {
-    color: white;
-    transition: all 0.2s ease;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+  .mat-icon-button {
+    color: var(--ai-chat-text-primary);
+    transition: all var(--ai-chat-transition-fast);
+    width: var(--ai-chat-button-size);
+    height: var(--ai-chat-button-size);
+    min-width: var(--ai-chat-button-size);
+    min-height: var(--ai-chat-button-size);
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -280,10 +320,10 @@
 
   // Header icon SVG styling (dark theme - white icons)
   .header-icon {
-    fill: white;
-    transition: all 0.2s ease;
-    width: 20px;
-    height: 20px;
+    fill: var(--ai-chat-text-primary);
+    transition: all var(--ai-chat-transition-fast);
+    width: var(--ai-chat-icon-size);
+    height: var(--ai-chat-icon-size);
   }
 
   // Hover effect for header buttons
@@ -292,7 +332,7 @@
     border-radius: 50%;
 
     .header-icon {
-      fill: white;
+      fill: var(--ai-chat-text-primary);
       transform: scale(1.1);
     }
   }
@@ -400,3 +440,43 @@
 .lightTheme .minimized-icon {
   color: #424242;
 }
+
+// ============================================================================
+// CRITICAL FIX: Material overlays must appear above AI Chat container
+// AI Chat z-index is 9999, so all overlays need to be higher
+// ============================================================================
+
+// Global CDK overlay fix - highest priority
+.cdk-overlay-container {
+  z-index: var(--ai-chat-z-menu) !important;
+}
+
+// All Material overlay panels
+.mat-menu-panel,
+.mat-select-panel,
+.mat-autocomplete-panel,
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-datepicker-content,
+.mat-timepicker-content,
+.mat-colorpicker-content {
+  z-index: var(--ai-chat-z-menu) !important;
+}
+
+// Backdrop (overlay background)
+.cdk-overlay-backdrop {
+  z-index: calc(var(--ai-chat-z-menu) - 1) !important;
+}
+
+// Overlay connection (used for positioning)
+.cdk-overlay-connected-position-bounding-box {
+  z-index: var(--ai-chat-z-menu) !important;
+}
+
+// NOTE: Material overlay z-index fixes are applied globally in styles.scss
+// Material CDK overlays are appended to document body, not parent component
+// Component-scoped rules won't work for overlays
+
+// NOTE: Menu and sidebar icon styles are in global styles.scss
+// Menu panels are rendered to body, and component styles are encapsulated (Angular 14)
+// So all icon color overrides are defined globally

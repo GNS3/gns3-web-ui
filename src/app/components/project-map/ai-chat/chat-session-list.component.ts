@@ -17,7 +17,9 @@ import { ChatSession } from '@models/ai-chat.interface';
       <!-- New session button -->
       <div class="session-list-header">
         <button mat-button (click)="createNewSession()" class="new-session-button">
-          <mat-icon>add</mat-icon>
+          <svg class="session-list-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
           <span>New Chat</span>
         </button>
       </div>
@@ -33,14 +35,18 @@ import { ChatSession } from '@models/ai-chat.interface';
           >
             <!-- Pin indicator -->
             <div class="session-pin" *ngIf="session.pinned">
-              <mat-icon>push_pin</mat-icon>
+              <svg class="pin-icon" xmlns="http://www.w3.org/2000/svg" height="12" width="12" viewBox="0 0 24 24">
+                <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/>
+              </svg>
             </div>
 
             <!-- Session content -->
             <div class="session-content">
               <!-- Session title -->
               <div class="session-header" *ngIf="!session.editing">
-                <mat-icon class="session-icon">chat_bubble_outline</mat-icon>
+                <svg class="session-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/>
+                </svg>
                 <div class="session-info">
                   <div class="session-title">{{ session.title || 'New chat' }}</div>
                   <div class="session-preview">
@@ -52,7 +58,9 @@ import { ChatSession } from '@models/ai-chat.interface';
 
               <!-- Edit title -->
               <mat-form-field class="session-edit-field" *ngIf="session.editing" (click)="$event.stopPropagation()">
-                <mat-icon class="session-icon">edit</mat-icon>
+                <svg class="session-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
                 <input
                   matInput
                   [value]="session.title"
@@ -71,22 +79,30 @@ import { ChatSession } from '@models/ai-chat.interface';
               [matMenuTriggerFor]="sessionMenu"
               (click)="$event.stopPropagation()"
             >
-              <mat-icon>more_vert</mat-icon>
+              <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+              </svg>
             </button>
 
             <!-- Session menu -->
             <mat-menu #sessionMenu="matMenu" xPosition="before">
               <button mat-menu-item (click)="renameSession(session)">
-                <mat-icon>edit</mat-icon>
+                <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
                 <span>Rename</span>
               </button>
               <button mat-menu-item (click)="togglePinSession(session)">
-                <mat-icon>{{ session.pinned ? 'push_pin' : 'push_pin' }}</mat-icon>
+                <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                  <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/>
+                </svg>
                 <span>{{ session.pinned ? 'Unpin' : 'Pin' }}</span>
               </button>
               <mat-divider></mat-divider>
               <button mat-menu-item (click)="deleteSession(session)" class="delete-action">
-                <mat-icon>delete</mat-icon>
+                <svg class="menu-item-icon delete-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
                 <span>Delete</span>
               </button>
             </mat-menu>
@@ -95,7 +111,9 @@ import { ChatSession } from '@models/ai-chat.interface';
 
         <ng-template #noSessions>
           <div class="no-sessions">
-            <mat-icon class="no-sessions-icon">forum</mat-icon>
+            <svg class="no-sessions-icon" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 24 24">
+              <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/>
+            </svg>
             <p class="no-sessions-text">No sessions</p>
             <p class="no-sessions-hint">Click button above to create new session</p>
           </div>
@@ -123,6 +141,16 @@ import { ChatSession } from '@models/ai-chat.interface';
       align-items: center;
       justify-content: center;
       gap: 8px;
+    }
+
+    /* Session list header icon (New Chat + icon) */
+    .session-list-icon {
+      fill: var(--mat-app-on-surface);
+      transition: fill 0.2s ease;
+    }
+
+    .new-session-button:hover .session-list-icon {
+      fill: var(--mat-app-primary);
     }
 
     .sessions-container {
@@ -160,11 +188,9 @@ import { ChatSession } from '@models/ai-chat.interface';
       right: 4px;
     }
 
-    .session-pin mat-icon {
-      font-size: 12px;
-      width: 12px;
-      height: 12px;
-      color: var(--mat-app-primary);
+    /* Pin icon */
+    .pin-icon {
+      fill: var(--mat-app-primary);
     }
 
     .session-content {
@@ -178,9 +204,19 @@ import { ChatSession } from '@models/ai-chat.interface';
       gap: 8px;
     }
 
+    /* Session icon (chat bubble) */
     .session-icon {
-      color: var(--mat-app-on-surface-variant);
+      fill: var(--mat-app-on-surface-variant);
       flex-shrink: 0;
+      transition: fill 0.2s ease;
+    }
+
+    .session-item:hover .session-icon {
+      fill: var(--mat-app-on-surface);
+    }
+
+    .session-item.active .session-icon {
+      fill: var(--mat-app-on-primary-container);
     }
 
     .session-info {
@@ -240,6 +276,16 @@ import { ChatSession } from '@models/ai-chat.interface';
       opacity: 1;
     }
 
+    /* Menu icon (three dots) */
+    .menu-icon {
+      fill: var(--mat-app-on-surface-variant);
+      transition: fill 0.2s ease;
+    }
+
+    .session-menu-button:hover .menu-icon {
+      fill: var(--mat-app-on-surface);
+    }
+
     .no-sessions {
       display: flex;
       flex-direction: column;
@@ -250,10 +296,7 @@ import { ChatSession } from '@models/ai-chat.interface';
     }
 
     .no-sessions-icon {
-      width: 48px;
-      height: 48px;
-      font-size: 48px;
-      color: var(--mat-app-outline-variant);
+      fill: var(--mat-app-outline-variant);
       margin-bottom: 12px;
     }
 
