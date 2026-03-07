@@ -175,10 +175,24 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
 
     .session-item.active {
       background-color: var(--mat-app-primary-container);
+      border-left: 4px solid var(--mat-app-primary);
+      box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3), inset 0 0 0 1px rgba(0, 151, 167, 0.1);
+      transform: translateX(2px);
     }
 
     .session-item.active .session-title {
       color: var(--mat-app-on-primary-container);
+      font-weight: 700;
+    }
+
+    .session-item.active .session-stats,
+    .session-item.active .session-time {
+      color: var(--mat-app-on-primary-container);
+      opacity: 0.9;
+    }
+
+    .session-item.active .menu-icon {
+      fill: var(--mat-app-on-primary-container);
     }
 
     .session-pin {

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,6 +16,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
   selector: 'app-chat-message-list',
   styleUrls: ['./chat-message-list.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll">
       <div class="messages-container">
@@ -350,26 +351,11 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
     // Check if date is valid
     if (isNaN(date.getTime())) {
-      console.warn('[ChatMessageList] Invalid timestamp:', timestamp);
       return '';
     }
 
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-
-    // Debug: Always log first message
-    if (!this['timeDebugLogged']) {
-      console.log('=== ChatMessageList Time Debug ===');
-      console.log('Raw timestamp:', timestamp);
-      console.log('Normalized:', normalizedTimestamp);
-      console.log('Message time (ISO):', date.toISOString());
-      console.log('Message time (Local):', date.toLocaleString());
-      console.log('Current time (ISO):', now.toISOString());
-      console.log('Current time (Local):', now.toLocaleString());
-      console.log('Time diff (minutes):', diffMins);
-      console.log('================================');
-      this['timeDebugLogged'] = true;
-    }
 
     if (diffMins < 1) {
       return 'Just now';
