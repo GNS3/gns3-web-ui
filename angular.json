@@ -48,7 +48,8 @@
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/notosans-fontface/css/notosans-fontface.min.css",
                             "src/styles.scss",
-                            "src/theme.scss"
+                            "src/theme.scss",
+                            "src/tailwind-markdown.scss"
                         ],
                         "scripts": [],
                         "vendorChunk": true,

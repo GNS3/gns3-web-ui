@@ -26,7 +26,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
             </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
-                <markdown class="message-text markdown-body" [data]="message.content"></markdown>
+                <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
               </div>
               <div class="message-time">{{ formatTime(message.created_at) }}</div>
             </div>
@@ -39,7 +39,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
             </div>
             <div class="message-content assistant-content">
               <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
-                <markdown class="message-text markdown-body" [data]="message.content"></markdown>
+                <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
                 <mat-spinner *ngIf="isStreaming && message === lastAssistantMessage" diameter="16" class="streaming-indicator"></mat-spinner>
               </div>
 
@@ -98,7 +98,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
           <!-- System message -->
           <div class="message system-message" *ngIf="message.role === 'system'">
             <div class="message-bubble system-bubble">
-              <markdown class="message-text" [data]="message.content"></markdown>
+              <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
             </div>
           </div>
 

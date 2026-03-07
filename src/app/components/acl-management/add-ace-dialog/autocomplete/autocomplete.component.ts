@@ -3,7 +3,6 @@ import {Group} from "@models/groups/group";
 import {Observable} from "rxjs";
 import {UntypedFormControl} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
-import {data} from "autoprefixer";
 
 @Component({
   selector: 'app-autocomplete',

@@ -104,7 +104,7 @@ Project Map Component (项目拓扑图组件)
   - `tool_result` - 工具执行结果 (可折叠)
   - `error` - 错误消息 (红色标识)
 - 新消息自动滚动到底部
-- Markdown 渲染 (使用 marked 库)
+- **Markdown 渲染 (使用 ngx-markdown + Tailwind Typography)**
 - 命令语法高亮 (Cisco IOS)
 - JSON 语法高亮
 
@@ -521,6 +521,7 @@ handleToolCallEvent(toolCall: ToolCall) {
    - 遵循现有 GNS3 Web UI 模式
    - Material Design 组件库
    - RxJS Observable 响应式编程
+   - ngx-markdown + Tailwind Typography (用于 Markdown 渲染)
    - 不引入额外的状态管理库
 
 ---
@@ -532,14 +533,15 @@ handleToolCallEvent(toolCall: ToolCall) {
 ### 核心渲染文件
 | 文件 | 作用 |
 |------|------|
-| `chat-message-list.component.ts` | **主要渲染逻辑** - `formatMessage()`, `formatToolResult()`, Markdown解析 |
+| `chat-message-list.component.ts` | **Markdown 渲染** - 使用 ngx-markdown 组件 |
 | `chat-message-list.component.scss` | 消息列表样式 |
 | `ai-chat.component.scss` | 主面板样式 |
 
 ### 样式相关
 | 文件 | 作用 |
 |------|------|
-| `src/styles.scss` | 全局 Markdown 样式 (github-markdown-css) |
+| `src/tailwind-markdown.scss` | Tailwind CSS 入口文件 |
+| `tailwind.config.js` | Tailwind 配置 (包含 Typography 插件) |
 | `chat-message-list.component.scss` | 消息气泡、Cisco IOS高亮样式 |
 
 ### 数据/配置
@@ -556,39 +558,36 @@ handleToolCallEvent(toolCall: ToolCall) {
 | `json-viewer.component.ts` | JSON 格式化显示 |
 | `draggable-tool-dialog.component.ts` | 工具结果对话框 |
 
-### marked 配置
-配置位置：`chat-message-list.component.ts`
-```typescript
-marked.setOptions({
-  gfm: true,          // GitHub Flavored Markdown
-  breaks: true,       // 单换行转 <br>
-  pedantic: false,
-  smartLists: true,
-});
+### Markdown 渲染配置
+
+#### 1. Tailwind Typography 配置 (`tailwind.config.js`)
+```javascript
+module.exports = {
+  content: ['./src/app/**/*.{html,ts}'],
+  plugins: [require('@tailwindcss/typography')],
+};
 ```
 
-### Markdown 渲染格式参数
+#### 2. 组件中的 CSS 类
+参考 FlowNet-Lab 项目的实现：
+```html
+<markdown class="prose prose-sm dark:prose-invert max-w-none min-w-0
+  prose-p:break-words prose-ul:break-words prose-ol:break-words
+  prose-pre:break-all prose-a:break-all prose-code:break-all"
+  [data]="message.content">
+</markdown>
+```
 
-#### 基础样式 (`styles.scss` - github-markdown-css)
-| 元素 | font-size | line-height | 其他 |
-|------|-----------|-------------|------|
-| 正文 `.markdown-body` | **16px** | **1.5** | - |
-| 标题 h1 | **2em** (32px) | 1.25 | 底部边框 |
-| 标题 h2 | **1.5em** (24px) | 1.25 | 底部边框 |
-| 标题 h3 | **1.25em** (20px) | - | - |
-| 无序/有序列表 ul/ol | 继承 16px | - | padding-left: 2em, margin-bottom: 16px |
-| 列表项 li | 继承 16px | - | margin: 0.25em |
-| 段落 p | 继承 16px | - | margin-bottom: 16px |
+| 类名 | 作用 |
+|------|------|
+| `prose` | Tailwind Typography 基础类 |
+| `prose-sm` | 小号字体 |
+| `dark:prose-invert` | 暗色主题适配 |
+| `max-w-none` | 不限制最大宽度 |
+| `min-w-0` | 允许收缩 |
+| `prose-xxx:break-words` | 强制换行，防止溢出 |
 
-#### 消息内覆盖样式 (`chat-message-list.component.scss`)
-| 元素 | font-size |
-|------|-----------|
-| 消息气泡内容 | **13px** |
-| 用户消息气泡 | **12px** |
-| 工具调用标题 | **14px** |
-| 代码块 code | **12px** (`!important`) |
-
-> **注意**: 消息渲染主要在 `chat-message-list.component.ts` 的 `formatMessage` 方法中，使用 `marked` 库解析 Markdown，然后通过 `DomSanitizer` 注入 HTML。
+> **注意**: 消息渲染使用 `ngx-markdown` 组件 + Tailwind Typography 类，不再使用手动 marked 配置。
 
 ---
 
@@ -605,6 +604,10 @@ marked.setOptions({
 8. `src/app/components/project-map/ai-chat/tool-call-display.component.ts`
 9. `src/app/components/project-map/ai-chat/json-viewer.component.ts`
 10. `src/app/components/project-map/ai-chat/draggable-tool-dialog.component.ts`
+
+### 新增配置文件 (3个)
+1. `tailwind.config.js` - Tailwind CSS 配置
+2. `src/tailwind-markdown.scss` - Tailwind 入口文件
 
 ### 修改文件 (3个)
 1. `src/app/components/project-map/project-map-menu/project-map-menu.component.html`
