@@ -136,7 +136,7 @@
   border-bottom: 1px solid var(--ai-chat-border-color);
   cursor: grab;
   user-select: none;
-  min-height: 48px;
+  height: 48px;
   box-sizing: border-box;
 }
 
@@ -177,7 +177,6 @@
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
-  // GNS3 cyan gradient with glow
   background: linear-gradient(135deg, var(--ai-chat-primary-color), var(--ai-chat-primary-dark));
   color: white;
   padding: 6px 10px;
@@ -188,7 +187,6 @@
   position: relative;
   overflow: hidden;
 
-  // Subtle shine effect
   &::after {
     content: '';
     position: absolute;
@@ -217,7 +215,7 @@
 }
 
 .sidebar-title.clickable:active .ai-logo {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }
 
 .sidebar-content {
@@ -246,7 +244,7 @@
   box-shadow: var(--ai-chat-shadow-sm);
   transition: background 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  min-height: 48px;
+  height: 48px;
   box-sizing: border-box;
 
   // Subtle top glow effect
