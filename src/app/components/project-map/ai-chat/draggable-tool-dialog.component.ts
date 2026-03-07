@@ -309,8 +309,20 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChange
     if (this.toolCall?.function?.arguments) {
       try {
         const args = this.toolCall.function.arguments;
-        this.parsedArguments = typeof args === 'string' ? JSON.parse(args) : args;
+
+        // Handle both string and object formats
+        if (typeof args === 'string') {
+          // String format - parse it
+          this.parsedArguments = JSON.parse(args);
+        } else if (args.tool_input && typeof args.tool_input === 'string') {
+          // Object format with tool_input wrapper - parse the inner string
+          this.parsedArguments = JSON.parse(args.tool_input);
+        } else {
+          // Object format without wrapper - use as-is
+          this.parsedArguments = args;
+        }
       } catch (e) {
+        // If all parsing fails, keep the original value
         this.parsedArguments = this.toolCall.function.arguments;
       }
     }

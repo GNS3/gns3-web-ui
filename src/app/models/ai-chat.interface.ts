@@ -23,7 +23,7 @@ export interface ToolCall {
   type: 'function';
   function: {
     name: string;       // 工具名称
-    arguments: string;  // 参数 JSON 字符串
+    arguments: string | Record<string, any>;  // 参数 JSON 字符串或对象
     complete?: boolean; // 参数是否完整
   };
 }

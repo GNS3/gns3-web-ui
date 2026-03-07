@@ -365,7 +365,9 @@ export class ToolCallDisplayComponent implements OnChanges {
    * Check if parameters are accumulating
    */
   get isAccumulating(): boolean {
-    return !this.toolCall?.function?.complete;
+    // If complete field exists and is false, it's accumulating
+    // If complete field doesn't exist (historical messages), assume complete
+    return this.toolCall?.function?.complete === false;
   }
 
   /**
@@ -391,14 +393,33 @@ export class ToolCallDisplayComponent implements OnChanges {
     }
 
     try {
-      const args = this.toolCall.function.arguments;
-      // Try to format as JSON
-      if (args.startsWith('{') || args.startsWith('[')) {
-        return JSON.stringify(JSON.parse(args), null, 2);
+      let args = this.toolCall.function.arguments;
+      let jsonString: string;
+
+      // Handle both string and object formats
+      if (typeof args === 'object') {
+        // For object format, extract the actual arguments
+        // If it's wrapped in tool_input, use that; otherwise stringify the whole object
+        if (args.tool_input) {
+          jsonString = args.tool_input;
+        } else {
+          jsonString = JSON.stringify(args, null, 2);
+        }
+      } else {
+        // String format
+        jsonString = args;
       }
-      return args;
+
+      // Try to parse and format as JSON for better readability
+      if (jsonString.trim().startsWith('{') || jsonString.trim().startsWith('[')) {
+        return JSON.stringify(JSON.parse(jsonString), null, 2);
+      }
+      return jsonString;
     } catch (e) {
-      return this.toolCall.function.arguments;
+      // Fallback: return as-is if parsing fails
+      return typeof this.toolCall.function.arguments === 'string'
+        ? this.toolCall.function.arguments
+        : JSON.stringify(this.toolCall.function.arguments, null, 2);
     }
   }
 
