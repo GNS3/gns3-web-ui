@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { select } from 'd3-selection';
 import { FontFixer } from '../../helpers/font-fixer';
 import { TextElement } from '../../models/drawings/text-element';
 import { MapDrawing } from '../../models/map/map-drawing';
@@ -36,6 +35,7 @@ export class TextDrawingWidget implements DrawingShapeWidget {
         }
         return styles.join('; ');
       })
+      .attr('dominant-baseline', 'text-before-edge')
       .attr('fill', (text) => text.fill)
       .attr('text-decoration', (text) => text.text_decoration);
 
@@ -55,13 +55,12 @@ export class TextDrawingWidget implements DrawingShapeWidget {
 
     lines.exit().remove();
 
-    merge.attr('transform', function (this: SVGTextElement) {
-      // SVG calculates y pos by the /bottom/ of the first tspan, hence we need to make some
-      // approx and make it matching to GUI
-      const tspan = select(this).selectAll<SVGTSpanElement, string>('tspan');
-      const height = this.getBBox().height / tspan.size();
-      //return `translate(0, ${height})`;
-      return `translate(${TextDrawingWidget.MARGIN}, ${height - TextDrawingWidget.MARGIN})`;
+    // Center glyphs inside the text drawing box so GUI/WebUI look consistent.
+    merge.attr('transform', function (this: SVGTextElement, text: TextElement) {
+      const bbox = this.getBBox();
+      const expectedHeight = Number(text.height);
+      const yOffset = isFinite(expectedHeight) ? expectedHeight / 2 - (bbox.y + bbox.height / 2) : 0;
+      return `translate(0, ${yOffset})`;
     });
 
     drawing.exit().remove();
