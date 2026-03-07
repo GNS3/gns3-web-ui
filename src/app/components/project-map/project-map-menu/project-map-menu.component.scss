@@ -23,3 +23,12 @@
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
 }
+
+/* Menu button hover effect */
+.menu-button {
+  transition: transform 0.2s ease;
+}
+
+.menu-button:hover {
+  transform: scale(1.3);
+}
