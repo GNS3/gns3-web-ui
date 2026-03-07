@@ -1,14 +1,15 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ConfirmationBottomSheetComponent } from '@components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
+import { ZIndexService } from '@services/z-index.service';
 
 /**
  * AI Chat Session List Component
@@ -83,7 +84,7 @@ import { AiChatService } from '@services/ai-chat.service';
             </button>
 
             <!-- Session menu -->
-            <mat-menu #sessionMenu="matMenu" xPosition="before" panelClass="session-action-menu">
+            <mat-menu #sessionMenu="matMenu" xPosition="before" panelClass="session-action-menu" (opened)="onMenuOpened()">
               <button mat-menu-item (click)="renameSession(session)">
                 <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
                   <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
@@ -384,8 +385,25 @@ export class ChatSessionListComponent implements OnInit {
 
   constructor(
     private bottomSheet: MatBottomSheet,
-    private aiChatService: AiChatService
+    private aiChatService: AiChatService,
+    private zIndexService: ZIndexService
   ) {}
+
+  /**
+   * Handle menu opened event - bring menu to front
+   */
+  onMenuOpened(): void {
+    // Get next z-index to ensure menu appears on top
+    const zIndex = this.zIndexService.getNextZIndex();
+
+    // Find the menu panel and set its z-index
+    setTimeout(() => {
+      const menuPanel = document.querySelector('.mat-menu-panel.session-action-menu') as HTMLElement;
+      if (menuPanel) {
+        menuPanel.style.zIndex = zIndex.toString();
+      }
+    });
+  }
 
   /**
    * Sorted sessions list (pinned ones first)
