@@ -91,15 +91,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    this.log('ngOnInit called');
-    this.log('Project:', this.project);
-    this.log('Controller:', this.controller);
     this.initializeChat();
     this.subscribeToStateChanges();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log('ngOnChanges called', changes);
     if (changes.project || changes.controller) {
       this.initializeChat();
     }
@@ -231,7 +227,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
       // If was minimized and now is not minimized, restore the chat
       if (wasMinimized && !panelState.isMinimized) {
-        console.log('[AI Chat] Restoring from minimized state');
         // Restore previous style
         if (Object.keys(this.previousStyle).length > 0) {
           this.style = { ...this.previousStyle };
@@ -240,7 +235,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       }
       // If was not minimized and now is minimized, apply minimized style
       else if (!wasMinimized && panelState.isMinimized) {
-        console.log('[AI Chat] Entering minimized state');
         // Save current style before minimizing
         this.previousStyle = { ...this.style };
         // Apply minimized style (move off-screen)

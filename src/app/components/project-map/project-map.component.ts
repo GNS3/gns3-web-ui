@@ -91,7 +91,6 @@ import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
-import { AiChatComponent } from './ai-chat/ai-chat.component';
 import { AiChatStore } from '../../stores/ai-chat.store';
 
 @Component({
@@ -139,7 +138,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
-  @ViewChild(AiChatComponent) aiChatComponent: AiChatComponent;
   @ViewChild('topologySummaryContainer', { read: ViewContainerRef }) topologySummaryContainer: ViewContainerRef;
 
   private projectMapSubscription: Subscription = new Subscription();
@@ -291,7 +289,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
-        console.log('from project map component');
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })
@@ -855,26 +852,39 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    * Handle AI Chat opened event
    */
   public onAIChatOpened() {
-    console.log('[Project Map] AI Chat opened event received');
+    // Get current panel state
+    const panelState = this.aiChatStore.getPanelStateValue();
 
     // Open panel in store to update state
     this.aiChatStore.openPanel();
 
-    // If AI Chat is already visible, restore it if minimized
-    if (this.isAIChatVisible && this.aiChatComponent) {
-      this.aiChatComponent.restoreChat();
-    } else {
-      this.isAIChatVisible = true;
+    // If AI Chat is already visible and minimized, restore it via store
+    if (this.isAIChatVisible && panelState.isMinimized) {
+      this.aiChatStore.restorePanel();
     }
 
-    console.log('[Project Map] isAIChatVisible set to:', this.isAIChatVisible);
+    // Make AI Chat visible
+    this.isAIChatVisible = true;
+  }
+
+  /**
+   * Close AI Chat panel and reset state when leaving project
+   * This ensures clean state when returning to project
+   */
+  public onLeaveProject() {
+    this.closeAIChat();
+    // Reset panel state
+    this.aiChatStore.setPanelState({
+      isOpen: false,
+      isMinimized: false,
+      isMaximized: false
+    });
   }
 
   /**
    * Close AI Chat panel
    */
   public closeAIChat() {
-    console.log('[Project Map] Closing AI Chat');
     this.isAIChatVisible = false;
   }
 
@@ -1119,6 +1129,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    // Close AI Chat when leaving project
+    this.onLeaveProject();
+
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');
 

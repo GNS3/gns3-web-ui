@@ -77,8 +77,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.aiChatStateSubscription = this.aiChatStore.getPanelState().subscribe(panelState => {
       this.isAIChatOpen = panelState.isOpen;
       this.isAIMinimized = panelState.isMinimized;
-      console.log('[Project Map Menu] Panel state updated:', panelState);
-      console.log('[Project Map Menu] isAIChatOpen:', this.isAIChatOpen, 'isAIMinimized:', this.isAIMinimized);
       // Trigger change detection for OnPush strategy
       this.cdr.markForCheck();
     });
@@ -302,29 +300,18 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
    * Open AI Chat panel
    */
   public openAIChat() {
-    console.log('[AI Chat] Button clicked');
-    console.log('[AI Chat] isAIChatOpen:', this.isAIChatOpen);
-    console.log('[AI Chat] isAIMinimized:', this.isAIMinimized);
-
     if (!this.project || !this.controller) {
-      console.warn('[AI Chat] Cannot open: project or controller not available');
       return;
     }
 
-    const panelState = this.aiChatStore.getPanelStateValue();
-    console.log('[AI Chat] Panel state:', panelState);
-
     if (!this.isAIChatOpen) {
       // First click: open the panel (emit event to parent)
-      console.log('[AI Chat] Opening panel - emitting event');
       this.aiChatOpened.emit();
     } else if (this.isAIMinimized) {
       // Panel is minimized: restore it
-      console.log('[AI Chat] Restoring panel');
       this.aiChatStore.restorePanel();
     } else {
       // Panel is open: minimize it
-      console.log('[AI Chat] Minimizing panel');
       this.aiChatStore.minimizePanel();
     }
   }

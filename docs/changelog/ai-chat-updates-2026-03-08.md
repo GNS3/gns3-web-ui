@@ -161,6 +161,66 @@ private startChatStream(message: string, sessionId?: string): void {
 
 ---
 
+### 3. 离开项目时关闭 AI Chat ✅
+
+**问题**：在 AI Assistant 窗口打开或最小化状态下，离开项目窗口再返回后，点击 AI 按钮无法打开窗口。
+
+**根本原因**：
+1. `@ViewChild(AiChatComponent)` 在组件被 `*ngIf` 隐藏时为 `undefined`
+2. 组件销毁/重建时状态未正确重置
+
+**解决方案**：
+1. 移除对 `@ViewChild` 的依赖，改用 Store 状态管理
+2. 在离开项目时（`ngOnDestroy`）关闭 AI Chat 窗口并重置状态
+
+**文件**：
+- 修改：`src/app/components/project-map/project-map.component.ts`
+
+**关键修改**：
+```typescript
+// 新增 onLeaveProject 方法
+public onLeaveProject() {
+  this.closeAIChat();
+  this.aiChatStore.setPanelState({
+    isOpen: false,
+    isMinimized: false,
+    isMaximized: false
+  });
+}
+
+// 在 ngOnDestroy 中调用
+public ngOnDestroy() {
+  this.onLeaveProject();
+  // ... 其他清理
+}
+```
+
+---
+
+### 4. 清理调试日志 ✅
+
+**问题**：代码中存在大量调试日志，影响生产环境性能。
+
+**解决方案**：移除所有非必要的调试日志。
+
+**修改的文件**：
+- `ai-chat.component.ts` - 移除 ngOnInit、ngOnChanges、最小化/恢复等日志
+- `project-map-menu.component.ts` - 移除订阅和按钮点击日志
+- `project-map.component.ts` - 移除链接变化和关闭日志
+
+---
+
+### 5. 清理未使用代码 ✅
+
+**问题**：存在未使用的导入和 ViewChild 声明。
+
+**解决方案**：移除未使用的代码。
+
+**修改的文件**：
+- `project-map.component.ts` - 移除未使用的 `@ViewChild(AiChatComponent)` 声明和导入
+
+---
+
 ## Breaking Changes
 
 **无**：所有更改向后兼容。
@@ -229,6 +289,9 @@ showConfirmation() {
 2. ✅ 每次创建新会话（前端生成 session_id）
 3. ✅ 用户消息不显示（防止历史消息覆盖）
 4. ✅ 消息追加错误（重置 currentAssistantMessage）
+5. ✅ 离开项目后无法打开 AI Chat（离开时关闭并重置状态）
+6. ✅ 调试日志已清理
+7. ✅ 未使用代码已清理
 
 ### 无已知问题
 
