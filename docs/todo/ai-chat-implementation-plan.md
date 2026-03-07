@@ -24,18 +24,22 @@ AI Chat 功能将集成到项目拓扑图的左侧工具栏中，允许用户与
 Project Map Component (项目拓扑图组件)
 └── Left Toolbar (左侧工具栏)
     └── AI Chat Button (AI聊天按钮) 【新增】
-        └── AI Chat Panel (AI聊天面板)
-            ├── Session List (会话列表侧边栏)
+        └── AI Chat Panel (AI聊天面板) 【ai-chat.component.ts】
+            ├── Session List (会话列表侧边栏) 【chat-session-list.component.ts】
             ├── Chat Interface (聊天主区域)
-            │   ├── Message List (消息列表)
-            │   ├── Input Area (输入区域)
-            │   └── Tool Call Display (工具调用显示)
+            │   ├── Message List (消息列表) 【chat-message-list.component.ts】
+            │   │   ├── Tool Call Display (工具调用显示) 【tool-call-display.component.ts】
+            │   │   └── JSON Viewer (JSON查看器) 【json-viewer.component.ts】
+            │   └── Input Area (输入区域) 【chat-input-area.component.ts】
+            ├── Draggable Tool Dialog (可拖拽工具对话框) 【draggable-tool-dialog.component.ts】
             └── Session Controls (会话控制)
                 ├── New Chat (新建会话)
                 ├── Rename (重命名)
                 ├── Delete (删除)
                 └── Pin/Unpin (置顶)
 ```
+
+> **注意**: 面板可调整大小功能直接集成在 `ai-chat.component.ts` 中，未使用独立的 `ai-chat-panel.component.ts`
 
 ---
 
@@ -76,12 +80,8 @@ Project Map Component (项目拓扑图组件)
 - 管理整体聊天状态和布局
 - 协调会话列表和聊天界面
 - 处理面板显示/隐藏逻辑
-
-#### **`ai-chat-panel.component.ts`**
-- 可调整大小的面板容器（参考 topology-summary 组件）
-- 拖拽调整大小功能
-- 面板位置持久化到 localStorage
-- 主题感知样式
+- 集成可调整大小的面板功能（拖拽调整大小，面板位置持久化到 localStorage）
+- 处理 SSE 流式事件 (content, tool_call, tool_start, tool_end, error, done, heartbeat)
 
 #### **`chat-session-list.component.ts`**
 - 显示聊天会话列表
@@ -96,15 +96,17 @@ Project Map Component (项目拓扑图组件)
 
 #### **`chat-message-list.component.ts`**
 - 可滚动的消息历史显示
-- 消息类型:
-  - 用户消息
-  - AI 消息（支持流式显示）
-  - 工具调用消息
-  - 工具结果消息
-  - 错误消息
+- 消息类型 (实际支持):
+  - `user` - 用户消息 (右侧，带头像)
+  - `assistant` - AI 消息 (左侧，支持流式显示)
+  - `system` - 系统消息 (居中)
+  - `tool_call` - 工具调用请求 (可展开参数)
+  - `tool_result` - 工具执行结果 (可折叠)
+  - `error` - 错误消息 (红色标识)
 - 新消息自动滚动到底部
-- Markdown 渲染代码块
-- 命令语法高亮
+- Markdown 渲染 (使用 marked 库)
+- 命令语法高亮 (Cisco IOS)
+- JSON 语法高亮
 
 #### **`chat-input-area.component.ts`**
 - 多行文本输入框
@@ -119,6 +121,19 @@ Project Map Component (项目拓扑图组件)
 - 参数累积的视觉指示器
 - 可折叠的工具结果
 - JSON 结果语法高亮
+- 工具执行状态显示 (accumulating/ready/executing/completed)
+- Angular animations 动画效果
+
+#### **`json-viewer.component.ts`** (额外新增)
+- JSON 数据的格式化显示
+- 支持折叠/展开 JSON 节点
+- 语法高亮
+- 复制功能
+
+#### **`draggable-tool-dialog.component.ts`** (额外新增)
+- 可拖拽的工具执行结果对话框
+- 支持调整大小
+- 位置持久化到 localStorage
 
 ---
 
@@ -164,13 +179,16 @@ interface ChatSession {
 // 聊天消息
 interface ChatMessage {
   id: string;                 // 消息唯一标识
-  role: 'user' | 'assistant' | 'system' | 'tool';
+  role: 'user' | 'assistant' | 'system' | 'tool' | 'tool_call' | 'tool_result'; // 实际支持的消息角色
   content: string;            // 消息内容
   created_at: string;         // 创建时间
-  tool_calls?: ToolCall[];    // 工具调用列表
+  tool_calls?: ToolCall[];    // 工具调用列表 (assistant 消息)
   tool_call_id?: string;      // 关联的工具调用 ID
-  name?: string;              // 工具消息名称
+  name?: string;              // 工具名称 (tool/tool_result 消息)
   metadata?: any;             // 元数据
+  toolCall?: ToolCall;        // 单个工具调用 (tool_call 消息)
+  toolName?: string;          // 工具名称 (tool_result 消息)
+  toolOutput?: any;           // 工具输出 (tool_result 消息)
 }
 
 // 工具调用
@@ -195,12 +213,19 @@ interface ToolCall {
 ```typescript
 interface AIChatState {
   currentProjectId: string | null;      // 当前项目 ID
-  currentSessionId: string | null;      // 当前会话 ID
-  sessions: ChatSession[];              // 会话列表
-  messages: Map<string, ChatMessage[]>; // 消息历史 (sessionId -> messages)
-  isStreaming: boolean;                 // 是否正在流式传输
+  currentSessionId: string | null;       // 当前会话 ID
+  sessions: ChatSession[];                // 会话列表
+  messagesMap: Map<string, ChatMessage[]>; // 消息历史 (sessionId -> messages)
+  isStreaming: boolean;                   // 是否正在流式传输
   currentToolCalls: Map<string, ToolCall>; // 当前工具调用状态
-  error: string | null;                 // 错误信息
+  panelState: {                           // 面板状态 (持久化到 localStorage)
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    visible: boolean;
+  };
+  error: string | null;                   // 错误信息
 }
 ```
 
@@ -502,16 +527,17 @@ handleToolCallEvent(toolCall: ToolCall) {
 
 ## 📦 文件清单总结
 
-### 新增文件 (9个)
+### 新增文件 (10个)
 1. `src/app/services/ai-chat.service.ts`
-2. `src/app/components/project-map/ai-chat/ai-chat.component.ts`
-3. `src/app/components/project-map/ai-chat/ai-chat-panel.component.ts`
-4. `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
-5. `src/app/components/project-map/ai-chat/chat-message-list.component.ts`
-6. `src/app/components/project-map/ai-chat/chat-input-area.component.ts`
-7. `src/app/components/project-map/ai-chat/tool-call-display.component.ts`
-8. `src/app/models/ai-chat.interface.ts`
-9. `src/app/stores/ai-chat.store.ts`
+2. `src/app/models/ai-chat.interface.ts`
+3. `src/app/stores/ai-chat.store.ts`
+4. `src/app/components/project-map/ai-chat/ai-chat.component.ts`
+5. `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
+6. `src/app/components/project-map/ai-chat/chat-message-list.component.ts`
+7. `src/app/components/project-map/ai-chat/chat-input-area.component.ts`
+8. `src/app/components/project-map/ai-chat/tool-call-display.component.ts`
+9. `src/app/components/project-map/ai-chat/json-viewer.component.ts`
+10. `src/app/components/project-map/ai-chat/draggable-tool-dialog.component.ts`
 
 ### 修改文件 (3个)
 1. `src/app/components/project-map/project-map-menu/project-map-menu.component.html`
