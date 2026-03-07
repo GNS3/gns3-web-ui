@@ -242,7 +242,130 @@ export default defineConfig({
 
 ### 第三阶段：创建 API 适配层
 
-#### 3.1 创建 API 适配器
+#### 3.1 创建 API 适配器（含 SSE 重试逻辑）
+
+**⚠️ 注意**：Angular 的 zone.js 有时会干扰 fetch + ReadableStream
+
+**推荐方案**：使用 EventSource（如果后端支持）或 fetch + ReadableStream + zone.js 兼容处理
+
+**方案A：EventSource（更稳定）**
+```typescript
+/**
+ * EventSource 方案（推荐）
+ * 优点：浏览器原生、自动重连、更稳定
+ * 注意：需要后端支持 GET 请求返回 SSE
+ *
+ * 架构：
+ * POST /chat -> 返回 stream_id
+ * GET /chat/stream/{stream_id} -> SSE
+ */
+class SseClient {
+  private eventSource: EventSource | null = null;
+
+  connect(streamId: string, onMessage: (data: any) => void) {
+    this.eventSource = new EventSource(`/chat/stream/${streamId}`, {
+      withCredentials: true
+    });
+
+    this.eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      onMessage(data);
+    };
+
+    this.eventSource.onerror = () => {
+      this.eventSource?.close();
+      // 自动重连逻辑
+    };
+  }
+
+  disconnect() {
+    this.eventSource?.close();
+  }
+}
+```
+
+**方案B：fetch + ReadableStream（当前方案，需兼容 zone.js）**
+```typescript
+/**
+ * fetch + ReadableStream 方案
+ * 如果遇到 zone.js 干扰，使用 NgZone.run() 包装回调
+ */
+import { NgZone } from '@angular/core';
+
+// 在 Angular 侧使用
+this.ngZone.run(() => {
+  callback(data);
+});
+```
+
+**SSE 重试机制说明**：
+- 自动重试：网络波动时最多重试 3 次
+- 指数退避：重试间隔 1s, 2s, 4s
+- Token 刷新：检测到 401 时触发 token 更新回调
+
+```typescript
+/**
+ * 鲁棒的 SSE 流处理
+ */
+async function* streamWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries = 3
+): AsyncGenerator<any> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+
+      if (response.status === 401) {
+        // Token 过期，抛出特定错误让上层处理
+        throw new Error('TOKEN_EXPIRED');
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader!.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            yield JSON.parse(line.slice(6));
+          }
+        }
+      }
+      return; // 成功结束
+    } catch (error) {
+      lastError = error as Error;
+
+      if ((error as Error).message === 'TOKEN_EXPIRED') {
+        // 立即抛出，让上层处理 token 刷新
+        throw error;
+      }
+
+      if (attempt < maxRetries - 1) {
+        // 指数退避
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      }
+    }
+  }
+
+  throw lastError;
+}
+```
+
+#### 3.2 创建 API 适配器
 
 **src/services/apiAdapter.ts**:
 ```typescript
@@ -417,7 +540,8 @@ export default ApiAdapter;
 
 **src/App.tsx**:
 ```typescript
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 import { ChatContainer } from './components/Chat';
 import { useChatStore } from './store/chatStore';
 import ApiAdapter from './services/apiAdapter';
@@ -454,23 +578,38 @@ export const AiChatWC: React.FC<AiChatWCProps> = (props) => {
   }
 
   return (
-    <div className="h-full w-full">
+    // 添加 stopPropagation 防止事件穿透到 Angular
+    // 添加 pointer-events 和 focus trap 防止快捷键冲突
+    <div
+      className="ai-chat-wc-root h-full w-full"
+      onKeyDown={(e) => {
+        e.stopPropagation();
+        // 拦截 ESC 等关键快捷键
+        if (['Escape', 'Space', 'Enter'].includes(e.key)) {
+          e.preventDefault();
+        }
+      }}
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
       <ChatContainer apiAdapter={apiAdapter} />
     </div>
   );
 };
 
-// Web Component wrapper
+// Web Component wrapper - 添加 render debounce 避免频繁 rerender
 class AiChatWCElement extends HTMLElement {
   private root: ReactDOM.Root | null = null;
+  private renderTimer: ReturnType<typeof setTimeout> | null = null;
 
   static get observedAttributes() {
     return ['project-id', 'controller-host', 'controller-port', 'controller-auth-token'];
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (oldValue !== newValue && this.root) {
-      this.render();
+    if (oldValue !== newValue) {
+      // 使用 debounce 避免 Angular 频繁触发更新
+      this.scheduleRender();
     }
   }
 
@@ -479,29 +618,45 @@ class AiChatWCElement extends HTMLElement {
   }
 
   disconnectedCallback() {
+    if (this.renderTimer) {
+      clearTimeout(this.renderTimer);
+    }
     this.root?.unmount();
+    this.root = null;
+  }
+
+  /**
+   * 使用 debounce 避免 Angular 模板触发多次 attribute 更新
+   */
+  private scheduleRender() {
+    if (this.renderTimer) {
+      clearTimeout(this.renderTimer);
+    }
+    this.renderTimer = setTimeout(() => {
+      this.render();
+    }, 0);
   }
 
   private render() {
-    import('react-dom').then((ReactDOM) => {
-      const container = this;
-      this.root = ReactDOM.createRoot(container);
+    // 复用已有 root，避免重复创建
+    if (!this.root) {
+      this.root = ReactDOM.createRoot(this);
+    }
 
-      this.root.render(
-        <React.StrictMode>
-          <AiChatWC
-            projectId={this.getAttribute('project-id') || ''}
-            controllerHost={this.getAttribute('controller-host') || 'localhost'}
-            controllerPort={this.getAttribute('controller-port') || '3080'}
-            controllerAuthToken={this.getAttribute('controller-auth-token') || ''}
-          />
-        </React.StrictMode>
-      );
-    });
+    this.root.render(
+      <React.StrictMode>
+        <AiChatWC
+          projectId={this.getAttribute('project-id') || ''}
+          controllerHost={this.getAttribute('controller-host') || 'localhost'}
+          controllerPort={this.getAttribute('controller-port') || '3080'}
+          controllerAuthToken={this.getAttribute('controller-auth-token') || ''}
+        />
+      </React.StrictMode>
+    );
   }
 }
 
-// Register custom element
+// Register custom element - 使用 Light DOM（shadow: false）
 customElements.define('ai-chat-wc', AiChatWCElement);
 
 export default AiChatWCElement;
@@ -581,10 +736,18 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
   }
 
   private loadWebComponent() {
-    // 动态加载 Web Component 脚本
+    // 动态加载 Web Component 脚本（ES Module 需设置 type="module"）
+    const existingScript = document.querySelector('script[src*="ai-chat-wc"]');
+    if (existingScript) {
+      console.log('AI Chat WC already loaded');
+      return;
+    }
+
     const script = document.createElement('script');
+    script.type = 'module';  // 关键：ES Module 必须设置
     script.src = 'assets/ai-chat-wc.es.js';
     script.onload = () => console.log('AI Chat WC loaded');
+    script.onerror = (err) => console.error('Failed to load AI Chat WC:', err);
     document.head.appendChild(script);
   }
 
@@ -734,21 +897,159 @@ wc.addEventListener('session-create', (e: Event) => {
 
 ## ⚠️ 风险与注意事项
 
-### 1. 样式隔离
-- Web Component 使用 Shadow DOM，样式完全隔离
-- 确保 Tailwind 通过 `<slot>` 或 inline styles 正确应用
+### 1. 样式隔离（必须项）
+- **必须使用 `shadow: false`（Light DOM）**，原因：
+  - Tailwind CSS 变量（--primary, --background 等）可直接穿透
+  - 主题色同步无需额外处理
+  - 样式直接复用 Angular 全局 CSS
+  - 浮动面板拖拽、resize 事件处理更简单
+  - DevTools 调试体验更好
 
-### 2. React 版本兼容性
-- 确保 React 17+（支持 JSX transform）
-- Vite 默认使用新版 React
+**实现方式**：
+```typescript
+class AiChatWCElement extends HTMLElement {
+  // 不调用 attachShadow，保持 Light DOM
+  connectedCallback() {
+    this.render();
+  }
+}
+```
 
-### 3. 第三方依赖
-- 避免使用太大 的 npm 包
-- 考虑 tree-shaking 优化
+**⚠️ Angular 全局 CSS 隔离**：
+- 所有 React 组件使用统一的 class 前缀 `.ai-chat-wc-root`
+- 避免 Angular 全局 CSS（如 normalize / reset）污染 React 组件
+- 在 Tailwind 配置中添加 prefix：
 
-### 4. Angular 兼容性
-- Angular 14 需要在 `angular.json` 中配置 CORS（如果需要）
-- 确保 Web Component 脚本正确加载
+```javascript
+// tailwind.config.js
+module.exports = {
+  prefix: 'wc-',  // 所有类名加前缀，如 wc-p-4
+  // ...
+}
+```
+
+### 2. React 与 Angular 事件冲突
+- 聊天框内的操作可能触发 Angular 侧的全局监听器
+- **优化建议**：在最外层添加 stopPropagation：
+```typescript
+<div onKeyDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+  <ChatContainer ... />
+</div>
+```
+
+### 3. Token 同步与 SSE 重连（必须项）
+- Angular 的 token 过期后，SSE 连接需要携带新 token 重连
+- **推荐方案B（主动式）**：Angular 主动 push 新 token
+
+**ApiAdapter 增加更新方法**:
+```typescript
+class ApiAdapter {
+  updateAuthToken(newToken: string) {
+    this.controller.authToken = newToken;
+    // 如果有活跃的 SSE 连接，需要断开重连
+    this.reconnectIfNeeded();
+  }
+
+  private reconnectIfNeeded() {
+    // 实现重连逻辑
+  }
+}
+```
+
+**Web Component 监听属性变化**:
+```typescript
+attributeChangedCallback(name, old, new) {
+  if (name === 'controller-auth-token' && new !== old) {
+    this.apiAdapter?.updateAuthToken(new);
+  }
+}
+```
+
+**Angular 侧**:
+```html
+<ai-chat-wc
+  [attr.controller-auth-token]="currentAuthToken$ | async"
+></ai-chat-wc>
+```
+
+### 4. 构建体积优化
+- ~~必须将 React/ReactDOM 配置为 externals~~
+- **正确方案**：React 应该打包进 Web Component
+- 原因：Web Component 设计哲学是 "self-contained"
+- 大小约 250KB gzip，完全可接受
+
+**正确的 vite.config.ts**:
+```typescript
+export default defineConfig({
+  build: {
+    target: 'es2018',  // 兼容主流浏览器
+    minify: 'esbuild',
+    cssCodeSplit: false,  // CSS 打包进 JS
+    sourcemap: true,
+    // 不要 external React！全部打包进去
+  },
+})
+```
+
+**最终 bundle 结构**:
+```
+ai-chat-wc.es.js
+  ├ React 18
+  ├ ReactDOM 18
+  ├ Zustand
+  └ Chat UI
+```
+
+### 5. 会话管理由 Angular 接管（推荐）
+- 目前 React 侧会自己 createSession、deleteSession、renameSession
+- 建议改为：Angular 负责所有 CRUD 会话操作，React 只负责渲染 + 发送消息 + 接收流
+- 通过属性 + 事件双向通信
+
+**好处**：
+- 统一在 Angular 侧做列表缓存、搜索、最近会话排序等
+- 避免两边状态不一致
+
+**实现方式**：
+```typescript
+// Angular 侧管理会话
+// React 只接收 session-id 属性，通过事件通知消息发送
+
+// Angular → React
+<ai-chat-wc
+  [attr.session-id]="currentSessionId"
+  (message-send)="onMessageSend($event)"
+></ai-chat-wc>
+
+// React → Angular 事件
+this.dispatchEvent(new CustomEvent('message-send', {
+  detail: { message: 'hello' },
+  bubbles: true
+}));
+```
+
+### 6. Angular 14 兼容性
+- Angular 14 需要在对应 Module 添加 `CUSTOM_ELEMENTS_SCHEMA`：
+```typescript
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+@NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] // 必须添加
+})
+export class ProjectMapModule { }
+```
+
+### 7. 静态资源路径
+- 使用 `import.meta.url` 动态获取路径，防止 404
+
+---
+
+## 🔄 联调自测表
+
+完成集成后，请检查：
+
+1. **SSE 连接保持**：切换设备时，SSE 是否会被 Angular 变更检测切断？
+2. **滚动条冲突**：给 `ai-chat-panel` 加 `overscroll-behavior: contain`
+3. **主题色同步**：观察 Web Component 是否能通过 CSS 变量实时变色
 
 ---
 
