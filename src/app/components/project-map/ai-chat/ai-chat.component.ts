@@ -552,8 +552,10 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       this.currentMessages = [...this.currentMessages, this.currentAssistantMessage];
       this.cdr.markForCheck(); // Trigger change detection
     } else {
-      // Append content
+      // Append content - create new array reference to trigger ngOnChanges in child component
       this.currentAssistantMessage.content += event.content || '';
+      // Create new array reference to trigger change detection for auto-scroll
+      this.currentMessages = [...this.currentMessages];
       this.cdr.markForCheck(); // Trigger change detection for streaming updates
     }
   }
