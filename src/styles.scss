@@ -211,3 +211,17 @@ mat-menu-panel {
 .lightTheme .ai-chat-container .session-menu-button:hover .menu-icon {
   fill: rgba(0, 0, 0, 0.87) !important;
 }
+
+/* ============================================================================
+ * Confirmation Dialog - Outer transparent, inner with color
+ * ============================================================================ */
+
+.confirmation-dialog-panel {
+  /* Material Dialog Container - transparent */
+  mat-dialog-container,
+  .mat-dialog-container {
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+}

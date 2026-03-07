@@ -4,12 +4,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { ConfirmationBottomSheetComponent } from '@components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
+import { MatDialog } from '@angular/material/dialog';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
 import { ZIndexService } from '@services/z-index.service';
+import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 /**
  * AI Chat Session List Component
@@ -98,7 +98,7 @@ import { ZIndexService } from '@services/z-index.service';
                 <span>{{ session.pinned ? 'Unpin' : 'Pin' }}</span>
               </button>
               <mat-divider></mat-divider>
-              <button mat-menu-item (click)="deleteSession(session)" class="delete-action">
+              <button mat-menu-item (click)="deleteSession(session, $event)" class="delete-action">
                 <svg class="menu-item-icon delete-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
                   <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                 </svg>
@@ -384,7 +384,7 @@ export class ChatSessionListComponent implements OnInit {
   @Output() sessionUnpinned = new EventEmitter<string>();
 
   constructor(
-    private bottomSheet: MatBottomSheet,
+    private dialog: MatDialog,
     private aiChatService: AiChatService,
     private zIndexService: ZIndexService
   ) {}
@@ -488,16 +488,64 @@ export class ChatSessionListComponent implements OnInit {
   /**
    * Delete session with confirmation dialog
    * @param session Session
+   * @param event MouseEvent to calculate dialog position
    */
-  deleteSession(session: ChatSession): void {
+  deleteSession(session: ChatSession, event?: MouseEvent): void {
     const message = `Are you sure you want to delete "${session.title || 'New chat'}"?`;
-    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+
+    // Calculate dialog position centered on click
+    let position: { top?: string; left?: string; right?: string; bottom?: string } = {};
+
+    if (event) {
+      // Get click coordinates
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+
+      // Dialog dimensions (estimated)
+      const dialogWidth = 360;
+      const dialogHeight = 180;
+
+      // Calculate centered position
+      let left = clickX - dialogWidth / 2;
+      let top = clickY - dialogHeight / 2;
+
+      // Get viewport dimensions
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Ensure dialog doesn't go off-screen horizontally
+      if (left < 10) {
+        left = 10;
+      }
+      if (left + dialogWidth > viewportWidth - 10) {
+        left = viewportWidth - dialogWidth - 10;
+      }
+
+      // Ensure dialog doesn't go off-screen vertically
+      if (top < 10) {
+        top = 10;
+      }
+      if (top + dialogHeight > viewportHeight - 10) {
+        top = viewportHeight - dialogHeight - 10;
+      }
+
+      position = {
+        top: `${top}px`,
+        left: `${left}px`
+      };
+    }
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: { message },
-      panelClass: 'ai-chat-bottom-sheet',
-      hasBackdrop: false  // Disable backdrop to avoid z-index issues
+      width: '360px',
+      position,
+      autoFocus: false,
+      restoreFocus: false,
+      backdropClass: 'delete-dialog-backdrop',
+      panelClass: 'confirmation-dialog-panel'
     });
 
-    bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
+    dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.delete(session);
       }

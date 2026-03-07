@@ -112,6 +112,7 @@
 
 每个目录的详细代码审查文档已生成：
 
+### 目录级代码审查
 - **[Services 目录文档](src/app/services/CODE_REVIEW.md)** - 业务逻辑服务分析
 - **[Models 目录文档](src/app/models/CODE_REVIEW.md)** - 数据模型分析
 - **[Components 目录文档](src/app/components/CODE_REVIEW.md)** - UI 组件分析
@@ -120,6 +121,19 @@
 - **[Guards 目录文档](src/app/guards/CODE_REVIEW.md)** - 路由守卫分析
 - **[Interceptors 目录文档](src/app/interceptors/CODE_REVIEW.md)** - HTTP 拦截器分析
 - **[Stores 目录文档](src/app/stores/CODE_REVIEW.md)** - 状态管理分析
+
+### 组件详细文档
+- **[Confirmation Dialog 组件](components/confirmation-dialog-component.md)** - 可复用确认对话框组件文档
+
+### 组件审查文档
+- **[Login 组件](components/login-review.md)** - 登录页面组件
+- **[User Management 组件](components/user-management-review.md)** - 用户管理
+- **[Projects 组件](components/projects-review.md)** - 项目管理
+- **[Project Map 组件](components/project-map-review.md)** - 项目地图
+- **[Group Management 组件](components/group-management-review.md)** - 分组管理
+- **[Role Management 组件](components/role-management-review.md)** - 角色管理
+- **[Template 组件](components/template-review.md)** - 模板管理
+- **[Other Components](components/other-components-review.md)** - 其他组件
 
 ---
 
