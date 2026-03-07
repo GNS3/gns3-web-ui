@@ -279,7 +279,6 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { VpcsService } from '@services/vpcs.service';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
-import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from '@components/login/login.component';
 import { LoginService } from '@services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
@@ -308,6 +307,7 @@ import { DeleteRoleDialogComponent } from '@components/role-management/delete-ro
 import { RoleDetailComponent } from '@components/role-management/role-detail/role-detail.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatAutocompleteModule} from "@angular/material/autocomplete";;
+import { MarkdownModule } from 'ngx-markdown';
 import { AddRoleToGroupComponent } from '@components/group-details/add-role-to-group/add-role-to-group.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
@@ -526,7 +526,6 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         ChangeHostnameDialogComponent,
         ApplianceInfoDialogComponent,
         ReadmeEditorComponent,
-        MarkedDirective,
         InformationDialogComponent,
         QuestionDialogComponent,
         TemplateNameDialogComponent,
@@ -616,6 +615,7 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         MatAutocompleteModule,
         CdkAccordionModule,
         CdkTreeModule,
+        MarkdownModule.forRoot(),
     ],
     providers: [
         SettingsService,

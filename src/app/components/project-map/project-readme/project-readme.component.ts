@@ -3,7 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { ProjectService } from '@services/project.service';
-import { marked } from 'marked';
+import { MarkdownService } from 'ngx-markdown';
 import { ElementRef } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { ViewChild } from '@angular/core';
@@ -22,7 +22,8 @@ export class ProjectReadmeComponent implements AfterViewInit {
     public dialogRef: MatDialogRef<ProjectReadmeComponent>,
     private projectService: ProjectService,
     private elementRef: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private markdownService: MarkdownService
   ) {}
 
   ngAfterViewInit() {
@@ -31,9 +32,9 @@ export class ProjectReadmeComponent implements AfterViewInit {
     this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe(file => {
         if (file) {
             markdown = file;
-            setTimeout(function(){
-                const markdownHtml = marked(markdown);
-                document.getElementById('text').innerHTML = markdownHtml;
+            setTimeout(() => {
+                const markdownHtml = this.markdownService.parse(markdown);
+                document.getElementById('text')!.innerHTML = markdownHtml;
             }, 1000);
         }
     });

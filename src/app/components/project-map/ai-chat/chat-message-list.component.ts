@@ -5,7 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { DraggableToolDialogComponent } from './draggable-tool-dialog.component';
-import { marked } from 'marked';
+import { MarkdownService } from 'ngx-markdown';
 
 /**
  * AI Chat Message List Component
@@ -14,7 +14,7 @@ import { marked } from 'marked';
  */
 @Component({
   selector: 'app-chat-message-list',
-  styleUrls: ['./chat-message-list.component.scss', './_markdown-content.scss'],
+  styleUrls: ['./chat-message-list.component.scss'],
   template: `
     <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll">
       <div class="messages-container">
@@ -26,7 +26,7 @@ import { marked } from 'marked';
             </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
-                <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>
+                <div class="message-text markdown-body" [innerHTML]="formatMessage(message.content)"></div>
               </div>
               <div class="message-time">{{ formatTime(message.created_at) }}</div>
             </div>
@@ -39,7 +39,7 @@ import { marked } from 'marked';
             </div>
             <div class="message-content assistant-content">
               <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
-                <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>
+                <div class="message-text markdown-body" [innerHTML]="formatMessage(message.content)"></div>
                 <mat-spinner *ngIf="isStreaming && message === lastAssistantMessage" diameter="16" class="streaming-indicator"></mat-spinner>
               </div>
 
@@ -170,6 +170,8 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
+  constructor(private markdownService: MarkdownService) {}
+
   // Tool result expand/collapse state
   private expandedToolResults = new Set<string>();
 
@@ -224,8 +226,8 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
     }
 
     try {
-      // Use marked library for full markdown support
-      const html = marked.parse(content, { async: false }) as string;
+      // Use ngx-markdown service for full markdown support
+      const html = this.markdownService.parse(content);
       return html;
     } catch (e) {
       // Fallback to simple rendering if marked fails
