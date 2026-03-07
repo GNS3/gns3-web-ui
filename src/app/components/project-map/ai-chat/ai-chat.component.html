@@ -23,8 +23,18 @@
             title="Click to toggle sidebar">
           <span class="ai-logo">AI</span>
           <span class="sidebar-text" *ngIf="!sidebarCollapsed">Assistant</span>
-          <mat-icon class="toggle-icon" *ngIf="!sidebarCollapsed">chevron_left</mat-icon>
         </h3>
+      </div>
+
+      <!-- New chat button for collapsed state -->
+      <div class="sidebar-content" *ngIf="sidebarCollapsed">
+        <button class="collapsed-new-chat-btn"
+                mat-icon-button
+                (click)="onSessionCreated()"
+                matTooltip="New chat"
+                matTooltipPosition="right">
+          <mat-icon>add</mat-icon>
+        </button>
       </div>
 
       <div class="sidebar-content" *ngIf="!sidebarCollapsed">
