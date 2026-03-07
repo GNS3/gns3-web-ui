@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
@@ -11,6 +11,7 @@ import { ChatMessage, ChatSession, ChatEvent, ToolCall } from '@models/ai-chat.i
 import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
+import { ZIndexService } from '@services/z-index.service';
 
 /**
  * AI Chat Main Component
@@ -36,6 +37,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   isLightThemeEnabled = false;
   isMaximized = false;
   isMinimized = false;
+
+  // Z-index management
+  currentZIndex = 1000;
 
   // Position and size state
   public style: object = {};
@@ -63,8 +67,12 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     private controllerService: ControllerService,
     private aiChatStore: AiChatStore,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private zIndexService: ZIndexService
+  ) {
+    // Initialize with current z-index from service
+    this.currentZIndex = this.zIndexService.getCurrentZIndex();
+  }
 
   /**
    * Logger method - disabled in production
@@ -102,6 +110,19 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.destroy$.complete();
     this.cleanup();
   }
+
+  /**
+   * Bring window to front when clicked
+   */
+  @HostListener('click')
+  bringToFront(): void {
+    // Get next z-index from service and apply to this window
+    this.currentZIndex = this.zIndexService.getNextZIndex();
+  }
+
+  /**
+   * Initialize chat
+   */
 
   /**
    * Initialize chat
@@ -195,6 +216,41 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     ).subscribe(streaming => {
       this.isStreaming = streaming;
       this.cdr.markForCheck(); // Trigger change detection
+    });
+
+    // Subscribe to panel state changes
+    this.aiChatStore.getPanelState().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(panelState => {
+      const wasMinimized = this.isMinimized;
+      const wasMaximized = this.isMaximized;
+      this.isMinimized = panelState.isMinimized;
+      this.isMaximized = panelState.isMaximized;
+
+      // If was minimized and now is not minimized, restore the chat
+      if (wasMinimized && !panelState.isMinimized) {
+        console.log('[AI Chat] Restoring from minimized state');
+        // Restore previous style
+        if (Object.keys(this.previousStyle).length > 0) {
+          this.style = { ...this.previousStyle };
+        }
+        this.cdr.markForCheck();
+      }
+      // If was not minimized and now is minimized, apply minimized style
+      else if (!wasMinimized && panelState.isMinimized) {
+        console.log('[AI Chat] Entering minimized state');
+        // Save current style before minimizing
+        this.previousStyle = { ...this.style };
+        // Apply minimized style (move off-screen)
+        this.style = {
+          position: 'fixed',
+          left: '-9999px',
+          top: '-9999px',
+          width: '0px',
+          height: '0px',
+        };
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -599,6 +655,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Minimize chat
+   * Note: Actual minimization is handled by panel state subscription
    */
   minimizeChat(): void {
     if (this.isMinimized) {
@@ -606,27 +663,21 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    // Save current state
+    // Save current state before minimizing
     this.previousStyle = { ...this.style };
 
-    this.isMinimized = true;
+    // Update store state - subscription will handle the actual minimization
     this.isMaximized = false;
     this.aiChatStore.minimizePanel();
-    this.applyMinimizedStyle();
   }
 
   /**
    * Restore chat
+   * Note: Actual restoration is handled by panel state subscription
    */
   restoreChat(): void {
-    this.isMaximized = false;
-    this.isMinimized = false;
+    // Update store state - subscription will handle the actual restoration
     this.aiChatStore.restorePanel();
-
-    // Restore previous style
-    if (Object.keys(this.previousStyle).length > 0) {
-      this.style = { ...this.previousStyle };
-    }
   }
 
   /**
@@ -645,19 +696,16 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Apply minimized style
+   * Hide the window completely when minimized (use sidebar AI button instead)
    */
   private applyMinimizedStyle(): void {
-    // Save current state before minimizing
-    if (!this.isMinimized && !Object.keys(this.previousStyle).length) {
-      this.previousStyle = { ...this.style };
-    }
-
+    // Move window off-screen to hide it completely
     this.style = {
       position: 'fixed',
-      bottom: '20px',
-      left: '20px',
-      width: '60px',
-      height: '60px',
+      left: '-9999px',
+      top: '-9999px',
+      width: '0px',
+      height: '0px',
     };
   }
 

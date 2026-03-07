@@ -111,9 +111,12 @@
   matTooltipPosition="left"
   mat-icon-button
   class="menu-button ai-chat-button"
+  [class.ai-active]="isAIChatOpen && !isAIMinimized"
+  [class.ai-minimized]="isAIChatOpen && isAIMinimized"
   (click)="openAIChat()"
 >
   <span class="ai-icon">AI</span>
+  <span *ngIf="isAIChatOpen && isAIMinimized" class="ai-minimize-indicator"></span>
 </button>
 <app-drawing-added
   [controller]="controller"

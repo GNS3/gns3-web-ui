@@ -500,6 +500,10 @@ export class AiChatStore {
       const saved = localStorage.getItem('ai-chat-panel-state');
       if (saved) {
         const state: ChatPanelState = JSON.parse(saved);
+        // Reset isOpen to false on page load since the panel is not actually visible
+        state.isOpen = false;
+        state.isMaximized = false;
+        state.isMinimized = false;
         this.panelState$.next(state);
       }
     } catch (e) {

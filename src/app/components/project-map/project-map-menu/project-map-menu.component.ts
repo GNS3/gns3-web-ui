@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NodeService } from '@services/node.service';
 import { select } from 'd3-selection';
@@ -19,6 +19,7 @@ import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/scre
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { AiChatStore } from '../../../stores/ai-chat.store';
 @Component({
   selector: 'app-project-map-menu',
   templateUrl: './project-map-menu.component.html',
@@ -42,7 +43,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   };
   public isLocked: boolean = false;
   public isLightThemeEnabled: boolean = false;
+  public isAIChatOpen: boolean = false;
+  public isAIMinimized: boolean = false;
   private projectSubscription: Subscription;
+  private aiChatStateSubscription: Subscription;
   constructor(
     private toolsService: ToolsService,
     private mapSettingsService: MapSettingsService,
@@ -54,6 +58,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     private nodeService : NodeService,
     private nodesDataSource: NodesDataSource,
     private drawingsDataSource: DrawingsDataSource,
+    private aiChatStore: AiChatStore,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -66,6 +72,16 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       }
     });
     this.getAllNodesAndDrawingStatus();
+
+    // Subscribe to AI Chat panel state
+    this.aiChatStateSubscription = this.aiChatStore.getPanelState().subscribe(panelState => {
+      this.isAIChatOpen = panelState.isOpen;
+      this.isAIMinimized = panelState.isMinimized;
+      console.log('[Project Map Menu] Panel state updated:', panelState);
+      console.log('[Project Map Menu] isAIChatOpen:', this.isAIChatOpen, 'isAIMinimized:', this.isAIMinimized);
+      // Trigger change detection for OnPush strategy
+      this.cdr.markForCheck();
+    });
   }
 
   getCssClassForIcon(type: string) {
@@ -277,6 +293,9 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // this.projectSubscription.unsubscribe();
+    if (this.aiChatStateSubscription) {
+      this.aiChatStateSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -284,16 +303,29 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
    */
   public openAIChat() {
     console.log('[AI Chat] Button clicked');
-    console.log('[AI Chat] Project:', this.project);
-    console.log('[AI Chat] Controller:', this.controller);
+    console.log('[AI Chat] isAIChatOpen:', this.isAIChatOpen);
+    console.log('[AI Chat] isAIMinimized:', this.isAIMinimized);
 
     if (!this.project || !this.controller) {
       console.warn('[AI Chat] Cannot open: project or controller not available');
       return;
     }
 
-    console.log('[AI Chat] Emitting aiChatOpened event');
-    this.aiChatOpened.emit();
-    console.log('[AI Chat] Event emitted');
+    const panelState = this.aiChatStore.getPanelStateValue();
+    console.log('[AI Chat] Panel state:', panelState);
+
+    if (!this.isAIChatOpen) {
+      // First click: open the panel (emit event to parent)
+      console.log('[AI Chat] Opening panel - emitting event');
+      this.aiChatOpened.emit();
+    } else if (this.isAIMinimized) {
+      // Panel is minimized: restore it
+      console.log('[AI Chat] Restoring panel');
+      this.aiChatStore.restorePanel();
+    } else {
+      // Panel is open: minimize it
+      console.log('[AI Chat] Minimizing panel');
+      this.aiChatStore.minimizePanel();
+    }
   }
 }

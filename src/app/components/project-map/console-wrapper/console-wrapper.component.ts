@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
@@ -7,6 +7,7 @@ import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
+import { ZIndexService } from '@services/z-index.service';
 
 @Component({
   selector: 'app-console-wrapper',
@@ -27,14 +28,30 @@ export class ConsoleWrapperComponent implements OnInit {
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
 
+  // Z-index management
+  currentZIndex = 1000;
+
   public resizedWidth: number = 720;
   public resizedHeight: number = 480;
 
   constructor(
     private consoleService: NodeConsoleService,
     private themeService: ThemeService,
-    private mapSettingsService: MapSettingsService
-  ) {}
+    private mapSettingsService: MapSettingsService,
+    private zIndexService: ZIndexService
+  ) {
+    // Initialize with current z-index from service
+    this.currentZIndex = this.zIndexService.getCurrentZIndex();
+  }
+
+  /**
+   * Bring window to front when clicked
+   */
+  @HostListener('click')
+  bringToFront(): void {
+    // Get next z-index from service and apply to this window
+    this.currentZIndex = this.zIndexService.getNextZIndex();
+  }
 
   nodes: Node[] = [];
   selected = new UntypedFormControl(0);

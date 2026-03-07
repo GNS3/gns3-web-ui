@@ -92,6 +92,7 @@ import { NewTemplateDialogComponent } from './new-template-dialog/new-template-d
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
 import { AiChatComponent } from './ai-chat/ai-chat.component';
+import { AiChatStore } from '../../stores/ai-chat.store';
 
 @Component({
   selector: 'app-project-map',
@@ -190,6 +191,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
     private cd: ChangeDetectorRef,
+    private aiChatStore: AiChatStore,
     // private cfr: ComponentFactoryResolver,
     // private injector: Injector,
     private viewContainerRef: ViewContainerRef
@@ -854,6 +856,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public onAIChatOpened() {
     console.log('[Project Map] AI Chat opened event received');
+
+    // Open panel in store to update state
+    this.aiChatStore.openPanel();
 
     // If AI Chat is already visible, restore it if minimized
     if (this.isAIChatVisible && this.aiChatComponent) {

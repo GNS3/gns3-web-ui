@@ -1,15 +1,17 @@
-<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
+<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" [style.z-index]="currentZIndex + 1" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 
 <!-- AI Chat Container -->
-<div class="ai-chat-container" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
+<div class="ai-chat-container" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style" [style.z-index]="currentZIndex"
   mwlResizable [validateResize]="validate"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 
-  <!-- Minimized state -->
+  <!-- Minimized state - disabled, now using sidebar AI button instead -->
+  <!--
   <div class="minimized-bar" *ngIf="isMinimized" (click)="restoreChat()" title="Click to restore AI Assistant">
     <mat-icon class="minimized-icon">chat_bubble_outline</mat-icon>
   </div>
+  -->
 
   <!-- Normal/Maximized state -->
   <ng-container *ngIf="!isMinimized">

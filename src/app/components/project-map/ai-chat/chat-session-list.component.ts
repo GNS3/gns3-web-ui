@@ -83,7 +83,7 @@ import { AiChatService } from '@services/ai-chat.service';
             </button>
 
             <!-- Session menu -->
-            <mat-menu #sessionMenu="matMenu" xPosition="before">
+            <mat-menu #sessionMenu="matMenu" xPosition="before" panelClass="session-action-menu">
               <button mat-menu-item (click)="renameSession(session)">
                 <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
                   <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
@@ -313,6 +313,41 @@ import { AiChatService } from '@services/ai-chat.service';
 
     .delete-action {
       color: var(--mat-app-error);
+    }
+
+    /* Session menu panel - flexible height */
+    ::ng-deep .mat-menu-panel.session-action-menu {
+      min-height: auto !important;
+      max-height: none !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    ::ng-deep .session-action-menu .mat-mdc-menu-content {
+      padding: 4px 0;
+      max-height: none !important;
+    }
+
+    ::ng-deep .session-action-menu .mat-mdc-menu-item {
+      height: 40px;
+      min-height: 40px;
+      padding: 0 12px;
+    }
+
+    ::ng-deep .session-action-menu .mat-mdc-menu-item .mdc-list-item__primary-text {
+      font-size: 14px;
+    }
+
+    /* Menu item icons */
+    ::ng-deep .session-action-menu .menu-item-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+
+    ::ng-deep .session-action-menu .delete-icon {
+      fill: var(--mat-app-error);
     }
 
     /* Scrollbar styles */
