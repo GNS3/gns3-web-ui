@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,6 +15,7 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
 @Component({
   selector: 'app-chat-message-list',
   styleUrls: ['./chat-message-list.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll">
       <div class="messages-container">

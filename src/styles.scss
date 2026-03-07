@@ -1,5 +1,19 @@
 /* GitHub Markdown styles - removed */
 
+/* Global markdown list fix */
+app-chat-message-list markdown p,
+app-chat-message-list markdown ul,
+app-chat-message-list markdown ol,
+app-chat-message-list markdown li {
+  margin-top: 0.1em !important;
+  margin-bottom: 0.1em !important;
+  line-height: 1.2 !important;
+}
+
+app-chat-message-list markdown li p {
+  margin: 0 !important;
+}
+
 body {
   background-color: #e8ecef;
 }

@@ -584,3 +584,24 @@
 .auto-scroll {
   scroll-behavior: smooth;
 }
+
+/* Fix: Tailwind Typography prose list spacing */
+markdown p {
+  margin-top: 0.25em !important;
+  margin-bottom: 0.25em !important;
+}
+
+markdown ul,
+markdown ol {
+  margin-top: 0.25em !important;
+  margin-bottom: 0.25em !important;
+}
+
+markdown li {
+  margin-top: 0.1em !important;
+  margin-bottom: 0.1em !important;
+}
+
+markdown li p {
+  margin: 0 !important;
+}
