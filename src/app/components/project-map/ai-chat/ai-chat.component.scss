@@ -8,25 +8,28 @@
   --ai-chat-icon-size: 20px;
   --ai-chat-minimized-size: 56px;
 
-  // Colors - Dark theme
+  // Colors - Dark theme (GNS3 themed)
   --ai-chat-bg-dark: #263238;
   --ai-chat-bg-sidebar: #20313b;
   --ai-chat-bg-sidebar-gradient: #1a252c;
   --ai-chat-bg-header: #20313b;
   --ai-chat-bg-header-gradient: #1e2a32;
 
-  // Borders
-  --ai-chat-border-color: rgba(255, 255, 255, 0.1);
+  // Borders - GNS3 cyan theme
+  --ai-chat-border-color: rgba(0, 151, 167, 0.3);
+  --ai-chat-border-focus: rgba(0, 151, 167, 0.6);
 
-  // Shadows
-  --ai-chat-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --ai-chat-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --ai-chat-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
+  // Shadows - Enhanced
+  --ai-chat-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --ai-chat-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+  --ai-chat-shadow-lg: 0 15px 50px rgba(0, 0, 0, 0.5);
+  --ai-chat-shadow-glow: 0 0 20px rgba(0, 151, 167, 0.3);
 
-  // Brand colors
-  --ai-chat-primary-color: #10a37f;
-  --ai-chat-primary-dark: #1a7f64;
-  --ai-chat-accent-color: #7c4dff;
+  // Brand colors - GNS3 cyan
+  --ai-chat-primary-color: #0097a7;
+  --ai-chat-primary-dark: #00838f;
+  --ai-chat-primary-light: #26c6da;
+  --ai-chat-accent-color: #00bcd4;
 
   // Text colors
   --ai-chat-text-primary: rgba(255, 255, 255, 1);
@@ -43,11 +46,11 @@
   --ai-chat-z-overlay: 1001;
   --ai-chat-z-container: 1000;
   --ai-chat-z-sidebar: 100;
-  --ai-chat-z-menu: 1001; // Menu should be above container
+  --ai-chat-z-menu: 1001;
 }
 
 .ai-chat-container {
-  box-shadow: var(--ai-chat-shadow-lg);
+  box-shadow: var(--ai-chat-shadow-lg), var(--ai-chat-shadow-glow);
   position: fixed;
   background-color: var(--ai-chat-bg-dark);
   border-radius: 12px;
@@ -57,8 +60,9 @@
   color: var(--ai-chat-text-primary);
   border: 1px solid var(--ai-chat-border-color);
   backdrop-filter: blur(10px);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 
-  // ChatGPT-style gradient border effect
+  // GNS3 cyan gradient border effect
   &::before {
     content: '';
     position: absolute;
@@ -68,19 +72,26 @@
     bottom: 0;
     border-radius: 12px;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(103, 58, 183, 0.3), rgba(63, 81, 181, 0.3));
+    background: linear-gradient(135deg, rgba(0, 151, 167, 0.4), rgba(0, 188, 212, 0.2), rgba(0, 151, 167, 0.4));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  // Enhanced hover effect
+  &:hover::before {
+    opacity: 1;
   }
 
   // Minimized state override - make it perfectly circular and clean
   &.minimized {
     border-radius: 50%;
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 151, 167, 0.4);
     backdrop-filter: none;
 
     &::before {
@@ -164,22 +175,47 @@
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
-  // ChatGPT-style gradient
+  // GNS3 cyan gradient with glow
   background: linear-gradient(135deg, var(--ai-chat-primary-color), var(--ai-chat-primary-dark));
-  color: var(--ai-chat-text-primary);
+  color: white;
   padding: 6px 10px;
   border-radius: 6px;
-  transition: transform var(--ai-chat-transition-fast), box-shadow var(--ai-chat-transition-fast);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  // Subtle shine effect
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
 }
 
 .sidebar-title.clickable:hover .ai-logo {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(16, 163, 127, 0.4);
+  transform: scale(1.08);
+  box-shadow: 0 4px 15px rgba(0, 151, 167, 0.5);
+
+  &::after {
+    transform: translateX(100%);
+  }
 }
 
 .sidebar-title.clickable:active .ai-logo {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 .sidebar-content {
@@ -205,9 +241,24 @@
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
-
-  // ChatGPT-style subtle glow
   box-shadow: var(--ai-chat-shadow-sm);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+
+  // Subtle top glow effect
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0, 151, 167, 0.3) 50%,
+      transparent 100%
+    );
+  }
 }
 
 .chat-header:active {
@@ -307,7 +358,7 @@
   // Icon button color and sizing
   .mat-icon-button {
     color: var(--ai-chat-text-primary);
-    transition: all var(--ai-chat-transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: var(--ai-chat-button-size);
     height: var(--ai-chat-button-size);
     min-width: var(--ai-chat-button-size);
@@ -316,34 +367,132 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+
+    // Ripple effect enhancement
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(0, 151, 167, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease;
+    }
   }
 
   // Header icon SVG styling (dark theme - white icons)
   .header-icon {
     fill: var(--ai-chat-text-primary);
-    transition: all var(--ai-chat-transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: var(--ai-chat-icon-size);
     height: var(--ai-chat-icon-size);
+    position: relative;
+    z-index: 1;
   }
 
-  // Hover effect for header buttons
+  // Enhanced hover effect for header buttons
   .mat-icon-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 151, 167, 0.15);
     border-radius: 50%;
+    transform: scale(1.1);
+
+    &::before {
+      width: 100%;
+      height: 100%;
+    }
 
     .header-icon {
-      fill: var(--ai-chat-text-primary);
-      transform: scale(1.1);
+      fill: var(--ai-chat-primary-light);
+      filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.6));
     }
   }
 
-  // Close button hover effect (red tint)
+  .mat-icon-button:active {
+    transform: scale(0.95);
+  }
+
+  // Close button hover effect (red tint with cyan glow)
   .close-button:hover {
     background-color: rgba(244, 67, 54, 0.2);
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
 
     .header-icon {
       fill: #ff8a80;
     }
+  }
+}
+
+// Chat input focus effects
+.chat-input {
+  border-top: 1px solid var(--ai-chat-border-color);
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.3s ease;
+
+  &:focus-within {
+    border-top-color: var(--ai-chat-border-focus);
+    box-shadow: 0 -2px 10px rgba(0, 151, 167, 0.2);
+  }
+}
+
+// Minimized state - floating circular button with GNS3 cyan glow
+.minimized-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #263238, #20313b);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 151, 167, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: bounceIn 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
+
+  // Pulsing glow effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 151, 167, 0.3) 0%, transparent 70%);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 151, 167, 0.5);
+
+    &::before {
+      background: radial-gradient(circle, rgba(0, 151, 167, 0.5) 0%, transparent 70%);
+    }
+  }
+
+  &:active {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
   }
 }
 
@@ -365,32 +514,6 @@
   }
 }
 
-// Minimized state - floating circular button with GNS3 dark theme style
-.minimized-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  user-select: none;
-  border-radius: 50%;
-  // GNS3 dark theme background
-  background-color: #263238;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: bounceIn 0.3s ease-out;
-
-  &:hover {
-    transform: scale(1.2);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
 @keyframes bounceIn {
   0% {
     transform: scale(0);
@@ -398,6 +521,7 @@
   }
   50% {
     transform: scale(1.1);
+    opacity: 1;
   }
   100% {
     transform: scale(1);
@@ -409,8 +533,9 @@
   font-size: 28px;
   width: 28px;
   height: 28px;
-  // Light color icon for dark background
   color: #b0bec5;
+  position: relative;
+  z-index: 1;
 }
 
 // Light theme - maximized and minimized states
@@ -420,13 +545,21 @@
   }
 }
 
-// Light theme styles for minimized button
+// Light theme styles for minimized button with cyan glow
 .lightTheme .minimized-bar {
-  background-color: #f5f5f5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 151, 167, 0.3);
+
+  &::before {
+    background: radial-gradient(circle, rgba(0, 151, 167, 0.3) 0%, transparent 70%);
+  }
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 151, 167, 0.5);
+
+    &::before {
+      background: radial-gradient(circle, rgba(0, 151, 167, 0.5) 0%, transparent 70%);
+    }
   }
 }
 
