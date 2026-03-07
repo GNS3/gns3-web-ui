@@ -13,7 +13,7 @@
   background-color: transparent !important;
 }
 
-/* Headers */
+/* Headers color */
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
@@ -40,7 +40,7 @@
   color: var(--mat-app-primary, #0969da) !important;
 }
 
-/* Dark theme overrides - directly set color property */
+/* Dark theme overrides */
 app-root.dark-theme .markdown-body {
   color: #e6edf3 !important;
   --color-fg-default: #e6edf3 !important;
