@@ -136,6 +136,8 @@
   border-bottom: 1px solid var(--ai-chat-border-color);
   cursor: grab;
   user-select: none;
+  min-height: 48px;
+  box-sizing: border-box;
 }
 
 .sidebar-header:active {
@@ -235,7 +237,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--ai-chat-spacing-md) var(--ai-chat-spacing-lg);
+  padding: var(--ai-chat-spacing-md);
   border-bottom: 1px solid var(--ai-chat-border-color);
   background: linear-gradient(180deg, var(--ai-chat-bg-header) 0%, var(--ai-chat-bg-header-gradient) 100%);
   flex-shrink: 0;
@@ -244,6 +246,8 @@
   box-shadow: var(--ai-chat-shadow-sm);
   transition: background 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  min-height: 48px;
+  box-sizing: border-box;
 
   // Subtle top glow effect
   &::after {
