@@ -171,7 +171,15 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private sanitizer: DomSanitizer) {
+    // Configure marked for better chat experience
+    marked.setOptions({
+      gfm: true,         // GitHub Flavored Markdown (tables, strikethrough, etc.)
+      breaks: true,      // Enable single newline to <br> (important for chat)
+      pedantic: false,   // Don't be strict about markdown rules
+      smartLists: true,  // Use smarter list behavior
+    });
+  }
 
   // Tool result expand/collapse state
   private expandedToolResults = new Set<string>();
