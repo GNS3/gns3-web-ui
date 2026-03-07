@@ -204,7 +204,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       takeUntil(this.destroy$)
     ).subscribe(sessionId => {
       this.currentSessionId = sessionId;
-      if (sessionId) {
+      // Only load session messages if not currently streaming
+      // This prevents clearing the current conversation while streaming is active
+      if (sessionId && !this.isStreaming) {
         this.loadSessionMessages(sessionId);
       }
       this.cdr.markForCheck(); // Trigger change detection
@@ -450,14 +452,37 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Add to message list
     const updatedMessages = [...this.currentMessages, userMessage];
     this.currentMessages = updatedMessages;
-    this.aiChatStore.addMessage(
-      this.currentSessionId || 'temp',
-      userMessage
-    );
+
+    // Generate or use existing session_id
+    // If this is the first message in a new session, generate a UUID
+    let sessionId = this.currentSessionId || this.aiChatService.getCurrentSessionId();
+
+    if (!sessionId) {
+      // Generate new session_id for new conversation
+      sessionId = this.generateUUID();
+      this.log('Generated new session_id:', sessionId);
+
+      // Set streaming state BEFORE updating session_id
+      // This prevents the subscriber from loading session history
+      this.isStreaming = true;
+      this.aiChatStore.setStreamingState(true);
+
+      // Update store to track this session
+      this.aiChatStore.setCurrentSessionId(sessionId);
+    } else {
+      // For existing sessions, also set streaming state early
+      this.isStreaming = true;
+      this.aiChatStore.setStreamingState(true);
+    }
+
+    // Save user message to store with the session_id
+    this.aiChatStore.addMessage(sessionId, userMessage);
+
     this.cdr.markForCheck(); // Trigger change detection
 
-    // Start streaming chat
-    this.startChatStream(message, this.currentSessionId || undefined);
+    // Start streaming chat with the session_id
+    this.log('Sending message with session_id:', sessionId);
+    this.startChatStream(message, sessionId);
   }
 
   /**
@@ -469,6 +494,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.controller) {
       return;
     }
+
+    // Reset current assistant message to avoid appending to previous message
+    this.currentAssistantMessage = null;
 
     // Get fresh controller from localStorage to ensure we have the latest authToken
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
@@ -530,7 +558,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         this.showError(event.error || 'An error occurred');
         break;
       case 'done':
-        // Stream ended, reload sessions list
+        // Stream ended, reload sessions list to update session metadata
+        // Note: Don't update currentSessionId here to avoid triggering loadSessionMessages
+        // The service layer already manages session_id internally
         this.loadSessions();
         break;
     }
@@ -829,6 +859,18 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    */
   private generateMessageId(): string {
     return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Generate UUID v4
+   * @returns UUID string
+   */
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
   /**
