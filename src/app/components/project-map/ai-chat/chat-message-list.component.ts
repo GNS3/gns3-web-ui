@@ -1,12 +1,11 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { DraggableToolDialogComponent } from './draggable-tool-dialog.component';
-import { marked } from 'marked';
 
 /**
  * AI Chat Message List Component
@@ -27,7 +26,7 @@ import { marked } from 'marked';
             </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
-                <div class="message-text markdown-body" [innerHTML]="formatMessage(message.content)"></div>
+                <markdown class="message-text markdown-body" [data]="message.content"></markdown>
               </div>
               <div class="message-time">{{ formatTime(message.created_at) }}</div>
             </div>
@@ -40,7 +39,7 @@ import { marked } from 'marked';
             </div>
             <div class="message-content assistant-content">
               <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
-                <div class="message-text markdown-body" [innerHTML]="formatMessage(message.content)"></div>
+                <markdown class="message-text markdown-body" [data]="message.content"></markdown>
                 <mat-spinner *ngIf="isStreaming && message === lastAssistantMessage" diameter="16" class="streaming-indicator"></mat-spinner>
               </div>
 
@@ -99,7 +98,7 @@ import { marked } from 'marked';
           <!-- System message -->
           <div class="message system-message" *ngIf="message.role === 'system'">
             <div class="message-bubble system-bubble">
-              <div class="message-text" [innerHTML]="formatMessage(message.content)"></div>
+              <markdown class="message-text" [data]="message.content"></markdown>
             </div>
           </div>
 
@@ -171,16 +170,6 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
-  constructor(private sanitizer: DomSanitizer) {
-    // Configure marked for better chat experience
-    marked.setOptions({
-      gfm: true,         // GitHub Flavored Markdown (tables, strikethrough, etc.)
-      breaks: true,      // Enable single newline to <br> (important for chat)
-      pedantic: false,   // Don't be strict about markdown rules
-      smartLists: true,  // Use smarter list behavior
-    });
-  }
-
   // Tool result expand/collapse state
   private expandedToolResults = new Set<string>();
 
@@ -225,32 +214,11 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   }
 
   /**
-   * Format message content (supports simple Markdown)
-   * @param content Message content
-   * @returns Formatted HTML
-   */
-  formatMessage(content: string): SafeHtml | string {
-    if (!content) {
-      return '';
-    }
-
-    try {
-      // Use marked directly to avoid ngx-markdown's internal sanitization
-      const html = marked(content) as string;
-      // Bypass security to allow markdown rendering (content is trusted from backend)
-      return this.sanitizer.bypassSecurityTrustHtml(html);
-    } catch (e) {
-      // Fallback to simple rendering if marked fails
-      return this.escapeHtml(content);
-    }
-  }
-
-  /**
    * Format tool result
    * @param result Tool result
    * @returns Formatted HTML
    */
-  formatToolResult(result: string): SafeHtml | string {
+  formatToolResult(result: string): string {
     if (!result) {
       return '';
     }
@@ -275,7 +243,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   /**
    * Format device diagnostic results (array of devices)
    */
-  private formatDeviceResults(devices: any[]): SafeHtml {
+  private formatDeviceResults(devices: any[]): string {
     let html = '<div class="device-results">';
 
     for (const device of devices) {
@@ -301,23 +269,22 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
     }
 
     html += '</div>';
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    return html;
   }
 
   /**
    * Format JSON with syntax highlighting
    */
-  private formatJsonWithHighlight(obj: any): SafeHtml {
+  private formatJsonWithHighlight(obj: any): string {
     const json = JSON.stringify(obj, null, 2);
-    const highlighted = this.syntaxHighlightJson(json);
-    return this.sanitizer.bypassSecurityTrustHtml(highlighted);
+    return this.syntaxHighlightJson(json);
   }
 
   /**
    * Format Cisco IOS command output with basic highlighting
    */
-  private formatCiscoOutput(output: string): SafeHtml {
-    if (!output) return this.sanitizer.bypassSecurityTrustHtml('');
+  private formatCiscoOutput(output: string): string {
+    if (!output) return '';
 
     let formatted = this.escapeHtml(output);
 
@@ -342,7 +309,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       // Success rate
       .replace(/(\d+)\s*packets input.*?(\d+)\s*errors?/gi, '<span class="cisco-errors">$1 packets, $2 errors</span>');
 
-    return this.sanitizer.bypassSecurityTrustHtml(formatted);
+    return formatted;
   }
 
   /**

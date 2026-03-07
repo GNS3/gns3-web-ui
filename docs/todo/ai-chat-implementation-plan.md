@@ -525,6 +525,73 @@ handleToolCallEvent(toolCall: ToolCall) {
 
 ---
 
+## 🔨 消息渲染模块
+
+影响 AI Assistant 消息渲染的模块文件：
+
+### 核心渲染文件
+| 文件 | 作用 |
+|------|------|
+| `chat-message-list.component.ts` | **主要渲染逻辑** - `formatMessage()`, `formatToolResult()`, Markdown解析 |
+| `chat-message-list.component.scss` | 消息列表样式 |
+| `ai-chat.component.scss` | 主面板样式 |
+
+### 样式相关
+| 文件 | 作用 |
+|------|------|
+| `src/styles.scss` | 全局 Markdown 样式 (github-markdown-css) |
+| `chat-message-list.component.scss` | 消息气泡、Cisco IOS高亮样式 |
+
+### 数据/配置
+| 文件 | 作用 |
+|------|------|
+| `ai-chat.interface.ts` | 消息数据结构 `ChatMessage`, `MessageRole` |
+| `ai-chat.store.ts` | 消息状态管理 |
+| `ai-chat.service.ts` | SSE 事件处理，消息流转 |
+
+### 辅助渲染组件
+| 文件 | 作用 |
+|------|------|
+| `tool-call-display.component.ts` | 工具调用显示 |
+| `json-viewer.component.ts` | JSON 格式化显示 |
+| `draggable-tool-dialog.component.ts` | 工具结果对话框 |
+
+### marked 配置
+配置位置：`chat-message-list.component.ts`
+```typescript
+marked.setOptions({
+  gfm: true,          // GitHub Flavored Markdown
+  breaks: true,       // 单换行转 <br>
+  pedantic: false,
+  smartLists: true,
+});
+```
+
+### Markdown 渲染格式参数
+
+#### 基础样式 (`styles.scss` - github-markdown-css)
+| 元素 | font-size | line-height | 其他 |
+|------|-----------|-------------|------|
+| 正文 `.markdown-body` | **16px** | **1.5** | - |
+| 标题 h1 | **2em** (32px) | 1.25 | 底部边框 |
+| 标题 h2 | **1.5em** (24px) | 1.25 | 底部边框 |
+| 标题 h3 | **1.25em** (20px) | - | - |
+| 无序/有序列表 ul/ol | 继承 16px | - | padding-left: 2em, margin-bottom: 16px |
+| 列表项 li | 继承 16px | - | margin: 0.25em |
+| 段落 p | 继承 16px | - | margin-bottom: 16px |
+
+#### 消息内覆盖样式 (`chat-message-list.component.scss`)
+| 元素 | font-size |
+|------|-----------|
+| 消息气泡内容 | **13px** |
+| 用户消息气泡 | **12px** |
+| 工具调用标题 | **14px** |
+| 代码块 code | **12px** (`!important`) |
+
+> **注意**: 消息渲染主要在 `chat-message-list.component.ts` 的 `formatMessage` 方法中，使用 `marked` 库解析 Markdown，然后通过 `DomSanitizer` 注入 HTML。
+
+---
+
 ## 📦 文件清单总结
 
 ### 新增文件 (10个)
