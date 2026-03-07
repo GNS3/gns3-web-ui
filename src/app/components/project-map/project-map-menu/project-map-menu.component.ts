@@ -113,9 +113,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       }
       let svgString = splittedSvg.join();
 
-      let placeholder = document.createElement('div');
-      placeholder.innerHTML = svgString;
-      let element = placeholder.firstChild;
+      // Use DOMParser instead of innerHTML to avoid XSS warnings
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgString, 'image/svg+xml');
+      const element = doc.documentElement;
 
       svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
     } else {

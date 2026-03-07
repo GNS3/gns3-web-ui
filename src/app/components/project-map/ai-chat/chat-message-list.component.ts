@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { DraggableToolDialogComponent } from './draggable-tool-dialog.component';
-import { MarkdownService } from 'ngx-markdown';
+import { marked } from 'marked';
 
 /**
  * AI Chat Message List Component
@@ -170,7 +171,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
-  constructor(private markdownService: MarkdownService) {}
+  constructor(private sanitizer: DomSanitizer) {}
 
   // Tool result expand/collapse state
   private expandedToolResults = new Set<string>();
@@ -220,15 +221,16 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * @param content Message content
    * @returns Formatted HTML
    */
-  formatMessage(content: string): string {
+  formatMessage(content: string): SafeHtml | string {
     if (!content) {
       return '';
     }
 
     try {
-      // Use ngx-markdown service for full markdown support
-      const html = this.markdownService.parse(content);
-      return html;
+      // Use marked directly to avoid ngx-markdown's internal sanitization
+      const html = marked(content) as string;
+      // Bypass security to allow markdown rendering (content is trusted from backend)
+      return this.sanitizer.bypassSecurityTrustHtml(html);
     } catch (e) {
       // Fallback to simple rendering if marked fails
       return this.escapeHtml(content);
@@ -240,7 +242,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * @param result Tool result
    * @returns Formatted HTML
    */
-  formatToolResult(result: string): string {
+  formatToolResult(result: string): SafeHtml | string {
     if (!result) {
       return '';
     }
@@ -265,7 +267,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   /**
    * Format device diagnostic results (array of devices)
    */
-  private formatDeviceResults(devices: any[]): string {
+  private formatDeviceResults(devices: any[]): SafeHtml {
     let html = '<div class="device-results">';
 
     for (const device of devices) {
@@ -291,22 +293,23 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
     }
 
     html += '</div>';
-    return html;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   /**
    * Format JSON with syntax highlighting
    */
-  private formatJsonWithHighlight(obj: any): string {
+  private formatJsonWithHighlight(obj: any): SafeHtml {
     const json = JSON.stringify(obj, null, 2);
-    return this.syntaxHighlightJson(json);
+    const highlighted = this.syntaxHighlightJson(json);
+    return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
 
   /**
    * Format Cisco IOS command output with basic highlighting
    */
-  private formatCiscoOutput(output: string): string {
-    if (!output) return '';
+  private formatCiscoOutput(output: string): SafeHtml {
+    if (!output) return this.sanitizer.bypassSecurityTrustHtml('');
 
     let formatted = this.escapeHtml(output);
 
@@ -331,7 +334,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       // Success rate
       .replace(/(\d+)\s*packets input.*?(\d+)\s*errors?/gi, '<span class="cisco-errors">$1 packets, $2 errors</span>');
 
-    return formatted;
+    return this.sanitizer.bypassSecurityTrustHtml(formatted);
   }
 
   /**

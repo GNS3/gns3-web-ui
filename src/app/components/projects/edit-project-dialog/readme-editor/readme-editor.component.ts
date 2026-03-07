@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 import { ProjectService } from '@services/project.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
@@ -16,8 +18,25 @@ export class ReadmeEditorComponent implements OnInit {
     public markdown = ``;
 
     constructor(
-        private projectService: ProjectService
+        private projectService: ProjectService,
+        private sanitizer: DomSanitizer
     ) {}
+
+    /**
+     * Get safe HTML for markdown preview
+     * @returns SafeHtml
+     */
+    get markdownHtml(): SafeHtml | string {
+        if (!this.markdown) {
+            return '';
+        }
+        try {
+            const html = marked(this.markdown) as string;
+            return this.sanitizer.bypassSecurityTrustHtml(html);
+        } catch (e) {
+            return this.markdown;
+        }
+    }
 
     ngOnInit() {
         this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe({
