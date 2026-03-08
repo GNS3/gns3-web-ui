@@ -132,3 +132,16 @@ $light-theme: map-merge(
   @include mat-tooltip-theme($light-theme);
   @include mat-snack-bar-theme($light-theme);
 }
+
+$menu-hover-background: #DC143C;
+
+.mat-menu-panel .mat-menu-item:not([disabled]):hover,
+.mat-menu-panel .mat-menu-item:not([disabled]).cdk-program-focused,
+.mat-menu-panel .mat-menu-item:not([disabled]).cdk-keyboard-focused {
+  background-color: $menu-hover-background !important;
+}
+
+.mat-menu-panel:not(.context-menu-items) .mat-menu-item {
+  height: 32px;
+  line-height: 32px;
+}
