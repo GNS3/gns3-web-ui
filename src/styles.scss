@@ -126,6 +126,15 @@ mat-menu-panel {
 /* Dark theme (default) - white icons for AI Chat menus */
 .mat-menu-panel .menu-item-icon {
   fill: rgba(255, 255, 255, 0.87) !important;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Fix alignment: menu items with icons */
+.mat-menu-panel .mat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .mat-menu-panel .delete-icon {
@@ -210,6 +219,21 @@ mat-menu-panel {
 .lightTheme .ai-chat-container .session-item:hover .session-icon,
 .lightTheme .ai-chat-container .session-menu-button:hover .menu-icon {
   fill: rgba(0, 0, 0, 0.87) !important;
+}
+
+/* ============================================================================
+ * Fix SVG and text alignment in AI Chat buttons
+ * ============================================================================ */
+
+.ai-chat-container .new-session-button .mat-button-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-chat-container .session-list-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 /* ============================================================================
