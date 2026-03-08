@@ -81,17 +81,27 @@ export type MessageRole =
  * Chat message
  * Enhanced message interface with support for tool calls and results display
  */
+/**
+ * Tool result item (for assistant message)
+ */
+export interface ToolResult {
+  toolName: string;
+  toolOutput: string;
+  tool_call_id?: string;
+}
+
 export interface ChatMessage {
   id: string;                 // Message unique identifier
   role: MessageRole;          // Message role
   content: string;            // Message content
   created_at: string;         // Creation time (ISO 8601)
   tool_calls?: ToolCall[];    // Tool call list (assistant message)
+  tool_result?: ToolResult[]; // Tool result list (assistant message)
   tool_call_id?: string;      // Associated tool call ID (tool/tool_result message)
   name?: string;              // Tool message name (tool/tool_result message)
   metadata?: any;             // Additional message metadata
 
-  // New fields for tool_call and tool_result messages
+  // Legacy fields (for tool role message)
   toolCall?: ToolCall;        // Single tool call (tool_call message)
   toolName?: string;          // Tool name (tool_result message)
   toolOutput?: any;           // Tool output (tool_result message, can be JSON object or string)

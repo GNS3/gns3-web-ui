@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MarkdownModule } from 'ngx-markdown';
-import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
+import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
 
@@ -56,44 +56,18 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
                 </app-tool-call-display>
               </div>
 
-              <div class="message-time">{{ formatTime(message.created_at) }}</div>
-            </div>
-          </div>
-
-          <!-- Tool call message (inline display) -->
-          <div class="message tool-call-message" *ngIf="message.role === 'tool_call'">
-            <div class="inline-tool-call" (click)="openToolCallDialog($event, message.toolCall!)">
-              <mat-icon class="tool-icon">build</mat-icon>
-              <span class="tool-name-text">{{ message.toolCall?.function.name }}</span>
-              <mat-icon class="expand-icon">open_in_new</mat-icon>
-            </div>
-          </div>
-
-          <!-- Tool result message (inline display) -->
-          <div class="message tool-result-message" *ngIf="message.role === 'tool_result'">
-            <div class="inline-tool-result" (click)="openToolResultDialog($event, message)">
-              <mat-icon class="tool-icon">check_circle</mat-icon>
-              <span class="tool-name-text">result</span>
-              <mat-icon class="expand-icon">open_in_new</mat-icon>
-            </div>
-          </div>
-
-          <!-- Legacy Tool message (for backward compatibility) -->
-          <div class="message tool-message" *ngIf="message.role === 'tool'">
-            <div class="message-avatar tool-avatar">
-              <mat-icon>build</mat-icon>
-            </div>
-            <div class="message-content tool-content">
-              <div class="tool-header" (click)="toggleToolResult(message.id)">
-                <div class="tool-name">
-                  <mat-icon class="expand-icon">{{ isToolResultExpanded(message.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
-                  <span>{{ message.name || 'Tool' }}</span>
+              <!-- Tool results list -->
+              <div class="tool-results-container" *ngIf="message.tool_result && message.tool_result.length > 0">
+                <div
+                  class="inline-tool-result"
+                  *ngFor="let result of message.tool_result"
+                  (click)="openAssistantToolResultDialog(result)">
+                  <mat-icon class="tool-icon">check_circle</mat-icon>
+                  <span class="tool-name-text">{{ result.toolName }}</span>
+                  <mat-icon class="expand-icon">open_in_new</mat-icon>
                 </div>
-                <span class="tool-summary" *ngIf="!isToolResultExpanded(message.id)">{{ getToolResultSummary(message.content) }}</span>
               </div>
-              <div class="tool-bubble" *ngIf="isToolResultExpanded(message.id)">
-                <pre class="tool-result" [innerHTML]="formatToolResult(message.content)"></pre>
-              </div>
+
               <div class="message-time">{{ formatTime(message.created_at) }}</div>
             </div>
           </div>
@@ -154,9 +128,6 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
-  // Tool result expand/collapse state
-  private expandedToolResults = new Set<string>();
-
   constructor(private dialog: MatDialog) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -190,118 +161,6 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   isToolCallExecuting(toolCallId: string): boolean {
     // Can get from state management
     return false;
-  }
-
-  /**
-   * Format tool result
-   * @param result Tool result
-   * @returns Formatted HTML
-   */
-  formatToolResult(result: string): string {
-    if (!result) {
-      return '';
-    }
-
-    try {
-      // Try to parse as JSON
-      const parsed = JSON.parse(result);
-
-      // Check if it's an array of device results (common format)
-      if (Array.isArray(parsed)) {
-        return this.formatDeviceResults(parsed);
-      }
-
-      // Single object - format as JSON
-      return this.formatJsonWithHighlight(parsed);
-    } catch (e) {
-      // Not JSON - treat as plain text (Cisco IOS output)
-      return this.formatCiscoOutput(result);
-    }
-  }
-
-  /**
-   * Format device diagnostic results (array of devices)
-   */
-  private formatDeviceResults(devices: any[]): string {
-    let html = '<div class="device-results">';
-
-    for (const device of devices) {
-      const status = device.status === 'success' ? 'success' : 'error';
-      const statusColor = device.status === 'success' ? '#22c55e' : '#ef4444';
-
-      html += `
-        <div class="device-result">
-          <div class="device-header">
-            <span class="device-name">${this.escapeHtml(device.device_name || 'Unknown')}</span>
-            <span class="device-status" style="color: ${statusColor}">${status}</span>
-          </div>`;
-
-      if (device.output) {
-        html += `<div class="device-output"><pre>${this.formatCiscoOutput(device.output)}</pre></div>`;
-      }
-
-      if (device.diagnostic_commands) {
-        html += `<div class="device-commands">Commands: ${this.escapeHtml(device.diagnostic_commands.join(', '))}</div>`;
-      }
-
-      html += '</div>';
-    }
-
-    html += '</div>';
-    return html;
-  }
-
-  /**
-   * Format JSON with syntax highlighting
-   */
-  private formatJsonWithHighlight(obj: any): string {
-    const json = JSON.stringify(obj, null, 2);
-    return this.syntaxHighlightJson(json);
-  }
-
-  /**
-   * Format Cisco IOS command output with basic highlighting
-   */
-  private formatCiscoOutput(output: string): string {
-    if (!output) return '';
-
-    let formatted = this.escapeHtml(output);
-
-    // Highlight Cisco IOS commands (lines starting with certain patterns)
-    formatted = formatted
-      // Command prompts like "R1#", "R2#show", etc.
-      .replace(/^([A-Z][A-Za-z0-9]*)#(\S*)/gm, '<span class="cisco-prompt">$1#$2</span>')
-      // Interface names
-      .replace(/\b(GigabitEthernet|Serial|FastEthernet|Ethernet|Loopback|Port-channel|Tunnel|Vlan)\d*\/\d*(\.\d+)?(\s|$)/g, '<span class="cisco-interface">$&</span>')
-      // IP addresses
-      .replace(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/\d{1,2})?\b/g, '<span class="cisco-ip">$1$2</span>')
-      // OSPF area, router ID
-      .replace(/\b(area \d+|router-id \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/gi, '<span class="cisco-ospf">$1</span>')
-      // Network statements
-      .replace(/\b(network \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} area \d+)\b/gi, '<span class="cisco-network">$1</span>')
-      // Show commands
-      .replace(/\b(show \S+)/g, '<span class="cisco-command">$1</span>')
-      // Config keywords
-      .replace(/\b(interface|router|ip address|no shutdown|description|hostname|router ospf|network|passive-interface|redistribute)\b/gi, '<span class="cisco-keyword">$1</span>')
-      // Protocol states
-      .replace(/\b(UP|DOWN|FULL|DR|BDR|2WAY|EXSTART|EXCHANGE|LOADING|FULL)\b/g, '<span class="cisco-state">$1</span>')
-      // Success rate
-      .replace(/(\d+)\s*packets input.*?(\d+)\s*errors?/gi, '<span class="cisco-errors">$1 packets, $2 errors</span>');
-
-    return formatted;
-  }
-
-  /**
-   * Syntax highlight JSON
-   */
-  private syntaxHighlightJson(json: string): string {
-    return json
-      .replace(/&quot;/g, '"')
-      .replace(/"(.*?)":/g, '<span class="json-key">"$1"</span>:')
-      .replace(/: &quot;(.*?)&quot;/g, ': <span class="json-string">"$1"</span>')
-      .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
-      .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>')
-      .replace(/: (null)/g, ': <span class="json-null">$1</span>');
   }
 
   /**
@@ -349,17 +208,6 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
         minute: '2-digit'
       });
     }
-  }
-
-  /**
-   * Escape HTML
-   * @param text Text
-   * @returns Escaped text
-   */
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
   }
 
   /**
@@ -415,15 +263,14 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   }
 
   /**
-   * Open tool result dialog
-   * @param event Mouse event
-   * @param message Tool result message
+   * Open assistant tool result dialog (from assistant.message.tool_result)
+   * @param result Tool result item
    */
-  openToolResultDialog(event: MouseEvent, message: ChatMessage): void {
+  openAssistantToolResultDialog(result: ToolResult): void {
     const data: ToolDetailsDialogData = {
       type: 'tool_result',
-      toolName: message.content,
-      toolOutput: message.toolOutput
+      toolName: result.toolName,
+      toolOutput: result.toolOutput
     };
 
     this.dialog.open(ToolDetailsDialogComponent, {
@@ -441,59 +288,5 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    */
   sendSuggestion(suggestion: string): void {
     this.suggestionClicked.emit(suggestion);
-  }
-
-  /**
-   * Toggle tool result expand/collapse
-   * @param messageId Message ID
-   */
-  toggleToolResult(messageId: string): void {
-    if (this.expandedToolResults.has(messageId)) {
-      this.expandedToolResults.delete(messageId);
-    } else {
-      this.expandedToolResults.add(messageId);
-    }
-  }
-
-  /**
-   * Check if tool result is expanded
-   * @param messageId Message ID
-   * @returns Whether expanded
-   */
-  isToolResultExpanded(messageId: string): boolean {
-    return this.expandedToolResults.has(messageId);
-  }
-
-  /**
-   * Get summary of tool result for collapsed state
-   * @param content Tool result content
-   * @returns Summary string
-   */
-  getToolResultSummary(content: string): string {
-    if (!content) {
-      return 'Empty result';
-    }
-
-    try {
-      // Try to parse as JSON
-      const parsed = JSON.parse(content);
-
-      if (Array.isArray(parsed)) {
-        // Array of device results
-        const devices = parsed.map(d => d.device_name || 'Unknown').join(', ');
-        return `${parsed.length} device(s): ${devices}`;
-      }
-
-      // Single object
-      if (parsed.device_name) {
-        return `${parsed.device_name}: ${parsed.status || 'completed'}`;
-      }
-
-      return 'JSON result';
-    } catch (e) {
-      // Plain text - show first line or truncate
-      const firstLine = content.split('\n')[0];
-      return firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
-    }
   }
 }

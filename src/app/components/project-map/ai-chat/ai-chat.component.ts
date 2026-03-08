@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
 
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
-import { ChatMessage, ChatSession, ChatEvent, ToolCall } from '@models/ai-chat.interface';
+import { ChatMessage, ChatSession, ChatEvent, ToolCall, ToolResult } from '@models/ai-chat.interface';
 import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
@@ -279,8 +279,10 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
       this.aiChatService.getSessionHistory(this.controller, this.project.project_id, sessionId).pipe(
         tap(history => {
-          this.aiChatStore.setMessages(sessionId, history.messages);
-          this.currentMessages = history.messages;
+          // Convert legacy role:tool messages to assistant.tool_result format
+          const convertedMessages = this.convertLegacyToolMessages(history.messages);
+          this.aiChatStore.setMessages(sessionId, convertedMessages);
+          this.currentMessages = convertedMessages;
           this.cdr.markForCheck(); // Trigger change detection immediately
         }),
         takeUntil(this.destroy$)
@@ -613,18 +615,44 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @param event Event
    */
   private handleToolEndEvent(event: ChatEvent): void {
-    // Create tool result message
-    const toolMessage: ChatMessage = {
-      id: this.generateMessageId(),
-      role: 'tool',
-      content: event.tool_output || '',
-      created_at: new Date().toISOString(),
-      tool_call_id: event.tool_call_id,
-      name: event.tool_name
-    };
+    // Find the last assistant message and add tool_result to it
+    let lastAssistantIndex = -1;
+    for (let i = this.currentMessages.length - 1; i >= 0; i--) {
+      if (this.currentMessages[i].role === 'assistant') {
+        lastAssistantIndex = i;
+        break;
+      }
+    }
 
-    this.currentMessages = [...this.currentMessages, toolMessage];
-    this.cdr.markForCheck(); // Trigger change detection
+    if (lastAssistantIndex !== -1) {
+      // Add tool_result to existing assistant message
+      const assistantMessage = this.currentMessages[lastAssistantIndex];
+      if (!assistantMessage.tool_result) {
+        assistantMessage.tool_result = [];
+      }
+      assistantMessage.tool_result.push({
+        toolName: event.tool_name || '',
+        toolOutput: event.tool_output || '',
+        tool_call_id: event.tool_call_id
+      });
+      // Trigger change detection
+      this.currentMessages = [...this.currentMessages];
+    } else {
+      // Fallback: create a new assistant message with tool_result
+      const assistantMessage: ChatMessage = {
+        id: this.generateMessageId(),
+        role: 'assistant',
+        content: '',
+        created_at: new Date().toISOString(),
+        tool_result: [{
+          toolName: event.tool_name || '',
+          toolOutput: event.tool_output || '',
+          tool_call_id: event.tool_call_id
+        }]
+      };
+      this.currentMessages = [...this.currentMessages, assistantMessage];
+    }
+    this.cdr.markForCheck();
   }
 
   /**
@@ -843,6 +871,55 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    */
   private generateMessageId(): string {
     return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Convert legacy role:tool messages to assistant.tool_result format
+   * @param messages Original messages
+   * @returns Converted messages
+   */
+  private convertLegacyToolMessages(messages: ChatMessage[]): ChatMessage[] {
+    const converted: ChatMessage[] = [];
+    let lastAssistantIndex = -1;
+
+    for (const msg of messages) {
+      if (msg.role === 'tool') {
+        // Convert role:tool to assistant.tool_result
+        if (lastAssistantIndex >= 0) {
+          const lastAssistant = converted[lastAssistantIndex];
+          if (!lastAssistant.tool_result) {
+            lastAssistant.tool_result = [];
+          }
+          lastAssistant.tool_result.push({
+            toolName: msg.name || '',
+            toolOutput: msg.content || '',
+            tool_call_id: msg.tool_call_id
+          });
+        } else {
+          // No assistant message before, create one with tool_result
+          const newAssistant: ChatMessage = {
+            id: this.generateMessageId(),
+            role: 'assistant',
+            content: '',
+            created_at: msg.created_at,
+            tool_result: [{
+              toolName: msg.name || '',
+              toolOutput: msg.content || '',
+              tool_call_id: msg.tool_call_id
+            }]
+          };
+          converted.push(newAssistant);
+          lastAssistantIndex = converted.length - 1;
+        }
+      } else {
+        converted.push({ ...msg });
+        if (msg.role === 'assistant') {
+          lastAssistantIndex = converted.length - 1;
+        }
+      }
+    }
+
+    return converted;
   }
 
   /**
