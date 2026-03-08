@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
-import { ZIndexService } from '@services/z-index.service';
+import { ZIndexService, Z_INDEX_LAYERS } from '@services/z-index.service';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 /**
@@ -84,7 +84,7 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
             </button>
 
             <!-- Session menu -->
-            <mat-menu #sessionMenu="matMenu" xPosition="before" panelClass="session-action-menu" (opened)="onMenuOpened()">
+            <mat-menu #sessionMenu="matMenu" xPosition="before" panelClass="session-action-menu" (opened)="onMenuOpened()" (closed)="onMenuClosed()">
               <button mat-menu-item (click)="renameSession(session)">
                 <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
                   <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
@@ -400,24 +400,43 @@ export class ChatSessionListComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private aiChatService: AiChatService,
-    private zIndexService: ZIndexService
+    private zIndexService: ZIndexService,
+    private renderer: Renderer2
   ) {}
 
   /**
-   * Handle menu opened event - bring menu to front
+   * Handle menu opened event
+   * Set menu z-index using ZIndexService
    */
   onMenuOpened(): void {
-    // Find the menu panel and set its z-index
-    setTimeout(() => {
-      const menuPanel = document.querySelector('.mat-menu-panel.session-action-menu') as HTMLElement;
-      if (menuPanel) {
-        // Get the AI Chat container's z-index (parent window)
-        const aiChatContainer = document.querySelector('.ai-chat-container') as HTMLElement;
-        if (aiChatContainer) {
-          const containerZIndex = parseInt(window.getComputedStyle(aiChatContainer).zIndex) || 1000;
-          // Set menu z-index to parent's z-index + 1 to ensure it's on top
-          menuPanel.style.setProperty('z-index', String(containerZIndex + 1), 'important');
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      // Get all menu panels - the last one is our session menu
+      const menuPanels = document.querySelectorAll('.mat-menu-panel');
+      if (menuPanels.length > 0) {
+        const lastMenu = menuPanels[menuPanels.length - 1] as HTMLElement;
+        const overlayPane = lastMenu.closest('.cdk-overlay-pane') as HTMLElement;
+
+        if (overlayPane) {
+          // Mark it as session menu overlay
+          this.renderer.setAttribute(overlayPane, 'data-session-menu', 'true');
+          // Set z-index
+          this.zIndexService.applyLayerZIndex('SESSION_MENU', overlayPane);
         }
+      }
+    });
+  }
+
+  /**
+   * Handle menu closed event
+   */
+  onMenuClosed(): void {
+    requestAnimationFrame(() => {
+      // Find the session menu overlay by its data attribute and clean up
+      const sessionMenuOverlay = document.querySelector('[data-session-menu="true"]') as HTMLElement;
+      if (sessionMenuOverlay) {
+        this.renderer.removeAttribute(sessionMenuOverlay, 'data-session-menu');
+        sessionMenuOverlay.style.removeProperty('z-index');
       }
     });
   }
@@ -560,6 +579,14 @@ export class ChatSessionListComponent implements OnInit {
       restoreFocus: false,
       backdropClass: 'delete-dialog-backdrop',
       panelClass: 'confirmation-dialog-panel'
+    });
+
+    // Set dialog z-index using ZIndexService
+    dialogRef.afterOpened().subscribe(() => {
+      const dialogPane = document.querySelector('.confirmation-dialog-panel') as HTMLElement;
+      if (dialogPane) {
+        this.zIndexService.applyLayerZIndex('CONFIRM_DIALOG', dialogPane);
+      }
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {

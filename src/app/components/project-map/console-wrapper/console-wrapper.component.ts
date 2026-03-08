@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, HostListener, ElementRef, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UntypedFormControl } from '@angular/forms';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
@@ -7,14 +9,16 @@ import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
-import { ZIndexService } from '@services/z-index.service';
+import { ZIndexService, Z_INDEX_LAYERS } from '@services/z-index.service';
 
 @Component({
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],
 })
-export class ConsoleWrapperComponent implements OnInit {
+export class ConsoleWrapperComponent implements OnInit, OnDestroy {
+
+  private destroy$ = new Subject<void>();
   @Input() controller: Controller;
   @Input() project: Project;
   @Output() closeConsole = new EventEmitter<boolean>();
@@ -29,7 +33,7 @@ export class ConsoleWrapperComponent implements OnInit {
   public isMinimized: boolean = false;
 
   // Z-index management
-  currentZIndex = 1000;
+  currentZIndex: number;
 
   public resizedWidth: number = 720;
   public resizedHeight: number = 480;
@@ -38,25 +42,32 @@ export class ConsoleWrapperComponent implements OnInit {
     private consoleService: NodeConsoleService,
     private themeService: ThemeService,
     private mapSettingsService: MapSettingsService,
-    private zIndexService: ZIndexService
+    private zIndexService: ZIndexService,
+    private elementRef: ElementRef
   ) {
-    // Initialize with current z-index from service
-    this.currentZIndex = this.zIndexService.getCurrentZIndex();
+    // Initialize with WEB_CONSOLE layer z-index
+    this.currentZIndex = Z_INDEX_LAYERS.WEB_CONSOLE;
   }
 
   /**
    * Bring window to front when clicked
+   * Uses TEMP_TOP (1200) temporarily, restores to WEB_CONSOLE layer (1002) when another window is clicked
    */
   @HostListener('click')
   bringToFront(): void {
-    // Get next z-index from service and apply to this window
-    this.currentZIndex = this.zIndexService.getNextZIndex();
+    // Use TEMP_TOP layer when this window is active
+    this.zIndexService.bringToFront(this.elementRef.nativeElement);
+    this.currentZIndex = Z_INDEX_LAYERS.TEMP_TOP;
   }
 
   nodes: Node[] = [];
   selected = new UntypedFormControl(0);
 
   ngOnInit() {
+    // Apply initial z-index to DOM immediately (before user can click)
+    this.elementRef.nativeElement.style.zIndex = String(Z_INDEX_LAYERS.WEB_CONSOLE);
+    this.subscribeToZIndexChanges();
+
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
@@ -173,5 +184,31 @@ export class ConsoleWrapperComponent implements OnInit {
 
   disableScroll(e) {
     this.mapSettingsService.isScrollDisabled.next(true);
+  }
+
+  /**
+   * Subscribe to z-index changes from ZIndexService
+   * When another window is brought to front, this window's z-index is restored
+   */
+  private subscribeToZIndexChanges(): void {
+    this.zIndexService.getZIndexChanged().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((newZIndex: number) => {
+      // Check if this element is no longer at TEMP_TOP
+      const isAtTop = this.zIndexService.isAtTop(this.elementRef.nativeElement);
+
+      if (!isAtTop) {
+        // This window was restored to its original layer
+        this.currentZIndex = Z_INDEX_LAYERS.WEB_CONSOLE;
+      }
+    });
+  }
+
+  /**
+   * Cleanup on component destroy
+   */
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

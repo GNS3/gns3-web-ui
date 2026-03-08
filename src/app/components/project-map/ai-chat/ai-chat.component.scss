@@ -642,10 +642,8 @@
   z-index: var(--ai-chat-z-menu) !important;
 }
 
-// Session action menu - allow dynamic z-index from JavaScript
-.mat-menu-panel.session-action-menu {
-  z-index: auto !important;
-}
+// NOTE: Session menu and confirm dialog z-index are now set in global styles.scss
+// These overlays are rendered to document body, so component-scoped styles won't work
 
 // Backdrop (overlay background)
 .cdk-overlay-backdrop {

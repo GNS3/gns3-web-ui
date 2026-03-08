@@ -126,11 +126,13 @@
 - **[Confirmation Dialog 组件](components/confirmation-dialog-component.md)** - 可复用确认对话框组件文档
 
 ### 故障排查文档
+- **[Z-Index 管理重构](troubleshooting/z-index-management-refactor.md)** - Z-Index 层级管理系统重构文档
 - **[Session ID & SSE 管理](troubleshooting/ai-chat-session-id-and-sse.md)** - AI Chat 会话管理和 SSE 连接详解
 - **[AI Chat 删除功能修复](troubleshooting/ai-chat-delete-fix.md)** - 删除会话功能的修复记录
 - **[时间戳时区问题](troubleshooting/timestamp-timezone-issue.md)** - 时间显示问题修复
 
 ### 更新日志
+- **[2026-03-08 Z-Index 重构](changelog/z-index-service-refactor-2026-03-08.md)** - Z-Index 管理系统从增量计数器重构为固定层级模式
 - **[2026-03-08 更新](changelog/ai-chat-updates-2026-03-08.md)** - 确认对话框组件和 Session 管理优化
 
 ### 组件审查文档

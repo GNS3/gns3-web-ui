@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
@@ -11,7 +11,7 @@ import { ChatMessage, ChatSession, ChatEvent, ToolCall } from '@models/ai-chat.i
 import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
-import { ZIndexService } from '@services/z-index.service';
+import { ZIndexService, Z_INDEX_LAYERS } from '@services/z-index.service';
 
 /**
  * AI Chat Main Component
@@ -39,7 +39,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   isMinimized = false;
 
   // Z-index management
-  currentZIndex = 1000;
+  currentZIndex: number;
 
   // Position and size state
   public style: object = {};
@@ -68,10 +68,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     private aiChatStore: AiChatStore,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private zIndexService: ZIndexService
+    private zIndexService: ZIndexService,
+    private elementRef: ElementRef
   ) {
-    // Initialize with current z-index from service
-    this.currentZIndex = this.zIndexService.getCurrentZIndex();
+    // Initialize with AI_CHAT layer z-index
+    this.currentZIndex = Z_INDEX_LAYERS.AI_CHAT;
   }
 
   /**
@@ -91,8 +92,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
+    // Apply initial z-index to DOM immediately (before user can click)
+    this.elementRef.nativeElement.style.zIndex = String(Z_INDEX_LAYERS.AI_CHAT);
     this.initializeChat();
     this.subscribeToStateChanges();
+    this.subscribeToZIndexChanges();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -109,11 +113,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Bring window to front when clicked
+   * Uses TEMP_TOP (1200) temporarily, restores to AI_CHAT layer (1001) when another window is clicked
    */
   @HostListener('click')
   bringToFront(): void {
-    // Get next z-index from service and apply to this window
-    this.currentZIndex = this.zIndexService.getNextZIndex();
+    // Use TEMP_TOP layer when this window is active
+    this.zIndexService.bringToFront(this.elementRef.nativeElement);
+    this.currentZIndex = Z_INDEX_LAYERS.TEMP_TOP;
   }
 
   /**
@@ -245,6 +251,25 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
           width: '0px',
           height: '0px',
         };
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /**
+   * Subscribe to z-index changes from ZIndexService
+   * When another window is brought to front, this window's z-index is restored
+   */
+  private subscribeToZIndexChanges(): void {
+    this.zIndexService.getZIndexChanged().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((newZIndex: number) => {
+      // Check if this element is no longer at TEMP_TOP
+      const isAtTop = this.zIndexService.isAtTop(this.elementRef.nativeElement);
+
+      if (!isAtTop) {
+        // This window was restored to its original layer
+        this.currentZIndex = Z_INDEX_LAYERS.AI_CHAT;
         this.cdr.markForCheck();
       }
     });
