@@ -221,21 +221,21 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   updateGrid() {
     if (this.project.grid_size && this.project.grid_size > 0)
       this.nodeGridX =
-        this.project.scene_width / 2 -
-        Math.floor(this.project.scene_width / 2 / this.project.grid_size) * this.project.grid_size;
+        this.context.size.width / 2 -
+        Math.floor(this.context.size.width / 2 / this.project.grid_size) * this.project.grid_size;
     if (this.project.grid_size && this.project.grid_size > 0)
       this.nodeGridY =
-        this.project.scene_height / 2 -
-        Math.floor(this.project.scene_height / 2 / this.project.grid_size) * this.project.grid_size;
+        this.context.size.height / 2 -
+        Math.floor(this.context.size.height / 2 / this.project.grid_size) * this.project.grid_size;
 
     if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
       this.drawingGridX =
-        this.project.scene_width / 2 -
-        Math.floor(this.project.scene_width / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
+        this.context.size.width / 2 -
+        Math.floor(this.context.size.width / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
     if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
       this.drawingGridY =
-        this.project.scene_height / 2 -
-        Math.floor(this.project.scene_height / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
+        this.context.size.height / 2 -
+        Math.floor(this.context.size.height / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
   }
 
   @HostListener('window:resize', ['$event'])

@@ -95,6 +95,7 @@ export class ProjectService {
       name: project.name,
       scene_width: project.scene_width,
       scene_height: project.scene_height,
+      snap_to_grid: project.snap_to_grid,
       show_interface_labels: project.show_interface_labels,
     });
   }

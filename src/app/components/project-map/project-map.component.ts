@@ -925,7 +925,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public toggleSnapToGrid(enabled: boolean) {
+    const previousValue = this.project.snap_to_grid;
     this.project.snap_to_grid = enabled;
+    this.projectService.update(this.controller, this.project).subscribe(
+      (project: Project) => {
+        this.project.snap_to_grid = project.snap_to_grid;
+      },
+      () => {
+        this.project.snap_to_grid = previousValue;
+        this.toasterService.error('Cannot update project settings');
+      }
+    );
   }
 
   private showMessage(msg) {
