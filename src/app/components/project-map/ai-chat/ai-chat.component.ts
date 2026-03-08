@@ -1044,10 +1044,27 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @param event Resize event
    */
   onResizeEnd(event: ResizeEvent): void {
-    this.style = {
+    // Determine if using left or right based on current style
+    const hasLeft = this.style['left'] !== undefined;
+
+    // Build position style based on original positioning
+    const positionStyle: any = {
       position: 'fixed',
-      top: this.style['top'],
-      right: this.style['right'],
+      top: `${event.rectangle.top}px`,
+    };
+
+    // Preserve the original horizontal positioning (left or right)
+    // Note: angular-resizable-element only provides left, not right
+    if (hasLeft) {
+      positionStyle.left = `${event.rectangle.left}px`;
+    } else {
+      // Calculate right from left + width
+      const right = window.innerWidth - event.rectangle.left - event.rectangle.width;
+      positionStyle.right = `${right}px`;
+    }
+
+    this.style = {
+      ...positionStyle,
       width: `${event.rectangle.width}px`,
       height: `${event.rectangle.height}px`,
     };
