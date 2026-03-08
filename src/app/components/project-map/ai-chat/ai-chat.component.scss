@@ -8,34 +8,6 @@
   --ai-chat-icon-size: 20px;
   --ai-chat-minimized-size: 56px;
 
-  // Colors - Dark theme (GNS3 themed)
-  --ai-chat-bg-dark: #263238;
-  --ai-chat-bg-sidebar: #20313b;
-  --ai-chat-bg-sidebar-gradient: #1a252c;
-  --ai-chat-bg-header: #20313b;
-  --ai-chat-bg-header-gradient: #1e2a32;
-
-  // Borders - GNS3 cyan theme
-  --ai-chat-border-color: rgba(0, 151, 167, 0.3);
-  --ai-chat-border-focus: rgba(0, 151, 167, 0.6);
-
-  // Shadows - Enhanced
-  --ai-chat-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --ai-chat-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
-  --ai-chat-shadow-lg: 0 15px 50px rgba(0, 0, 0, 0.5);
-  --ai-chat-shadow-glow: 0 0 20px rgba(0, 151, 167, 0.3);
-
-  // Brand colors - GNS3 cyan
-  --ai-chat-primary-color: #0097a7;
-  --ai-chat-primary-dark: #00838f;
-  --ai-chat-primary-light: #26c6da;
-  --ai-chat-accent-color: #00bcd4;
-
-  // Text colors
-  --ai-chat-text-primary: rgba(255, 255, 255, 1);
-  --ai-chat-text-secondary: rgba(255, 255, 255, 0.7);
-  --ai-chat-text-disabled: rgba(255, 255, 255, 0.5);
-
   // Spacing
   --ai-chat-spacing-xs: 4px;
   --ai-chat-spacing-sm: 8px;
@@ -44,16 +16,15 @@
 }
 
 .ai-chat-container {
-  box-shadow: var(--ai-chat-shadow-lg), var(--ai-chat-shadow-glow);
   position: fixed;
-  background-color: var(--ai-chat-bg-dark);
+  background-color: var(--mat-app-surface);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   z-index: 1000;
-  color: var(--ai-chat-text-primary);
-  border: 1px solid var(--ai-chat-border-color);
-  backdrop-filter: blur(10px);
+  color: var(--mat-app-on-surface);
+  border: 1px solid var(--mat-app-outline-variant);
+  backdrop-filter: blur(15px) saturate(150%);
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 
   // GNS3 cyan gradient border effect
@@ -106,27 +77,23 @@
 }
 
 .chat-sidebar {
-  width: var(--ai-chat-sidebar-width);
-  background-color: var(--ai-chat-bg-sidebar);
-  // border-right removed for cleaner look
+  width: 280px;
+  background-color: var(--mat-app-background);
   display: flex;
   flex-direction: column;
-  transition: width var(--ai-chat-transition-normal);
+  transition: width 0.3s;
   flex-shrink: 0;
-
-  // Subtle gradient overlay
-  background: linear-gradient(180deg, var(--ai-chat-bg-sidebar) 0%, var(--ai-chat-bg-sidebar-gradient) 100%);
 }
 
 .chat-sidebar.collapsed {
-  width: var(--ai-chat-sidebar-collapsed-width);
+  width: 48px;
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--ai-chat-spacing-md);
+  padding: 12px;
   // border-bottom removed for cleaner look
   cursor: grab;
   user-select: none;
@@ -154,7 +121,7 @@
     font-size: 24px;
     width: 24px;
     height: 24px;
-    color: var(--ai-chat-primary-color);
+    color: var(--mat-app-primary);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -186,17 +153,17 @@
   margin: 0;
   font-size: 16px;
   font-weight: 500;
-  color: var(--ai-chat-text-primary);
+  color: var(--mat-app-on-surface);
   display: flex;
   align-items: center;
-  gap: var(--ai-chat-spacing-sm);
+  gap: 8px;
   width: 100%;
   justify-content: center;
 }
 
 .sidebar-title.clickable {
   cursor: pointer;
-  transition: all var(--ai-chat-transition-fast);
+  transition: all 0.2s;
 }
 
 .sidebar-title.clickable:hover {
@@ -215,8 +182,8 @@
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--ai-chat-primary-color), var(--ai-chat-primary-dark));
-  color: white;
+  background: linear-gradient(135deg, var(--mat-app-primary), var(--mat-app-primary));
+  color: var(--mat-app-on-primary);
   padding: 6px 10px;
   border-radius: 6px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -265,7 +232,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #263238;
+  background-color: var(--mat-app-background);
   min-width: 0;
 }
 
@@ -273,32 +240,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--ai-chat-spacing-md);
-  // border-bottom removed for cleaner look
-  background: linear-gradient(180deg, var(--ai-chat-bg-header) 0%, var(--ai-chat-bg-header-gradient) 100%);
+  padding: 12px;
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
-  box-shadow: var(--ai-chat-shadow-sm);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  transition: background 0.3s ease;
   position: relative;
   height: 48px;
   box-sizing: border-box;
-
-  // Subtle top glow effect
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(0, 151, 167, 0.3) 50%,
-      transparent 100%
-    );
-  }
 }
 
 .chat-header:active {
@@ -308,10 +257,10 @@
 .chat-title {
   display: flex;
   align-items: center;
-  gap: var(--ai-chat-spacing-sm);
+  gap: 8px;
   font-size: 16px;
   font-weight: 500;
-  color: var(--ai-chat-text-primary);
+  color: var(--mat-app-on-surface);
 }
 
 .chat-messages {
@@ -321,7 +270,7 @@
 }
 
 .chat-input {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--mat-app-outline-variant);
   flex-shrink: 0;
 }
 
@@ -335,46 +284,6 @@
     color: white;
     font-weight: 600;
   }
-}
-
-// Light theme support
-.lightTheme .ai-chat-container {
-  background-color: white;
-  color: black;
-}
-
-.lightTheme .chat-sidebar {
-  background-color: #f5f5f5;
-  // border-right removed for cleaner look
-}
-
-.lightTheme .sidebar-header {
-  // border-bottom removed for cleaner look
-}
-
-.lightTheme .sidebar-title {
-  color: black;
-}
-
-.lightTheme .chat-main {
-  background-color: white;
-}
-
-.lightTheme .chat-header {
-  background-color: #f5f5f5;
-  // border-bottom removed for cleaner look
-}
-
-.lightTheme .chat-title {
-  color: black;
-}
-
-.lightTheme .chat-input {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.lightTheme .collapsed-hint {
-  color: rgba(0, 0, 0, 0.7);
 }
 
 @media (max-width: 768px) {
@@ -393,16 +302,16 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: var(--ai-chat-spacing-xs);
+  gap: 4px;
 
   // Icon button color and sizing
   .mat-icon-button {
-    color: var(--ai-chat-text-primary);
+    color: var(--mat-app-on-surface);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: var(--ai-chat-button-size);
-    height: var(--ai-chat-button-size);
-    min-width: var(--ai-chat-button-size);
-    min-height: var(--ai-chat-button-size);
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -425,19 +334,19 @@
     }
   }
 
-  // Header icon SVG styling (dark theme - white icons)
+  // Header icon SVG styling
   .header-icon {
-    fill: var(--ai-chat-text-primary);
+    fill: var(--mat-app-on-surface);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: var(--ai-chat-icon-size);
-    height: var(--ai-chat-icon-size);
+    width: 20px;
+    height: 20px;
     position: relative;
     z-index: 1;
   }
 
   // Enhanced hover effect for header buttons
   .mat-icon-button:hover {
-    background-color: rgba(0, 151, 167, 0.15);
+    background-color: var(--mat-app-primary-container);
     border-radius: 50%;
     transform: scale(1.1);
 
@@ -447,7 +356,7 @@
     }
 
     .header-icon {
-      fill: var(--ai-chat-primary-light);
+      fill: var(--mat-app-on-primary-container);
       filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.6));
     }
   }
@@ -469,13 +378,13 @@
 
 // Chat input focus effects
 .chat-input {
-  border-top: 1px solid var(--ai-chat-border-color);
+  border-top: 1px solid var(--mat-app-outline-variant);
   flex-shrink: 0;
   position: relative;
   transition: border-color 0.3s ease;
 
   &:focus-within {
-    border-top-color: var(--ai-chat-border-focus);
+    border-top-color: var(--mat-app-primary);
     box-shadow: 0 -2px 10px rgba(0, 151, 167, 0.2);
   }
 }
@@ -490,7 +399,7 @@
   cursor: pointer;
   user-select: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #263238, #20313b);
+  background: linear-gradient(135deg, var(--mat-app-background), var(--mat-app-surface));
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 151, 167, 0.3);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: bounceIn 0.3s ease-out;
@@ -578,42 +487,18 @@
   z-index: 1;
 }
 
-// Light theme - maximized and minimized states
-.lightTheme .ai-chat-container.maximized {
-  .chat-header {
-    background-color: #f5f5f5;
-  }
-}
-
-// Light theme styles for minimized button with cyan glow
-.lightTheme .minimized-bar {
-  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 151, 167, 0.3);
-
-  &::before {
-    background: radial-gradient(circle, rgba(0, 151, 167, 0.3) 0%, transparent 70%);
-  }
-
-  &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 151, 167, 0.5);
-
-    &::before {
-      background: radial-gradient(circle, rgba(0, 151, 167, 0.5) 0%, transparent 70%);
-    }
-  }
-}
-
-// Light theme - header icons should be dark
-.lightTheme .header-actions {
-  .header-icon {
-    fill: rgba(0, 0, 0, 0.87);
-  }
-}
-
-.lightTheme .minimized-icon {
-  color: #424242;
-}
-
 // NOTE: Menu and sidebar icon styles are in global styles.scss
 // Menu panels are rendered to body, and component styles are encapsulated
 // So all icon color overrides are defined globally
+
+// Dark theme - match GNS3 toolbar color #20313b with transparency
+.dark-theme .ai-chat-container {
+  background-color: rgba(32, 49, 59, 0.60);
+  backdrop-filter: blur(15px) saturate(150%);
+}
+.dark-theme .chat-sidebar {
+  background-color: rgba(26, 37, 44, 0.70);
+}
+.dark-theme .chat-main {
+  background-color: rgba(32, 49, 59, 0.60);
+}

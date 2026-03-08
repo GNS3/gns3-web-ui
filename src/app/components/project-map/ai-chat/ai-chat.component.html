@@ -1,7 +1,7 @@
 <div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 
 <!-- AI Chat Container -->
-<div class="ai-chat-container" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
+<div class="ai-chat-container" [class.lightTheme]="isLightThemeEnabled" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
   mwlResizable [validateResize]="validate"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
@@ -32,9 +32,7 @@
       <div class="sidebar-content" *ngIf="sidebarCollapsed">
         <button class="collapsed-new-chat-btn"
                 mat-icon-button
-                (click)="onSessionCreated()"
-                matTooltip="New chat"
-                matTooltipPosition="right">
+                (click)="onSessionCreated()">
           <mat-icon>add</mat-icon>
         </button>
       </div>
@@ -66,8 +64,7 @@
           <button mat-icon-button
             (mousedown)="$event.stopPropagation()"
             (click)="$event.stopPropagation(); minimizeChat()"
-            class="minimize-button"
-            matTooltip="Minimize">
+            class="minimize-button">
             <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
                  height="20" width="20"
                  viewBox="0 0 24 24">
@@ -77,8 +74,7 @@
           <button mat-icon-button
             (mousedown)="$event.stopPropagation()"
             (click)="$event.stopPropagation(); maximizeChat()"
-            class="maximize-button"
-            [matTooltip]="isMaximized ? 'Restore' : 'Maximize'">
+            class="maximize-button">
             <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
                  height="20" width="20"
                  viewBox="0 0 24 24">
@@ -89,8 +85,7 @@
           <button mat-icon-button
             (mousedown)="$event.stopPropagation()"
             (click)="$event.stopPropagation(); closeChat()"
-            class="close-button"
-            matTooltip="Close">
+            class="close-button">
             <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
                  height="20" width="20"
                  viewBox="0 0 24 24">

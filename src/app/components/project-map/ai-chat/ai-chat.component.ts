@@ -11,6 +11,7 @@ import { ChatMessage, ChatSession, ChatEvent, ToolCall } from '@models/ai-chat.i
 import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
+import { ThemeService } from '@services/theme.service';
 
 /**
  * AI Chat Main Component
@@ -63,7 +64,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     private controllerService: ControllerService,
     private aiChatStore: AiChatStore,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private themeService: ThemeService
   ) {}
 
   /**
@@ -83,6 +85,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
+    // Initialize theme
+    this.themeService.getActualTheme() === 'light'
+      ? (this.isLightThemeEnabled = true)
+      : (this.isLightThemeEnabled = false);
+
     this.initializeChat();
     this.subscribeToStateChanges();
   }
