@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ElementRef, HostListener, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
@@ -18,8 +18,7 @@ import { JsonViewerComponent } from './json-viewer.component';
     <div
       *ngIf="isOpen"
       class="draggable-dialog-overlay"
-      [style.top.px]="position.top"
-      [style.left.px]="position.left"
+      [style.transform]="transform"
       [style.width.px]="size.width"
       [style.zIndex]="9999"
     >
@@ -92,6 +91,9 @@ import { JsonViewerComponent } from './json-viewer.component';
   styles: [`
     .draggable-dialog-overlay {
       position: fixed;
+      top: 0;
+      left: 0;
+      will-change: transform;
     }
 
     .draggable-dialog {
@@ -287,6 +289,7 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChange
 
   isDragging = false;
   dragOffset = { x: 0, y: 0 };
+  animationFrameId: number | null = null;
 
   parsedArguments: any = null;
   parsedOutput: any = null;
@@ -294,6 +297,12 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChange
   get title(): string {
     return this.type === 'tool_call' ? 'Tool Call Details' : 'Execution Result Details';
   }
+
+  get transform(): string {
+    return `translate3d(${this.position.left}px, ${this.position.top}px, 0)`;
+  }
+
+  constructor(private ngZone: NgZone) {}
 
   ngOnInit() {
     this.position = { ...this.initialPosition };
@@ -343,6 +352,9 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChange
 
   ngOnDestroy() {
     this.cleanupDragListeners();
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
   }
 
   startDrag(event: MouseEvent) {
@@ -357,9 +369,11 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChange
       y: event.clientY - this.position.top
     };
 
-    // Add global listeners
-    document.addEventListener('mousemove', this.onDrag);
-    document.addEventListener('mouseup', this.stopDrag);
+    // Add global listeners outside Angular zone for better performance
+    this.ngZone.runOutsideAngular(() => {
+      document.addEventListener('mousemove', this.onDrag);
+      document.addEventListener('mouseup', this.stopDrag);
+    });
   }
 
   private onDrag = (event: MouseEvent) => {
@@ -367,26 +381,45 @@ export class DraggableToolDialogComponent implements OnInit, OnDestroy, OnChange
 
     event.preventDefault();
 
-    let newX = event.clientX - this.dragOffset.x;
-    let newY = event.clientY - this.dragOffset.y;
+    // Cancel any pending animation frame
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
 
-    // Constrain to viewport
-    const maxX = window.innerWidth - this.size.width;
-    const maxY = window.innerHeight - 100; // Minimum visible height
+    // Use requestAnimationFrame for smooth updates
+    this.animationFrameId = requestAnimationFrame(() => {
+      let newX = event.clientX - this.dragOffset.x;
+      let newY = event.clientY - this.dragOffset.y;
 
-    newX = Math.max(0, Math.min(newX, maxX));
-    newY = Math.max(0, Math.min(newY, maxY));
+      // Relax viewport constraints - allow more freedom
+      // Only keep at least 50px visible to prevent losing the dialog
+      const maxX = window.innerWidth - 50;
+      const maxY = window.innerHeight - 50;
 
-    this.position = { left: newX, top: newY };
+      // Allow negative values to move dialog partially off-screen
+      newX = Math.min(newX, maxX);
+      newY = Math.min(newY, maxY);
+
+      // Update position (will trigger change detection once per frame)
+      this.ngZone.run(() => {
+        this.position = { left: newX, top: newY };
+      });
+    });
   };
 
   private stopDrag = () => {
     this.isDragging = false;
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
     this.cleanupDragListeners();
   };
 
   private cleanupDragListeners() {
-    document.removeEventListener('mousemove', this.onDrag);
-    document.removeEventListener('mouseup', this.stopDrag);
+    this.ngZone.runOutsideAngular(() => {
+      document.removeEventListener('mousemove', this.onDrag);
+      document.removeEventListener('mouseup', this.stopDrag);
+    });
   }
 }

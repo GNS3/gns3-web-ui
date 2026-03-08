@@ -2,10 +2,11 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, After
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
 import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
-import { DraggableToolDialogComponent } from './draggable-tool-dialog.component';
+import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
 
 /**
  * AI Chat Message List Component
@@ -139,25 +140,6 @@ import { DraggableToolDialogComponent } from './draggable-tool-dialog.component'
         </div>
       </div>
     </div>
-
-    <!-- Draggable Tool Call Dialog -->
-    <app-draggable-tool-dialog
-      [isOpen]="toolCallDialogOpen"
-      [type]="'tool_call'"
-      [toolCall]="currentToolCall"
-      [initialPosition]="dialogPosition"
-      (close)="closeToolCallDialog()">
-    </app-draggable-tool-dialog>
-
-    <!-- Draggable Tool Result Dialog -->
-    <app-draggable-tool-dialog
-      [isOpen]="toolResultDialogOpen"
-      [type]="'tool_result'"
-      [toolName]="currentToolResult?.toolName"
-      [toolOutput]="currentToolResult?.toolOutput"
-      [initialPosition]="dialogPosition"
-      (close)="closeToolResultDialog()">
-    </app-draggable-tool-dialog>
   `
 })
 export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
@@ -175,12 +157,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   // Tool result expand/collapse state
   private expandedToolResults = new Set<string>();
 
-  // Dialog state for tool calls
-  toolCallDialogOpen = false;
-  toolResultDialogOpen = false;
-  currentToolCall?: ToolCall;
-  currentToolResult?: ChatMessage;
-  dialogPosition = { top: 100, left: 100 };
+  constructor(private dialog: MatDialog) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     // Mark need to scroll to bottom when messages change
@@ -408,107 +385,54 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   /**
    * Open tool call dialog
-   * @param toolCall Tool call to display
+   * @param eventOrToolCall Mouse event or ToolCall from tool-call-display
+   * @param toolCall Optional tool call (when called from inline click)
    */
-  openToolCallDialog(event: MouseEvent | ToolCall, toolCall?: ToolCall): void {
+  openToolCallDialog(eventOrToolCall: MouseEvent | ToolCall, toolCall?: ToolCall): void {
     // Handle both cases: (event, toolCall) or (toolCall) from tool-call-display
     let tc: ToolCall;
-    let triggerElement: HTMLElement | null = null;
 
     if (toolCall !== undefined) {
-      // Called as (event, toolCall)
+      // Called as (event, toolCall) from inline click
       tc = toolCall;
-      const mouseEvent = event as MouseEvent;
-      triggerElement = mouseEvent.target as HTMLElement;
     } else {
       // Called as (toolCall) from tool-call-display
-      tc = event as ToolCall;
+      tc = eventOrToolCall as ToolCall;
     }
 
-    this.currentToolCall = tc;
-    this.toolCallDialogOpen = true;
-
-    // Position dialog near trigger element, or center if no element
-    if (triggerElement) {
-      const rect = triggerElement.getBoundingClientRect();
-      this.dialogPosition = this.calculateDialogPosition(rect);
-    } else {
-      this.dialogPosition = this.getCenterPosition();
-    }
-  }
-
-  /**
-   * Calculate dialog position near trigger element
-   * @param rect Bounding rectangle of trigger element
-   * @returns Position object
-   */
-  private calculateDialogPosition(rect: DOMRect): { top: number; left: number } {
-    const dialogWidth = 700;
-    const dialogHeight = 500;
-    const offset = 10;
-
-    let left = rect.right + offset;
-    let top = rect.top;
-
-    // If dialog would go off right edge, position to the left of the element
-    if (left + dialogWidth > window.innerWidth) {
-      left = rect.left - dialogWidth - offset;
-    }
-
-    // If dialog would go off left edge, center horizontally
-    if (left < 0) {
-      left = (window.innerWidth - dialogWidth) / 2;
-    }
-
-    // If dialog would go off bottom edge, position above the element
-    if (top + dialogHeight > window.innerHeight) {
-      top = window.innerHeight - dialogHeight - offset;
-    }
-
-    // Ensure minimum margins
-    left = Math.max(10, left);
-    top = Math.max(10, top);
-
-    return { top, left };
-  }
-
-  /**
-   * Get centered position in viewport
-   * @returns Position object
-   */
-  private getCenterPosition(): { top: number; left: number } {
-    return {
-      top: Math.max(100, window.innerHeight / 2 - 200),
-      left: Math.max(100, window.innerWidth / 2 - 350)
+    const data: ToolDetailsDialogData = {
+      type: 'tool_call',
+      toolCall: tc
     };
-  }
 
-  /**
-   * Close tool call dialog
-   */
-  closeToolCallDialog(): void {
-    this.toolCallDialogOpen = false;
+    this.dialog.open(ToolDetailsDialogComponent, {
+      data,
+      width: '700px',
+      maxWidth: '90vw',
+      maxHeight: '80vh',
+      panelClass: 'tool-details-dialog'
+    });
   }
 
   /**
    * Open tool result dialog
+   * @param event Mouse event
    * @param message Tool result message
    */
   openToolResultDialog(event: MouseEvent, message: ChatMessage): void {
-    this.currentToolResult = message;
-    this.toolResultDialogOpen = true;
+    const data: ToolDetailsDialogData = {
+      type: 'tool_result',
+      toolName: message.content,
+      toolOutput: message.toolOutput
+    };
 
-    // Position dialog near trigger element
-    const triggerElement = event.target as HTMLElement;
-    const rect = triggerElement.getBoundingClientRect();
-    this.dialogPosition = this.calculateDialogPosition(rect);
-  }
-
-  /**
-   * Close tool result dialog
-   */
-  closeToolResultDialog(): void {
-    this.toolResultDialogOpen = false;
+    this.dialog.open(ToolDetailsDialogComponent, {
+      data,
+      width: '700px',
+      maxWidth: '90vw',
+      maxHeight: '80vh',
+      panelClass: 'tool-details-dialog'
+    });
   }
 
   /**
