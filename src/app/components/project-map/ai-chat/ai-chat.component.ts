@@ -873,6 +873,10 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    */
   toggleDragging(value: boolean): void {
     this.isDraggingEnabled = value;
+    // Save position when dragging ends
+    if (!value) {
+      this.debouncedSavePanelState();
+    }
   }
 
   /**
