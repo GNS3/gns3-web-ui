@@ -494,7 +494,7 @@
 // Dark theme - match GNS3 toolbar color #20313b with transparency
 .dark-theme .ai-chat-container {
   background-color: rgba(32, 49, 59, 0.60);
-  backdrop-filter: blur(15px) saturate(150%);
+  backdrop-filter: blur(10px) saturate(150%);
 }
 .dark-theme .chat-sidebar {
   background-color: rgba(26, 37, 44, 0.70);
