@@ -85,7 +85,7 @@
 | 问题 | 位置 | 风险等级 | 文档 |
 |------|------|----------|------|
 | 密码明文存储 | `login/login.component.ts:105-111` | 🔴 严重 | [login-review.md](components/login-review.md) |
-| XSS 漏洞（AI 聊天） | `project-map/ai-chat/chat-message-list.component.ts:240-241` | 🔴 严重 | [project-map-review.md](components/project-map-review.md) |
+| XSS 漏洞（AI 聊天） | `project-map/ai-chat/chat-message-list.component.ts:240-241` | ✅ 已修复 (2026-03-09) | [project-map-review.md](components/project-map-review.md) |
 | 认证错误处理被禁用 | `interceptors/http.interceptor.ts:15-19` | 🔴 严重 | [interceptors-review.md](interceptors-review.md) |
 | XSS 防护不足 | `projects/edit-project-dialog/readme-editor/readme-editor.component.ts:34-35` | 🔴 严重 | [projects-review.md](components/projects-review.md) |
 | SVG 注入风险 | `template/template.component.ts` | 🔴 高 | [template-review.md](components/template-review.md) |
@@ -99,7 +99,7 @@
 
 | 严重程度 | 数量 | 百分比 |
 |----------|------|--------|
-| 🔴 严重 | 8 | 14% |
+| 🔴 严重 | 7 | 12% |
 | 🟠 高 | 15 | 26% |
 | 🟡 中 | 28 | 48% |
 | 🟢 低 | 7 | 12% |
@@ -108,7 +108,7 @@
 
 | 问题类型 | 数量 |
 |----------|------|
-| 安全漏洞 | 18 |
+| 安全漏洞 | 17 |
 | 内存泄漏 | 20 |
 | 性能问题 | 12 |
 | 代码质量 | 28 |

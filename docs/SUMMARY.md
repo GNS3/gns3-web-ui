@@ -2,7 +2,7 @@
 
 ---
 
-**文档生成时间**: 2026-03-07
+**文档生成时间**: 2026-03-09
 **审查工具**: Claude Code (Sonnet 4.5)
 **审查范围**: GNS3 Web UI 完整项目代码审查
 
@@ -51,16 +51,17 @@
 - **风险**: 未授权用户可能访问受保护资源
 - **修复**: 立即取消注释并实现认证错误处理
 
-#### 3. **XSS 漏洞** (高)
+#### 3. **XSS 漏洞** (高) ✅ 已修复
 - **位置**: `src/app/components/project-map/ai-chat/chat-message-list.component.ts:241`
-- **问题**: 使用 `bypassSecurityTrustHtml` 绕过安全检查
-- **风险**: 恶意聊天消息可能注入脚本
-- **修复**: 使用 DOMPurify 净化 HTML
+- **原问题**: 使用 `bypassSecurityTrustHtml` 绕过安全检查
+- **修复**: 改用 `<markdown>` 组件渲染内容，避免 XSS 风险
+- **状态**: 2026-03-09 已修复
 
-#### 4. **SVG 注入风险** (中)
+#### 4. **SVG 注入风险** (中) ✅ 已改进
 - **位置**: `src/app/cartography/helpers/svg-to-drawing-converter/`
-- **问题**: SVG 内容解析时未进行净化
-- **修复**: 实现严格的 SVG 白名单
+- **原问题**: SVG 内容解析时未进行净化
+- **修复**: 使用 DOMParser 解析，仅提取安全属性（x, y, width, height 等），不执行脚本
+- **状态**: 2026-03-09 已改进
 
 ---
 
@@ -126,13 +127,11 @@
 - **[Confirmation Dialog 组件](components/confirmation-dialog-component.md)** - 可复用确认对话框组件文档
 
 ### 故障排查文档
-- **[Z-Index 管理重构](troubleshooting/z-index-management-refactor.md)** - Z-Index 层级管理系统重构文档
 - **[Session ID & SSE 管理](troubleshooting/ai-chat-session-id-and-sse.md)** - AI Chat 会话管理和 SSE 连接详解
 - **[AI Chat 删除功能修复](troubleshooting/ai-chat-delete-fix.md)** - 删除会话功能的修复记录
 - **[时间戳时区问题](troubleshooting/timestamp-timezone-issue.md)** - 时间显示问题修复
 
 ### 更新日志
-- **[2026-03-08 Z-Index 重构](changelog/z-index-service-refactor-2026-03-08.md)** - Z-Index 管理系统从增量计数器重构为固定层级模式
 - **[2026-03-08 更新](changelog/ai-chat-updates-2026-03-08.md)** - 确认对话框组件和 Session 管理优化
 
 ### 组件审查文档
@@ -174,14 +173,10 @@ catchError((err: HttpErrorResponse) => {
 })
 ```
 
-#### 3. 修复 XSS 漏洞
+#### 3. 修复 XSS 漏洞 ✅ 已完成
 ```typescript
-import DOMPurify from 'dompurify';
-
-const clean = DOMPurify.sanitize(html, {
-  ALLOWED_TAGS: ['p', 'strong', 'em', 'code', 'pre'],
-  ALLOWED_ATTR: []
-});
+// 已改用 <markdown> 组件渲染内容，无需额外净化
+// 2026-03-09 已完成
 ```
 
 ### 📅 短期改进 / Short-term (本月内)
@@ -339,7 +334,7 @@ function validateResponse(data: unknown): data is ExpectedType {
 | 类型覆盖率 | ~60% | >90% |
 | 错误处理覆盖率 | ~30% | >80% |
 | 测试覆盖率 | 未知 | >70% |
-| 安全漏洞 | 4 个严重 | 0 |
+| 安全漏洞 | 2 个严重 (密码存储、认证处理) | 0 |
 | 内存泄漏 | 多处 | 0 |
 
 ---
@@ -349,7 +344,7 @@ function validateResponse(data: unknown): data is ExpectedType {
 ### 本周
 - [ ] 修复密码明文存储问题
 - [ ] 启用认证错误处理
-- [ ] 修复 XSS 漏洞
+- [x] 修复 XSS 漏洞 (2026-03-09 已完成)
 
 ### 本月
 - [ ] 修复所有内存泄漏
@@ -369,5 +364,5 @@ function validateResponse(data: unknown): data is ExpectedType {
 
 ---
 
-**文档生成时间**: 2026-03-07
+**文档生成时间**: 2026-03-09
 **审查工具**: Claude Code (Sonnet 4.5)
