@@ -1,16 +1,24 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ToolCall } from '@models/ai-chat.interface';
 
 /**
  * AI Chat Tool Call Display Component
- * Simplified display - shows tool name as clickable inline element
+ * Shows tool name with status indicator and progress
  */
 @Component({
   selector: 'app-tool-call-display',
+  standalone: true,
+  imports: [MatIconModule, MatProgressSpinnerModule],
   template: `
-    <div class="inline-tool-call" (click)="onViewDetails()" title="Click to view details">
+    <div class="inline-tool-call" (click)="onViewDetails()" [title]="getStatusText()" *ngIf="toolCall?.function?.name">
       <mat-icon class="tool-icon">build</mat-icon>
-      <span class="tool-name">{{ toolCall.function.name }}</span>
+      <span class="tool-name">{{ toolCall?.function?.name }}</span>
+      <span class="tool-status" [class.status-receiving]="isReceiving" [class.status-executing]="isExecuting">
+        <mat-spinner *ngIf="isReceiving || isExecuting" diameter="12"></mat-spinner>
+        <span *ngIf="!isReceiving && !isExecuting" class="status-text">{{ getStatusText() }}</span>
+      </span>
       <mat-icon class="expand-icon">open_in_new</mat-icon>
     </div>
   `,
@@ -52,6 +60,26 @@ import { ToolCall } from '@models/ai-chat.interface';
       color: var(--mat-app-on-surface);
     }
 
+    .tool-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--mat-app-on-surface-variant);
+    }
+
+    .tool-status.status-receiving {
+      color: #f59e0b;
+    }
+
+    .tool-status.status-executing {
+      color: #8b5cf6;
+    }
+
+    .status-text {
+      font-size: 11px;
+    }
+
     .expand-icon {
       width: 14px;
       height: 14px;
@@ -63,14 +91,51 @@ import { ToolCall } from '@models/ai-chat.interface';
     .inline-tool-call:hover .expand-icon {
       opacity: 1;
     }
+
+    ::ng-deep .tool-status mat-spinner {
+      display: inline-block;
+    }
   `]
 })
 export class ToolCallDisplayComponent {
-  @Input() toolCall: ToolCall;
+  @Input() toolCall: ToolCall & { isExecuting?: boolean };
   @Input() toolOutput?: string;
   @Input() error?: string;
   @Input() isExecuting = false;
+
+  // For historical messages, the tool call is already complete
+  @Input() isHistory = false;
   @Output() viewDetails = new EventEmitter<ToolCall>();
+
+  /**
+   * Check if receiving tool call parameters (not complete)
+   * Only show for real-time messages when complete is explicitly false
+   */
+  get isReceiving(): boolean {
+    // For history messages, complete might not exist - treat as complete
+    // Only show receiving when complete is explicitly false (real-time)
+    return this.toolCall?.function?.complete === false;
+  }
+
+  /**
+   * Get status text
+   */
+  getStatusText(): string {
+    if (this.isReceiving) {
+      return 'Receiving parameters...';
+    }
+    if (this.isExecuting || (this.toolCall as any)?.isExecuting) {
+      return 'Executing...';
+    }
+    if (this.error) {
+      return 'Error';
+    }
+    if (this.toolOutput) {
+      return 'Completed';
+    }
+    // For history messages, always show as ready/completed
+    return 'Completed';
+  }
 
   /**
    * Emit viewDetails event to open dialog

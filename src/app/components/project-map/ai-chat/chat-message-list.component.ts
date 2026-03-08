@@ -48,12 +48,14 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
 
               <!-- Tool calls list -->
               <div class="tool-calls-container" *ngIf="message.tool_calls && message.tool_calls.length > 0">
-                <app-tool-call-display
+                <div
+                  class="inline-tool-call"
                   *ngFor="let toolCall of message.tool_calls"
-                  [toolCall]="toolCall"
-                  [isExecuting]="isToolCallExecuting(toolCall.id)"
-                  (viewDetails)="openToolCallDialog($event)">
-                </app-tool-call-display>
+                  (click)="openToolCallDialog(toolCall)">
+                  <mat-icon class="tool-icon">build</mat-icon>
+                  <span class="tool-name-text">{{ toolCall.function.name }}</span>
+                  <mat-icon class="expand-icon">open_in_new</mat-icon>
+                </div>
               </div>
 
               <!-- Tool results list -->

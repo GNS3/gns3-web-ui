@@ -535,7 +535,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         this.handleToolCallEvent(event);
         break;
       case 'tool_start':
-        // Tool started execution
+        this.handleToolStartEvent(event);
         break;
       case 'tool_end':
         this.handleToolEndEvent(event);
@@ -608,6 +608,23 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Update tool call in state management
     this.aiChatStore.addOrUpdateToolCall(toolCall);
+  }
+
+  /**
+   * Handle tool start event - tool call finished, execution started
+   * @param event Event
+   */
+  private handleToolStartEvent(event: ChatEvent): void {
+    // Mark the tool call as executing
+    if (event.tool_call_id && this.currentAssistantMessage?.tool_calls) {
+      const toolCall = this.currentAssistantMessage.tool_calls.find(tc => tc.id === event.tool_call_id);
+      if (toolCall) {
+        // Mark as executing (will be used to show executing status)
+        (toolCall as any).isExecuting = true;
+        this.currentMessages = [...this.currentMessages];
+        this.cdr.markForCheck();
+      }
+    }
   }
 
   /**
