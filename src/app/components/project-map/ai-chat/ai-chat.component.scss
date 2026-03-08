@@ -41,12 +41,6 @@
   --ai-chat-spacing-sm: 8px;
   --ai-chat-spacing-md: 12px;
   --ai-chat-spacing-lg: 16px;
-
-  // Z-index layers
-  --ai-chat-z-overlay: 1001;
-  --ai-chat-z-container: 1000;
-  --ai-chat-z-sidebar: 100;
-  --ai-chat-z-menu: 1001;
 }
 
 .ai-chat-container {
@@ -56,7 +50,7 @@
   border-radius: 12px;
   overflow: hidden;
   display: flex;
-  z-index: var(--ai-chat-z-container);
+  z-index: 1000;
   color: var(--ai-chat-text-primary);
   border: 1px solid var(--ai-chat-border-color);
   backdrop-filter: blur(10px);
@@ -107,7 +101,7 @@
   right: 0;
   bottom: 0;
   background-color: transparent;
-  z-index: var(--ai-chat-z-overlay);
+  z-index: 1001;
   cursor: grabbing;
 }
 
@@ -620,45 +614,6 @@
   color: #424242;
 }
 
-// ============================================================================
-// CRITICAL FIX: Material overlays must appear above AI Chat container
-// AI Chat z-index is 9999, so all overlays need to be higher
-// ============================================================================
-
-// Global CDK overlay fix - highest priority
-.cdk-overlay-container {
-  z-index: var(--ai-chat-z-menu) !important;
-}
-
-// All Material overlay panels
-.mat-menu-panel,
-.mat-select-panel,
-.mat-autocomplete-panel,
-.mat-mdc-menu-panel,
-.mat-mdc-select-panel,
-.mat-datepicker-content,
-.mat-timepicker-content,
-.mat-colorpicker-content {
-  z-index: var(--ai-chat-z-menu) !important;
-}
-
-// NOTE: Session menu and confirm dialog z-index are now set in global styles.scss
-// These overlays are rendered to document body, so component-scoped styles won't work
-
-// Backdrop (overlay background)
-.cdk-overlay-backdrop {
-  z-index: calc(var(--ai-chat-z-menu) - 1) !important;
-}
-
-// Overlay connection (used for positioning)
-.cdk-overlay-connected-position-bounding-box {
-  z-index: var(--ai-chat-z-menu) !important;
-}
-
-// NOTE: Material overlay z-index fixes are applied globally in styles.scss
-// Material CDK overlays are appended to document body, not parent component
-// Component-scoped rules won't work for overlays
-
 // NOTE: Menu and sidebar icon styles are in global styles.scss
-// Menu panels are rendered to body, and component styles are encapsulated (Angular 14)
+// Menu panels are rendered to body, and component styles are encapsulated
 // So all icon color overrides are defined globally

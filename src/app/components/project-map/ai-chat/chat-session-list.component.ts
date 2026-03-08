@@ -8,7 +8,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
-import { ZIndexService, Z_INDEX_LAYERS } from '@services/z-index.service';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 /**
@@ -400,45 +399,21 @@ export class ChatSessionListComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private aiChatService: AiChatService,
-    private zIndexService: ZIndexService,
     private renderer: Renderer2
   ) {}
 
   /**
    * Handle menu opened event
-   * Set menu z-index using ZIndexService
    */
   onMenuOpened(): void {
-    // Use requestAnimationFrame to ensure DOM is ready
-    requestAnimationFrame(() => {
-      // Get all menu panels - the last one is our session menu
-      const menuPanels = document.querySelectorAll('.mat-menu-panel');
-      if (menuPanels.length > 0) {
-        const lastMenu = menuPanels[menuPanels.length - 1] as HTMLElement;
-        const overlayPane = lastMenu.closest('.cdk-overlay-pane') as HTMLElement;
-
-        if (overlayPane) {
-          // Mark it as session menu overlay
-          this.renderer.setAttribute(overlayPane, 'data-session-menu', 'true');
-          // Set z-index
-          this.zIndexService.applyLayerZIndex('SESSION_MENU', overlayPane);
-        }
-      }
-    });
+    // Menu z-index handled by CSS
   }
 
   /**
    * Handle menu closed event
    */
   onMenuClosed(): void {
-    requestAnimationFrame(() => {
-      // Find the session menu overlay by its data attribute and clean up
-      const sessionMenuOverlay = document.querySelector('[data-session-menu="true"]') as HTMLElement;
-      if (sessionMenuOverlay) {
-        this.renderer.removeAttribute(sessionMenuOverlay, 'data-session-menu');
-        sessionMenuOverlay.style.removeProperty('z-index');
-      }
-    });
+    // Cleanup if needed
   }
 
   /**
@@ -579,14 +554,6 @@ export class ChatSessionListComponent implements OnInit {
       restoreFocus: false,
       backdropClass: 'delete-dialog-backdrop',
       panelClass: 'confirmation-dialog-panel'
-    });
-
-    // Set dialog z-index using ZIndexService
-    dialogRef.afterOpened().subscribe(() => {
-      const dialogPane = document.querySelector('.confirmation-dialog-panel') as HTMLElement;
-      if (dialogPane) {
-        this.zIndexService.applyLayerZIndex('CONFIRM_DIALOG', dialogPane);
-      }
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {

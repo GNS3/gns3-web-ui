@@ -1,7 +1,7 @@
-<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" [style.z-index]="currentZIndex + 1" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
+<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 
 <!-- AI Chat Container -->
-<div class="ai-chat-container" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style" [style.z-index]="currentZIndex"
+<div class="ai-chat-container" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
   mwlResizable [validateResize]="validate"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
