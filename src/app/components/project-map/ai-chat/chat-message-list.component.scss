@@ -715,3 +715,38 @@ markdown li p {
 .dark-theme .system-bubble {
   color: rgba(255, 255, 255, 0.75);
 }
+
+/* Light theme text colors */
+.light-theme .message-text,
+.light-theme .tool-name-text,
+.light-theme .tool-summary {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.light-theme .message-time,
+.light-theme .expand-icon {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.light-theme .assistant-bubble {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.light-theme .system-bubble {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Light theme code block colors */
+.light-theme .message-text code {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.light-theme .message-text pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.light-theme .message-text pre code {
+  color: rgba(0, 0, 0, 0.95);
+}
