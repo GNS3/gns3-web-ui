@@ -407,14 +407,17 @@ export class ChatSessionListComponent implements OnInit {
    * Handle menu opened event - bring menu to front
    */
   onMenuOpened(): void {
-    // Get next z-index to ensure menu appears on top
-    const zIndex = this.zIndexService.getNextZIndex();
-
     // Find the menu panel and set its z-index
     setTimeout(() => {
       const menuPanel = document.querySelector('.mat-menu-panel.session-action-menu') as HTMLElement;
       if (menuPanel) {
-        menuPanel.style.zIndex = zIndex.toString();
+        // Get the AI Chat container's z-index (parent window)
+        const aiChatContainer = document.querySelector('.ai-chat-container') as HTMLElement;
+        if (aiChatContainer) {
+          const containerZIndex = parseInt(window.getComputedStyle(aiChatContainer).zIndex) || 1000;
+          // Set menu z-index to parent's z-index + 1 to ensure it's on top
+          menuPanel.style.setProperty('z-index', String(containerZIndex + 1), 'important');
+        }
       }
     });
   }

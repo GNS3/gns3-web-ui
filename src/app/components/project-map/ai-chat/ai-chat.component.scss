@@ -642,6 +642,11 @@
   z-index: var(--ai-chat-z-menu) !important;
 }
 
+// Session action menu - allow dynamic z-index from JavaScript
+.mat-menu-panel.session-action-menu {
+  z-index: auto !important;
+}
+
 // Backdrop (overlay background)
 .cdk-overlay-backdrop {
   z-index: calc(var(--ai-chat-z-menu) - 1) !important;
