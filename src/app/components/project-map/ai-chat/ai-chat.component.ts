@@ -590,24 +590,35 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Update or add tool call
     this.currentToolCalls.set(toolCall.id, toolCall);
 
-    // Add to assistant message's tool_calls if it's a new tool call
-    if (this.currentAssistantMessage && !this.currentAssistantMessage.tool_calls) {
+    // If no currentAssistantMessage, create one
+    if (!this.currentAssistantMessage) {
+      this.currentAssistantMessage = {
+        id: event.message_id || this.generateMessageId(),
+        role: 'assistant',
+        content: '',
+        created_at: new Date().toISOString(),
+        tool_calls: []
+      };
+      this.currentMessages = [...this.currentMessages, this.currentAssistantMessage];
+    }
+
+    // Add to assistant message's tool_calls
+    if (!this.currentAssistantMessage.tool_calls) {
       this.currentAssistantMessage.tool_calls = [];
     }
 
-    if (this.currentAssistantMessage) {
-      const existingCall = this.currentAssistantMessage.tool_calls?.find(tc => tc.id === toolCall.id);
-      if (!existingCall) {
-        this.currentAssistantMessage.tool_calls?.push({ ...toolCall });
-      } else {
-        // Update parameters
-        existingCall.function.arguments = toolCall.function.arguments;
-        existingCall.function.complete = toolCall.function.complete;
-      }
+    const existingCall = this.currentAssistantMessage.tool_calls.find(tc => tc.id === toolCall.id);
+    if (!existingCall) {
+      this.currentAssistantMessage.tool_calls.push({ ...toolCall });
+    } else {
+      // Update parameters
+      existingCall.function.arguments = toolCall.function.arguments;
+      existingCall.function.complete = toolCall.function.complete;
     }
 
     // Update tool call in state management
     this.aiChatStore.addOrUpdateToolCall(toolCall);
+    this.cdr.markForCheck();
   }
 
   /**
@@ -632,28 +643,44 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @param event Event
    */
   private handleToolEndEvent(event: ChatEvent): void {
-    // Find the last assistant message and add tool_result to it
-    let lastAssistantIndex = -1;
-    for (let i = this.currentMessages.length - 1; i >= 0; i--) {
-      if (this.currentMessages[i].role === 'assistant') {
-        lastAssistantIndex = i;
-        break;
+    // Find the assistant message that contains this tool_call
+    let targetAssistant: ChatMessage | null = null;
+
+    if (event.tool_call_id) {
+      // Find by tool_call_id
+      for (let i = this.currentMessages.length - 1; i >= 0; i--) {
+        const msg = this.currentMessages[i];
+        if (msg.role === 'assistant' && msg.tool_calls) {
+          const found = msg.tool_calls.find(tc => tc.id === event.tool_call_id);
+          if (found) {
+            targetAssistant = msg;
+            break;
+          }
+        }
       }
     }
 
-    if (lastAssistantIndex !== -1) {
+    // Fallback to currentAssistantMessage
+    if (!targetAssistant) {
+      targetAssistant = this.currentAssistantMessage;
+    }
+
+    if (targetAssistant) {
       // Add tool_result to existing assistant message
-      const assistantMessage = this.currentMessages[lastAssistantIndex];
-      if (!assistantMessage.tool_result) {
-        assistantMessage.tool_result = [];
+      if (!targetAssistant.tool_result) {
+        targetAssistant.tool_result = [];
       }
-      assistantMessage.tool_result.push({
+      targetAssistant.tool_result.push({
         toolName: event.tool_name || '',
         toolOutput: event.tool_output || '',
         tool_call_id: event.tool_call_id
       });
       // Trigger change detection
       this.currentMessages = [...this.currentMessages];
+      this.cdr.markForCheck();
+
+      // Reset currentAssistantMessage so next content creates a new message
+      this.currentAssistantMessage = null;
     } else {
       // Fallback: create a new assistant message with tool_result
       const assistantMessage: ChatMessage = {
