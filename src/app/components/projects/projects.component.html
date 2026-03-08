@@ -47,8 +47,6 @@
           <mat-cell  class="action" *matCellDef="let row" style="text-align: right">
             <button
               mat-icon-button
-              matTooltip="Open project"
-              matTooltipClass="custom-tooltip"
               (click)="open(row)"
               *ngIf="row.status == 'closed'"
             >
@@ -56,8 +54,6 @@
             </button>
             <button
               mat-icon-button
-              matTooltip="Close project"
-              matTooltipClass="custom-tooltip"
               (click)="close(row)"
               *ngIf="row.status == 'opened'"
             >
@@ -65,8 +61,6 @@
             </button>
             <button
               mat-icon-button
-              matTooltip="Save project as"
-              matTooltipClass="custom-tooltip"
               (click)="duplicate(row)"
               *ngIf="row.status == 'closed'"
             >
@@ -74,8 +68,6 @@
             </button>
             <button
               mat-icon-button
-              matTooltip="Export project"
-              matTooltipClass="custom-tooltip"
               (click)="exportSelectProject(row)"
 
             >
@@ -88,12 +80,12 @@
 
         <ng-container matColumnDef="delete" >
           <mat-header-cell *matHeaderCellDef  class="action">
-            <button mat-button   matTooltip="Delete all projects"   matTooltipClass="custom-tooltip"*ngIf="selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+            <button mat-button *ngIf="selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
              <mat-icon>delete</mat-icon>
             </button>
           </mat-header-cell>
           <mat-cell *matCellDef="let row"   class="action">
-            <button  mat-icon-button  matTooltip="Delete project"   matTooltipClass="custom-tooltip" (click)="delete(row)" *ngIf="row.status == 'closed' && selection.isSelected(row)" aria-label="Example icon button with a delete icon" >
+            <button  mat-icon-button (click)="delete(row)" *ngIf="row.status == 'closed' && selection.isSelected(row)" aria-label="Example icon button with a delete icon" >
             <mat-icon aria-label="Delete project">delete</mat-icon>
           </button>
           </mat-cell>

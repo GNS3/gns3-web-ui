@@ -79,3 +79,24 @@ mat-header-cell, mat-cell {
     width: 100%;
   }
 }
+
+.table-link {
+  transition: transform 0.2s ease;
+  display: inline-block;
+  transform-origin: left center;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.table-link:hover {
+  transform: scale(1.25);
+}
+
+/* Table action buttons hover effect */
+mat-cell .mat-icon-button {
+  transition: transform 0.2s ease;
+}
+
+mat-cell .mat-icon-button:hover {
+  transform: scale(1.25);
+}
