@@ -92,6 +92,17 @@ mat-tab-group {
   display: flex;
   justify-content: space-between;
   padding-right: 5px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
 }
 
 ::-webkit-scrollbar {
