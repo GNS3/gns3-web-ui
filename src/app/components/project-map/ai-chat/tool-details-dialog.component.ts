@@ -163,6 +163,24 @@ export interface ToolDetailsDialogData {
       border: 1px solid var(--mat-app-outline-variant);
       white-space: pre-wrap;
       font-size: 13px;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    }
+
+    /* Dark mode colors */
+    ::ng-deep .dark-theme .json-container {
+      --ngx-json-string: #a5d6ff;
+      --ngx-json-number: #79c0ff;
+      --ngx-json-boolean: #ff7b72;
+      --ngx-json-date: #d29922;
+      --ngx-json-array: #ffa657;
+      --ngx-json-object: #7ee787;
+      --ngx-json-function: #fff;
+      --ngx-json-null: #8b949e;
+      --ngx-json-null-bg: rgba(235, 235, 235, 0.1);
+      --ngx-json-undefined: #f28179;
+      --ngx-json-key: #7ee787;
+      --ngx-json-separator: #8b949e;
+      --ngx-json-value: var(--mat-app-on-surface);
     }
 
     /* Scrollbar styles */
