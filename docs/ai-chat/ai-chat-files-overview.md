@@ -9,9 +9,8 @@
 ### 实现方案
 | 文档 | 说明 | 状态 |
 |------|------|------|
-| [ai-chat-implementation-plan.md](./ai-chat-implementation-plan.md) | AI Chat 初始实现计划 | ✅ 已实现 |
-| [ai-chat-ui-optimization-plan.md](./ai-chat-ui-optimization-plan.md) | UI 优化方案（JSON viewer等） | ✅ 已实现 |
-| [ai-chat-component-architecture.md](./ai-chat-component-architecture.md) | 组件架构文档 | ✅ 已完成 |
+| [ai-chat-implementation-plan.md](./ai-chat-implementation-plan.md) | AI Chat 实现与架构（完整指南） | ✅ 已实现 |
+| [ai-chat-ui-optimization-plan.md](./ai-chat-ui-optimization-plan.md) | UI 优化方案 | ✅ 已实现 |
 | [ai-chat-json-viewer-implementation.md](./ai-chat-json-viewer-implementation.md) | JSON Viewer 实现记录 | ✅ 已完成 |
 | [confirmation-dialog-component.md](./confirmation-dialog-component.md) | 确认对话框组件 | ✅ 已实现 |
 
