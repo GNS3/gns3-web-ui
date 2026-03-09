@@ -2,7 +2,7 @@
 
 <!-- AI Chat Container -->
 <div class="ai-chat-container" [class.lightTheme]="isLightThemeEnabled" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
-  mwlResizable [validateResize]="validate"
+  mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 

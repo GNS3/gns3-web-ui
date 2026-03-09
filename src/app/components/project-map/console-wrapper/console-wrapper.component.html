@@ -2,7 +2,7 @@
 </div>
 <!-- Option with resizing -->
 <div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled }"
-  [ngStyle]="style" mwlResizable [validateResize]="validate"
+  [ngStyle]="style" mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 
