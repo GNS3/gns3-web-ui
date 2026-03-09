@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MarkdownModule } from 'ngx-markdown';
 import { ToolCall } from '@models/ai-chat.interface';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 export interface ToolDetailsDialogData {
   type: 'tool_call' | 'tool_result';
@@ -15,6 +15,7 @@ export interface ToolDetailsDialogData {
 /**
  * Tool Details Dialog Component
  * Displays tool call or tool result details in a Material Dialog
+ * Uses JsonViewerComponent for formatted JSON display
  */
 @Component({
   selector: 'app-tool-details-dialog',
@@ -23,7 +24,7 @@ export interface ToolDetailsDialogData {
     CommonModule,
     MatIconModule,
     MatDialogModule,
-    MarkdownModule
+    NgxJsonViewerModule
   ],
   template: `
     <div class="dialog-header">
@@ -46,11 +47,8 @@ export interface ToolDetailsDialogData {
 
         <div class="info-section">
           <div class="info-label">Arguments:</div>
-          <div class="content-container">
-            <ng-container *ngIf="isArgumentsMarkdown">
-              <markdown class="markdown-content" [data]="formattedArguments"></markdown>
-            </ng-container>
-            <pre *ngIf="!isArgumentsMarkdown" class="code-content"><code>{{ formattedArguments }}</code></pre>
+          <div class="json-container">
+            <ngx-json-viewer [json]="parsedArguments"></ngx-json-viewer>
           </div>
         </div>
       </ng-container>
@@ -64,11 +62,8 @@ export interface ToolDetailsDialogData {
 
         <div class="info-section">
           <div class="info-label">Output:</div>
-          <div class="content-container">
-            <ng-container *ngIf="isOutputMarkdown">
-              <markdown class="markdown-content" [data]="formattedOutput"></markdown>
-            </ng-container>
-            <pre *ngIf="!isOutputMarkdown" class="code-content"><code>{{ formattedOutput }}</code></pre>
+          <div class="json-container">
+            <ngx-json-viewer [json]="parsedOutput"></ngx-json-viewer>
           </div>
         </div>
       </ng-container>
@@ -110,48 +105,17 @@ export interface ToolDetailsDialogData {
       padding: 0;
       color: var(--mat-app-on-surface);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      border-radius: 50%;
-    }
-
-    .close-button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(244, 67, 54, 0.2);
-      transform: translate(-50%, -50%);
-      transition: width 0.4s ease, height 0.4s ease;
     }
 
     .close-button:hover {
       background-color: rgba(244, 67, 54, 0.1);
-      box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
-      transform: scale(1.1);
-    }
-
-    .close-button:hover::before {
-      width: 100%;
-      height: 100%;
-    }
-
-    .close-button:active {
-      transform: scale(0.95);
+      border-radius: 50%;
     }
 
     .close-button mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
-      position: relative;
-      z-index: 1;
     }
 
     .dialog-content {
@@ -159,8 +123,8 @@ export interface ToolDetailsDialogData {
       max-width: 800px;
       min-width: 500px;
       max-height: 70vh;
+      overflow-y: auto;
       background-color: var(--mat-app-background);
-      border-radius: 0 0 16px 16px;
     }
 
     .info-section {
@@ -190,142 +154,39 @@ export interface ToolDetailsDialogData {
       word-break: break-all;
     }
 
-    .content-container {
+    .json-container {
       background: var(--mat-app-surface-container-low);
       border-radius: 6px;
-      overflow: hidden;
+      padding: 12px;
+      max-height: 500px;
+      overflow-y: auto;
       border: 1px solid var(--mat-app-outline-variant);
     }
 
-    .markdown-content {
-      padding: 12px;
-      color: var(--mat-app-on-surface);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .markdown-content :global(p) {
-      margin: 0.25em 0;
-    }
-
-    .markdown-content :global(ul),
-    .markdown-content :global(ol) {
-      margin: 0.25em 0;
-    }
-
-    .markdown-content :global(li) {
-      margin: 0.1em 0;
-    }
-
-    .markdown-content :global(pre) {
-      background: var(--mat-app-surface-container-high);
-      padding: 8px;
-      border-radius: 4px;
-      overflow-x: auto;
-      margin: 4px 0;
-      font-size: 13px;
-    }
-
-    .markdown-content :global(code) {
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .markdown-content :global(pre code) {
-      font-size: 13px;
-    }
-
-    .code-content {
-      margin: 0;
-      padding: 12px;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 13px;
-      line-height: 1.5;
-      color: var(--mat-app-on-surface);
-      background: var(--mat-app-surface);
-      overflow-x: auto;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-
-    .code-content code {
-      font-family: inherit;
-      font-size: inherit;
-    }
-
-    /* Scrollbar styles - match AI chat window */
-    .content-container::-webkit-scrollbar,
-    .code-content::-webkit-scrollbar {
+    /* Scrollbar styles */
+    .dialog-content::-webkit-scrollbar,
+    .json-container::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
 
-    .content-container::-webkit-scrollbar-track,
-    .code-content::-webkit-scrollbar-track {
+    .dialog-content::-webkit-scrollbar-track,
+    .json-container::-webkit-scrollbar-track {
       background: transparent;
     }
 
-    .content-container::-webkit-scrollbar-thumb,
-    .code-content::-webkit-scrollbar-thumb {
+    .dialog-content::-webkit-scrollbar-thumb,
+    .json-container::-webkit-scrollbar-thumb {
       background: rgba(0, 151, 167, 0.3);
       border-radius: 10px;
     }
 
-    .content-container::-webkit-scrollbar-thumb:hover,
-    .code-content::-webkit-scrollbar-thumb:hover {
+    .dialog-content::-webkit-scrollbar-thumb:hover,
+    .json-container::-webkit-scrollbar-thumb:hover {
       background: rgba(0, 151, 167, 0.5);
     }
 
-    /* Dark theme adjustments */
-    :host-context(.dark-theme) .dialog-content {
-      background-color: rgba(32, 49, 59, 0.95);
-    }
-
-    :host-context(.dark-theme) .markdown-content,
-    :host-context(.dark-theme) .code-content {
-      color: rgba(255, 255, 255, 0.87);
-    }
-
-    :host-context(.dark-theme) .info-value {
-      color: rgba(255, 255, 255, 0.87);
-      background-color: rgba(26, 37, 44, 0.7);
-    }
-
-    :host-context(.dark-theme) .content-container {
-      background-color: rgba(26, 37, 44, 0.7);
-      border-color: var(--mat-app-outline-variant);
-    }
-
-    :host-context(.dark-theme) .code-content {
-      background-color: rgba(32, 49, 59, 0.8);
-    }
-
-    /* Light theme adjustments */
-    :host-context(.light-theme) .markdown-content,
-    :host-context(.light-theme) .code-content {
-      color: rgba(0, 0, 0, 0.87);
-    }
-
-    :host-context(.light-theme) .info-value {
-      color: rgba(0, 0, 0, 0.87);
-    }
-
-    :host-context(.light-theme) .markdown-content :global(code) {
-      background-color: rgba(0, 0, 0, 0.08);
-      color: rgba(0, 0, 0, 0.95);
-    }
-
-    :host-context(.light-theme) .markdown-content :global(pre) {
-      background-color: rgba(0, 0, 0, 0.05);
-      color: rgba(0, 0, 0, 0.95);
-    }
-
-    :host-context(.light-theme) .markdown-content :global(pre code) {
-      color: rgba(0, 0, 0, 0.95);
-    }
-
-    /* Dialog container styling - enhanced with glass effect */
+    /* Dialog container styling */
     ::ng-deep .mat-mdc-dialog-container {
       border-radius: 16px !important;
       border: 1px solid var(--mat-app-outline-variant);
@@ -333,67 +194,12 @@ export interface ToolDetailsDialogData {
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.2) !important;
     }
 
-    /* Dark theme dialog container */
     ::ng-deep .dark-theme .mat-mdc-dialog-container {
       background-color: rgba(32, 49, 59, 0.85) !important;
     }
 
-    /* Light theme dialog container */
     ::ng-deep .light-theme .mat-mdc-dialog-container {
       background-color: rgba(255, 255, 255, 0.95) !important;
-    }
-
-    /* Enhanced GNS3 cyan gradient border effect */
-    ::ng-deep .mat-mdc-dialog-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 16px;
-      padding: 2px;
-      background: linear-gradient(135deg, rgba(0, 151, 167, 0.6), rgba(0, 188, 212, 0.4), rgba(0, 151, 167, 0.6));
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-      opacity: 1;
-    }
-
-    /* Enhance header with glass effect */
-    .dialog-header {
-      backdrop-filter: blur(10px);
-      border-radius: 16px 16px 0 0;
-    }
-
-    /* Enhance content areas with rounded corners */
-    .info-value {
-      border-radius: 8px;
-    }
-
-    .content-container {
-      border-radius: 8px;
-    }
-
-    .code-content {
-      border-radius: 6px;
-    }
-
-    /* Enhanced close button with more rounded appearance */
-    .close-button {
-      border-radius: 50%;
-    }
-
-    /* Subtle glow effect on dark theme */
-    :host-context(.dark-theme) ::ng-deep .mat-mdc-dialog-container {
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 16px rgba(0, 151, 167, 0.3) !important;
-    }
-
-    /* Light theme shadow adjustment */
-    :host-context(.light-theme) ::ng-deep .mat-mdc-dialog-container {
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 151, 167, 0.15) !important;
     }
   `]
 })
@@ -451,56 +257,13 @@ export class ToolDetailsDialogComponent {
         try {
           this.parsedOutput = JSON.parse(this.toolOutput);
         } catch (e) {
+          // Not valid JSON, keep as string
           this.parsedOutput = this.toolOutput;
         }
       } else {
         this.parsedOutput = this.toolOutput;
       }
     }
-  }
-
-  get formattedArguments(): string {
-    if (!this.parsedArguments) {
-      return '// No arguments';
-    }
-
-    if (typeof this.parsedArguments === 'string') {
-      return this.parsedArguments;
-    }
-
-    return JSON.stringify(this.parsedArguments, null, 2);
-  }
-
-  get formattedOutput(): string {
-    if (!this.parsedOutput) {
-      return '// No output';
-    }
-
-    if (typeof this.parsedOutput === 'string') {
-      return this.parsedOutput;
-    }
-
-    return JSON.stringify(this.parsedOutput, null, 2);
-  }
-
-  get isArgumentsMarkdown(): boolean {
-    // Check if arguments contain markdown-like content
-    if (typeof this.parsedArguments === 'string') {
-      const str = this.parsedArguments;
-      // Check for common markdown patterns
-      return str.includes('**') || str.includes('`') || str.includes('```') || str.includes('# ');
-    }
-    return false;
-  }
-
-  get isOutputMarkdown(): boolean {
-    // Check if output contains markdown-like content
-    if (typeof this.parsedOutput === 'string') {
-      const str = this.parsedOutput;
-      // Check for common markdown patterns
-      return str.includes('**') || str.includes('`') || str.includes('```') || str.includes('# ');
-    }
-    return false;
   }
 
   closeDialog(): void {
