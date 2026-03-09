@@ -46,6 +46,11 @@
   padding: 2px;
   justify-content: space-between;
   background: #263238 !important;
+  cursor: grab;
+}
+
+.consoleHeader:active {
+  cursor: grabbing;
 }
 
 .lightThemeConsoleHeader {

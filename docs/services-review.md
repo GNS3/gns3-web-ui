@@ -3,14 +3,15 @@
 ---
 
 **Document Generated**: 2026-03-07
+**Last Updated**: 2026-03-09
 **Review Tool**: Claude Code (Sonnet 4.5)
-**Review Scope**: src/app/services/ (57 service files)
+**Review Scope**: src/app/services/ (58 service files)
 
 ---
 
 ## Overview
 
-**English Description**: This directory contains all business logic services for the GNS3 Web UI application, with 57 service files responsible for data interactions, state management, API calls, and other core functionalities.
+**English Description**: This directory contains all business logic services for the GNS3 Web UI application, with 58 service files responsible for data interactions, state management, API calls, and other core functionalities.
 
 ---
 
@@ -57,6 +58,7 @@
 - `theme.service.ts` - Theme switching (dark/light mode)
 - `mapScale.service.ts` - Map scale
 - `mapsettings.service.ts` - Map settings
+- `window-boundary.service.ts` - **[NEW]** Window boundary constraint service for draggable/resizable windows (2026-03-09)
 
 #### 8. **Utility & Configuration Services**
 - `settings.service.ts` - Application settings

@@ -12,6 +12,7 @@ import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 import { ThemeService } from '@services/theme.service';
+import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 
 /**
  * AI Chat Main Component
@@ -40,7 +41,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   // Position and size state
   public style: object = {};
-  private previousStyle: object = {}; // 保存最大化前的状态
+  private previousStyle: object = {}; // Save state before maximize
   public resizedWidth: number = 700;
   public resizedHeight: number = 600;
 
@@ -65,7 +66,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     private aiChatStore: AiChatStore,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private boundaryService: WindowBoundaryService
   ) {}
 
   /**
@@ -89,6 +91,10 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
+
+    // Set top offset to keep AI Chat below toolbar (64px for desktop, 56px for mobile)
+    const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+    this.boundaryService.setConfig({ topOffset: toolbarHeight });
 
     this.initializeChat();
     this.subscribeToStateChanges();
@@ -240,12 +246,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
       // If was maximized and now is not maximized, restore the previous size
       if (wasMaximized && !panelState.isMaximized && !panelState.isMinimized) {
-        // Restore previous style
+        // Restore previous style with boundary check
         if (Object.keys(this.previousStyle).length > 0) {
-          this.style = { ...this.previousStyle };
+          const constrainedStyle = this.boundaryService.constrainWindowPosition(this.previousStyle);
+          this.style = constrainedStyle;
           // Update resizedWidth and resizedHeight from previous style
-          const width = this.previousStyle['width'] as string;
-          const height = this.previousStyle['height'] as string;
+          const width = constrainedStyle['width'] as string;
+          const height = constrainedStyle['height'] as string;
           if (width) {
             this.resizedWidth = Number(width.split('px')[0]);
           }
@@ -1009,7 +1016,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   /**
-   * Handle drag event with RAF optimization
+   * Handle drag event with RAF optimization and boundary checks
    * @param event Mouse event
    */
   dragWidget(event: MouseEvent): void {
@@ -1020,21 +1027,12 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Schedule update on next animation frame
     this.dragRafId = requestAnimationFrame(() => {
-      const x: number = event.movementX;
-      const y: number = event.movementY;
-
-      const width: number = Number(this.style['width'].split('px')[0]);
-      const height: number = Number(this.style['height'].split('px')[0]);
-      const right: number = Number(this.style['right'].split('px')[0]) - x;
-      const top: number = Number(this.style['top'].split('px')[0]) + y;
-
-      this.style = {
-        position: 'fixed',
-        right: `${right}px`,
-        top: `${top}px`,
-        width: `${width}px`,
-        height: `${height}px`,
-      };
+      // Use boundary service to constrain position
+      this.style = this.boundaryService.constrainDragPosition(
+        this.style,
+        event.movementX,
+        event.movementY
+      );
 
       // Trigger change detection manually
       this.cdr.markForCheck();
@@ -1050,7 +1048,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < 500 || event.rectangle.height < 400)
+      !this.boundaryService.isValidSize(event.rectangle.width, event.rectangle.height)
     ) {
       return false;
     }
@@ -1062,32 +1060,39 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @param event Resize event
    */
   onResizeEnd(event: ResizeEvent): void {
+    // Use boundary service to constrain size
+    const constrained = this.boundaryService.constrainResizeSize(
+      event.rectangle.width || this.resizedWidth,
+      event.rectangle.height || this.resizedHeight,
+      event.rectangle.left,
+      event.rectangle.top
+    );
+
     // Determine if using left or right based on current style
     const hasLeft = this.style['left'] !== undefined;
 
     // Build position style based on original positioning
     const positionStyle: any = {
       position: 'fixed',
-      top: `${event.rectangle.top}px`,
+      top: constrained.top !== undefined ? `${constrained.top}px` : this.style['top'],
     };
 
     // Preserve the original horizontal positioning (left or right)
-    // Note: angular-resizable-element only provides left, not right
     if (hasLeft) {
-      positionStyle.left = `${event.rectangle.left}px`;
+      positionStyle.left = constrained.left !== undefined ? `${constrained.left}px` : this.style['left'];
     } else {
       // Calculate right from left + width
-      const right = window.innerWidth - event.rectangle.left - event.rectangle.width;
+      const right = window.innerWidth - (constrained.left || 0) - constrained.width;
       positionStyle.right = `${right}px`;
     }
 
     this.style = {
       ...positionStyle,
-      width: `${event.rectangle.width}px`,
-      height: `${event.rectangle.height}px`,
+      width: `${constrained.width}px`,
+      height: `${constrained.height}px`,
     };
-    this.resizedWidth = event.rectangle.width;
-    this.resizedHeight = event.rectangle.height;
+    this.resizedWidth = constrained.width;
+    this.resizedHeight = constrained.height;
 
     // Debounced state save
     this.debouncedSavePanelState();

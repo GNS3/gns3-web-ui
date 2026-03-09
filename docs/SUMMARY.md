@@ -132,6 +132,7 @@ Detailed code review documents have been generated for each directory:
 - **[Timestamp Timezone Issue](troubleshooting/timestamp-timezone-issue.md)** - Time display issue fix
 
 ### Changelog
+- **[2026-03-09 Update](changelog/window-boundary-service-2026-03-09.md)** - Window boundary service and UI improvements
 - **[2026-03-08 Update](changelog/ai-chat-updates-2026-03-08.md)** - Confirmation dialog component and session management optimization
 
 ### Component Review Documents

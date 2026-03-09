@@ -1,12 +1,13 @@
 <div *ngIf="isDraggingEnabled" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)">
 </div>
 <!-- Option with resizing -->
-<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled }" (mousedown)="toggleDragging(true)"
+<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled }"
   [ngStyle]="style" mwlResizable [validateResize]="validate"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 
-  <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }">
+  <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+       (mousedown)="toggleDragging(true)">
     <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
       <mat-tab>
         <ng-template mat-tab-label>
@@ -18,6 +19,7 @@
         <ng-template mat-tab-label>
           <div class="col" style="margin-left: 20px">{{ node.name }}</div>
           <button [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white" mat-icon-button
+            (mousedown)="$event.stopPropagation()"
             (click)="removeTab(index)">
             <mat-icon>close</mat-icon>
           </button>
@@ -26,15 +28,15 @@
     </mat-tab-group>
 
     <button *ngIf="!isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (click)="minimize(true)">
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(true)">
       <mat-icon>remove</mat-icon>
     </button>
     <button *ngIf="isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (click)="minimize(false)">
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(false)">
       <mat-icon>web_asset</mat-icon>
     </button>
     <button [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white" mat-icon-button
-      (click)="close()">
+      (mousedown)="$event.stopPropagation()" (click)="close()">
       <mat-icon>close</mat-icon>
     </button>
   </div>

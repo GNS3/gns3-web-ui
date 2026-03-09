@@ -9,6 +9,7 @@ import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
+import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 
 @Component({
   selector: 'app-console-wrapper',
@@ -37,7 +38,8 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   constructor(
     private consoleService: NodeConsoleService,
     private themeService: ThemeService,
-    private mapSettingsService: MapSettingsService
+    private mapSettingsService: MapSettingsService,
+    private boundaryService: WindowBoundaryService
   ) {}
 
   nodes: Node[] = [];
@@ -48,6 +50,10 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
     this.style = { bottom: '20px', left: '80px', width: '720px', height: '460px' };
+
+    // Set top offset to keep console below toolbar (64px for desktop, 56px for mobile)
+    const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+    this.boundaryService.setConfig({ topOffset: toolbarHeight });
 
     this.consoleService.nodeConsoleTrigger.subscribe((node) => {
       this.addTab(node, true);
@@ -89,38 +95,19 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   }
 
   dragWidget(event) {
-    let x: number = Number(event.movementX);
-    let y: number = Number(event.movementY);
-
-    let width: number = Number(this.style['width'].split('px')[0]);
-    let height: number = Number(this.style['height'].split('px')[0]);
-    let left: number = Number(this.style['left'].split('px')[0]) + x;
-    if (this.style['top']) {
-      let top: number = Number(this.style['top'].split('px')[0]) + y;
-      this.style = {
-        position: 'fixed',
-        left: `${left}px`,
-        top: `${top}px`,
-        width: `${width}px`,
-        height: `${height}px`,
-      };
-    } else {
-      let bottom: number = Number(this.style['bottom'].split('px')[0]) - y;
-      this.style = {
-        position: 'fixed',
-        left: `${left}px`,
-        bottom: `${bottom}px`,
-        width: `${width}px`,
-        height: `${height}px`,
-      };
-    }
+    // Use boundary service to constrain position
+    this.style = this.boundaryService.constrainDragPosition(
+      this.style,
+      event.movementX,
+      event.movementY
+    );
   }
 
   validate(event: ResizeEvent): boolean {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < 500 || event.rectangle.height < 100)
+      !this.boundaryService.isValidSize(event.rectangle.width, event.rectangle.height)
     ) {
       return false;
     }
@@ -128,26 +115,34 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   }
 
   onResizeEnd(event: ResizeEvent): void {
+    // Use boundary service to constrain size
+    const constrained = this.boundaryService.constrainResizeSize(
+      event.rectangle.width || this.resizedWidth,
+      event.rectangle.height || this.resizedHeight,
+      event.rectangle.left,
+      event.rectangle.top
+    );
+
     this.style = {
       position: 'fixed',
-      left: `${event.rectangle.left}px`,
-      top: `${event.rectangle.top}px`,
-      width: `${event.rectangle.width}px`,
-      height: `${event.rectangle.height}px`,
+      left: `${constrained.left}px`,
+      top: `${constrained.top}px`,
+      width: `${constrained.width}px`,
+      height: `${constrained.height}px`,
     };
 
     this.styleInside = {
-      height: `${event.rectangle.height - 60}px`,
-      width: `${event.rectangle.width}px`,
+      height: `${constrained.height - 60}px`,
+      width: `${constrained.width}px`,
     };
 
     this.consoleService.consoleResized.next({
-      width: event.rectangle.width,
-      height: event.rectangle.height - 53,
+      width: constrained.width,
+      height: constrained.height - 53,
     });
 
-    this.resizedWidth = event.rectangle.width;
-    this.resizedHeight = event.rectangle.height;
+    this.resizedWidth = constrained.width;
+    this.resizedHeight = constrained.height;
   }
 
   close() {
