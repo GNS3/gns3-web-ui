@@ -237,6 +237,24 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         };
         this.cdr.markForCheck();
       }
+
+      // If was maximized and now is not maximized, restore the previous size
+      if (wasMaximized && !panelState.isMaximized && !panelState.isMinimized) {
+        // Restore previous style
+        if (Object.keys(this.previousStyle).length > 0) {
+          this.style = { ...this.previousStyle };
+          // Update resizedWidth and resizedHeight from previous style
+          const width = this.previousStyle['width'] as string;
+          const height = this.previousStyle['height'] as string;
+          if (width) {
+            this.resizedWidth = Number(width.split('px')[0]);
+          }
+          if (height) {
+            this.resizedHeight = Number(height.split('px')[0]);
+          }
+        }
+        this.cdr.markForCheck();
+      }
     });
   }
 
