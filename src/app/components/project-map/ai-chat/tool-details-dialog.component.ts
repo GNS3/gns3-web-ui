@@ -161,6 +161,8 @@ export interface ToolDetailsDialogData {
       max-height: 500px;
       overflow-y: auto;
       border: 1px solid var(--mat-app-outline-variant);
+      white-space: pre-wrap;
+      font-size: 13px;
     }
 
     /* Scrollbar styles */
