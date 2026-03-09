@@ -124,26 +124,24 @@ Detailed code review documents have been generated for each directory:
 - **[Stores Directory Document](src/app/stores/CODE_REVIEW.md)** - State management analysis
 
 ### Component Detailed Documents
-- **[Confirmation Dialog Component](components/confirmation-dialog-component.md)** - Reusable confirmation dialog component documentation
+- **[Confirmation Dialog Component](ai-chat/confirmation-dialog-component.md)** - Reusable confirmation dialog component documentation
 
 ### Troubleshooting Documents
-- **[Session ID & SSE Management](troubleshooting/ai-chat-session-id-and-sse.md)** - AI Chat session management and SSE connection details
-- **[AI Chat Delete Fix](troubleshooting/ai-chat-delete-fix.md)** - Fix record for delete session functionality
+- **[Session ID & SSE Management](ai-chat/ai-chat-session-id-and-sse.md)** - AI Chat session management and SSE connection details
+- **[AI Chat Delete Fix](ai-chat/ai-chat-delete-fix.md)** - Fix record for delete session functionality
 - **[Timestamp Timezone Issue](troubleshooting/timestamp-timezone-issue.md)** - Time display issue fix
 
-### Changelog
-- **[2026-03-09 Update](changelog/window-boundary-service-2026-03-09.md)** - Window boundary service and UI improvements
-- **[2026-03-08 Update](changelog/ai-chat-updates-2026-03-08.md)** - Confirmation dialog component and session management optimization
-
-### Component Review Documents
-- **[Login Component](components/login-review.md)** - Login page component
-- **[User Management Component](components/user-management-review.md)** - User management
-- **[Projects Component](components/projects-review.md)** - Project management
-- **[Project Map Component](components/project-map-review.md)** - Project map
-- **[Group Management Component](components/group-management-review.md)** - Group management
-- **[Role Management Component](components/role-management-review.md)** - Role management
-- **[Template Component](components/template-review.md)** - Template management
-- **[Other Components](components/other-components-review.md)** - Other components
+### Code Review Documents
+- **[Login Component](reviews/login-review.md)** - Login page component
+- **[User Management Component](reviews/user-management-review.md)** - User management
+- **[Projects Component](reviews/projects-review.md)** - Project management
+- **[Project Map Component](reviews/project-map-review.md)** - Project map
+- **[Group Management Component](reviews/group-management-review.md)** - Group management
+- **[Role Management Component](reviews/role-management-review.md)** - Role management
+- **[Template Component](reviews/template-review.md)** - Template management
+- **[Services Review](reviews/services-review.md)** - Services review
+- **[Models Review](reviews/models-review.md)** - Models review
+- **[Cartography Review](reviews/cartography-review.md)** - Cartography review
 
 ---
 
