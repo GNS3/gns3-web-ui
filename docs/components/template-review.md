@@ -1,48 +1,46 @@
-# Template Component - 模板组件代码审查 / Code Review Documentation
+# Template Component - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/components/template/ (Template Component)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/components/template/ (Template Component)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：模板组件负责设备模板管理，包括模板浏览、选择、搜索和拖拽创建功能。
-
-**English Description**: Template component handles device template management, including template browsing, selection, search, and drag-to-drop creation.
+Template component handles device template management, including template browsing, selection, search, and drag-to-drop creation.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
 
-### 主要组件
+### Main Components
 
 #### **TemplateComponent**
-- 模板浏览器
-- 分类展示（内置、Docker、QEMU、VirtualBox 等）
-- 模板搜索和过滤
-- 拖拽创建节点
+- Template browser
+- Category display (built-in, Docker, QEMU, VirtualBox, etc.)
+- Template search and filtering
+- Drag-to-drop node creation
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🔴 安全问题 / Security Issues
+### Security Issues
 
-#### 1. **XSS 风险 - SVG 处理**
-**文件**: `template.component.ts`
+#### 1. **XSS Risk - SVG Handling**
+**File**: `template.component.ts`
 
-**问题描述**:
+**Description**:
 ```typescript
 const svgData = btoa(unescape(encodeURIComponent(svgString)));
-// SVG 内容未经过净化
+// SVG content not sanitized
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 import DOMPurify from 'dompurify';
 
@@ -60,15 +58,15 @@ processSvg(svgString: string): string {
 }
 ```
 
-#### 2. **拖拽坐标验证不足**
-**文件**: `template.component.ts`
+#### 2. **Insufficient Drag Coordinate Validation**
+**File**: `template.component.ts`
 
-**问题描述**: 拖拽坐标可能被恶意操控
+**Description**: Drag coordinates could be maliciously manipulated
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 private validateDropCoordinates(x: number, y: number): boolean {
-  // 验证坐标在合理范围内
+  // Validate coordinates are within reasonable range
   const MAX_COORDINATE = 100000;
   const MIN_COORDINATE = -100000;
 
@@ -88,17 +86,17 @@ onDrop(event: DragEvent) {
     return;
   }
 
-  // 继续处理
+  // Continue processing
 }
 ```
 
-#### 3. **文件上传验证缺失**
-**文件**: 模板导入相关代码
+#### 3. **Missing File Upload Validation**
+**File**: Template import related code
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 validateTemplateFile(file: File): boolean {
-  // 文件类型验证
+  // File type validation
   const validExtensions = ['.gns3template', '.zip'];
   const hasValidExtension = validExtensions.some(ext =>
     file.name.toLowerCase().endsWith(ext)
@@ -109,7 +107,7 @@ validateTemplateFile(file: File): boolean {
     return false;
   }
 
-  // 文件大小验证（最大 100MB）
+  // File size validation (max 100MB)
   const maxSize = 100 * 1024 * 1024;
   if (file.size > maxSize) {
     this.toasterService.error('File too large (max 100MB)');
@@ -122,21 +120,21 @@ validateTemplateFile(file: File): boolean {
 
 ---
 
-### 🟠 代码质量问题 / Code Quality Issues
+### Code Quality Issues
 
-#### 4. **硬编码模板类型**
-**文件**: `template.component.ts:28-40`
+#### 4. **Hardcoded Template Types**
+**File**: `template.component.ts:28-40`
 
-**问题描述**:
+**Description**:
 ```typescript
 templateTypes = [
   { type: 'cloud', icon: 'cloud', name: 'Cloud' },
   { type: 'ethernet_hub', icon: 'hub', name: 'Ethernet hub' },
-  // ... 硬编码
+  // ... hardcoded
 ];
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 // template-types.config.ts
 export const TEMPLATE_TYPES = [
@@ -158,12 +156,12 @@ import { TEMPLATE_TYPES } from './template-types.config';
 templateTypes = TEMPLATE_TYPES;
 ```
 
-#### 5. **内存泄漏**
-**文件**: `template.component.ts`
+#### 5. **Memory Leak**
+**File**: `template.component.ts`
 
-**问题描述**: 订阅未清理
+**Description**: Subscriptions not cleaned up
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class TemplateComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -183,26 +181,26 @@ export class TemplateComponent implements OnInit, OnDestroy {
 }
 ```
 
-#### 6. **性能问题 - 重复获取 SVG**
-**文件**: `template.component.ts`
+#### 6. **Performance Issue - Repeated SVG Fetching**
+**File**: `template.component.ts`
 
-**问题描述**: 每次拖拽都重新获取 SVG
+**Description**: Fetches SVG again on every drag
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class TemplateComponent {
   private svgCache = new Map<string, string>();
 
   async getTemplateSvg(templateId: string): Promise<string> {
-    // 检查缓存
+    // Check cache
     if (this.svgCache.has(templateId)) {
       return this.svgCache.get(templateId)!;
     }
 
-    // 获取 SVG
+    // Fetch SVG
     const svg = await this.symbolService.getTemplateSymbol(templateId).toPromise();
 
-    // 缓存
+    // Cache
     this.svgCache.set(templateId, svg);
 
     return svg;
@@ -216,11 +214,11 @@ export class TemplateComponent {
 
 ---
 
-## 修复建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复
+### Priority 1 - Immediate Fixes
 
-#### 1. 净化 SVG 内容
+#### 1. Sanitize SVG Content
 ```typescript
 import DOMPurify from 'dompurify';
 
@@ -235,7 +233,7 @@ private sanitizeSvg(svg: string): string {
 }
 ```
 
-#### 2. 验证拖拽坐标
+#### 2. Validate Drag Coordinates
 ```typescript
 private validateCoordinates(x: number, y: number): boolean {
   const isValidNumber = (n: number) => typeof n === 'number' && !isNaN(n) && isFinite(n);
@@ -256,14 +254,14 @@ onDrop(event: DragEvent) {
 }
 ```
 
-### 优先级 2 - 短期改进
+### Priority 2 - Short-term Improvements
 
-#### 1. 实现 SVG 缓存
+#### 1. Implement SVG Caching
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class TemplateSvgCache {
   private cache = new Map<string, Observable<string>>();
-  private ttl = 10 * 60 * 1000; // 10 分钟
+  private ttl = 10 * 60 * 1000; // 10 minutes
 
   get(templateId: string, fetcher: () => Observable<string>): Observable<string> {
     if (this.cache.has(templateId)) {
@@ -276,7 +274,7 @@ export class TemplateSvgCache {
 
     this.cache.set(templateId, source);
 
-    // 定期清理
+    // Periodic cleanup
     setTimeout(() => {
       this.cache.delete(templateId);
     }, this.ttl);
@@ -290,9 +288,9 @@ export class TemplateSvgCache {
 }
 ```
 
-#### 2. 改进拖拽性能
+#### 2. Improve Drag Performance
 ```typescript
-// 使用防抖
+// Use debounce
 private dragEnd$ = new Subject<DragEvent>();
 
 ngOnInit() {
@@ -311,7 +309,7 @@ onDragEnd(event: DragEvent) {
 
 ---
 
-## 测试建议
+## Testing Recommendations
 
 ```typescript
 describe('TemplateComponent', () => {

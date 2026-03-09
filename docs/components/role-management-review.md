@@ -1,49 +1,47 @@
-# Role Management Component - 角色管理组件代码审查 / Code Review Documentation
+# Role Management Component - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/components/role-management/ (Role Management Component)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/components/role-management/ (Role Management Component)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：角色管理模块负责用户角色的创建、删除、查看和权限配置管理。
-
-**English Description**: Role management module handles user role creation, deletion, viewing, and permission configuration.
+Role management module handles user role creation, deletion, viewing, and permission configuration.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
 
-### 主要组件
+### Main Components
 
 #### **RoleManagementComponent**
-- 角色列表展示
-- 角色创建、编辑、删除
-- 权限配置管理
+- Role list display
+- Role create, edit, delete
+- Permission configuration management
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🟠 代码质量问题 / Code Quality Issues
+### Code Quality Issues
 
-#### 1. **错误消息格式混乱**
-**文件**: `role-management.component.ts:114-115`
+#### 1. **Error Message Format Confusion**
+**File**: `role-management.component.ts:114-115`
 
-**问题描述**:
+**Description**:
 ```typescript
 (error: HttpErrorResponse) =>
   this.toasterService.error(`${error.message} ${error.error.message || ''}`);
 ```
 
-**问题**: 错误消息拼接可能导致显示异常
+**Issue**: Error message concatenation may cause display issues
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 catchError((error: HttpErrorResponse) => {
   console.error('Role creation error:', error);
@@ -65,27 +63,27 @@ private getUserFriendlyErrorMessage(error: HttpErrorResponse): string {
 }
 ```
 
-#### 2. **使用 UntypedFormControl**
-**文件**: 多个组件
+#### 2. **Using UntypedFormControl**
+**File**: Multiple components
 
-**问题描述**:
+**Description**:
 ```typescript
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 使用强类型表单控件
+// Use strongly-typed form controls
 import { FormControl, FormGroup } from '@angular/forms';
 
-// 创建接口
+// Create interface
 interface RoleForm {
   name: FormControl<string | null>;
   description: FormControl<string | null>;
   privileges: FormArray;
 }
 
-// 使用类型化表单
+// Use typed form
 roleForm = new FormGroup<RoleForm>({
   name: new FormControl<string | null>(null, [Validators.required]),
   description: new FormControl<string | null>(null),
@@ -93,12 +91,12 @@ roleForm = new FormGroup<RoleForm>({
 });
 ```
 
-#### 3. **订阅管理**
-**文件**: `role-management.component.ts`
+#### 3. **Subscription Management**
+**File**: `role-management.component.ts`
 
-**问题描述**: `addRole` 方法中的订阅没有清理
+**Description**: Subscription in `addRole` method is not cleaned up
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class RoleManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -127,19 +125,19 @@ export class RoleManagementComponent implements OnInit, OnDestroy {
 
 ---
 
-### 🔒 安全问题 / Security Issues
+### Security Issues
 
-#### 4. **权限提升风险**
-**文件**: `role-management.component.ts`
+#### 4. **Privilege Escalation Risk**
+**File**: `role-management.component.ts`
 
-**问题描述**: 没有验证用户是否有权限创建/删除角色
+**Description**: No verification if user has permission to create/delete roles
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 canManageRoles(): boolean {
   const currentUser = this.authService.getCurrentUser();
 
-  // 只有管理员可以管理角色
+  // Only admins can manage roles
   return currentUser?.role?.name === 'Administrator' ||
          currentUser?.role?.privileges?.includes('ROLE_MANAGEMENT');
 }
@@ -150,16 +148,16 @@ addRole() {
     return;
   }
 
-  // 继续创建角色
+  // Continue role creation
 }
 ```
 
-#### 5. **输入验证不足**
-**文件**: 多个表单组件
+#### 5. **Insufficient Input Validation**
+**File**: Multiple form components
 
-**问题描述**: 角色名称和描述没有充分验证
+**Description**: Role name and description are not sufficiently validated
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 buildForm() {
   this.roleForm = this.formBuilder.group({
@@ -169,8 +167,8 @@ buildForm() {
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z0-9_-]+$/),  // 只允许字母、数字、下划线、连字符
-        this.uniqueRoleNameValidator()  // 自定义验证器检查唯一性
+        Validators.pattern(/^[a-zA-Z0-9_-]+$/),  // Only allow letters, numbers, underscores, hyphens
+        this.uniqueRoleNameValidator()  // Custom validator to check uniqueness
       ]
     ],
     description: [
@@ -199,11 +197,11 @@ private uniqueRoleNameValidator(): AsyncValidatorFn {
 
 ---
 
-## 修复建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复
+### Priority 1 - Immediate Fixes
 
-#### 1. 添加权限检查
+#### 1. Add Permission Checks
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class RoleGuard implements CanActivateChild {
@@ -229,7 +227,7 @@ export class RoleGuard implements CanActivateChild {
   }
 }
 
-// 在路由中使用
+// Use in route
 {
   path: 'roles',
   canActivateChild: [RoleGuard],
@@ -237,7 +235,7 @@ export class RoleGuard implements CanActivateChild {
 }
 ```
 
-#### 2. 改进错误处理
+#### 2. Improve Error Handling
 ```typescript
 private handleError(error: HttpErrorResponse, operation: string): void {
   console.error(`${operation} error:`, error);
@@ -256,18 +254,18 @@ private handleError(error: HttpErrorResponse, operation: string): void {
 }
 ```
 
-### 优先级 2 - 短期改进
+### Priority 2 - Short-term Improvements
 
-#### 1. 使用强类型表单
+#### 1. Use Strongly-Typed Forms
 ```typescript
-// 创建表单模型接口
+// Create form model interface
 interface RoleFormData {
   name: string;
   description: string;
   privileges: string[];
 }
 
-// 使用类型化表单组
+// Use typed form group
 roleForm = new FormGroup<{
   name: FormControl<string>;
   description: FormControl<string | null>;
@@ -282,7 +280,7 @@ roleForm = new FormGroup<{
 });
 ```
 
-#### 2. 添加操作审计
+#### 2. Add Operation Audit
 ```typescript
 logRoleAction(action: string, role: Role) {
   this.auditLogService.log({
@@ -298,7 +296,7 @@ logRoleAction(action: string, role: Role) {
 
 ---
 
-## 测试建议
+## Testing Recommendations
 
 ```typescript
 describe('RoleManagementComponent', () => {

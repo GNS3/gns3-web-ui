@@ -1,125 +1,123 @@
-# Cartography Directory - 代码审查文档 / Code Review Documentation
+# Cartography Directory - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/cartography/ (D3.js 地图引擎 / D3.js Map Engine)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/cartography/ (D3.js Map Engine)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：本目录包含 GNS3 Web UI 的拓扑图引擎，基于 D3.js 实现，负责网络拓扑的可视化、交互和编辑功能。
-
-**English Description**: This directory contains the topology map engine for GNS3 Web UI, implemented using D3.js, responsible for visualization, interaction, and editing of network topologies.
+This directory contains the topology map engine for GNS3 Web UI, implemented using D3.js, responsible for visualization, interaction, and editing of network topologies.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
-### 架构组件 / Architecture Components
+### Architecture Components
 
-#### 1. **组件层 / Components Layer**
-- `components/d3-map/` - 主 D3.js 地图组件
-- `components/experimental-map/` - 新一代地图组件
-- `components/link-editing/` - 链接编辑功能
-- `components/drawing-adding/` - 绘图工具
-- `components/selection-control/` - 选择管理
-- `components/text-editor/` - 文本编辑器
+#### 1. Components Layer
+- `components/d3-map/` - Main D3.js map component
+- `components/experimental-map/` - Next-generation map component
+- `components/link-editing/` - Link editing functionality
+- `components/drawing-adding/` - Drawing tools
+- `components/selection-control/` - Selection management
+- `components/text-editor/` - Text editor
 
-#### 2. **管理器层 / Managers Layer**
-- `managers/` - 数据和状态管理
-  - 图形数据管理器
-  - 层级管理器
-  - 选择管理器
+#### 2. Managers Layer
+- `managers/` - Data and state management
+  - Graph data manager
+  - Layers manager
+  - Selection manager
 
-#### 3. **小部件层 / Widgets Layer**
-- `widgets/` - D3.js 渲染小部件
-  - `nodes/` - 节点渲染
-  - `links/` - 链接渲染
-  - `drawings/` - 绘图元素渲染
+#### 3. Widgets Layer
+- `widgets/` - D3.js rendering widgets
+  - `nodes/` - Node rendering
+  - `links/` - Link rendering
+  - `drawings/` - Drawing element rendering
 
-#### 4. **转换器层 / Converters Layer**
-- `converters/` - 数据模型转换
-  - 节点数据转换
-  - 链接数据转换
-  - SVG 到绘图转换
+#### 4. Converters Layer
+- `converters/` - Data model conversion
+  - Node data conversion
+  - Link data conversion
+  - SVG to drawing conversion
 
-#### 5. **数据源层 / Datasources Layer**
-- `datasources/` - 数据集合管理
-  - 地图节点数据源
-  - 地图链接数据源
-  - 绘图数据源
+#### 5. Datasources Layer
+- `datasources/` - Data collection management
+  - Map node datasource
+  - Map link datasource
+  - Drawing datasource
 
-#### 6. **工具层 / Tools Layer**
-- `tools/` - 用户交互工具
-  - 移动工具
-  - 选择工具
-  - 绘图工具
+#### 6. Tools Layer
+- `tools/` - User interaction tools
+  - Move tool
+  - Selection tool
+  - Drawing tool
 
-#### 7. **模型层 / Models Layer**
-- `models/` - 数据结构定义
-  - 节点模型
-  - 链接模型
-  - 上下文模型
-  - 绘图模型
+#### 7. Models Layer
+- `models/` - Data structure definitions
+  - Node model
+  - Link model
+  - Context model
+  - Drawing model
 
-#### 8. **服务层 / Services Layer**
-- `services/` - 地图相关服务
-  - 布局服务
-  - 渲染服务
+#### 8. Services Layer
+- `services/` - Map-related services
+  - Layout service
+  - Rendering service
 
 ---
 
-## 架构模式 / Architecture Pattern
+## Architecture Pattern
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     Angular Components                   │
-│  (D3MapComponent, ExperimentalMapComponent)              │
-└────────────────────┬────────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────────┐
-│                    Managers Layer                        │
-│  (GraphDataManager, LayersManager, SelectionManager)    │
-└────────────────────┬────────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────────┐
-│              Widgets + Converters + Tools                │
-│  (NodesWidget, LinksWidget, MovingTool, Converters)     │
-└────────────────────┬────────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────────┐
-│                    D3.js Rendering                       │
-└─────────────────────────────────────────────────────────┘
++----------------------------------------------------------+
+|                     Angular Components                    |
+|  (D3MapComponent, ExperimentalMapComponent)              |
++------------------------+---------------------------------+
+                         |
++------------------------▼---------------------------------+
+|                    Managers Layer                        |
+|  (GraphDataManager, LayersManager, SelectionManager)    |
++------------------------+---------------------------------+
+                         |
++------------------------▼---------------------------------+
+|              Widgets + Converters + Tools                 |
+|  (NodesWidget, LinksWidget, MovingTool, Converters)    |
++------------------------+---------------------------------+
+                         |
++------------------------▼---------------------------------+
+|                    D3.js Rendering                       |
++----------------------------------------------------------+
 ```
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🔴 严重安全问题 / Critical Security Issues
+### Critical Security Issues
 
-#### 1. **SVG 注入漏洞 / SVG Injection Vulnerability**
-**文件**: `helpers/svg-to-drawing-converter/`
+#### 1. SVG Injection Vulnerability
+**File**: `helpers/svg-to-drawing-converter/`
 
-**问题描述**:
-- SVG 内容解析时未进行净化
-- 可能执行恶意 SVG 内容
+**Problem Description**:
+- SVG content is not sanitized when parsing
+- Malicious SVG content could be executed
 
-**代码位置**:
+**Code Location**:
 ```typescript
 const parser = new DOMParser();
 const doc = parser.parseFromString(svg, 'image/svg+xml');
-// 没有验证或净化 SVG 内容！
+// No validation or sanitization of SVG content!
 ```
 
-**风险**:
-- XSS 攻击
-- 执行任意 JavaScript
+**Risk**:
+- XSS attacks
+- Execute arbitrary JavaScript
 
-**建议**:
+**Recommendation**:
 ```typescript
 import DOMPurify from 'dompurify';
 
@@ -132,51 +130,51 @@ const parser = new DOMParser();
 const doc = parser.parseFromString(cleanSvg, 'image/svg+xml');
 ```
 
-#### 2. **CSS 注入风险 / CSS Injection Risk**
-**文件**: 使用 `CssFixer` 的地方
+#### 2. CSS Injection Risk
+**File**: Places using `CssFixer`
 
-**问题描述**:
-- 动态应用样式时未进行净化
-- 可能注入恶意 CSS
+**Problem Description**:
+- Styles are not sanitized when applying dynamically
+- Malicious CSS could be injected
 
-**建议**:
-- 实现严格的白名单
-- 验证 CSS 属性和值
-- 考虑使用 CSS-in-JS 解决方案
+**Recommendation**:
+- Implement strict whitelist
+- Validate CSS properties and values
+- Consider using CSS-in-JS solution
 
 ---
 
-### 🟠 性能问题 / Performance Issues
+### Performance Issues
 
-#### 1. **大型图的渲染性能**
-**影响**: 整个地图系统
+#### 1. Large Graph Rendering Performance
+**Impact**: Entire map system
 
-**问题描述**:
-- 没有虚拟化支持
-- 完全重绘而非部分更新
-- 频繁的 DOM 操作
+**Problem Description**:
+- No virtualization support
+- Full redraw instead of partial updates
+- Frequent DOM operations
 
-**建议**:
-- 实现视口裁剪（只渲染可见元素）
-- 使用 Canvas 替代 SVG 处理大型数据集
-- 实现增量更新
+**Recommendation**:
+- Implement viewport culling (only render visible elements)
+- Use Canvas instead of SVG for large datasets
+- Implement incremental updates
 
-#### 2. **变换计算重复**
-**影响**: 多个组件
+#### 2. Duplicate Transform Calculations
+**Impact**: Multiple components
 
-**问题描述**:
-- 变换矩阵计算在多处重复
-- 缺少缓存机制
+**Problem Description**:
+- Transform matrix calculations are duplicated in multiple places
+- Lack of caching mechanism
 
-**代码位置**:
+**Code Location**:
 ```typescript
-// 在多个文件中重复
+// Repeated in multiple files
 const transform = `translate(${x}, ${y}) scale(${scale})`;
 ```
 
-**建议**:
+**Recommendation**:
 ```typescript
-// 创建共享工具
+// Create shared utility
 export class TransformUtils {
   private static cache = new Map<string, string>();
 
@@ -190,14 +188,14 @@ export class TransformUtils {
 }
 ```
 
-#### 3. **调整事件未防抖**
-**文件**: 地图组件
+#### 3. Resize Events Not Debounced
+**File**: Map component
 
-**问题描述**:
-- 窗口调整时频繁重绘
-- 没有防抖或节流
+**Problem Description**:
+- Frequent redraws during window resize
+- No debounce or throttle
 
-**建议**:
+**Recommendation**:
 ```typescript
 import { debounceTime } from 'rxjs/operators';
 
@@ -210,18 +208,18 @@ this.resize.pipe(
 
 ---
 
-### 🟡 代码质量问题 / Code Quality Issues
+### Code Quality Issues
 
-#### 1. **重复的 D3 选择模式**
-**影响**: 所有小部件
+#### 1. Duplicate D3 Selection Patterns
+**Impact**: All widgets
 
-**问题描述**:
-- 相同的 D3 数据绑定模式重复出现
-- enter().append().merge().exit().remove() 模式到处都是
+**Problem Description**:
+- Same D3 data binding patterns repeated
+- enter().append().merge().exit().remove() pattern everywhere
 
-**建议**:
+**Recommendation**:
 ```typescript
-// 创建基础小部件类
+// Create base widget class
 export abstract class BaseWidget<T> {
   protected abstract getSelection(): Selection<HTMLElement, T, any, any>;
 
@@ -237,7 +235,7 @@ export abstract class BaseWidget<T> {
     // EXIT
     selection.exit().remove();
 
-    // 调用具体实现
+    // Call specific implementation
     this.configureEnter(enter);
     this.configureUpdate(merge);
   }
@@ -248,97 +246,97 @@ export abstract class BaseWidget<T> {
 }
 ```
 
-#### 2. **类型安全问题**
-**影响**: 多个文件
+#### 2. Type Safety Issues
+**Impact**: Multiple files
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 private parentNativeElement: any;
 private svg: Selection<SVGSVGElement, any, null, undefined>;
 ```
 
-**建议**:
+**Recommendation**:
 ```typescript
 private parentNativeElement: HTMLElement;
 private svg: Selection<SVGSVGElement, unknown, null, undefined>;
 ```
 
-#### 3. **空检查不一致**
-**影响**: 多个文件
+#### 3. Inconsistent Null Checks
+**Impact**: Multiple files
 
-**问题描述**:
-- 有些地方检查 null
-- 有些地方不检查
+**Problem Description**:
+- Some places check for null
+- Some places don't check
 
-**建议**:
-- 建立一致的空值处理策略
-- 使用可选链操作符
-- 提供默认值
+**Recommendation**:
+- Establish consistent null handling strategy
+- Use optional chaining operator
+- Provide default values
 
-#### 4. **空实现**
-**文件**: `components/experimental-map/`
+#### 4. Empty Implementations
+**File**: `components/experimental-map/`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
-// 空的 setter
+// Empty setter
 @Input()
 set readonly(value: boolean) {
-  // 空
+  // Empty
 }
 
-// 空的 ngOnChanges
+// Empty ngOnChanges
 ngOnChanges() {
-  // 空
+  // Empty
 }
 ```
 
-**建议**:
-- 移除未使用的属性
-- 实现或移除空的生命周期钩子
+**Recommendation**:
+- Remove unused properties
+- Implement or remove empty lifecycle hooks
 
 ---
 
-### 🔵 内存泄漏 / Memory Leaks
+### Memory Leaks
 
-#### 1. **订阅未清理**
-**影响**: 多个组件
+#### 1. Subscriptions Not Cleaned Up
+**Impact**: Multiple components
 
-**问题描述**:
-- 有些组件不清理订阅
-- D3 事件监听器可能持久化
+**Problem Description**:
+- Some components don't clean up subscriptions
+- D3 event listeners may persist
 
-**建议**:
+**Recommendation**:
 ```typescript
 export class D3MapComponent implements OnDestroy {
   private subscriptions: Subscription[] = [];
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    // 清理 D3 事件监听器
+    // Clean up D3 event listeners
     this.svg.on('.zoom', null);
   }
 }
 ```
 
-#### 2. **D3 事件处理程序**
-**影响**: 地图组件
+#### 2. D3 Event Handlers
+**Impact**: Map component
 
-**问题描述**:
-- 缩放/平移处理程序可能在组件销毁后仍存在
+**Problem Description**:
+- Zoom/pan handlers may still exist after component destruction
 
-**建议**:
-- 在 `ngOnDestroy` 中移除所有 D3 事件监听器
-- 使用弱引用（如果适用）
+**Recommendation**:
+- Remove all D3 event listeners in `ngOnDestroy`
+- Use weak references (if applicable)
 
 ---
 
-## 改进建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复 / Immediate Actions
+### Priority 1 - Immediate Actions
 
-#### 1. 修复安全漏洞
+#### 1. Fix Security Vulnerabilities
 ```typescript
-// SVG 净化
+// SVG sanitization
 import DOMPurify from 'dompurify';
 
 function sanitizeSvg(svg: string): string {
@@ -349,20 +347,20 @@ function sanitizeSvg(svg: string): string {
 }
 ```
 
-#### 2. 添加错误边界
+#### 2. Add Error Boundaries
 ```typescript
 try {
-  // 渲染逻辑
+  // Rendering logic
 } catch (error) {
   console.error('Rendering error:', error);
   this.errorHandler.handleError(error);
-  // 显示友好错误消息
+  // Display user-friendly error message
 }
 ```
 
-### 优先级 2 - 短期改进 / Short-term Improvements
+### Priority 2 - Short-term Improvements
 
-#### 1. 创建共享工具
+#### 1. Create Shared Utilities
 ```typescript
 // cartography/utils/transform-utils.ts
 export class TransformUtils {
@@ -371,19 +369,19 @@ export class TransformUtils {
   }
 
   static parseTransform(transform: string): { x: number; y: number; scale: number } {
-    // 解析逻辑
+    // Parsing logic
   }
 }
 
 // cartography/utils/d3-widget-base.ts
 export abstract class D3WidgetBase<T> {
-  // 通用 D3 小部件功能
+  // Common D3 widget functionality
 }
 ```
 
-#### 2. 改进类型安全
+#### 2. Improve Type Safety
 ```typescript
-// 定义严格的类型
+// Define strict types
 interface MapNode {
   id: string;
   x: number;
@@ -399,7 +397,7 @@ interface MapLink {
 }
 ```
 
-#### 3. 添加输入验证
+#### 3. Add Input Validation
 ```typescript
 function validateNode(node: unknown): node is MapNode {
   return (
@@ -412,11 +410,11 @@ function validateNode(node: unknown): node is MapNode {
 }
 ```
 
-### 优先级 3 - 长期改进 / Long-term Improvements
+### Priority 3 - Long-term Improvements
 
-#### 1. 实现虚拟化
+#### 1. Implement Virtualization
 ```typescript
-// 只渲染视口内的元素
+// Only render elements within viewport
 function isInViewport(node: MapNode, viewport: Viewport): boolean {
   return (
     node.x >= viewport.x &&
@@ -427,9 +425,9 @@ function isInViewport(node: MapNode, viewport: Viewport): boolean {
 }
 ```
 
-#### 2. Canvas 渲染（用于大型图）
+#### 2. Canvas Rendering (for Large Graphs)
 ```typescript
-// 对于超过 1000 个节点的图，考虑使用 Canvas
+// For graphs with more than 1000 nodes, consider using Canvas
 if (nodeCount > 1000) {
   return new CanvasMapRenderer();
 } else {
@@ -437,9 +435,9 @@ if (nodeCount > 1000) {
 }
 ```
 
-#### 3. 增量更新
+#### 3. Incremental Updates
 ```typescript
-// 只更新变化的元素
+// Only update changed elements
 function updateGraph(changes: GraphChanges) {
   changes.addedNodes.forEach(node => this.addNode(node));
   changes.updatedNodes.forEach(node => this.updateNode(node));
@@ -449,18 +447,18 @@ function updateGraph(changes: GraphChanges) {
 
 ---
 
-## 架构建议 / Architecture Recommendations
+## Architecture Recommendations
 
-### 1. 分离关注点
+### 1. Separation of Concerns
 ```
-当前：
-组件 → 直接操作 D3
+Current:
+Component -> Directly manipulate D3
 
-建议：
-组件 → 管理器 → 服务 → D3
+Recommended:
+Component -> Manager -> Service -> D3
 ```
 
-### 2. 使用不可变数据
+### 2. Use Immutable Data
 ```typescript
 import { produce } from 'immer';
 
@@ -469,9 +467,9 @@ const newState = produce(currentState, draft => {
 });
 ```
 
-### 3. 事件驱动架构
+### 3. Event-Driven Architecture
 ```typescript
-// 创建中央事件总线
+// Create central event bus
 export class CartographyEventBus {
   private events = new Subject<CartographyEvent>();
 
@@ -487,54 +485,54 @@ export class CartographyEventBus {
 
 ---
 
-## 性能优化建议 / Performance Optimization
+## Performance Optimization Recommendations
 
-### 1. 减少重绘
-- 使用 CSS transforms 而非重新计算位置
-- 批量 DOM 更新
-- 使用 requestAnimationFrame
+### 1. Reduce Repaints
+- Use CSS transforms instead of recalculating positions
+- Batch DOM updates
+- Use requestAnimationFrame
 
-### 2. 数据结构优化
-- 使用 Map 而非数组进行快速查找
-- 空间索引（如四叉树）进行碰撞检测
-- 对节点和链接进行索引
+### 2. Data Structure Optimization
+- Use Map instead of array for fast lookups
+- Spatial indexing (e.g., quadtree) for collision detection
+- Index nodes and links
 
-### 3. 渲染优化
-- 对静态元素使用图层
-- 对频繁更新的元素使用独立的 SVG 组
-- 考虑使用 Web Workers 处理复杂计算
-
----
-
-## 测试建议 / Testing Recommendations
-
-### 单元测试
-- 测试数据转换器
-- 测试工具逻辑
-- Mock D3 选择
-
-### 集成测试
-- 测试用户交互
-- 测试组件之间的通信
-
-### 性能测试
-- 测试大型图的渲染性能
-- 测试内存使用
-- 测试更新频率
+### 3. Rendering Optimization
+- Use layers for static elements
+- Use separate SVG groups for frequently updated elements
+- Consider using Web Workers for complex calculations
 
 ---
 
-## 迁移建议 / Migration Recommendations
+## Testing Recommendations
 
-### 从 D3Map 到 ExperimentalMap
+### Unit Tests
+- Test data converters
+- Test utility logic
+- Mock D3 selections
+
+### Integration Tests
+- Test user interactions
+- Test communication between components
+
+### Performance Tests
+- Test rendering performance for large graphs
+- Test memory usage
+- Test update frequency
+
+---
+
+## Migration Recommendations
+
+### From D3Map to ExperimentalMap
 ```typescript
-// 1. 识别差异
-// 2. 创建适配器层
-// 3. 逐步迁移功能
-// 4. 保留旧 API 用于向后兼容
+// 1. Identify differences
+// 2. Create adapter layer
+// 3. Migrate features gradually
+// 4. Keep old API for backward compatibility
 ```
 
-### 未来改进
-- 考虑使用 Web Graphics Library (WGL) 替代 D3
-- 探索使用 Canvas API 进行渲染
-- 考虑使用 WebGL 进行 3D 可视化
+### Future Improvements
+- Consider using Web Graphics Library (WebGL) instead of D3
+- Explore using Canvas API for rendering
+- Consider using WebGL for 3D visualization

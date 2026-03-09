@@ -1,366 +1,366 @@
-# GNS3 Copilot AI Chat 功能实现方案
+# GNS3 Copilot AI Chat Feature Implementation Plan
 
-## 📋 方案概述
+## Overview
 
-AI Chat 功能将集成到项目拓扑图的左侧工具栏中，允许用户与 GNS3 Copilot Agent 交互，获取网络拓扑辅助和设备管理功能。
-
----
-
-## 🏗️ 整体架构
-
-### 后端 API 集成
-**基础路径**: `/v3/projects/{project_id}/chat/`
-
-**核心接口**:
-- `POST /stream` - SSE 流式对话
-- `GET /sessions` - 获取会话列表
-- `GET /sessions/{session_id}/history` - 获取会话历史
-- `PATCH /sessions/{session_id}` - 重命名会话
-- `DELETE /sessions/{session_id}` - 删除会话
-- `PUT/DELETE /sessions/{session_id}/pin` - 置顶/取消置顶
-
-### 前端架构设计
-```
-Project Map Component (项目拓扑图组件)
-└── Left Toolbar (左侧工具栏)
-    └── AI Chat Button (AI聊天按钮) 【新增】
-        └── AI Chat Panel (AI聊天面板) 【ai-chat.component.ts】
-            ├── Session List (会话列表侧边栏) 【chat-session-list.component.ts】
-            ├── Chat Interface (聊天主区域)
-            │   ├── Message List (消息列表) 【chat-message-list.component.ts】
-            │   │   ├── Tool Call Display (工具调用显示) 【tool-call-display.component.ts】
-            │   │   └── JSON Viewer (JSON查看器) 【json-viewer.component.ts】
-            │   └── Input Area (输入区域) 【chat-input-area.component.ts】
-            ├── Draggable Tool Dialog (可拖拽工具对话框) 【draggable-tool-dialog.component.ts】
-            └── Session Controls (会话控制)
-                ├── New Chat (新建会话)
-                ├── Rename (重命名)
-                ├── Delete (删除)
-                └── Pin/Unpin (置顶)
-```
-
-> **注意**: 面板可调整大小功能直接集成在 `ai-chat.component.ts` 中，未使用独立的 `ai-chat-panel.component.ts`
+The AI Chat feature will be integrated into the left toolbar of the project topology map, allowing users to interact with the GNS3 Copilot Agent to get network topology assistance and device management functionality.
 
 ---
 
-## 📁 需要修改和新增的模块/文件
+## Architecture
 
-### 1. **服务层** (新增)
+### Backend API Integration
+**Base Path**: `/v3/projects/{project_id}/chat/`
 
-**文件**: `src/app/services/ai-chat.service.ts`
+**Core Endpoints**:
+- `POST /stream` - SSE streaming conversation
+- `GET /sessions` - Get session list
+- `GET /sessions/{session_id}/history` - Get session history
+- `PATCH /sessions/{session_id}` - Rename session
+- `DELETE /sessions/{session_id}` - Delete session
+- `PUT/DELETE /sessions/{session_id}/pin` - Pin/Unpin session
 
-**主要职责**:
-- 处理所有 AI Chat API 调用
-- 管理 SSE 连接和流式响应
-- 维护会话状态和消息历史
-- 处理工具调用的流式累积
-- 管理统计信息
+### Frontend Architecture Design
+```
+Project Map Component
+└── Left Toolbar
+    └── AI Chat Button [New]
+        └── AI Chat Panel [ai-chat.component.ts]
+            ├── Session List Sidebar [chat-session-list.component.ts]
+            ├── Chat Interface
+            │   ├── Message List [chat-message-list.component.ts]
+            │   │   ├── Tool Call Display [tool-call-display.component.ts]
+            │   │   └── JSON Viewer [json-viewer.component.ts]
+            │   └── Input Area [chat-input-area.component.ts]
+            ├── Draggable Tool Dialog [draggable-tool-dialog.component.ts]
+            └── Session Controls
+                ├── New Chat
+                ├── Rename
+                ├── Delete
+                └── Pin/Unpin
+```
 
-**核心方法**:
+> **Note**: The resizable panel functionality is directly integrated in `ai-chat.component.ts`, without using a separate `ai-chat-panel.component.ts`
+
+---
+
+## Files to Modify and Add
+
+### 1. Service Layer (New)
+
+**File**: `src/app/services/ai-chat.service.ts`
+
+**Main Responsibilities**:
+- Handle all AI Chat API calls
+- Manage SSE connections and streaming responses
+- Maintain session state and message history
+- Handle streaming accumulation of tool calls
+- Manage statistics
+
+**Core Methods**:
 ```typescript
-- streamChat(projectId, message, sessionId?)  // 流式对话
-- getSessions(projectId)                       // 获取会话列表
-- getSessionHistory(projectId, sessionId)      // 获取会话历史
-- renameSession(projectId, sessionId, title)   // 重命名会话
-- deleteSession(projectId, sessionId)          // 删除会话
-- pinSession(projectId, sessionId)             // 置顶会话
-- unpinSession(projectId, sessionId)           // 取消置顶
+- streamChat(projectId, message, sessionId?)  // Streaming conversation
+- getSessions(projectId)                       // Get session list
+- getSessionHistory(projectId, sessionId)      // Get session history
+- renameSession(projectId, sessionId, title)   // Rename session
+- deleteSession(projectId, sessionId)          // Delete session
+- pinSession(projectId, sessionId)             // Pin session
+- unpinSession(projectId, // Unpin session sessionId)
 ```
 
 ---
 
-### 2. **组件层** (新增)
+### 2. Component Layer (New)
 
-**目录**: `src/app/components/project-map/ai-chat/`
+**Directory**: `src/app/components/project-map/ai-chat/`
 
-**新增组件列表**:
+**New Component List**:
 
-#### **`ai-chat.component.ts`**
-- AI Chat 功能的入口组件
-- 管理整体聊天状态和布局
-- 协调会话列表和聊天界面
-- 处理面板显示/隐藏逻辑
-- 集成可调整大小的面板功能（拖拽调整大小，面板位置持久化到 localStorage）
-- 处理 SSE 流式事件 (content, tool_call, tool_start, tool_end, error, done, heartbeat)
+#### `ai-chat.component.ts`
+- Entry component for AI Chat feature
+- Manage overall chat state and layout
+- Coordinate session list and chat interface
+- Handle panel show/hide logic
+- Integrate resizable panel functionality (drag to resize, panel position persisted to localStorage)
+- Handle SSE streaming events (content, tool_call, tool_start, tool_end, error, done, heartbeat)
 
-#### **`chat-session-list.component.ts`**
-- 显示聊天会话列表
-- 会话项显示:
-  - 标题（可编辑）
-  - 最后一条消息预览
-  - 统计信息（消息数、token 使用量）
-  - 置顶标识
-  - 时间戳
-- 会话管理操作（重命名、删除、置顶）
-- 新建会话按钮
+#### `chat-session-list.component.ts`
+- Display chat session list
+- Session item display:
+  - Title (editable)
+  - Last message preview
+  - Statistics (message count, token usage)
+  - Pin indicator
+  - Timestamp
+- Session management operations (rename, delete, pin)
+- New session button
 
-#### **`chat-message-list.component.ts`**
-- 可滚动的消息历史显示
-- 消息类型 (实际支持):
-  - `user` - 用户消息 (右侧，带头像)
-  - `assistant` - AI 消息 (左侧，支持流式显示)
-  - `system` - 系统消息 (居中)
-  - `tool_call` - 工具调用请求 (可展开参数)
-  - `tool_result` - 工具执行结果 (可折叠)
-  - `error` - 错误消息 (红色标识)
-- 新消息自动滚动到底部
-- **Markdown 渲染 (使用 ngx-markdown + Tailwind Typography)**
-- 命令语法高亮 (Cisco IOS)
-- JSON 语法高亮
+#### `chat-message-list.component.ts`
+- Scrollable message history display
+- Message types (actually supported):
+  - `user` - User message (right, with avatar)
+  - `assistant` - AI message (left, supports streaming)
+  - `system` - System message (centered)
+  - `tool_call` - Tool call request (expandable parameters)
+  - `tool_result` - Tool execution result (collapsible)
+  - `error` - Error message (red indicator)
+- Auto-scroll to bottom for new messages
+- **Markdown rendering (using ngx-markdown + Tailwind Typography)**
+- Command syntax highlighting (Cisco IOS)
+- JSON syntax highlighting
 
-#### **`chat-input-area.component.ts`**
-- 多行文本输入框
-- 发送按钮及键盘快捷键（Enter/Ctrl+Enter）
-- 字符计数器
-- 流式传输时禁用状态
-- 文件附件（未来扩展）
+#### `chat-input-area.component.ts`
+- Multi-line text input
+- Send button and keyboard shortcuts (Enter/Ctrl+Enter)
+- Character counter
+- Disabled state during streaming
+- File attachments (future expansion)
 
-#### **`tool-call-display.component.ts`**
-- 显示工具调用信息
-- 显示工具名称和累积的参数
-- 参数累积的视觉指示器
-- 可折叠的工具结果
-- JSON 结果语法高亮
-- 工具执行状态显示 (accumulating/ready/executing/completed)
-- Angular animations 动画效果
+#### `tool-call-display.component.ts`
+- Display tool call information
+- Display tool name and accumulated parameters
+- Visual indicator for parameter accumulation
+- Collapsible tool results
+- JSON result syntax highlighting
+- Tool execution status display (accumulating/ready/executing/completed)
+- Angular animations effects
 
-#### **`json-viewer.component.ts`** (额外新增)
-- JSON 数据的格式化显示
-- 支持折叠/展开 JSON 节点
-- 语法高亮
-- 复制功能
+#### `json-viewer.component.ts` (Additional)
+- Formatted display of JSON data
+- Support collapse/expand JSON nodes
+- Syntax highlighting
+- Copy functionality
 
-#### **`draggable-tool-dialog.component.ts`** (额外新增)
-- 可拖拽的工具执行结果对话框
-- 支持调整大小
-- 位置持久化到 localStorage
+#### `draggable-tool-dialog.component.ts` (Additional)
+- Draggable tool execution result dialog
+- Support resize
+- Position persisted to localStorage
 
 ---
 
-### 3. **数据模型** (新增)
+### 3. Data Models (New)
 
-**文件**: `src/app/models/ai-chat.interface.ts`
+**File**: `src/app/models/ai-chat.interface.ts`
 
-**核心接口定义**:
+**Core Interface Definitions**:
 
 ```typescript
-// SSE 事件类型
+// SSE Event Types
 interface ChatEvent {
   type: 'content' | 'tool_call' | 'tool_start' | 'tool_end' |
         'error' | 'done' | 'heartbeat';
-  content?: string;           // AI 文本内容
-  tool_call?: ToolCall;       // 工具调用信息
-  tool_name?: string;         // 工具名称
-  tool_output?: string;       // 工具执行结果
-  tool_call_id?: string;      // 工具调用 ID
-  error?: string;             // 错误信息
-  session_id?: string;        // 会话 ID
-  message_id?: string;        // 消息 ID
+  content?: string;           // AI text content
+  tool_call?: ToolCall;       // Tool call information
+  tool_name?: string;         // Tool name
+  tool_output?: string;       // Tool execution result
+  tool_call_id?: string;      // Tool call ID
+  error?: string;             // Error message
+  session_id?: string;        // Session ID
+  message_id?: string;        // Message ID
 }
 
-// 聊天会话
+// Chat Session
 interface ChatSession {
-  id: number;                 // 数据库自增 ID
+  id: number;                 // Database auto-increment ID
   thread_id: string;          // LangGraph thread_id
-  user_id: string;            // 用户 ID
-  project_id: string;         // 项目 ID
-  title: string;              // 会话标题
-  message_count: number;      // 消息数量
-  llm_calls_count: number;    // LLM 调用次数
-  input_tokens: number;       // 输入 token 数
-  output_tokens: number;      // 输出 token 数
-  total_tokens: number;       // 总 token 数
-  last_message_at: string;    // 最后消息时间
-  created_at: string;         // 创建时间
-  updated_at: string;         // 更新时间
-  pinned: boolean;            // 是否置顶
+  user_id: string;            // User ID
+  project_id: string;         // Project ID
+  title: string;              // Session title
+  message_count: number;      // Message count
+  llm_calls_count: number;    // LLM call count
+  input_tokens: number;       // Input token count
+  output_tokens: number;      // Output token count
+  total_tokens: number;       // Total token count
+  last_message_at: string;    // Last message time
+  created_at: string;         // Creation time
+  updated_at: string;         // Update time
+  pinned: boolean;            // Pinned status
 }
 
-// 聊天消息
+// Chat Message
 interface ChatMessage {
-  id: string;                 // 消息唯一标识
-  role: 'user' | 'assistant' | 'system' | 'tool' | 'tool_call' | 'tool_result'; // 实际支持的消息角色
-  content: string;            // 消息内容
-  created_at: string;         // 创建时间
-  tool_calls?: ToolCall[];    // 工具调用列表 (assistant 消息)
-  tool_call_id?: string;      // 关联的工具调用 ID
-  name?: string;              // 工具名称 (tool/tool_result 消息)
-  metadata?: any;             // 元数据
-  toolCall?: ToolCall;        // 单个工具调用 (tool_call 消息)
-  toolName?: string;          // 工具名称 (tool_result 消息)
-  toolOutput?: any;           // 工具输出 (tool_result 消息)
+  id: string;                 // Message unique identifier
+  role: 'user' | 'assistant' | 'system' | 'tool' | 'tool_call' | 'tool_result'; // Actually supported message roles
+  content: string;            // Message content
+  created_at: string;         // Creation time
+  tool_calls?: ToolCall[];    // Tool call list (assistant message)
+  tool_call_id?: string;      // Related tool call ID
+  name?: string;              // Tool name (tool/tool_result message)
+  metadata?: any;             // Metadata
+  toolCall?: ToolCall;        // Single tool call (tool_call message)
+  toolName?: string;          // Tool name (tool_result message)
+  toolOutput?: any;           // Tool output (tool_result message)
 }
 
-// 工具调用
+// Tool Call
 interface ToolCall {
-  id: string;                 // 工具调用 ID
+  id: string;                 // Tool call ID
   type: 'function';
   function: {
-    name: string;             // 工具名称
-    arguments: string;        // 参数 JSON 字符串
-    complete?: boolean;       // 参数是否完整
+    name: string;             // Tool name
+    arguments: string;        // Arguments JSON string
+    complete?: boolean;       // Whether arguments are complete
   };
 }
 ```
 
 ---
 
-### 4. **状态管理** (新增)
+### 4. State Management (New)
 
-**文件**: `src/app/stores/ai-chat.store.ts`
+**File**: `src/app/stores/ai-chat.store.ts`
 
-**状态结构**:
+**State Structure**:
 ```typescript
 interface AIChatState {
-  currentProjectId: string | null;      // 当前项目 ID
-  currentSessionId: string | null;       // 当前会话 ID
-  sessions: ChatSession[];                // 会话列表
-  messagesMap: Map<string, ChatMessage[]>; // 消息历史 (sessionId -> messages)
-  isStreaming: boolean;                   // 是否正在流式传输
-  currentToolCalls: Map<string, ToolCall>; // 当前工具调用状态
-  panelState: {                           // 面板状态 (持久化到 localStorage)
+  currentProjectId: string | null;      // Current project ID
+  currentSessionId: string | null;       // Current session ID
+  sessions: ChatSession[];                // Session list
+  messagesMap: Map<string, ChatMessage[]>; // Message history (sessionId -> messages)
+  isStreaming: boolean;                   // Whether streaming
+  currentToolCalls: Map<string, ToolCall>; // Current tool call state
+  panelState: {                           // Panel state (persisted to localStorage)
     width: number;
     height: number;
     x: number;
     y: number;
     visible: boolean;
   };
-  error: string | null;                   // 错误信息
+  error: string | null;                   // Error message
 }
 ```
 
-**实现方式**:
-- 使用 RxJS Observable 和 BehaviorSubject
-- 遵循项目现有的服务化状态管理模式
-- 不引入额外的状态管理库（如 NgRx）
+**Implementation**:
+- Use RxJS Observable and BehaviorSubject
+- Follow the project's existing service-based state management pattern
+- Do not introduce additional state management libraries (like NgRx)
 
 ---
 
-### 5. **需要修改的现有文件**
+### 5. Existing Files to Modify
 
-#### **`src/app/components/project-map/project-map-menu/project-map-menu.component.html`**
-在工具栏添加 AI Chat 按钮:
+#### `src/app/components/project-map/project-map-menu/project-map-menu.component.html`
+Add AI Chat button to toolbar:
 ```html
 <button mat-icon-button
-        matTooltip="AI 助手"
+        matTooltip="AI Assistant"
         (click)="openAIChat()">
   <mat-icon>psychology</mat-icon>
 </button>
 ```
 
-#### **`src/app/components/project-map/project-map-menu/project-map-menu.component.ts`**
-添加打开 AI Chat 的方法:
+#### `src/app/components/project-map/project-map-menu/project-map-menu.component.ts`
+Add method to open AI Chat:
 ```typescript
 openAIChat() {
   this.aiChatService.openChatPanel(this.project);
 }
 ```
 
-#### **`src/app/components/project-map/project-map.component.scss`**
-为 AI Chat 面板集成添加样式
+#### `src/app/components/project-map/project-map.component.scss`
+Add styles for AI Chat panel integration
 
 ---
 
-## 🔄 数据流程设计
+## Data Flow Design
 
-### **1. 初始化聊天**
+### 1. Initialize Chat
 ```
-用户点击 AI Chat 按钮
+User clicks AI Chat Button
     ↓
-检查项目是否已打开
+Check if project is already opened
     ↓
-加载当前项目的会话列表
+Load session list for current project
     ↓
-创建新会话或选择已有会话
+Create new session or select existing session
     ↓
-显示聊天面板
-```
-
-### **2. 发送消息流程**
-```
-用户输入消息并点击发送
-    ↓
-将用户消息添加到本地状态
-    ↓
-调用 aiChatService.streamChat()
-    ↓
-建立 SSE 连接
-    ↓
-处理接收的事件:
-    - content: 追加到 AI 消息内容
-    - tool_call: 更新工具调用显示
-    - tool_start: 显示工具开始执行
-    - tool_end: 显示工具执行结果
-    - error: 显示错误信息
-    - done: 完成消息
-    ↓
-更新会话统计信息
+Show chat panel
 ```
 
-### **3. 工具调用处理流程**
+### 2. Send Message Flow
 ```
-接收 tool_call 事件 (流式)
+User enters message and clicks send
     ↓
-累积参数 (arguments 逐步完整)
+Add user message to local state
     ↓
-显示工具调用及进度指示器
+Call aiChatService.streamChat()
     ↓
-接收 tool_start 事件
+Establish SSE connection
     ↓
-显示工具执行状态
+Process received events:
+    - content: Append to AI message content
+    - tool_call: Update tool call display
+    - tool_start: Show tool execution started
+    - tool_end: Show tool execution result
+    - error: Show error message
+    - done: Complete message
     ↓
-接收 tool_end 事件
+Update session statistics
+```
+
+### 3. Tool Call Processing Flow
+```
+Receive tool_call event (streaming)
     ↓
-显示工具执行结果
+Accumulate arguments (arguments gradually complete)
+    ↓
+Show tool call with progress indicator
+    ↓
+Receive tool_start event
+    ↓
+Show tool execution status
+    ↓
+Receive tool_end event
+    ↓
+Show tool execution result
 ```
 
 ---
 
-## 🎨 界面设计
+## UI Design
 
-### **面板布局**
+### Panel Layout
 ```
 ┌─────────────────────────────────────────────────┐
-│ AI 助手                           [_] [□] [×]  │
+│ AI Assistant                         [_] [□] [×]│
 ├──────────────────────┬──────────────────────────┤
-│ 会话列表 (250px)     │ 聊天区域                 │
+│ Session List (250px)│ Chat Area                 │
 │ ┌─────────────────┐  │                          │
-│ │ 新建会话    +   │  │ ┌──────────────────────┐ │
-│ ├─────────────────┤  │ │ 用户: 查看版本信息   │ │
-│ │📌 拓扑帮助     │  │ └──────────────────────┘ │
-│ │ 上次: 如何配置...│  │                          │
+│ │ New Chat     +   │  │ ┌──────────────────────┐ │
+│ ├─────────────────┤  │ │ User: Check version   │ │
+│ │📌 Topology Help│  │ └──────────────────────┘ │
+│ │ Last: How to...│  │                          │
 │ ├─────────────────┤  │ ┌──────────────────────┐ │
-│ │ 网络调试       │  │ │ 助手: 我来帮你检查... │ │
-│ │ 上次: 路由器... │  │ │ [流式输出中...]       │ │
+│ │ Network Debug  │  │ │Assistant: Let me...   │ │
+│ │ Last: Router...│  │ │ [Streaming...]         │ │
 │ └─────────────────┘  │ └──────────────────────┘ │
 │                      │                          │
 │                      │ ┌──────────────────────┐ │
-│                      │ │ 🔧 执行命令          │ │
-│                      │ │ 参数: {...}          │ │
+│                      │ │ 🔧 Execute Command    │ │
+│                      │ │ Params: {...}        │ │
 │                      │ └──────────────────────┘ │
 │                      │ ┌──────────────────────┐ │
-│                      │ │ [输入框]           [发送]│ │
+│                      │ │ [Input]           [Send]│ │
 │                      │ └──────────────────────┘ │
 └──────────────────────┴──────────────────────────┘
 ```
 
-### **UI/UX 原则**
-- **主题适配**: 支持浅色/深色主题
-- **可调整大小**: 拖拽调整面板尺寸
-- **可折叠**: 最小化为图标视图
-- **响应式**: 适配不同屏幕尺寸
-- **无障碍**: 键盘导航、ARIA 标签
+### UI/UX Principles
+- **Theme Support**: Light/dark theme support
+- **Resizable**: Drag to resize panel
+- **Collapsible**: Minimize to icon view
+- **Responsive**: Adapt to different screen sizes
+- **Accessibility**: Keyboard navigation, ARIA labels
 
 ---
 
-## 🔧 关键技术实现
+## Key Technical Implementation
 
-### **SSE 事件处理**
+### SSE Event Handling
 ```typescript
-// 服务层方法
+// Service layer method
 streamChat(projectId: string, message: string, sessionId?: string): Observable<ChatEvent> {
   return new Observable<ChatEvent>((observer) => {
-    // 使用 fetch 发送 POST 请求（EventSource 不支持 POST）
+    // Use fetch to send POST request (EventSource doesn't support POST)
     fetch(`${this.apiUrl}/projects/${projectId}/chat/stream`, {
       method: 'POST',
       headers: {
@@ -372,7 +372,7 @@ streamChat(projectId: string, message: string, sessionId?: string): Observable<C
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
 
-      // 读取流式响应
+      // Read streaming response
       const processStream = async () => {
         while (true) {
           const { done, value } = await reader.read();
@@ -400,7 +400,7 @@ streamChat(projectId: string, message: string, sessionId?: string): Observable<C
       processStream().catch(error => observer.error(error));
     }).catch(error => observer.error(error));
 
-    // 返回清理函数
+    // Return cleanup function
     return () => {
       reader?.cancel();
     };
@@ -408,14 +408,14 @@ streamChat(projectId: string, message: string, sessionId?: string): Observable<C
 }
 ```
 
-### **工具调用参数累积**
+### Tool Call Argument Accumulation
 ```typescript
-// 组件逻辑
+// Component logic
 handleToolCallEvent(toolCall: ToolCall) {
   const existing = this.currentToolCalls.get(toolCall.id);
 
   if (!existing) {
-    // 新的工具调用
+    // New tool call
     this.currentToolCalls.set(toolCall.id, {
       ...toolCall,
       function: {
@@ -425,13 +425,13 @@ handleToolCallEvent(toolCall: ToolCall) {
     });
     this.displayToolCallStarted(toolCall);
   } else {
-    // 更新现有工具调用的参数
+    // Update existing tool call arguments
     existing.function.arguments = toolCall.function.arguments;
     existing.function.complete = toolCall.function.complete || false;
     this.updateToolCallDisplay(existing);
   }
 
-  // 参数完整，准备执行
+  // Arguments complete, ready to execute
   if (toolCall.function.complete) {
     this.markToolCallReady(toolCall);
   }
@@ -440,127 +440,127 @@ handleToolCallEvent(toolCall: ToolCall) {
 
 ---
 
-## ✅ 实施清单
+## Implementation Checklist
 
-### 第一阶段：基础设施
-- [ ] 创建 AI Chat 服务及基础 API 方法
-- [ ] 定义所有数据模型的 TypeScript 接口
-- [ ] 创建基础组件结构
-- [ ] 实现 SSE 流式处理
-- [ ] 在工具栏添加 AI Chat 按钮
+### Phase 1: Infrastructure
+- [ ] Create AI Chat service and basic API methods
+- [ ] Define all data model TypeScript interfaces
+- [ ] Create basic component structure
+- [ ] Implement SSE streaming
+- [ ] Add AI Chat button to toolbar
 
-### 第二阶段：核心功能
-- [ ] 实现聊天消息列表组件
-- [ ] 实现聊天输入区域组件
-- [ ] 实现会话列表组件
-- [ ] 添加会话增删改查操作
-- [ ] 实现消息流式显示 UI
+### Phase 2: Core Features
+- [ ] Implement chat message list component
+- [ ] Implement chat input area component
+- [ ] Implement session list component
+- [ ] Add session CRUD operations
+- [ ] Implement message streaming display UI
 
-### 第三阶段：高级功能
-- [ ] 工具调用显示组件
-- [ ] 工具调用参数累积逻辑
-- [ ] 会话统计信息显示
-- [ ] 置顶/取消置顶功能
-- [ ] Markdown 渲染
+### Phase 3: Advanced Features
+- [ ] Tool call display component
+- [ ] Tool call argument accumulation logic
+- [ ] Session statistics display
+- [ ] Pin/Unpin functionality
+- [ ] Markdown rendering
 
-### 第四阶段：优化完善
-- [ ] 可调整大小的面板
-- [ ] 主题集成
-- [ ] 错误处理
-- [ ] 加载状态
-- [ ] 键盘快捷键
-- [ ] 无障碍功能
+### Phase 4: Optimization
+- [ ] Resizable panel
+- [ ] Theme integration
+- [ ] Error handling
+- [ ] Loading state
+- [ ] Keyboard shortcuts
+- [ ] Accessibility
 
-### 第五阶段：测试
-- [ ] 服务层单元测试
-- [ ] 组件测试
-- [ ] 集成测试
-- [ ] E2E 测试
-
----
-
-## 📊 成功指标
-
-- **性能**: SSE 延迟 < 100ms
-- **可用性**: 面板打开时间 < 300ms
-- **可靠性**: 99.9% 连接成功率
-- **无障碍**: 符合 WCAG 2.1 AA 标准
+### Phase 5: Testing
+- [ ] Service layer unit tests
+- [ ] Component tests
+- [ ] Integration tests
+- [ ] E2E tests
 
 ---
 
-## 🚀 未来增强功能
+## Success Metrics
 
-1. **多模态支持**: 图片/文件上传
-2. **语音输入**: 语音转文字集成
-3. **导出会话**: JSON/Markdown 导出
-4. **会话分享**: 用户间共享会话
-5. **自定义工具**: 用户自定义工具插件
-6. **快捷操作**: 预设提示词
-7. **搜索功能**: 在会话中搜索
+- **Performance**: SSE latency < 100ms
+- **Usability**: Panel open time < 300ms
+- **Reliability**: 99.9% connection success rate
+- **Accessibility**: WCAG 2.1 AA compliant
 
 ---
 
-## 📝 重要说明
+## Future Enhancements
 
-1. **依赖条件**:
-   - GNS3 服务器需要启用 Chat API
-   - 用户必须已配置 LLM 设置（已在 AI Profile Management 中实现）
-   - 项目必须处于 "opened" 状态才能使用聊天功能
-
-2. **数据隔离**:
-   - 会话按项目和用户隔离
-   - 每个项目在项目目录下创建 `gns3-copilot/copilot_checkpoints.db`
-   - 项目删除时自动清理相关数据
-
-3. **安全性**:
-   - 所有敏感数据（API 密钥、JWT token）在服务端处理
-   - 通过 ContextVars 传递，不持久化到数据库
-   - 请求结束后自动清除内存中的敏感信息
-
-4. **技术栈**:
-   - 遵循现有 GNS3 Web UI 模式
-   - Material Design 组件库
-   - RxJS Observable 响应式编程
-   - ngx-markdown + Tailwind Typography (用于 Markdown 渲染)
-   - 不引入额外的状态管理库
+1. **Multimodal Support**: Image/file upload
+2. **Voice Input**: Speech-to-text integration
+3. **Export Sessions**: JSON/Markdown export
+4. **Share Sessions**: Share sessions between users
+5. **Custom Tools**: User-defined tool plugins
+6. **Quick Actions**: Preset prompts
+7. **Search**: Search within sessions
 
 ---
 
-## 🔨 消息渲染模块
+## Important Notes
 
-影响 AI Assistant 消息渲染的模块文件：
+1. **Prerequisites**:
+   - GNS3 server must have Chat API enabled
+   - User must have LLM settings configured (already implemented in AI Profile Management)
+   - Project must be in "opened" state to use chat
 
-### 核心渲染文件
-| 文件 | 作用 |
-|------|------|
-| `chat-message-list.component.ts` | **Markdown 渲染** - 使用 ngx-markdown 组件 |
-| `chat-message-list.component.scss` | 消息列表样式 |
-| `ai-chat.component.scss` | 主面板样式 |
+2. **Data Isolation**:
+   - Sessions are isolated by project and user
+   - Each project creates `gns3-copilot/copilot_checkpoints.db` in project directory
+   - Project deletion automatically cleans up related data
 
-### 样式相关
-| 文件 | 作用 |
-|------|------|
-| `src/tailwind-markdown.scss` | Tailwind CSS 入口文件 |
-| `tailwind.config.js` | Tailwind 配置 (包含 Typography 插件) |
-| `chat-message-list.component.scss` | 消息气泡、Cisco IOS高亮样式 |
+3. **Security**:
+   - All sensitive data (API keys, JWT tokens) handled on server side
+   - Passed through ContextVars, not persisted to database
+   - Sensitive info automatically cleared from memory after request
 
-### 数据/配置
-| 文件 | 作用 |
-|------|------|
-| `ai-chat.interface.ts` | 消息数据结构 `ChatMessage`, `MessageRole` |
-| `ai-chat.store.ts` | 消息状态管理 |
-| `ai-chat.service.ts` | SSE 事件处理，消息流转 |
+4. **Tech Stack**:
+   - Follow existing GNS3 Web UI patterns
+   - Material Design component library
+   - RxJS Observable reactive programming
+   - ngx-markdown + Tailwind Typography (for Markdown rendering)
+   - No additional state management libraries
 
-### 辅助渲染组件
-| 文件 | 作用 |
-|------|------|
-| `tool-call-display.component.ts` | 工具调用显示 |
-| `json-viewer.component.ts` | JSON 格式化显示 |
-| `draggable-tool-dialog.component.ts` | 工具结果对话框 |
+---
 
-### Markdown 渲染配置
+## Message Rendering Module
 
-#### 1. Tailwind Typography 配置 (`tailwind.config.js`)
+Modules affecting AI Assistant message rendering:
+
+### Core Rendering Files
+| File | Purpose |
+|------|---------|
+| `chat-message-list.component.ts` | **Markdown rendering** - using ngx-markdown component |
+| `chat-message-list.component.scss` | Message list styles |
+| `ai-chat.component.scss` | Main panel styles |
+
+### Style Related
+| File | Purpose |
+|------|---------|
+| `src/tailwind-markdown.scss` | Tailwind CSS entry file |
+| `tailwind.config.js` | Tailwind config (includes Typography plugin) |
+| `chat-message-list.component.scss` | Message bubble, Cisco IOS highlight styles |
+
+### Data/Config
+| File | Purpose |
+|------|---------|
+| `ai-chat.interface.ts` | Message data structures `ChatMessage`, `MessageRole` |
+| `ai-chat.store.ts` | Message state management |
+| `ai-chat.service.ts` | SSE event handling, message flow |
+
+### Auxiliary Rendering Components
+| File | Purpose |
+|------|---------|
+| `tool-call-display.component.ts` | Tool call display |
+| `json-viewer.component.ts` | JSON formatted display |
+| `draggable-tool-dialog.component.ts` | Tool result dialog |
+
+### Markdown Rendering Configuration
+
+#### 1. Tailwind Typography Config (`tailwind.config.js`)
 ```javascript
 module.exports = {
   content: ['./src/app/**/*.{html,ts}'],
@@ -568,8 +568,8 @@ module.exports = {
 };
 ```
 
-#### 2. 组件中的 CSS 类
-参考 FlowNet-Lab 项目的实现：
+#### 2. CSS Classes in Components
+Reference FlowNet-Lab implementation:
 ```html
 <markdown class="prose prose-sm dark:prose-invert max-w-none min-w-0
   prose-p:break-words prose-ul:break-words prose-ol:break-words
@@ -578,22 +578,22 @@ module.exports = {
 </markdown>
 ```
 
-| 类名 | 作用 |
-|------|------|
-| `prose` | Tailwind Typography 基础类 |
-| `prose-sm` | 小号字体 |
-| `dark:prose-invert` | 暗色主题适配 |
-| `max-w-none` | 不限制最大宽度 |
-| `min-w-0` | 允许收缩 |
-| `prose-xxx:break-words` | 强制换行，防止溢出 |
+| Class | Purpose |
+|-------|---------|
+| `prose` | Tailwind Typography base class |
+| `prose-sm` | Small font size |
+| `dark:prose-invert` | Dark theme adaptation |
+| `max-w-none` | No max width limit |
+| `min-w-0` | Allow shrinking |
+| `prose-xxx:break-words` | Force word wrap, prevent overflow |
 
-> **注意**: 消息渲染使用 `ngx-markdown` 组件 + Tailwind Typography 类，不再使用手动 marked 配置。
+> **Note**: Message rendering uses `ngx-markdown` component + Tailwind Typography classes, no longer uses manual marked configuration.
 
 ---
 
-## 📦 文件清单总结
+## File List Summary
 
-### 新增文件 (10个)
+### New Files (10)
 1. `src/app/services/ai-chat.service.ts`
 2. `src/app/models/ai-chat.interface.ts`
 3. `src/app/stores/ai-chat.store.ts`
@@ -605,11 +605,11 @@ module.exports = {
 9. `src/app/components/project-map/ai-chat/json-viewer.component.ts`
 10. `src/app/components/project-map/ai-chat/draggable-tool-dialog.component.ts`
 
-### 新增配置文件 (3个)
-1. `tailwind.config.js` - Tailwind CSS 配置
-2. `src/tailwind-markdown.scss` - Tailwind 入口文件
+### New Config Files (3)
+1. `tailwind.config.js` - Tailwind CSS configuration
+2. `src/tailwind-markdown.scss` - Tailwind entry file
 
-### 修改文件 (3个)
+### Modified Files (3)
 1. `src/app/components/project-map/project-map-menu/project-map-menu.component.html`
 2. `src/app/components/project-map/project-map-menu/project-map-menu.component.ts`
 3. `src/app/components/project-map/project-map.component.scss`

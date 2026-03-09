@@ -1,68 +1,66 @@
-# Project Map Component - 项目地图组件代码审查 / Code Review Documentation
+# Project Map Component - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/components/project-map/ (Project Map Component)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/components/project-map/ (Project Map Component)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：项目地图组件负责网络拓扑可视化、节点管理、链接管理和 AI 聊天集成。
-
-**English Description**: Project map component handles network topology visualization, node management, link management, and AI chat integration.
+Project map component handles network topology visualization, node management, link management, and AI chat integration.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
 
-### 核心组件
+### Core Components
 
 #### **ProjectMapComponent**
-- 项目拓扑图主容器
-- 节点、链接、绘图管理
-- 图层、网格、工具栏控制
-- WebSocket 通信管理
-- 控制台和日志集成
+- Project topology main container
+- Node, link, drawing management
+- Layer, grid, toolbar control
+- WebSocket communication management
+- Console and log integration
 
 #### **AiChatComponent** (ai-chat/)
-- AI 聊天主界面
-- 可拖拽、可调整大小
-- 会话管理
-- 工具调用显示
+- AI chat main interface
+- Draggable, resizable
+- Session management
+- Tool call display
 
 #### **ChatMessageListComponent** (ai-chat/)
-- 消息列表渲染
-- Markdown 支持
-- 代码高亮
-- 流式消息处理
+- Message list rendering
+- Markdown support
+- Code highlighting
+- Streaming message handling
 
 #### **ChatInputAreaComponent** (ai-chat/)
-- 用户输入区域
-- 文件上传支持
-- 消息发送
+- User input area
+- File upload support
+- Message sending
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🔴 严重安全问题 / Critical Security Issues
+### Critical Security Issues
 
-#### 1. **XSS 漏洞 - Markdown 未净化** (严重)
-**文件**: `ai-chat/chat-message-list/chat-message-list.component.ts:240-241`
+#### 1. **XSS Vulnerability - Markdown Not Sanitized** (Critical)
+**File**: `ai-chat/chat-message-list/chat-message-list.component.ts:240-241`
 
-**问题描述**:
+**Description**:
 ```typescript
 const html = marked(content) as string;
 return this.sanitizer.bypassSecurityTrustHtml(html);
 ```
 
-**风险**: 恶意 markdown 可能包含脚本注入
+**Risk**: Malicious markdown may contain script injection
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 import DOMPurify from 'dompurify';
 
@@ -72,13 +70,13 @@ private formatMessage(content: string): SafeHtml | string {
   }
 
   try {
-    // 配置 marked
+    // Configure marked
     marked.setOptions({
       gfm: true,
       breaks: true
     });
 
-    // 使用 DOMPurify 净化
+    // Sanitize with DOMPurify
     const dirtyHtml = marked(content);
     const cleanHtml = DOMPurify.sanitize(dirtyHtml, {
       ALLOWED_TAGS: ['p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -102,60 +100,60 @@ private escapeHtml(text: string): string {
 }
 ```
 
-#### 2. **JWT 令牌明文存储**
-**文件**: `ai-chat.service.ts:365-367`
+#### 2. **JWT Token Stored in Plain Text**
+**File**: `ai-chat.service.ts:365-367`
 
-**问题描述**:
+**Description**:
 ```typescript
 if (controller.authToken) {
   return headers.set('Authorization', `Bearer ${controller.authToken}`);
 }
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 考虑使用更安全的存储方式
-// 1. 使用 sessionStorage 而非内存
-// 2. 实现令牌自动刷新
-// 3. 设置合理的过期时间
+// Consider using more secure storage
+// 1. Use sessionStorage instead of memory
+// 2. Implement token auto-refresh
+// 3. Set reasonable expiration time
 ```
 
 ---
 
-### 🟠 性能问题 / Performance Issues
+### Performance Issues
 
-#### 3. **频繁的 DOM 操作**
-**文件**: `chat-message-list.component.ts:326-343`
+#### 3. **Frequent DOM Operations**
+**File**: `chat-message-list.component.ts:326-343`
 
-**问题描述**:
+**Description**:
 ```typescript
 formatted = formatted
   .replace(/^([A-Z][A-Za-z0-9]*)#(\S*)/gm, '<span class="cisco-prompt">$1#$2</span>')
   .replace(/\b(GigabitEthernet|Serial|FastEthernet|Ethernet|Loopback|Port-channel|Tunnel|Vlan)\d*\/\d*(\.\d+)?(\s|$)/g, '<span class="cisco-interface">$&</span>')
-  // 多个正则替换操作
+  // Multiple regex replace operations
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 使用预编译的正则表达式
+// Use pre-compiled regex
 private static CISCO_PROMPT_REGEX = /^([A-Z][A-Za-z0-9]*)#(\S*)/gm;
 private static CISCO_INTERFACE_REGEX = /\b(GigabitEthernet|Serial|FastEthernet|Ethernet|Loopback|Port-channel|Tunnel|Vlan)\d*\/\d*(\.\d+)?(\s|$)/g;
 
 private formatMessage(content: string): SafeHtml | string {
   let formatted = content;
 
-  // 使用缓存的正则表达式
+  // Use cached regex
   formatted = formatted.replace(ChatMessageListComponent.CISCO_PROMPT_REGEX, '<span class="cisco-prompt">$1#$2</span>');
   formatted = formatted.replace(ChatMessageListComponent.CISCO_INTERFACE_REGEX, '<span class="cisco-interface">$&</span>');
 
-  // ... 其他格式化
+  // ... other formatting
 }
 ```
 
-#### 4. **重复计算节点缩放**
-**文件**: `project-map.component.ts:323-331`
+#### 4. **Repeated Node Scaling Calculation**
+**File**: `project-map.component.ts:323-331`
 
-**问题描述**:
+**Description**:
 ```typescript
 applyScalingOfNodeSymbols() {
   this.nodesDataSource.getItems().forEach((node) => {
@@ -168,15 +166,15 @@ applyScalingOfNodeSymbols() {
 }
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 缓存已缩放的节点
+// Cache scaled nodes
 private scaledNodesCache = new Set<string>();
 
 applyScalingOfNodeSymbols() {
   this.nodesDataSource.getItems().forEach((node) => {
     if (this.scaledNodesCache.has(node.node_id)) {
-      return;  // 已处理过
+      return;  // Already processed
     }
 
     if (node.height > this.symbolService.getMaximumSymbolSize()) {
@@ -191,33 +189,33 @@ applyScalingOfNodeSymbols() {
 
 ---
 
-### 🟡 内存泄漏问题 / Memory Leak Issues
+### Memory Leak Issues
 
-#### 5. **定时器未清理**
-**文件**: `ai-chat/ai-chat.component.ts:58-59`
+#### 5. **Timer Not Cleaned Up**
+**File**: `ai-chat/ai-chat.component.ts:58-59`
 
-**问题描述**:
+**Description**:
 ```typescript
 private saveStateTimer: any = null;
 private dragRafId: number | null = null;
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 private cleanup(): void {
-  // 清理定时器
+  // Cleanup timer
   if (this.saveStateTimer) {
     clearTimeout(this.saveStateTimer);
     this.saveStateTimer = null;
   }
 
-  // 清理 RAF
+  // Cleanup RAF
   if (this.dragRafId !== null) {
     cancelAnimationFrame(this.dragRafId);
     this.dragRafId = null;
   }
 
-  // 重置状态
+  // Reset state
   this.aiChatStore.resetSessionState();
   this.currentToolCalls.clear();
   this.currentAssistantMessage = null;
@@ -228,24 +226,24 @@ ngOnDestroy() {
 }
 ```
 
-#### 6. **WebSocket 连接清理不完整**
-**文件**: `project-map.component.ts:1124-1129`
+#### 6. **WebSocket Connection Cleanup Incomplete**
+**File**: `project-map.component.ts:1124-1129`
 
-**问题描述**:
+**Description**:
 ```typescript
 if (this.projectws) {
   if (this.projectws.OPEN) this.projectws.close();
 }
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 public ngOnDestroy() {
-  // 健壮的 WebSocket 清理
+  // Robust WebSocket cleanup
   this.closeWebSocketSafely(this.projectws);
   this.closeWebSocketSafely(this.ws);
 
-  // 清理其他资源
+  // Cleanup other resources
   if (this.projectMapSubscription) {
     this.projectMapSubscription.unsubscribe();
   }
@@ -264,16 +262,16 @@ private closeWebSocketSafely(ws: WebSocket | null): void {
 }
 ```
 
-#### 7. **动态组件实例可能泄漏**
-**文件**: `project-map.component.ts:241-254`
+#### 7. **Dynamic Component Instances May Leak**
+**File**: `project-map.component.ts:241-254`
 
-**问题描述**:
+**Description**:
 ```typescript
 const { TopologySummaryComponent } = await import('../topology-summary/topology-summary.component');
 this.instance = this.viewContainerRef.createComponent(TopologySummaryComponent);
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 private dynamicComponentRefs: ComponentRef<any>[] = [];
 
@@ -285,7 +283,7 @@ async createTopologySummary() {
 }
 
 ngOnDestroy() {
-  // 销毁所有动态创建的组件
+  // Destroy all dynamically created components
   this.dynamicComponentRefs.forEach(ref => {
     try {
       ref.destroy();
@@ -299,11 +297,11 @@ ngOnDestroy() {
 
 ---
 
-## 修复建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复 / Immediate Fixes
+### Priority 1 - Immediate Fixes
 
-#### 1. 修复 XSS 漏洞
+#### 1. Fix XSS Vulnerability
 ```bash
 npm install dompurify @types/dompurify
 ```
@@ -330,7 +328,7 @@ private formatMessage(content: string): SafeHtml | string {
 }
 ```
 
-#### 2. 修复内存泄漏
+#### 2. Fix Memory Leaks
 ```typescript
 // ai-chat.component.ts
 export class AiChatComponent implements OnInit, OnDestroy {
@@ -359,11 +357,11 @@ export class AiChatComponent implements OnInit, OnDestroy {
 }
 ```
 
-### 优先级 2 - 短期改进 / Short-term Improvements
+### Priority 2 - Short-term Improvements
 
-#### 1. 性能优化
+#### 1. Performance Optimization
 ```typescript
-// 使用虚拟滚动
+// Use virtual scrolling
 <cdk-virtual-scroll-viewport itemSize="80" maxBufferPx="500" minBufferPx="200">
   <app-chat-message-list
     *cdkVirtualFor="let message of messages; trackBy: trackByMessageId"
@@ -376,7 +374,7 @@ trackByMessageId(index: number, message: ChatMessage): string {
 }
 ```
 
-#### 2. 改进错误处理
+#### 2. Improve Error Handling
 ```typescript
 // ai-chat.service.ts
 streamChatMessages(request: ChatRequest): Observable<ChatEvent> {
@@ -389,7 +387,7 @@ streamChatMessages(request: ChatRequest): Observable<ChatEvent> {
     catchError((error: HttpErrorResponse) => {
       console.error('Chat stream error:', error);
 
-      // 返回用户友好的错误
+      // Return user-friendly error
       const userError: ChatError = {
         type: 'error',
         message: this.getUserFriendlyErrorMessage(error),
@@ -415,7 +413,7 @@ private getUserFriendlyErrorMessage(error: HttpErrorResponse): string {
 }
 ```
 
-#### 3. 添加加载状态
+#### 3. Add Loading State
 ```typescript
 // ai-chat.component.ts
 export class AiChatComponent {
@@ -438,9 +436,9 @@ export class AiChatComponent {
 }
 ```
 
-### 优先级 3 - 长期改进 / Long-term Improvements
+### Priority 3 - Long-term Improvements
 
-#### 1. 实现离线支持
+#### 1. Implement Offline Support
 ```typescript
 // chat-queue.service.ts
 @Injectable({ providedIn: 'root' })
@@ -476,7 +474,7 @@ export class ChatQueueService {
 }
 ```
 
-#### 2. 添加消息搜索
+#### 2. Add Message Search
 ```typescript
 // chat-search.service.ts
 @Injectable({ providedIn: 'root' })
@@ -489,12 +487,12 @@ export class ChatSearchService {
     const lowerQuery = query.toLowerCase();
 
     return messages.filter(message => {
-      // 搜索消息内容
+      // Search message content
       if (message.content?.toLowerCase().includes(lowerQuery)) {
         return true;
       }
 
-      // 搜索工具调用
+      // Search tool calls
       if (message.tool_calls) {
         return message.tool_calls.some(call =>
           call.function.name.toLowerCase().includes(lowerQuery)
@@ -522,17 +520,17 @@ export class ChatSearchService {
 
 ---
 
-## AI 聊天特定问题
+## AI Chat Specific Issues
 
-### 安全问题
+### Security Issues
 
-#### 1. **工具调用未验证**
-**风险**: 恶意服务器可能返回危险的工具调用
+#### 1. **Tool Calls Not Validated**
+**Risk**: Malicious server may return dangerous tool calls
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 private validateToolCall(call: ToolCall): boolean {
-  // 白名单允许的工具
+  // Whitelist allowed tools
   const allowedTools = [
     'get_device_config',
     'analyze_network',
@@ -544,7 +542,7 @@ private validateToolCall(call: ToolCall): boolean {
     return false;
   }
 
-  // 验证参数
+  // Validate arguments
   try {
     JSON.parse(call.function.arguments);
     return true;
@@ -555,10 +553,10 @@ private validateToolCall(call: ToolCall): boolean {
 }
 ```
 
-#### 2. **流式响应大小限制**
-**风险**: 无限制的流式数据可能导致内存溢出
+#### 2. **Streaming Response Size Limit**
+**Risk**: Unlimited streaming data may cause memory overflow
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 private MAX_STREAM_SIZE = 10 * 1024 * 1024; // 10MB
 private currentStreamSize = 0;
@@ -586,9 +584,9 @@ streamChatMessages(request: ChatRequest): Observable<ChatEvent> {
 
 ---
 
-## 测试建议 / Testing Recommendations
+## Testing Recommendations
 
-### 单元测试
+### Unit Tests
 ```typescript
 describe('ChatMessageListComponent', () => {
   it('should sanitize malicious HTML', () => {
@@ -607,7 +605,7 @@ describe('ChatMessageListComponent', () => {
 });
 ```
 
-### 集成测试
+### Integration Tests
 ```typescript
 it('should handle streaming responses', async () => {
   const response$ = service.streamChatMessages({ content: 'Hello' });

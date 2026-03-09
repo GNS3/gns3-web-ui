@@ -1,64 +1,62 @@
-# Interceptors Directory - 代码审查文档 / Code Review Documentation
+# Interceptors Directory - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/interceptors/ (HTTP 拦截器 / HTTP Interceptors)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/interceptors/ (HTTP Interceptors)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：本目录包含 Angular HTTP 拦截器，用于处理 HTTP 请求和响应，包括认证、令牌管理等功能。
-
-**English Description**: This directory contains Angular HTTP interceptors that handle HTTP requests and responses, including authentication, token management, and more.
+This directory contains Angular HTTP interceptors that handle HTTP requests and responses, including authentication, token management, and more.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
-### 拦截器文件 / Interceptor Files
+### Interceptor Files
 
 #### **http.interceptor.ts**
-**类型**: HTTP 拦截器
+**Type**: HTTP Interceptor
 
-**功能**:
-- 拦截所有 HTTP 请求和响应
-- 添加控制器 ID 到请求头
-- 处理认证错误（401/403）
-- 自动令牌刷新（当前已注释）
-- 管理令牌刷新状态
+**Functions**:
+- Intercept all HTTP requests and responses
+- Add controller ID to request headers
+- Handle authentication errors (401/403)
+- Automatic token refresh (currently commented out)
+- Manage token refresh state
 
-**实现细节**:
-- 使用 RxJS 操作符处理请求/响应
-- 从 localStorage 读取控制器 ID
-- 处理令牌刷新流程
-- 刷新失败时重定向登录
+**Implementation Details**:
+- Use RxJS operators to handle requests/responses
+- Read controller ID from localStorage
+- Handle token refresh flow
+- Redirect to login when refresh fails
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🔴 严重安全问题 / Critical Security Issues
+### 🔴 Critical Security Issues
 
-#### 1. **认证错误处理被禁用**
-**文件**: `http.interceptor.ts:15-19`
+#### 1. **Authentication Error Handling is Disabled**
+**File**: `http.interceptor.ts:15-19`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 // if (err.status === 401 || err.status === 403) {
-//   // 认证错误处理被注释掉了！
+//   // Authentication error handling is commented out!
 // }
 ```
 
-**影响**:
-- **未授权用户可能访问受保护资源**
-- 401/403 错误不被捕获和处理
-- 令牌过期时用户不会被重定向到登录
-- **严重的安全漏洞**
+**Impact**:
+- **Unauthorized users may access protected resources**
+- 401/403 errors are not caught and handled
+- Users are not redirected to login when token expires
+- **Serious security vulnerability**
 
-**建议**:
+**Recommendation**:
 ```typescript
 intercept(
   req: HttpRequest<any>,
@@ -66,12 +64,12 @@ intercept(
 ): Observable<HttpEvent<any>> {
   return next.handle(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      // 立即取消注释并修复
+      // Uncomment and fix immediately
       if (err.status === 401 || err.status === 403) {
         return this.handleAuthError(req, next);
       }
 
-      // 其他错误处理
+      // Other error handling
       return throwError(() => err);
     })
   );
@@ -81,13 +79,13 @@ private handleAuthError(
   req: HttpRequest<any>,
   next: HttpHandler
 ): Observable<HttpEvent<any>> {
-  // 检查是否已经在刷新令牌
+  // Check if already refreshing token
   if (this.isRefreshing) {
     return this.refreshTokenSubject.pipe(
       filter(token => token !== null),
       take(1),
       switchMap(token => {
-        // 使用新令牌重试请求
+        // Retry request with new token
         const cloned = req.clone({
           setHeaders: {
             Authorization: `Bearer ${token}`
@@ -98,7 +96,7 @@ private handleAuthError(
     );
   }
 
-  // 开始令牌刷新
+  // Start token refresh
   this.isRefreshing = true;
   this.refreshTokenSubject.next(null);
 
@@ -108,7 +106,7 @@ private handleAuthError(
       const newToken = response.token;
       this.refreshTokenSubject.next(newToken);
 
-      // 重试原始请求
+      // Retry original request
       const cloned = req.clone({
         setHeaders: {
           Authorization: `Bearer ${newToken}`
@@ -118,7 +116,7 @@ private handleAuthError(
     }),
     catchError(error => {
       this.isRefreshing = false;
-      // 刷新失败，重定向到登录
+      // Refresh failed, redirect to login
       this.authService.logout();
       this.router.navigate(['/login']);
       return throwError(() => error);
@@ -127,21 +125,21 @@ private handleAuthError(
 }
 ```
 
-#### 2. **localStorage 操作无错误处理**
-**文件**: `http.interceptor.ts:25`
+#### 2. **No Error Handling for localStorage Operations**
+**File**: `http.interceptor.ts:25`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 const controller_id = JSON.parse(localStorage.getItem(`controller_${id}`));
-// 没有 try-catch！
+// No try-catch!
 ```
 
-**风险**:
-- localStorage 数据可能被篡改
-- JSON.parse 可能抛出异常
-- 可能导致整个拦截器失败
+**Risk**:
+- localStorage data may be tampered with
+- JSON.parse may throw exceptions
+- Could cause the entire interceptor to fail
 
-**建议**:
+**Recommendation**:
 ```typescript
 function getControllerId(id: string): string | null {
   try {
@@ -150,7 +148,7 @@ function getControllerId(id: string): string | null {
       return null;
     }
     const data = JSON.parse(item);
-    // 验证数据结构
+    // Validate data structure
     if (data && typeof data === 'object' && 'controller_id' in data) {
       return data.controller_id;
     }
@@ -162,19 +160,19 @@ function getControllerId(id: string): string | null {
 }
 ```
 
-#### 3. **缺少 null 检查**
-**文件**: `http.interceptor.ts:27`
+#### 3. **Missing Null Check**
+**File**: `http.interceptor.ts:27`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 clone.set({
   setHeaders: {
-    'Controller-ID': controller_id  // 可能为 null！
+    'Controller-ID': controller_id  // Could be null!
   }
 });
 ```
 
-**建议**:
+**Recommendation**:
 ```typescript
 const controllerId = this.getControllerId(id);
 
@@ -189,27 +187,27 @@ if (controllerId) {
 
 ---
 
-### 🟠 代码质量问题 / Code Quality Issues
+### 🟠 Code Quality Issues
 
-#### 1. **使用 location.reload()**
-**文件**: `http.interceptor.ts:44`
+#### 1. **Using location.reload()**
+**File**: `http.interceptor.ts:44`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
-location.reload();  // 粗暴的方法
+location.reload();  // Crude method
 ```
 
-**问题**:
-- 导致整页重新加载
-- 丢失应用状态
-- 用户体验差
+**Issues**:
+- Causes entire page reload
+- Loses application state
+- Poor user experience
 
-**建议**:
+**Recommendation**:
 ```typescript
-// 使用 Angular 路由
+// Use Angular Router
 constructor(private router: Router) {}
 
-// 在错误处理中
+// In error handling
 this.router.navigate(['/login'], {
   queryParams: {
     reason: 'session_expired',
@@ -218,27 +216,27 @@ this.router.navigate(['/login'], {
 });
 ```
 
-#### 2. **空错误处理**
-**文件**: `http.interceptor.ts:40-41`
+#### 2. **Empty Error Handling**
+**File**: `http.interceptor.ts:40-41`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 catchError((e) => {
-  return throwError(() => e);  // 只是重新抛出，没有添加任何值
+  return throwError(() => e);  // Just re-throws, doesn't add any value
 })
 ```
 
-**建议**:
+**Recommendation**:
 ```typescript
 catchError((error: HttpErrorResponse) => {
-  // 记录错误
+  // Log the error
   console.error('HTTP error:', {
     status: error.status,
     url: error.url,
     message: error.message
   });
 
-  // 显示用户友好的消息
+  // Show user-friendly messages
   if (error.status === 0) {
     this.toasterService.showError('Network error. Please check your connection.');
   } else if (error.status >= 500) {
@@ -249,17 +247,17 @@ catchError((error: HttpErrorResponse) => {
 })
 ```
 
-#### 3. **硬编码状态码**
-**文件**: `http.interceptor.ts`
+#### 3. **Hardcoded Status Codes**
+**File**: `http.interceptor.ts`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 if (err.status === 401 || err.status === 403) {
-  // 魔法数字
+  // Magic numbers
 }
 ```
 
-**建议**:
+**Recommendation**:
 ```typescript
 // http-status.constants.ts
 export const HTTP_STATUS = {
@@ -270,7 +268,7 @@ export const HTTP_STATUS = {
   SERVICE_UNAVAILABLE: 503
 } as const;
 
-// 在拦截器中使用
+// In interceptor, use it
 import { HTTP_STATUS } from './http-status.constants';
 
 if (err.status === HTTP_STATUS.UNAUTHORIZED || err.status === HTTP_STATUS.FORBIDDEN) {
@@ -280,23 +278,23 @@ if (err.status === HTTP_STATUS.UNAUTHORIZED || err.status === HTTP_STATUS.FORBID
 
 ---
 
-### 🟡 最佳实践违反 / Best Practices Violations
+### 🟡 Best Practices Violations
 
-#### 1. **缺少依赖注入**
-**文件**: `http.interceptor.ts`
+#### 1. **Missing Dependency Injection**
+**File**: `http.interceptor.ts`
 
-**问题描述**:
+**Problem Description**:
 ```typescript
 export class HttpInterceptor implements HttpInterceptor {
   intercept(...) { ... }
 }
 ```
 
-**问题**:
-- 没有注入 Router、ToasterService 等服务
-- 使用 `location.reload()` 而非 Angular Router
+**Issues**:
+- No injection of Router, ToasterService, etc.
+- Using `location.reload()` instead of Angular Router
 
-**建议**:
+**Recommendation**:
 ```typescript
 @Injectable()
 export class HttpInterceptor implements HttpInterceptor {
@@ -311,21 +309,21 @@ export class HttpInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    // 现在可以注入服务
+    // Now can inject services
   }
 }
 ```
 
-#### 2. **混合 async/await 和 RxJS**
-**文件**: `http.interceptor.ts`
+#### 2. **Mixing async/await and RxJS**
+**File**: `http.interceptor.ts`
 
-**问题描述**:
-- 在 Observable 上下文中使用 async/await
-- 可能导致不可预测的行为
+**Problem Description**:
+- Using async/await in Observable context
+- May cause unpredictable behavior
 
-**建议**:
+**Recommendation**:
 ```typescript
-// 完全使用 RxJS
+// Use RxJS entirely
 intercept(
   req: HttpRequest<any>,
   next: HttpHandler
@@ -349,10 +347,10 @@ private handleError(
 }
 ```
 
-#### 3. **缺少请求重试逻辑**
-**影响**: 网络不稳定时
+#### 3. **Missing Request Retry Logic**
+**Impact**: When network is unstable
 
-**建议**:
+**Recommendation**:
 ```typescript
 import { retryWhen, delay, take } from 'rxjs/operators';
 
@@ -364,14 +362,14 @@ intercept(
     retryWhen(errors =>
       errors.pipe(
         mergeMap(error => {
-          // 不重试 4xx 错误（除了 429）
+          // Don't retry 4xx errors (except 429)
           if (error.status >= 400 && error.status < 500 && error.status !== 429) {
             return throwError(() => error);
           }
           return of(error);
         }),
-        delay(1000),  // 等待 1 秒
-        take(3)  // 最多重试 3 次
+        delay(1000),  // Wait 1 second
+        take(3)  // Retry up to 3 times
       )
     ),
     catchError((error: HttpErrorResponse) => {
@@ -383,11 +381,11 @@ intercept(
 
 ---
 
-## 改进建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复 / Immediate Actions
+### Priority 1 - Immediate Actions
 
-#### 1. 启用认证错误处理
+#### 1. Enable Authentication Error Handling
 ```typescript
 // http.interceptor.ts
 intercept(
@@ -396,12 +394,12 @@ intercept(
 ): Observable<HttpEvent<any>> {
   return next.handle(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      // 🔴 立即取消注释并修复
+      // Uncomment and fix immediately
       if (err.status === 401 || err.status === 403) {
         return this.handleAuthError(req, next);
       }
 
-      // 记录所有错误
+      // Log all errors
       this.logger.error('HTTP Error', {
         status: err.status,
         url: err.url,
@@ -414,7 +412,7 @@ intercept(
 }
 ```
 
-#### 2. 添加 localStorage 错误处理
+#### 2. Add localStorage Error Handling
 ```typescript
 private getControllerId(id: string): string | null {
   try {
@@ -423,7 +421,7 @@ private getControllerId(id: string): string | null {
 
     const data = JSON.parse(item);
 
-    // 验证数据
+    // Validate data
     if (!data || typeof data !== 'object') {
       console.warn('Invalid controller data in localStorage');
       return null;
@@ -437,20 +435,20 @@ private getControllerId(id: string): string | null {
 }
 ```
 
-#### 3. 替换 location.reload()
+#### 3. Replace location.reload()
 ```typescript
-// ❌ 删除
+// Delete
 location.reload();
 
-// ✅ 替换为
+// Replace with
 this.router.navigate(['/login'], {
   queryParams: { session: 'expired' }
 });
 ```
 
-### 优先级 2 - 短期改进 / Short-term Improvements
+### Priority 2 - Short-term Improvements
 
-#### 1. 实现完整的令牌刷新
+#### 1. Implement Complete Token Refresh
 ```typescript
 @Injectable()
 export class HttpInterceptor implements HttpInterceptor {
@@ -467,7 +465,7 @@ export class HttpInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    // 添加令牌到请求
+    // Add token to request
     const authReq = this.addToken(req);
 
     return next.handle(authReq).pipe(
@@ -524,7 +522,7 @@ export class HttpInterceptor implements HttpInterceptor {
 }
 ```
 
-#### 2. 添加请求日志（仅开发环境）
+#### 2. Add Request Logging (Development Only)
 ```typescript
 intercept(
   req: HttpRequest<any>,
@@ -551,43 +549,43 @@ intercept(
 }
 ```
 
-### 优先级 3 - 长期改进 / Long-term Improvements
+### Priority 3 - Long-term Improvements
 
-#### 1. 创建多个专用拦截器
+#### 1. Create Multiple Specialized Interceptors
 ```typescript
-// auth.interceptor.ts - 专门处理认证
+// auth.interceptor.ts - Handle authentication specifically
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // 令牌逻辑
+    // Token logic
   }
 }
 
-// controller-id.interceptor.ts - 专门处理控制器 ID
+// controller-id.interceptor.ts - Handle controller ID specifically
 @Injectable()
 export class ControllerIdInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // 控制器 ID 逻辑
+    // Controller ID logic
   }
 }
 
-// error-handling.interceptor.ts - 专门处理错误
+// error-handling.interceptor.ts - Handle errors specifically
 @Injectable()
 export class ErrorHandlingInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // 错误处理逻辑
+    // Error handling logic
   }
 }
 
-// logging.interceptor.ts - 专门处理日志
+// logging.interceptor.ts - Handle logging specifically
 @Injectable()
 export class LoggingInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // 日志逻辑
+    // Logging logic
   }
 }
 
-// 在 app.module.ts 中按顺序注册
+// Register in order in app.module.ts
 providers: [
   { provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true },
   { provide: HTTP_INTERCEPTORS, useClass: ControllerIdInterceptor, multi: true },
@@ -596,7 +594,7 @@ providers: [
 ]
 ```
 
-#### 2. 添加请求取消支持
+#### 2. Add Request Cancellation Support
 ```typescript
 @Injectable()
 export class HttpInterceptor implements HttpInterceptor {
@@ -608,7 +606,7 @@ export class HttpInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const key = req.url + req.params.toString();
 
-    // 取消相同的待处理请求
+    // Cancel duplicate pending requests
     if (this.pendingRequests.has(key)) {
       this.pendingRequests.get(key)?.unsubscribe();
       this.pendingRequests.delete(key);
@@ -628,9 +626,9 @@ export class HttpInterceptor implements HttpInterceptor {
 
 ---
 
-## 测试建议 / Testing Recommendations
+## Testing Recommendations
 
-### 单元测试
+### Unit Tests
 ```typescript
 describe('HttpInterceptor', () => {
   let interceptor: HttpInterceptor;
@@ -666,20 +664,20 @@ describe('HttpInterceptor', () => {
   });
 
   it('should handle 401 errors', () => {
-    // 测试令牌刷新逻辑
+    // Test token refresh logic
   });
 });
 ```
 
 ---
 
-## 安全检查清单 / Security Checklist
+## Security Checklist
 
-- [ ] 已启用 401/403 错误处理
-- [ ] localStorage 操作有错误处理
-- [ ] 令牌存储在安全位置（考虑使用 httpOnly cookie）
-- [ ] 实现 CSRF 保护
-- [ ] 验证令牌格式和有效期
-- [ ] 敏感信息不记录在日志中
-- [ ] 实现适当的超时
-- [ ] 验证服务器响应
+- [ ] Enable 401/403 error handling
+- [ ] Add error handling for localStorage operations
+- [ ] Store tokens in secure location (consider httpOnly cookies)
+- [ ] Implement CSRF protection
+- [ ] Validate token format and expiration
+- [ ] Don't log sensitive information
+- [ ] Implement appropriate timeouts
+- [ ] Validate server responses

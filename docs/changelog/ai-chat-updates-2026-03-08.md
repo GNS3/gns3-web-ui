@@ -2,7 +2,7 @@
 
 ## Overview
 
-本文档记录了 2026-03-08 对 GNS3 AI Chat 功能的所有更新和修复。
+This document records all updates and fixes for GNS3 AI Chat feature on 2026-03-08.
 
 **Date**: 2026-03-08
 **Author**: Claude Code
@@ -12,50 +12,50 @@
 
 ## Summary of Changes
 
-### 1. 新增确认对话框组件 ✅
+### 1. New Confirmation Dialog Component
 
-**问题**：使用 MatBottomSheet 实现的删除确认对话框导致页面晃动。
+**Problem**: The delete confirmation dialog implemented with MatBottomSheet caused page shaking.
 
-**解决方案**：创建了独立可复用的 `ConfirmationDialogComponent`，使用 MatDialog。
+**Solution**: Created a reusable `ConfirmationDialogComponent` using MatDialog.
 
-**文件**：
-- 新建：`src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.ts`
-- 新建：`src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.html`
-- 新建：`src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.scss`
-- 修改：`src/app/components/project-map/ai-chat/chat-session-list.component.ts`
-- 修改：`src/styles.scss`
+**Files**:
+- New: `src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.ts`
+- New: `src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.html`
+- New: `src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.scss`
+- Modified: `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
+- Modified: `src/styles.scss`
 
-**特性**：
-- 16px 圆角（现代化设计）
-- 360px 宽度（紧凑设计）
-- 点击居中定位（智能边界检测）
-- 警告图标（红色，静态显示）
-- Yes/No 按钮水平居中
-- 滑入动画和悬停效果
-- Material 容器透明（单层显示）
+**Features**:
+- 16px border radius (modern design)
+- 360px width (compact design)
+- Click-centered positioning (intelligent boundary detection)
+- Warning icon (red, static display)
+- Yes/No buttons horizontally centered
+- Slide-in animation and hover effects
+- Material container transparent (single layer display)
 
-**文档**：
+**Documentation**:
 - `docs/components/confirmation-dialog-component.md`
 
 ---
 
-### 2. Session ID 管理优化 ✅
+### 2. Session ID Management Optimization
 
-**问题**：每次发送消息都创建新会话，无法保持多轮对话上下文。
+**Problem**: A new session was created every time a message was sent, making it impossible to maintain multi-round conversation context.
 
-**根本原因**：
-1. 组件没有保存后端返回的 session_id
-2. 后续请求没有携带 session_id
-3. 导致后端每次都创建新会话
+**Root Cause**:
+1. Component did not save the session_id returned by the backend
+2. Subsequent requests did not carry the session_id
+3. This caused the backend to create a new session every time
 
-**解决方案**：前端生成 session_id（UUID v4），在首次发送时使用。
+**Solution**: Frontend generates session_id (UUID v4), used on first send.
 
-**文件**：
-- 修改：`src/app/components/project-map/ai-chat/ai-chat.component.ts`
+**Files**:
+- Modified: `src/app/components/project-map/ai-chat/ai-chat.component.ts`
 
-**关键修改**：
+**Key Modifications**:
 
-1. **添加 UUID 生成方法**：
+1. **Add UUID generation method**:
 ```typescript
 private generateUUID(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -66,7 +66,7 @@ private generateUUID(): string {
 }
 ```
 
-2. **发送消息时生成或使用现有 session_id**：
+2. **Generate or use existing session_id when sending message**:
 ```typescript
 let sessionId = this.currentSessionId || this.aiChatService.getCurrentSessionId();
 
@@ -91,7 +91,7 @@ if (!sessionId) {
 this.startChatStream(message, sessionId);
 ```
 
-3. **防止历史消息加载覆盖当前消息**：
+3. **Prevent history message loading from overwriting current messages**:
 ```typescript
 // Subscribe to current session
 this.aiChatStore.getCurrentSessionId().pipe(
@@ -107,7 +107,7 @@ this.aiChatStore.getCurrentSessionId().pipe(
 });
 ```
 
-4. **重置 assistant 消息避免追加到旧消息**：
+4. **Reset assistant message to avoid appending to old messages**:
 ```typescript
 private startChatStream(message: string, sessionId?: string): void {
   // Reset current assistant message to avoid appending to previous message
@@ -117,43 +117,43 @@ private startChatStream(message: string, sessionId?: string): void {
 }
 ```
 
-**文档**：
+**Documentation**:
 - `docs/troubleshooting/ai-chat-session-id-and-sse.md`
 
 ---
 
-### 3. SSE 连接生命周期说明 ✅
+### 3. SSE Connection Lifecycle Explanation
 
-**问题**：用户误解为什么每次发送消息都新建 SSE 连接。
+**Problem**: Users misunderstood why a new SSE connection is created for every message sent.
 
-**说明**：这是 SSE 的正常行为。
+**Explanation**: This is normal behavior for SSE.
 
-**技术限制**：
-- SSE 是单向通信（服务器 → 客户端）
-- 客户端无法通过 SSE 连接发送数据
-- 每次发送消息需要发起新的 HTTP POST 请求
-- HTTP 响应完成后连接必须关闭
+**Technical Limitations**:
+- SSE is unidirectional communication (Server -> Client)
+- Client cannot send data through SSE connection
+- Every message send requires a new HTTP POST request
+- Connection must close after HTTP response completes
 
-**上下文维护**：
-- 后端通过 session_id 从数据库加载历史消息
-- 不依赖持久连接来维护上下文
-- 每次新建连接但使用相同的 session_id
+**Context Maintenance**:
+- Backend loads historical messages from database through session_id
+- Does not rely on persistent connections to maintain context
+- New connection is created each time but uses the same session_id
 
-**文档**：
-- `docs/troubleshooting/ai-chat-session-id-and-sse.md`（详细说明）
+**Documentation**:
+- `docs/troubleshooting/ai-chat-session-id-and-sse.md` (Detailed explanation)
 
 ---
 
 ## Modified Files
 
-### 新建文件
+### New Files
 1. `src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.ts`
 2. `src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.html`
 3. `src/app/components/dialogs/confirmation-dialog/confirmation-dialog.component.scss`
 4. `docs/components/confirmation-dialog-component.md`
 5. `docs/troubleshooting/ai-chat-session-id-and-sse.md`
 
-### 修改文件
+### Modified Files
 1. `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
 2. `src/app/components/project-map/ai-chat/ai-chat.component.ts`
 3. `src/styles.scss`
@@ -161,24 +161,24 @@ private startChatStream(message: string, sessionId?: string): void {
 
 ---
 
-### 3. 离开项目时关闭 AI Chat ✅
+### 3. Close AI Chat When Leaving Project
 
-**问题**：在 AI Assistant 窗口打开或最小化状态下，离开项目窗口再返回后，点击 AI 按钮无法打开窗口。
+**Problem**: When the AI Assistant window is open or minimized, after leaving the project window and returning, clicking the AI button cannot open the window.
 
-**根本原因**：
-1. `@ViewChild(AiChatComponent)` 在组件被 `*ngIf` 隐藏时为 `undefined`
-2. 组件销毁/重建时状态未正确重置
+**Root Cause**:
+1. `@ViewChild(AiChatComponent)` is `undefined` when the component is hidden by `*ngIf`
+2. State is not properly reset when component is destroyed/recreated
 
-**解决方案**：
-1. 移除对 `@ViewChild` 的依赖，改用 Store 状态管理
-2. 在离开项目时（`ngOnDestroy`）关闭 AI Chat 窗口并重置状态
+**Solution**:
+1. Remove dependency on `@ViewChild`, use Store state management instead
+2. Close AI Chat window and reset state when leaving project (`ngOnDestroy`)
 
-**文件**：
-- 修改：`src/app/components/project-map/project-map.component.ts`
+**Files**:
+- Modified: `src/app/components/project-map/project-map.component.ts`
 
-**关键修改**：
+**Key Modifications**:
 ```typescript
-// 新增 onLeaveProject 方法
+// New onLeaveProject method
 public onLeaveProject() {
   this.closeAIChat();
   this.aiChatStore.setPanelState({
@@ -188,85 +188,85 @@ public onLeaveProject() {
   });
 }
 
-// 在 ngOnDestroy 中调用
+// Call in ngOnDestroy
 public ngOnDestroy() {
   this.onLeaveProject();
-  // ... 其他清理
+  // ... other cleanup
 }
 ```
 
 ---
 
-### 4. 清理调试日志 ✅
+### 4. Clean Up Debug Logs
 
-**问题**：代码中存在大量调试日志，影响生产环境性能。
+**Problem**: There are many debug logs in the code, affecting production environment performance.
 
-**解决方案**：移除所有非必要的调试日志。
+**Solution**: Remove all non-essential debug logs.
 
-**修改的文件**：
-- `ai-chat.component.ts` - 移除 ngOnInit、ngOnChanges、最小化/恢复等日志
-- `project-map-menu.component.ts` - 移除订阅和按钮点击日志
-- `project-map.component.ts` - 移除链接变化和关闭日志
-
----
-
-### 5. 清理未使用代码 ✅
-
-**问题**：存在未使用的导入和 ViewChild 声明。
-
-**解决方案**：移除未使用的代码。
-
-**修改的文件**：
-- `project-map.component.ts` - 移除未使用的 `@ViewChild(AiChatComponent)` 声明和导入
+**Modified Files**:
+- `ai-chat.component.ts` - Remove logs from ngOnInit, ngOnChanges, minimize/restore, etc.
+- `project-map-menu.component.ts` - Remove subscription and button click logs
+- `project-map.component.ts` - Remove link change and close logs
 
 ---
 
-### 6. 清理分隔线 ✅
+### 5. Clean Up Unused Code
 
-**问题**：AI Assistant 窗口各区域之间存在多余的分隔线，影响视觉统一性。
+**Problem**: There are unused imports and ViewChild declarations.
 
-**解决方案**：移除所有多余的分隔线。
+**Solution**: Remove unused code.
 
-**文件**：
-- 修改：`src/app/components/project-map/ai-chat/ai-chat.component.scss`
-
-**移除的分隔线**：
-- 左侧 AI Logo 和会话列表之间的边框
-- 左侧会话列表和右侧聊天窗口之间的边框
-- 右侧标题栏和消息列表之间的边框
-- 浅色主题对应的边框
+**Modified Files**:
+- `project-map.component.ts` - Remove unused `@ViewChild(AiChatComponent)` declaration and import
 
 ---
 
-### 7. 增强会话列表选中效果 ✅
+### 6. Clean Up Dividers
 
-**问题**：左侧会话列表的选中效果不够明显。
+**Problem**: There are extra dividers between areas in the AI Assistant window, affecting visual consistency.
 
-**解决方案**：增强选中会话的视觉指示。
+**Solution**: Remove all extra dividers.
 
-**文件**：
-- 修改：`src/app/components/project-map/ai-chat/chat-session-list.component.ts`
+**Files**:
+- Modified: `src/app/components/project-map/ai-chat/ai-chat.component.scss`
 
-**增强效果**：
-- 左侧 4px 蓝色边框
-- 更深的阴影效果 + 内边框
-- 向右微移产生凸出效果
-- 标题字体加粗到 700
-- 菜单图标颜色变亮
+**Removed Dividers**:
+- Border between left AI Logo and session list
+- Border between left session list and right chat window
+- Border between right title bar and message list
+- Corresponding borders for light theme
+
+---
+
+### 7. Enhance Session List Selection Effect
+
+**Problem**: The selection effect in the left session list is not obvious enough.
+
+**Solution**: Enhance visual indication for selected session.
+
+**Files**:
+- Modified: `src/app/components/project-map/ai-chat/chat-session-list.component.ts`
+
+**Enhanced Effects**:
+- Left 4px blue border
+- Deeper shadow effect + inner border
+- Slight right shift for protruding effect
+- Title font weight bold to 700
+- Menu icon color becomes brighter
 
 ---
 
 ## Breaking Changes
 
-**无**：所有更改向后兼容。
+**None**: All changes are backward compatible.
 
 ---
 
 ## Migration Guide
 
-### 对于开发者
+### For Developers
 
-如果其他组件需要使用确认对话框：
+If other components need to use the confirmation dialog:
 
 ```typescript
 import { MatDialog } from '@angular/material/dialog';
@@ -293,70 +293,70 @@ showConfirmation() {
 
 ## Testing
 
-### 手动测试清单
+### Manual Testing Checklist
 
-#### 确认对话框
-- [ ] 对话框打开时无页面晃动
-- [ ] 对话框显示在鼠标点击位置
-- [ ] 对话框不会超出屏幕边界
-- [ ] 圆角正常显示（16px）
-- [ ] 背景不透明
-- [ ] 警告图标静态显示（无闪烁）
-- [ ] Yes/No 按钮水平居中
-- [ ] 按钮悬停效果正常
+#### Confirmation Dialog
+- [ ] No page shaking when dialog opens
+- [ ] Dialog displays at mouse click position
+- [ ] Dialog does not go beyond screen boundaries
+- [ ] Border radius displays correctly (16px)
+- [ ] Background is opaque
+- [ ] Warning icon displays statically (no flickering)
+- [ ] Yes/No buttons are horizontally centered
+- [ ] Button hover effects work correctly
 
-#### Session 管理
-- [ ] 第一条消息创建新会话
-- [ ] 前端生成 UUID v4 格式的 session_id
-- [ ] 用户消息立即显示
-- [ ] SSE 消息流式显示
-- [ ] 第二条消息使用相同的 session_id
-- [ ] 对话上下文正确维护
-- [ ] 用户消息不会被覆盖
-- [ ] 不会触发过早的历史消息加载
+#### Session Management
+- [ ] First message creates new session
+- [ ] Frontend generates UUID v4 format session_id
+- [ ] User message displays immediately
+- [ ] SSE message streams display
+- [ ] Second message uses the same session_id
+- [ ] Conversation context is properly maintained
+- [ ] User messages are not overwritten
+- [ ] Premature history message loading is not triggered
 
-#### 分隔线清理
-- [ ] 左侧 AI Logo 和会话列表之间无分隔线
-- [ ] 左侧会话列表和右侧聊天窗口之间无分隔线
-- [ ] 右侧标题栏和消息列表之间无分隔线
-- [ ] 浅色主题下同样无分隔线
+#### Divider Cleanup
+- [ ] No divider between left AI Logo and session list
+- [ ] No divider between left session list and right chat window
+- [ ] No divider between right title bar and message list
+- [ ] Same no dividers under light theme
 
-#### 会话列表选中效果
-- [ ] 选中会话显示 4px 左边框
-- [ ] 选中会话有阴影效果
-- [ ] 标题字体加粗显示
-- [ ] 菜单图标颜色变亮
+#### Session List Selection Effect
+- [ ] Selected session shows 4px left border
+- [ ] Selected session has shadow effect
+- [ ] Title font displays in bold
+- [ ] Menu icon color becomes brighter
 
 ---
 
 ## Known Issues
 
-### 已解决
-1. ✅ 页面晃动（MatBottomSheet → MatDialog）
-2. ✅ 每次创建新会话（前端生成 session_id）
-3. ✅ 用户消息不显示（防止历史消息覆盖）
-4. ✅ 消息追加错误（重置 currentAssistantMessage）
-5. ✅ 离开项目后无法打开 AI Chat（离开时关闭并重置状态）
-6. ✅ 调试日志已清理
-7. ✅ 未使用代码已清理
-8. ✅ 多余分隔线已移除
-9. ✅ 会话列表选中效果已增强
+### Resolved
+1. Page shaking (MatBottomSheet -> MatDialog)
+2. New session created every time (frontend generates session_id)
+3. User message not displayed (prevent history message overwrite)
+4. Message append error (reset currentAssistantMessage)
+5. Cannot open AI Chat after leaving project (close and reset state on leave)
+6. Debug logs cleaned up
+7. Unused code cleaned up
+8. Extra dividers removed
+9. Session list selection effect enhanced
 
-### 无已知问题
+### No Known Issues
 
 ---
 
 ## Future Improvements
 
-### 短期（可选）
-1. 添加单元测试
-2. 添加 E2E 测试
-3. 性能优化（减少不必要的变更检测）
+### Short-term (Optional)
+1. Add unit tests
+2. Add E2E tests
+3. Performance optimization (reduce unnecessary change detection)
 
-### 长期（如果需要）
-1. 考虑使用 WebSocket 替代 SSE（如果需要更低延迟）
-2. 实现并发消息支持（如果用户需要同时发送多条消息）
-3. 添加会话导出功能
+### Long-term (If Needed)
+1. Consider using WebSocket instead of SSE (if lower latency is needed)
+2. Implement concurrent message support (if users need to send multiple messages simultaneously)
+3. Add session export feature
 
 ---
 
@@ -368,5 +368,5 @@ showConfirmation() {
 
 ---
 
-**文档版本**: 1.0.0
-**最后更新**: 2026-03-08
+**Document Version**: 1.0.0
+**Last Updated**: 2026-03-08

@@ -1,17 +1,17 @@
-# 方案 B：Web Components 桥接实现计划
+# Plan B: Web Components Bridge Implementation Plan
 
-## 📋 概述
+## Overview
 
-利用 Web Components (Custom Elements) 将 FlowNet-Lab 的 React AI 聊天组件封装为 Web Component，然后集成到 gns3-web-ui (Angular 14) 项目中。
+Use Web Components (Custom Elements) to wrap FlowNet-Lab's React AI chat component as a Web Component, then integrate it into the gns3-web-ui (Angular 14) project.
 
-**优势**：
-- 渐进式迁移，不破坏现有 Angular 拓扑功能
-- 复用 FlowNet-Lab 高质量的 React 聊天组件
-- 独立构建，互不影响
+**Advantages**:
+- Progressive migration, no disruption to existing Angular topology functionality
+- Reuse FlowNet-Lab's high-quality React chat components
+- Independent builds, no mutual impact
 
 ---
 
-## 🏗️ 整体架构
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -19,7 +19,7 @@
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  project-map.component                                    │  │
 │  │  ┌─────────────────┐  ┌────────────────────────────────┐  │  │
-│  │  │  拓扑图组件     │  │  <ai-chat-wc></ai-chat-wc>     │  │  │
+│  │  │  Topology Component│  │  <ai-chat-wc></ai-chat-wc>     │  │  │
 │  │  │                 │  │  (Web Component)               │  │  │
 │  │  │                 │  │                                 │  │  │
 │  │  └─────────────────┘  └────────────────────────────────┘  │  │
@@ -33,15 +33,15 @@
 │  ┌──────────────┐  ┌────────────────────────────────────────┐ │
 │  │ Conversation │  │           ChatContainer                 │ │
 │  │  Sidebar    │  │  ┌────────────────────────────────────┐  │ │
-│  │              │  │  │  MessageBubble (可复用 90%)       │  │ │
-│  │              │  │  │  ChatInput (可复用 80%)           │  │ │
-│  │              │  │  │  ToolCallDialog (可复用 85%)      │  │ │
-│  │              │  │  │  ToolResultDialog (可复用 85%)    │  │ │
+│  │              │  │  │  MessageBubble (90% reusable)     │  │ │
+│  │              │  │  │  ChatInput (80% reusable)         │  │ │
+│  │              │  │  │  ToolCallDialog (85% reusable)    │  │ │
+│  │              │  │  │  ToolResultDialog (85% reusable)  │  │ │
 │  └──────────────┘  │  └────────────────────────────────────┘  │ │
 │                    └────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
                               │
-                              │ API 适配层
+                              │ API Adapter Layer
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    gns3-web-ui Backend API                      │
@@ -53,14 +53,14 @@
 
 ---
 
-## 📁 项目结构
+## Project Structure
 
 ```
 gns3-web-ui/
 ├── projects/
-│   └── ai-chat-wc/              # React Web Component 项目
+│   └── ai-chat-wc/              # React Web Component project
 │       ├── src/
-│       │   ├── components/      # UI 组件（从 FlowNet-Lab 复制）
+│       │   ├── components/      # UI components (copied from FlowNet-Lab)
 │       │   │   ├── Chat/
 │       │   │   │   ├── ChatContainer.tsx
 │       │   │   │   ├── ChatInput.tsx
@@ -70,57 +70,57 @@ gns3-web-ui/
 │       │   │   │   └── ToolResultDialog.tsx
 │       │   │   └── index.ts
 │       │   ├── hooks/
-│       │   │   └── useChat.ts    # 适配后的 hook
+│       │   │   └── useChat.ts    # Adapted hook
 │       │   ├── services/
-│       │   │   ├── apiAdapter.ts # API 适配层
+│       │   │   ├── apiAdapter.ts # API adapter layer
 │       │   │   └── chatService.ts
 │       │   ├── store/
-│       │   │   └── chatStore.ts  # Zustand store (可复用)
+│       │   │   └── chatStore.ts  # Zustand store (reusable)
 │       │   ├── types/
-│       │   │   └── chat.ts       # 类型定义（适配）
-│       │   ├── App.tsx           # Web Component 入口
-│       │   └── index.tsx        # 构建入口
+│       │   │   └── chat.ts       # Type definitions (adapted)
+│       │   ├── App.tsx           # Web Component entry
+│       │   └── index.tsx        # Build entry
 │       ├── package.json
-│       ├── vite.config.ts        # Vite 配置
+│       ├── vite.config.ts        # Vite configuration
 │       └── tsconfig.json
 ├── src/
 │   └── app/
 │       └── components/
 │           └── project-map/
-│               ├── project-map.component.ts  # 集成 Web Component
-│               └── ai-chat-wc.js             # 构建输出
+│               ├── project-map.component.ts  # Integrate Web Component
+│               └── ai-chat-wc.js             # Build output
 ```
 
 ---
 
-## 🔄 组件复用评估
+## Component Reuse Assessment
 
-### UI 组件（从 FlowNet-Lab 复制）
+### UI Components (copied from FlowNet-Lab)
 
-| 组件 | 可复用程度 | 需修改内容 |
+| Component | Reuse Level | Modifications Needed |
 |------|-----------|-----------|
-| `MessageBubble.tsx` | ⭐⭐⭐⭐⭐ 90% | 替换图标库 |
-| `ChatInput.tsx` | ⭐⭐⭐⭐ 80% | 替换图标库 |
-| `ConversationSidebar.tsx` | ⭐⭐⭐⭐ 80% | API 端点适配 |
-| `ToolCallDialog.tsx` | ⭐⭐⭐⭐ 85% | 样式微调 |
-| `ToolResultDialog.tsx` | ⭐⭐⭐⭐ 85% | 样式微调 |
-| `ChatContainer.tsx` | ⭐⭐⭐⭐ 80% | API 适配 |
+| `MessageBubble.tsx` | 90% | Replace icon library |
+| `ChatInput.tsx` | 80% | Replace icon library |
+| `ConversationSidebar.tsx` | 80% | API endpoint adaptation |
+| `ToolCallDialog.tsx` | 85% | Minor style adjustments |
+| `ToolResultDialog.tsx` | 85% | Minor style adjustments |
+| `ChatContainer.tsx` | 80% | API adaptation |
 
-### 核心逻辑层
+### Core Logic Layer
 
-| 模块 | 可复用程度 | 说明 |
+| Module | Reuse Level | Description |
 |------|-----------|------|
-| `chatStore.ts` (Zustand) | ⭐⭐⭐⭐⭐ 95% | 状态管理逻辑完全通用 |
-| `useChat.ts` | ⭐⭐⭐⭐ 80% | 需替换 API 调用 |
-| SSE 流处理 | ⭐⭐⭐⭐⭐ 95% | 逻辑完全通用 |
+| `chatStore.ts` (Zustand) | 95% | State management logic is fully generic |
+| `useChat.ts` | 80% | Need to replace API calls |
+| SSE Stream Processing | 95% | Logic is fully generic |
 
 ---
 
-## 📋 实施步骤
+## Implementation Steps
 
-### 第一阶段：创建 React 项目并配置构建
+### Phase 1: Create React Project and Configure Build
 
-#### 1.1 创建 Vite + React 项目
+#### 1.1 Create Vite + React Project
 
 ```bash
 cd /home/yueguobin/myCode/GNS3/gns3-web-ui/projects
@@ -129,19 +129,19 @@ cd ai-chat-wc
 npm install
 ```
 
-#### 1.2 安装依赖
+#### 1.2 Install Dependencies
 
 ```bash
-# 核心依赖
+# Core dependencies
 npm install zustand marked lucide-react clsx tailwind-merge
 
-# 开发依赖
+# Dev dependencies
 npm install -D @webcomponents/custom-elements
 npm install -D tailwindcss postcss autoprefixer @tailwindcss/typography
 npm install -D @types/node
 ```
 
-#### 1.3 配置 Tailwind CSS
+#### 1.3 Configure Tailwind CSS
 
 ```bash
 npx tailwindcss init -p
@@ -173,7 +173,7 @@ export default {
 }
 ```
 
-#### 1.4 配置 Vite 构建为 Web Component
+#### 1.4 Configure Vite to Build as Web Component
 
 **vite.config.ts**:
 ```typescript
@@ -210,11 +210,11 @@ export default defineConfig({
 
 ---
 
-### 第二阶段：复制并适配 FlowNet-Lab 组件
+### Phase 2: Copy and Adapt FlowNet-Lab Components
 
-#### 2.1 复制 UI 组件
+#### 2.1 Copy UI Components
 
-从 FlowNet-Lab 复制以下文件到 `src/components/Chat/`:
+Copy the following files from FlowNet-Lab to `src/components/Chat/`:
 
 - `ChatContainer.tsx`
 - `ChatInput.tsx`
@@ -224,39 +224,39 @@ export default defineConfig({
 - `ToolResultDialog.tsx`
 - `index.ts`
 
-#### 2.2 复制并适配 Store
+#### 2.2 Copy and Adapt Store
 
-复制 `store/chatStore.ts`，进行以下修改：
+Copy `store/chatStore.ts` and make the following modifications:
 
-1. 移除 localStorage 持久化（由 Angular 侧管理）
-2. 添加接收外部 projectId 的能力
+1. Remove localStorage persistence (managed by Angular side)
+2. Add ability to receive external projectId
 
-#### 2.3 复制并适配 Hooks
+#### 2.3 Copy and Adapt Hooks
 
-复制 `hooks/useChat.ts`，进行以下修改：
+Copy `hooks/useChat.ts` and make the following modifications:
 
-1. 将 `chatService` 替换为本地适配版本
-2. 移除 session 创建逻辑（由 Angular 侧处理）
+1. Replace `chatService` with local adapted version
+2. Remove session creation logic (handled by Angular side)
 
 ---
 
-### 第三阶段：创建 API 适配层
+### Phase 3: Create API Adapter Layer
 
-#### 3.1 创建 API 适配器（含 SSE 重试逻辑）
+#### 3.1 Create API Adapter (with SSE Retry Logic)
 
-**⚠️ 注意**：Angular 的 zone.js 有时会干扰 fetch + ReadableStream
+**Note**: Angular's zone.js sometimes interferes with fetch + ReadableStream
 
-**推荐方案**：使用 EventSource（如果后端支持）或 fetch + ReadableStream + zone.js 兼容处理
+**Recommended Approach**: Use EventSource (if backend supports) or fetch + ReadableStream + zone.js compatible handling
 
-**方案A：EventSource（更稳定）**
+**Option A: EventSource (More Stable)**
 ```typescript
 /**
- * EventSource 方案（推荐）
- * 优点：浏览器原生、自动重连、更稳定
- * 注意：需要后端支持 GET 请求返回 SSE
+ * EventSource approach (recommended)
+ * Pros: Browser native, auto-reconnect, more stable
+ * Note: Requires backend to support GET request returning SSE
  *
- * 架构：
- * POST /chat -> 返回 stream_id
+ * Architecture:
+ * POST /chat -> returns stream_id
  * GET /chat/stream/{stream_id} -> SSE
  */
 class SseClient {
@@ -274,7 +274,7 @@ class SseClient {
 
     this.eventSource.onerror = () => {
       this.eventSource?.close();
-      // 自动重连逻辑
+      // Auto-reconnect logic
     };
   }
 
@@ -284,28 +284,28 @@ class SseClient {
 }
 ```
 
-**方案B：fetch + ReadableStream（当前方案，需兼容 zone.js）**
+**Option B: fetch + ReadableStream (Current approach, needs zone.js compatibility)**
 ```typescript
 /**
- * fetch + ReadableStream 方案
- * 如果遇到 zone.js 干扰，使用 NgZone.run() 包装回调
+ * fetch + ReadableStream approach
+ * If encountering zone.js interference, wrap callback with NgZone.run()
  */
 import { NgZone } from '@angular/core';
 
-// 在 Angular 侧使用
+// Use on Angular side
 this.ngZone.run(() => {
   callback(data);
 });
 ```
 
-**SSE 重试机制说明**：
-- 自动重试：网络波动时最多重试 3 次
-- 指数退避：重试间隔 1s, 2s, 4s
-- Token 刷新：检测到 401 时触发 token 更新回调
+**SSE Retry Mechanism**:
+- Auto-retry: Max 3 retries on network fluctuations
+- Exponential backoff: Retry intervals 1s, 2s, 4s
+- Token refresh: Trigger token update callback when 401 detected
 
 ```typescript
 /**
- * 鲁棒的 SSE 流处理
+ * Robust SSE stream processing
  */
 async function* streamWithRetry(
   url: string,
@@ -319,7 +319,7 @@ async function* streamWithRetry(
       const response = await fetch(url, options);
 
       if (response.status === 401) {
-        // Token 过期，抛出特定错误让上层处理
+        // Token expired, throw specific error for upper layer to handle
         throw new Error('TOKEN_EXPIRED');
       }
 
@@ -345,17 +345,17 @@ async function* streamWithRetry(
           }
         }
       }
-      return; // 成功结束
+      return; // Successful completion
     } catch (error) {
       lastError = error as Error;
 
       if ((error as Error).message === 'TOKEN_EXPIRED') {
-        // 立即抛出，让上层处理 token 刷新
+        // Throw immediately, let upper layer handle token refresh
         throw error;
       }
 
       if (attempt < maxRetries - 1) {
-        // 指数退避
+        // Exponential backoff
         await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
       }
     }
@@ -365,16 +365,16 @@ async function* streamWithRetry(
 }
 ```
 
-#### 3.2 创建 API 适配器
+#### 3.2 Create API Adapter
 
 **src/services/apiAdapter.ts**:
 ```typescript
 /**
- * API 适配器
- * 将 gns3-web-ui 的 API 端点适配为 FlowNet-Lab 格式
+ * API Adapter
+ * Adapt gns3-web-ui API endpoints to FlowNet-Lab format
  */
 
-const API_BASE = '/v3';  // 通过 props 传入
+const API_BASE = '/v3';  // Passed via props
 
 export class ApiAdapter {
   private baseUrl: string;
@@ -534,9 +534,9 @@ export default ApiAdapter;
 
 ---
 
-### 第四阶段：创建 Web Component 入口
+### Phase 4: Create Web Component Entry
 
-#### 4.1 创建主组件
+#### 4.1 Create Main Component
 
 **src/App.tsx**:
 ```typescript
@@ -578,13 +578,13 @@ export const AiChatWC: React.FC<AiChatWCProps> = (props) => {
   }
 
   return (
-    // 添加 stopPropagation 防止事件穿透到 Angular
-    // 添加 pointer-events 和 focus trap 防止快捷键冲突
+    // Add stopPropagation to prevent event bubbling to Angular
+    // Add pointer-events and focus trap to prevent shortcut conflicts
     <div
       className="ai-chat-wc-root h-full w-full"
       onKeyDown={(e) => {
         e.stopPropagation();
-        // 拦截 ESC 等关键快捷键
+        // Intercept key shortcuts like ESC
         if (['Escape', 'Space', 'Enter'].includes(e.key)) {
           e.preventDefault();
         }
@@ -597,7 +597,7 @@ export const AiChatWC: React.FC<AiChatWCProps> = (props) => {
   );
 };
 
-// Web Component wrapper - 添加 render debounce 避免频繁 rerender
+// Web Component wrapper - add render debounce to avoid frequent rerenders
 class AiChatWCElement extends HTMLElement {
   private root: ReactDOM.Root | null = null;
   private renderTimer: ReturnType<typeof setTimeout> | null = null;
@@ -608,7 +608,7 @@ class AiChatWCElement extends HTMLElement {
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (oldValue !== newValue) {
-      // 使用 debounce 避免 Angular 频繁触发更新
+      // Use debounce to avoid Angular frequently triggering updates
       this.scheduleRender();
     }
   }
@@ -626,7 +626,7 @@ class AiChatWCElement extends HTMLElement {
   }
 
   /**
-   * 使用 debounce 避免 Angular 模板触发多次 attribute 更新
+   * Use debounce to avoid Angular template triggering multiple attribute updates
    */
   private scheduleRender() {
     if (this.renderTimer) {
@@ -638,7 +638,7 @@ class AiChatWCElement extends HTMLElement {
   }
 
   private render() {
-    // 复用已有 root，避免重复创建
+    // Reuse existing root, avoid recreating
     if (!this.root) {
       this.root = ReactDOM.createRoot(this);
     }
@@ -656,13 +656,13 @@ class AiChatWCElement extends HTMLElement {
   }
 }
 
-// Register custom element - 使用 Light DOM（shadow: false）
+// Register custom element - use Light DOM (shadow: false)
 customElements.define('ai-chat-wc', AiChatWCElement);
 
 export default AiChatWCElement;
 ```
 
-#### 4.2 创建入口文件
+#### 4.2 Create Entry File
 
 **src/index.tsx**:
 ```typescript
@@ -679,25 +679,25 @@ console.log('AI Chat Web Component loaded');
 
 ---
 
-### 第五阶段：构建并集成到 Angular
+### Phase 5: Build and Integrate into Angular
 
-#### 5.1 构建 Web Component
+#### 5.1 Build Web Component
 
 ```bash
 cd projects/ai-chat-wc
 npm run build
 ```
 
-输出文件：`dist/ai-chat-wc.es.js`, `dist/ai-chat-wc.umd.js`
+Output files: `dist/ai-chat-wc.es.js`, `dist/ai-chat-wc.umd.js`
 
-#### 5.2 复制到 Angular 项目
+#### 5.2 Copy to Angular Project
 
 ```bash
 cp dist/ai-chat-wc.es.js ../../src/assets/
 cp dist/ai-chat-wc.umd.js ../../src/assets/
 ```
 
-#### 5.3 在 Angular 中集成
+#### 5.3 Integrate in Angular
 
 **project-map.component.ts**:
 ```typescript
@@ -714,13 +714,13 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
   isChatOpen = false;
   currentProjectId = '';
 
-  // Controller 信息（从服务获取）
+  // Controller info (obtained from service)
   controllerHost = 'localhost';
   controllerPort = '3080';
   controllerAuthToken = '';
 
   ngOnInit() {
-    // 获取当前项目和控制器信息
+    // Get current project and controller info
     this.loadCurrentProject();
   }
 
@@ -736,7 +736,7 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
   }
 
   private loadWebComponent() {
-    // 动态加载 Web Component 脚本（ES Module 需设置 type="module"）
+    // Dynamically load Web Component script (ES Module needs type="module")
     const existingScript = document.querySelector('script[src*="ai-chat-wc"]');
     if (existingScript) {
       console.log('AI Chat WC already loaded');
@@ -744,7 +744,7 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
     }
 
     const script = document.createElement('script');
-    script.type = 'module';  // 关键：ES Module 必须设置
+    script.type = 'module';  // Critical: ES Module must set this
     script.src = 'assets/ai-chat-wc.es.js';
     script.onload = () => console.log('AI Chat WC loaded');
     script.onerror = (err) => console.error('Failed to load AI Chat WC:', err);
@@ -760,8 +760,8 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
   }
 
   private loadCurrentProject() {
-    // 从项目服务获取当前项目 ID
-    // 从控制器服务获取认证信息
+    // Get current project ID from project service
+    // Get auth info from controller service
   }
 }
 ```
@@ -769,7 +769,7 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
 **project-map.component.html**:
 ```html
 <div class="project-map-container">
-  <!-- 拓扑图组件 -->
+  <!-- Topology Component -->
   <app-topology></app-topology>
 
   <!-- AI Chat Web Component -->
@@ -802,11 +802,11 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
 
 ---
 
-## 🔧 通信机制
+## Communication Mechanism
 
 ### Angular → React (Web Component)
 
-通过 HTML 属性（Props）传递：
+Pass via HTML attributes (Props):
 
 ```html
 <ai-chat-wc
@@ -819,10 +819,10 @@ export class ProjectMapComponent implements OnInit, AfterViewInit {
 
 ### React (Web Component) → Angular
 
-通过 Custom Events 通知：
+Notify via Custom Events:
 
 ```typescript
-// React 侧
+// React side
 const handleSessionCreate = (sessionId: string) => {
   this.dispatchEvent(new CustomEvent('session-create', {
     detail: { sessionId },
@@ -831,7 +831,7 @@ const handleSessionCreate = (sessionId: string) => {
   }));
 };
 
-// Angular 侧
+// Angular side
 wc.addEventListener('session-create', (e: Event) => {
   const detail = (e as CustomEvent).detail;
   console.log('Session created:', detail.sessionId);
@@ -840,123 +840,123 @@ wc.addEventListener('session-create', (e: Event) => {
 
 ---
 
-## ✅ 实施清单
+## Implementation Checklist
 
-### 第一阶段：项目初始化
-- [ ] 创建 Vite + React 项目
-- [ ] 配置 Tailwind CSS
-- [ ] 配置 Vite Web Component 构建
-- [ ] 安装依赖包
+### Phase 1: Project Initialization
+- [ ] Create Vite + React project
+- [ ] Configure Tailwind CSS
+- [ ] Configure Vite Web Component build
+- [ ] Install dependencies
 
-### 第二阶段：组件迁移
-- [ ] 复制 Chat 组件（FlowNet-Lab → ai-chat-wc）
-- [ ] 复制 chatStore（Zustand）
-- [ ] 复制 useChat hook
-- [ ] 替换图标库（lucide-react）
-- [ ] 适配样式（Tailwind 类名）
+### Phase 2: Component Migration
+- [ ] Copy Chat components (FlowNet-Lab → ai-chat-wc)
+- [ ] Copy chatStore (Zustand)
+- [ ] Copy useChat hook
+- [ ] Replace icon library (lucide-react)
+- [ ] Adapt styles (Tailwind class names)
 
-### 第三阶段：API 适配
-- [ ] 创建 API 适配器
-- [ ] 实现 SSE 流处理
-- [ ] 实现会话 CRUD
-- [ ] 实现历史加载
+### Phase 3: API Adaptation
+- [ ] Create API adapter
+- [ ] Implement SSE streaming
+- [ ] Implement session CRUD
+- [ ] Implement history loading
 
-### 第四阶段：Web Component 封装
-- [ ] 创建 Web Component 入口
-- [ ] 实现属性监听
-- [ ] 实现事件派发
-- [ ] 构建测试
+### Phase 4: Web Component Encapsulation
+- [ ] Create Web Component entry
+- [ ] Implement attribute listening
+- [ ] Implement event dispatching
+- [ ] Build test
 
-### 第五阶段：Angular 集成
-- [ ] 加载 Web Component 脚本
-- [ ] 集成到 project-map
-- [ ] 传递项目上下文
-- [ ] 处理事件通信
+### Phase 5: Angular Integration
+- [ ] Load Web Component script
+- [ ] Integrate into project-map
+- [ ] Pass project context
+- [ ] Handle event communication
 
-### 第六阶段：测试
-- [ ] 单元测试
-- [ ] 集成测试
-- [ ] E2E 测试
-- [ ] 样式兼容性测试
+### Phase 6: Testing
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] E2E tests
+- [ ] Style compatibility tests
 
 ---
 
-## 📊 工作量估算
+## Workload Estimation
 
-| 阶段 | 任务 | 预计工作量 |
+| Phase | Task | Estimated Time |
 |------|------|-----------|
-| 第一阶段 | 项目初始化 | 1-2 小时 |
-| 第二阶段 | 组件迁移 | 2-4 小时 |
-| 第三阶段 | API 适配 | 2-3 小时 |
-| 第四阶段 | WC 封装 | 1-2 小时 |
-| 第五阶段 | Angular 集成 | 1-2 小时 |
-| 第六阶段 | 测试 | 2-3 小时 |
-| **总计** | | **9-16 小时** |
+| Phase 1 | Project initialization | 1-2 hours |
+| Phase 2 | Component migration | 2-4 hours |
+| Phase 3 | API adaptation | 2-3 hours |
+| Phase 4 | WC encapsulation | 1-2 hours |
+| Phase 5 | Angular integration | 1-2 hours |
+| Phase 6 | Testing | 2-3 hours |
+| **Total** | | **9-16 hours** |
 
 ---
 
-## ⚠️ 风险与注意事项
+## Risks and Notes
 
-### 1. 样式隔离（必须项）
-- **必须使用 `shadow: false`（Light DOM）**，原因：
-  - Tailwind CSS 变量（--primary, --background 等）可直接穿透
-  - 主题色同步无需额外处理
-  - 样式直接复用 Angular 全局 CSS
-  - 浮动面板拖拽、resize 事件处理更简单
-  - DevTools 调试体验更好
+### 1. Style Isolation (Must Do)
+- **Must use `shadow: false` (Light DOM)**, reasons:
+  - Tailwind CSS variables (--primary, --background, etc.) can directly pass through
+  - No additional handling needed for theme color synchronization
+  - Styles can directly reuse Angular global CSS
+  - Floating panel drag and resize event handling is simpler
+  - Better DevTools debugging experience
 
-**实现方式**：
+**Implementation**:
 ```typescript
 class AiChatWCElement extends HTMLElement {
-  // 不调用 attachShadow，保持 Light DOM
+  // Don't call attachShadow, keep Light DOM
   connectedCallback() {
     this.render();
   }
 }
 ```
 
-**⚠️ Angular 全局 CSS 隔离**：
-- 所有 React 组件使用统一的 class 前缀 `.ai-chat-wc-root`
-- 避免 Angular 全局 CSS（如 normalize / reset）污染 React 组件
-- 在 Tailwind 配置中添加 prefix：
+**Angular Global CSS Isolation**:
+- All React components use unified class prefix `.ai-chat-wc-root`
+- Avoid Angular global CSS (like normalize / reset) polluting React components
+- Add prefix in Tailwind config:
 
 ```javascript
 // tailwind.config.js
 module.exports = {
-  prefix: 'wc-',  // 所有类名加前缀，如 wc-p-4
+  prefix: 'wc-',  // All class names get prefix, like wc-p-4
   // ...
 }
 ```
 
-### 2. React 与 Angular 事件冲突
-- 聊天框内的操作可能触发 Angular 侧的全局监听器
-- **优化建议**：在最外层添加 stopPropagation：
+### 2. React and Angular Event Conflicts
+- Operations inside the chat box may trigger global listeners on Angular side
+- **Optimization suggestion**: Add stopPropagation at the outermost layer:
 ```typescript
 <div onKeyDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
   <ChatContainer ... />
 </div>
 ```
 
-### 3. Token 同步与 SSE 重连（必须项）
-- Angular 的 token 过期后，SSE 连接需要携带新 token 重连
-- **推荐方案B（主动式）**：Angular 主动 push 新 token
+### 3. Token Sync and SSE Reconnection (Must Do)
+- After Angular's token expires, SSE connection needs to reconnect with new token
+- **Recommended Option B (Proactive)**: Angular actively pushes new token
 
-**ApiAdapter 增加更新方法**:
+**Add update method to ApiAdapter**:
 ```typescript
 class ApiAdapter {
   updateAuthToken(newToken: string) {
     this.controller.authToken = newToken;
-    // 如果有活跃的 SSE 连接，需要断开重连
+    // If there's an active SSE connection, need to disconnect and reconnect
     this.reconnectIfNeeded();
   }
 
   private reconnectIfNeeded() {
-    // 实现重连逻辑
+    // Implement reconnection logic
   }
 }
 ```
 
-**Web Component 监听属性变化**:
+**Web Component listens for attribute changes**:
 ```typescript
 attributeChangedCallback(name, old, new) {
   if (name === 'controller-auth-token' && new !== old) {
@@ -965,33 +965,33 @@ attributeChangedCallback(name, old, new) {
 }
 ```
 
-**Angular 侧**:
+**Angular side**:
 ```html
 <ai-chat-wc
   [attr.controller-auth-token]="currentAuthToken$ | async"
 ></ai-chat-wc>
 ```
 
-### 4. 构建体积优化
-- ~~必须将 React/ReactDOM 配置为 externals~~
-- **正确方案**：React 应该打包进 Web Component
-- 原因：Web Component 设计哲学是 "self-contained"
-- 大小约 250KB gzip，完全可接受
+### 4. Build Size Optimization
+- ~~Must configure React/ReactDOM as externals~~
+- **Correct approach**: React should be bundled into Web Component
+- Reason: Web Component design philosophy is "self-contained"
+- Size about 250KB gzip, completely acceptable
 
-**正确的 vite.config.ts**:
+**Correct vite.config.ts**:
 ```typescript
 export default defineConfig({
   build: {
-    target: 'es2018',  // 兼容主流浏览器
+    target: 'es2018',  // Compatible with mainstream browsers
     minify: 'esbuild',
-    cssCodeSplit: false,  // CSS 打包进 JS
+    cssCodeSplit: false,  // Bundle CSS into JS
     sourcemap: true,
-    // 不要 external React！全部打包进去
+    // Don't external React! Bundle everything
   },
 })
 ```
 
-**最终 bundle 结构**:
+**Final bundle structure**:
 ```
 ai-chat-wc.es.js
   ├ React 18
@@ -1000,19 +1000,19 @@ ai-chat-wc.es.js
   └ Chat UI
 ```
 
-### 5. 会话管理由 Angular 接管（推荐）
-- 目前 React 侧会自己 createSession、deleteSession、renameSession
-- 建议改为：Angular 负责所有 CRUD 会话操作，React 只负责渲染 + 发送消息 + 接收流
-- 通过属性 + 事件双向通信
+### 5. Session Management Taken Over by Angular (Recommended)
+- Currently React side will createSession, deleteSession, renameSession on its own
+- Recommended: Angular handles all CRUD session operations, React only handles rendering + sending messages + receiving stream
+- Bidirectional communication via attributes + events
 
-**好处**：
-- 统一在 Angular 侧做列表缓存、搜索、最近会话排序等
-- 避免两边状态不一致
+**Benefits**:
+- Unified list caching, search, recent session sorting on Angular side
+- Avoid state inconsistency between both sides
 
-**实现方式**：
+**Implementation**:
 ```typescript
-// Angular 侧管理会话
-// React 只接收 session-id 属性，通过事件通知消息发送
+// Angular side manages sessions
+// React only receives session-id attribute, notifies via events for message sending
 
 // Angular → React
 <ai-chat-wc
@@ -1020,42 +1020,42 @@ ai-chat-wc.es.js
   (message-send)="onMessageSend($event)"
 ></ai-chat-wc>
 
-// React → Angular 事件
+// React → Angular event
 this.dispatchEvent(new CustomEvent('message-send', {
   detail: { message: 'hello' },
   bubbles: true
 }));
 ```
 
-### 6. Angular 14 兼容性
-- Angular 14 需要在对应 Module 添加 `CUSTOM_ELEMENTS_SCHEMA`：
+### 6. Angular 14 Compatibility
+- Angular 14 needs to add `CUSTOM_ELEMENTS_SCHEMA` in the corresponding Module:
 ```typescript
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @NgModule({
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] // 必须添加
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Must add
 })
 export class ProjectMapModule { }
 ```
 
-### 7. 静态资源路径
-- 使用 `import.meta.url` 动态获取路径，防止 404
+### 7. Static Resource Paths
+- Use `import.meta.url` to dynamically get paths, prevent 404
 
 ---
 
-## 🔄 联调自测表
+## Integration Testing Checklist
 
-完成集成后，请检查：
+After completing integration, please check:
 
-1. **SSE 连接保持**：切换设备时，SSE 是否会被 Angular 变更检测切断？
-2. **滚动条冲突**：给 `ai-chat-panel` 加 `overscroll-behavior: contain`
-3. **主题色同步**：观察 Web Component 是否能通过 CSS 变量实时变色
+1. **SSE Connection Maintenance**: When switching devices, will SSE be cut off by Angular change detection?
+2. **Scrollbar Conflicts**: Add `overscroll-behavior: contain` to `ai-chat-panel`
+3. **Theme Color Sync**: Check if Web Component can change colors in real-time via CSS variables
 
 ---
 
-## 🔄 后续扩展
+## Future Extensions
 
-1. **样式主题同步**：实现 Angular 主题与 React 组件的主题同步
-2. **状态持久化**：Web Component 状态同步到 Angular 侧
-3. **按需加载**：实现 Web Component 的 lazy loading
-4. **SSR 支持**：如果未来迁移到 SSR，考虑兼容性
+1. **Theme Sync**: Implement theme synchronization between Angular and React components
+2. **State Persistence**: Sync Web Component state to Angular side
+3. **Lazy Loading**: Implement lazy loading for Web Component
+4. **SSR Support**: Consider compatibility if migrating to SSR in the future

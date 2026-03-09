@@ -1,61 +1,59 @@
-# Group Management Component - 组管理组件代码审查 / Code Review Documentation
+# Group Management Component - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/components/group-management/ (Group Management Component)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/components/group-management/ (Group Management Component)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：组管理模块负责用户组的创建、删除、查看和用户关联管理。
-
-**English Description**: Group management module handles user group creation, deletion, viewing, and user association.
+Group management module handles user group creation, deletion, viewing, and user association.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
 
-### 主要组件
+### Main Components
 
 #### **GroupManagementComponent**
-- 用户组列表展示
-- 组的搜索、排序
-- 批量选择和删除
-- 添加/编辑组
+- User group list display
+- Group search, sorting
+- Batch selection and deletion
+- Add/edit groups
 
 #### **GroupDetailsComponent**
-- 组详细信息展示
-- 组成员管理
-- 组权限管理
+- Detailed group information display
+- Group member management
+- Group permission management
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🟠 代码质量问题 / Code Quality Issues
+### Code Quality Issues
 
-#### 1. **变量命名不一致**
-**文件**: `group-management.component.ts:128`
+#### 1. **Inconsistent Variable Naming**
+**File**: `group-management.component.ts:128`
 
-**问题描述**:
+**Description**:
 ```typescript
 this.toasterService.error(`An error occur while trying to delete group`);
-// 应该是 "occurred" 而非 "occur"
+// Should be "occurred" not "occur"
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 this.toasterService.error('An error occurred while deleting groups');
 ```
 
-#### 2. **订阅管理缺失**
-**文件**: `group-management.component.ts:140-158`
+#### 2. **Missing Subscription Management**
+**File**: `group-management.component.ts:140-158`
 
-**问题描述**:
+**Description**:
 ```typescript
 onDelete(groupsToDelete: Group[]) {
   const observables: Observable<any>[] = [];
@@ -71,9 +69,9 @@ onDelete(groupsToDelete: Group[]) {
 }
 ```
 
-**问题**: 订阅没有存储，组件销毁时无法取消
+**Issue**: Subscription is not stored, cannot be unsubscribed when component is destroyed
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class GroupManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -104,12 +102,12 @@ export class GroupManagementComponent implements OnInit, OnDestroy {
 }
 ```
 
-#### 3. **错误处理不完整**
-**文件**: `group-management.component.ts`
+#### 3. **Incomplete Error Handling**
+**File**: `group-management.component.ts`
 
-**问题描述**: 错误消息未记录详细信息
+**Description**: Error messages don't log detailed information
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 catchError((error: HttpErrorResponse) => {
   console.error('Group management error:', {
@@ -140,14 +138,14 @@ private getUserFriendlyErrorMessage(error: HttpErrorResponse): string {
 
 ---
 
-### 🔒 安全问题 / Security Issues
+### Security Issues
 
-#### 4. **权限验证缺失**
-**文件**: `group-management.component.ts`
+#### 4. **Missing Permission Verification**
+**File**: `group-management.component.ts`
 
-**问题描述**: 没有检查用户是否有权限删除组
+**Description**: No check if user has permission to delete groups
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class GroupManagementComponent {
   canDeleteGroups(): boolean {
@@ -161,17 +159,17 @@ export class GroupManagementComponent {
       return;
     }
 
-    // 继续删除逻辑
+    // Continue deletion logic
   }
 }
 ```
 
-#### 5. **批量操作缺少二次确认**
-**文件**: `group-management.component.ts:140-158`
+#### 5. **Batch Operations Missing Confirmation**
+**File**: `group-management.component.ts:140-158`
 
-**问题描述**: 批量删除直接执行，没有确认对话框
+**Description**: Batch deletion executes directly without confirmation dialog
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 onDelete(groupsToDelete: Group[]) {
   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -196,30 +194,30 @@ onDelete(groupsToDelete: Group[]) {
 
 ---
 
-## 修复建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复
+### Priority 1 - Immediate Fixes
 
-#### 1. 修复错误消息
+#### 1. Fix Error Messages
 ```typescript
-// ✅ 正确
+// Correct
 this.toasterService.error('An error occurred while deleting groups');
 
-// ❌ 错误
+// Incorrect
 this.toasterService.error(`An error occur while trying to delete group`);
 ```
 
-#### 2. 添加权限检查
+#### 2. Add Permission Checks
 ```typescript
 canDeleteGroup(group: Group): boolean {
   const currentUser = this.authService.getCurrentUser();
 
-  // 检查权限
+  // Check permission
   if (!this.hasGroupManagementPermission(currentUser)) {
     return false;
   }
 
-  // 不能删除自己所在的组
+  // Can't delete group you're a member of
   if (currentUser.groups?.includes(group.group_id)) {
     return false;
   }
@@ -232,9 +230,9 @@ private hasGroupManagementPermission(user: User | null): boolean {
 }
 ```
 
-### 优先级 2 - 短期改进
+### Priority 2 - Short-term Improvements
 
-#### 1. 改进订阅管理
+#### 1. Improve Subscription Management
 ```typescript
 export class GroupManagementComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
@@ -258,7 +256,7 @@ export class GroupManagementComponent implements OnInit, OnDestroy {
 }
 ```
 
-#### 2. 添加加载状态
+#### 2. Add Loading State
 ```typescript
 export class GroupManagementComponent {
   loading = false;
@@ -291,9 +289,9 @@ export class GroupManagementComponent {
 }
 ```
 
-### 优先级 3 - 长期改进
+### Priority 3 - Long-term Improvements
 
-#### 1. 实现操作审计
+#### 1. Implement Operation Audit
 ```typescript
 // audit-log.service.ts
 @Injectable({ providedIn: 'root' })
@@ -313,24 +311,24 @@ export class AuditLogService {
   }
 }
 
-// 使用
+// Usage
 this.auditLog.logGroupAction('GROUP_DELETED', group, {
   affectedMembers: group.members.length
 });
 ```
 
-#### 2. 添加撤销功能
+#### 2. Add Undo Functionality
 ```typescript
 export class GroupManagementComponent {
   private deletedGroupsBackup: Map<string, Group> = new Map();
 
   onDelete(groupsToDelete: Group[]) {
-    // 备份
+    // Backup
     groupsToDelete.forEach(group => {
       this.deletedGroupsBackup.set(group.group_id, { ...group });
     });
 
-    // 执行删除
+    // Execute deletion
     this.performDelete(groupsToDelete);
   }
 
@@ -345,7 +343,7 @@ export class GroupManagementComponent {
   }
 
   canUndo(groupId: string): boolean {
-    // 5 分钟内可以撤销
+    // Can undo within 5 minutes
     const backup = this.deletedGroupsBackup.get(groupId);
     if (!backup) return false;
 
@@ -357,9 +355,9 @@ export class GroupManagementComponent {
 
 ---
 
-## 测试建议
+## Testing Recommendations
 
-### 单元测试
+### Unit Tests
 ```typescript
 describe('GroupManagementComponent', () => {
   it('should prevent unauthorized group deletion', () => {

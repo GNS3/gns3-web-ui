@@ -1,53 +1,53 @@
-# Converters Directory - 代码审查文档 / Code Review Documentation
+# Converters Directory - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/converters/ (数据转换器 / Data Converters)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/converters/ (Data Converters)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：本目录包含数据转换器，在不同模型和数据结构之间进行转换、数据格式化、业务逻辑封装。
+**Chinese Description**: This directory contains data converters for transforming between different models and data structures, formatting data, and encapsulating business logic.
 
 **English Description**: This directory contains data converters for transforming between different models and data structures, formatting data, and encapsulating business logic.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
 
-### 转换器类型
+### Converter Types
 
-#### **基础接口**
-- `converter.ts` - 定义转换器接口 `Converter<TSource, TDestination>`
+#### **Base Interface**
+- `converter.ts` - Defines converter interface `Converter<TSource, TDestination>`
 
-#### **主要转换器**
-- **Symbol 相关**: `symbol-to-map-symbol-converter.ts`, `map-symbol-to-symbol-converter.ts`
-- **Port 相关**: `port-to-map-port-converter.ts`, `map-port-to-port-converter.ts`
-- **Node 相关**: `node-to-map-node-converter.ts`
-- **Drawing 相关**: `map-drawing-to-svg-converter.ts`
-- **Label 相关**: `label-to-map-label-converter.ts`
-- **Style 相关**: `styles-to-font-converter.ts`
+#### **Main Converters**
+- **Symbol Related**: `symbol-to-map-symbol-converter.ts`, `map-symbol-to-symbol-converter.ts`
+- **Port Related**: `port-to-map-port-converter.ts`, `map-port-to-port-converter.ts`
+- **Node Related**: `node-to-map-node-converter.ts`
+- **Drawing Related**: `map-drawing-to-svg-converter.ts`
+- **Label Related**: `label-to-map-label-converter.ts`
+- **Style Related**: `styles-to-font-converter.ts`
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🔴 严重安全问题 / Security Issues
+### Security Issues
 
-#### 1. **SVG 注入风险**
-**文件**: `cartography/converters/map/map-drawing-to-svg-converter.ts:17,19,23`
+#### 1. **SVG Injection Risk**
+**File**: `cartography/converters/map/map-drawing-to-svg-converter.ts:17,19,23`
 
-**问题描述**:
+**Issue Description**:
 ```typescript
 elem = `<rect fill="${mapDrawing.element.fill}" ... />`;
-// 直接将用户输入嵌入 SVG
+// Directly embed user input into SVG
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 import { DomSanitizer, SecurityContext } from '@angular/platform-browser';
 
@@ -65,34 +65,34 @@ convert(mapDrawing: MapDrawing): string {
 
 ---
 
-### 🟠 代码质量问题 / Code Quality Issues
+### Code Quality Issues
 
-#### 2. **参数名拼写错误**
-**文件**: `cartography/converters/map/label-to-map-label-converter.ts:16`
+#### 2. **Parameter Name Spelling Error**
+**File**: `cartography/converters/map/label-to-map-label-converter.ts:16`
 
-**问题描述**:
+**Issue Description**:
 ```typescript
 convert(label: Label, paramaters?: { [node_id: string]: string })
-// paramaters 应为 parameters
+// paramaters should be parameters
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 convert(label: Label, parameters?: { [node_id: string]: string })
 ```
 
-#### 3. **硬编码魔法数字**
-**文件**: `cartography/converters/map/node-to-map-node-converter.ts:58-59`
+#### 3. **Hardcoded Magic Numbers**
+**File**: `cartography/converters/map/node-to-map-node-converter.ts:58-59`
 
-**问题描述**:
+**Issue Description**:
 ```typescript
-mapNode.label.x = node.width / 2 - box.width / 2 + 3;  // 硬编码 3
-mapNode.label.y = -8;  // 硬编码 -8
+mapNode.label.x = node.width / 2 - box.width / 2 + 3;  // hardcoded 3
+mapNode.label.y = -8;  // hardcoded -8
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 定义常量
+// Define constants
 const LABEL_OFFSET_X = 3;
 const LABEL_OFFSET_Y = -8;
 const DEFAULT_LABEL_Y = -8;
@@ -101,21 +101,21 @@ mapNode.label.x = node.width / 2 - box.width / 2 + LABEL_OFFSET_X;
 mapNode.label.y = node.label.y === null ? DEFAULT_LABEL_Y : node.label.y;
 ```
 
-#### 4. **空值检查不一致**
-**文件**: `cartography/converters/map/node-to-map-node-converter.ts:57-60`
+#### 4. **Inconsistent Null Checks**
+**File**: `cartography/converters/map/node-to-map-node-converter.ts:57-60`
 
-**问题描述**:
+**Issue Description**:
 ```typescript
 if (node.label.x === null || node.label.y === null) {
-  // 使用 === null
+  // using === null
 } else if (mapLabel.x !== null) {
-  // 使用 !== null
+  // using !== null
 }
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 统一使用宽松相等
+// Use loose equality consistently
 if (node.label.x == null || node.label.y == null) {
   // ...
 }
@@ -125,15 +125,15 @@ if (mapLabel.x != null) {
 }
 ```
 
-#### 5. **复杂的三元运算符**
-**文件**: `cartography/converters/map/map-drawing-to-svg-converter.ts:17,19`
+#### 5. **Complex Ternary Operators**
+**File**: `cartography/converters/map/map-drawing-to-svg-converter.ts:17,19`
 
-**问题描述**:
+**Issue Description**:
 ```typescript
 elem = `${mapDrawing.element.stroke_dasharray == '' ? `<rect fill="..."/>` : `<rect fill="..."/>`}`;
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 if (mapDrawing.element.stroke_dasharray === '') {
   elem = this.createRect(mapDrawing.element, false);
@@ -151,23 +151,23 @@ private createRect(element: any, hasDash: boolean): string {
 }
 ```
 
-#### 6. **未验证的数据类型转换**
-**文件**: `cartography/converters/styles-to-font-converter.ts:21-23`
+#### 6. **Unvalidated Data Type Conversion**
+**File**: `cartography/converters/styles-to-font-converter.ts:21-23`
 
-**问题描述**:
+**Issue Description**:
 ```typescript
 if (value.type === 'Dimension') {
-  font.font_size = parseInt(value.value);  // 没有验证结果
+  font.font_size = parseInt(value.value);  // no validation of result
 }
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 if (value.type === 'Dimension') {
   const size = parseInt(value.value, 10);
   if (isNaN(size)) {
     console.warn('Invalid font size:', value.value);
-    font.font_size = 12;  // 默认值
+    font.font_size = 12;  // default value
   } else {
     font.font_size = size;
   }
@@ -176,11 +176,11 @@ if (value.type === 'Dimension') {
 
 ---
 
-## 修复建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 安全修复
+### Priority 1 - Security Fix
 
-#### 1. SVG 安全处理
+#### 1. SVG Security Handling
 ```typescript
 import { DomSanitizer, SecurityContext } from '@angular/platform-browser';
 
@@ -210,9 +210,9 @@ export class SafeSvgConverter {
 }
 ```
 
-### 优先级 2 - 代码质量改进
+### Priority 2 - Code Quality Improvements
 
-#### 1. 创建基础转换器类
+#### 1. Create Base Converter Class
 ```typescript
 export abstract class BaseConverter<TSource, TDestination> implements Converter<TSource, TDestination> {
   abstract convert(from: TSource): TDestination;
@@ -229,7 +229,7 @@ export abstract class BaseConverter<TSource, TDestination> implements Converter<
 }
 ```
 
-#### 2. 添加常量文件
+#### 2. Add Constants File
 ```typescript
 // converter.constants.ts
 export const CONVERTER_CONSTANTS = {
@@ -245,7 +245,7 @@ export const CONVERTER_CONSTANTS = {
 };
 ```
 
-#### 3. 改进错误处理
+#### 3. Improve Error Handling
 ```typescript
 convert(from: TSource): TDestination {
   if (!from) {
@@ -268,7 +268,7 @@ protected abstract performConversion(from: TSource): TDestination;
 
 ---
 
-## 测试建议
+## Test Suggestions
 
 ```typescript
 describe('NodeToMapNodeConverter', () => {

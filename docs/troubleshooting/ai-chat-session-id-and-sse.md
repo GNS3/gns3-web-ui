@@ -127,8 +127,8 @@ async def stream_chat(request: ChatRequest, project_id: str):
 ### Why SSE Requires New Connection Per Message
 
 **SSE (Server-Sent Events)** is a **unidirectional** communication protocol:
-- **Server → Client**: Data flow
-- **Client → Server**: Not possible through SSE connection
+- **Server -> Client**: Data flow
+- **Client -> Server**: Not possible through SSE connection
 
 ### Single Round Trip Flow
 
@@ -146,11 +146,11 @@ async def stream_chat(request: ChatRequest, project_id: str):
    HTTP/1.1 200 OK
    Content-Type: text/event-stream
 
-   data: {"type": "content", "content": "你"}
-   data: {"type": "content", "content": "好"}
+   data: {"type": "content", "content": "Hello"}
+   data: {"type": "content", "content": " there"}
    data: {"type": "done", "session_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"}
 
-3. Connection closes ❌
+3. Connection closes
    (HTTP response completed, connection must close)
 ```
 
@@ -158,18 +158,18 @@ async def stream_chat(request: ChatRequest, project_id: str):
 
 ```
 Round 1:
-Client → POST /chat/stream {message: "hello", session_id: "uuid-1"}
-Client ← SSE: "你好！"
+Client -> POST /chat/stream {message: "hello", session_id: "uuid-1"}
+Client <- SSE: "Hello!"
 [Connection closes]
 
 Round 2:
-Client → POST /chat/stream {message: "如何?", session_id: "uuid-1"}  // Same session_id
-Client ← SSE: "我很好！"
+Client -> POST /chat/stream {message: "How are you?", session_id: "uuid-1"}  // Same session_id
+Client <- SSE: "I'm doing great!"
 [Connection closes]
 
 Round 3:
-Client → POST /chat/stream {message: "再见", session_id: "uuid-1"}  // Same session_id
-Client ← SSE: "拜拜！"
+Client -> POST /chat/stream {message: "Goodbye", session_id: "uuid-1"}  // Same session_id
+Client <- SSE: "Bye!"
 [Connection closes]
 ```
 
@@ -187,37 +187,37 @@ The backend maintains conversation context through **session_id**, not through a
 
 ```
 Database (LangGraph Thread):
-┌─────────────────────────────────────────┐
-│ Thread ID: a1b2c3d4-e5f6-7890-abcd-...  │
-├─────────────────────────────────────────┤
-│ Message 1: {role: "user", content: "hello"}     │
-│ Message 2: {role: "assistant", content: "你好！"}│
-│ Message 3: {role: "user", content: "如何?"}    │
-│ Message 4: {role: "assistant", content: "我很好！"}│
-│ Message 5: {role: "user", content: "再见"}    │
-│ Message 6: {role: "assistant", content: "拜拜！"}│
-└─────────────────────────────────────────┘
++------------------------------------------+
+| Thread ID: a1b2c3d4-e5f6-7890-abcd-...   |
++------------------------------------------+
+| Message 1: {role: "user", content: "hello"}           |
+| Message 2: {role: "assistant", content: "Hello!"}     |
+| Message 3: {role: "user", content: "How are you?"}    |
+| Message 4: {role: "assistant", content: "I'm doing great!"}|
+| Message 5: {role: "user", content: "Goodbye"}          |
+| Message 6: {role: "assistant", content: "Bye!"}        |
++------------------------------------------+
 ```
 
 #### Flow Diagram
 
 ```
 User sends "hello" (with session_id="uuid-1"):
-  Frontend → Backend: POST /chat/stream {message: "hello", session_id: "uuid-1"}
+  Frontend -> Backend: POST /chat/stream {message: "hello", session_id: "uuid-1"}
   Backend: Loads empty history (new session)
-  Backend → LLM: [User: "hello"]
-  Backend ← LLM: "你好！"
+  Backend -> LLM: [User: "hello"]
+  Backend <- LLM: "Hello!"
   Backend: Saves messages to database
-  Backend → Frontend: SSE stream
+  Backend -> Frontend: SSE stream
   [Connection closes]
 
-User sends "如何?" (with session_id="uuid-1"):
-  Frontend → Backend: POST /chat/stream {message: "如何?", session_id: "uuid-1"}
+User sends "How are you?" (with session_id="uuid-1"):
+  Frontend -> Backend: POST /chat/stream {message: "How are you?", session_id: "uuid-1"}
   Backend: Loads history from database
-  Backend → LLM: [User: "hello", Assistant: "你好！", User: "如何?"]
-  Backend ← LLM: "我很好！"
+  Backend -> LLM: [User: "hello", Assistant: "Hello!", User: "How are you?"]
+  Backend <- LLM: "I'm doing great!"
   Backend: Saves messages to database
-  Backend → Frontend: SSE stream
+  Backend -> Frontend: SSE stream
   [Connection closes]
 ```
 
@@ -369,12 +369,12 @@ private startChatStream(message: string, sessionId?: string): void {
 2. Check `!this.isStreaming` in subscriber before loading history
 
 ```typescript
-// ✅ CORRECT
+// CORRECT
 this.isStreaming = true;
 this.aiChatStore.setStreamingState(true);
 this.aiChatStore.setCurrentSessionId(sessionId);
 
-// ❌ WRONG
+// WRONG
 this.aiChatStore.setCurrentSessionId(sessionId);
 this.isStreaming = true;
 ```
@@ -390,7 +390,7 @@ this.isStreaming = true;
 ```typescript
 this.aiChatService.streamChat(controller, projectId, {
   message: message,
-  session_id: sessionId,  // ✅ Must include this
+  session_id: session_id,  // Must include this
   stream: true
 });
 ```
@@ -431,15 +431,15 @@ private startChatStream(message: string, sessionId?: string): void {
 ### Q1: Why not use WebSocket instead of SSE?
 
 **A**: SSE is simpler and sufficient for this use case:
-- ✅ Server → Client streaming is all we need
-- ✅ Built-in HTTP support (no additional libraries)
-- ✅ Automatic reconnection handling
-- ✅ Simpler backend implementation
+- Server -> Client streaming is all we need
+- Built-in HTTP support (no additional libraries)
+- Automatic reconnection handling
+- Simpler backend implementation
 
 **WebSocket benefits** (if needed in future):
-- ✅ Bidirectional communication
-- ✅ Lower latency (no HTTP overhead)
-- ✅ Single connection for multiple messages
+- Bidirectional communication
+- Lower latency (no HTTP overhead)
+- Single connection for multiple messages
 
 **Trade-offs**:
 - SSE: New connection per message, but simpler

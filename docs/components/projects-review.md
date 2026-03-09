@@ -1,58 +1,56 @@
-# Projects Component - 项目管理组件代码审查 / Code Review Documentation
+# Projects Component - Code Review Documentation
 
 ---
 
-**文档生成时间 / Document Generated**: 2026-03-07
-**审查工具 / Review Tool**: Claude Code (Sonnet 4.5)
-**审查范围 / Review Scope**: src/app/components/projects/ (Projects Component)
+**Document Generated**: 2026-03-07
+**Review Tool**: Claude Code (Sonnet 4.5)
+**Review Scope**: src/app/components/projects/ (Projects Component)
 
 ---
 
-## 概述 / Overview
+## Overview
 
-**中文说明**：项目管理模块负责项目列表展示、创建、编辑、导入、导出和删除等操作。
-
-**English Description**: Project management module handles project list display, creation, editing, importing, exporting, and deletion.
+Project management module handles project list display, creation, editing, importing, exporting, and deletion.
 
 ---
 
-## 模块功能 / Module Functions
+## Module Functions
 
 
-### 主要组件
+### Main Components
 
 #### **ProjectsComponent**
-- 项目列表展示（Material 表格）
-- 项目搜索、过滤、排序
-- 批量选择和操作
-- 项目创建、导入、删除
+- Project list display (Material table)
+- Project search, filtering, sorting
+- Batch selection and operations
+- Project create, import, delete
 
 #### **AddBlankProjectDialogComponent**
-- 创建空白项目对话框
-- 项目名称重复检查
+- Create blank project dialog
+- Project name duplicate check
 
 #### **EditProjectDialogComponent**
-- 编辑项目属性
-- README 编辑器
-- 项目变量管理
+- Edit project properties
+- README editor
+- Project variable management
 
 #### **ImportProjectDialogComponent**
-- 项目导入功能
-- 文件上传处理
+- Project import functionality
+- File upload handling
 
 #### **DeleteProjectDialogComponent**
-- 删除项目确认对话框
+- Delete project confirmation dialog
 
 ---
 
-## 发现的问题 / Issues Found
+## Issues Found
 
-### 🔴 严重问题 / Critical Issues
+### Critical Issues
 
-#### 1. **内存泄漏 - 订阅未取消** (严重)
-**文件**: `projects.component.ts:87-93`
+#### 1. **Memory Leak - Subscription Not Cancelled** (Critical)
+**File**: `projects.component.ts:87-93`
 
-**问题描述**:
+**Description**:
 ```typescript
 const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
   if (result) {
@@ -61,12 +59,12 @@ const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((resul
     });
   }
 });
-// 订阅未被存储或取消
+// Subscription not stored or cancelled
 ```
 
-**影响**: 组件销毁时订阅仍然存在，导致内存泄漏
+**Impact**: Subscription persists when component is destroyed, causing memory leak
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class ProjectsComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
@@ -100,18 +98,18 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 }
 ```
 
-#### 2. **XSS 防护不足** (严重)
-**文件**: `readme-editor/readme-editor.component.ts:34-35`
+#### 2. **Insufficient XSS Protection** (Critical)
+**File**: `readme-editor/readme-editor.component.ts:34-35`
 
-**问题描述**:
+**Description**:
 ```typescript
 const html = marked(this.markdown) as string;
 return this.sanitizer.bypassSecurityTrustHtml(html);
 ```
 
-**风险**: Markdown 可能包含恶意 HTML/JavaScript
+**Risk**: Markdown may contain malicious HTML/JavaScript
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 import DOMPurify from 'dompurify';
 
@@ -121,14 +119,14 @@ private renderMarkdown(): SafeHtml {
   }
 
   try {
-    // 配置 marked 选项
+    // Configure marked options
     marked.setOptions({
       gfm: true,
       breaks: true,
       headerIds: false
     });
 
-    // 使用 DOMPurify 净化
+    // Sanitize with DOMPurify
     const dirtyHtml = marked(this.markdown);
     const cleanHtml = DOMPurify.sanitize(dirtyHtml, {
       ALLOWED_TAGS: ['p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -155,16 +153,16 @@ private escapeHtml(text: string): string {
 }
 ```
 
-#### 3. **projectListSubject 订阅未取消** (严重)
-**文件**: `projects.component.ts:69`
+#### 3. **projectListSubject Subscription Not Cancelled** (Critical)
+**File**: `projects.component.ts:69`
 
-**问题描述**:
+**Description**:
 ```typescript
 this.projectService.projectListSubject.subscribe(() => this.refresh());
-// 没有存储订阅引用
+// Subscription reference not stored
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 export class ProjectsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -184,19 +182,19 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
 ---
 
-### 🟠 性能问题 / Performance Issues
+### Performance Issues
 
-#### 4. **实时搜索无防抖** (中等)
-**文件**: `projects.component.html:22`
+#### 4. **Real-time Search Without Debounce** (Medium)
+**File**: `projects.component.html:22`
 
-**问题描述**:
+**Description**:
 ```html
 [dataSource]="dataSource | projectsfilter: searchText"
 ```
 
-**问题**: 每次输入都触发过滤，对于大量项目会影响性能
+**Issue**: Filtering triggers on every input, affecting performance with large number of projects
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 // projects.component.ts
 export class ProjectsComponent implements OnInit {
@@ -220,19 +218,19 @@ export class ProjectsComponent implements OnInit {
 ```
 
 ```html
-<!-- 模板 -->
+<!-- Template -->
 <input matInput (input)="onSearchInput($event)" placeholder="Search">
 ```
 
-#### 5. **不必要的数组操作** (中等)
-**文件**: `projects.component.ts:225`
+#### 5. **Unnecessary Array Operations** (Medium)
+**File**: `projects.component.ts:225`
 
-**问题描述**:
+**Description**:
 ```typescript
 this.projectDatabase.data.forEach((row) => this.selection.select(row));
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 isAllSelected() {
   const numSelected = this.selection.selected.length;
@@ -249,19 +247,19 @@ masterToggle() {
 }
 ```
 
-#### 6. **重复的 API 调用** (中等)
-**文件**: `add-blank-project-dialog/add-blank-project-dialog.component.ts:54-63`
+#### 6. **Duplicate API Calls** (Medium)
+**File**: `add-blank-project-dialog/add-blank-project-dialog.component.ts:54-63`
 
-**问题描述**:
+**Description**:
 ```typescript
 this.projectService.list(this.controller).subscribe((projects: Project[]) => {
-  // 每次添加项目都获取完整列表
+  // Gets full list every time a project is added
 });
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 使用服务中的缓存
+// Use service cache
 const existingProject = this.projectService.getCachedProject(projectName);
 
 if (existingProject) {
@@ -273,32 +271,32 @@ if (existingProject) {
 
 ---
 
-### 🟡 代码质量问题 / Code Quality Issues
+### Code Quality Issues
 
-#### 7. **方法命名不符合规范**
-**文件**: `projects.component.ts:230`
+#### 7. **Method Naming Does Not Follow Conventions**
+**File**: `projects.component.ts:230`
 
-**问题描述**:
+**Description**:
 ```typescript
-exportSelectProject(project: Project){  // 缺少空格
+exportSelectProject(project: Project){  // Missing space
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 exportSelectProject(project: Project) {
 ```
 
-#### 8. **直接访问私有属性**
-**文件**: `projects.component.ts:85, 116, 170`
+#### 8. **Direct Access to Private Properties**
+**File**: `projects.component.ts:85, 116, 170`
 
-**问题描述**:
+**Description**:
 ```typescript
 let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 使用公共 API 或创建服务跟踪状态
+// Use public API or create service to track state
 @Injectable({ providedIn: 'root' })
 export class BottomSheetStateService {
   private openedSubject = new BehaviorSubject<boolean>(false);
@@ -315,31 +313,31 @@ export class BottomSheetStateService {
 }
 ```
 
-#### 9. **拼写错误**
-**文件**: `import-project-dialog/import-project-dialog.component.ts:122`
+#### 9. **Typo**
+**File**: `import-project-dialog/import-project-dialog.component.ts:122`
 
-**问题描述**:
+**Description**:
 ```typescript
-panelClass: 'uplaoding-file-snackabar'  // 拼写错误
+panelClass: 'uplaoding-file-snackabar'  // Typo
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
-// 创建常量
+// Create constants
 export const SNACKBAR_CLASSES = {
   UPLOADING: 'uploading-file-snackbar'
 };
 
-// 使用
+// Usage
 this.snackBar.openFromComponent(UploadingProcessbarComponent, {
   panelClass: SNACKBAR_CLASSES.UPLOADING
 });
 ```
 
-#### 10. **错误处理不完整**
-**文件**: `edit-project-dialog/edit-project-dialog.component.ts:94-99`
+#### 10. **Incomplete Error Handling**
+**File**: `edit-project-dialog/edit-project-dialog.component.ts:94-99`
 
-**问题描述**:
+**Description**:
 ```typescript
 this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
   this.projectService.postReadmeFile(this.controller, this.project.project_id, this.editor.markdown).subscribe((response) => {
@@ -347,11 +345,11 @@ this.projectService.update(this.controller, this.project).subscribe((project: Pr
     this.onNoClick();
   });
 }, (error) => {
-  // 只处理了 update 错误，postReadmeFile 错误未处理
+  // Only handled update error, postReadmeFile error not handled
 })
 ```
 
-**修复建议**:
+**Fix Recommendation**:
 ```typescript
 this.projectService.update(this.controller, this.project).pipe(
   switchMap(project =>
@@ -363,7 +361,7 @@ this.projectService.update(this.controller, this.project).pipe(
       map(() => project),
       catchError(error => {
         this.toasterService.error('Failed to save README');
-        return of(project);  // 继续关闭对话框
+        return of(project);  // Continue closing dialog
       })
     )
   ),
@@ -381,18 +379,18 @@ this.projectService.update(this.controller, this.project).pipe(
 
 ---
 
-## 修复建议 / Recommendations
+## Recommendations
 
-### 优先级 1 - 立即修复 / Immediate Fixes
+### Priority 1 - Immediate Fixes
 
-#### 1. 修复所有内存泄漏
+#### 1. Fix All Memory Leaks
 ```typescript
 export class ProjectsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private subscriptions = new Subscription();
 
   ngOnInit() {
-    // 所有订阅使用 takeUntil
+    // All subscriptions use takeUntil
     this.projectService.projectListSubject.pipe(
       takeUntil(this.destroy$)
     ).subscribe(() => this.refresh());
@@ -406,23 +404,23 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 }
 ```
 
-#### 2. 修复 XSS 漏洞
+#### 2. Fix XSS Vulnerability
 ```typescript
-// 安装 DOMPurify
+// Install DOMPurify
 // npm install dompurify @types/dompurify
 
-// 配置 marked
+// Configure marked
 marked.setOptions({
   sanitize: true,
   sanitizer: (html) => DOMPurify.sanitize(html)
 });
 ```
 
-#### 3. 添加文件上传验证
+#### 3. Add File Upload Validation
 ```typescript
 // import-project-dialog.component.ts
 validateUploadFile(file: File): boolean {
-  // 文件类型验证
+  // File type validation
   const validTypes = ['.gns3project', '.zip'];
   const hasValidExtension = validTypes.some(ext =>
     file.name.toLowerCase().endsWith(ext)
@@ -433,7 +431,7 @@ validateUploadFile(file: File): boolean {
     return false;
   }
 
-  // 文件大小验证（例如：最大 2GB）
+  // File size validation (e.g., max 2GB)
   const maxSize = 2 * 1024 * 1024 * 1024;
   if (file.size > maxSize) {
     this.toasterService.error('File too large. Maximum size is 2GB.');
@@ -444,9 +442,9 @@ validateUploadFile(file: File): boolean {
 }
 ```
 
-### 优先级 2 - 短期改进 / Short-term Improvements
+### Priority 2 - Short-term Improvements
 
-#### 1. 实现搜索防抖
+#### 1. Implement Search Debounce
 ```typescript
 export class ProjectsComponent {
   private searchSubject = new Subject<string>();
@@ -471,7 +469,7 @@ export class ProjectsComponent {
 }
 ```
 
-#### 2. 改进加载状态
+#### 2. Improve Loading State
 ```typescript
 export class ProjectsComponent {
   loading = false;
@@ -489,7 +487,7 @@ export class ProjectsComponent {
 }
 ```
 
-#### 3. 添加操作确认
+#### 3. Add Operation Confirmation
 ```typescript
 deleteProjects(projects: Project[]) {
   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -511,23 +509,23 @@ deleteProjects(projects: Project[]) {
 }
 ```
 
-### 优先级 3 - 长期改进 / Long-term Improvements
+### Priority 3 - Long-term Improvements
 
-#### 1. 实现虚拟滚动
+#### 1. Implement Virtual Scrolling
 ```html
 <cdk-virtual-scroll-viewport itemSize="50" maxBufferPx="500" minBufferPx="200">
   <mat-table #table [dataSource]="dataSource" matSort>
-    <!-- 表格内容 -->
+    <!-- Table content -->
   </mat-table>
 </cdk-virtual-scroll-viewport>
 ```
 
-#### 2. 实现项目缓存
+#### 2. Implement Project Caching
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class ProjectCacheService {
   private cache = new Map<string, Project[]>();
-  private ttl = 5 * 60 * 1000; // 5 分钟
+  private ttl = 5 * 60 * 1000; // 5 minutes
 
   get(controllerId: string): Project[] | null {
     const cached = this.cache.get(controllerId);
@@ -552,26 +550,26 @@ export class ProjectCacheService {
 }
 ```
 
-#### 3. 添加撤销功能
+#### 3. Add Undo Functionality
 ```typescript
 export class ProjectsComponent {
   private undoStack: UndoAction[] = [];
 
   deleteProjects(projects: Project[]) {
-    // 保存用于撤销
+    // Save for undo
     this.undoStack.push({
       type: 'delete',
       projects: projects.map(p => ({ ...p })),
       timestamp: Date.now()
     });
 
-    // 执行删除
+    // Execute deletion
   }
 
   undo() {
     const lastAction = this.undoStack.pop();
     if (lastAction && lastAction.type === 'delete') {
-      // 恢复项目
+      // Restore projects
       lastAction.projects.forEach(project => {
         this.projectService.create(this.controller, project).subscribe();
       });
@@ -582,9 +580,9 @@ export class ProjectsComponent {
 
 ---
 
-## 测试建议 / Testing Recommendations
+## Testing Recommendations
 
-### 单元测试
+### Unit Tests
 ```typescript
 describe('ProjectsComponent', () => {
   it('should clean up subscriptions on destroy', () => {
@@ -602,7 +600,7 @@ describe('ProjectsComponent', () => {
 });
 ```
 
-### E2E 测试
+### E2E Tests
 ```typescript
 it('should prevent deleting multiple projects without confirmation', () => {
   page.selectProjects(['project1', 'project2']);
