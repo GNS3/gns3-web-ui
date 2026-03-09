@@ -42,8 +42,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   // Position and size state
   public style: object = {};
   private previousStyle: object = {}; // Save state before maximize
-  public resizedWidth: number = 700;
-  public resizedHeight: number = 600;
+  public resizedWidth: number = 800;
+  public resizedHeight: number = 900;
 
   // Data
   sessions: ChatSession[] = [];
@@ -181,8 +181,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         position: 'fixed',
         top: '80px',
         right: '20px',
-        width: '700px',
-        height: '600px',
+        width: '800px',
+        height: '900px',
       };
       this.previousStyle = { ...this.style };
     }

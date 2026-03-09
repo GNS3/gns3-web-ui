@@ -35,8 +35,8 @@ export class AiChatStore {
   // 面板状态
   private panelState$ = new BehaviorSubject<ChatPanelState>({
     isOpen: false,
-    width: 700,
-    height: 600,
+    width: 800,
+    height: 900,
     isMaximized: false,
     isMinimized: false,
     position: {

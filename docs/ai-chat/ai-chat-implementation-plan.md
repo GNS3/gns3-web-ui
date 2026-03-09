@@ -202,7 +202,36 @@ ai-chat.component (Main container)
 - Collapsible nodes
 - Copy to clipboard
 - Dark/light theme support
+- Glassmorphism effect (backdrop-filter blur)
 - Resizable dialog (800px default, min 600px, max 95vw)
+
+**Glassmorphism Effect Configuration**:
+Located in `tool-details-dialog.component.ts` styles (line 209-231):
+```scss
+/* Dialog container styling with glassmorphism effect */
+::ng-deep .mat-mdc-dialog-container {
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.15) !important;
+}
+
+/* Make dialog surface transparent for glassmorphism */
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: transparent !important;
+}
+
+/* Dark theme: 75% opacity */
+::ng-deep .dark-theme .mat-mdc-dialog-container {
+  background-color: rgba(30, 41, 55, 0.75) !important;
+}
+
+/* Light theme: 85% opacity */
+::ng-deep .light-theme .mat-mdc-dialog-container {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+```
+
+**Note**: Glassmorphism effect requires content behind the dialog to be visible.
 
 ---
 
@@ -293,6 +322,48 @@ ngx-json-viewer displays formatted JSON
 ---
 
 ## 11. Window Management
+
+### Default Window Size
+**Current Default**: 800px × 900px
+
+To change the default window size, modify **6 locations** across **2 files**:
+
+#### File 1: `src/app/components/project-map/ai-chat/ai-chat.component.ts` (4 locations)
+
+1. **Line 45** - Resize width state
+   ```typescript
+   public resizedWidth: number = 800;
+   ```
+
+2. **Line 46** - Resize height state
+   ```typescript
+   public resizedHeight: number = 900;
+   ```
+
+3. **Line 184** - Default style width
+   ```typescript
+   this.style = {
+     // ...
+     width: '800px',
+     height: '900px',
+   };
+   ```
+
+#### File 2: `src/app/stores/ai-chat.store.ts` (2 locations)
+
+4. **Line 38** - Panel state width
+   ```typescript
+   private panelState$ = new BehaviorSubject<ChatPanelState>({
+     isOpen: false,
+     width: 800,
+     height: 900,
+   ```
+   ```
+
+**Important**: After changing default size, users need to clear localStorage:
+```javascript
+localStorage.removeItem('ai-chat-panel-state');
+```
 
 ### WindowBoundaryService Integration
 - Resizable panel with min/max constraints

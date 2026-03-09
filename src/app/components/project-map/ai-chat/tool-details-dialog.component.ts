@@ -206,20 +206,28 @@ export interface ToolDetailsDialogData {
       background: rgba(0, 151, 167, 0.5);
     }
 
-    /* Dialog container styling */
+    /* Dialog container styling with glassmorphism effect */
     ::ng-deep .mat-mdc-dialog-container {
       border-radius: 16px !important;
       border: 1px solid var(--mat-app-outline-variant);
-      backdrop-filter: blur(20px) saturate(180%) !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.2) !important;
+      backdrop-filter: blur(16px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.15) !important;
     }
 
+    /* Make dialog surface transparent for glassmorphism */
+    ::ng-deep .mat-mdc-dialog-surface {
+      background-color: transparent !important;
+    }
+
+    /* Dark theme glassmorphism */
     ::ng-deep .dark-theme .mat-mdc-dialog-container {
-      background-color: rgba(32, 49, 59, 0.85) !important;
+      background-color: rgba(30, 41, 55, 0.75) !important;
     }
 
+    /* Light theme glassmorphism */
     ::ng-deep .light-theme .mat-mdc-dialog-container {
-      background-color: rgba(255, 255, 255, 0.95) !important;
+      background-color: rgba(255, 255, 255, 0.85) !important;
     }
   `]
 })
