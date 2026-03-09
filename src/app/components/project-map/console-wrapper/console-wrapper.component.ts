@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UntypedFormControl } from '@angular/forms';
@@ -155,6 +155,21 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
   disableScroll(e) {
     this.mapSettingsService.isScrollDisabled.next(true);
+  }
+
+  /**
+   * Handle window resize events to keep Console within viewport boundaries
+   * This ensures the window stays visible when browser window is resized
+   */
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(): void {
+    // Skip if minimized
+    if (this.isMinimized) {
+      return;
+    }
+
+    // Re-constrain window position to stay within viewport
+    this.style = this.boundaryService.constrainWindowPosition(this.style as WindowStyle);
   }
 
   /**

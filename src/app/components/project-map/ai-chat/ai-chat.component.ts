@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ResizeEvent } from 'angular-resizable-element';
@@ -110,6 +110,22 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.destroy$.next();
     this.destroy$.complete();
     this.cleanup();
+  }
+
+  /**
+   * Handle window resize events to keep AI Chat within viewport boundaries
+   * This ensures the window stays visible when browser window is resized
+   */
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(): void {
+    // Skip if minimized or maximized
+    if (this.isMinimized || this.isMaximized) {
+      return;
+    }
+
+    // Re-constrain window position to stay within viewport
+    this.style = this.boundaryService.constrainWindowPosition(this.style as WindowStyle);
+    this.cdr.markForCheck();
   }
 
   /**
