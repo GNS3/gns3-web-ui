@@ -1048,7 +1048,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      !this.boundaryService.isValidSize(event.rectangle.width, event.rectangle.height)
+      (event.rectangle.width < 500 || event.rectangle.height < 400)
     ) {
       return false;
     }

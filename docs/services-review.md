@@ -58,7 +58,7 @@
 - `theme.service.ts` - Theme switching (dark/light mode)
 - `mapScale.service.ts` - Map scale
 - `mapsettings.service.ts` - Map settings
-- `window-boundary.service.ts` - **[NEW]** Window boundary constraint service for draggable/resizable windows (2026-03-09)
+- `window-boundary.service.ts` - Window boundary constraint service for draggable/resizable windows (2026-03-09) - **[FIXED]** Resolved resize validation issue with undefined values
 
 #### 8. **Utility & Configuration Services**
 - `settings.service.ts` - Application settings

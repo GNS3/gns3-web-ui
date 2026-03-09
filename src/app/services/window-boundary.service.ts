@@ -252,17 +252,21 @@ export class WindowBoundaryService {
 
   /**
    * Check if given size is valid
-   * @param width Width
-   * @param height Height
+   * @param width Width (may be undefined or non-numeric)
+   * @param height Height (may be undefined or non-numeric)
    * @returns Whether valid
    */
-  isValidSize(width: number, height: number): boolean {
-    const config = this.config$.value;
-    const validWidth = width >= config.minWidth;
-    const validHeight = height >= config.minHeight;
+  isValidSize(width: unknown, height: unknown): boolean {
+    // Convert to number, treat invalid values as 0 (which will be < minWidth/minHeight)
+    const numWidth = typeof width === 'number' ? width : (typeof width === 'string' ? parseFloat(width) : 0);
+    const numHeight = typeof height === 'number' ? height : (typeof height === 'string' ? parseFloat(height) : 0);
 
-    if (config.maxWidth && width > config.maxWidth) return false;
-    if (config.maxHeight && height > config.maxHeight) return false;
+    const config = this.config$.value;
+    const validWidth = numWidth >= config.minWidth;
+    const validHeight = numHeight >= config.minHeight;
+
+    if (config.maxWidth && numWidth > config.maxWidth) return false;
+    if (config.maxHeight && numHeight > config.maxHeight) return false;
 
     return validWidth && validHeight;
   }
