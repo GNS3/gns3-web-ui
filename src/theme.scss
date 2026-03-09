@@ -134,11 +134,27 @@ $light-theme: map-merge(
 }
 
 $menu-hover-background: #DC143C;
+$menu-selected-text-color: #FFFFFF;
 
-.mat-menu-panel .mat-menu-item:not([disabled]):hover,
-.mat-menu-panel .mat-menu-item:not([disabled]).cdk-program-focused,
-.mat-menu-panel .mat-menu-item:not([disabled]).cdk-keyboard-focused {
+.mat-menu-panel .mat-menu-item:not([disabled]):hover {
   background-color: $menu-hover-background !important;
+}
+
+.mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
+.mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
+  background-color: $menu-hover-background !important;
+}
+
+.light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
+  color: $menu-selected-text-color !important;
+}
+
+.light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover .mat-icon,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused .mat-icon,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused .mat-icon {
+  color: $menu-selected-text-color !important;
 }
 
 .mat-menu-panel:not(.context-menu-items) .mat-menu-item {
