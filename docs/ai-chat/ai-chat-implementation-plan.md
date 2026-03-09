@@ -326,44 +326,44 @@ ngx-json-viewer displays formatted JSON
 ### Default Window Size
 **Current Default**: 800px × 900px
 
-To change the default window size, modify **6 locations** across **2 files**:
+**Architecture**: Store is the single source of truth for default values. Component reads from Store at initialization.
 
-#### File 1: `src/app/components/project-map/ai-chat/ai-chat.component.ts` (4 locations)
+#### To change the default window size, modify only **1 location**:
 
-1. **Line 45** - Resize width state
-   ```typescript
-   public resizedWidth: number = 800;
-   ```
+**File**: `src/app/stores/ai-chat.store.ts`
 
-2. **Line 46** - Resize height state
-   ```typescript
-   public resizedHeight: number = 900;
-   ```
+**Line 38-39** - Panel state defaults:
+```typescript
+private panelState$ = new BehaviorSubject<ChatPanelState>({
+  isOpen: false,
+  width: 800,   // ← Modify this for default width
+  height: 900,  // ← Modify this for default height
+  isMaximized: false,
+  isMinimized: false,
+  position: {
+    top: 80,
+    right: 20
+  }
+});
+```
 
-3. **Line 184** - Default style width
-   ```typescript
-   this.style = {
-     // ...
-     width: '800px',
-     height: '900px',
-   };
-   ```
-
-#### File 2: `src/app/stores/ai-chat.store.ts` (2 locations)
-
-4. **Line 38** - Panel state width
-   ```typescript
-   private panelState$ = new BehaviorSubject<ChatPanelState>({
-     isOpen: false,
-     width: 800,
-     height: 900,
-   ```
-   ```
+**Component Fallback** (defensive programming):
+The component has fallback values in `loadPanelState()` method (lines 164-165), but these should match Store defaults:
+```typescript
+const width = panelState.width || 800;   // Fallback (should match Store)
+const height = panelState.height || 900; // Fallback (should match Store)
+```
 
 **Important**: After changing default size, users need to clear localStorage:
 ```javascript
 localStorage.removeItem('ai-chat-panel-state');
 ```
+
+#### Architecture Benefits:
+- ✅ **Single source of truth**: Store owns all default values
+- ✅ **No duplication**: Defaults defined in one place
+- ✅ **Type-safe**: PanelState interface ensures type safety
+- ✅ **Maintainable**: Change once, applies everywhere
 
 ### WindowBoundaryService Integration
 - Resizable panel with min/max constraints

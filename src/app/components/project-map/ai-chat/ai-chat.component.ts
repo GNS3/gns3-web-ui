@@ -42,8 +42,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   // Position and size state
   public style: object = {};
   private previousStyle: object = {}; // Save state before maximize
-  public resizedWidth: number = 800;
-  public resizedHeight: number = 900;
+  public resizedWidth: number = 0;
+  public resizedHeight: number = 0;
 
   // Data
   sessions: ChatSession[] = [];
@@ -152,6 +152,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Load panel state from store
+   * Store is the single source of truth for all default values
    */
   private loadPanelState(): void {
     const panelState = this.aiChatStore.getPanelStateValue();
@@ -159,33 +160,25 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.isMaximized = panelState.isMaximized || false;
     this.isMinimized = panelState.isMinimized || false;
 
-    // Build style from saved state
-    if (panelState.position) {
-      const pos = panelState.position;
-      this.style = {
-        position: 'fixed',
-        top: pos.top !== undefined ? `${pos.top}px` : '80px',
-        right: pos.right !== undefined ? `${pos.right}px` : undefined,
-        left: pos.left !== undefined ? `${pos.left}px` : undefined,
-        width: `${panelState.width}px`,
-        height: `${panelState.height}px`,
-      };
+    // Store provides default width/height values (800x900)
+    const width = panelState.width || 800;
+    const height = panelState.height || 900;
+    const pos = panelState.position;
 
-      // Save for restore
-      this.previousStyle = { ...this.style };
-      this.resizedWidth = panelState.width;
-      this.resizedHeight = panelState.height;
-    } else {
-      // Default style
-      this.style = {
-        position: 'fixed',
-        top: '80px',
-        right: '20px',
-        width: '800px',
-        height: '900px',
-      };
-      this.previousStyle = { ...this.style };
-    }
+    // Build style from store state
+    this.style = {
+      position: 'fixed',
+      top: pos?.top !== undefined ? `${pos.top}px` : '80px',
+      right: pos?.right !== undefined ? `${pos.right}px` : undefined,
+      left: pos?.left !== undefined ? `${pos.left}px` : undefined,
+      width: `${width}px`,
+      height: `${height}px`,
+    };
+
+    // Save for restore
+    this.previousStyle = { ...this.style };
+    this.resizedWidth = width;
+    this.resizedHeight = height;
 
     // Update maximized state
     if (this.isMaximized) {
