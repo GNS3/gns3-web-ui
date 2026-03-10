@@ -90,4 +90,14 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
       return true;
     });
   }
+
+  /**
+   * Public method to focus the terminal
+   * Called by parent component when tab is switched
+   */
+  focusTerminal(): void {
+    if (this.term) {
+      this.term.focus();
+    }
+  }
 }

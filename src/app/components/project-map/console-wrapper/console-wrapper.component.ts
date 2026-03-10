@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UntypedFormControl } from '@angular/forms';
@@ -12,6 +12,7 @@ import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
+import { WebConsoleComponent } from '../web-console/web-console.component';
 
 @Component({
   selector: 'app-console-wrapper',
@@ -48,6 +49,9 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
   nodes: Node[] = [];
   selected = new UntypedFormControl(0);
+
+  @ViewChildren(WebConsoleComponent)
+  webConsoleComponents: QueryList<WebConsoleComponent>;
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
@@ -249,6 +253,18 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
       return; // Invalid index
     }
     this.selected.setValue(index);
+
+    // Auto-focus xterm when switching to device console tab (not GNS3 console)
+    if (index > 0 && this.webConsoleComponents) {
+      // Use setTimeout to ensure DOM has updated before focusing
+      setTimeout(() => {
+        const consoleIndex = index - 1; // Tab 1 = nodes[0], Tab 2 = nodes[1], etc.
+        const webConsoleArray = this.webConsoleComponents.toArray();
+        if (webConsoleArray[consoleIndex]) {
+          webConsoleArray[consoleIndex].focusTerminal();
+        }
+      }, 100);
+    }
   }
 
   enableScroll(e) {
