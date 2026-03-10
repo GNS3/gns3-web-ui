@@ -85,7 +85,6 @@ export class InterfaceStatusWidget implements Widget {
       link_group.selectAll<SVGTextElement, LinkStatus>('text.status_stopped_label').remove();
       link_group.selectAll<SVGRectElement, LinkStatus>('rect.status_suspended').remove();
       link_group.selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
-      link_group.selectAll<SVGGElement, LinkStatus>('g.status_label').remove();
 
       if (
         self.mapSettingsService.showInterfaceLabels &&
@@ -137,6 +136,8 @@ export class InterfaceStatusWidget implements Widget {
 
         status_labels.exit().remove();
       } else {
+        link_group.selectAll<SVGGElement, LinkStatus>('g.status_label').remove();
+
         const status_started = link_group
           .selectAll<SVGCircleElement, LinkStatus>('circle.status_started')
           .data(statuses.filter((link_status: LinkStatus) => link_status.status === 'started'));
