@@ -342,6 +342,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    */
   onSessionCreated(): void {
     this.aiChatStore.setCurrentSessionId(null);
+    this.aiChatService.resetCurrentSession(); // Clear service layer session_id
     this.currentMessages = [];
     this.currentToolCalls.clear();
     this.cdr.markForCheck(); // Trigger change detection
