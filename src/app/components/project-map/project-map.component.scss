@@ -415,6 +415,13 @@ g.node text,
 .context-menu-items .mat-menu-item:focus {
   background: none;
 }
+
+.context-menu-items .mat-menu-item.cdk-focused:not(:hover),
+.context-menu-items .mat-menu-item.cdk-program-focused:not(:hover),
+.context-menu-items .mat-menu-item.cdk-keyboard-focused:not(:hover) {
+  background: none !important;
+}
+
 .context-menu-items .mat-menu-item:hover {
   background-color: #DC143C !important;
 }
