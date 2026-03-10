@@ -35,6 +35,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
   public isConsoleActive: boolean = false;
+  public showLogConsole: boolean = false;
 
   public resizedWidth: number = 800;
   public resizedHeight: number = 600;
@@ -178,7 +179,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
   /**
    * Handle keyboard shortcuts for tab switching
-   * Alt+1-9 to switch to console tabs
+   * Alt+1-9 to switch to device console tabs
    * Only works when console window is active (clicked/focused)
    */
   @HostListener('window:keydown.alt.1', ['$event'])
@@ -199,8 +200,18 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     const key = event.key;
-    const tabIndex = parseInt(key) - 1; // Alt+1 = tab 0 (GNS3 console), Alt+2 = tab 1, etc.
+    const tabIndex = parseInt(key) - 1; // Alt+1 = tab 0 (device 1), Alt+2 = tab 1 (device 2), etc.
     this.switchToTab(tabIndex);
+  }
+
+  /**
+   * Handle F12 shortcut to toggle GNS3 log console
+   */
+  @HostListener('window:keydown.f12', ['$event'])
+  handleF12Shortcut(event: KeyboardEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.toggleLogConsole();
   }
 
   /**
@@ -217,7 +228,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     const key = event.detail.key;
-    const tabIndex = parseInt(key) - 1;
+    const tabIndex = parseInt(key) - 1; // Alt+1 = tab 0 (device 1), Alt+2 = tab 1 (device 2), etc.
     this.switchToTab(tabIndex);
   }
 
@@ -246,22 +257,21 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
   /**
    * Switch to specific tab by index
-   * @param index Tab index (0 = GNS3 console, 1-9 = device consoles)
+   * @param index Tab index (0-8 = device consoles)
    */
   switchToTab(index: number): void {
-    if (index < 0 || index > this.nodes.length) {
+    if (index < 0 || index >= this.nodes.length) {
       return; // Invalid index
     }
     this.selected.setValue(index);
 
-    // Auto-focus xterm when switching to device console tab (not GNS3 console)
-    if (index > 0 && this.webConsoleComponents) {
+    // Auto-focus xterm when switching to device console tab
+    if (this.webConsoleComponents) {
       // Use setTimeout to ensure DOM has updated before focusing
       setTimeout(() => {
-        const consoleIndex = index - 1; // Tab 1 = nodes[0], Tab 2 = nodes[1], etc.
         const webConsoleArray = this.webConsoleComponents.toArray();
-        if (webConsoleArray[consoleIndex]) {
-          webConsoleArray[consoleIndex].focusTerminal();
+        if (webConsoleArray[index]) {
+          webConsoleArray[index].focusTerminal();
         }
       }, 100);
     }
@@ -291,6 +301,13 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Toggle GNS3 log console visibility
+   */
+  toggleLogConsole(): void {
+    this.showLogConsole = !this.showLogConsole;
+    this.cdr.markForCheck();
+  }
+
   /**
    * Cleanup on component destroy
    */

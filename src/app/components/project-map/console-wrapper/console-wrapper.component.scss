@@ -161,3 +161,63 @@ input:focus {
   overflow: hidden;
 }
 
+// Independent GNS3 Log Console Window
+.logConsoleWrapper {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  width: 600px;
+  height: 400px;
+  background: #000000 !important;
+  color: white;
+  overflow: hidden;
+  font-size: 12px;
+  border-radius: 8px;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  &.lightTheme {
+    background: white !important;
+    color: black;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.logConsoleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #263238 !important;
+  cursor: grab;
+  flex-shrink: 0;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &.lightThemeConsoleHeader {
+    background: white !important;
+    color: black !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+}
+
+.logConsoleTitle {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+
+  .lightThemeConsoleHeader & {
+    color: black;
+  }
+}
