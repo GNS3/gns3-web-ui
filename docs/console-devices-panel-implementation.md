@@ -5,12 +5,20 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.5.0
+**Version**: 1.6.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.6.0 (2026-03-10)
+
+**Improvements**:
+- ✅ Move GNS3 console tab to last position (after all device tabs)
+- ✅ Device tabs now: Alt+1-8 (tab 0-7)
+- ✅ GNS3 console: Alt+9 (last tab)
+- ✅ More intuitive tab ordering with devices first
 
 ### v1.5.0 (2026-03-10)
 
@@ -166,8 +174,12 @@ Clicking on any device in the sidebar:
 
 | Shortcut | Action |
 |----------|--------|
-| Alt+1 | GNS3 console (tab 0) |
-| Alt+2-9 | Device console tabs 1-8 |
+| Alt+1-8 | Device console tabs 1-8 |
+| Alt+9 | GNS3 console (last tab) |
+
+**Tab Order**:
+- Devices: tab 0-7 (in order of opening)
+- GNS3 console: always last tab
 
 **Behavior**:
 - Shortcuts only work when Console window is **activated** (clicked)
@@ -665,6 +677,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.5.0
+**Document Version**: 1.6.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team

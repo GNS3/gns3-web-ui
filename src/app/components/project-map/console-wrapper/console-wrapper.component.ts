@@ -142,14 +142,14 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     if (existingIndex >= 0) {
       // Node already exists, just switch to that tab
       if (selectAfterAdding) {
-        this.selected.setValue(existingIndex + 1); // +1 because index 0 is GNS3 console
+        this.selected.setValue(existingIndex); // Device tabs are 0, 1, 2, ...
       }
     } else {
       // Add new tab
       this.nodes.push(node);
 
       if (selectAfterAdding) {
-        this.selected.setValue(this.nodes.length);
+        this.selected.setValue(this.nodes.length - 1);
       }
 
       this.consoleService.openConsoles++;
@@ -237,7 +237,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * Handle keyboard shortcuts for tab switching
-   * Alt+1-9 to switch to console tabs
+   * Alt+1-8 for devices, Alt+9 for GNS3 console
    * Only works when console window is active (clicked/focused)
    */
   @HostListener('window:keydown.alt.1', ['$event'])
@@ -258,8 +258,16 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     event.preventDefault();
     event.stopPropagation();
     const key = event.key;
-    const tabIndex = parseInt(key) - 1; // Alt+1 = tab 0 (GNS3 console), Alt+2 = tab 1, etc.
-    this.switchToTab(tabIndex);
+
+    // Alt+1-8 = device consoles (tab 0-7), Alt+9 = GNS3 console (last tab)
+    if (key === '9') {
+      this.switchToTab(this.nodes.length); // GNS3 console (last tab)
+    } else {
+      const tabIndex = parseInt(key) - 1; // Alt+1 = tab 0, Alt+2 = tab 1, etc.
+      if (tabIndex < this.nodes.length) {
+        this.switchToTab(tabIndex);
+      }
+    }
   }
 
   /**
@@ -305,7 +313,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * Switch to specific tab by index
-   * @param index Tab index (0 = GNS3 console, 1-9 = device consoles)
+   * @param index Tab index (0-n = devices, last = GNS3 console)
    */
   switchToTab(index: number): void {
     if (index < 0 || index > this.nodes.length) {
@@ -314,13 +322,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     this.selected.setValue(index);
 
     // Auto-focus xterm when switching to device console tab (not GNS3 console)
-    if (index > 0 && this.webConsoleComponents) {
+    if (index < this.nodes.length && this.webConsoleComponents) {
       // Use setTimeout to ensure DOM has updated before focusing
       setTimeout(() => {
-        const consoleIndex = index - 1; // Tab 1 = nodes[0], Tab 2 = nodes[1], etc.
         const webConsoleArray = this.webConsoleComponents.toArray();
-        if (webConsoleArray[consoleIndex]) {
-          webConsoleArray[consoleIndex].focusTerminal();
+        if (webConsoleArray[index]) {
+          webConsoleArray[index].focusTerminal();
         }
       }, 100);
     }
