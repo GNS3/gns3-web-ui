@@ -5,12 +5,24 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.4.0
+**Version**: 1.5.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.5.0 (2026-03-10)
+
+**New Features**:
+- ✅ Add localStorage to save/restore window state
+- ✅ Window size and position persist across sessions
+- ✅ Maximize state persists across sessions
+
+**Improvements**:
+- ✅ xterm automatically resizes when restoring maximized window
+- ✅ Window state saved on resize, drag, and maximize
+- ✅ Use ngAfterViewInit to ensure xterm is ready before sending resize events
 
 ### v1.4.0 (2026-03-10)
 
@@ -653,6 +665,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.4.0
+**Document Version**: 1.5.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team

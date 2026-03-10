@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UntypedFormControl } from '@angular/forms';
@@ -19,7 +19,7 @@ import { WebConsoleComponent } from '../web-console/web-console.component';
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],
 })
-export class ConsoleWrapperComponent implements OnInit, OnDestroy {
+export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   @Input() controller: Controller;
@@ -58,7 +58,9 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '80px', width: '848px', height: '600px' };
+
+    // Load saved window state from localStorage
+    this.loadWindowState();
 
     // Set top offset to keep console below toolbar (64px for desktop, 56px for mobile)
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
@@ -77,8 +79,24 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   minimize(value: boolean) {
     this.isMinimized = value;
     if (!value) {
-      this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+      // Restore from minimized state
+      if (this.isMaximized) {
+        // Restore to maximized state
+        const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+        const windowHeight = window.innerHeight;
+        const newHeight = windowHeight - toolbarHeight - 20;
+        this.style = {
+          bottom: '0px',
+          left: '80px',
+          width: `${this.resizedWidth}px`,
+          height: `${newHeight}px`
+        };
+      } else {
+        // Restore to normal state
+        this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+      }
     } else {
+      // Minimize
       this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px' };
     }
   }
@@ -111,6 +129,8 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
       });
     }
     this.cdr.markForCheck();
+    // Save window state to localStorage
+    this.saveWindowState();
   }
 
   addTab(node: Node, selectAfterAdding: boolean) {
@@ -142,7 +162,12 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   }
 
   toggleDragging(value: boolean) {
+    const wasDragging = this.isDraggingEnabled;
     this.isDraggingEnabled = value;
+    // Save window state after drag ends
+    if (wasDragging && !value) {
+      this.saveWindowState();
+    }
   }
 
   dragWidget(event) {
@@ -194,6 +219,9 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
     this.resizedWidth = constrained.width;
     this.resizedHeight = constrained.height;
+
+    // Save window state to localStorage
+    this.saveWindowState();
   }
 
   close() {
@@ -325,8 +353,94 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   /**
    * Cleanup on component destroy
    */
+  ngAfterViewInit(): void {
+    // Notify xterm to resize after child components are initialized
+    // Use requestAnimationFrame to ensure DOM is fully rendered
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (this.isMaximized) {
+          const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+          const windowHeight = window.innerHeight;
+          const newHeight = windowHeight - toolbarHeight - 20;
+          this.consoleService.consoleResized.next({
+            width: this.resizedWidth,
+            height: newHeight - 53,
+          });
+        } else {
+          this.consoleService.consoleResized.next({
+            width: this.resizedWidth,
+            height: this.resizedHeight - 53,
+          });
+        }
+      });
+    });
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Load window state from localStorage
+   */
+  private loadWindowState(): void {
+    const STORAGE_KEY = 'gns3_console_window_state';
+    try {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState) {
+        const state = JSON.parse(savedState);
+        this.resizedWidth = state.width || 848;
+        this.resizedHeight = state.height || 600;
+        this.isMaximized = state.isMaximized || false;
+
+        // Apply window state
+        if (this.isMaximized) {
+          // Restore to maximized state
+          const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+          const windowHeight = window.innerHeight;
+          const newHeight = windowHeight - toolbarHeight - 20;
+          this.style = {
+            bottom: '0px',
+            left: '80px',
+            width: `${this.resizedWidth}px`,
+            height: `${newHeight}px`
+          };
+        } else {
+          // Restore to normal state with saved position
+          this.style = {
+            bottom: state.bottom || '20px',
+            left: state.left || '80px',
+            width: `${this.resizedWidth}px`,
+            height: `${this.resizedHeight}px`
+          };
+        }
+      } else {
+        // Default state
+        this.style = { bottom: '20px', left: '80px', width: '848px', height: '600px' };
+      }
+    } catch (e) {
+      // Error reading from localStorage, use defaults
+      this.style = { bottom: '20px', left: '80px', width: '848px', height: '600px' };
+    }
+  }
+
+  /**
+   * Save window state to localStorage
+   */
+  private saveWindowState(): void {
+    const STORAGE_KEY = 'gns3_console_window_state';
+    try {
+      const state = {
+        width: this.resizedWidth,
+        height: this.resizedHeight,
+        bottom: (this.style as WindowStyle).bottom,
+        left: (this.style as WindowStyle).left,
+        isMaximized: this.isMaximized
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      // Error saving to localStorage, ignore
+    }
   }
 }
