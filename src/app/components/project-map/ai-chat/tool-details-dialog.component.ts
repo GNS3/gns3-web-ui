@@ -48,7 +48,7 @@ export interface ToolDetailsDialogData {
         <div class="info-section">
           <div class="info-label">Arguments:</div>
           <div class="json-container">
-            <ngx-json-viewer [json]="parsedArguments"></ngx-json-viewer>
+            <ngx-json-viewer [json]="parsedArguments" [expanded]="true"></ngx-json-viewer>
           </div>
         </div>
       </ng-container>
@@ -63,7 +63,7 @@ export interface ToolDetailsDialogData {
         <div class="info-section">
           <div class="info-label">Output:</div>
           <div class="json-container">
-            <ngx-json-viewer [json]="parsedOutput"></ngx-json-viewer>
+            <ngx-json-viewer [json]="parsedOutput" [expanded]="false"></ngx-json-viewer>
           </div>
         </div>
       </ng-container>
