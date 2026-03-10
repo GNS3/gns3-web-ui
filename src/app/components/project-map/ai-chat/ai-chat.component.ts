@@ -32,7 +32,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   @Output() closed = new EventEmitter<void>();
 
   // UI state
-  sidebarCollapsed = false;
+  sidebarCollapsed = true;
   isStreaming = false;
   isDraggingEnabled = false;
   isLightThemeEnabled = false;
