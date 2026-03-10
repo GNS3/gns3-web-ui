@@ -212,6 +212,121 @@ constructor(private electronService: ElectronService) {
 
 ---
 
+## 5.3 Device Status Technical Details
+
+### 5.3.1 Node Status Field
+
+Device status is obtained from the `Node` model's `status` field:
+
+```typescript
+// src/app/cartography/models/node.ts
+export class Node {
+  // ... other fields
+  status: string;      // Device status field
+  console_type: string; // Console type (telnet, vnc, none, etc.)
+  console: number;      // Console port
+  // ...
+}
+```
+
+### 5.3.2 Status Values
+
+| Status | Description | Color (Hex) |
+|--------|-------------|-------------|
+| `started` | Device is running and console can be opened | `#22c55e` (green) |
+| `starting` | Device is starting up | `#eab308` (yellow) |
+| `stopped` | Device is stopped | `#6b7280` (gray) |
+| `suspended` | Device is suspended | `#f97316` (orange) |
+| `errored` | Device has an error | `#ef4444` (red) |
+
+### 5.3.3 Data Subscription Pattern
+
+Subscribe to node updates via `NodesDataSource`:
+
+```typescript
+import { NodesDataSource } from '@cartography/datasources/nodes-datasource';
+import { Node } from '@cartography/models/node';
+
+export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
+  private nodes: Node[] = [];
+  private destroy$ = new Subject<void>();
+
+  constructor(private nodesDataSource: NodesDataSource) {}
+
+  ngOnInit() {
+    // Subscribe to all nodes changes
+    this.nodesDataSource.changes.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((nodes: Node[]) => {
+      // Filter console-capable devices
+      this.nodes = nodes.filter(n => n.console_type !== 'none');
+      this.cdr.markForCheck();
+    });
+
+    // Subscribe to individual node updates
+    this.nodesDataSource.itemChanged.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((node: Node) => {
+      // Update specific node status
+      const index = this.nodes.findIndex(n => n.node_id === node.node_id);
+      if (index >= 0) {
+        this.nodes[index] = node;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Check if device is started
+  isDeviceStarted(node: Node): boolean {
+    return node.status === 'started';
+  }
+
+  // Get status color class
+  getStatusColor(status: string): string {
+    const colorMap = {
+      started: '#22c55e',
+      starting: '#eab308',
+      stopped: '#6b7280',
+      suspended: '#f97316',
+      errored: '#ef4444'
+    };
+    return colorMap[status] || '#6b7280';
+  }
+}
+```
+
+### 5.3.4 Usage Examples
+
+```typescript
+// Filter console-capable devices
+const consoleNodes = nodes.filter(n => n.console_type !== 'none');
+
+// Check if device can open console
+if (node.status === 'started' && node.console_type !== 'none') {
+  // Enable console button
+  consoleButton.disabled = false;
+}
+
+// Display status indicator
+<div class="status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
+```
+
+### 5.3.5 Related Services
+
+| Service | Method | Description |
+|---------|--------|-------------|
+| NodeService | `getNodes()` | Get all nodes for a project |
+| NodesDataSource | `changes` Observable | Subscribe to node list changes |
+| NodesDataSource | `itemChanged` Observable | Subscribe to individual node updates |
+| NodeConsoleService | `openConsoleForNode(node)` | Open console for a specific node |
+
+---
+
 ## 6. Confirmed Design Decisions
 
 | Feature | Decision |
