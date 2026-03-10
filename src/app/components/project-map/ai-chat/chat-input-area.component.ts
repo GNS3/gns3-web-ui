@@ -21,7 +21,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
           [placeholder]="placeholder"
           [disabled]="disabled"
           [(ngModel)]="message"
-          (keydown.enter)="handleKeyDown($event)"
+          (keydown)="handleKeyDown($event)"
           (input)="onInputChange()"
           [rows]="1"
           [maxLength]="maxLength"
