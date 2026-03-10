@@ -59,6 +59,9 @@
   justify-content: space-between;
   background: #263238 !important;
   cursor: grab;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .consoleHeader:active {
@@ -73,6 +76,7 @@
 :host ::ng-deep .mat-tab-label {
   height: 3rem !important;
   min-width: 8rem !important;
+  flex-shrink: 0;
 }
 
 :host ::ng-deep .mat-tab-label.mat-tab-label-active {
@@ -83,6 +87,21 @@
 
 :host ::ng-deep .mat-ink-bar {
   display: none !important;
+}
+
+/* Firefox tab label fix */
+@-moz-document url-prefix() {
+  :host ::ng-deep .mat-tab-label {
+    min-width: 8rem !important;
+    max-width: none !important;
+    flex: 0 0 auto;
+    width: auto !important;
+  }
+
+  :host ::ng-deep .mat-tab-label-container {
+    display: flex;
+    flex-direction: row;
+  }
 }
 
 .tabs {
@@ -159,5 +178,7 @@ input:focus {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  isolation: isolate;
 }
 
