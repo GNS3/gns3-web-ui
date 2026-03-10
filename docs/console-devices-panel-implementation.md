@@ -5,12 +5,25 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.1.0
+**Version**: 1.2.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.2.0 (2026-03-10)
+
+**New Features**:
+- ✅ Move GNS3 console to independent floating window
+- ✅ Add toggle button (terminal icon) to header
+- ✅ Add F12 shortcut to show/hide GNS3 console
+- ✅ GNS3 console defaults to hidden
+
+**Improvements**:
+- ✅ Update keyboard shortcuts: Alt+1-9 now for devices only
+- ✅ Support up to 9 device consoles (was 8)
+- ✅ Simplified tab indexing (0-8 = devices)
 
 ### v1.1.0 (2026-03-10)
 
@@ -110,23 +123,30 @@ Clicking on any device in the sidebar:
 
 ### 5. Keyboard Shortcuts
 
-**Alt+1 through Alt+9** to switch between console tabs:
+**Alt+1 through Alt+9** to switch between device console tabs:
 
 | Shortcut | Action |
 |----------|--------|
-| Alt+1 | Switch to GNS3 console (log output) |
-| Alt+2-9 | Switch to device console tabs 1-8 |
+| Alt+1-9 | Switch to device console tabs 1-9 |
+| F12 | Toggle GNS3 console (log output) window |
 
 **Behavior**:
 - Shortcuts only work when Console window is **activated** (clicked)
 - Clicking outside Console window deactivates shortcuts
 - Visual feedback (cyan glow) indicates active state
 - Works even when xterm has focus (intercepts Alt+1-9)
+- F12 works globally (no activation needed)
+
+**GNS3 Console**:
+- Independent floating window (default hidden)
+- Toggle with F12 or terminal icon button in header
+- Draggable and resizable
+- Does not occupy a tab position
 
 **Activation States**:
 ```
 ┌─────────────────────────────┐
-│ [GNS3 console] [R1] [R2]    │ ← Cyan glow = Active
+│ [R1] [R2] [S1]              │ ← Cyan glow = Active
 ├─────────────────────────────┤
 │ ●  R1        🖥            │
 │ ●  R2        🖥            │
@@ -146,8 +166,26 @@ Clicking on any device in the sidebar:
 - Resizable from all edges
 - Minimizable (56px height bar)
 - Boundary constrained (stays within viewport)
+- Terminal icon button to toggle GNS3 console
 
-### 7. Hover Effects
+### 7. GNS3 Console (Log Output)
+
+**Independent Floating Window**:
+- **Default State**: Hidden
+- **Position**: Top-right corner (top: 100px, right: 20px)
+- **Default Size**: 600px x 400px
+- **Toggle Methods**:
+  - F12 keyboard shortcut (global)
+  - Terminal icon button in console header
+
+**Features**:
+- Draggable by header
+- Resizable from all edges
+- Close button to hide
+- Does not interfere with device console tabs
+- Shows project log events, errors, warnings, etc.
+
+### 8. Hover Effects
 
 **Device Items**:
 - Background color change
@@ -588,6 +626,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.1.0
+**Document Version**: 1.2.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team
