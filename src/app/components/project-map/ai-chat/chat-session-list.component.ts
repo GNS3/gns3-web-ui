@@ -217,7 +217,7 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
         opacity: 0;
       }
       50% {
-        transform: scale(1.2);
+        transform: scale(1.35);
       }
       100% {
         transform: scale(1);
