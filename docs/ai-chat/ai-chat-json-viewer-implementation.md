@@ -3,7 +3,7 @@
 ## Document Information
 
 **Created**: 2026-03-09
-**Updated**: 2026-03-09
+**Updated**: 2026-03-10
 **Status**: ✅ **Completed**
 **Priority**: High
 **Related Docs**:
@@ -280,6 +280,66 @@ ngx-json-viewer (external module)
 
 ---
 
+## Styling & UI Effects
+
+### Dialog Window Styling
+
+The tool details dialog features modern glassmorphism design consistent with AI Chat window:
+
+| Style Element | Value | Description |
+|--------------|-------|-------------|
+| Border Radius | 16px | Matches AI Chat window (12px) with slightly more rounded corners |
+| Backdrop Filter | blur(16px) saturate(180%) | Glassmorphism effect for modern translucent look |
+| Box Shadow | Multi-layer | 0 8px 32px rgba(0,0,0,0.3) + cyan accent shadow |
+| Border | 1px solid | Uses theme outline variant color |
+| Background | Semi-transparent | Dark: rgba(30,41,55,0.75), Light: rgba(255,255,255,0.85) |
+
+### Header Styling
+
+- **Gradient background**: Linear gradient from surface to surface-container-low
+- **Icon styling**: Primary color with 20px size
+- **Close button hover**: Red tint with circular background, smooth cubic-bezier transition
+
+### JSON Container Styling
+
+- **Background**: Surface container low for contrast
+- **Border Radius**: 6px for inner containers
+- **Max Height**: 500px with scrollable overflow
+- **Monospace Font**: Monaco, Menlo, Consolas for code readability
+- **Custom Scrollbar**: 8px width with teal color (rgba(0, 151, 167, 0.3))
+
+### Syntax Highlighting Colors (Dark Theme)
+
+| JSON Type | Color |
+|-----------|-------|
+| String | #a5d6ff (light blue) |
+| Number | #79c0ff (blue) |
+| Boolean | #ff7b72 (red) |
+| Object Key | #7ee787 (green) |
+| Array | #ffa657 (orange) |
+| Null | #8b949e (gray) |
+
+### CSS Selector Fix (2026-03-10)
+
+**Issue**: Dialog styling (border-radius, glassmorphism) was not applying.
+
+**Root Cause**: CSS selector used `.mat-mdc-dialog-container` but actual Material class is `.mat-dialog-container`.
+
+**Fix Applied**:
+```css
+/* Before */
+::ng-deep .mat-mdc-dialog-container { ... }
+::ng-deep .mat-mdc-dialog-surface { ... }
+
+/* After */
+::ng-deep .mat-dialog-container { ... }
+::ng-deep .mat-dialog-container .mat-dialog-surface { ... }
+```
+
+**Files Modified**: `src/app/components/project-map/ai-chat/tool-details-dialog.component.ts`
+
+---
+
 ## Appendix: Example Output
 
 ### Input (Raw JSON String)
@@ -305,6 +365,6 @@ Interface..."
 
 ---
 
-**Last Updated**: 2026-03-09
+**Last Updated**: 2026-03-10
 **Status**: ✅ **Completed & Deployed**
 **Maintainer**: Development Team
