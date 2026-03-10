@@ -5,12 +5,29 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.2.0
+**Version**: 1.3.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.3.0 (2026-03-10)
+
+**New Features**:
+- ✅ Add ResizeObserver to WebConsole for automatic terminal resizing
+- ✅ Initial xterm size set to cols: 100, rows: 32
+
+**Improvements**:
+- ✅ Update GNS3 console styles to match xterm appearance
+- ✅ GNS3 console initial size: 848x477
+- ✅ Increase default console window size to 848x600
+- ✅ GNS3 console responds to window resize events
+- ✅ GNS3 console header/input styling with dark theme (#1a1a1a)
+- ✅ GNS3 console font: Menlo, Monaco, Courier New (13px)
+
+**Bug Fixes**:
+- ✅ Fix GNS3 console height calculation (header + input = 60px offset)
 
 ### v1.2.0 (2026-03-10)
 
@@ -157,7 +174,7 @@ Clicking on any device in the sidebar:
 ### 6. Console Window
 
 **Default Size**:
-- **Width**: 800px
+- **Width**: 848px
 - **Height**: 600px
 - **Initial Position**: bottom: 20px, left: 80px
 
@@ -626,6 +643,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.2.0
+**Document Version**: 1.3.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team

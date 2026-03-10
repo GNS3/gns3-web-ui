@@ -81,15 +81,16 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // 响应窗口大小变化
     this.nodeConsoleService.consoleResized.subscribe((ev) => {
-      this.style = { bottom: '20px', left: '20px', width: `${ev.width}px`, height: `${ev.height - 70}px` };
+      this.style = { width: `${ev.width}px`, height: `${ev.height - 70}px` };
       this.changeDetectorRef.detectChanges();
     });
 
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '20px', width: '720px', height: '340px' };
+    this.style = { width: '848px', height: '477px' };
 
     this.nodeSubscription = this.projectWebServiceHandler.nodeNotificationEmitter.subscribe((event) => {
       let node: Node = event.event as Node;
