@@ -44,7 +44,7 @@
 
   &:hover {
     background: var(--mat-app-surface-container-high);
-    transform: translateX(2px);
+    transform: translateX(4px) scale(1.15);
   }
 
   &.started {
