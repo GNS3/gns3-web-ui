@@ -5,8 +5,37 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.0.0
+**Version**: 1.1.0
 **Author**: Development Team
+
+---
+
+## Version History
+
+### v1.1.0 (2026-03-10)
+
+**New Features**:
+- ✅ Add collapse/expand functionality to devices panel
+- ✅ Add panel header with devices icon and title
+- ✅ Implement togglePanel() method for collapse/expand
+- ✅ Panel width: 200px (expanded) / 48px (collapsed)
+- ✅ Default state: collapsed
+- ✅ Smooth transition animation (0.2s)
+- ✅ Icon scale effect on hover/active
+
+**Improvements**:
+- ✅ Increase default console window size to 800x600 (from 720x460)
+
+### v1.0.0 (2026-03-10)
+
+**Initial Release**:
+- Device list sidebar with status indicators
+- Device sorting (running first, alphabetical)
+- Click to open console
+- Alt+1-9 keyboard shortcuts
+- Device status color differentiation
+- Custom scrollbar styling
+- Theme adaptation
 
 ---
 
@@ -23,10 +52,17 @@ The Console Devices Panel is a sidebar feature added to the GNS3 Console window,
 A sidebar displayed on the left side of the Console window showing all console-capable devices in the current project.
 
 **Specifications**:
-- **Width**: 200px (fixed)
+- **Width**: 200px (expanded), 48px (collapsed)
+- **Default State**: Collapsed
 - **Height**: Matches Console window height
 - **Position**: Left side of Console window
 - **Scroll**: Custom styled scrollbar (8px width, cyan accent)
+
+**Collapse/Expand**:
+- Click the panel header to toggle between collapsed and expanded states
+- Collapsed: Shows only the "devices" icon
+- Expanded: Shows full device list with names and status indicators
+- Smooth transition animation (0.2s)
 
 ### 2. Device Status Indicators
 
@@ -98,7 +134,20 @@ Clicking on any device in the sidebar:
 └─────────────────────────────┘
 ```
 
-### 6. Hover Effects
+### 6. Console Window
+
+**Default Size**:
+- **Width**: 800px
+- **Height**: 600px
+- **Initial Position**: bottom: 20px, left: 80px
+
+**Window Features**:
+- Draggable by header
+- Resizable from all edges
+- Minimizable (56px height bar)
+- Boundary constrained (stays within viewport)
+
+### 7. Hover Effects
 
 **Device Items**:
 - Background color change
@@ -161,6 +210,7 @@ ngOnInit(): Subscribe to data source changes
 isDeviceStarted(node: Node): boolean: Check if node.status === 'started'
 getStatusColor(status: string): string: Return color for status
 onDeviceClick(node: Node): void: Emit deviceSelected event
+togglePanel(): void: Toggle panel collapse/expand state
 private sortNodes(): void: Sort by status and name
 ```
 
@@ -240,6 +290,43 @@ this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
   height: 100%;
   background-color: var(--mat-app-surface);
   border-right: 1px solid var(--mat-app-outline-variant);
+  transition: width 0.2s ease;
+
+  &.collapsed {
+    width: 48px;
+  }
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--mat-app-outline-variant);
+  background-color: var(--mat-app-surface-container);
+  flex-shrink: 0;
+
+  &.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  &:hover.clickable {
+    background-color: var(--mat-app-surface-container-high);
+  }
+}
+
+.panel-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--mat-app-primary);
+  transition: transform 0.2s;
+}
+
+.header-title.clickable:hover .panel-icon {
+  transform: scale(1.08);
 }
 
 .device-list {
@@ -501,6 +588,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.0.0
+**Document Version**: 1.1.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team
