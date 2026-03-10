@@ -5,12 +5,22 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.3.0
+**Version**: 1.4.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.4.0 (2026-03-10)
+
+**New Features**:
+- ✅ Add height maximize button (fullscreen icon)
+- ✅ Add restore button (fullscreen_exit icon)
+
+**Improvements**:
+- ✅ xterm automatically resizes when window is maximized/restored
+- ✅ Maximize keeps width unchanged (848px), only height changes
 
 ### v1.3.0 (2026-03-10)
 
@@ -140,19 +150,18 @@ Clicking on any device in the sidebar:
 
 ### 5. Keyboard Shortcuts
 
-**Alt+1 through Alt+9** to switch between device console tabs:
+**Alt+1 through Alt+9** to switch between console tabs:
 
 | Shortcut | Action |
 |----------|--------|
-| Alt+1-9 | Switch to device console tabs 1-9 |
-| F12 | Toggle GNS3 console (log output) window |
+| Alt+1 | GNS3 console (tab 0) |
+| Alt+2-9 | Device console tabs 1-8 |
 
 **Behavior**:
 - Shortcuts only work when Console window is **activated** (clicked)
 - Clicking outside Console window deactivates shortcuts
 - Visual feedback (cyan glow) indicates active state
 - Works even when xterm has focus (intercepts Alt+1-9)
-- F12 works globally (no activation needed)
 
 **GNS3 Console**:
 - Independent floating window (default hidden)
@@ -182,6 +191,7 @@ Clicking on any device in the sidebar:
 - Draggable by header
 - Resizable from all edges
 - Minimizable (56px height bar)
+- Maximizable (height only, width stays 848px)
 - Boundary constrained (stays within viewport)
 - Terminal icon button to toggle GNS3 console
 
@@ -643,6 +653,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.3.0
+**Document Version**: 1.4.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team

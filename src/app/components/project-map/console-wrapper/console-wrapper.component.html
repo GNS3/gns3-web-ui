@@ -36,6 +36,16 @@
       </mat-tab>
     </mat-tab-group>
 
+    <button *ngIf="!isMinimized && !isMaximized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()"
+      title="Maximize height">
+      <mat-icon>fullscreen</mat-icon>
+    </button>
+    <button *ngIf="isMaximized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()"
+      title="Restore">
+      <mat-icon>fullscreen_exit</mat-icon>
+    </button>
     <button *ngIf="!isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
       mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(true)">
       <mat-icon>remove</mat-icon>

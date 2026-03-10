@@ -34,6 +34,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   public isDraggingEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
+  public isMaximized: boolean = false;
   public isConsoleActive: boolean = false;
 
   public resizedWidth: number = 848;
@@ -80,6 +81,36 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     } else {
       this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px' };
     }
+  }
+
+  toggleMaximize() {
+    this.isMaximized = !this.isMaximized;
+    if (this.isMaximized) {
+      // Maximize height only, keep width unchanged (848px)
+      const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+      const windowHeight = window.innerHeight;
+      const newHeight = windowHeight - toolbarHeight - 20;
+      this.style = {
+        bottom: '0px',
+        left: '80px',
+        width: `${this.resizedWidth}px`,
+        height: `${newHeight}px`
+      };
+      // Notify resize
+      this.consoleService.consoleResized.next({
+        width: this.resizedWidth,
+        height: newHeight - 53,
+      });
+    } else {
+      // Restore to normal size
+      this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+      // Notify resize
+      this.consoleService.consoleResized.next({
+        width: this.resizedWidth,
+        height: this.resizedHeight - 53,
+      });
+    }
+    this.cdr.markForCheck();
   }
 
   addTab(node: Node, selectAfterAdding: boolean) {
