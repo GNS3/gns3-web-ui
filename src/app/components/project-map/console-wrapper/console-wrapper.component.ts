@@ -37,7 +37,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   public isConsoleActive: boolean = false;
   public showLogConsole: boolean = false;
 
-  public resizedWidth: number = 800;
+  public resizedWidth: number = 848;
   public resizedHeight: number = 600;
 
   constructor(
@@ -58,7 +58,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '80px', width: '800px', height: '600px' };
+    this.style = { bottom: '20px', left: '80px', width: '848px', height: '600px' };
 
     // Set top offset to keep console below toolbar (64px for desktop, 56px for mobile)
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;

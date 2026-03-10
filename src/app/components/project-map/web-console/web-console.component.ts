@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
@@ -14,19 +14,28 @@ import { ThemeService } from '@services/theme.service';
   templateUrl: './web-console.component.html',
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
 })
-export class WebConsoleComponent implements OnInit, AfterViewInit {
+export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() controller: Controller;
   @Input() project: Project;
   @Input() node: Node;
 
-  public term: Terminal = new Terminal();
+  public term: Terminal = new Terminal({
+    cols: 100,
+    rows: 32,
+    cursorBlink: true,
+  });
   public fitAddon: FitAddon = new FitAddon();
   public isLightThemeEnabled: boolean = false;
   private copiedText: string = '';
+  private resizeObserver: ResizeObserver | null = null;
 
   @ViewChild('terminal') terminal: ElementRef;
 
-  constructor(private consoleService: NodeConsoleService, private themeService: ThemeService) {}
+  constructor(
+    private consoleService: NodeConsoleService,
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
@@ -89,6 +98,47 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
       }
       return true;
     });
+
+    // Setup ResizeObserver for automatic terminal resizing
+    this.setupResizeObserver();
+  }
+
+  /**
+   * Setup ResizeObserver to automatically resize terminal when container size changes
+   */
+  private setupResizeObserver(): void {
+    if (!this.terminal?.nativeElement) return;
+
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+
+        // Skip if width or height is 0 (element is hidden)
+        if (width === 0 || height === 0) continue;
+
+        // Use requestAnimationFrame to ensure DOM is fully rendered
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            try {
+              // Fit terminal to container
+              this.fitAddon.fit();
+
+              // Also update columns/rows for service
+              const cols = this.term.cols;
+              const rows = this.term.rows;
+              this.consoleService.setNumberOfColumns(cols);
+              this.consoleService.setNumberOfRows(rows);
+            } catch (e) {
+              // Ignore fit errors when element is not visible
+            }
+
+            this.cdr.markForCheck();
+          });
+        });
+      }
+    });
+
+    this.resizeObserver.observe(this.terminal.nativeElement);
   }
 
   /**
@@ -99,5 +149,19 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     if (this.term) {
       this.term.focus();
     }
+  }
+
+  /**
+   * Cleanup on component destroy
+   */
+  ngOnDestroy(): void {
+    // Cleanup ResizeObserver to prevent memory leaks
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+
+    // Dispose terminal
+    this.term.dispose();
   }
 }
