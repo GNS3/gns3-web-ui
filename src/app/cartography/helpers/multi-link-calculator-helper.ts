@@ -3,45 +3,66 @@ import { MapLink } from '../models/map/map-link';
 
 @Injectable()
 export class MultiLinkCalculatorHelper {
-  LINK_WIDTH = 2;
+  private static readonly LINK_SPACING = 14;
 
   public linkTranslation(
     distance: number,
     point0: { x: number; y: number },
     point1: { x: number; y: number }
   ): { dx: number; dy: number } {
-    const x1_x0 = point1.x - point0.x;
-    const y1_y0 = point1.y - point0.y;
-    let x2_x0;
-    let y2_y0;
-
-    if (y1_y0 === 0) {
-      x2_x0 = 0;
-      y2_y0 = distance;
-    } else {
-      const angle = Math.atan(x1_x0 / y1_y0);
-      x2_x0 = -distance * Math.cos(angle);
-      y2_y0 = distance * Math.sin(angle);
+    if (!distance) {
+      return {
+        dx: 0,
+        dy: 0,
+      };
     }
+
+    const deltaX = point1.x - point0.x;
+    const deltaY = point1.y - point0.y;
+    const lineLength = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    if (lineLength === 0) {
+      return {
+        dx: 0,
+        dy: 0,
+      };
+    }
+
+    const perpendicularX = -deltaY / lineLength;
+    const perpendicularY = deltaX / lineLength;
+
     return {
-      dx: x2_x0,
-      dy: y2_y0,
+      dx: perpendicularX * distance,
+      dy: perpendicularY * distance,
     };
   }
 
   public assignDataToLinks(links: MapLink[]) {
-    const links_from_nodes = {};
-    links.forEach((l: MapLink, i: number) => {
-      const sid = l.source.id;
-      const tid = l.target.id;
-      const key = sid < tid ? sid + ',' + tid : tid + ',' + sid;
-      let idx = 1;
-      if (!(key in links_from_nodes)) {
-        links_from_nodes[key] = [i];
-      } else {
-        idx = links_from_nodes[key].push(i);
+    const linksFromNodes: { [key: string]: MapLink[] } = {};
+
+    links.forEach((link: MapLink) => {
+      if (!link.source || !link.target) {
+        link.distance = 0;
+        return;
       }
-      l.distance = idx % 2 === 0 ? idx * this.LINK_WIDTH : (-idx + 1) * this.LINK_WIDTH;
+
+      const sid = link.source.id;
+      const tid = link.target.id;
+      const key = sid < tid ? `${sid},${tid}` : `${tid},${sid}`;
+
+      if (!(key in linksFromNodes)) {
+        linksFromNodes[key] = [];
+      }
+      linksFromNodes[key].push(link);
+    });
+
+    Object.keys(linksFromNodes).forEach((key) => {
+      const groupedLinks = linksFromNodes[key];
+      const center = (groupedLinks.length - 1) / 2;
+
+      groupedLinks.forEach((link: MapLink, index: number) => {
+        link.distance = (index - center) * MultiLinkCalculatorHelper.LINK_SPACING;
+      });
     });
   }
 }
