@@ -78,13 +78,25 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
   addTab(node: Node, selectAfterAdding: boolean) {
     this.minimize(false);
-    this.nodes.push(node);
 
-    if (selectAfterAdding) {
-      this.selected.setValue(this.nodes.length);
+    // Check if node already exists in tabs
+    const existingIndex = this.nodes.findIndex(n => n.node_id === node.node_id);
+
+    if (existingIndex >= 0) {
+      // Node already exists, just switch to that tab
+      if (selectAfterAdding) {
+        this.selected.setValue(existingIndex + 1); // +1 because index 0 is GNS3 console
+      }
+    } else {
+      // Add new tab
+      this.nodes.push(node);
+
+      if (selectAfterAdding) {
+        this.selected.setValue(this.nodes.length);
+      }
+
+      this.consoleService.openConsoles++;
     }
-
-    this.consoleService.openConsoles++;
   }
 
   removeTab(index: number) {
