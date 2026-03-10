@@ -82,6 +82,32 @@ handleKeyDown(event: KeyboardEvent): void {
 
 ---
 
+### 3. Sidebar Default Collapsed State
+
+**Problem**: AI Chat window opens with sidebar expanded by default, taking up space that could be used for the chat area.
+
+**Solution**: Changed sidebar default state from expanded to collapsed.
+
+**Files Modified**:
+- `src/app/components/project-map/ai-chat/ai-chat.component.ts`
+
+**Changes**:
+```typescript
+// Before
+sidebarCollapsed = false;
+
+// After
+sidebarCollapsed = true;
+```
+
+**Result**:
+- Sidebar is collapsed by default when AI Chat window opens
+- More space available for chat area
+- Users can click sidebar icon to expand and view session list
+- Better initial user experience with focused chat interface
+
+---
+
 ## Documentation Updates
 
 ### Updated Files
@@ -110,6 +136,13 @@ handleKeyDown(event: KeyboardEvent): void {
 - [x] Shortcut works when message is not empty
 - [x] Shortcut doesn't work when input is disabled
 - [x] Placeholder text accurately describes functionality
+
+### Sidebar State
+- [x] Sidebar is collapsed when AI Chat window opens
+- [x] More space available for chat area by default
+- [x] Clicking sidebar icon expands to show session list
+- [x] Clicking sidebar icon again collapses sidebar
+- [x] Sidebar state toggles correctly
 
 ---
 
