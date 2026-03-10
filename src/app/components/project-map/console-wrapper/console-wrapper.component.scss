@@ -16,6 +16,18 @@
   overflow: hidden;
   font-size: 12px;
   border-radius: 8px;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+
+  &.console-active {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19),
+                0 0 0 2px rgba(0, 151, 167, 0.6),
+                0 0 12px rgba(0, 151, 167, 0.3);
+  }
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .lightTheme {

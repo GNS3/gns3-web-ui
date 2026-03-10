@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UntypedFormControl } from '@angular/forms';
@@ -33,6 +33,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   public isDraggingEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
+  public isConsoleActive: boolean = false;
 
   public resizedWidth: number = 720;
   public resizedHeight: number = 480;
@@ -41,7 +42,8 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     private consoleService: NodeConsoleService,
     private themeService: ThemeService,
     private mapSettingsService: MapSettingsService,
-    private boundaryService: WindowBoundaryService
+    private boundaryService: WindowBoundaryService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   nodes: Node[] = [];
@@ -168,6 +170,85 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
    */
   onDeviceSelected(node: Node): void {
     this.addTab(node, true);
+  }
+
+  /**
+   * Handle keyboard shortcuts for tab switching
+   * Alt+1-9 to switch to console tabs
+   * Only works when console window is active (clicked/focused)
+   */
+  @HostListener('window:keydown.alt.1', ['$event'])
+  @HostListener('window:keydown.alt.2', ['$event'])
+  @HostListener('window:keydown.alt.3', ['$event'])
+  @HostListener('window:keydown.alt.4', ['$event'])
+  @HostListener('window:keydown.alt.5', ['$event'])
+  @HostListener('window:keydown.alt.6', ['$event'])
+  @HostListener('window:keydown.alt.7', ['$event'])
+  @HostListener('window:keydown.alt.8', ['$event'])
+  @HostListener('window:keydown.alt.9', ['$event'])
+  handleTabShortcut(event: KeyboardEvent): void {
+    // Only handle shortcuts when console is active
+    if (!this.isConsoleActive) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    const key = event.key;
+    const tabIndex = parseInt(key) - 1; // Alt+1 = tab 0 (GNS3 console), Alt+2 = tab 1, etc.
+    this.switchToTab(tabIndex);
+  }
+
+  /**
+   * Handle custom event from xterm for tab shortcuts
+   * This is needed because xterm captures keyboard events
+   */
+  @HostListener('document:consoleTabShortcut', ['$event'])
+  onXtermTabShortcut(event: CustomEvent): void {
+    // Only handle shortcuts when console is active
+    if (!this.isConsoleActive) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    const key = event.detail.key;
+    const tabIndex = parseInt(key) - 1;
+    this.switchToTab(tabIndex);
+  }
+
+  /**
+   * Mark console as active when clicked
+   */
+  onConsoleActivate(): void {
+    this.isConsoleActive = true;
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Handle document click to deactivate console when clicking outside
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    // Use setTimeout to ensure click event propagates first
+    setTimeout(() => {
+      const consoleElement = document.querySelector('.consoleWrapper');
+      if (consoleElement && !consoleElement.contains(event.target as any)) {
+        this.isConsoleActive = false;
+        this.cdr.markForCheck();
+      }
+    }, 0);
+  }
+
+  /**
+   * Switch to specific tab by index
+   * @param index Tab index (0 = GNS3 console, 1-9 = device consoles)
+   */
+  switchToTab(index: number): void {
+    if (index < 0 || index > this.nodes.length) {
+      return; // Invalid index
+    }
+    this.selected.setValue(index);
   }
 
   enableScroll(e) {

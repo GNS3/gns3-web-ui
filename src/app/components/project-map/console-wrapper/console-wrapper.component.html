@@ -1,10 +1,13 @@
 <div *ngIf="isDraggingEnabled" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)">
 </div>
 <!-- Option with resizing -->
-<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled }"
+<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled, 'console-active': isConsoleActive }"
   [ngStyle]="style" mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
-  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
+  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)"
+  tabindex="0"
+  (click)="onConsoleActivate()"
+  (focus)="onConsoleActivate()">
 
   <div class="console-content">
     <!-- Devices Panel -->

@@ -70,6 +70,18 @@ export class WebConsoleComponent implements OnInit, AfterViewInit {
     this.term.focus();
 
     this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
+      // Handle Alt+1-9 shortcuts for tab switching (forward to parent)
+      if (key.altKey && key.key >= '1' && key.key <= '9') {
+        // Create and dispatch custom event for parent component
+        const customEvent = new CustomEvent('consoleTabShortcut', {
+          detail: { key: key.key },
+          bubbles: true
+        });
+        this.term.element.dispatchEvent(customEvent);
+        return false; // Prevent xterm from handling this
+      }
+
+      // Copy/paste handling
       if (key.code === 'KeyC' || key.code === 'KeyV') {
         if (key.ctrlKey && key.shiftKey) {
           return false;
