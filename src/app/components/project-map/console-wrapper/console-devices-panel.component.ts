@@ -19,8 +19,6 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   @Output() deviceSelected = new EventEmitter<Node>();
 
   nodes: Node[] = [];
-  filteredNodes: Node[] = [];
-  searchQuery = '';
 
   private destroy$ = new Subject<void>();
 
@@ -35,7 +33,6 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((nodes: Node[]) => {
       this.nodes = nodes.filter(n => n.console_type !== 'none');
-      this.applyFilter();
       this.cdr.markForCheck();
     });
 
@@ -46,7 +43,6 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       const index = this.nodes.findIndex(n => n.node_id === node.node_id);
       if (index >= 0) {
         this.nodes[index] = node;
-        this.applyFilter();
         this.cdr.markForCheck();
       }
     });
@@ -76,36 +72,6 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       errored: '#ef4444'
     };
     return colorMap[status] || '#6b7280';
-  }
-
-  /**
-   * Handle search input
-   */
-  onSearchInput(event: Event): void {
-    this.searchQuery = (event.target as HTMLInputElement).value;
-    this.applyFilter();
-  }
-
-  /**
-   * Clear search
-   */
-  clearSearch(): void {
-    this.searchQuery = '';
-    this.applyFilter();
-  }
-
-  /**
-   * Apply search filter
-   */
-  private applyFilter(): void {
-    if (!this.searchQuery.trim()) {
-      this.filteredNodes = this.nodes;
-    } else {
-      const query = this.searchQuery.toLowerCase();
-      this.filteredNodes = this.nodes.filter(node =>
-        node.name.toLowerCase().includes(query)
-      );
-    }
   }
 
   /**
