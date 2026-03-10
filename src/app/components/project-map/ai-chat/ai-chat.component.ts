@@ -140,6 +140,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
+    // Reset service layer session_id to prevent reusing old session when returning to project
+    this.aiChatService.resetCurrentSession();
+
     // Set current project
     this.aiChatStore.setCurrentProjectId(this.project.project_id);
 
