@@ -346,9 +346,10 @@
 
   // Enhanced hover effect for header buttons
   .mat-icon-button:hover {
-    background-color: var(--mat-app-primary-container);
+    background-color: rgba(0, 151, 167, 0.15);
     border-radius: 50%;
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3);
 
     &::before {
       width: 100%;
@@ -356,8 +357,8 @@
     }
 
     .header-icon {
-      fill: var(--mat-app-on-primary-container);
-      filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.6));
+      fill: var(--mat-app-primary);
+      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.8));
     }
   }
 
