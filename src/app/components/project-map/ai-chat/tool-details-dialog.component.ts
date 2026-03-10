@@ -207,7 +207,7 @@ export interface ToolDetailsDialogData {
     }
 
     /* Dialog container styling with glassmorphism effect */
-    ::ng-deep .mat-mdc-dialog-container {
+    ::ng-deep .mat-dialog-container {
       border-radius: 16px !important;
       border: 1px solid var(--mat-app-outline-variant);
       backdrop-filter: blur(16px) saturate(180%) !important;
@@ -216,17 +216,17 @@ export interface ToolDetailsDialogData {
     }
 
     /* Make dialog surface transparent for glassmorphism */
-    ::ng-deep .mat-mdc-dialog-surface {
+    ::ng-deep .mat-dialog-container .mat-dialog-surface {
       background-color: transparent !important;
     }
 
     /* Dark theme glassmorphism */
-    ::ng-deep .dark-theme .mat-mdc-dialog-container {
+    ::ng-deep .dark-theme .mat-dialog-container {
       background-color: rgba(30, 41, 55, 0.75) !important;
     }
 
     /* Light theme glassmorphism */
-    ::ng-deep .light-theme .mat-mdc-dialog-container {
+    ::ng-deep .light-theme .mat-dialog-container {
       background-color: rgba(255, 255, 255, 0.85) !important;
     }
   `]
