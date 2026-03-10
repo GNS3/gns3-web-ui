@@ -6,8 +6,14 @@
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
 
-  <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-       (mousedown)="toggleDragging(true)">
+  <div class="console-content">
+    <!-- Devices Panel -->
+    <app-console-devices-panel (deviceSelected)="onDeviceSelected($event)"></app-console-devices-panel>
+
+    <!-- Console Area -->
+    <div class="console-area">
+      <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+           (mousedown)="toggleDragging(true)">
     <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
       <mat-tab>
         <ng-template mat-tab-label>
@@ -49,4 +55,6 @@
     <app-web-console [hidden]="!(selected.value === index + 1)" [controller]="controller" [node]="nodes[index]">
     </app-web-console>
   </div>
+</div>
+</div>
 </div>

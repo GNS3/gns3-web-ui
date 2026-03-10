@@ -101,6 +101,7 @@ import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templa
 import { ChangeHostnameDialogComponent } from '@components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ChangeSymbolDialogComponent } from '@components/project-map/change-symbol-dialog/change-symbol-dialog.component';
 import { ConsoleWrapperComponent } from '@components/project-map/console-wrapper/console-wrapper.component';
+import { ConsoleDevicesPanelComponent } from '@components/project-map/console-wrapper/console-devices-panel.component';
 import { ContextConsoleMenuComponent } from '@components/project-map/context-console-menu/context-console-menu.component';
 import { AlignHorizontallyActionComponent } from '@components/project-map/context-menu/actions/align-horizontally/align-horizontally.component';
 import { AlignVerticallyActionComponent } from '@components/project-map/context-menu/actions/align_vertically/align-vertically.component';
@@ -518,6 +519,7 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         AutoIdlePcActionComponent,
         WebConsoleComponent,
         ConsoleWrapperComponent,
+        ConsoleDevicesPanelComponent,
         HttpConsoleNewTabActionComponent,
         WebConsoleFullWindowComponent,
         NewTemplateDialogComponent,

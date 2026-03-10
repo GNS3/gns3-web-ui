@@ -134,3 +134,18 @@ input:focus {
 .closeButton {
   cursor: pointer;
 }
+
+// Console layout with devices panel
+.console-content {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.console-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+

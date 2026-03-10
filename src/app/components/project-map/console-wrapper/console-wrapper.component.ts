@@ -10,6 +10,8 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
 
 @Component({
   selector: 'app-console-wrapper',
@@ -147,6 +149,13 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
 
   close() {
     this.closeConsole.emit(false);
+  }
+
+  /**
+   * Handle device selection from devices panel
+   */
+  onDeviceSelected(node: Node): void {
+    this.addTab(node, true);
   }
 
   enableScroll(e) {

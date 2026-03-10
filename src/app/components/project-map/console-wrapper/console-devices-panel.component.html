@@ -1,0 +1,55 @@
+<div class="console-devices-panel">
+  <!-- Search Bar -->
+  <div class="panel-header">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search devices..."
+        [value]="searchQuery"
+        (input)="onSearchInput($event)"
+      />
+      <button
+        *ngIf="searchQuery"
+        class="clear-button"
+        mat-icon-button
+        (click)="clearSearch()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Device List -->
+  <div class="device-list">
+    <div
+      *ngFor="let node of filteredNodes"
+      class="device-item"
+      [class.started]="isDeviceStarted(node)"
+      (click)="onDeviceClick(node)"
+    >
+      <div class="device-info">
+        <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
+        <div class="device-details">
+          <div class="device-name">{{ node.name }}</div>
+          <div class="device-status" [style.color]="getStatusColor(node.status)">
+            {{ getStatusLabel(node.status) }}
+          </div>
+        </div>
+      </div>
+      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)">
+        terminal
+      </mat-icon>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredNodes.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">devices</mat-icon>
+      <div class="empty-text">
+        <div *ngIf="searchQuery">No devices found</div>
+        <div *ngIf="!searchQuery">No console devices available</div>
+      </div>
+    </div>
+  </div>
+</div>
