@@ -39,7 +39,7 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
           >
             <!-- Pin indicator -->
             <div class="session-pin" *ngIf="session.pinned">
-              <svg class="pin-icon" xmlns="http://www.w3.org/2000/svg" height="12" width="12" viewBox="0 0 24 24">
+              <svg class="pin-icon pin-animation" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24">
                 <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/>
               </svg>
             </div>
@@ -203,6 +203,26 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
     /* Pin icon */
     .pin-icon {
       fill: var(--mat-app-primary);
+      filter: drop-shadow(0 2px 4px rgba(0, 151, 167, 0.4));
+    }
+
+    /* Pin bounce animation */
+    .pin-animation {
+      animation: pinBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes pinBounce {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     .session-content {
