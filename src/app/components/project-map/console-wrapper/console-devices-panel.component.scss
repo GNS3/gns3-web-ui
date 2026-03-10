@@ -14,19 +14,19 @@
   padding: 8px;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.05);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--mat-app-outline-variant);
-    border-radius: 3px;
+    background: rgba(0, 151, 167, 0.4);
+    border-radius: 4px;
 
     &:hover {
-      background: var(--mat-app-outline);
+      background: rgba(0, 151, 167, 0.6);
     }
   }
 }
