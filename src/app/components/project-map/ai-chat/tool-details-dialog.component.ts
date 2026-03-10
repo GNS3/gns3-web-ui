@@ -183,6 +183,23 @@ export interface ToolDetailsDialogData {
       --ngx-json-value: var(--mat-app-on-surface);
     }
 
+    /* Light mode colors */
+    ::ng-deep .light-theme .json-container {
+      --ngx-json-string: #0451a5;
+      --ngx-json-number: #098658;
+      --ngx-json-boolean: #0000ff;
+      --ngx-json-date: #795e26;
+      --ngx-json-array: #a31515;
+      --ngx-json-object: #098658;
+      --ngx-json-function: #795e26;
+      --ngx-json-null: #808080;
+      --ngx-json-null-bg: rgba(0, 0, 0, 0.04);
+      --ngx-json-undefined: #a31515;
+      --ngx-json-key: #0451a5;
+      --ngx-json-separator: #808080;
+      --ngx-json-value: var(--mat-app-on-surface);
+    }
+
     /* Scrollbar styles */
     .dialog-content::-webkit-scrollbar,
     .json-container::-webkit-scrollbar {
