@@ -5,12 +5,24 @@
 **Created**: 2026-03-10
 **Updated**: 2026-03-10
 **Status**: ✅ **Completed**
-**Version**: 1.6.0
+**Version**: 1.7.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.7.0 (2026-03-10)
+
+**Bug Fixes**:
+- ✅ Fix AI Chat Tool Details Dialog light theme colors
+- ✅ Fix AI Chat JSON expansion defaults (Tool Call expanded, Result collapsed)
+- ✅ Fix Firefox tab labels being covered by xterm black background
+
+**Improvements**:
+- ✅ Add light theme JSON syntax highlighting for tool details dialogs
+- ✅ Pass theme class to dialog panelClass dynamically
+- ✅ Add Firefox-specific tab label fixes with proper stacking context
 
 ### v1.6.0 (2026-03-10)
 
@@ -658,6 +670,47 @@ ngOnDestroy(): void {
 
 ---
 
+## Recent Bug Fixes (v1.7.0)
+
+### 1. AI Chat Tool Details Dialog Light Theme Fix
+
+**Problem**: Tool call details and execution result details dialogs displayed with dark theme colors in light mode.
+
+**Solution**:
+- Added light theme JSON syntax highlighting colors to `tool-details-dialog.component.ts`
+- Injected `ThemeService` into `ChatMessageListComponent`
+- Pass current theme class (`light-theme` or `dark-theme`) to dialog `panelClass`
+
+**Files Modified**:
+- `src/app/components/project-map/ai-chat/tool-details-dialog.component.ts`
+- `src/app/components/project-map/ai-chat/chat-message-list.component.ts`
+
+### 2. JSON Expansion Defaults
+
+**Problem**: All JSON in tool details dialogs was expanded by default, making large outputs difficult to navigate.
+
+**Solution**:
+- Set `[expanded]="true"` for Tool Call Details (Arguments)
+- Set `[expanded]="false"` for Execution Result Details (Output)
+
+**Files Modified**:
+- `src/app/components/project-map/ai-chat/tool-details-dialog.component.ts`
+
+### 3. Firefox Tab Labels Covered by Xterm
+
+**Problem**: In Firefox browser, device console tab labels were partially hidden by xterm's black background.
+
+**Solution**:
+- Added `position: relative` and `z-index: 10` to `.consoleHeader`
+- Added `flex-shrink: 0` to `.mat-tab-label` to prevent compression
+- Added Firefox-specific tab fixes using `@-moz-document url-prefix()`
+- Added `isolation: isolate` to `.console-area` for proper stacking context
+
+**Files Modified**:
+- `src/app/components/project-map/console-wrapper/console-wrapper.component.scss`
+
+---
+
 ## References
 
 ### Related Documentation
@@ -677,6 +730,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.6.0
+**Document Version**: 1.7.0
 **Last Updated**: 2026-03-10
 **Maintainer**: Development Team
