@@ -33,6 +33,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((nodes: Node[]) => {
       this.nodes = nodes.filter(n => n.console_type !== 'none');
+      this.sortNodes();
       this.cdr.markForCheck();
     });
 
@@ -43,6 +44,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       const index = this.nodes.findIndex(n => n.node_id === node.node_id);
       if (index >= 0) {
         this.nodes[index] = node;
+        this.sortNodes();
         this.cdr.markForCheck();
       }
     });
@@ -58,6 +60,27 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
    */
   isDeviceStarted(node: Node): boolean {
     return node.status === 'started';
+  }
+
+  /**
+   * Sort nodes: started devices first, then by name
+   */
+  private sortNodes(): void {
+    this.nodes.sort((a, b) => {
+      // First, sort by status (started first)
+      const aStarted = a.status === 'started';
+      const bStarted = b.status === 'started';
+
+      if (aStarted && !bStarted) {
+        return -1;
+      }
+      if (!aStarted && bStarted) {
+        return 1;
+      }
+
+      // Then, sort by name alphabetically
+      return a.name.localeCompare(b.name);
+    });
   }
 
   /**
