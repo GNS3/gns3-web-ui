@@ -19,6 +19,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   @Output() deviceSelected = new EventEmitter<Node>();
 
   nodes: Node[] = [];
+  collapsed = true;
 
   private destroy$ = new Subject<void>();
 
@@ -102,6 +103,14 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
    */
   onDeviceClick(node: Node): void {
     this.deviceSelected.emit(node);
+  }
+
+  /**
+   * Toggle panel collapse/expand
+   */
+  togglePanel(): void {
+    this.collapsed = !this.collapsed;
+    this.cdr.markForCheck();
   }
 
   /**

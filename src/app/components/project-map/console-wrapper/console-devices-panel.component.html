@@ -1,6 +1,18 @@
-<div class="console-devices-panel">
+<div class="console-devices-panel" [class.collapsed]="collapsed">
+  <!-- Panel Header -->
+  <div class="panel-header"
+       (mousedown)="$event.stopPropagation()"
+       (click)="togglePanel()"
+       [class.clickable]="true"
+       title="Click to toggle panel">
+    <div class="header-title">
+      <mat-icon class="panel-icon">devices</mat-icon>
+      <span class="header-text" *ngIf="!collapsed">Devices</span>
+    </div>
+  </div>
+
   <!-- Device List -->
-  <div class="device-list">
+  <div class="device-list" *ngIf="!collapsed">
     <div
       *ngFor="let node of nodes"
       class="device-item"
