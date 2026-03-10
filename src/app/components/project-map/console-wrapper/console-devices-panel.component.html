@@ -33,9 +33,6 @@
         <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
         <div class="device-details">
           <div class="device-name">{{ node.name }}</div>
-          <div class="device-status" [style.color]="getStatusColor(node.status)">
-            {{ getStatusLabel(node.status) }}
-          </div>
         </div>
       </div>
       <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)">
