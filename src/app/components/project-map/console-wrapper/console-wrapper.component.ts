@@ -36,8 +36,8 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   public isMinimized: boolean = false;
   public isConsoleActive: boolean = false;
 
-  public resizedWidth: number = 720;
-  public resizedHeight: number = 480;
+  public resizedWidth: number = 800;
+  public resizedHeight: number = 600;
 
   constructor(
     private consoleService: NodeConsoleService,
@@ -57,7 +57,7 @@ export class ConsoleWrapperComponent implements OnInit, OnDestroy {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '80px', width: '720px', height: '460px' };
+    this.style = { bottom: '20px', left: '80px', width: '800px', height: '600px' };
 
     // Set top offset to keep console below toolbar (64px for desktop, 56px for mobile)
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
