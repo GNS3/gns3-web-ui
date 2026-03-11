@@ -8,6 +8,7 @@ export class MultiLinkCalculatorHelper {
   private static readonly MIN_LINK_SPACING = 6;
   private static readonly DENSE_BUNDLE_THRESHOLD = 4;
   private static readonly NODE_EDGE_PADDING = 8;
+  private static readonly MAX_VISIBLE_DENSE_LINKS = 8;
 
   public linkTranslation(
     distance: number,
@@ -63,14 +64,52 @@ export class MultiLinkCalculatorHelper {
 
     Object.keys(linksFromNodes).forEach((key) => {
       const groupedLinks = linksFromNodes[key];
-      const center = (groupedLinks.length - 1) / 2;
       const spacing = this.calculateSpacingForGroup(groupedLinks);
+      const visibleRange = this.getVisibleRange(groupedLinks.length);
+      const overflowStackDistance = this.getOverflowStackDistance(groupedLinks.length, spacing);
+      const visibleCenter = (visibleRange.count - 1) / 2;
 
       groupedLinks.forEach((link: MapLink, index: number) => {
-        link.distance = (index - center) * spacing;
+        if (index < visibleRange.start || index > visibleRange.end) {
+          link.distance = overflowStackDistance;
+        } else {
+          const visibleIndex = index - visibleRange.start;
+          link.distance = (visibleIndex - visibleCenter) * spacing;
+        }
+
         link.parallelLinksCount = groupedLinks.length;
       });
     });
+  }
+
+  private getVisibleRange(linkCount: number): { start: number; end: number; count: number } {
+    if (linkCount <= MultiLinkCalculatorHelper.MAX_VISIBLE_DENSE_LINKS) {
+      return {
+        start: 0,
+        end: Math.max(0, linkCount - 1),
+        count: linkCount,
+      };
+    }
+
+    const visibleLinksCount = this.getVisibleLinksCountForSpacing(linkCount);
+    const hiddenLinksCount = linkCount - visibleLinksCount;
+    const leftHiddenCount = Math.floor(hiddenLinksCount / 2);
+    const start = leftHiddenCount;
+
+    return {
+      start,
+      end: start + visibleLinksCount - 1,
+      count: visibleLinksCount,
+    };
+  }
+
+  private getOverflowStackDistance(linkCount: number, spacing: number): number {
+    if (linkCount <= MultiLinkCalculatorHelper.MAX_VISIBLE_DENSE_LINKS) {
+      return 0;
+    }
+
+    // Stack overflow links on middle visible link #5 when 8 dense links are shown.
+    return spacing / 2;
   }
 
   private calculateSpacingForGroup(groupedLinks: MapLink[]): number {
@@ -89,7 +128,9 @@ export class MultiLinkCalculatorHelper {
   }
 
   private getMaxSpacingFromNodeSize(groupedLinks: MapLink[]): number {
-    if (groupedLinks.length <= 1) {
+    const visibleLinksCount = this.getVisibleLinksCountForSpacing(groupedLinks.length);
+
+    if (visibleLinksCount <= 1) {
       return MultiLinkCalculatorHelper.DEFAULT_LINK_SPACING;
     }
 
@@ -106,7 +147,11 @@ export class MultiLinkCalculatorHelper {
       return 0;
     }
 
-    return availableSpan / (groupedLinks.length - 1);
+    return availableSpan / (visibleLinksCount - 1);
+  }
+
+  private getVisibleLinksCountForSpacing(linkCount: number): number {
+    return Math.min(linkCount, MultiLinkCalculatorHelper.MAX_VISIBLE_DENSE_LINKS);
   }
 
   private getNodeCrossSection(node: { width: number; height: number }): number {

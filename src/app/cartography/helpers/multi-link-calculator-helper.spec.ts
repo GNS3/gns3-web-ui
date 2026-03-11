@@ -81,6 +81,30 @@ describe('MultiLinkCalculatorHelper', () => {
     expect(links.map((link) => link.distance)).toEqual([-18, -12, -6, 0, 6, 12, 18]);
   });
 
+  it('should keep eight dense links visible and stack 14-link overflow on middle link #5', () => {
+    const links = Array.from({ length: 14 }, () => createLink('A', 'B', 72, 72, 72, 72));
+
+    helper.assignDataToLinks(links);
+
+    expect(links.map((link) => link.distance)).toEqual([4, 4, 4, -28, -20, -12, -4, 4, 12, 20, 28, 4, 4, 4]);
+  });
+
+  it('should keep eight dense links visible and stack 16-link overflow on middle link #5', () => {
+    const links = Array.from({ length: 16 }, () => createLink('A', 'B', 72, 72, 72, 72));
+
+    helper.assignDataToLinks(links);
+
+    expect(links.map((link) => link.distance)).toEqual([4, 4, 4, 4, -28, -20, -12, -4, 4, 12, 20, 28, 4, 4, 4, 4]);
+  });
+
+  it('should keep eight dense links uniformly spaced for odd dense bundles and stack overflow', () => {
+    const links = Array.from({ length: 15 }, () => createLink('A', 'B', 72, 72, 72, 72));
+
+    helper.assignDataToLinks(links);
+
+    expect(links.map((link) => link.distance)).toEqual([4, 4, 4, -28, -20, -12, -4, 4, 12, 20, 28, 4, 4, 4, 4]);
+  });
+
   it('should group links regardless of source/target ordering', () => {
     const linkAB = createLink('A', 'B');
     const linkBA = createLink('B', 'A');
