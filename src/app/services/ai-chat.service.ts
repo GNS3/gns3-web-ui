@@ -60,12 +60,6 @@ export class AiChatService {
       }
     });
 
-    // Debug: log the headers being sent
-    console.log('[AI Chat Service] Request URL:', url);
-    console.log('[AI Chat Service] Request headers:', headersObj);
-    console.log('[AI Chat Service] Controller authToken:', controller.authToken ? 'Present' : 'Missing');
-    console.log('[AI Chat Service] Full controller:', controller);
-
     return new Observable<ChatEvent>((observer) => {
       fetch(url, {
         method: 'POST',

@@ -71,15 +71,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   /**
-   * Logger method - disabled in production
-   */
-  private log(...args: any[]): void {
-    if (!environment.production) {
-      console.log('[AI Chat]', ...args);
-    }
-  }
-
-  /**
    * Error logger - always enabled
    */
   private logError(...args: any[]): void {
@@ -484,7 +475,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     if (!sessionId) {
       // Generate new session_id for new conversation
       sessionId = this.generateUUID();
-      this.log('Generated new session_id:', sessionId);
 
       // Set streaming state BEFORE updating session_id
       // This prevents the subscriber from loading session history
@@ -505,7 +495,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.cdr.markForCheck(); // Trigger change detection
 
     // Start streaming chat with the session_id
-    this.log('Sending message with session_id:', sessionId);
     this.startChatStream(message, sessionId);
   }
 
@@ -524,9 +513,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Get fresh controller from localStorage to ensure we have the latest authToken
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
-      this.log('Fresh controller loaded:', freshController);
-      this.log('authToken present:', !!freshController.authToken);
-
       // Update the controller reference
       this.controller = freshController;
 
