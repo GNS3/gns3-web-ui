@@ -3,7 +3,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, SecurityContext } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserModule, Title } from '@angular/platform-browser';
@@ -615,7 +615,9 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         MatAutocompleteModule,
         CdkAccordionModule,
         CdkTreeModule,
-        MarkdownModule.forRoot(),
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.HTML
+        }),
     ],
     providers: [
         SettingsService,
