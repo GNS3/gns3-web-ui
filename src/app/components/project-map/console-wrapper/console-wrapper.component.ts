@@ -79,7 +79,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   minimize(value: boolean) {
     this.isMinimized = value;
     if (!value) {
-      // Restore from minimized state
+      // Restore from minimized state - preserve current left position
+      const currentLeft = (this.style as WindowStyle).left || '80px';
+
       if (this.isMaximized) {
         // Restore to maximized state
         const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
@@ -87,13 +89,18 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         const newHeight = windowHeight - toolbarHeight - 20;
         this.style = {
           bottom: '0px',
-          left: '80px',
+          left: currentLeft,
           width: `${this.resizedWidth}px`,
           height: `${newHeight}px`
         };
       } else {
         // Restore to normal state
-        this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+        this.style = {
+          bottom: '20px',
+          left: currentLeft,
+          width: `${this.resizedWidth}px`,
+          height: `${this.resizedHeight}px`
+        };
       }
     } else {
       // Minimize
