@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { select } from 'd3-selection';
+import { select, Selection } from 'd3-selection';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { LinkStatus } from '../models/link-status';
 import { MapLink } from '../models/map/map-link';
@@ -8,6 +8,7 @@ import { Widget } from './widget';
 
 @Injectable()
 export class InterfaceStatusWidget implements Widget {
+  private static readonly MAX_INLINE_LABELS_PARALLEL_LINKS = 4;
   private static readonly LABEL_DISTANCE = 60;
   private static readonly MIN_LINK_LENGTH_FOR_LABELS = 180;
   private static readonly LABEL_HEIGHT = 18;
@@ -23,40 +24,33 @@ export class InterfaceStatusWidget implements Widget {
 
   public draw(view: SVGSelection) {
     const self = this;
-    let mapLinks: MapLink[] = [];
 
     view.each(function (this: SVGGElement, l: MapLink) {
-      mapLinks.push(l);
-    });
-    mapLinks.forEach((mapLink) => {
-      mapLink.isMultiplied = false;
-      mapLinks.forEach((n) => {
-        if (n.nodes[0].linkId !== mapLink.nodes[0].linkId) {
-          if (
-            (mapLink.nodes[0].nodeId === n.nodes[0].nodeId && mapLink.nodes[1].nodeId === n.nodes[1].nodeId) ||
-            (mapLink.nodes[0].nodeId === n.nodes[1].nodeId && mapLink.nodes[1].nodeId === n.nodes[0].nodeId) ||
-            (mapLink.nodes[1].nodeId === n.nodes[0].nodeId && mapLink.nodes[0].nodeId === n.nodes[1].nodeId)
-          ) {
-            mapLink.isMultiplied = true;
-          }
-        }
-      });
-    });
+      l.isMultiplied = (l.parallelLinksCount || 1) > 1;
 
-    view.each(function (this: SVGGElement, l: MapLink) {
       const link_group = select<SVGGElement, MapLink>(this);
       const link_path = link_group.select<SVGPathElement>('path');
+      const showInterfaceLabels = self.mapSettingsService.showInterfaceLabels;
+      const useIntegratedLabels = showInterfaceLabels && self.mapSettingsService.integrateLinkLabelsToLinks;
+      const useTooltipOnlyLabels = showInterfaceLabels && self.shouldRenderTooltipOnly(l);
 
       let statuses: LinkStatus[] = [];
       const pathNode = link_path.node();
       if (pathNode) {
         const totalLength = pathNode.getTotalLength();
 
-        if (totalLength > InterfaceStatusWidget.MIN_LINK_LENGTH_FOR_LABELS && l.source && l.target) {
-          const start_point: SVGPoint = pathNode.getPointAtLength(InterfaceStatusWidget.LABEL_DISTANCE);
-          const end_point: SVGPoint = pathNode.getPointAtLength(totalLength - InterfaceStatusWidget.LABEL_DISTANCE);
-          const sourcePort = l.nodes.find((node) => node.nodeId === l.source.id)?.label?.text || '';
-          const destinationPort = l.nodes.find((node) => node.nodeId === l.target.id)?.label?.text || '';
+        if (
+          l.source &&
+          l.target &&
+          (useTooltipOnlyLabels || totalLength > InterfaceStatusWidget.MIN_LINK_LENGTH_FOR_LABELS)
+        ) {
+          const labelDistance = useTooltipOnlyLabels
+            ? Math.min(InterfaceStatusWidget.LABEL_DISTANCE, totalLength / 4)
+            : InterfaceStatusWidget.LABEL_DISTANCE;
+          const start_point: SVGPoint = pathNode.getPointAtLength(labelDistance);
+          const end_point: SVGPoint = pathNode.getPointAtLength(totalLength - labelDistance);
+          const sourcePort = l.nodes?.find((node) => node.nodeId === l.source.id)?.label?.text || '';
+          const destinationPort = l.nodes?.find((node) => node.nodeId === l.target.id)?.label?.text || '';
 
           statuses = [
             new LinkStatus(
@@ -75,6 +69,9 @@ export class InterfaceStatusWidget implements Widget {
         }
       }
 
+      self.renderEndpointHoverTooltips(link_group, statuses, useTooltipOnlyLabels);
+      self.bindEndpointTooltipHover(link_path, link_group, useTooltipOnlyLabels);
+
       link_group.selectAll<SVGCircleElement, LinkStatus>('circle.status_started').remove();
       link_group.selectAll<SVGCircleElement, LinkStatus>('circle.status_stopped').remove();
       link_group.selectAll<SVGCircleElement, LinkStatus>('circle.status_suspended').remove();
@@ -86,10 +83,7 @@ export class InterfaceStatusWidget implements Widget {
       link_group.selectAll<SVGRectElement, LinkStatus>('rect.status_suspended').remove();
       link_group.selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
 
-      if (
-        self.mapSettingsService.showInterfaceLabels &&
-        self.mapSettingsService.integrateLinkLabelsToLinks
-      ) {
+      if (useIntegratedLabels && !useTooltipOnlyLabels) {
         const status_labels = link_group.selectAll<SVGGElement, LinkStatus>('g.status_label').data(statuses);
         const status_labels_enter = status_labels.enter().append<SVGGElement>('g').attr('class', 'status_label');
 
@@ -209,5 +203,118 @@ export class InterfaceStatusWidget implements Widget {
       return 'red';
     }
     return '#FFFF00';
+  }
+
+  private shouldRenderTooltipOnly(link: MapLink): boolean {
+    return (link.parallelLinksCount || 1) > InterfaceStatusWidget.MAX_INLINE_LABELS_PARALLEL_LINKS;
+  }
+
+  private renderEndpointHoverTooltips(
+    linkGroup: Selection<SVGGElement, MapLink, SVGElement, any>,
+    statuses: LinkStatus[],
+    enabled: boolean
+  ) {
+    const tooltips = linkGroup
+      .selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip')
+      .data(enabled ? statuses : []);
+
+    const tooltipsEnter = tooltips
+      .enter()
+      .append<SVGGElement>('g')
+      .attr('class', 'status_hover_tooltip')
+      .attr('visibility', 'hidden');
+
+    const tooltipsMerge = tooltips
+      .merge(tooltipsEnter)
+      .style('pointer-events', 'none')
+      .attr('transform', (ls: LinkStatus) => `translate(${ls.x}, ${ls.y})`);
+
+    tooltipsMerge.raise();
+
+    const tooltipRects = tooltipsMerge.selectAll<SVGRectElement, LinkStatus>('rect').data((ls) => [ls]);
+    tooltipRects
+      .enter()
+      .append<SVGRectElement>('rect')
+      .merge(tooltipRects)
+      .attr('class', 'status_hover_tooltip_rect')
+      .attr('width', (ls: LinkStatus) => this.getLabelWidth(ls.port))
+      .attr('height', InterfaceStatusWidget.LABEL_HEIGHT)
+      .attr('x', (ls: LinkStatus) => -(this.getLabelWidth(ls.port) / 2))
+      .attr('y', -InterfaceStatusWidget.LABEL_HEIGHT / 2)
+      .attr('rx', InterfaceStatusWidget.LABEL_RADIUS)
+      .attr('ry', InterfaceStatusWidget.LABEL_RADIUS)
+      .style('fill', InterfaceStatusWidget.LABEL_BACKGROUND_COLOR)
+      .style('fill-opacity', 1)
+      .attr('stroke', (ls: LinkStatus) => this.getStatusStrokeColor(ls.status))
+      .attr('stroke-width', InterfaceStatusWidget.LABEL_STROKE_WIDTH);
+    tooltipRects.exit().remove();
+
+    const tooltipTexts = tooltipsMerge.selectAll<SVGTextElement, LinkStatus>('text').data((ls) => [ls]);
+    tooltipTexts
+      .enter()
+      .append<SVGTextElement>('text')
+      .merge(tooltipTexts)
+      .attr('class', 'status_hover_tooltip_label')
+      .text((ls: LinkStatus) => ls.port || '')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('dy', '0em')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'central')
+      .attr('alignment-baseline', 'central')
+      .attr('fill', '#111111')
+      .style('font-family', InterfaceStatusWidget.LABEL_FONT_FAMILY)
+      .style('font-size', `${InterfaceStatusWidget.LABEL_FONT_SIZE}px`)
+      .style('font-weight', '500');
+    tooltipTexts.exit().remove();
+
+    tooltips.exit().remove();
+  }
+
+  private bindEndpointTooltipHover(
+    linkPath: Selection<SVGPathElement, MapLink, SVGGElement, MapLink>,
+    linkGroup: Selection<SVGGElement, MapLink, SVGElement, any>,
+    enabled: boolean
+  ) {
+    const linkGroupNode = linkGroup.node();
+    const linkContainer =
+      linkGroupNode && linkGroupNode.parentNode
+        ? select<SVGGElement, MapLink>(linkGroupNode.parentNode as SVGGElement)
+        : null;
+
+    if (!enabled) {
+      linkPath.on('mouseover.status_hover_tooltip', null);
+      linkPath.on('mouseout.status_hover_tooltip', null);
+      linkPath.attr('pointer-events', null);
+      linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip').attr('visibility', 'hidden');
+      return;
+    }
+
+    linkPath.attr('pointer-events', 'stroke');
+
+    linkPath
+      .on('mouseover.status_hover_tooltip', () => {
+        if (linkContainer) {
+          linkContainer.raise();
+        }
+        linkGroup
+          .selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip')
+          .raise()
+          .attr('visibility', 'visible');
+      })
+      .on('mouseout.status_hover_tooltip', () => {
+        linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip').attr('visibility', 'hidden');
+      });
+
+    const pathNode = linkPath.node();
+    const isHovered = pathNode ? pathNode.matches(':hover') : false;
+    const tooltipSelection = linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip');
+    if (isHovered) {
+      if (linkContainer) {
+        linkContainer.raise();
+      }
+      tooltipSelection.raise();
+    }
+    tooltipSelection.attr('visibility', isHovered ? 'visible' : 'hidden');
   }
 }

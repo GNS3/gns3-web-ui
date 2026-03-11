@@ -51,6 +51,36 @@ describe('MultiLinkCalculatorHelper', () => {
     expect(links.map((link) => link.distance)).toEqual([-21, -7, 7, 21]);
   });
 
+  it('should reduce spacing for bundles larger than four links', () => {
+    const links = [
+      createLink('A', 'B'),
+      createLink('A', 'B'),
+      createLink('A', 'B'),
+      createLink('A', 'B'),
+      createLink('A', 'B'),
+    ];
+
+    helper.assignDataToLinks(links);
+
+    expect(links.map((link) => link.distance)).toEqual([-20, -10, 0, 10, 20]);
+  });
+
+  it('should enforce a minimum spacing floor for very dense bundles on small nodes', () => {
+    const links = [
+      createLink('A', 'B', 40, 40, 40, 40),
+      createLink('A', 'B', 40, 40, 40, 40),
+      createLink('A', 'B', 40, 40, 40, 40),
+      createLink('A', 'B', 40, 40, 40, 40),
+      createLink('A', 'B', 40, 40, 40, 40),
+      createLink('A', 'B', 40, 40, 40, 40),
+      createLink('A', 'B', 40, 40, 40, 40),
+    ];
+
+    helper.assignDataToLinks(links);
+
+    expect(links.map((link) => link.distance)).toEqual([-18, -12, -6, 0, 6, 12, 18]);
+  });
+
   it('should group links regardless of source/target ordering', () => {
     const linkAB = createLink('A', 'B');
     const linkBA = createLink('B', 'A');
@@ -74,21 +104,40 @@ describe('MultiLinkCalculatorHelper', () => {
     expect(validOne.distance).toBe(-7);
     expect(validTwo.distance).toBe(7);
   });
+
+  it('should set parallelLinksCount for grouped links', () => {
+    const links = [createLink('A', 'B'), createLink('A', 'B'), createLink('A', 'B')];
+
+    helper.assignDataToLinks(links);
+
+    expect(links.map((link) => link.parallelLinksCount)).toEqual([3, 3, 3]);
+  });
 });
 
-function createNode(id: string): MapNode {
-  return { id } as MapNode;
+function createNode(id: string, width?: number, height?: number): MapNode {
+  return {
+    id,
+    width,
+    height,
+  } as MapNode;
 }
 
-function createLink(sourceId?: string, targetId?: string): MapLink {
+function createLink(
+  sourceId?: string,
+  targetId?: string,
+  sourceWidth?: number,
+  sourceHeight?: number,
+  targetWidth?: number,
+  targetHeight?: number
+): MapLink {
   const link = new MapLink();
 
   if (sourceId) {
-    link.source = createNode(sourceId);
+    link.source = createNode(sourceId, sourceWidth, sourceHeight);
   }
 
   if (targetId) {
-    link.target = createNode(targetId);
+    link.target = createNode(targetId, targetWidth, targetHeight);
   }
 
   return link;
