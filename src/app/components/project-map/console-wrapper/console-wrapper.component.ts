@@ -115,9 +115,10 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
       const windowHeight = window.innerHeight;
       const newHeight = windowHeight - toolbarHeight - 20;
+      const currentLeft = (this.style as WindowStyle).left || '80px';
       this.style = {
         bottom: '0px',
-        left: '80px',
+        left: currentLeft,
         width: `${this.resizedWidth}px`,
         height: `${newHeight}px`
       };
@@ -128,7 +129,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       });
     } else {
       // Restore to normal size
-      this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+      const currentLeft = (this.style as WindowStyle).left || '80px';
+      this.style = { bottom: '20px', left: currentLeft, width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
       // Notify resize
       this.consoleService.consoleResized.next({
         width: this.resizedWidth,
