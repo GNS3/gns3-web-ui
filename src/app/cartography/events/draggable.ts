@@ -38,13 +38,8 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
 
   private behaviour() {
     let startEvt;
-    let lastX: number;
-    let lastY: number;
     return drag<GElement, Datum>()
       .on('start', (datum: Datum) => {
-        lastX = event.sourceEvent.clientX;
-        lastY = event.sourceEvent.clientY;
-
         startEvt = new DraggableStart<Datum>(datum);
         startEvt.dx = event.dx;
         startEvt.dy = event.dy;
@@ -54,10 +49,11 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
       })
       .on('drag', (datum: Datum) => {
         const evt = new DraggableDrag<Datum>(datum);
-        evt.dx = event.sourceEvent.clientX - lastX;
-        evt.dy = event.sourceEvent.clientY - lastY;
-        lastX = event.sourceEvent.clientX;
-        lastY = event.sourceEvent.clientY;
+        // Use D3's event.dx/dy which are in local (canvas) coordinate space,
+        // already accounting for zoom scale. Using raw clientX/Y deltas caused
+        // nodes to move at the wrong speed when zoomed and jump on drag end.
+        evt.dx = event.dx;
+        evt.dy = event.dy;
         this.drag.emit(evt);
       })
       .on('end', (datum: Datum) => {
