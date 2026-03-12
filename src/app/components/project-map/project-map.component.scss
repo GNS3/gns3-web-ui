@@ -26,6 +26,11 @@ g.node:hover {
       stroke: #ffffff;
     }
  
+    // Dark mode: brighten default dark-red serial cables so they're visible
+    path.serial_link[stroke="#800000"] {
+      stroke: #e05555;
+    }
+
     // Dark mode: drawing cable line is white
     g.drawing-line-tool path {
       stroke: #ffffff;
@@ -233,6 +238,13 @@ img {
 
 .lightTheme {
   color: black !important;
+
+  // When the map canvas is light but the toolbar/titlebar are in dark mode,
+  // reset the inherited black color back to white so their icons stay visible.
+  #project-titlebar:not(.lightTheme),
+  #project-toolbar:not(.lightTheme) {
+    color: white !important;
+  }
 }
 
 .darkTheme {

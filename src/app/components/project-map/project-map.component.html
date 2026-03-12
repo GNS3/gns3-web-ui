@@ -35,7 +35,7 @@
   </app-experimental-map>
 
   <!-- Project Titlebar -->
-  <div id="project-titlebar" [ngClass]="{ lightTheme: isLightThemeEnabled }">
+  <div id="project-titlebar" [ngClass]="{ lightTheme: isGlobalLightTheme }">
     <button
       matTooltip="Open menu"
       matTooltipClass="custom-tooltip"
@@ -43,11 +43,11 @@
       class="gns3-button menu-button"
       [matMenuTriggerFor]="mainMenu"
     >
-      <mat-icon *ngIf="!isLightThemeEnabled" svgIcon="gns3"></mat-icon>
-      <mat-icon *ngIf="isLightThemeEnabled" svgIcon="gns3black"></mat-icon>
+      <mat-icon *ngIf="!isGlobalLightTheme" svgIcon="gns3"></mat-icon>
+      <mat-icon *ngIf="isGlobalLightTheme" svgIcon="gns3black"></mat-icon>
     </button>
     <div class="project-titlebar-controls">
-      <div *ngIf="!readonly" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="menu-button-group primary-controls">
+      <div *ngIf="!readonly" [ngClass]="{ lightTheme: isGlobalLightTheme }" class="menu-button-group primary-controls">
         <app-template [controller]="controller" [project]="project" (onNodeCreation)="onNodeCreation($event)"> </app-template>
         <button
           matTooltip="Add a link"
@@ -71,7 +71,7 @@
         matTooltip="Toggle topology/controllers summary"
         matTooltipClass="custom-tooltip"
         [ngClass]="{
-          unmarkedLight: !isTopologySummaryVisible && isLightThemeEnabled,
+          unmarkedLight: !isTopologySummaryVisible && isGlobalLightTheme,
           marked: isTopologySummaryVisible
         }"
         mat-icon-button
@@ -178,7 +178,7 @@
   </div>
 
   <!-- Project toolbar -->
-  <div id="project-toolbar" [ngClass]="{ lightTheme: isLightThemeEnabled }">
+  <div id="project-toolbar" [ngClass]="{ lightTheme: isGlobalLightTheme }">
     <div class="section">
       <button
         matTooltip="Selection mode"

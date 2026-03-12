@@ -41,10 +41,10 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Always use #000000 as the default — CSS handles the dark/light visual conversion.
-    // Saving a theme-adjusted color (e.g. #ffffff) would lock the cable to that color
-    // permanently, breaking theme switching.
-    this.formGroup.controls['color'].setValue(this.link.link_style?.color ?? '#000000');
+    // Use the canonical default color per link type so CSS can handle theme conversion.
+    // Saving a theme-adjusted color would lock the cable permanently, breaking switching.
+    const defaultColor = this.link.link_type === 'serial' ? '#800000' : '#000000';
+    this.formGroup.controls['color'].setValue(this.link.link_style?.color ?? defaultColor);
 
     const width = this.link.link_style?.width !== undefined ? this.link.link_style.width : 2;
     this.formGroup.controls['width'].setValue(width);

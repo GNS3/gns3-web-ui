@@ -132,6 +132,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private scrollY: number = 0;
   private scrollEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
+  public isGlobalLightTheme: boolean = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
@@ -212,17 +213,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.addSubscriptions();
     this.addKeyboardListeners();
 
+    this.themeService.mapThemeChanged.subscribe((value: string) => {
+      this.isLightThemeEnabled = value === 'light';
+    });
+
     this.themeService.themeChanged.subscribe((value: string) => {
-      this.themeService.getActualTheme() === 'light'
-        ? (this.isLightThemeEnabled = true)
-        : (this.isLightThemeEnabled = false);
+      this.isGlobalLightTheme = value === 'light-theme';
     });
   }
 
   getSettings() {
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+    this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
+    this.isGlobalLightTheme = this.themeService.getActualTheme() === 'light';
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
