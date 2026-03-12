@@ -197,7 +197,7 @@
 }
 
 // Light theme adjustments
-.lightTheme {
+:host-context(.lightTheme) {
   .console-devices-panel {
     background-color: #ffffff;
     border-right-color: #e0e0e0;
@@ -206,6 +206,22 @@
   .panel-header {
     background-color: #f5f5f5;
     border-bottom-color: #e0e0e0;
+
+    &.clickable:hover {
+      background-color: #eeeeee;
+    }
+
+    &.clickable:active {
+      background-color: #e0e0e0;
+    }
+  }
+
+  .header-title {
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .panel-icon {
+    color: #0097a7;
   }
 
   .device-item {
@@ -214,6 +230,24 @@
     &:hover {
       background: #eeeeee;
     }
+  }
+
+  .device-name {
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .device-icon {
+    &.disabled {
+      color: rgba(0, 0, 0, 0.40);
+    }
+  }
+
+  .empty-icon {
+    color: rgba(0, 0, 0, 0.40);
+  }
+
+  .empty-text {
+    color: rgba(0, 0, 0, 0.60);
   }
 }
 
