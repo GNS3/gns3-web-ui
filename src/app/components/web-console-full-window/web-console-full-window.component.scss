@@ -1,9 +1,4 @@
-.lightTheme {
-  background: white !important;
-  color: black !important;
-}
-
-// xterm Context Menu Styles
+// xterm Context Menu Styles for Full Window Console
 .xterm-context-menu {
   background: var(--mat-app-surface-container);
   border: 1px solid var(--mat-app-outline-variant);
@@ -37,17 +32,8 @@
       background: var(--mat-app-primary);
       color: var(--mat-app-on-primary);
     }
-
-    // Keyboard shortcut hint (optional, for future use)
-    &::after {
-      content: attr(data-shortcut);
-      margin-left: auto;
-      opacity: 0.6;
-      font-size: 11px;
-    }
   }
 
-  // Add separator if needed in future
   .xterm-context-menu-separator {
     height: 1px;
     background: var(--mat-app-outline-variant);

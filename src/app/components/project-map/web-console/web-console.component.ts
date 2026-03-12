@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, Input, OnInit, OnDestroy, ViewChi
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
-import { Node } from '../../../cartography/models/node';
+import { Node as GNS3Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { NodeConsoleService } from '@services/nodeConsole.service';
@@ -17,12 +17,14 @@ import { ThemeService } from '@services/theme.service';
 export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() controller: Controller;
   @Input() project: Project;
-  @Input() node: Node;
+  @Input() node: GNS3Node;
 
   public term: Terminal = new Terminal({
     cols: 100,
     rows: 32,
     cursorBlink: true,
+    rightClickSelectsWord: true,  // Enable right-click to select word
+    altClickMovesCursor: true,    // Enable Alt+Click to move cursor
   });
   public fitAddon: FitAddon = new FitAddon();
   public isLightThemeEnabled: boolean = false;
@@ -101,6 +103,9 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Setup ResizeObserver for automatic terminal resizing
     this.setupResizeObserver();
+
+    // Setup context menu for copy/paste
+    this.setupContextMenu();
   }
 
   /**
@@ -139,6 +144,116 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.resizeObserver.observe(this.terminal.nativeElement);
+  }
+
+  /**
+   * Setup context menu for copy/paste operations
+   */
+  private setupContextMenu(): void {
+    const terminalElement = this.terminal?.nativeElement;
+    if (!terminalElement) return;
+
+    // Handle context menu event
+    terminalElement.addEventListener('contextmenu', (event: MouseEvent) => {
+      event.preventDefault();
+
+      const selection = this.term.getSelection();
+      const hasSelection = selection && selection.length > 0;
+
+      // Get current theme
+      const currentTheme = this.themeService.getActualTheme();
+      const themeClass = currentTheme === 'light' ? 'light-theme' : 'dark-theme';
+
+      // Create context menu
+      const contextMenu = document.createElement('div');
+      contextMenu.className = `xterm-context-menu ${themeClass}`;
+      contextMenu.style.position = 'absolute';
+      contextMenu.style.left = `${event.clientX}px`;
+      contextMenu.style.top = `${event.clientY}px`;
+      contextMenu.style.zIndex = '10000';
+
+      // Copy menu item
+      if (hasSelection) {
+        const copyItem = document.createElement('div');
+        copyItem.className = 'xterm-context-menu-item';
+        copyItem.textContent = 'Copy';
+        copyItem.addEventListener('click', () => {
+          navigator.clipboard.writeText(selection).then(() => {
+            // Successfully copied - no terminal output needed
+            this.term.focus();
+          });
+          contextMenu.remove();
+        });
+        contextMenu.appendChild(copyItem);
+      }
+
+      // Paste menu item
+      const pasteItem = document.createElement('div');
+      pasteItem.className = 'xterm-context-menu-item';
+      pasteItem.textContent = 'Paste';
+      pasteItem.addEventListener('click', () => {
+        navigator.clipboard.readText().then((text) => {
+          this.term.paste(text);
+        });
+        contextMenu.remove();
+      });
+      contextMenu.appendChild(pasteItem);
+
+      // Select all menu item
+      const selectAllItem = document.createElement('div');
+      selectAllItem.className = 'xterm-context-menu-item';
+      selectAllItem.textContent = 'Select All';
+      selectAllItem.addEventListener('click', () => {
+        this.term.selectAll();
+        contextMenu.remove();
+      });
+      contextMenu.appendChild(selectAllItem);
+
+      // Clear selection menu item
+      if (hasSelection) {
+        const clearSelectionItem = document.createElement('div');
+        clearSelectionItem.className = 'xterm-context-menu-item';
+        clearSelectionItem.textContent = 'Clear Selection';
+        clearSelectionItem.addEventListener('click', () => {
+          this.term.clearSelection();
+          contextMenu.remove();
+        });
+        contextMenu.appendChild(clearSelectionItem);
+      }
+
+      // Add to document
+      document.body.appendChild(contextMenu);
+
+      // Focus back to terminal after menu interaction
+      const focusTerminal = () => {
+        this.term.focus();
+      };
+
+      // Remove menu on click outside
+      const removeMenu = (e: MouseEvent) => {
+        if (!contextMenu.contains(e.target as globalThis.Node)) {
+          contextMenu.remove();
+          document.removeEventListener('click', removeMenu);
+          document.removeEventListener('keydown', handleEscape);
+          focusTerminal();
+        }
+      };
+
+      // Remove menu on Escape key
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          contextMenu.remove();
+          document.removeEventListener('click', removeMenu);
+          document.removeEventListener('keydown', handleEscape);
+          focusTerminal();
+        }
+      };
+
+      setTimeout(() => {
+        document.addEventListener('click', removeMenu);
+        document.addEventListener('keydown', handleEscape);
+      }, 0);
+    });
   }
 
   /**
