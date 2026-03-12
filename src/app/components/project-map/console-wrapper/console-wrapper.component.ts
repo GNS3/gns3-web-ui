@@ -79,8 +79,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   minimize(value: boolean) {
     this.isMinimized = value;
     if (!value) {
-      // Restore from minimized state - preserve current left position
+      // Restore from minimized state - preserve current left and bottom positions
       const currentLeft = (this.style as WindowStyle).left || '80px';
+      const currentBottom = (this.style as WindowStyle).bottom || '20px';
 
       if (this.isMaximized) {
         // Restore to maximized state
@@ -96,7 +97,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       } else {
         // Restore to normal state
         this.style = {
-          bottom: '20px',
+          bottom: currentBottom,
           left: currentLeft,
           width: `${this.resizedWidth}px`,
           height: `${this.resizedHeight}px`
