@@ -166,8 +166,8 @@ export interface ToolDetailsDialogData {
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
     }
 
-    /* Dark mode colors */
-    ::ng-deep .dark-theme .json-container {
+    /* ngx-json-viewer theme colors - scoped to this dialog using panelClass */
+    ::ng-deep .tool-details-dialog.dark-theme .json-container {
       --ngx-json-string: #a5d6ff;
       --ngx-json-number: #79c0ff;
       --ngx-json-boolean: #ff7b72;
@@ -183,8 +183,8 @@ export interface ToolDetailsDialogData {
       --ngx-json-value: var(--mat-app-on-surface);
     }
 
-    /* Light mode colors */
-    ::ng-deep .light-theme .json-container {
+    /* Light mode colors - scoped */
+    ::ng-deep .tool-details-dialog.light-theme .json-container {
       --ngx-json-string: #0451a5;
       --ngx-json-number: #098658;
       --ngx-json-boolean: #0000ff;
@@ -223,8 +223,8 @@ export interface ToolDetailsDialogData {
       background: rgba(0, 151, 167, 0.5);
     }
 
-    /* Dialog container styling with glassmorphism effect */
-    ::ng-deep .mat-dialog-container {
+    /* Dialog container styling with glassmorphism effect - scoped using panelClass */
+    ::ng-deep .tool-details-dialog .mat-dialog-container {
       border-radius: 16px !important;
       border: 1px solid var(--mat-app-outline-variant);
       backdrop-filter: blur(16px) saturate(180%) !important;
@@ -232,18 +232,18 @@ export interface ToolDetailsDialogData {
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.15) !important;
     }
 
-    /* Make dialog surface transparent for glassmorphism */
-    ::ng-deep .mat-dialog-container .mat-dialog-surface {
+    /* Make dialog surface transparent for glassmorphism - scoped */
+    ::ng-deep .tool-details-dialog .mat-dialog-container .mat-dialog-surface {
       background-color: transparent !important;
     }
 
-    /* Dark theme glassmorphism */
-    ::ng-deep .dark-theme .mat-dialog-container {
+    /* Dark theme glassmorphism - scoped */
+    ::ng-deep .tool-details-dialog.dark-theme .mat-dialog-container {
       background-color: rgba(30, 41, 55, 0.75) !important;
     }
 
-    /* Light theme glassmorphism */
-    ::ng-deep .light-theme .mat-dialog-container {
+    /* Light theme glassmorphism - scoped */
+    ::ng-deep .tool-details-dialog.light-theme .mat-dialog-container {
       background-color: rgba(255, 255, 255, 0.85) !important;
     }
   `]

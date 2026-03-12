@@ -2,7 +2,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-10
+**Last Updated**: 2026-03-13
 
 ---
 
@@ -12,6 +12,7 @@
 docs/
 ├── ai-chat-complete-guide.md             # ⭐ Complete AI Chat implementation guide
 ├── console-devices-panel-implementation.md # Console devices panel docs (v1.7.0)
+├── dialog-style-isolation-guide.md       # Dialog style isolation using panelClass
 ├── window-boundary-service.md            # Window boundary service documentation
 └── README.md                             # This file
 ```
@@ -26,6 +27,7 @@ docs/
 |----------|-------------|
 | [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) | ⭐ Complete AI Chat implementation guide |
 | [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.7.0) |
+| [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) | Dialog style isolation using panelClass |
 | [window-boundary-service.md](./window-boundary-service.md) | Window boundary service |
 
 ---
@@ -36,17 +38,25 @@ docs/
 
 - **AI Chat Feature**: [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) - Complete AI Chat implementation guide
 - **Console Devices Panel**: [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) - Multi-device console management
+- **Dialog Style Isolation**: [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) - Using panelClass to prevent style pollution
 - **Window Boundary Service**: [window-boundary-service.md](./window-boundary-service.md) - Window boundary management
 
 ### Getting Started
 
 1. **New to AI Chat?** Start with [ai-chat-complete-guide.md](./ai-chat-complete-guide.md)
 2. **Console Management?** See [console-devices-panel-implementation.md](./console-devices-panel-implementation.md)
-3. **Service Integration?** Check [window-boundary-service.md](./window-boundary-service.md)
+3. **Dialog Styling?** Check [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md)
+4. **Service Integration?** Check [window-boundary-service.md](./window-boundary-service.md)
 
 ---
 
 ## 📝 Recent Updates
+
+### 2026-03-13
+- ✅ **Dialog Style Isolation Guide**: New documentation for using panelClass to scope dialog styles
+  - Explains how to prevent `.mat-dialog-container` style pollution
+  - Provides complete example with `tool-details-dialog` component
+  - Includes theme-specific styling patterns
 
 ### 2026-03-10
 - ✅ **Documentation Restructuring**: Flattened documentation structure
@@ -59,4 +69,4 @@ docs/
 
 ---
 
-*Last Updated: 2026-03-10*
+*Last Updated: 2026-03-13*
