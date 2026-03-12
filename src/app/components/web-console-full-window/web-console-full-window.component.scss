@@ -1,7 +1,7 @@
 // xterm Context Menu Styles for Full Window Console
 .xterm-context-menu {
-  background: var(--mat-app-surface-container);
-  border: 1px solid var(--mat-app-outline-variant);
+  background: rgba(32, 49, 59, 0.95);
+  border: 1px solid rgba(0, 151, 167, 0.3);
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 4px 0;
@@ -16,7 +16,7 @@
 
   .xterm-context-menu-item {
     padding: 8px 16px;
-    color: var(--mat-app-on-surface);
+    color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     transition: all 0.15s ease;
     display: flex;
@@ -24,19 +24,19 @@
     gap: 8px;
 
     &:hover {
-      background: var(--mat-app-primary-container);
-      color: var(--mat-app-on-primary-container);
+      background: rgba(0, 151, 167, 0.15);
+      color: #ffffff;
     }
 
     &:active {
-      background: var(--mat-app-primary);
-      color: var(--mat-app-on-primary);
+      background: rgba(0, 151, 167, 0.25);
+      color: #ffffff;
     }
   }
 
   .xterm-context-menu-separator {
     height: 1px;
-    background: var(--mat-app-outline-variant);
+    background: rgba(0, 151, 167, 0.3);
     margin: 4px 0;
   }
 }
