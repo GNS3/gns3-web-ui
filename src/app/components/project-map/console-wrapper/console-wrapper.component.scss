@@ -68,9 +68,78 @@
   cursor: grabbing;
 }
 
+// Enhanced hover effects for header buttons
+.consoleHeader {
+  .mat-icon-button {
+    transition: all 0.2s ease;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: rgba(0, 151, 167, 0.15);
+      transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0, 151, 167, 0.2);
+
+      mat-icon {
+        color: #4dd0e1;
+        filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.6));
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+      background-color: rgba(0, 151, 167, 0.25);
+    }
+  }
+
+  // Close button special hover effect (red tint)
+  .mat-icon-button[title="Close"]:hover,
+  .mat-icon-button[title~="close"]:hover {
+    background-color: rgba(244, 67, 54, 0.15);
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+
+    mat-icon {
+      color: #ff8a80;
+      filter: drop-shadow(0 0 4px rgba(244, 67, 54, 0.6));
+    }
+
+    &:active {
+      background-color: rgba(244, 67, 54, 0.25);
+    }
+  }
+}
+
 .lightThemeConsoleHeader {
   background: white !important;
   color: black !important;
+
+  .mat-icon-button {
+    &:hover {
+      background-color: rgba(0, 151, 167, 0.1);
+
+      mat-icon {
+        color: #0097a7;
+        filter: none;
+      }
+    }
+
+    &:active {
+      background-color: rgba(0, 151, 167, 0.2);
+    }
+  }
+
+  // Close button hover in light theme
+  .mat-icon-button[title="Close"]:hover,
+  .mat-icon-button[title~="close"]:hover {
+    background-color: rgba(244, 67, 54, 0.1);
+
+    mat-icon {
+      color: #d32f2f;
+    }
+
+    &:active {
+      background-color: rgba(244, 67, 54, 0.2);
+    }
+  }
 }
 
 :host ::ng-deep .mat-tab-label {

@@ -3,8 +3,8 @@
   flex-direction: column;
   width: 200px;
   height: 100%;
-  background-color: var(--mat-app-surface);
-  border-right: 1px solid var(--mat-app-outline-variant);
+  background-color: #263238;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
   transition: width 0.2s ease;
 
   &.collapsed {
@@ -19,8 +19,8 @@
   justify-content: center;
   height: 48px;
   padding: 0 12px;
-  border-bottom: 1px solid var(--mat-app-outline-variant);
-  background-color: var(--mat-app-surface-container);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: #1e2329;
   flex-shrink: 0;
 
   &.clickable {
@@ -29,11 +29,11 @@
   }
 
   &:hover.clickable {
-    background-color: var(--mat-app-surface-container-high);
+    background-color: #343a42;
   }
 
   &:active.clickable {
-    background-color: var(--mat-app-surface-container-highest);
+    background-color: #3c434c;
   }
 }
 
@@ -45,14 +45,14 @@
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: var(--mat-app-on-surface);
+  color: rgba(255, 255, 255, 0.87);
 }
 
 .panel-icon {
   font-size: 20px;
   width: 20px;
   height: 20px;
-  color: var(--mat-app-primary);
+  color: #0097a7;
   transition: transform 0.2s;
 }
 
@@ -103,16 +103,16 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: var(--mat-app-surface-container-low);
+  background: #2c3138;
 
   &:hover {
-    background: var(--mat-app-surface-container-high);
+    background: #343a42;
     transform: translateX(4px);
     box-shadow: 0 2px 8px rgba(0, 151, 167, 0.2);
   }
 
   &.started {
-    border-left: 3px solid var(--mat-app-primary);
+    border-left: 3px solid #0097a7;
   }
 }
 
@@ -139,7 +139,7 @@
 .device-name {
   font-size: 13px;
   font-weight: 500;
-  color: var(--mat-app-on-surface);
+  color: rgba(255, 255, 255, 0.87);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -155,13 +155,13 @@
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: var(--mat-app-primary);
+  color: #0097a7;
   flex-shrink: 0;
   opacity: 0.8;
   transition: all 0.2s ease;
 
   &.disabled {
-    color: var(--mat-app-on-surface-variant);
+    color: rgba(255, 255, 255, 0.60);
     opacity: 0.4;
   }
 }
@@ -185,14 +185,14 @@
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: var(--mat-app-on-surface-variant);
+  color: rgba(255, 255, 255, 0.60);
   opacity: 0.4;
   margin-bottom: 12px;
 }
 
 .empty-text {
   font-size: 13px;
-  color: var(--mat-app-on-surface-variant);
+  color: rgba(255, 255, 255, 0.60);
   opacity: 0.8;
 }
 
