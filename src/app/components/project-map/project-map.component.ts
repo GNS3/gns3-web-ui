@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -18,6 +19,7 @@ import * as Mousetrap from 'mousetrap';
 import { from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
+import * as d3 from 'd3';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
@@ -134,6 +136,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private scrollY: number = 0;
   private scrollEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
+  private highlightedNodeId: string = null;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
@@ -1138,7 +1141,80 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
-  public ngOnDestroy() {
+  /**
+   * Handle device selection from console devices panel
+   * Highlights the selected node and its connected links in the topology
+   */
+  public onDeviceSelected(nodeId: string): void {
+    // Clear previous highlight first
+    this.clearConsoleHighlight();
+
+    this.highlightedNodeId = nodeId;
+
+    // Highlight the selected node with pulse animation
+    const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
+    if (!nodeElement.empty()) {
+      nodeElement.classed('console-highlight', true);
+    }
+
+    // Highlight connected links and their connected nodes
+    d3.selectAll('g.link_body').each(function(link: any) {
+      if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
+        d3.select(this).classed('console-highlight', true);
+
+        // Highlight the other node connected by this link (without pulse)
+        const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
+        if (otherNodeId) {
+          const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
+          if (!otherNodeElement.empty()) {
+            otherNodeElement.classed('console-highlight-connected', true);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Clear console device highlight
+   */
+  public clearConsoleHighlight(): void {
+    const nodeId = this.highlightedNodeId;
+    if (nodeId) {
+      // Remove highlight from selected node
+      const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
+      if (!nodeElement.empty()) {
+        nodeElement.classed('console-highlight', false);
+      }
+
+      // Remove highlight from connected links and their nodes
+      d3.selectAll('g.link_body').each(function(link: any) {
+        if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
+          d3.select(this).classed('console-highlight', false);
+
+          // Remove highlight from the other connected node
+          const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
+          if (otherNodeId) {
+            const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
+            if (!otherNodeElement.empty()) {
+              otherNodeElement.classed('console-highlight-connected', false);
+            }
+          }
+        }
+      });
+
+      this.highlightedNodeId = null;
+    }
+  }
+
+  /**
+   * Handle ESC key to clear highlight
+   */
+  @HostListener('window:keydown.escape')
+  onEscapeKey(): void {
+    this.clearConsoleHighlight();
+  }
+
+  public ngOnDestroy(): void {
     // Close AI Chat when leaving project
     this.onLeaveProject();
 

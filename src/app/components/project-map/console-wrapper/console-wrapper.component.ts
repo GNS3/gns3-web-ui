@@ -25,6 +25,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   @Input() controller: Controller;
   @Input() project: Project;
   @Output() closeConsole = new EventEmitter<boolean>();
+  @Output() deviceSelected = new EventEmitter<string>();
+  @Output() consoleDeactivated = new EventEmitter<void>();
 
   filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   selectedFilter: string = 'all';
@@ -66,13 +68,20 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
     this.boundaryService.setConfig({ topOffset: toolbarHeight });
 
-    this.consoleService.nodeConsoleTrigger.subscribe((node) => {
+    this.consoleService.nodeConsoleTrigger.pipe(takeUntil(this.destroy$)).subscribe((node) => {
       this.addTab(node, true);
     });
 
-    this.consoleService.closeNodeConsoleTrigger.subscribe((node) => {
+    this.consoleService.closeNodeConsoleTrigger.pipe(takeUntil(this.destroy$)).subscribe((node) => {
       let index = this.nodes.findIndex((n) => n.node_id === node.node_id);
       this.removeTab(index);
+    });
+
+    // Listen to tab changes and emit deviceSelected event
+    this.selected.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((index: number) => {
+      if (index >= 0 && index < this.nodes.length) {
+        this.deviceSelected.emit(this.nodes[index].node_id);
+      }
     });
   }
 
@@ -243,6 +252,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
    */
   onDeviceSelected(node: Node): void {
     this.addTab(node, true);
+    this.deviceSelected.emit(node.node_id);
   }
 
   /**
@@ -315,8 +325,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     setTimeout(() => {
       const consoleElement = document.querySelector('.consoleWrapper');
       if (consoleElement && !consoleElement.contains(event.target as any)) {
-        this.isConsoleActive = false;
-        this.cdr.markForCheck();
+        if (this.isConsoleActive) {
+          this.isConsoleActive = false;
+          this.consoleDeactivated.emit();
+          this.cdr.markForCheck();
+        }
       }
     }, 0);
   }

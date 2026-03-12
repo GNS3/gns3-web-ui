@@ -445,3 +445,83 @@ mat-menu-panel {
 .marked {
   color: #0097a7 !important;
 }
+
+/* ============================================================================
+ * Console Device Highlight Styles
+ * Highlight selected console device and its connected links in topology
+ * ============================================================================ */
+
+g.node.console-highlight {
+  // Selected node - purple color
+  // Use animated drop-shadow to create a "breathing" effect
+  animation: nodeHighlightGlow 2s ease-in-out infinite;
+
+  .node_body {
+    stroke: #8b5cf6;
+    stroke-width: 3px;
+  }
+
+  // Exclude label from stroke effect - keep original color
+  .layer_label,
+  .layer_label_wrapper,
+  .label_container,
+  .label,
+  text {
+    stroke: none !important;
+    fill: inherit !important;
+  }
+}
+
+// Connected node highlight (no animation, just static glow)
+g.node.console-highlight-connected {
+  filter: drop-shadow(0 0 4px #3b82f6);
+
+  .node_body {
+    stroke: #3b82f6;
+    stroke-width: 3px;
+  }
+
+  // Exclude label from stroke effect - keep original color
+  .layer_label,
+  .layer_label_wrapper,
+  .label_container,
+  .label,
+  text {
+    stroke: none !important;
+    fill: inherit !important;
+  }
+}
+
+@keyframes nodeHighlightGlow {
+ 0%, 100% {
+    filter: drop-shadow(0 0 6px #8b5cf6);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px #8b5cf6) drop-shadow(0 0 10px #8b5cf6);
+  }
+}
+
+g.link_body.console-highlight {
+  // Highlight the edge line only with animated dash
+  > path.ethernet_link,
+  > path.serial_link {
+    stroke: #60a5fa !important;
+    stroke-width: 4px !important;
+    stroke-dasharray: 10 5;
+    animation: linkDashAnimation 1s linear infinite;
+  }
+
+  // Force label text to keep original color using !important on fill attribute
+  .status_label text {
+    fill: #111111 !important;
+  }
+}
+
+@keyframes linkDashAnimation {
+  from {
+    stroke-dashoffset: 15;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

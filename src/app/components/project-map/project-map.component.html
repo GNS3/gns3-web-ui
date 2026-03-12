@@ -257,6 +257,8 @@
       [controller]="controller"
       [project]="project"
       (closeConsole)="toggleShowConsole($event)"
+      (deviceSelected)="onDeviceSelected($event)"
+      (consoleDeactivated)="clearConsoleHighlight()"
     ></app-console-wrapper>
   </div>
 
