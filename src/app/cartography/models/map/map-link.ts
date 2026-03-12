@@ -23,6 +23,7 @@ export class MapLink implements Indexed {
 
   isSelected = false; // this is not from controller
   isMultiplied = false; // this is not from controller
+  parallelLinksCount = 1; // this is not from controller
   x: number; // this is not from controller
   y: number; // this is not from controller
 }
