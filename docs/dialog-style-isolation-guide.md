@@ -96,16 +96,17 @@ openToolDetailsDialog(): void {
     /* Dialog container styles - scoped using panelClass */
     ::ng-deep .tool-details-dialog .mat-dialog-container {
       border-radius: 16px !important;
-      backdrop-filter: blur(16px) saturate(180%) !important;
+      /* Performance optimized: removed backdrop-filter */
+      backdrop-filter: none !important;
     }
 
-    /* Theme-specific styles */
+    /* Theme-specific styles - fully opaque backgrounds */
     ::ng-deep .tool-details-dialog.dark-theme .mat-dialog-container {
-      background-color: rgba(30, 41, 55, 0.75) !important;
+      background-color: rgba(32, 49, 59, 1) !important;
     }
 
     ::ng-deep .tool-details-dialog.light-theme .mat-dialog-container {
-      background-color: rgba(255, 255, 255, 0.85) !important;
+      background-color: rgba(250, 250, 250, 1) !important;
     }
 
     /* Third-party component variable isolation */

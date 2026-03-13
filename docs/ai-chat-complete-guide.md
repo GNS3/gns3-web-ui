@@ -264,7 +264,7 @@ closeDialog()
 - Collapsible nodes
 - Copy to clipboard
 - Dark/light theme support
-- Glassmorphism effect (backdrop-filter blur)
+- Solid background (performance optimized, no glassmorphism)
 - Resizable dialog (800px default, min 600px, max 95vw)
 
 **Theme Support**:
