@@ -267,23 +267,16 @@
 .streaming-indicator {
   flex-shrink: 0;
   margin-top: 4px;
-  animation: pulse-glow 1.5s ease-in-out infinite;
+  // Performance optimized: removed animation, using static styles
+  opacity: 0.9;
 
   ::ng-deep mat-spinner circle {
     stroke: var(--ai-chat-primary-color);
   }
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.7;
-    filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.3));
-  }
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 0 8px rgba(0, 151, 167, 0.6));
-  }
-}
+// Performance optimized: removed pulse-glow animation
+// @keyframes pulse-glow { ... }
 
 .tool-calls-container {
   display: flex;

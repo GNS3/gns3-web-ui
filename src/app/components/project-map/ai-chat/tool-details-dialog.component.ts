@@ -223,12 +223,13 @@ export interface ToolDetailsDialogData {
       background: rgba(0, 151, 167, 0.5);
     }
 
-    /* Dialog container styling with glassmorphism effect - scoped using panelClass */
+    /* Dialog container styling - performance optimized: removed glassmorphism */
     ::ng-deep .tool-details-dialog .mat-dialog-container {
       border-radius: 16px !important;
       border: 1px solid var(--mat-app-outline-variant);
-      backdrop-filter: blur(16px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+      /* Performance optimized: removed backdrop-filter */
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.15) !important;
     }
 
@@ -237,14 +238,14 @@ export interface ToolDetailsDialogData {
       background-color: transparent !important;
     }
 
-    /* Dark theme glassmorphism - scoped */
+    /* Dark theme styling - performance optimized: fully opaque */
     ::ng-deep .tool-details-dialog.dark-theme .mat-dialog-container {
-      background-color: rgba(30, 41, 55, 0.75) !important;
+      background-color: rgba(32, 49, 59, 1) !important;
     }
 
-    /* Light theme glassmorphism - scoped */
+    /* Light theme styling - performance optimized: fully opaque */
     ::ng-deep .tool-details-dialog.light-theme .mat-dialog-container {
-      background-color: rgba(255, 255, 255, 0.85) !important;
+      background-color: rgba(250, 250, 250, 1) !important;
     }
   `]
 })

@@ -351,13 +351,8 @@ line.selected {
 svg.map image:hover,
 svg.map image.chosen,
 g.selected {
-  -webkit-filter: grayscale(100%);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: grayscale(100%);
-  filter: gray;
-  filter: url('#grayscale'); /* Chrome doesn't support CSS filters on SVG */
+  // Performance optimized: replaced grayscale filter with opacity (no GPU-heavy filter)
+  opacity: 1;
 }
 
 path.selected {
@@ -452,13 +447,14 @@ mat-menu-panel {
  * ============================================================================ */
 
 g.node.console-highlight {
-  // Selected node - red color, static glow (no animation)
+  // Selected node - red glow only (no border color change)
   will-change: filter;
-  filter: drop-shadow(0 0 4px #ef4444);
+  filter: drop-shadow(0 0 5px #ef4444);
 
   .node_body {
-    stroke: #ef4444;
-    stroke-width: 4px;
+    // No stroke color change - keep original node border color
+    // Only add red glow effect
+    stroke-width: 5px;
   }
 
   // Exclude label from stroke effect - keep original color
@@ -478,7 +474,8 @@ g.node.console-highlight-connected {
   filter: drop-shadow(0 0 3px #3b82f6);
 
   .node_body {
-    stroke: #3b82f6;
+    // No stroke color change - keep original node border color
+    // Only add blue glow effect
     stroke-width: 3px;
   }
 
@@ -494,13 +491,12 @@ g.node.console-highlight-connected {
 }
 
 g.link_body.console-highlight {
-  // Highlight the edge line only with animated dash
+  // Performance optimized: removed animation, using static red color
   > path.ethernet_link,
   > path.serial_link {
-    stroke: #60a5fa !important;
+    stroke: #ef4444 !important;
     stroke-width: 4px !important;
-    stroke-dasharray: 10 5;
-    animation: linkDashAnimation 1s linear infinite;
+    // No animation, no dash - solid red line
   }
 
   // Force label text to keep original color using !important on fill attribute
@@ -509,11 +505,4 @@ g.link_body.console-highlight {
   }
 }
 
-@keyframes linkDashAnimation {
-  from {
-    stroke-dashoffset: 15;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
+// Performance optimized: removed linkDashAnimation (no longer used)
