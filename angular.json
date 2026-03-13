@@ -29,9 +29,7 @@
                             "stylenames",
                             "source-map-js",
                             "spark-md5",
-                            "xterm",
-                            "xterm-addon-attach",
-                            "xterm-addon-fit",
+                            "ghostty-web",
                             "ipaddr.js"
                         ],
                         "outputPath": "dist",
@@ -42,7 +40,12 @@
                         "assets": [
                             "src/assets",
                             "src/favicon.ico",
-                            "src/ReleaseNotes.txt"
+                            "src/ReleaseNotes.txt",
+                            {
+                                "glob": "ghostty-vt.wasm",
+                                "input": "node_modules/ghostty-web/dist",
+                                "output": "/"
+                            }
                         ],
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
@@ -170,7 +173,12 @@
                         "sourceMap": false,
                         "assets": [
                             "src/assets",
-                            "src/favicon.ico"
+                            "src/favicon.ico",
+                            {
+                                "glob": "ghostty-vt.wasm",
+                                "input": "node_modules/ghostty-web/dist",
+                                "output": "/"
+                            }
                         ]
                     }
                 },

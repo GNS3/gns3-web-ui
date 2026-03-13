@@ -4,13 +4,22 @@
   }
 }
 
+:host {
+  --console-header-height: 40px;
+  --console-active-tab-radius: 10px;
+  --console-active-tab-bg-dark: #0b91d1;
+  --console-active-tab-bg-light: #0b91d1;
+  --console-close-btn-bg: #c62828;
+  --console-close-btn-bg-hover: #b71c1c;
+}
+
 .consoleWrapper {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   position: fixed;
   bottom: 40px;
   left: 80px;
   height: 180px;
-  width: 600px;
+  width: 800px;
   background: #000000 !important;
   color: white;
   overflow: hidden;
@@ -23,28 +32,16 @@
   color: black;
 }
 
-.filterButton {
-  background: transparent;
-  color: white;
-  border: none;
-  margin-top: 0px;
-  outline: none;
-  color: #dbd5d5;
-  font-weight: bold;
-  padding: 0px;
-}
-
-.consoleFiltering {
-  display: flex;
-}
-
 .consoleHeader {
   width: 100%;
+  height: var(--console-header-height);
   font-size: 12px;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
-  padding: 2px;
-  justify-content: space-between;
+  align-items: center;
+  padding: 0 6px;
+  box-sizing: border-box;
+  justify-content: flex-start;
   background: #263238 !important;
 }
 
@@ -53,15 +50,90 @@
   color: black !important;
 }
 
-:host ::ng-deep .mat-tab-label {
-  height: 3rem !important;
-  min-width: 8rem !important;
+:host ::ng-deep .mat-tab-label,
+:host ::ng-deep .mat-mdc-tab {
+  height: calc(var(--console-header-height) - 4px) !important;
+  margin-top: 4px !important;
 }
 
-:host ::ng-deep .mat-tab-label.mat-tab-label-active {
+:host ::ng-deep .mat-tab-label {
+  min-width: 7rem !important;
+  padding: 0 12px !important;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active,
+:host ::ng-deep .mat-tab-label.mat-tab-label-active:hover,
+:host ::ng-deep .mat-tab-label.mat-tab-label-active:focus,
+:host ::ng-deep .mat-tab-label.mat-tab-label-active.cdk-focused,
+:host ::ng-deep .mat-tab-label.mat-tab-label-active.cdk-program-focused {
+  background: var(--console-active-tab-bg-dark) !important;
+  border-radius: var(--console-active-tab-radius) var(--console-active-tab-radius) 0 0;
+  color: #ffffff !important;
+  opacity: 1 !important;
   border-bottom: 2px solid #0097a7;
   box-sizing: border-box;
   font-weight: 1200;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: none !important;
+}
+
+:host ::ng-deep .lightThemeConsoleHeader .mat-tab-label.mat-tab-label-active,
+:host ::ng-deep .lightThemeConsoleHeader .mat-tab-label.mat-tab-label-active:hover,
+:host ::ng-deep .lightThemeConsoleHeader .mat-tab-label.mat-tab-label-active:focus,
+:host ::ng-deep .lightThemeConsoleHeader .mat-tab-label.mat-tab-label-active.cdk-focused,
+:host ::ng-deep .lightThemeConsoleHeader .mat-tab-label.mat-tab-label-active.cdk-program-focused {
+  background: var(--console-active-tab-bg-light) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active .mat-tab-label-content {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active:hover,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active:focus,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active.cdk-focused,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active.cdk-program-focused {
+  background: var(--console-active-tab-bg-dark) !important;
+  border-radius: var(--console-active-tab-radius) var(--console-active-tab-radius) 0 0;
+  opacity: 1 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: none !important;
+}
+
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab.mdc-tab--active,
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab.mdc-tab--active:hover,
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab.mdc-tab--active:focus,
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab.mdc-tab--active.cdk-focused,
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab.mdc-tab--active.cdk-program-focused {
+  background: var(--console-active-tab-bg-light) !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .lightThemeConsoleHeader .mat-tab-label:not(.mat-tab-label-active),
+:host ::ng-deep .lightThemeConsoleHeader .mat-mdc-tab:not(.mdc-tab--active) {
+  background: transparent !important;
+  opacity: 1 !important;
+}
+
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__ripple::before,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__ripple::after,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .mat-ripple-element,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .mat-mdc-focus-indicator::before {
+  opacity: 0 !important;
 }
 
 :host ::ng-deep .mat-ink-bar {
@@ -69,38 +141,185 @@
 }
 
 .tabs {
-  width: 80%;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--console-header-height);
 }
 
-.console {
-  width: 596px;
-  height: 120px;
-  overflow-y: scroll;
-  padding: 2px;
-  color: #dbd5d5;
-  scrollbar-color: darkgrey #263238;
-  scrollbar-width: thin;
-}
-
-.xterm-console {
-  background: black;
-}
-
-.consoleInput {
-  width: 100%;
-  height: 30px;
-  padding: 2px;
+.header-actions {
+  height: 100%;
   display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  margin-right: 6px;
+  position: relative;
 }
 
-.commandLine {
-  background-color: transparent;
-  color: white;
+.color-picker-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.color-picker-popover {
+  position: absolute;
+  top: calc(var(--console-header-height) - 2px);
+  right: 0;
+  min-width: 210px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #1f2a30;
+  color: #ffffff;
+  z-index: 12;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.color-row span {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 104px;
+  white-space: nowrap;
+}
+
+.color-row input[type='color'] {
+  width: 38px;
+  height: 22px;
   border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
 }
 
-.inputIcon {
-  margin-top: 2px;
+.color-reset-btn {
+  width: 100%;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  background: transparent;
+  color: #e8f0f4;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.color-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tab-title {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 16px;
+  margin-left: 20px;
+  margin-right: 10px;
+}
+
+:host ::ng-deep .tabs .mat-tab-header,
+:host ::ng-deep .tabs .mat-tab-label-container {
+  height: var(--console-header-height) !important;
+}
+
+.terminal-console {
+  background: #000000;
+  height: calc(100% - var(--console-header-height));
+}
+
+:host ::ng-deep .tabs .mat-tab-label-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.tab-close-btn {
+  margin-left: 0;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  line-height: 24px !important;
+  padding: 0 !important;
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.tab-close-btn .mat-icon {
+  width: 14px !important;
+  height: 14px !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+}
+
+.header-action-btn,
+.tab-close-btn {
+  color: white;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active .tab-close-btn,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .tab-close-btn {
+  background: var(--console-close-btn-bg) !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active .tab-close-btn:hover,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .tab-close-btn:hover {
+  background: var(--console-close-btn-bg-hover) !important;
+}
+
+:host ::ng-deep .mat-tab-label.mat-tab-label-active .tab-close-btn .mat-icon,
+:host ::ng-deep .mat-mdc-tab.mdc-tab--active .tab-close-btn .mat-icon {
+  color: #ffffff !important;
+}
+
+.header-close-btn {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  line-height: 26px !important;
+  padding: 0 !important;
+  background: var(--console-close-btn-bg) !important;
+  border-radius: 6px;
+  color: #ffffff !important;
+}
+
+.header-close-btn:hover {
+  background: var(--console-close-btn-bg-hover) !important;
+}
+
+.header-close-btn .mat-icon {
+  width: 14px !important;
+  height: 14px !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .consoleHeader .mat-icon-button {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  line-height: 30px;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .consoleHeader .mat-icon-button .mat-icon {
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+  line-height: 19px;
 }
 
 mat-icon {
@@ -126,6 +345,3 @@ input:focus {
   outline: 1px solid #263238;
 }
 
-.closeButton {
-  cursor: pointer;
-}

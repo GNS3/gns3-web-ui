@@ -1,34 +1,42 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { ResizeEvent } from 'angular-resizable-element';
+import { Subscription } from 'rxjs';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
+import {
+  DEFAULT_CONSOLE_BACKGROUND_COLOR,
+  DEFAULT_CONSOLE_FOREGROUND_COLOR,
+  loadConsoleColors,
+  saveConsoleColors,
+} from '@services/terminal/ghostty-console-helpers';
 
 @Component({
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],
 })
-export class ConsoleWrapperComponent implements OnInit {
+export class ConsoleWrapperComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
   @Input() project: Project;
   @Output() closeConsole = new EventEmitter<boolean>();
 
-  filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
-  selectedFilter: string = 'all';
-
   public style: object = {};
-  public styleInside: object = { height: `120px` };
   public isDraggingEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
+  public isColorPickerOpen: boolean = false;
+  public consoleForegroundColor: string = DEFAULT_CONSOLE_FOREGROUND_COLOR;
+  public consoleBackgroundColor: string = DEFAULT_CONSOLE_BACKGROUND_COLOR;
 
-  public resizedWidth: number = 720;
+  public resizedWidth: number = 800;
   public resizedHeight: number = 480;
+  private readonly consoleHeaderHeight: number = 40;
+  private readonly subscriptions: Subscription = new Subscription();
 
   constructor(
     private consoleService: NodeConsoleService,
@@ -40,19 +48,33 @@ export class ConsoleWrapperComponent implements OnInit {
   selected = new UntypedFormControl(0);
 
   ngOnInit() {
+    const storedColors = loadConsoleColors();
+    this.consoleForegroundColor = storedColors.foregroundColor;
+    this.consoleBackgroundColor = storedColors.backgroundColor;
+
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '80px', width: '720px', height: '460px' };
+    this.style = { bottom: '20px', left: '80px', width: '800px', height: '460px' };
 
-    this.consoleService.nodeConsoleTrigger.subscribe((node) => {
-      this.addTab(node, true);
-    });
+    this.subscriptions.add(
+      this.consoleService.nodeConsoleTrigger.subscribe((node) => {
+        this.addTab(node, true);
+      })
+    );
 
-    this.consoleService.closeNodeConsoleTrigger.subscribe((node) => {
-      let index = this.nodes.findIndex((n) => n.node_id === node.node_id);
-      this.removeTab(index);
-    });
+    this.subscriptions.add(
+      this.consoleService.closeNodeConsoleTrigger.subscribe((node) => {
+        let index = this.nodes.findIndex((n) => n.node_id === node.node_id);
+        if (index >= 0) {
+          this.removeTab(index);
+        }
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   minimize(value: boolean) {
@@ -60,7 +82,12 @@ export class ConsoleWrapperComponent implements OnInit {
     if (!value) {
       this.style = { bottom: '20px', left: '80px', width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
     } else {
-      this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px' };
+      this.style = {
+        bottom: '20px',
+        left: '20px',
+        width: `${this.resizedWidth}px`,
+        height: `${this.consoleHeaderHeight}px`,
+      };
     }
   }
 
@@ -76,8 +103,75 @@ export class ConsoleWrapperComponent implements OnInit {
   }
 
   removeTab(index: number) {
+    if (index < 0 || index >= this.nodes.length) {
+      return;
+    }
+
     this.nodes.splice(index, 1);
-    this.consoleService.openConsoles--;
+
+    this.consoleService.openConsoles = Math.max(0, this.consoleService.openConsoles - 1);
+
+    const maxSelectedIndex = this.nodes.length;
+    if (this.selected.value > maxSelectedIndex) {
+      this.selected.setValue(maxSelectedIndex);
+    }
+  }
+
+  onHeaderMouseDown(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest('button, input, .color-picker-popover')) {
+      return;
+    }
+
+    this.toggleDragging(true);
+  }
+
+  toggleColorPicker(event: MouseEvent) {
+    event.stopPropagation();
+    this.isColorPickerOpen = !this.isColorPickerOpen;
+  }
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMouseDown(event: MouseEvent) {
+    if (!this.isColorPickerOpen) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    if (target?.closest('.color-picker-wrapper')) {
+      return;
+    }
+
+    this.isColorPickerOpen = false;
+  }
+
+  onForegroundColorInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    if (value) {
+      this.consoleForegroundColor = value;
+      this.persistConsoleColors();
+    }
+  }
+
+  onBackgroundColorInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    if (value) {
+      this.consoleBackgroundColor = value;
+      this.persistConsoleColors();
+    }
+  }
+
+  resetConsoleColors() {
+    this.consoleForegroundColor = DEFAULT_CONSOLE_FOREGROUND_COLOR;
+    this.consoleBackgroundColor = DEFAULT_CONSOLE_BACKGROUND_COLOR;
+    this.persistConsoleColors();
+  }
+
+  private persistConsoleColors() {
+    saveConsoleColors({
+      foregroundColor: this.consoleForegroundColor,
+      backgroundColor: this.consoleBackgroundColor,
+    });
   }
 
   toggleDragging(value: boolean) {
@@ -132,14 +226,9 @@ export class ConsoleWrapperComponent implements OnInit {
       height: `${event.rectangle.height}px`,
     };
 
-    this.styleInside = {
-      height: `${event.rectangle.height - 60}px`,
-      width: `${event.rectangle.width}px`,
-    };
-
     this.consoleService.consoleResized.next({
       width: event.rectangle.width,
-      height: event.rectangle.height - 53,
+      height: Math.max(1, event.rectangle.height - this.consoleHeaderHeight),
     });
 
     this.resizedWidth = event.rectangle.width;
@@ -150,11 +239,11 @@ export class ConsoleWrapperComponent implements OnInit {
     this.closeConsole.emit(false);
   }
 
-  enableScroll(e) {
+  enableScroll() {
     this.mapSettingsService.isScrollDisabled.next(false);
   }
 
-  disableScroll(e) {
+  disableScroll() {
     this.mapSettingsService.isScrollDisabled.next(true);
   }
 }

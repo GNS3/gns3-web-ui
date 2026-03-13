@@ -5,7 +5,6 @@ import { Node } from '../cartography/models/node';
 import { Router } from '@angular/router';
 import { ToasterService } from './toaster.service';
 import { MapSettingsService } from './mapsettings.service';
-import { node } from 'prop-types';
 import { environment } from 'environments/environment';
 
 @Injectable()
@@ -82,7 +81,7 @@ export class NodeConsoleService {
       if (n.console_type !== "none") {
         if (n.status === 'started') {
           this.mapSettingsService.logConsoleSubject.next(true);
-          // this timeout is required due to xterm.js implementation
+          // Keep a short delay to prevent race conditions when opening multiple console tabs.
           setTimeout(() => { this.openConsoleForNode(n); }, 500);
         } else {
           nodesToStartCounter++;

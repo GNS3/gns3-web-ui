@@ -1,4 +1,12 @@
-.lightTheme {
-  background: white !important;
-  color: black !important;
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+#terminal {
+  width: 100%;
+  height: 100%;
+  background: #000000;
 }
