@@ -452,13 +452,13 @@ mat-menu-panel {
  * ============================================================================ */
 
 g.node.console-highlight {
-  // Selected node - purple color
-  // Use animated drop-shadow to create a "breathing" effect
-  animation: nodeHighlightGlow 2s ease-in-out infinite;
+  // Selected node - red color, static glow (no animation)
+  will-change: filter;
+  filter: drop-shadow(0 0 4px #ef4444);
 
   .node_body {
-    stroke: #8b5cf6;
-    stroke-width: 3px;
+    stroke: #ef4444;
+    stroke-width: 4px;
   }
 
   // Exclude label from stroke effect - keep original color
@@ -472,9 +472,10 @@ g.node.console-highlight {
   }
 }
 
-// Connected node highlight (no animation, just static glow)
+// Connected node highlight (static highlight, performance optimized)
 g.node.console-highlight-connected {
-  filter: drop-shadow(0 0 4px #3b82f6);
+  will-change: filter;
+  filter: drop-shadow(0 0 3px #3b82f6);
 
   .node_body {
     stroke: #3b82f6;
@@ -489,15 +490,6 @@ g.node.console-highlight-connected {
   text {
     stroke: none !important;
     fill: inherit !important;
-  }
-}
-
-@keyframes nodeHighlightGlow {
- 0%, 100% {
-    filter: drop-shadow(0 0 6px #8b5cf6);
-  }
-  50% {
-    filter: drop-shadow(0 0 8px #8b5cf6) drop-shadow(0 0 10px #8b5cf6);
   }
 }
 
