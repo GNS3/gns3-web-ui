@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { MatDialog } from '@angular/material/dialog';
 import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
+import { NgZone } from '@angular/core';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
@@ -11,6 +12,7 @@ import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Context } from '../../cartography/models/context';
 
 @Component({
   selector: 'app-template',
@@ -40,11 +42,14 @@ export class TemplateComponent implements OnInit, OnDestroy {
   ];
   selectedType: string;
 
-  movementX: number;
-  movementY: number;
+  // Track mouse position during drag
+  private lastPageX: number = 0;
+  private lastPageY: number = 0;
+  private isDragging: boolean = false;
 
-  startX: number;
-  startY: number;
+  // Track mouse offset from the icon's top-left corner
+  private mouseOffsetX: number = 0;
+  private mouseOffsetY: number = 0;
 
   private subscription: Subscription;
   private themeSubscription: Subscription;
@@ -58,6 +63,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
     private domSanitizer: DomSanitizer,
     private themeService: ThemeService,
     private overlayContainer: OverlayContainer,
+    private context: Context,
+    private ngZone: NgZone,
   ) {
     this.overlay = overlayContainer.getContainerElement();
   }
@@ -109,28 +116,59 @@ export class TemplateComponent implements OnInit, OnDestroy {
     this.sortTemplates();
   }
 
-  dragStart(ev) {
-    let elemRect = (event.target as HTMLElement).getBoundingClientRect();
+  dragStart(ev, template: Template) {
+    const elemRect = (event.target as HTMLElement).getBoundingClientRect();
 
-    this.startX = (event as MouseEvent).clientX;
-    this.startY = (event as MouseEvent).clientY;
+    // Calculate the offset of the mouse from the icon's top-left corner
+    // This ensures the node maintains the same relative position when dropped
+    this.mouseOffsetX = (event as MouseEvent).clientX - elemRect.left;
+    this.mouseOffsetY = (event as MouseEvent).clientY - elemRect.top;
 
-    this.movementY = elemRect.top - (event as MouseEvent).clientY;
-    this.movementX = elemRect.left - (event as MouseEvent).clientX;
+    // Start tracking mouse position outside Angular zone to prevent excessive change detection
+    this.ngZone.runOutsideAngular(() => {
+      this.isDragging = true;
+      const trackMouseMove = (e: MouseEvent) => {
+        if (this.isDragging) {
+          this.lastPageX = e.pageX;
+          this.lastPageY = e.pageY;
+        }
+      };
+      window.addEventListener('mousemove', trackMouseMove);
+      window.addEventListener('mouseup', () => {
+        this.isDragging = false;
+        window.removeEventListener('mousemove', trackMouseMove);
+      }, { once: true });
+    });
   }
 
   dragEnd(ev, template: Template) {
-    this.symbolService.raw(this.controller, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
-      let width = +symbolSvg.split('width="')[1].split('"')[0] ? +symbolSvg.split('width="')[1].split('"')[0] : 0;
-      let scale = this.scaleService.getScale();
+    // Calculate coordinates directly without unnecessary HTTP request
+    const pageX = this.lastPageX;
+    const pageY = this.lastPageY;
 
-      let nodeAddedEvent: NodeAddedEvent = {
-        template: template,
-        controller: 'local',
-        numberOfNodes: 1,
-        x: (this.startX + ev.x - this.project.scene_width / 2 - width / 2) * scale + window.scrollX,
-        y: (this.startY + ev.y - this.project.scene_height / 2) * scale + window.scrollY,
-      };
+    // Use scene dimensions as fallback for context size
+    const centerX = this.context.size.width > 0 ? this.context.size.width / 2 : this.project.scene_width / 2;
+    const centerY = this.context.size.height > 0 ? this.context.size.height / 2 : this.project.scene_height / 2;
+
+    // Convert screen coordinates to world coordinates using D3 transformation
+    const worldX = (pageX - (centerX + this.context.transformation.x)) / this.context.transformation.k;
+    const worldY = (pageY - (centerY + this.context.transformation.y)) / this.context.transformation.k;
+
+    // Subtract the mouse offset to position the node correctly
+    // The offset represents where the mouse was relative to the icon's top-left when dragging started
+    const finalX = Math.round(worldX - this.mouseOffsetX);
+    const finalY = Math.round(worldY - this.mouseOffsetY);
+
+    let nodeAddedEvent: NodeAddedEvent = {
+      template: template,
+      controller: 'local',
+      numberOfNodes: 1,
+      x: finalX,
+      y: finalY,
+    };
+
+    // Emit event inside Angular zone to ensure proper change detection
+    this.ngZone.run(() => {
       this.onNodeCreation.emit(nodeAddedEvent);
     });
   }

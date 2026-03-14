@@ -315,6 +315,7 @@ import { NodesMenuConfirmationDialogComponent } from '@components/project-map/no
 import { ConfirmationDeleteAllProjectsComponent } from '@components/projects/confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { ProjectMapLockConfirmationDialogComponent } from '@components/project-map/project-map-menu/project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { AclManagementComponent } from "@components/acl-management/acl-management.component";
+import { Context } from './cartography/models/context';
 import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
 import { AutocompleteComponent } from '@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component';
 import { DeleteAceDialogComponent } from '@components/acl-management/delete-ace-dialog/delete-ace-dialog.component';
@@ -598,6 +599,7 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         CdkTreeModule,
     ],
     providers: [
+        Context,
         SettingsService,
         { provide: ErrorHandler, useClass: ToasterErrorHandler },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
