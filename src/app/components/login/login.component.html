@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <form [formGroup]="loginForm">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
         <mat-form-field>
           <input matInput formControlName="username" placeholder="Username" />
           <mat-error *ngIf="loginForm.get('username').hasError('required')">You must enter username</mat-error>
@@ -21,18 +21,18 @@
           <input matInput type="password" formControlName="password" placeholder="Password" />
           <mat-error *ngIf="loginForm.get('password').hasError('required')">You must enter password</mat-error>
         </mat-form-field>
+        <mat-checkbox
+          [disabled]="!isRememberMe"
+          [checked]="isRememberMeChecked"
+          class="margin-left"
+          color="primary"
+          (change)="rememberMe($event)"
+          >Remember me</mat-checkbox
+        >
+        <div class="buttons-bar">
+          <button type="submit" class="loginButton" mat-raised-button color="primary">Login</button>
+        </div>
       </form>
-      <mat-checkbox
-        [disabled]="!isRememberMe"
-        [checked]="isRememberMeChecked"
-        class="margin-left"
-        color="primary"
-        (change)="rememberMe($event)"
-        >Remember me</mat-checkbox
-      >
-      <div class="buttons-bar">
-        <button class="loginButton" mat-raised-button color="primary" (click)="login()">Login</button>
-      </div>
     </mat-card>
 
     <div class="errorMessage">
